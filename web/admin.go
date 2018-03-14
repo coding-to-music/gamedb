@@ -341,7 +341,7 @@ func adminRanks(w http.ResponseWriter, r *http.Request) {
 	newRanks := make(map[int]*datastore.Rank)
 	var players []*datastore.Player
 
-	// Get top players by level
+	// Get players by level, todo, code repetition
 	players, err = datastore.GetPlayers("-level", playersToRank)
 	if err != nil {
 		logger.Error(err)
@@ -353,8 +353,44 @@ func adminRanks(w http.ResponseWriter, r *http.Request) {
 		delete(oldKeys, v.PlayerID)
 	}
 
-	// Get top players by games
+	// Get players by games
 	players, err = datastore.GetPlayers("-games_count", playersToRank)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	for _, v := range players {
+		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
+		delete(oldKeys, v.PlayerID)
+	}
+
+	// Get players by badges
+	players, err = datastore.GetPlayers("-badges_count", playersToRank)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	for _, v := range players {
+		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
+		delete(oldKeys, v.PlayerID)
+	}
+
+	// Get players by play time
+	players, err = datastore.GetPlayers("-play_time", playersToRank)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	for _, v := range players {
+		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
+		delete(oldKeys, v.PlayerID)
+	}
+
+	// Get players by games
+	players, err = datastore.GetPlayers("-friends_count", playersToRank)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -373,22 +409,34 @@ func adminRanks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make ranks
-	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].Level > ranks[j].Level
-	})
-
+	sort.Slice(ranks, func(i, j int) bool { return ranks[i].Level > ranks[j].Level })
 	for k, v := range ranks {
 		v.UpdatedAt = time.Now()
 		v.LevelRank = k + 1
 	}
 
-	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].GamesCount > ranks[j].GamesCount
-	})
-
+	sort.Slice(ranks, func(i, j int) bool { return ranks[i].GamesCount > ranks[j].GamesCount })
 	for k, v := range ranks {
 		v.UpdatedAt = time.Now()
 		v.GamesRank = k + 1
+	}
+
+	sort.Slice(ranks, func(i, j int) bool { return ranks[i].BadgesCount > ranks[j].BadgesCount })
+	for k, v := range ranks {
+		v.UpdatedAt = time.Now()
+		v.BadgesRank = k + 1
+	}
+
+	sort.Slice(ranks, func(i, j int) bool { return ranks[i].PlayTime > ranks[j].PlayTime })
+	for k, v := range ranks {
+		v.UpdatedAt = time.Now()
+		v.PlayTimeRank = k + 1
+	}
+
+	sort.Slice(ranks, func(i, j int) bool { return ranks[i].FriendsCount > ranks[j].FriendsCount })
+	for k, v := range ranks {
+		v.UpdatedAt = time.Now()
+		v.FriendsRank = k + 1
 	}
 
 	// Bulk save ranks

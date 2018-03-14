@@ -37,7 +37,7 @@
                     <th scope="col"><a href="/players/level">Level</a></th>
                     <th scope="col"><a href="/players/games">Games</a></th>
                     <th scope="col"><a href="/players/badges">Badges</a></th>
-                    <th scope="col"><a href="/players/playtime">Playtime</a></th>
+                    <th scope="col"><a href="/players/playtime">Time</a></th>
                     <th scope="col"><a href="/players/friends">Friends</a></th>
                     </thead>
                 {{ range $key, $value := .Ranks }}
@@ -50,11 +50,11 @@
                         <td class="img">
                             <img src="{{ .GetFlag }}" title="{{ .CountryCode }}" class="rounded">
                         </td>
-                        <td>{{ .Level }}</td>
-                        <td>{{ .GamesCount }}</td>
-                        <td>{{ .BadgesCount }}</td>
-                        <td>{{ .PlayTime }}</td>
-                        <td>{{ .FriendsCount }}</td>
+                        <td>{{ comma .Level }}</td>
+                        <td>{{ comma .GamesCount }}</td>
+                        <td>{{ comma .BadgesCount }}</td>
+                        <td>{{ comma .PlayTime }}</td>
+                        <td>{{ comma .FriendsCount }}</td>
                     </tr>
                 {{ end }}
                 </table>

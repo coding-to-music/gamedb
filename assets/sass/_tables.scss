@@ -1,4 +1,13 @@
 table.table {
+    thead{
+        th{
+            color: $dark;
+            a{
+                color: $dark;
+                text-decoration: underline;
+            }
+        }
+    }
     td.platforms {
         font-size: 26px;
         line-height: 28px;
