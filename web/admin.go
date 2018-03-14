@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/go-helpers/logger"
@@ -334,76 +335,44 @@ type steamTag struct {
 
 func adminRanks(w http.ResponseWriter, r *http.Request) {
 
-	playersToRank := 1000
+	playersToRank := 10
 	timeStart := time.Now().Unix()
 
 	oldKeys, err := datastore.GetRankKeys()
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
 	newRanks := make(map[int]*datastore.Rank)
 	var players []*datastore.Player
 
-	// Get players by level, todo, code repetition
-	players, err = datastore.GetPlayers("-level", playersToRank)
-	if err != nil {
-		logger.Error(err)
-		return
-	}
+	var wg sync.WaitGroup
 
-	for _, v := range players {
-		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
-		delete(oldKeys, v.PlayerID)
-	}
+	for _, v := range []string{"-level", "-games_count", "-badges_count", "-play_time", "-friends_count"} {
 
-	// Get players by games
-	players, err = datastore.GetPlayers("-games_count", playersToRank)
-	if err != nil {
-		logger.Error(err)
-		return
-	}
+		wg.Add(1)
+		go func(column string) {
 
-	for _, v := range players {
-		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
-		delete(oldKeys, v.PlayerID)
-	}
+			players, err = datastore.GetPlayers(column, playersToRank)
+			if err != nil {
+				logger.Error(err)
+				return
+			}
 
-	// Get players by badges
-	players, err = datastore.GetPlayers("-badges_count", playersToRank)
-	if err != nil {
-		logger.Error(err)
-		return
-	}
+			for _, v := range players {
+				newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
+				delete(oldKeys, v.PlayerID)
+			}
 
-	for _, v := range players {
-		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
-		delete(oldKeys, v.PlayerID)
-	}
+			wg.Done()
+		}(v)
 
-	// Get players by play time
-	players, err = datastore.GetPlayers("-play_time", playersToRank)
-	if err != nil {
-		logger.Error(err)
-		return
 	}
-
-	for _, v := range players {
-		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
-		delete(oldKeys, v.PlayerID)
-	}
-
-	// Get players by games
-	players, err = datastore.GetPlayers("-friends_count", playersToRank)
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
-	for _, v := range players {
-		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
-		delete(oldKeys, v.PlayerID)
-	}
+	wg.Wait()
 
 	// Convert new ranks to slice
 	var ranks []*datastore.Rank
-
 	for _, v := range newRanks {
 		ranks = append(ranks, v)
 	}
