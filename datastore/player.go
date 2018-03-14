@@ -12,7 +12,6 @@ import (
 	"github.com/Jleagle/go-helpers/logger"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/steam"
-	"google.golang.org/api/iterator"
 )
 
 const (
@@ -63,6 +62,10 @@ func (p Player) GetAvatar() string {
 	}
 }
 
+func (p Player) GetFlag() string {
+	return "/assets/img/flags/" + strings.ToLower(p.CountryCode) + ".png"
+}
+
 func (p Player) shouldUpdate() bool {
 
 	if p.PersonaName == "" {
@@ -104,7 +107,7 @@ func GetPlayer(id int) (ret *Player, err error) {
 	return player, nil
 }
 
-func GetPlayers(order string, limit int) (players []Player, err error) {
+func GetPlayers(order string, limit int) (players []*Player, err error) {
 
 	client, ctx, err := getDSClient()
 	if err != nil {
@@ -112,20 +115,7 @@ func GetPlayers(order string, limit int) (players []Player, err error) {
 	}
 
 	q := datastore.NewQuery(KindPlayer).Order(order).Limit(limit)
-	it := client.Run(ctx, q)
-
-	for {
-		var dsPlayer Player
-		_, err := it.Next(&dsPlayer)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			logger.Error(err)
-		}
-
-		players = append(players, dsPlayer)
-	}
+	_, err = client.GetAll(ctx, q, &players)
 
 	return players, err
 }

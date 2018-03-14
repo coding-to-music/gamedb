@@ -62,7 +62,7 @@
                 {{ range $key, $value := .Apps }}
                     <tr>
                         <td class="img">
-                            <img class="mr-3 rounded" src="{{ .GetIcon }}" alt="{{ .GetName }}">
+                            <img class="mr-3 rounded" src="{{ .GetIcon }}">
                         </td>
                         <td style="white-space:nowrap"><a href="/apps/{{.ID}}">{{.GetName}}</a></td>
                         <td>{{ .GetType }}</td>

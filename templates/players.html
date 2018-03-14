@@ -34,28 +34,26 @@
                     <th scope="col">Rank</th>
                     <th scope="col">Player</th>
                     <th scope="col">Country</th>
-                    <th scope="col">Level</th>
-                    <th scope="col">Games</th>
-                    <th scope="col">Badges</th>
-                    <th scope="col">Play Time</th>
-                    <th scope="col">Time on Steam</th>
-                    <th scope="col">Friends</th>
+                    <th scope="col"><a href="/players/level">Level</a></th>
+                    <th scope="col"><a href="/players/games">Games</a></th>
+                    <th scope="col"><a href="/players/badges">Badges</a></th>
+                    <th scope="col"><a href="/players/playtime">Playtime</a></th>
+                    <th scope="col"><a href="/players/friends">Friends</a></th>
                     </thead>
                 {{ range $key, $value := .Ranks }}
                     <tr data-link="/players/{{ .PlayerID }}/{{ .PersonaName }}">
                         <td>{{ .Rank }}</td>
                         <td class="img">
-                            <img src="{{ .GetAvatar }}" alt="{{ .PersonaName }}" class="avatar rounded">
+                            <img src="{{ .GetAvatar }}" class="avatar rounded">
                             <span>{{ .PersonaName }}</span>
                         </td>
                         <td class="img">
-                            <img src="/assets/img/flags/{{ .CountryCode }}.png" alt="{{ .CountryCode }}" class="rounded">
+                            <img src="{{ .GetFlag }}" title="{{ .CountryCode }}" class="rounded">
                         </td>
                         <td>{{ .Level }}</td>
                         <td>{{ .GamesCount }}</td>
                         <td>{{ .BadgesCount }}</td>
                         <td>{{ .PlayTime }}</td>
-                        {{/*<td>{{ .TimeCreated }}</td>*/}}
                         <td>{{ .FriendsCount }}</td>
                     </tr>
                 {{ end }}

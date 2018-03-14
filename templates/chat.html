@@ -4,7 +4,7 @@
 
     <div class="jumbotron">
         <a href="https://discord.gg/c5zrcus">
-            <img src="/assets/img/discord.png" alt="" class="float-right">
+            <img src="/assets/img/discord.png" class="float-right">
         </a>
         <h1 class="display-4"><i class="fas fa-comments"></i> Chat</h1>
         <p class="lead">See what's going on, on our <a href="https://discord.gg/c5zrcus">Discord chat server</a>.</p>
@@ -32,7 +32,7 @@
 
             {{ range $key, $value := .Messages }}
                 <li class="media">
-                    <img class="mr-3 rounded" src="https://cdn.discordapp.com/avatars/{{ .Author.ID }}/{{ .Author.Avatar }}.png?size=128" alt="{{ .Author.Username }}">
+                    <img class="mr-3 rounded" src="https://cdn.discordapp.com/avatars/{{ .Author.ID }}/{{ .Author.Avatar }}.png?size=128">
                     <div class="media-body">
                         <h5 class="mt-0 mb-1">{{ .Content }}</h5>
                         <p class="text-muted">By {{ .Author.Username }}</p>

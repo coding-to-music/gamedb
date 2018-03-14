@@ -40,7 +40,7 @@
                     {{ range $key, $value := .Apps }}
                     <tr data-link="{{ .GetPath }}">
                         <td class="img">
-                            <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded">
+                            <img src="{{ .GetIcon }}" class="rounded">
                         </td>
                         <td>{{ .GetName }}</td>
                         <td>{{ .GetType }}</td>

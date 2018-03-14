@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
@@ -332,42 +334,61 @@ type steamTag struct {
 
 func adminRanks(w http.ResponseWriter, r *http.Request) {
 
-	var playersToRank = 500
+	playersToRank := 1000
+	timeStart := time.Now().Unix()
 
-	// Get keys, will delete any that are not removed from this map
 	oldKeys, err := datastore.GetRankKeys()
-
 	newRanks := make(map[int]*datastore.Rank)
+	var players []*datastore.Player
 
-	// Get players by level
-	players, err := datastore.GetPlayers("-level", playersToRank)
+	// Get top players by level
+	players, err = datastore.GetPlayers("-level", playersToRank)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
-	for k, v := range players {
+	for _, v := range players {
+		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
+		delete(oldKeys, v.PlayerID)
+	}
 
-		_, ok := newRanks[v.PlayerID]
-		if !ok {
+	// Get top players by games
+	players, err = datastore.GetPlayers("-games_count", playersToRank)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
 
-			rank := &datastore.Rank{}
-			rank.FillFromPlayer(v)
-
-			newRanks[v.PlayerID] = rank
-		}
-		newRanks[v.PlayerID].LevelRank = k + 1
-
-		_, ok = oldKeys[strconv.Itoa(v.PlayerID)]
-		if ok {
-			delete(oldKeys, strconv.Itoa(v.PlayerID))
-		}
+	for _, v := range players {
+		newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
+		delete(oldKeys, v.PlayerID)
 	}
 
 	// Convert new ranks to slice
 	var ranks []*datastore.Rank
+
 	for _, v := range newRanks {
 		ranks = append(ranks, v)
+	}
+
+	// Make ranks
+	sort.Slice(ranks, func(i, j int) bool {
+		return ranks[i].Level > ranks[j].Level
+	})
+
+	for k, v := range ranks {
+		v.UpdatedAt = time.Now()
+		v.LevelRank = k + 1
+	}
+
+	sort.Slice(ranks, func(i, j int) bool {
+		return ranks[i].GamesCount > ranks[j].GamesCount
+	})
+
+	for k, v := range ranks {
+		v.UpdatedAt = time.Now()
+		v.GamesRank = k + 1
 	}
 
 	// Bulk save ranks
@@ -378,8 +399,12 @@ func adminRanks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete leftover keys
-	datastore.BulkDeleteRanks(oldKeys)
+	err = datastore.BulkDeleteRanks(oldKeys)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
 
-	logger.Info("Ranks updated")
+	logger.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
 	w.Write([]byte("OK"))
 }

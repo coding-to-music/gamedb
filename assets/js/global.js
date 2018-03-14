@@ -15,3 +15,5 @@ function clearField(evt, input) {
 $("body").tooltip({
     selector: '[data-toggle="tooltip"]'
 });
+
+$('img[data-src]').Lazy();

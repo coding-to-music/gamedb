@@ -10,13 +10,11 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-var ranksLimit = 500
-
 type Rank struct {
 	CreatedAt   time.Time `datastore:"created_at,noindex"`
 	UpdatedAt   time.Time `datastore:"updated_at,noindex"`
 	PlayerID    int       `datastore:"player_id,noindex"`
-	ValintyURL  string    `datastore:"vality_url,noindex"`
+	VanintyURL  string    `datastore:"vality_url,noindex"`
 	Avatar      string    `datastore:"avatar,noindex"`
 	PersonaName string    `datastore:"persona_name,noindex"`
 	CountryCode string    `datastore:"country_code"`
@@ -50,29 +48,16 @@ func (rank Rank) GetAvatar() string {
 	}
 }
 
+func (rank Rank) GetFlag() string {
+	return "/assets/img/flags/" + strings.ToLower(rank.CountryCode) + ".png"
+}
+
 func (rank *Rank) Tidy() *Rank {
 
 	rank.UpdatedAt = time.Now()
 	if rank.CreatedAt.IsZero() {
 		rank.CreatedAt = time.Now()
 	}
-
-	return rank
-}
-
-func (rank *Rank) FillFromPlayer(player Player) *Rank {
-
-	rank.PlayerID = player.PlayerID
-	rank.ValintyURL = player.ValintyURL
-	rank.Avatar = player.Avatar
-	rank.PersonaName = player.PersonaName
-	rank.CountryCode = player.CountryCode
-	rank.Level = player.Level
-	rank.GamesCount = player.GamesCount
-	rank.BadgesCount = player.BadgesCount
-	rank.PlayTime = player.PlayTime
-	//rank.TimeCreated = player.TimeCreated
-	rank.FriendsCount = len(player.Friends)
 
 	return rank
 }
@@ -84,7 +69,7 @@ func GetRanksBy(order string) (ranks []Rank, err error) {
 		return ranks, err
 	}
 
-	q := datastore.NewQuery(KindRank).Order(order).Limit(ranksLimit)
+	q := datastore.NewQuery(KindRank).Order(order).Limit(1000)
 	it := client.Run(context, q)
 
 	for {
@@ -103,56 +88,30 @@ func GetRanksBy(order string) (ranks []Rank, err error) {
 	return ranks, err
 }
 
-func BulkSaveRanks(ranks []*Rank) (err error) {
+func GetRankKeys() (keysMap map[int]*datastore.Key, err error) {
 
-	RanksLen := len(ranks)
-	if RanksLen == 0 {
-		return nil
-	}
-
-	client, context, err := getDSClient()
-	if err != nil {
-		return err
-	}
-
-	keys := make([]*datastore.Key, 0, RanksLen)
-	for _, v := range ranks {
-		keys = append(keys, v.GetKey())
-	}
-
-	//fmt.Println("Saving " + strconv.Itoa(RanksLen) + " ranks")
-
-	_, err = client.PutMulti(context, keys, ranks)
-	if err != nil {
-		logger.Error(err)
-	}
-
-	return nil
-}
-
-func GetRankKeys() (keysMap map[string]*datastore.Key, err error) {
-
-	keysMap = make(map[string]*datastore.Key)
+	keysMap = make(map[int]*datastore.Key)
 
 	client, ctx, err := getDSClient()
 	if err != nil {
 		return keysMap, err
 	}
 
-	q := datastore.NewQuery(KindRank).KeysOnly().Limit(1000)
+	q := datastore.NewQuery(KindRank).KeysOnly()
 	keys, err := client.GetAll(ctx, q, nil)
 	if err != nil {
 		return keysMap, err
 	}
 
 	for _, v := range keys {
-		keysMap[v.Name] = v
+		playerId, _ := strconv.Atoi(v.Name)
+		keysMap[playerId] = v
 	}
 
 	return keysMap, nil
 }
 
-func CountRankedPlayers() (count int, err error) {
+func GetRanksCount() (count int, err error) {
 
 	client, ctx, err := getDSClient()
 	if err != nil {
@@ -168,7 +127,62 @@ func CountRankedPlayers() (count int, err error) {
 	return count, nil
 }
 
-func BulkDeleteRanks(keys map[string]*datastore.Key) (err error) {
+func NewRankFromPlayer(player Player) (rank *Rank) {
+
+	rank = new(Rank)
+
+	// Profile
+	rank.CreatedAt = time.Now()
+	rank.UpdatedAt = time.Now()
+	rank.PlayerID = player.PlayerID
+	rank.VanintyURL = player.ValintyURL
+	rank.Avatar = player.Avatar
+	rank.PersonaName = player.PersonaName
+	rank.CountryCode = player.CountryCode
+
+	// Rankable
+	rank.Level = player.Level
+	rank.GamesCount = player.GamesCount
+	rank.BadgesCount = player.BadgesCount
+	rank.PlayTime = player.PlayTime
+	rank.FriendsCount = len(player.Friends)
+
+	return rank
+}
+
+func BulkSaveRanks(ranks []*Rank) (err error) {
+
+	ranksLen := len(ranks)
+	if ranksLen == 0 {
+		return nil
+	}
+
+	client, context, err := getDSClient()
+	if err != nil {
+		return err
+	}
+
+	chunks := chunkRanks(ranks, 500)
+
+	for _, v := range chunks {
+
+		ranksLen := len(v)
+
+		keys := make([]*datastore.Key, 0, ranksLen)
+		for _, vv := range v {
+			keys = append(keys, vv.GetKey())
+		}
+
+		_, err = client.PutMulti(context, keys, v)
+		if err != nil {
+			logger.Error(err)
+		}
+	}
+
+	return nil
+}
+
+func BulkDeleteRanks(keys map[int]*datastore.Key) (err error) {
 
 	// Make map a slice
 	var keysToDelete []*datastore.Key
@@ -181,10 +195,45 @@ func BulkDeleteRanks(keys map[string]*datastore.Key) (err error) {
 		return err
 	}
 
-	err = client.DeleteMulti(ctx, keysToDelete)
-	if err != nil {
-		return err
+	chunks := chunkRankKeys(keysToDelete, 500)
+
+	for _, v := range chunks {
+
+		err = client.DeleteMulti(ctx, v)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func chunkRanks(logs []*Rank, chunkSize int) (divided [][]*Rank) {
+
+	for i := 0; i < len(logs); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(logs) {
+			end = len(logs)
+		}
+
+		divided = append(divided, logs[i:end])
+	}
+
+	return divided
+}
+
+func chunkRankKeys(logs []*datastore.Key, chunkSize int) (divided [][]*datastore.Key) {
+
+	for i := 0; i < len(logs); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(logs) {
+			end = len(logs)
+		}
+
+		divided = append(divided, logs[i:end])
+	}
+
+	return divided
 }

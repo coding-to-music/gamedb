@@ -16,13 +16,12 @@
             {{ range $key, $value := .Commits }}
 
                 <li class="media">
-                {{/*<img class="mr-3 rounded" src="{{ .Author.AvatarURL }}" alt="{{ .Author.Login }}">*/}}
                     <div class="media-body">
                         <h5 class="mt-0 mb-1">{{ .Commit.Message }}</h5>
                         <p class="text-muted">
                             <span data-livestamp="{{ .Commit.Author.Date.Unix }}">{{ .Commit.Author.Date.Unix }}</span>
                             <a href="{{ .HTMLURL }}">
-                                <i class="fa fa-paperclip" aria-hidden="true"></i>
+                                <i class="fas fa-paperclip" aria-hidden="true"></i>
                             </a>
                         </p>
                     </div>

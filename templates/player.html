@@ -3,10 +3,10 @@
 <div class="container" id="player-page">
 
     <div class="jumbotron">
-        <img src="{{ .Player.GetAvatar }}" alt="{{ .Player.PersonaName }}" class="rounded-left">
+        <img src="{{ .Player.GetAvatar }}" class="rounded-right">
         <h1 class="display-4">
-        {{ .Player.PersonaName }}
-            <span class="badge badge-secondary"><i class="fas fa-user"></i> {{ .Player.Level }}</span>
+            <i class="fas fa-user"></i> {{ .Player.PersonaName }}
+            <span class="badge badge-secondary">{{ .Player.Level }}</span>
         </h1>
         <p class="lead">x</p>
     </div>
@@ -60,7 +60,7 @@
 
                     {{ if ne .PersonaName "" }}
                         <a href="{{.GetPath}}" class="list-group-item list-group-item-action d-flex justify-content-betweenx align-items-center">
-                            <img class="avatar" src="{{ .GetAvatar }}" alt="">
+                            <img class="avatar" src="{{ .GetAvatar }}">
                             <span class="mr-auto">{{ .PersonaName }}</span>
                             <span class="badge badge-primary badge-pill" data-toggle="tooltip" data-placement="top" title="Level">{{ .Level }}</span>
                         </a>
@@ -90,7 +90,7 @@
                         {{ range $key, $value := .Games }}
                             <tr{{if ne .ID 0}} data-link="/apps/{{ .ID }}"{{end}}>
                                 <td class="img">
-                                    <img src="{{ .Icon }}" alt="{{ .Name }}" class="avatar rounded">
+                                    <img src="{{ .Icon }}" class="avatar rounded">
                                 </td>
                                 <td>{{ .Name }}</td>
                                 <td>${{ .Price }}</td>

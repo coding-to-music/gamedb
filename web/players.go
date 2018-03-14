@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"net/http"
@@ -25,26 +26,38 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	switch chi.URLParam(r, "id") {
-	case "level":
+	case "badges":
+		ranks, err = datastore.GetRanksBy("badges_rank")
+
+		for k := range ranks {
+			ranks[k].Rank = ranks[k].BadgesRank
+		}
+	case "friends":
+		ranks, err = datastore.GetRanksBy("friends_rank")
+
+		for k := range ranks {
+			ranks[k].Rank = ranks[k].FriendsRank
+		}
+	case "games":
+		ranks, err = datastore.GetRanksBy("games_rank")
+
+		for k := range ranks {
+			ranks[k].Rank = ranks[k].GamesRank
+		}
+	case "level", "":
 		ranks, err = datastore.GetRanksBy("level_rank")
 
 		for k := range ranks {
 			ranks[k].Rank = ranks[k].LevelRank
 		}
-		//case "games":
-		//	sort = "games_rank"
-		//case "badges":
-		//	sort = "badges_rank"
-		//case "playtime":
-		//	sort = "play_time_rank"
-		//case "steamtime":
-		//	sort = "-time_created_rank"
+	case "playtime":
+		ranks, err = datastore.GetRanksBy("play_time_rank")
+
+		for k := range ranks {
+			ranks[k].Rank = ranks[k].PlayTimeRank
+		}
 	default:
-		ranks, err = datastore.GetRanksBy("level_rank")
-
-		for k := range ranks {
-			ranks[k].Rank = ranks[k].LevelRank
-		}
+		err = errors.New("incorrect sort")
 	}
 
 	if err != nil {
@@ -60,7 +73,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Count ranks
-	ranksCount, err := datastore.CountRankedPlayers()
+	ranksCount, err := datastore.GetRanksCount()
 	if err != nil {
 		logger.Error(err)
 	}

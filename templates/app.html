@@ -3,7 +3,7 @@
 <div class="container" id="app-page">
 
     <div class="jumbotron">
-        <img src="http://cdn.akamai.steamstatic.com/steam/apps/{{ .App.ID }}/header.jpg" alt="{{ .App.GetName }}" class="rounded-right"
+        <img src="http://cdn.akamai.steamstatic.com/steam/apps/{{ .App.ID }}/header.jpg" class="rounded-right"
              onError="delete this; this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
         <h1 class="display-4"><i class="fas fa-gamepad"></i> {{.App.Name}}</h1>
         <p class="lead">x</p>
@@ -95,7 +95,7 @@
                             <div class="carousel-inner">
                             {{ range $key, $value := .App.GetScreenshots }}
                                 <div class="carousel-item {{if eq $key 0}}active{{end}}">
-                                    <img class="d-block w-100" style="width:50%;" src="{{ .PathFull }}" alt="Slide {{ $key }}">
+                                    <img class="d-block w-100" style="width:50%;" src="{{ .PathFull }}">
                                 </div>
                             {{ end }}
                             </div>
