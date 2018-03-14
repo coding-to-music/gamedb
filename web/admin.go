@@ -113,7 +113,7 @@ func adminDonations(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ma[player]total
+	// map[player]total
 	counts := make(map[int]int)
 
 	for _, v := range donations {
@@ -174,6 +174,7 @@ func adminGenres(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, v := range counts {
+		// todo, put this in goroutine?
 		err := mysql.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
 		if err != nil {
 			logger.Error(err)
@@ -299,6 +300,7 @@ func adminTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for k, v := range counts {
+		// todo, put this in goroutine?
 		err := mysql.SaveOrUpdateTag(k, mysql.Tag{
 			Apps:         v.count,
 			MeanPrice:    v.GetMeanPrice(),
@@ -335,7 +337,7 @@ type steamTag struct {
 
 func adminRanks(w http.ResponseWriter, r *http.Request) {
 
-	playersToRank := 10
+	playersToRank := 1000
 	timeStart := time.Now().Unix()
 
 	oldKeys, err := datastore.GetRankKeys()
