@@ -142,7 +142,7 @@ func NewRankFromPlayer(player Player) (rank *Rank) {
 	rank.CreatedAt = time.Now()
 	rank.UpdatedAt = time.Now()
 	rank.PlayerID = player.PlayerID
-	rank.VanintyURL = player.ValintyURL
+	rank.VanintyURL = player.VanintyURL
 	rank.Avatar = player.Avatar
 	rank.PersonaName = player.PersonaName
 	rank.CountryCode = player.CountryCode

@@ -8,7 +8,7 @@
             <i class="fas fa-user"></i> {{ .Player.PersonaName }}
             <span class="badge badge-secondary">{{ .Player.Level }}</span>
         </h1>
-        <p class="lead">{{ .Player.GetHumanPlayTime }}</p>
+        <p class="lead"></p>
     </div>
 
     <div class="card">
@@ -39,17 +39,14 @@
             <div class="tab-content">
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
-                    <div class="row">
-                        <div class="col-sm">
-                            x
-                        </div>
-                        <div class="col-sm">
-                            x
-                        </div>
-                        <div class="col-sm">
-                            x
-                        </div>
-                    </div>
+                    <p>Last updated: {{ .Player.UpdatedAt }}</p>
+                    <p>Steam profile: <a href="{{ .Player.GetSteamCommunityLink }}">{{ .Player.GetSteamCommunityLink }}</a></p>
+
+                    <p>Country: {{ .Player.CountryCode }}</p>
+                    <p>State: {{ .Player.StateCode }}</p>
+
+                    <p>Level: {{ .Player.Level }}</p>
+                    <p>Time on steam: {{ .Player.TimeCreated }}</p>
 
                 </div>
                 <div class="tab-pane" id="friends" role="tabpanel">
@@ -77,6 +74,14 @@
                 <div class="tab-pane" id="achievements" role="tabpanel">Achievements</div>
                 <div class="tab-pane" id="badges" role="tabpanel">Badges</div>
                 <div class="tab-pane" id="games" role="tabpanel">
+
+
+                {{ range $key, $value := .Player.GamesRecent }}
+                        xx
+                    <p>{{ .Name }}</p>
+                    <p>{{ .ImgLogoURL }}</p>
+                    <p>{{ .AppID }}</p>
+                {{ end }}
 
                     <div class="table-responsive">
                         <table class="table table-hover table-sm table-striped table-images table-sorter">

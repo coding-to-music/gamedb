@@ -24,7 +24,7 @@ type Player struct {
 	UpdatedAt        time.Time                   `datastore:"updated_at"`
 	FriendsAddedAt   time.Time                   `datastore:"friends_added_at,noindex"`
 	PlayerID         int                         `datastore:"player_id"`
-	ValintyURL       string                      `datastore:"vality_url,noindex"`
+	VanintyURL       string                      `datastore:"vanity_url,noindex"`
 	Avatar           string                      `datastore:"avatar,noindex"`
 	PersonaName      string                      `datastore:"persona_name,noindex"`
 	RealName         string                      `datastore:"real_name,noindex"`
@@ -53,6 +53,10 @@ func (p Player) GetKey() (key *datastore.Key) {
 
 func (p Player) GetPath() string {
 	return "/players/" + strconv.Itoa(p.PlayerID) + "/" + slug.Make(p.PersonaName)
+}
+
+func (p Player) GetSteamCommunityLink() string {
+	return "http://steamcommunity.com/profiles/" + strconv.Itoa(p.PlayerID)
 }
 
 func (p Player) GetAvatar() string {
@@ -208,7 +212,7 @@ func (p *Player) fill() (err error) {
 	}
 
 	p.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
-	p.ValintyURL = path.Base(summary.ProfileURL)
+	p.VanintyURL = path.Base(summary.ProfileURL)
 	p.RealName = summary.RealName
 	p.CountryCode = summary.LOCCountryCode
 	p.StateCode = summary.LOCStateCode

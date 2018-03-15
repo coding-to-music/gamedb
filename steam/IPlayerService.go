@@ -40,7 +40,7 @@ type RecentlyPlayedGamesResponse struct {
 }
 
 type RecentlyPlayedGame struct {
-	Appid           int    `json:"appid"`
+	AppID           int    `json:"appid"`
 	Name            string `json:"name"`
 	Playtime2Weeks  int    `json:"playtime_2weeks"`
 	PlaytimeForever int    `json:"playtime_forever"`
