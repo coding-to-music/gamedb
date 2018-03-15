@@ -19,7 +19,7 @@ import (
 	"github.com/steam-authority/steam-authority/steam"
 )
 
-func PlayersHandler(w http.ResponseWriter, r *http.Request) {
+func RanksHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Normalise the order
 	var ranks []datastore.Rank
@@ -84,7 +84,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	template.PlayersCount = playersCount
 	template.RanksCount = ranksCount
 
-	returnTemplate(w, r, "players", template)
+	returnTemplate(w, r, "ranks", template)
 	return
 }
 

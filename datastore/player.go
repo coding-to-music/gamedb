@@ -11,6 +11,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/go-helpers/logger"
 	"github.com/gosimple/slug"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/steam"
 )
 
@@ -81,6 +82,10 @@ func (p Player) shouldUpdate() bool {
 
 func (p Player) ShouldUpdateFriends() bool {
 	return p.FriendsAddedAt.Unix() < (time.Now().Unix() - int64(60*60*24*30))
+}
+
+func (p Player) GetHumanPlayTime() (ret string) {
+	return helpers.GetHumanPlayTime(p.PlayTime)
 }
 
 func GetPlayer(id int) (ret *Player, err error) {
@@ -216,6 +221,13 @@ func (p *Player) fill() (err error) {
 
 	p.Games = gamesResponse
 	p.GamesCount = len(gamesResponse)
+
+	// Get playtime
+	var playtime = 0
+	for _, v := range gamesResponse {
+		playtime = playtime + v.PlaytimeForever
+	}
+	p.PlayTime = playtime
 
 	// Get recent games
 	recentGames, err := steam.GetRecentlyPlayedGames(p.PlayerID)

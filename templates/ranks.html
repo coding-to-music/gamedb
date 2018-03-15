@@ -1,4 +1,4 @@
-{{define "players"}} {{ template "_header" . }}
+{{define "ranks"}} {{ template "_header" . }}
 
 <div class="container">
 
@@ -53,7 +53,7 @@
                         <td>{{ comma .Level }}</td>
                         <td>{{ comma .GamesCount }}</td>
                         <td>{{ comma .BadgesCount }}</td>
-                        <td>{{ comma .PlayTime }}</td>
+                        <td>{{ .GetHumanPlayTime }}</td>
                         <td>{{ comma .FriendsCount }}</td>
                     </tr>
                 {{ end }}

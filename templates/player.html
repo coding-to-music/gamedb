@@ -8,7 +8,7 @@
             <i class="fas fa-user"></i> {{ .Player.PersonaName }}
             <span class="badge badge-secondary">{{ .Player.Level }}</span>
         </h1>
-        <p class="lead">x</p>
+        <p class="lead">{{ .Player.GetHumanPlayTime }}</p>
     </div>
 
     <div class="card">

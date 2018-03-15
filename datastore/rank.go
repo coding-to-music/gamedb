@@ -7,6 +7,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/go-helpers/logger"
+	"github.com/steam-authority/steam-authority/helpers"
 	"google.golang.org/api/iterator"
 )
 
@@ -50,6 +51,10 @@ func (rank Rank) GetAvatar() string {
 
 func (rank Rank) GetFlag() string {
 	return "/assets/img/flags/" + strings.ToLower(rank.CountryCode) + ".png"
+}
+
+func (rank Rank) GetHumanPlayTime() (ret string) {
+	return helpers.GetHumanPlayTime(rank.PlayTime)
 }
 
 func (rank *Rank) Tidy() *Rank {

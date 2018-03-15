@@ -85,8 +85,8 @@ func main() {
 	r.Get("/packages/{id}", web.PackageHandler)
 
 	r.Post("/players", web.PlayerIDHandler)
-	r.Get("/players", web.PlayersHandler)
-	r.Get("/players/{id:[a-z]+}", web.PlayersHandler)
+	r.Get("/players", web.RanksHandler)
+	r.Get("/players/{id:[a-z]+}", web.RanksHandler)
 	r.Get("/players/{id:[0-9]+}", web.PlayerHandler)
 	r.Get("/players/{id:[0-9]+}/{slug}", web.PlayerHandler)
 
