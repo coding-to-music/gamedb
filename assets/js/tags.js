@@ -1,7 +1,7 @@
 if ($('#tags-page').length > 0) {
 
     var options = {
-        valueNames: ['tag-name', 'tag-games', 'tag-votes'],
+        valueNames: ['tag-name'],
         listClass: 'tags-list',
         page: 1000,
         fuzzySearch: {

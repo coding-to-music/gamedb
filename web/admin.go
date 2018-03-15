@@ -5,16 +5,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"sort"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
-	"github.com/hpcloud/tail"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
@@ -25,26 +22,24 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	option := chi.URLParam(r, "option")
 
-	var errors []string
-
 	switch option {
-	case "apps": // Add all apps to queue
-		go adminApps(w, r)
+	case "re-add-all-apps":
+		go adminApps()
 	case "deploy":
-		go adminDeploy(w, r)
-	case "donations":
-		go adminDonations(w, r)
-	case "genres":
-		go adminGenres(w, r)
+		go adminDeploy()
+	case "count-donations":
+		go adminDonations()
+	case "count-genres":
+		go adminGenres()
 	case "queues":
 		r.ParseForm()
-		go adminQueues(w, r, r.PostForm)
-	case "ranks":
-		go adminRanks(w, r)
-	case "tags":
-		go adminTags(w, r)
+		go adminQueues(r)
+	case "calculate-ranks":
+		go adminRanks()
+	case "count-tags":
+		go adminTags()
 	case "disable-consumers":
-		go adminDisableConsumers(w, r)
+		go adminDisableConsumers()
 	}
 
 	// Redirect away after action
@@ -53,19 +48,20 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get logs
-	t, err := tail.TailFile(os.Getenv("STEAM_PATH")+"/logs.txt", tail.Config{})
-	if err != nil {
-		logger.Error(err)
-	}
-	for line := range t.Lines {
-		errors = append(errors, strings.TrimSpace(line.Text)+"\n")
-	}
+	//// Get logs
+	//t, err := tail.TailFile(os.Getenv("STEAM_PATH")+"/logs.txt", tail.Config{})
+	//if err != nil {
+	//	logger.Error(err)
+	//}
+	//var errors []string
+	//for line := range t.Lines {
+	//	errors = append(errors, strings.TrimSpace(line.Text)+"\n")
+	//}
 
 	// Template
 	template := adminTemplate{}
 	template.Fill(r)
-	template.Errors = errors
+	//template.Errors = errors
 
 	returnTemplate(w, r, "admin", template)
 	return
@@ -76,11 +72,11 @@ type adminTemplate struct {
 	Errors []string
 }
 
-func adminDisableConsumers(w http.ResponseWriter, r *http.Request) {
+func adminDisableConsumers() {
 
 }
 
-func adminApps(w http.ResponseWriter, r *http.Request) {
+func adminApps() {
 
 	// Get apps
 	apps, err := steam.GetAppList()
@@ -101,11 +97,11 @@ func adminApps(w http.ResponseWriter, r *http.Request) {
 	logger.Info(strconv.Itoa(len(apps)) + " apps added to rabbit")
 }
 
-func adminDeploy(w http.ResponseWriter, r *http.Request) {
+func adminDeploy() {
 
 }
 
-func adminDonations(w http.ResponseWriter, r *http.Request) {
+func adminDonations() {
 
 	donations, err := datastore.GetDonations(0, 0)
 	if err != nil {
@@ -140,7 +136,7 @@ func adminDonations(w http.ResponseWriter, r *http.Request) {
 }
 
 // todo, handle genres that no longer have any games.
-func adminGenres(w http.ResponseWriter, r *http.Request) {
+func adminGenres() {
 
 	filter := url.Values{}
 	filter.Set("genres_depth", "3")
@@ -173,13 +169,23 @@ func adminGenres(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var wg sync.WaitGroup
+
 	for _, v := range counts {
-		// todo, put this in goroutine?
-		err := mysql.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
-		if err != nil {
-			logger.Error(err)
-		}
+
+		wg.Add(1)
+		go func(v *adminGenreCount) {
+
+			err := mysql.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
+			if err != nil {
+				logger.Error(err)
+			}
+
+			wg.Done()
+
+		}(v)
 	}
+	wg.Wait()
 
 	logger.Info("Genres updated")
 }
@@ -189,9 +195,9 @@ type adminGenreCount struct {
 	Genre steam.AppDetailsGenre
 }
 
-func adminQueues(w http.ResponseWriter, r *http.Request, form url.Values) {
+func adminQueues(r *http.Request) {
 
-	if val := form.Get("change-id"); val != "" {
+	if val := r.PostForm.Get("change-id"); val != "" {
 
 		logger.Info("Change: " + val)
 		appID, _ := strconv.Atoi(val)
@@ -201,7 +207,7 @@ func adminQueues(w http.ResponseWriter, r *http.Request, form url.Values) {
 		queue.Produce(queue.AppQueue, bytes)
 	}
 
-	if val := form.Get("player-id"); val != "" {
+	if val := r.PostForm.Get("player-id"); val != "" {
 
 		logger.Info("Player: " + val)
 		playerID, _ := strconv.Atoi(val)
@@ -211,7 +217,7 @@ func adminQueues(w http.ResponseWriter, r *http.Request, form url.Values) {
 		queue.Produce(queue.PlayerQueue, bytes)
 	}
 
-	if val := form.Get("app-id"); val != "" {
+	if val := r.PostForm.Get("app-id"); val != "" {
 
 		logger.Info("App: " + val)
 		appID, _ := strconv.Atoi(val)
@@ -221,7 +227,7 @@ func adminQueues(w http.ResponseWriter, r *http.Request, form url.Values) {
 		queue.Produce(queue.AppQueue, bytes)
 	}
 
-	if val := form.Get("package-id"); val != "" {
+	if val := r.PostForm.Get("package-id"); val != "" {
 
 		logger.Info("Package: " + val)
 		packageID, _ := strconv.Atoi(val)
@@ -233,7 +239,7 @@ func adminQueues(w http.ResponseWriter, r *http.Request, form url.Values) {
 }
 
 // todo, handle tags that no longer have any games.
-func adminTags(w http.ResponseWriter, r *http.Request) {
+func adminTags() {
 
 	// Get tags names
 	response, err := http.Get("http://store.steampowered.com/tagdata/populartags/english")
@@ -299,18 +305,28 @@ func adminTags(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var wg sync.WaitGroup
+
 	for k, v := range counts {
-		// todo, put this in goroutine?
-		err := mysql.SaveOrUpdateTag(k, mysql.Tag{
-			Apps:         v.count,
-			MeanPrice:    v.GetMeanPrice(),
-			MeanDiscount: v.GetMeanDiscount(),
-			Name:         v.name,
-		})
-		if err != nil {
-			logger.Error(err)
-		}
+
+		wg.Add(1)
+		go func(k int, v *adminTag) {
+
+			err := mysql.SaveOrUpdateTag(k, mysql.Tag{
+				Apps:         v.count,
+				MeanPrice:    v.GetMeanPrice(),
+				MeanDiscount: v.GetMeanDiscount(),
+				Name:         v.name,
+			})
+			if err != nil {
+				logger.Error(err)
+			}
+
+			wg.Done()
+
+		}(k, v)
 	}
+	wg.Wait()
 
 	logger.Info("Tags updated")
 }
@@ -335,7 +351,9 @@ type steamTag struct {
 	Name  string `json:"name"`
 }
 
-func adminRanks(w http.ResponseWriter, r *http.Request) {
+func adminRanks() {
+
+	logger.Info("Ranks updated started")
 
 	playersToRank := 1000
 	timeStart := time.Now().Unix()
@@ -380,44 +398,72 @@ func adminRanks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make ranks
+	var prev int
+	var rank int
+
+	rank = 0
 	sort.Slice(ranks, func(i, j int) bool { return ranks[i].Level > ranks[j].Level })
-	for k, v := range ranks {
+	for _, v := range ranks {
+		if v.Level != prev {
+			rank++
+		}
 		v.UpdatedAt = time.Now()
-		v.LevelRank = k + 1
+		v.LevelRank = rank
+		prev = v.Level
 	}
 
+	rank = 0
 	sort.Slice(ranks, func(i, j int) bool { return ranks[i].GamesCount > ranks[j].GamesCount })
-	for k, v := range ranks {
+	for _, v := range ranks {
+		if v.GamesCount != prev {
+			rank++
+		}
 		v.UpdatedAt = time.Now()
-		v.GamesRank = k + 1
+		v.GamesRank = rank
+		prev = v.GamesCount
 	}
 
+	rank = 0
 	sort.Slice(ranks, func(i, j int) bool { return ranks[i].BadgesCount > ranks[j].BadgesCount })
-	for k, v := range ranks {
+	for _, v := range ranks {
+		if v.BadgesCount != prev {
+			rank++
+		}
 		v.UpdatedAt = time.Now()
-		v.BadgesRank = k + 1
+		v.BadgesRank = rank
+		prev = v.BadgesCount
 	}
 
+	rank = 0
 	sort.Slice(ranks, func(i, j int) bool { return ranks[i].PlayTime > ranks[j].PlayTime })
-	for k, v := range ranks {
+	for _, v := range ranks {
+		if v.PlayTime != prev {
+			rank++
+		}
 		v.UpdatedAt = time.Now()
-		v.PlayTimeRank = k + 1
+		v.PlayTimeRank = rank
+		prev = v.PlayTime
 	}
 
+	rank = 0
 	sort.Slice(ranks, func(i, j int) bool { return ranks[i].FriendsCount > ranks[j].FriendsCount })
-	for k, v := range ranks {
+	for _, v := range ranks {
+		if v.FriendsCount != prev {
+			rank++
+		}
 		v.UpdatedAt = time.Now()
-		v.FriendsRank = k + 1
+		v.FriendsRank = rank
+		prev = v.FriendsCount
 	}
 
-	// Bulk save ranks
+	// Update ranks
 	err = datastore.BulkSaveRanks(ranks)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
-	// Delete leftover keys
+	// Remove old ranks
 	err = datastore.BulkDeleteRanks(oldKeys)
 	if err != nil {
 		logger.Error(err)
@@ -425,5 +471,4 @@ func adminRanks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logger.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
-	w.Write([]byte("OK"))
 }

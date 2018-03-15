@@ -27,8 +27,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
-		returnErrorTemplate(w, r, 500, err.Error())
-		return
+		logger.Error(err)
+		if err.Error() != "securecookie: the value is not valid" {
+			returnErrorTemplate(w, r, 500, err.Error())
+			return
+		}
 	}
 
 	if loggedIn {

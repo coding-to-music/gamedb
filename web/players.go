@@ -50,7 +50,7 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 		for k := range ranks {
 			ranks[k].Rank = ranks[k].LevelRank
 		}
-	case "playtime":
+	case "time":
 		ranks, err = datastore.GetRanksBy("play_time_rank")
 
 		for k := range ranks {

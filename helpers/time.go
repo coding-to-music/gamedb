@@ -1,7 +1,9 @@
 package helpers
 
 import (
+	"math"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -66,34 +68,61 @@ func Elapsed(from, to time.Time) (inverted bool, years, months, days, hours, min
 	return
 }
 
-func GetHumanPlayTime(minutes int) (ret string) {
+type Periods struct {
+	minutes string
+	hours   string
+	days    string
+	months  string
+	years   string
+}
+
+var (
+	Short = Periods{"m", "h", "d", "m", "y"}
+	Long  = Periods{" minutes", " hours", " days", " months", " years"}
+)
+
+func getHumanPlayTime(minutes int, periods Periods) (ret []string) {
 
 	if minutes == 0 {
-		return "0m"
+		return []string{"0" + periods.minutes}
 	}
-
-	// todo, only show the biggest 3 of the following
 
 	then := time.Unix(int64(minutes)*60, 0)
 	now := time.Unix(0, 0)
 
 	_, years, months, days, hours, minutes, _, _ := Elapsed(then, now)
 
+	var returns []string
+
 	if years != 0 {
-		ret = ret + " " + strconv.Itoa(years) + "y"
+		returns = append(returns, strconv.Itoa(years)+periods.years)
 	}
 	if months != 0 {
-		ret = ret + " " + strconv.Itoa(months) + "m"
+		returns = append(returns, strconv.Itoa(months)+periods.months)
 	}
 	if days != 0 {
-		ret = ret + " " + strconv.Itoa(days) + "d"
+		returns = append(returns, strconv.Itoa(days)+periods.days)
 	}
 	if hours != 0 {
-		ret = ret + " " + strconv.Itoa(hours) + "h"
+		returns = append(returns, strconv.Itoa(hours)+periods.hours)
 	}
 	if minutes != 0 {
-		ret = ret + " " + strconv.Itoa(minutes) + "m"
+		returns = append(returns, strconv.Itoa(minutes)+periods.minutes)
 	}
 
-	return ret
+	return returns
+}
+
+func GetTimeShort(minutes int, max int) (ret string) {
+	returns := getHumanPlayTime(minutes, Short)
+
+	x := int(math.Min(float64(max), float64(len(returns))))
+	return strings.Join(returns[0:x], " ")
+}
+
+func GetTimeLong(minutes int, max int) (ret string) {
+	returns := getHumanPlayTime(minutes, Long)
+
+	x := int(math.Min(float64(max), float64(len(returns))))
+	return strings.Join(returns[0:x], " ")
 }

@@ -62,7 +62,7 @@
                         <a href="{{.GetPath}}" class="list-group-item list-group-item-action d-flex justify-content-betweenx align-items-center">
                             <img class="avatar" src="{{ .GetAvatar }}">
                             <span class="mr-auto">{{ .PersonaName }}</span>
-                            <span class="badge badge-primary badge-pill" data-toggle="tooltip" data-placement="top" title="Level">{{ .Level }}</span>
+                            <span data-toggle="tooltip" data-placement="top" title="Level" class="badge badge-primary badge-pill">{{ .Level }}</span>
                         </a>
                     {{else}}
                         <span class="list-group-item list-group-item-action">

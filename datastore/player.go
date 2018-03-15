@@ -84,8 +84,12 @@ func (p Player) ShouldUpdateFriends() bool {
 	return p.FriendsAddedAt.Unix() < (time.Now().Unix() - int64(60*60*24*30))
 }
 
-func (p Player) GetHumanPlayTime() (ret string) {
-	return helpers.GetHumanPlayTime(p.PlayTime)
+func (p Player) GetTimeShort() (ret string) {
+	return helpers.GetTimeShort(p.PlayTime, 2)
+}
+
+func (p Player) GetTimeLong() (ret string) {
+	return helpers.GetTimeLong(p.PlayTime, 5)
 }
 
 func GetPlayer(id int) (ret *Player, err error) {

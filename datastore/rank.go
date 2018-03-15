@@ -29,8 +29,6 @@ type Rank struct {
 	BadgesRank   int `datastore:"badges_rank"`
 	PlayTime     int `datastore:"play_time"`
 	PlayTimeRank int `datastore:"play_time_rank"`
-	//TimeCreated     int `datastore:"time_created"`
-	//TimeCreatedRank int `datastore:"time_created_rank"`
 	FriendsCount int `datastore:"friends"`
 	FriendsRank  int `datastore:"friends_rank"`
 
@@ -53,8 +51,12 @@ func (rank Rank) GetFlag() string {
 	return "/assets/img/flags/" + strings.ToLower(rank.CountryCode) + ".png"
 }
 
-func (rank Rank) GetHumanPlayTime() (ret string) {
-	return helpers.GetHumanPlayTime(rank.PlayTime)
+func (rank Rank) GetTimeShort() (ret string) {
+	return helpers.GetTimeShort(rank.PlayTime, 2)
+}
+
+func (rank Rank) GetTimeLong() (ret string) {
+	return helpers.GetTimeLong(rank.PlayTime, 5)
 }
 
 func (rank *Rank) Tidy() *Rank {

@@ -6,15 +6,29 @@
         <h1 class="display-4"><i class="fas fa-unlock"></i> Admin</h1>
     </div>
 
-    <div class="row">
-        <div class="col-sm-6 mb-4">
+    <div class="card">
+        <div class="card-header">
 
-            <div class="card">
-                <div class="card-header">Actions</div>
-                <div class="card-body">
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#actions" role="tab">Actions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#queues" role="tab">Queues</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#logs" role="tab">Logs</a>
+                </li>
+            </ul>
+
+        </div>
+        <div class="card-body">
+
+            <div class="tab-content">
+                <div class="tab-pane show active" id="actions" role="tabpanel">
 
                     <div class="list-group list-group-flush" id="actions">
-                        <a href="/admin/apps" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <a href="/admin/re-add-all-apps" class="list-group-item list-group-item-action flex-column align-items-start">
                             <small class="text-muted float-right" data-livestamp="0">0</small>
                             <h5 class="mb-1">Apps</h5>
                             <p class="mb-1">Get every app from steam and add to queue</p>
@@ -26,22 +40,22 @@
                             <p class="mb-1">Pull master, build and restart</p>
                         </a>
                     {{end}}
-                        <a href="/admin/donations" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <a href="/admin/count-donations" class="list-group-item list-group-item-action flex-column align-items-start">
                             <small class="text-muted float-right" data-livestamp="0">0</small>
                             <h5 class="mb-1">Donations</h5>
                             <p class="mb-1">Read donations table and calculate totals</p>
                         </a>
-                        <a href="/admin/genres" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <a href="/admin/count-genres" class="list-group-item list-group-item-action flex-column align-items-start">
                             <small class="text-muted float-right" data-livestamp="0">0</small>
                             <h5 class="mb-1">Genres</h5>
                             <p class="mb-1">Scan all apps for genres, count them, update genres table</p>
                         </a>
-                        <a href="/admin/ranks" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <a href="/admin/calculate-ranks" class="list-group-item list-group-item-action flex-column align-items-start">
                             <small class="text-muted float-right" data-livestamp="0">0</small>
                             <h5 class="mb-1">Ranks</h5>
                             <p class="mb-1">Scan all players, update ranks table</p>
                         </a>
-                        <a href="/admin/tags" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <a href="/admin/count-tags" class="list-group-item list-group-item-action flex-column align-items-start">
                             <small class="text-muted float-right" data-livestamp="0">0</small>
                             <h5 class="mb-1">Tags</h5>
                             <p class="mb-1">Scan all apps for tags, count them, update tags table</p>
@@ -49,55 +63,38 @@
                     </div>
 
                 </div>
-            </div>
+                <div class="tab-pane" id="queues" role="tabpanel">
 
-        </div>
-        <div class="col-sm-6 mb-4">
-
-            <form action="/admin/queues" method="post">
-                <div class="card">
-                    <div class="card-header">Queues</div>
-                    <div class="card-body">
-
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">App ID</label>
-                            <div class="col-sm-9">
-                                <input type="number" name="app-id" class="form-control">
-                            </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">App ID</label>
+                        <div class="col-sm-10">
+                            <input type="number" name="app-id" class="form-control">
                         </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Package ID</label>
-                            <div class="col-sm-9">
-                                <input type="number" name="package-id" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Player ID</label>
-                            <div class="col-sm-9">
-                                <input type="number" name="player-id" class="form-control" value="76561197968626192">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Change ID</label>
-                            <div class="col-sm-9">
-                                <input type="number" name="change-id" class="form-control">
-                            </div>
-                        </div>
-
                     </div>
-                    <div class="card-footer text-muted text-right">
-                        <button type="submit" class="btn btn-primary">Produce</button>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Package ID</label>
+                        <div class="col-sm-10">
+                            <input type="number" name="package-id" class="form-control">
+                        </div>
                     </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Player ID</label>
+                        <div class="col-sm-10">
+                            <input type="number" name="player-id" class="form-control" value="76561197968626192">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Change ID</label>
+                        <div class="col-sm-10">
+                            <input type="number" name="change-id" class="form-control">
+                        </div>
+                    </div>
+
                 </div>
-            </form>
+                <div class="tab-pane" id="logs" role="tabpanel">
 
-        </div>
-        <div class="col-sm-12 mb-4">
-
-            <div class="card">
-                <div class="card-header">Logs</div>
-                <div class="card-body">
                     <pre><code>{{ range $key, $value := .Errors }}{{$value}}{{ end }}</code></pre>
+
                 </div>
             </div>
 
