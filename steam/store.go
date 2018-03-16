@@ -72,6 +72,9 @@ func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 	regex = regexp.MustCompile(`"display_type":(\d+)`)
 	b = regex.ReplaceAllString(b, `"display_type":"$1"`)
 
+	regex = regexp.MustCompile(`"legal_notice":(\d+)`)
+	b = regex.ReplaceAllString(b, `"legal_notice":"$1"`)
+
 	// Fix arrays that should be objects
 	b = strings.Replace(b, "\"pc_requirements\":[]", "\"pc_requirements\":null", 1)
 	b = strings.Replace(b, "\"mac_requirements\":[]", "\"mac_requirements\":null", 1)

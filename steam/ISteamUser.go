@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -99,6 +100,19 @@ func GetPlayerSummaries(id int) (player PlayerSummary, err error) {
 		return player, err
 	}
 
+	// Fix values that can change type, causing unmarshal errors
+	var regex *regexp.Regexp
+	var b = string(bytes)
+
+	// Convert strings to ints
+	regex = regexp.MustCompile(`"primaryclanid": "(\d+)"`)
+	b = regex.ReplaceAllString(b, `"primaryclanid": $1`)
+
+	regex = regexp.MustCompile(`"steamid": "(\d+)"`)
+	b = regex.ReplaceAllString(b, `"steamid": $1`)
+
+	bytes = []byte(b)
+
 	// Unmarshal JSON
 	var resp PlayerSummariesResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
@@ -123,7 +137,7 @@ type PlayerSummariesResponse struct {
 }
 
 type PlayerSummary struct {
-	SteamID                  string `json:"steamid"`
+	SteamID                  int    `json:"steamid"`
 	CommunityVisibilityState int    `json:"communityvisibilitystate"`
 	ProfileState             int    `json:"profilestate"`
 	PersonaName              string `json:"personaname"`
@@ -135,7 +149,7 @@ type PlayerSummary struct {
 	AvatarFull               string `json:"avatarfull"`
 	PersonaState             int    `json:"personastate"`
 	RealName                 string `json:"realname"`
-	PrimaryClanID            string `json:"primaryclanid"`
+	PrimaryClanID            int    `json:"primaryclanid"`
 	TimeCreated              int64  `json:"timecreated"`
 	PersonaStateFlags        int    `json:"personastateflags"`
 	LOCCountryCode           string `json:"loccountrycode"`

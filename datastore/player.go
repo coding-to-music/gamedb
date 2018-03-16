@@ -37,10 +37,12 @@ type Player struct {
 	Badges           steam.BadgesResponse        `datastore:"badges,noindex"`
 	BadgesCount      int                         `datastore:"badges_count"`
 	PlayTime         int                         `datastore:"play_time"`
-	TimeCreated      int                         `datastore:"time_created"` // In Steam's DB
+	TimeCreated      time.Time                   `datastore:"time_created"`
+	LastLogOff       time.Time                   `datastore:"time_logged_off"`
+	PrimaryClanID    int                         `datastore:"primary_clan_id"`
 	Friends          []steam.GetFriendListFriend `datastore:"friends,noindex"`
 	FriendsCount     int                         `datastore:"friends_count"`
-	Donated          int                         `datastore:"donated"` // Total
+	Donated          int                         `datastore:"donated"`
 	Bans             steam.GetPlayerBanResponse  `datastore:"bans"`
 	NumberOfVACBans  int                         `datastore:"bans_cav"`
 	NumberOfGameBans int                         `datastore:"bans_game"`
@@ -53,6 +55,30 @@ func (p Player) GetKey() (key *datastore.Key) {
 
 func (p Player) GetPath() string {
 	return "/players/" + strconv.Itoa(p.PlayerID) + "/" + slug.Make(p.PersonaName)
+}
+
+func (p Player) GetSteamTimeUnix() (int64) {
+	return p.TimeCreated.Unix()
+}
+
+func (p Player) GetSteamTimeNice() (string) {
+	return p.TimeCreated.Format(time.Stamp)
+}
+
+func (p Player) GetLogoffUnix() (int64) {
+	return p.LastLogOff.Unix()
+}
+
+func (p Player) GetLogoffNice() (string) {
+	return p.LastLogOff.Format(time.Stamp)
+}
+
+func (p Player) GetUpdatedUnix() (int64) {
+	return p.UpdatedAt.Unix()
+}
+
+func (p Player) GetUpdatedNice() (string) {
+	return p.UpdatedAt.Format(time.Stamp)
 }
 
 func (p Player) GetSteamCommunityLink() string {
@@ -217,6 +243,9 @@ func (p *Player) fill() (err error) {
 	p.CountryCode = summary.LOCCountryCode
 	p.StateCode = summary.LOCStateCode
 	p.PersonaName = summary.PersonaName
+	p.TimeCreated = time.Unix(summary.TimeCreated, 0)
+	p.LastLogOff = time.Unix(summary.LastLogOff, 0)
+	p.PrimaryClanID = summary.PrimaryClanID
 
 	// Get games
 	gamesResponse, err := steam.GetOwnedGames(p.PlayerID)

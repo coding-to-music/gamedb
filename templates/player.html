@@ -6,7 +6,6 @@
         <img src="{{ .Player.GetAvatar }}" class="rounded-right">
         <h1 class="display-4">
             <i class="fas fa-user"></i> {{ .Player.PersonaName }}
-            <span class="badge badge-secondary">{{ .Player.Level }}</span>
         </h1>
         <p class="lead"></p>
     </div>
@@ -39,14 +38,73 @@
             <div class="tab-content">
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
-                    <p>Last updated: {{ .Player.UpdatedAt }}</p>
-                    <p>Steam profile: <a href="{{ .Player.GetSteamCommunityLink }}">{{ .Player.GetSteamCommunityLink }}</a></p>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
 
-                    <p>Country: {{ .Player.CountryCode }}</p>
-                    <p>State: {{ .Player.StateCode }}</p>
+                            <table class="table">
+                                <tr>
+                                    <th scope="row" width="40%">Level</th>
+                                    <td>{{ .Player.Level }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">On Steam</th>
+                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Last Sign Off</th>
+                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetLogoffNice }}" data-livestamp="{{ .Player.GetLogoffUnix }}">{{ .Player.GetLogoffNice }}</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Last Updated</th>
+                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Steam profile</th>
+                                    <td><a href="{{ .Player.GetSteamCommunityLink }}">{{ .Player.VanintyURL }}</a></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Country</th>
+                                    <td><img data-toggle="tooltip" data-placement="top" title="{{ .Player.CountryCode }}" src="{{.Player.GetFlag}}"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">State</th>
+                                    <td>{{ .Player.StateCode }}</td>
+                                </tr>
+                            </table>
 
-                    <p>Level: {{ .Player.Level }}</p>
-                    <p>Time on steam: {{ .Player.TimeCreated }}</p>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+
+                            <table class="table">
+                                <tr>
+                                    <th scope="row" width="40%">Game Bans</th>
+                                    <td>{{ .Player.Bans.NumberOfGameBans }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">VAC Bans</th>
+                                    <td>{{ .Player.Bans.NumberOfVACBans }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Community Banned</th>
+                                    <td>{{.Player.Bans.CommunityBanned}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Economy Ban</th>
+                                    <td>{{ .Player.Bans.EconomyBan }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">VAC Banned</th>
+                                    <td>{{ .Player.Bans.VACBanned }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Last Ban</th>
+                                    <td>{{ .Player.Bans.DaysSinceLastBan }} days</td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+
 
                 </div>
                 <div class="tab-pane" id="friends" role="tabpanel">
@@ -77,7 +135,7 @@
 
 
                 {{ range $key, $value := .Player.GamesRecent }}
-                        xx
+                    xx
                     <p>{{ .Name }}</p>
                     <p>{{ .ImgLogoURL }}</p>
                     <p>{{ .AppID }}</p>
@@ -107,7 +165,11 @@
                     </div>
 
                 </div>
-                <div class="tab-pane" id="groups" role="tabpanel">Groups</div>
+                <div class="tab-pane" id="groups" role="tabpanel">
+                    Groups
+                    <p>Primary Clan: {{ .Player.PrimaryClanID }}</p>
+
+                </div>
             </div>
         </div>
     </div>
