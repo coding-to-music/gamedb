@@ -31,7 +31,7 @@ func (change Change) GetTimestamp() (int64) {
 }
 
 func (change Change) GetNiceDate() (string) {
-	return change.CreatedAt.Format(time.Stamp)
+	return change.CreatedAt.Format(time.RFC822)
 }
 
 func GetLatestChanges(limit int) (changes []Change, err error) {

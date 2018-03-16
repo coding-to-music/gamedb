@@ -1,5 +1,7 @@
 {{define "contact"}} {{ template "_header" . }}
 
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
 <div class="container">
 
     <div class="jumbotron">
@@ -34,6 +36,15 @@
                             <label for="message">Message</label>
                             <textarea class="form-control" id="message" rows="3" name="message" required></textarea>
                         </div>
+
+                    </div>
+                    <div class="col-sm-12">
+
+                        <label for="message">Captcha</label>
+                        <div class="g-recaptcha" data-sitekey="{{.RecaptchaPublic}}"></div>
+
+                    </div>
+                    <div class="col-sm-12 mt-4">
 
                         <button type="submit" class="btn btn-primary">Send</button>
 

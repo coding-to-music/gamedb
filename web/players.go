@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/go-helpers/logger"
+	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
 	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
@@ -193,12 +194,30 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		return sortedGamesSlice[i].Time > sortedGamesSlice[j].Time
 	})
 
+	// Get ranks
+	ranks, err := datastore.GetRank(player.PlayerID)
+	if err != nil {
+		if err.Error() != datastore.ErrorNotFound {
+			logger.Error(err)
+		}
+	}
+
+	ranksTemplate := playerRanksTemplate{
+		Ranks:          *ranks,
+		LevelOrdinal:   humanize.Ordinal(ranks.LevelRank),
+		GamesOrdinal:   humanize.Ordinal(ranks.GamesRank),
+		BadgesOrdinal:  humanize.Ordinal(ranks.BadgesRank),
+		TimeOrdinal:    humanize.Ordinal(ranks.PlayTimeRank),
+		FriendsOrdinal: humanize.Ordinal(ranks.FriendsRank),
+	}
+
 	// Template
 	template := playerTemplate{}
 	template.Fill(r)
 	template.Player = player
 	template.Friends = friends
 	template.Games = sortedGamesSlice
+	template.Ranks = ranksTemplate
 
 	returnTemplate(w, r, "player", template)
 }
@@ -208,6 +227,7 @@ type playerTemplate struct {
 	Player  *datastore.Player
 	Friends []datastore.Player
 	Games   []*playerAppTemplate
+	Ranks   playerRanksTemplate
 }
 
 type playerAppTemplate struct {
@@ -216,6 +236,15 @@ type playerAppTemplate struct {
 	Price string
 	Icon  string
 	Time  int
+}
+
+type playerRanksTemplate struct {
+	Ranks          datastore.Rank
+	LevelOrdinal   string
+	GamesOrdinal   string
+	BadgesOrdinal  string
+	TimeOrdinal    string
+	FriendsOrdinal string
 }
 
 func (g playerAppTemplate) GetPriceHour() string {

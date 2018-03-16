@@ -21,7 +21,7 @@ func (login Login) GetKey() (key *datastore.Key) {
 }
 
 func (login Login) GetTime() (t string) {
-	return login.CreatedAt.Format(time.Stamp)
+	return login.CreatedAt.Format(time.RFC822)
 }
 
 func CreateLogin(playerID int, r *http.Request) (err error) {

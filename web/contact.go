@@ -5,20 +5,27 @@ import (
 	"os"
 
 	"github.com/Jleagle/go-helpers/logger"
+	"github.com/dpapathanasiou/go-recaptcha"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
+func init() {
+	recaptcha.Init(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
+}
+
 func ContactHandler(w http.ResponseWriter, r *http.Request) {
 
-	template:= contactTemplate{}
+	template := contactTemplate{}
 	template.Fill(r)
+	template.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
 	returnTemplate(w, r, "contact", template)
 }
 
 type contactTemplate struct {
 	GlobalTemplate
+	RecaptchaPublic string
 }
 
 func PostContactHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +45,12 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.PostForm.Get("message") == "" {
 		returnErrorTemplate(w, r, 500, "Please fill in the whole form.")
+		return
+	}
+
+	good := recaptcha.Confirm(r.RemoteAddr, r.PostForm.Get("g-recaptcha-response"))
+	if !good {
+		returnErrorTemplate(w, r, 500, "Incorrect captcha.")
 		return
 	}
 

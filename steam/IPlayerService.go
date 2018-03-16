@@ -2,8 +2,10 @@ package steam
 
 import (
 	"encoding/json"
+	"math"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/kr/pretty"
 )
@@ -140,15 +142,40 @@ type BadgesResponseOuter struct {
 }
 
 type BadgesResponse struct {
-	Badges []struct {
-		Badgeid        int `json:"badgeid"`
-		Level          int `json:"level"`
-		CompletionTime int `json:"completion_time"`
-		Xp             int `json:"xp"`
-		Scarcity       int `json:"scarcity"`
-	} `json:"badges"`
-	PlayerXP                   int `json:"player_xp"`
-	PlayerLevel                int `json:"player_level"`
-	PlayerXPNeededToLevelUp    int `json:"player_xp_needed_to_level_up"`
-	PlayerXPNeededCurrentLevel int `json:"player_xp_needed_current_level"`
+	Badges                     []BadgeResponse `json:"badges"`
+	PlayerXP                   int             `json:"player_xp"`
+	PlayerLevel                int             `json:"player_level"`
+	PlayerXPNeededToLevelUp    int             `json:"player_xp_needed_to_level_up"`
+	PlayerXPNeededCurrentLevel int             `json:"player_xp_needed_current_level"`
+}
+
+func (b BadgesResponse) GetPercentOfLevel() int {
+
+	start := b.PlayerXPNeededCurrentLevel
+	finish := b.PlayerXPNeededToLevelUp + b.PlayerXP
+	levelRange := finish - start
+	intoLevel := b.PlayerXP - b.PlayerXPNeededCurrentLevel
+
+	return int((float64(intoLevel) / float64(levelRange)) * 100)
+}
+
+func (b BadgesResponse) GetLoadingBar() int {
+
+	percent := b.GetPercentOfLevel()
+	return int(math.Max(float64(percent), 5))
+}
+
+type BadgeResponse struct {
+	BadgeID        int   `json:"badgeid"`
+	Level          int   `json:"level"`
+	CompletionTime int64 `json:"completion_time"`
+	XP             int   `json:"xp"`
+	Scarcity       int   `json:"scarcity"`
+	AppID          int   `json:"appid"`
+	BorderColor    int   `json:"border_color"`
+}
+
+func (b BadgeResponse) GetTimeNice() string {
+
+	return time.Unix(b.CompletionTime, 0).Format(time.RFC822)
 }

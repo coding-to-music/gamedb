@@ -110,11 +110,11 @@ func (app App) GetPriceInitial() string {
 }
 
 func (app App) GetCommunityLink() (string) {
-	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=SteamAuthority&utm_campaign=SteamAuthority"
+	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
 }
 
 func (app App) GetStoreLink() (string) {
-	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=SteamAuthority&utm_campaign=SteamAuthority"
+	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
 }
 
 func (app App) GetInstallLink() (string) {
@@ -273,6 +273,7 @@ func GetApps(ids []int, columns []string) (apps []App, err error) {
 	return apps, nil
 }
 
+// todo, make a filter struct
 func SearchApps(query url.Values, limit int, sort string, columns []string) (apps []App, err error) {
 
 	db, err := GetDB()

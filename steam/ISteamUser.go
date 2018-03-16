@@ -55,7 +55,7 @@ func ResolveVanityURL(id string) (resp ResolveVanityURLBody, err error) {
 
 	options := url.Values{}
 	options.Set("vanityurl", id)
-	options.Set("url_type", "1")
+	options.Set("url_type", "1") // 1 (default): Individual profile, 2: Group, 3: Official game group
 
 	bytes, err := get("ISteamUser/ResolveVanityURL/v1/", options)
 	if err != nil {

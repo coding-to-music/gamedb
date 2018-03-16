@@ -21,6 +21,10 @@ const (
 	KindPricePackage = "PackagePrice"
 )
 
+const (
+	ErrorNotFound = "datastore: no such entity"
+)
+
 func getDSClient() (client *datastore.Client, ctx context.Context, err error) {
 
 	ctx = context.Background()

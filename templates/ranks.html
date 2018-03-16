@@ -44,7 +44,7 @@
                     <tr data-link="/players/{{ .PlayerID }}/{{ .PersonaName }}">
                         <td>{{ .Rank }}</td>
                         <td class="img">
-                            <img src="{{ .GetAvatar }}" class="avatar rounded">
+                            <img src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
                             <span>{{ .PersonaName }}</span>
                         </td>
                         <td class="img">

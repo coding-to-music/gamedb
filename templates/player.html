@@ -3,7 +3,7 @@
 <div class="container" id="player-page">
 
     <div class="jumbotron">
-        <img src="{{ .Player.GetAvatar }}" class="rounded-right">
+        <img src="{{ .Player.GetAvatar }}" class="rounded-right" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
         <h1 class="display-4">
             <i class="fas fa-user"></i> {{ .Player.PersonaName }}
         </h1>
@@ -21,16 +21,10 @@
                     <a class="nav-link" data-toggle="tab" href="#friends" role="tab">Friends ({{ .Player.FriendsCount }})</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#badges" role="tab">Badges ({{ .Player.BadgesCount }})</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#games" role="tab">Games ({{ .Player.GamesCount }})</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#groups" role="tab">Groups ({{ len .Player.Groups }})</a>
                 </li>
             </ul>
         </div>
@@ -39,68 +33,117 @@
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
                     <div class="row">
-                        <div class="col-sm-12 col-md-6">
+                        <div class="col-sm-12 col-md-6 col-lg-4">
 
-                            <table class="table">
-                                <tr>
-                                    <th scope="row" width="40%">Level</th>
-                                    <td>{{ .Player.Level }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">On Steam</th>
-                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Last Sign Off</th>
-                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetLogoffNice }}" data-livestamp="{{ .Player.GetLogoffUnix }}">{{ .Player.GetLogoffNice }}</span></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Last Updated</th>
-                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Steam profile</th>
-                                    <td><a href="{{ .Player.GetSteamCommunityLink }}">{{ .Player.VanintyURL }}</a></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Country</th>
-                                    <td><img data-toggle="tooltip" data-placement="top" title="{{ .Player.CountryCode }}" src="{{.Player.GetFlag}}"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">State</th>
-                                    <td>{{ .Player.StateCode }}</td>
-                                </tr>
-                            </table>
+                            <div class="card mb-4">
+                                <div class="card-header">Details</div>
+                                <div class="card-body">
+
+                                    <table class="table table-images mb-0">
+                                        <tr>
+                                            <th scope="row">Level</th>
+                                            <td>{{ .Player.Level }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">On Steam</th>
+                                            <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Last Sign Off</th>
+                                            <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetLogoffNice }}" data-livestamp="{{ .Player.GetLogoffUnix }}">{{ .Player.GetLogoffNice }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Last Updated</th>
+                                            <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Steam profile</th>
+                                            <td><a href="{{ .Player.GetSteamCommunityLink }}">{{ .Player.VanintyURL }}</a></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Country</th>
+                                            <td class="img"><img class="rounded" data-toggle="tooltip" data-placement="top" title="{{ .Player.CountryCode }}" src="{{.Player.GetFlag}}"></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">State</th>
+                                            <td>{{ .Player.StateCode }}</td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
 
                         </div>
-                        <div class="col-sm-12 col-md-6">
+                        <div class="col-sm-12 col-md-6 col-lg-4">
 
-                            <table class="table">
-                                <tr>
-                                    <th scope="row" width="40%">Game Bans</th>
-                                    <td>{{ .Player.Bans.NumberOfGameBans }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">VAC Bans</th>
-                                    <td>{{ .Player.Bans.NumberOfVACBans }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Community Banned</th>
-                                    <td>{{.Player.Bans.CommunityBanned}}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Economy Ban</th>
-                                    <td>{{ .Player.Bans.EconomyBan }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">VAC Banned</th>
-                                    <td>{{ .Player.Bans.VACBanned }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Last Ban</th>
-                                    <td>{{ .Player.Bans.DaysSinceLastBan }} days</td>
-                                </tr>
-                            </table>
+                            <div class="card mb-4">
+                                <div class="card-header">Ranks
+                                    <small class="text-muted float-right">Ranks get updated at midnight (GMT).</small>
+                                </div>
+                                <div class="card-body">
+
+                                    <table class="table mb-0">
+                                        <tr>
+                                            <th scope="row">Level</th>
+                                            <td><a href="/players/level">{{ .Ranks.LevelOrdinal }}</a></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Games</th>
+                                            <td><a href="/players/games">{{ .Ranks.GamesOrdinal }}</a></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Badges</th>
+                                            <td><a href="/players/badges">{{ .Ranks.BadgesOrdinal }}</a></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Time</th>
+                                            <td><a href="/players/time">{{ .Ranks.TimeOrdinal }}</a></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Friends</th>
+                                            <td><a href="/players/friends">{{ .Ranks.FriendsOrdinal }}</a></td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+
+                            <div class="card mb-4">
+                                <div class="card-header">Bans</div>
+                                <div class="card-body">
+
+                                    <table class="table mb-0">
+                                        <tr>
+                                            <th scope="row">Game Bans</th>
+                                            <td>{{ .Player.Bans.NumberOfGameBans }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">VAC Bans</th>
+                                            <td>{{ .Player.Bans.NumberOfVACBans }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Community Banned</th>
+                                            <td>{{.Player.Bans.CommunityBanned}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Economy Ban</th>
+                                            <td>{{ .Player.Bans.EconomyBan }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">VAC Banned</th>
+                                            <td>{{ .Player.Bans.VACBanned }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Last Ban</th>
+                                            <td>{{ .Player.Bans.DaysSinceLastBan }} days</td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -109,28 +152,78 @@
                 </div>
                 <div class="tab-pane" id="friends" role="tabpanel">
 
-                    <div class="list-group list-group-flush">
+                    <div class="row friend">
                     {{ range $key, $value := .Friends }}
 
-
                     {{ if ne .PersonaName "" }}
-                        <a href="{{.GetPath}}" class="list-group-item list-group-item-action d-flex justify-content-betweenx align-items-center">
-                            <img class="avatar" src="{{ .GetAvatar }}">
-                            <span class="mr-auto">{{ .PersonaName }}</span>
-                            <span data-toggle="tooltip" data-placement="top" title="Level" class="badge badge-primary badge-pill">{{ .Level }}</span>
+                        <a href="{{.GetPath}}" class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-2">
+                            <img src="{{ .GetAvatar }}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
+                            <span class="float-right badge badge-secondary badge-pill">{{ .Level }}</span>
+                            <span>{{ .PersonaName }}</span>
                         </a>
                     {{else}}
-                        <span class="list-group-item list-group-item-action">
-                            <span class="text-muted">Added to the <a href="/queues">queue</a> <i class="fas fa-spinner fa-spin"></i></span>
-                        </span>
+                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-2">
+                            <img src="/assets/img/no-player-image.jpg" class="rounded">
+                            <span class="float-right badge badge-secondary badge-pill">?</span>
+                            <span class="text-muted"><a href="/queues">Queued</a> <i class="fas fa-spinner fa-spin"></i></span>
+                        </div>
                     {{end}}
 
                     {{ end }}
                     </div>
 
                 </div>
-                <div class="tab-pane" id="achievements" role="tabpanel">Achievements</div>
-                <div class="tab-pane" id="badges" role="tabpanel">Badges</div>
+                <div class="tab-pane" id="badges" role="tabpanel">
+
+                    <table class="table mb-0">
+                        <tbody>
+                        <tr>
+                            <th scope="row" width="15%">Level</th>
+                            <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Experience</th>
+                            <td><a href="/experience/{{ .Player.Level }}">{{comma .Player.Badges.PlayerXP}}</a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Next Level In</th>
+                            <td><a href="/experience/{{ .Player.Level }}">{{comma .Player.Badges.PlayerXPNeededToLevelUp}}</a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">This Level</th>
+                            <td>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{.Player.Badges.GetLoadingBar}}%">{{.Player.Badges.GetPercentOfLevel}}%</div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm table-striped table-images table-sorter mb-0">
+                            <thead>
+                            <th scope="col">ID</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Acquired</th>
+                            <th scope="col">XP</th>
+                            <th scope="col">Owners</th>
+                            <th scope="col">App</th>
+                            </thead>
+                        {{ range $key, $value := .Player.Badges.Badges }}
+                            <tr>
+                                <td>{{ comma .BadgeID }}</td>
+                                <td>{{ comma .Level }}</td>
+                                <td>{{ .GetTimeNice }}</td>
+                                <td>{{ comma .XP }}</td>
+                                <td>{{ comma .Scarcity }}</td>
+                                <td>{{if ne .AppID 0}}<a href="/apps/{{ .AppID }}">{{ .AppID }}</a>{{end}}</td>
+                            </tr>
+                        {{ end }}
+                        </table>
+                    </div>
+
+                </div>
                 <div class="tab-pane" id="games" role="tabpanel">
 
 
@@ -163,11 +256,6 @@
                         {{ end }}
                         </table>
                     </div>
-
-                </div>
-                <div class="tab-pane" id="groups" role="tabpanel">
-                    Groups
-                    <p>Primary Clan: {{ .Player.PrimaryClanID }}</p>
 
                 </div>
             </div>

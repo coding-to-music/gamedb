@@ -35,7 +35,7 @@ func (article Article) GetTimestamp() (int64) {
 }
 
 func (article Article) GetNiceDate() (string) {
-	return article.Date.Format(time.Stamp)
+	return article.Date.Format(time.RFC822)
 }
 
 func (article *Article) Tidy() *Article {

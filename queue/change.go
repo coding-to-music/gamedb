@@ -62,7 +62,7 @@ func processChange(msg amqp.Delivery) (err error) {
 		payload := changeWebsocketPayload{
 			ID:            change.ChangeID,
 			CreatedAt:     change.CreatedAt.Unix(),
-			CreatedAtNice: change.CreatedAt.Format(time.Stamp),
+			CreatedAtNice: change.CreatedAt.Format(time.RFC822),
 			Apps:          apps,
 			Packages:      packages,
 		}

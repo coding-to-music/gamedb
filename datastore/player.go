@@ -15,10 +15,6 @@ import (
 	"github.com/steam-authority/steam-authority/steam"
 )
 
-const (
-	NotFound = "datastore: no such entity"
-)
-
 type Player struct {
 	CreatedAt        time.Time                   `datastore:"created_at"`
 	UpdatedAt        time.Time                   `datastore:"updated_at"`
@@ -62,7 +58,7 @@ func (p Player) GetSteamTimeUnix() (int64) {
 }
 
 func (p Player) GetSteamTimeNice() (string) {
-	return p.TimeCreated.Format(time.Stamp)
+	return p.TimeCreated.Format(time.RFC822)
 }
 
 func (p Player) GetLogoffUnix() (int64) {
@@ -70,7 +66,7 @@ func (p Player) GetLogoffUnix() (int64) {
 }
 
 func (p Player) GetLogoffNice() (string) {
-	return p.LastLogOff.Format(time.Stamp)
+	return p.LastLogOff.Format(time.RFC822)
 }
 
 func (p Player) GetUpdatedUnix() (int64) {
@@ -78,7 +74,7 @@ func (p Player) GetUpdatedUnix() (int64) {
 }
 
 func (p Player) GetUpdatedNice() (string) {
-	return p.UpdatedAt.Format(time.Stamp)
+	return p.UpdatedAt.Format(time.RFC822)
 }
 
 func (p Player) GetSteamCommunityLink() string {
@@ -137,7 +133,7 @@ func GetPlayer(id int) (ret *Player, err error) {
 	err = client.Get(context, key, player)
 	if err != nil {
 
-		if err.Error() == NotFound {
+		if err.Error() == ErrorNotFound {
 			return player, nil
 		}
 		return player, err

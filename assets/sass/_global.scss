@@ -4,6 +4,10 @@ body {
     background-color: $dark;
 }
 
+.card-body{
+    padding: 1.25rem 1.25rem 1rem 1.25rem;
+}
+
 #navbar {
     .nav-item.dropdown.closer {
         //margin-left: -10px;

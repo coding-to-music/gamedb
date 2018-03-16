@@ -69,6 +69,23 @@ func (rank *Rank) Tidy() *Rank {
 	return rank
 }
 
+func GetRank(playerID int) (rank *Rank, err error) {
+
+	client, context, err := getDSClient()
+	if err != nil {
+		return rank, err
+	}
+
+	key := datastore.NameKey(KindRank, strconv.Itoa(playerID), nil)
+
+	rank = new(Rank)
+	rank.PlayerID = playerID
+
+	err = client.Get(context, key, rank)
+
+	return rank, err
+}
+
 func GetRanksBy(order string) (ranks []Rank, err error) {
 
 	client, context, err := getDSClient()

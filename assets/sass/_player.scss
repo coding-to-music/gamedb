@@ -2,7 +2,8 @@
     .jumbotron {
         img {
             float: right;
-            height: 169px;
+            //height: 169px;
+            height: 139px;
             margin: -2rem;
         }
         h1,
@@ -11,7 +12,29 @@
         }
 
         .badge {
-            line-height: 36px;
+            //line-height: 36px;
         }
+    }
+    .friend {
+        a, div {
+            color: $dark;
+            text-decoration: none;
+            @include text-truncate;
+            img {
+                height: 52px;
+                margin-right: 5px;
+            }
+            span {
+                margin-top: 15px;
+            }
+            span:hover {
+                text-decoration: underline;
+            }
+            span.badge {
+                text-decoration: none;
+            }
+        }
+    }
+    table#badges-table{
     }
 }
