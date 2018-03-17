@@ -38,6 +38,10 @@
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
+                    <a role="button" class="btn btn-success" href="{{ .App.GetCommunityLink }}">Community</a>
+                    <a role="button" class="btn btn-success" href="{{ .App.GetStoreLink }}">Store</a>
+                    <a role="button" class="btn btn-success" href="{{ .App.GetInstallLink }}">Install</a>
+
                     <p>Game: <a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
                     <p>App Type: {{ .App.Type }}</p>
                     <p>Release State: {{ .App.ReleaseState }}</p>

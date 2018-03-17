@@ -26,14 +26,18 @@ func processPlayer(msg amqp.Delivery) (err error) {
 		logger.Error(err)
 	}
 
-	err = player.UpdateIfNeeded()
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
+	errs := player.UpdateIfNeeded()
+	if len(errs) > 0 {
+		for _, v := range errs {
+
+			logger.Error(err)
+
 			// API is probably down
-			msg.Nack(false, true)
-			return nil
+			if v.Error() == steam.ErrorInvalidJson {
+				msg.Nack(false, true)
+				return nil
+			}
 		}
-		logger.Error(err)
 	}
 
 	msg.Ack(false)

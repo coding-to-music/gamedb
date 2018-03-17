@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -202,143 +203,187 @@ func CountPlayers() (count int, err error) {
 	return count, nil
 }
 
-func (p *Player) UpdateIfNeeded() (err error) {
+func (p *Player) UpdateIfNeeded() (errs []error) {
 
 	if p.shouldUpdate() {
 
-		err = p.fill()
-		if err != nil {
-			return err
+		var wg sync.WaitGroup
+		var errs []error
+		var err error
+
+		wg.Add(1)
+		go func(p *Player) {
+
+			//Get summary
+			summary, err := steam.GetPlayerSummaries(p.PlayerID)
+			if err != nil {
+				if err.Error() == steam.ErrorInvalidJson {
+					errs = append(errs, err)
+				}
+				if !strings.HasPrefix(err.Error(), "not found in steam") {
+					logger.Error(err)
+				}
+			}
+
+			p.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
+			p.VanintyURL = path.Base(summary.ProfileURL)
+			p.RealName = summary.RealName
+			p.CountryCode = summary.LOCCountryCode
+			p.StateCode = summary.LOCStateCode
+			p.PersonaName = summary.PersonaName
+			p.TimeCreated = time.Unix(summary.TimeCreated, 0)
+			p.LastLogOff = time.Unix(summary.LastLogOff, 0)
+			p.PrimaryClanID = summary.PrimaryClanID
+
+			wg.Done()
+		}(p)
+
+		wg.Add(1)
+		go func(p *Player) {
+
+			// Get games
+			gamesResponse, err := steam.GetOwnedGames(p.PlayerID)
+			if err != nil {
+				if err.Error() == steam.ErrorInvalidJson {
+					errs = append(errs, err)
+				}
+				logger.Error(err)
+			}
+
+			p.Games = gamesResponse
+			p.GamesCount = len(gamesResponse)
+
+			// Get playtime
+			var playtime = 0
+			for _, v := range gamesResponse {
+				playtime = playtime + v.PlaytimeForever
+			}
+			p.PlayTime = playtime
+
+			wg.Done()
+		}(p)
+
+		wg.Add(1)
+		go func(p *Player) {
+
+			// Get recent games
+			recentGames, err := steam.GetRecentlyPlayedGames(p.PlayerID)
+			if err != nil {
+				if err.Error() == steam.ErrorInvalidJson {
+					errs = append(errs, err)
+				}
+				logger.Error(err)
+			}
+
+			p.GamesRecent = recentGames
+
+			wg.Done()
+		}(p)
+
+		wg.Add(1)
+		go func(p *Player) {
+
+			// Get badges
+			badges, err := steam.GetBadges(p.PlayerID)
+			if err != nil {
+				if err.Error() == steam.ErrorInvalidJson {
+					errs = append(errs, err)
+				}
+				logger.Error(err)
+			}
+
+			p.Badges = badges
+			p.BadgesCount = len(badges.Badges)
+
+			wg.Done()
+		}(p)
+
+		wg.Add(1)
+		go func(p *Player) {
+
+			//Get friends
+			friends, err := steam.GetFriendList(p.PlayerID)
+			if err != nil {
+				if err.Error() == steam.ErrorInvalidJson {
+					errs = append(errs, err)
+				}
+				logger.Error(err)
+			}
+
+			p.Friends = friends
+			p.FriendsCount = len(friends)
+
+			wg.Done()
+		}(p)
+
+		wg.Add(1)
+		go func(p *Player) {
+
+			// Get level
+			level, err := steam.GetSteamLevel(p.PlayerID)
+			if err != nil {
+				if err.Error() == steam.ErrorInvalidJson {
+					errs = append(errs, err)
+				}
+				logger.Error(err)
+			}
+
+			p.Level = level
+
+			wg.Done()
+		}(p)
+
+		wg.Add(1)
+		go func(p *Player) {
+
+			// Get bans
+			bans, err := steam.GetPlayerBans(p.PlayerID)
+			if err != nil {
+				if err.Error() == steam.ErrorInvalidJson {
+					errs = append(errs, err)
+				}
+				logger.Error(err)
+			}
+
+			p.Bans = bans
+			p.NumberOfGameBans = bans.NumberOfGameBans
+			p.NumberOfVACBans = bans.NumberOfVACBans
+
+			wg.Done()
+		}(p)
+
+		wg.Add(1)
+		go func(p *Player) {
+
+			// Get groups
+			groups, err := steam.GetUserGroupList(p.PlayerID)
+			if err != nil {
+				if err.Error() == steam.ErrorInvalidJson {
+					errs = append(errs, err)
+				}
+				logger.Error(err)
+			}
+
+			p.Groups = groups
+
+			wg.Done()
+		}(p)
+
+		wg.Wait()
+
+		// Fix dates
+		p.UpdatedAt = time.Now()
+		if p.CreatedAt.IsZero() {
+			p.CreatedAt = time.Now()
 		}
 
 		err = p.Save()
 		if err != nil {
-			return err
+			errs = append(errs, err)
 		}
 	}
 
-	return nil
-}
-
-func (p *Player) fill() (err error) {
-
-	//Get summary
-	summary, err := steam.GetPlayerSummaries(p.PlayerID)
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
-			return err
-		}
-		if !strings.HasPrefix(err.Error(), "not found in steam") {
-			logger.Error(err)
-		}
-	}
-
-	p.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
-	p.VanintyURL = path.Base(summary.ProfileURL)
-	p.RealName = summary.RealName
-	p.CountryCode = summary.LOCCountryCode
-	p.StateCode = summary.LOCStateCode
-	p.PersonaName = summary.PersonaName
-	p.TimeCreated = time.Unix(summary.TimeCreated, 0)
-	p.LastLogOff = time.Unix(summary.LastLogOff, 0)
-	p.PrimaryClanID = summary.PrimaryClanID
-
-	// Get games
-	gamesResponse, err := steam.GetOwnedGames(p.PlayerID)
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
-			return err
-		}
-		logger.Error(err)
-	}
-
-	p.Games = gamesResponse
-	p.GamesCount = len(gamesResponse)
-
-	// Get playtime
-	var playtime = 0
-	for _, v := range gamesResponse {
-		playtime = playtime + v.PlaytimeForever
-	}
-	p.PlayTime = playtime
-
-	// Get recent games
-	recentGames, err := steam.GetRecentlyPlayedGames(p.PlayerID)
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
-			return err
-		}
-		logger.Error(err)
-	}
-
-	p.GamesRecent = recentGames
-
-	// Get badges
-	badges, err := steam.GetBadges(p.PlayerID)
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
-			return err
-		}
-		logger.Error(err)
-	}
-
-	p.Badges = badges
-	p.BadgesCount = len(badges.Badges)
-
-	//Get friends
-	friends, err := steam.GetFriendList(p.PlayerID)
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
-			return err
-		}
-		logger.Error(err)
-	}
-
-	p.Friends = friends
-	p.FriendsCount = len(friends)
-
-	// Get level
-	level, err := steam.GetSteamLevel(p.PlayerID)
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
-			return err
-		}
-		logger.Error(err)
-	}
-
-	p.Level = level
-
-	// Get bans
-	bans, err := steam.GetPlayerBans(p.PlayerID)
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
-			return err
-		}
-		logger.Error(err)
-	}
-
-	p.Bans = bans
-	p.NumberOfGameBans = bans.NumberOfGameBans
-	p.NumberOfVACBans = bans.NumberOfVACBans
-
-	// Get groups
-	groups, err := steam.GetUserGroupList(p.PlayerID)
-	if err != nil {
-		if err.Error() == steam.ErrorInvalidJson {
-			return err
-		}
-		logger.Error(err)
-	}
-
-	p.Groups = groups
-
-	// Fix dates
-	p.UpdatedAt = time.Now()
-	if p.CreatedAt.IsZero() {
-		p.CreatedAt = time.Now()
-	}
-
-	return nil
+	return
 }
 
 func (p *Player) Save() (err error) {

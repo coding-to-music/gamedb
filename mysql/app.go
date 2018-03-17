@@ -117,8 +117,8 @@ func (app App) GetStoreLink() (string) {
 	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
 }
 
-func (app App) GetInstallLink() (string) {
-	return "steam://install/" + strconv.Itoa(app.ID)
+func (app App) GetInstallLink() (template.URL) {
+	return template.URL("steam://install/" + strconv.Itoa(app.ID))
 }
 
 // Used in frontend
@@ -293,7 +293,7 @@ func SearchApps(query url.Values, limit int, sort string, columns []string) (app
 		db = db.Select(columns)
 	}
 
-	// Hide ghosts? todo, fix
+	// Hide ghosts? todo, fix, apps can have no name
 	db = db.Where("name != ''")
 
 	// Tags depth

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/go-helpers/logger"
@@ -115,32 +116,21 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = player.UpdateIfNeeded()
-	if err != nil {
+	errs := player.UpdateIfNeeded()
+	if len(errs) > 0 {
+		for _, v := range errs {
 
-		if err.Error() == steam.ErrorInvalidJson {
-			returnErrorTemplate(w, r, 500, "Couldnt fetch player data, steam API may be down?")
+			logger.Error(err)
+
+			// API is probably down
+			if v.Error() == steam.ErrorInvalidJson {
+				returnErrorTemplate(w, r, 500, "Couldnt fetch player data, steam API may be down?")
+				return
+			}
+
+			returnErrorTemplate(w, r, 500, err.Error())
 			return
 		}
-
-		logger.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
-		return
-	}
-
-	// Queue friends
-	if player.ShouldUpdateFriends() {
-
-		for _, v := range player.Friends {
-			vv, _ := strconv.Atoi(v.SteamID)
-			p, _ := json.Marshal(queue.PlayerMessage{
-				PlayerID: vv,
-			})
-			queue.Produce(queue.PlayerQueue, p)
-		}
-
-		player.FriendsAddedAt = time.Now()
-		player.Save()
 	}
 
 	// Redirect to correct slug
@@ -150,66 +140,122 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Make friend ID slice
-	var friendsSlice []int
-	for _, v := range player.Friends {
-		s, _ := strconv.Atoi(v.SteamID)
-		friendsSlice = append(friendsSlice, s)
-	}
+	var wg sync.WaitGroup
 
-	// Get friends for template
-	friends, err := datastore.GetPlayersByIDs(friendsSlice)
-	if err != nil {
-		logger.Error(err)
-	}
+	wg.Add(1)
+	go func(player *datastore.Player) {
 
-	// Get games
-	var gamesSlice []int
-	gamesMap := make(map[int]*playerAppTemplate)
-	for _, v := range player.Games {
-		gamesSlice = append(gamesSlice, v.AppID)
-		gamesMap[v.AppID] = &playerAppTemplate{
-			Time: v.PlaytimeForever,
+		// Queue friends
+		if player.ShouldUpdateFriends() {
+
+			for _, v := range player.Friends {
+				vv, _ := strconv.Atoi(v.SteamID)
+				p, _ := json.Marshal(queue.PlayerMessage{
+					PlayerID: vv,
+				})
+				queue.Produce(queue.PlayerQueue, p)
+			}
+
+			player.FriendsAddedAt = time.Now()
+			player.Save()
 		}
-	}
 
-	gamesSql, err := mysql.GetApps(gamesSlice, []string{"id", "name", "price_initial", "icon"})
-	for _, v := range gamesSql {
-		gamesMap[v.ID].ID = v.ID
-		gamesMap[v.ID].Name = v.GetName()
-		gamesMap[v.ID].Price = v.GetPriceInitial()
-		gamesMap[v.ID].Icon = v.GetIcon()
-	}
+		wg.Done()
 
-	// Sort games
-	var sortedGamesSlice []*playerAppTemplate
-	for _, v := range gamesMap {
-		sortedGamesSlice = append(sortedGamesSlice, v)
-	}
+	}(player)
 
-	sort.Slice(sortedGamesSlice, func(i, j int) bool {
-		if sortedGamesSlice[i].Time == sortedGamesSlice[j].Time {
-			return sortedGamesSlice[i].Name < sortedGamesSlice[j].Name
+	var friends []datastore.Player
+	wg.Add(1)
+	go func(player *datastore.Player) {
+
+		// Make friend ID slice
+		var friendsSlice []int
+		for _, v := range player.Friends {
+			s, _ := strconv.Atoi(v.SteamID)
+			friendsSlice = append(friendsSlice, s)
 		}
-		return sortedGamesSlice[i].Time > sortedGamesSlice[j].Time
-	})
 
-	// Get ranks
-	ranks, err := datastore.GetRank(player.PlayerID)
-	if err != nil {
-		if err.Error() != datastore.ErrorNotFound {
+		// Get friends for template
+		friends, err = datastore.GetPlayersByIDs(friendsSlice)
+		if err != nil {
 			logger.Error(err)
 		}
-	}
 
-	ranksTemplate := playerRanksTemplate{
-		Ranks:          *ranks,
-		LevelOrdinal:   humanize.Ordinal(ranks.LevelRank),
-		GamesOrdinal:   humanize.Ordinal(ranks.GamesRank),
-		BadgesOrdinal:  humanize.Ordinal(ranks.BadgesRank),
-		TimeOrdinal:    humanize.Ordinal(ranks.PlayTimeRank),
-		FriendsOrdinal: humanize.Ordinal(ranks.FriendsRank),
-	}
+		wg.Done()
+
+	}(player)
+
+	var sortedGamesSlice []*playerAppTemplate
+	wg.Add(1)
+	go func(player *datastore.Player) {
+
+		// Get games
+		var gamesSlice []int
+		gamesMap := make(map[int]*playerAppTemplate)
+		for _, v := range player.Games {
+			gamesSlice = append(gamesSlice, v.AppID)
+			gamesMap[v.AppID] = &playerAppTemplate{
+				Time: v.PlaytimeForever,
+			}
+		}
+
+		gamesSql, err := mysql.GetApps(gamesSlice, []string{"id", "name", "price_initial", "icon"})
+		if err != nil {
+			logger.Error(err)
+		}
+
+		for _, v := range gamesSql {
+			gamesMap[v.ID].ID = v.ID
+			gamesMap[v.ID].Name = v.GetName()
+			gamesMap[v.ID].Price = v.GetPriceInitial()
+			gamesMap[v.ID].Icon = v.GetIcon()
+		}
+
+		// Sort games
+		for _, v := range gamesMap {
+			sortedGamesSlice = append(sortedGamesSlice, v)
+		}
+
+		sort.Slice(sortedGamesSlice, func(i, j int) bool {
+			if sortedGamesSlice[i].Time == sortedGamesSlice[j].Time {
+				return sortedGamesSlice[i].Name < sortedGamesSlice[j].Name
+			}
+			return sortedGamesSlice[i].Time > sortedGamesSlice[j].Time
+		})
+
+		wg.Done()
+
+	}(player)
+
+	var ranks *datastore.Rank
+	wg.Add(1)
+	go func(player *datastore.Player) {
+
+		// Get ranks
+		ranks, err = datastore.GetRank(player.PlayerID)
+		if err != nil {
+			if err.Error() != datastore.ErrorNotFound {
+				logger.Error(err)
+			}
+		}
+
+		wg.Done()
+
+	}(player)
+
+	wg.Add(1)
+	go func(player *datastore.Player) {
+
+		// Badges
+		sort.Slice(player.Badges.Badges, func(i, j int) bool {
+			return player.Badges.Badges[i].CompletionTime > player.Badges.Badges[j].CompletionTime
+		})
+
+		wg.Done()
+
+	}(player)
+
+	wg.Wait()
 
 	// Template
 	template := playerTemplate{}
@@ -217,7 +263,14 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	template.Player = player
 	template.Friends = friends
 	template.Games = sortedGamesSlice
-	template.Ranks = ranksTemplate
+	template.Ranks = playerRanksTemplate{
+		Ranks:          *ranks,
+		LevelOrdinal:   humanize.Ordinal(ranks.LevelRank),
+		GamesOrdinal:   humanize.Ordinal(ranks.GamesRank),
+		BadgesOrdinal:  humanize.Ordinal(ranks.BadgesRank),
+		TimeOrdinal:    humanize.Ordinal(ranks.PlayTimeRank),
+		FriendsOrdinal: humanize.Ordinal(ranks.FriendsRank),
+	}
 
 	returnTemplate(w, r, "player", template)
 }
