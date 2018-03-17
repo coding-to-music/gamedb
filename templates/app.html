@@ -41,6 +41,7 @@
                     <a role="button" class="btn btn-success" href="{{ .App.GetCommunityLink }}">Community</a>
                     <a role="button" class="btn btn-success" href="{{ .App.GetStoreLink }}">Store</a>
                     <a role="button" class="btn btn-success" href="{{ .App.GetInstallLink }}">Install</a>
+                    <a role="button" class="btn btn-success" href="{{ .App.Homepage }}">Homepage</a>
 
                     <p>Game: <a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
                     <p>App Type: {{ .App.Type }}</p>
@@ -55,10 +56,6 @@
 
                     <p>Store Tags: {{ .App.StoreTags }}</p>
                     <p>Genres: {{ .App.GetGenres }}</p>
-                    <p>Homepage: {{ .App.Homepage }}</p>
-                    <p>Change Number:
-                        <a href="/changes/{{ .App.ChangeNumber }}">{{ .App.ChangeNumber }}</a>
-                    </p>
 
                     <h5>Included in these packages</h5>
                     <div class="table-responsive">
@@ -79,7 +76,6 @@
                                 <td>{{ .LicenseType }}</td>
                                 <td>{{ .Status }}</td>
                                 <td>{{ len .Apps }}</td>
-                                <!-- <td>{{.ChangeID}}</td> -->
                             </tr>
                         {{ end }}
                         </table>
@@ -116,14 +112,27 @@
                 <div class="tab-pane" id="achievements" role="tabpanel">Achs</div>
                 <div class="tab-pane" id="news" role="tabpanel">
 
-                {{ range $key, $value := .Articles }}
-                    <h5>{{ .Title }}</h5>
-                    <blockquote class="blockquote mb-4">
-                        <p class="mb-0">{{ .Contents }}</p>
-                        <footer class="blockquote-footer">{{ .Author }}</footer>
-                    </blockquote>
+                    <div id="accordion">
 
-                {{ end }}
+                    {{ range $key, $value := .Articles }}
+                        <div class="card mb-1">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{$key}}">{{ .Title }}</button>
+                                </h5>
+                            </div>
+                            <div id="collapse{{$key}}" class="collapse {{if eq $key 0}}show{{end}}" data-parent="#accordion">
+                                <div class="card-body">
+                                    <blockquote class="blockquote mb-0">
+                                        <p class="mb-0">{{ .Contents }}</p>
+                                        <footer class="blockquote-footer">{{ .Author }}</footer>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                    {{ end }}
+
+                    </div>
 
                 </div>
             </div>
