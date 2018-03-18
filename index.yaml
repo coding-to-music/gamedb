@@ -17,3 +17,7 @@ indexes:
   - name: "player_id"
   - name: "created_at"
     direction: desc
+- kind: AppPrice
+  properties:
+  - name: app_id
+  - name: created_at

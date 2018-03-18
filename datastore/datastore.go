@@ -10,15 +10,16 @@ import (
 )
 
 const (
-	KindChange       = "Change"
 	KindArticle      = "Article"
-	KindPlayer       = "Player"
-	KindRank         = "Rank"
-	KindLogin        = "Login"
+	KindChange       = "Change"
+	KindConfig       = "Config"
 	KindDonation     = "Donation"
 	KindGroup        = "Group"
+	KindLogin        = "Login"
+	KindPlayer       = "Player"
 	KindPriceApp     = "AppPrice"
 	KindPricePackage = "PackagePrice"
+	KindRank         = "Rank"
 )
 
 const (

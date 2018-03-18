@@ -65,6 +65,12 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get prices
+	prices, err := datastore.GetAppPrices(app.ID)
+	if err != nil {
+		logger.Error(err)
+	}
+
 	// Redirect to correct slug
 	correctSLug := slugify.Make(app.Name)
 	if slug != "" && app.Name != "" && slug != correctSLug {
@@ -103,6 +109,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	template.Packages = packages
 	template.Articles = news
 	template.Banners = banners
+	template.Prices = prices
 
 	returnTemplate(w, r, "app", template)
 }
@@ -113,4 +120,5 @@ type appTemplate struct {
 	Packages []mysql.Package
 	Articles []datastore.Article
 	Banners  map[string][]string
+	Prices   []datastore.AppPrice
 }
