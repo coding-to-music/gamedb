@@ -47,24 +47,26 @@
         <h5 class="card-header">Logins</h5>
         <div class="card-body">
 
-            <table class="table table-hover table-sm table-striped">
-                <thead>
-                <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">IP</th>
-                    <th scope="col">User Agent</th>
-                </tr>
-                </thead>
-            {{ range $key, $value := .Logins }}
-                <tr>
-                    <td nowrap="nowrap">{{ .GetTime }}</td>
-                    <td>{{ .IP }}</td>
-                    <td>
-                        <span data-toggle="tooltip" data-placement="top" title="{{ .UserAgent }}">{{ printf "%.50s" .UserAgent }}&hellip;</span>
-                    </td>
-                </tr>
-            {{ end }}
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">IP</th>
+                        <th scope="col">User Agent</th>
+                    </tr>
+                    </thead>
+                {{ range $key, $value := .Logins }}
+                    <tr>
+                        <td nowrap="nowrap">{{ .GetTime }}</td>
+                        <td>{{ .IP }}</td>
+                        <td>
+                            <span data-toggle="tooltip" data-placement="top" title="{{ .UserAgent }}">{{ printf "%.50s" .UserAgent }}&hellip;</span>
+                        </td>
+                    </tr>
+                {{ end }}
+                </table>
+            </div>
 
         </div>
     </div>

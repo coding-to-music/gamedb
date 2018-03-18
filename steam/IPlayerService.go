@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 // Gets information about a player's recently played games
@@ -44,10 +45,18 @@ type RecentlyPlayedGamesResponse struct {
 type RecentlyPlayedGame struct {
 	AppID           int    `json:"appid"`
 	Name            string `json:"name"`
-	Playtime2Weeks  int    `json:"playtime_2weeks"`
-	PlaytimeForever int    `json:"playtime_forever"`
+	Playtime2Weeks  int  `json:"playtime_2weeks"`
+	PlaytimeForever int  `json:"playtime_forever"`
 	ImgIconURL      string `json:"img_icon_url"`
 	ImgLogoURL      string `json:"img_logo_url"`
+}
+
+func (r RecentlyPlayedGame) GetTwoWeeks() string {
+	return helpers.GetTimeShort(r.Playtime2Weeks, 2)
+}
+
+func (r RecentlyPlayedGame) GetAllTime() string {
+	return helpers.GetTimeShort(r.PlaytimeForever, 2)
 }
 
 // Return a list of games owned by the player
