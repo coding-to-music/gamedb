@@ -20,4 +20,10 @@ indexes:
 - kind: AppPrice
   properties:
   - name: app_id
+  - name: currency
+  - name: created_at
+- kind: PackagePrice
+  properties:
+  - name: package_id
+  - name: currency
   - name: created_at

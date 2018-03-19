@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/go-helpers/logger"
-	"google.golang.org/api/iterator"
 )
 
 type AppPrice struct {
@@ -43,23 +41,11 @@ func GetAppPrices(appID int) (prices []AppPrice, err error) {
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindPriceApp).Order("created_at").Limit(500)
+	q := datastore.NewQuery(KindPriceApp).Order("created_at").Limit(1000)
 	q = q.Filter("app_id =", appID)
+	q = q.Filter("currency =", "usd")
 
-	it := client.Run(ctx, q)
-
-	for {
-		var price AppPrice
-		_, err := it.Next(&price)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			logger.Error(err)
-		}
-
-		prices = append(prices, price)
-	}
+	_, err = client.GetAll(ctx, q, &prices)
 
 	return prices, err
 }
@@ -71,23 +57,11 @@ func GetPackagePrices(packageID int) (prices []PackagePrice, err error) {
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindPricePackage).Order("created_at").Limit(500)
+	q := datastore.NewQuery(KindPricePackage).Order("created_at").Limit(1000)
 	q = q.Filter("package_id =", packageID)
+	q = q.Filter("currency =", "usd")
 
-	it := client.Run(ctx, q)
-
-	for {
-		var price PackagePrice
-		_, err := it.Next(&price)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			logger.Error(err)
-		}
-
-		prices = append(prices, price)
-	}
+	_, err = client.GetAll(ctx, q, &prices)
 
 	return prices, err
 }
