@@ -15,4 +15,14 @@ if ($('#admin-page').length > 0) {
             $(this).removeClass('list-group-item-danger')
         }
     );
+
+    var queuesForm = $('form#queues');
+    queuesForm.on("submit", function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: queuesForm.attr('action'),
+            data: $(this).serialize()
+        });
+    });
 }
