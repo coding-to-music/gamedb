@@ -60,7 +60,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := adminTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Admin")
 	//template.Errors = errors
 
 	returnTemplate(w, r, "admin", template)

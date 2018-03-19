@@ -18,7 +18,7 @@ func QueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := queueTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Queues")
 	template.Queues = queues
 
 	returnTemplate(w, r, "queues", template)

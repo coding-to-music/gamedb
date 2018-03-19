@@ -44,7 +44,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := articlesTemplate{}
-	template.Fill(r)
+	template.Fill(r, "News")
 	template.Articles = filteredArticles
 	template.Apps = appMap
 

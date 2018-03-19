@@ -89,7 +89,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := chatTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Chat")
 	template.Channels = channels
 	template.Messages = messages
 	template.ChannelID = id

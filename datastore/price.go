@@ -65,3 +65,18 @@ func GetPackagePrices(packageID int) (prices []PackagePrice, err error) {
 
 	return prices, err
 }
+
+func GetAppChanges() (prices []AppPrice, err error) {
+
+	client, ctx, err := getDSClient()
+	if err != nil {
+		return prices, err
+	}
+
+	q := datastore.NewQuery(KindPriceApp).Order("created_at").Limit(1000)
+	q = q.Filter("currency =", "usd")
+
+	_, err = client.GetAll(ctx, q, &prices)
+
+	return prices, err
+}

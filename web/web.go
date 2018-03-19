@@ -16,6 +16,7 @@ import (
 	"github.com/kr/pretty"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
+	"github.com/steam-authority/steam-authority/steam"
 )
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
@@ -50,7 +51,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, code int, messa
 	w.WriteHeader(code)
 
 	tmpl := errorTemplate{}
-	tmpl.Fill(r)
+	tmpl.Fill(r, "Error")
 	tmpl.Code = code
 	tmpl.Message = message
 
@@ -84,8 +85,23 @@ func getTemplateFuncMap() map[string]interface{} {
 			}
 			return template.HTML("Packages: " + strings.Join(packages, ", "))
 		},
+		"tags": func(a []mysql.Tag) template.HTML {
+			var tags []string
+			for _, v := range a {
+				tags = append(tags, "<a href=\"/apps?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
+			}
+			return template.HTML(strings.Join(tags, ", "))
+		},
+		"genres": func(a []steam.AppDetailsGenre) template.HTML {
+			var genres []string
+			for _, v := range a {
+				genres = append(genres, "<a href=\"/apps?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
+			}
+			return template.HTML(strings.Join(genres, ", "))
+		},
 		"unix":       func(t time.Time) int64 { return t.Unix() },
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
+		"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
 	}
 }
 
@@ -93,7 +109,8 @@ func getTemplateFuncMap() map[string]interface{} {
 type GlobalTemplate struct {
 	Env     string
 	ID      int
-	Name    string
+	Name    string // Username
+	Title   string // Page title
 	Avatar  string
 	Level   int
 	Games   []int
@@ -102,7 +119,10 @@ type GlobalTemplate struct {
 	request *http.Request // Internal
 }
 
-func (t *GlobalTemplate) Fill(r *http.Request) {
+func (t *GlobalTemplate) Fill(r *http.Request, title string) {
+
+	t.Title = title
+	t.request = r
 
 	// From ENV
 	t.Env = os.Getenv("ENV")
@@ -131,7 +151,6 @@ func (t *GlobalTemplate) Fill(r *http.Request) {
 	// From request
 	t.Path = r.URL.Path
 	t.IsAdmin = r.Header.Get("Authorization") != ""
-	t.request = r
 }
 
 func (t GlobalTemplate) LoggedIn() (bool) {

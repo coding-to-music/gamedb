@@ -81,7 +81,7 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	template := playersTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Ranks")
 	template.Ranks = ranks
 	template.PlayersCount = playersCount
 	template.RanksCount = ranksCount
@@ -181,6 +181,10 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Error(err)
 		}
 
+		sort.Slice(friends, func(i, j int) bool {
+			return friends[i].Level > friends[j].Level
+		})
+
 		wg.Done()
 
 	}(player)
@@ -259,7 +263,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := playerTemplate{}
-	template.Fill(r)
+	template.Fill(r, player.PersonaName)
 	template.Player = player
 	template.Friends = friends
 	template.Games = sortedGamesSlice

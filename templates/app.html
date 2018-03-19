@@ -4,8 +4,15 @@
 
     <div class="jumbotron">
         <img src="http://cdn.akamai.steamstatic.com/steam/apps/{{ .App.ID }}/header.jpg" class="rounded-right" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
-        <h1 class="display-4"><i class="fas fa-gamepad"></i> {{.App.Name}}</h1>
-        <p class="lead">x</p>
+        <h1 class="display-4"><i class="fas fa-gamepad"></i> {{.App.GetName}}</h1>
+        <p class="lead">
+            <a href="{{ .App.GetCommunityLink }}">Community Page</a>
+            - <a href="{{ .App.GetStoreLink }}">Store Page</a>
+        {{if ne .App.Homepage ""}}
+            - <a href="{{ .App.Homepage }}">Game Website</a>
+        {{end}}
+            - <a href="{{ .App.GetInstallLink }}">Install</a>
+        </p>
     </div>
 
 {{ range $k, $v := .Banners }}
@@ -24,9 +31,6 @@
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ .App.GetAchievements.Total }})</a>
                 </li>
                 <li class="nav-item">
@@ -41,78 +45,105 @@
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
-                    <a role="button" class="btn btn-success" href="{{ .App.GetCommunityLink }}">Community</a>
-                    <a role="button" class="btn btn-success" href="{{ .App.GetStoreLink }}">Store</a>
-                    <a role="button" class="btn btn-success" href="{{ .App.GetInstallLink }}">Install</a>
-                    <a role="button" class="btn btn-success" href="{{ .App.Homepage }}">Homepage</a>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-7">
 
-                    <p>Game: <a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
-                    <p>App Type: {{ .App.Type }}</p>
-                    <p>Release State: {{ .App.ReleaseState }}</p>
-                    <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>
+                        {{ if ne .App.GameName "" }}
+                            <p>For Game: <a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
+                        {{end}}
 
-                {{ if gt .App.MetacriticScore 0 }}
-                    <p>Metacritic Score:
-                        <a href="{{ .App.MetacriticFullURL }}">{{ .App.MetacriticScore }}</a>
-                    </p>
-                {{end}}
+                            <p>App Type: {{ .App.GetType }}</p>
+                            <p>Release State: {{ .App.ReleaseState }}</p>
+                            <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>
 
-                    <p>Store Tags: {{ .App.StoreTags }}</p>
-                    <p>Genres: {{ .App.GetGenres }}</p>
+                        {{ if gt .App.MetacriticScore 0 }}
+                            <p>Metacritic Score:
+                                <a href="{{ .App.MetacriticFullURL }}">{{ .App.MetacriticScore }}</a>
+                            </p>
+                        {{end}}
 
-                    <h5>Included in these packages</h5>
+                            <p>Tags: {{ tags .Tags }}</p>
+                            <p>Genres: {{ genres .App.GetGenres }}</p>
+
+                            <h5>Packages</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-sm table-sorter">
+                                    <thead>
+                                    <th scope="col">Package ID</th>
+                                    <th scope="col">Billing</th>
+                                    <th scope="col">License</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Apps</th>
+                                    </thead>
+                                {{ range $key, $value := .Packages }}
+                                    <tr>
+                                        <td>
+                                            <a href="/packages/{{.ID}}">{{.ID}}</a>
+                                        </td>
+                                        <td>{{ .BillingType }}</td>
+                                        <td>{{ .LicenseType }}</td>
+                                        <td>{{ .Status }}</td>
+                                        <td>{{ len .Apps }}</td>
+                                    </tr>
+                                {{ end }}
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12 col-lg-5">
+
+                            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                                <ol class="carousel-indicators">
+                                {{ range $key, $value := .App.GetScreenshots }}
+                                    <li data-target="#carouselExampleIndicators" data-slide-to="{{ $key }}" class="{{if eq $key 0}}active{{end}}"></li>
+                                {{ end }}
+                                </ol>
+                                <div class="carousel-inner">
+                                {{ range $key, $value := .App.GetScreenshots }}
+                                    <div class="carousel-item {{if eq $key 0}}active{{end}}">
+                                        <img class="d-block w-100" style="width:50%;" src="{{ .PathFull }}">
+                                    </div>
+                                {{ end }}
+                                </div>
+                                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="tab-pane" id="achievements" role="tabpanel">
+
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm table-sorter">
+                        <table class="table table-hover table-sm table-striped table-sorter table-images">
                             <thead>
-                            <th scope="col">Package ID</th>
-                            <th scope="col">Billing</th>
-                            <th scope="col">License</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Apps</th>
-                            </thead>
-                        {{ range $key, $value := .Packages }}
                             <tr>
-                                <td>
-                                    <a href="/packages/{{.ID}}">{{.ID}}</a>
-                                </td>
-                                <td>{{ .BillingType }}</td>
-                                <td>{{ .LicenseType }}</td>
-                                <td>{{ .Status }}</td>
-                                <td>{{ len .Apps }}</td>
+                                <th scope="col" class="sorter-false"></th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Completed</th>
+                            </tr>
+                            </thead>
+                        {{ range $key, $value := .Schema.AvailableGameStats.Achievements }}
+                            <tr>
+                                <td class="img"><img src="{{ .Icon }}"></td>
+                                <td>{{ .DisplayName }}</td>
+                                <td>{{ .Description }}</td>
+                                <td>{{ index $.Achievements .Name }}%</td>
                             </tr>
                         {{ end }}
                         </table>
+
                     </div>
 
                 </div>
-                <div class="tab-pane" id="media" role="tabpanel">
-
-                    <div style="width:70%;">
-                        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                            <ol class="carousel-indicators">
-                            {{ range $key, $value := .App.GetScreenshots }}
-                                <li data-target="#carouselExampleIndicators" data-slide-to="{{ $key }}" class="{{if eq $key 0}}active{{end}}"></li>
-                            {{ end }}
-                            </ol>
-                            <div class="carousel-inner">
-                            {{ range $key, $value := .App.GetScreenshots }}
-                                <div class="carousel-item {{if eq $key 0}}active{{end}}">
-                                    <img class="d-block w-100" style="width:50%;" src="{{ .PathFull }}">
-                                </div>
-                            {{ end }}
-                            </div>
-                            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane" id="achievements" role="tabpanel">Achs</div>
                 <div class="tab-pane" id="news" role="tabpanel">
 
                     <div id="accordion">
@@ -140,13 +171,9 @@
                 </div>
                 <div class="tab-pane" id="prices" role="tabpanel">
 
-                    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                    <script>var prices = JSON.parse('{{ .Prices }}');</script>
+                    <div id="chart" style="height: 400px;"></div>
 
-                {{ range $key, $value := .Prices }}
-{{.PriceInitial}}
-{{.PriceFinal}}
-{{.Discount}}
-                {{ end }}
                 </div>
             </div>
         </div>

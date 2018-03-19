@@ -1,6 +1,8 @@
 package web
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -9,6 +11,7 @@ import (
 	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/mysql"
+	"github.com/steam-authority/steam-authority/steam"
 )
 
 func AppsHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +30,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := appsTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Games")
 	template.Apps = apps
 	template.Count = count
 
@@ -65,18 +68,61 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get prices
-	prices, err := datastore.GetAppPrices(app.ID)
+	// Redirect to correct slug
+	correctSLug := slugify.Make(app.GetName())
+	if slug != correctSLug {
+		http.Redirect(w, r, "/apps/"+id+"/"+correctSLug, 302)
+		return
+	}
+
+	// Get achievements
+	achievements, err := steam.GetGlobalAchievementPercentagesForApp(app.ID)
 	if err != nil {
 		logger.Error(err)
 	}
 
-	// Redirect to correct slug
-	correctSLug := slugify.Make(app.Name)
-	if slug != "" && app.Name != "" && slug != correctSLug {
-		http.Redirect(w, r, "/apps/"+id+"/"+correctSLug, 302)
-		return
+	achievementsMap := make(map[string]string)
+	for _, v := range achievements {
+		achievementsMap[v.Name] = fmt.Sprintf("%0.2f", v.Percent)
 	}
+
+	// Get tags
+	tagIDs, err := app.GetTags()
+	if err != nil {
+		logger.Error(err)
+	}
+
+	tags, err := mysql.GetTagsByID(tagIDs)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	// Get prices
+	pricesResp, err := datastore.GetAppPrices(app.ID)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	var prices [][]int64
+
+	for _, v := range pricesResp {
+		prices = append(prices, []int64{v.CreatedAt.Unix(), int64(v.PriceFinal)})
+	}
+
+	pricesBytes, err := json.Marshal(prices)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	// Get schema
+	schema, err := steam.GetSchemaForGame(app.ID)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	//sort.Slice(schema.AvailableGameStats.Achievements, func(i, j int) bool {
+	//	return schema.AvailableGameStats.Achievements[i].
+	//})
 
 	// Make banners
 	banners := make(map[string][]string)
@@ -104,21 +150,34 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := appTemplate{}
-	template.Fill(r)
+	template.Fill(r, app.GetName())
 	template.App = app
 	template.Packages = packages
 	template.Articles = news
 	template.Banners = banners
-	template.Prices = prices
+	template.Prices = string(pricesBytes)
+	template.Achievements = achievementsMap
+	template.Schema = schema
+	template.Tags = tags
 
 	returnTemplate(w, r, "app", template)
 }
 
 type appTemplate struct {
 	GlobalTemplate
-	App      mysql.App
-	Packages []mysql.Package
-	Articles []datastore.Article
-	Banners  map[string][]string
-	Prices   []datastore.AppPrice
+	App          mysql.App
+	Packages     []mysql.Package
+	Articles     []datastore.Article
+	Banners      map[string][]string
+	Prices       string
+	Achievements map[string]string
+	Schema       steam.GameSchema
+	Tags         []mysql.Tag
+}
+
+type hcSeries struct {
+	Type string
+	Name string
+	Data [][]int64
+	Step bool
 }

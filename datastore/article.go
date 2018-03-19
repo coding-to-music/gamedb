@@ -7,7 +7,6 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/go-helpers/logger"
 	"github.com/steam-authority/steam-authority/steam"
-	"google.golang.org/api/iterator"
 )
 
 type Article struct {
@@ -89,20 +88,7 @@ func GetArticles(appID int, limit int) (articles []Article, err error) {
 		q = q.Filter("app_id =", appID)
 	}
 
-	it := client.Run(ctx, q)
-
-	for {
-		var article Article
-		_, err := it.Next(&article)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			logger.Error(err)
-		}
-
-		articles = append(articles, article)
-	}
+	client.GetAll(ctx, q, &articles)
 
 	return articles, err
 }

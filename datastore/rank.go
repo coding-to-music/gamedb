@@ -8,7 +8,6 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/go-helpers/logger"
 	"github.com/steam-authority/steam-authority/helpers"
-	"google.golang.org/api/iterator"
 )
 
 type Rank struct {
@@ -88,26 +87,14 @@ func GetRank(playerID int) (rank *Rank, err error) {
 
 func GetRanksBy(order string) (ranks []Rank, err error) {
 
-	client, context, err := getDSClient()
+	client, ctx, err := getDSClient()
 	if err != nil {
 		return ranks, err
 	}
 
 	q := datastore.NewQuery(KindRank).Order(order).Limit(1000)
-	it := client.Run(context, q)
 
-	for {
-		var dsRank Rank
-		_, err := it.Next(&dsRank)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			logger.Error(err)
-		}
-
-		ranks = append(ranks, dsRank)
-	}
+	client.GetAll(ctx, q, &ranks)
 
 	return ranks, err
 }

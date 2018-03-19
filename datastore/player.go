@@ -3,7 +3,6 @@ package datastore
 import (
 	"errors"
 	"path"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -159,7 +158,7 @@ func GetPlayers(order string, limit int) (players []*Player, err error) {
 func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 
 	if len(ids) > 1000 {
-		return friends, errors.New("too many")
+		return friends, errors.New("too many players")
 	}
 
 	client, context, err := getDSClient()
@@ -178,11 +177,6 @@ func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 	if err != nil && !strings.Contains(err.Error(), "no such entity") {
 		return friends, err
 	}
-
-	// Sort friends by level desc
-	sort.Slice(friends, func(i, j int) bool {
-		return friends[i].Level > friends[j].Level
-	})
 
 	return friends, nil
 }

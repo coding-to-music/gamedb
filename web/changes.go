@@ -47,7 +47,7 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := changesTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Changes")
 	template.Changes = changes
 	template.Apps = appsMap
 	template.Packages = packagesMap
@@ -78,7 +78,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	template := changeTemplate{}
-	template.Fill(r)
+	template.Fill(r, change.GetName())
 	template.Change = change
 
 	returnTemplate(w, r, "change", template)

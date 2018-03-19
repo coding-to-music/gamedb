@@ -7,7 +7,7 @@ import (
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	template := homeTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Home")
 
 	returnTemplate(w, r, "home", template)
 }

@@ -144,7 +144,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := settingsTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Settings")
 	template.Logins = logins
 
 	returnTemplate(w, r, "settings", template)

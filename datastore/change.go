@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/go-helpers/logger"
-	"google.golang.org/api/iterator"
 )
 
 type Change struct {
@@ -36,26 +34,14 @@ func (change Change) GetNiceDate() (string) {
 
 func GetLatestChanges(limit int) (changes []Change, err error) {
 
-	client, context, err := getDSClient()
+	client, ctx, err := getDSClient()
 	if err != nil {
 		return changes, err
 	}
 
 	q := datastore.NewQuery(KindChange).Order("-change_id").Limit(limit)
-	it := client.Run(context, q)
 
-	for {
-		var change Change
-		_, err := it.Next(&change)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			logger.Error(err)
-		}
-
-		changes = append(changes, change)
-	}
+	client.GetAll(ctx, q, &changes)
 
 	return changes, err
 }

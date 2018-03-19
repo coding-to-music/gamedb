@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
+	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/mysql"
 )
 
@@ -19,24 +20,36 @@ func DealsHandler(w http.ResponseWriter, r *http.Request) {
 
 	tab := chi.URLParam(r, "id")
 	if tab == "" {
-		tab = "free"
-	}
-
-	search := url.Values{}
-	search.Set("is_free", "1")
-	search.Set("name", "-")
-
-	// Types not in this list will show first
-	sort := "FIELD(`type`,'game','dlc','demo','mod','video','movie','series','episode','application','tool','advertising'), name ASC"
-	apps, err := mysql.SearchApps(search, 1000, sort, []string{})
-	if err != nil {
-		logger.Error(err)
+		tab = FREE
 	}
 
 	template := dealsTemplate{}
-	template.Fill(r)
-	template.Apps = apps
+	template.Fill(r, "Deals")
 	template.Tab = tab
+
+	if tab == FREE {
+		search := url.Values{}
+		search.Set("is_free", "1")
+		search.Set("name", "-")
+
+		// Types not in this list will show first
+		sort := "FIELD(`type`,'game','dlc','demo','mod','video','movie','series','episode','application','tool','advertising'), name ASC"
+		freeApps, err := mysql.SearchApps(search, 1000, sort, []string{})
+		if err != nil {
+			logger.Error(err)
+		}
+
+		template.Apps = freeApps
+	}
+
+	if tab == CHANGES {
+		changes, err := datastore.GetAppChanges()
+		if err != nil {
+			logger.Error(err)
+		}
+
+		template.Changes = changes
+	}
 
 	returnTemplate(w, r, "deals", template)
 	return
@@ -44,6 +57,7 @@ func DealsHandler(w http.ResponseWriter, r *http.Request) {
 
 type dealsTemplate struct {
 	GlobalTemplate
-	Apps []mysql.App
-	Tab  string
+	Apps    []mysql.App
+	Tab     string
+	Changes []datastore.AppPrice
 }

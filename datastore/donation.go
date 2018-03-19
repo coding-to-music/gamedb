@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/go-helpers/logger"
-	"google.golang.org/api/iterator"
 )
 
 type Donation struct {
@@ -37,20 +35,7 @@ func GetDonations(playerID int, limit int) (donations []Donation, err error) {
 		q = q.Filter("player_id =", playerID)
 	}
 
-	it := client.Run(ctx, q)
-
-	for {
-		var donation Donation
-		_, err := it.Next(&donation)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			logger.Error(err)
-		}
-
-		donations = append(donations, donation)
-	}
+	client.GetAll(ctx, q, &donations)
 
 	return donations, err
 }

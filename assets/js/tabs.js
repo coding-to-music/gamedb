@@ -2,9 +2,12 @@
     'use strict';
 
     // Choose tab from URL
-    var hash = window.location.hash;
-    if (hash) {
-        $('.nav-link[href="' + hash + '"]').tab('show');
+    var hashes = window.location.hash;
+    if (hashes) {
+        console.log(hashes.split(','));
+        hashes.split(',').map(function (hash) {
+            $('.nav-link[href="' + hash + '"]').tab('show');
+        });
     }
 
     // Set URL from tab

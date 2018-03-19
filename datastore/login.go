@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/go-helpers/logger"
-	"google.golang.org/api/iterator"
 )
 
 type Login struct {
@@ -47,20 +45,7 @@ func GetLogins(playerID int, limit int) (logins []Login, err error) {
 	q := datastore.NewQuery(KindLogin).Order("-created_at").Limit(limit)
 	q = q.Filter("player_id =", playerID)
 
-	it := client.Run(ctx, q)
-
-	for {
-		var login Login
-		_, err := it.Next(&login)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			logger.Error(err)
-		}
-
-		logins = append(logins, login)
-	}
+	client.GetAll(ctx, q, &logins)
 
 	return logins, err
 }

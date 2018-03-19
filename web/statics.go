@@ -5,7 +5,7 @@ import "net/http"
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
 
 	template := staticTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Info")
 
 	returnTemplate(w, r, "info", template)
 }
@@ -13,7 +13,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 func DonateHandler(w http.ResponseWriter, r *http.Request) {
 
 	template := staticTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Donate")
 
 	returnTemplate(w, r, "donate", template)
 }

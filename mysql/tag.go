@@ -52,6 +52,21 @@ func GetAllTags() (tags []Tag, err error) {
 	return tags, nil
 }
 
+func GetTagsByID(ids []int) (tags []Tag, err error) {
+
+	db, err := GetDB()
+	if err != nil {
+		return tags, err
+	}
+
+	db = db.Limit(100).Where("id IN (?)", ids).Order("name ASC").Find(&tags)
+	if db.Error != nil {
+		return tags, db.Error
+	}
+
+	return tags, nil
+}
+
 func SaveOrUpdateTag(id int, vals Tag) (err error) {
 
 	db, err := GetDB()

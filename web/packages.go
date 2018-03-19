@@ -17,7 +17,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	template := packagesTemplate{}
-	template.Fill(r)
+	template.Fill(r, "Packages")
 	template.Packages = packages
 
 	returnTemplate(w, r, "packages", template)
@@ -72,7 +72,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := packageTemplate{}
-	template.Fill(r)
+	template.Fill(r, pack.GetName())
 	template.Package = pack
 	template.Apps = apps
 	template.Keys = mysql.PackageKeys

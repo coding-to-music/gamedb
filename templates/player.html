@@ -226,6 +226,7 @@
                 </div>
                 <div class="tab-pane" id="games" role="tabpanel">
 
+                {{ if gt (len .Player.GamesRecent) 0}}
                     <h5>Recent Games</h5>
                     <div class="table-responsive">
                         <table class="table table-hover table-sm table-striped table-images table-sorter">
@@ -247,6 +248,7 @@
                         {{ end }}
                         </table>
                     </div>
+                {{end}}
 
                     <h5>Games Library</h5>
                     <div class="table-responsive">

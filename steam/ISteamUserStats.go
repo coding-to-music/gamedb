@@ -105,7 +105,7 @@ type GameSchema struct {
 	GameName    string `json:"gameName"`
 	GameVersion string `json:"gameVersion"`
 	AvailableGameStats struct {
-		Stats []struct {
+		Stats []struct { // todo, We dont current use these
 			Name         string `json:"name"`
 			Defaultvalue int    `json:"defaultvalue"`
 			DisplayName  string `json:"displayName"`

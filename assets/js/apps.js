@@ -11,26 +11,7 @@ if ($('#app-page').length > 0) {
 
     $('.collapse').collapse();
 
-    var x = [
-        [
-            1370131200000,
-            0.7695
-        ],
-        [
-            1370217600000,
-            0.7648
-        ],
-        [
-            1370304000000,
-            0.7645
-        ],
-        [
-            1370390400000,
-            0.7638
-        ]
-    ];
-
-    Highcharts.chart('container', {
+    Highcharts.chart('chart', {
         chart: {
             zoomType: 'x'
         },
@@ -50,7 +31,7 @@ if ($('#app-page').length > 0) {
             }
         },
         legend: {
-            enabled: false
+            enabled: true
         },
         annotations: [{
             labelOptions: {
@@ -84,7 +65,6 @@ if ($('#app-page').length > 0) {
                 text: 'Mont-sur-Monnet'
             }]
         }],
-
         plotOptions: {
             area: {
                 fillColor: {
@@ -111,12 +91,14 @@ if ($('#app-page').length > 0) {
                 threshold: null
             }
         },
-
         series: [{
             type: 'area',
             name: 'USD to EUR',
-            data: x,
+            data: prices,
             step: true
-        }]
+        }],
+        credits: {
+            enabled: false
+        }
     });
 }
