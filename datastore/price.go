@@ -28,14 +28,22 @@ func (p AppPrice) GetKey() (key *datastore.Key) {
 func (p AppPrice) GetLogo() (ret string) {
 
 	if p.Logo == "" {
-		return "/assets/img/no-app-image-square.jpg"
+		return "/assets/img/no-app-image-banner.jpg"
 	} else {
 		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(p.AppID) + "/" + p.Logo + ".jpg"
 	}
 }
 
+func (p AppPrice) GetCreatedDate() (ret string) {
+	return p.CreatedAt.Format(time.RFC822)
+}
+
 func (p AppPrice) GetPriceInitial() string {
 	return fmt.Sprintf("%0.2f", float64(p.PriceInitial)/100)
+}
+
+func (p AppPrice) GetPriceFinal() string {
+	return fmt.Sprintf("%0.2f", float64(p.PriceFinal)/100)
 }
 
 func GetAppPrices(appID int) (prices []AppPrice, err error) {

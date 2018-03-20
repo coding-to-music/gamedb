@@ -32,31 +32,31 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 		ranks, err = datastore.GetRanksBy("badges_rank")
 
 		for k := range ranks {
-			ranks[k].Rank = ranks[k].BadgesRank
+			ranks[k].Rank = humanize.Ordinal(ranks[k].BadgesRank)
 		}
 	case "friends":
 		ranks, err = datastore.GetRanksBy("friends_rank")
 
 		for k := range ranks {
-			ranks[k].Rank = ranks[k].FriendsRank
+			ranks[k].Rank = humanize.Ordinal(ranks[k].FriendsRank)
 		}
 	case "games":
 		ranks, err = datastore.GetRanksBy("games_rank")
 
 		for k := range ranks {
-			ranks[k].Rank = ranks[k].GamesRank
+			ranks[k].Rank = humanize.Ordinal(ranks[k].GamesRank)
 		}
 	case "level", "":
 		ranks, err = datastore.GetRanksBy("level_rank")
 
 		for k := range ranks {
-			ranks[k].Rank = ranks[k].LevelRank
+			ranks[k].Rank = humanize.Ordinal(ranks[k].LevelRank)
 		}
 	case "time":
 		ranks, err = datastore.GetRanksBy("play_time_rank")
 
 		for k := range ranks {
-			ranks[k].Rank = ranks[k].PlayTimeRank
+			ranks[k].Rank = humanize.Ordinal(ranks[k].PlayTimeRank)
 		}
 	default:
 		err = errors.New("incorrect sort")

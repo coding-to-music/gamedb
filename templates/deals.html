@@ -28,29 +28,27 @@
         {{ if eq $.Tab "changes" }}
 
             <div class="table-responsive">
-                <table class="table table-hover table-sm table-striped table-images table-sorter">
+                <table class="table table-hover table-striped table-sorter">
                     <thead>
                     <th scope="col" class="sorter-false"></th>
-                    <th scope="col">Initial</th>
-                    <th scope="col">Final</th>
+                    <th scope="col">Game</th>
+                    <th scope="col">Release Date</th>
+                    <th scope="col">Price</th>
                     <th scope="col">Discount</th>
-                    <th scope="col">Currency</th>
                     <th scope="col">Change</th>
-                    <th scope="col">Release</th>
-                    <th scope="col">When</th>
+                    <th scope="col">Time Changed</th>
                     </thead>
                 {{ range $key, $value := .Changes }}
                     <tr data-link="/apps/{{ .AppID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
-                        <td class="img">
-                            <img src="{{.GetLogo}}" class="rounded">
+                        <td class="img" width="1%">
+                            <img src="{{.GetLogo}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
                         </td>
-                        <td>${{ .GetPriceInitial }}</td>
-                        <td>${{ .PriceFinal }}</td>
-                        <td>{{ .Discount }}%</td>
-                        <td>{{ .Currency }}</td>
-                        <td>${{ .Change }}</td>
+                        <td>{{ .AppName }}</td>
                         <td>{{ .ReleaseDate }}</td>
-                        <td>{{ .CreatedAt }}</td>
+                        <td>${{ .GetPriceFinal }}</td>
+                        <td>{{ .Discount }}%</td>
+                        <td>${{ .Change }}</td>
+                        <td>{{ .GetCreatedDate }}</td>
                     </tr>
                 {{ end }}
                 </table>
@@ -61,7 +59,7 @@
         {{ if eq $.Tab "free" }}
 
             <div class="table-responsive">
-                <table class="table table-hover table-sm table-sorter table-images">
+                <table class="table table-hover table-striped table-sorter">
                     <thead>
                     <tr>
                         <th scope="col" class="sorter-false" width="1%"></th>

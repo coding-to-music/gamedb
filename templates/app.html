@@ -65,9 +65,10 @@
                             <p>Tags: {{ tags .Tags }}</p>
                             <p>Genres: {{ genres .App.GetGenres }}</p>
 
+                            {{/* Packages with app */}}
                             <h5>Packages</h5>
                             <div class="table-responsive">
-                                <table class="table table-hover table-sm table-sorter">
+                                <table class="table table-hover table-striped table-sorter">
                                     <thead>
                                     <th scope="col">Package ID</th>
                                     <th scope="col">Billing</th>
@@ -121,8 +122,9 @@
                 </div>
                 <div class="tab-pane" id="achievements" role="tabpanel">
 
+                    {{/* App Achievements */}}
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm table-striped table-sorter table-images">
+                        <table class="table table-hover table-striped table-sorter">
                             <thead>
                             <tr>
                                 <th scope="col" class="sorter-false"></th>

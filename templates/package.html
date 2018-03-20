@@ -17,9 +17,10 @@
             </div>
         {{ end }}
 
+            {{/* Package Details */}}
             <h5>Properties</h5>
             <div class="table-responsive">
-                <table class="table table-hover table-sm">
+                <table class="table table-hover">
                     <tr>
                         <td width="30%">Billing Type</td>
                         <td>{{ .Package.GetBillingType }}</td>
@@ -49,9 +50,10 @@
                 </table>
             </div>
 
+            {{/* Apps in Package */}}
             <h5>Apps ({{len .Package.GetApps}})</h5>
             <div class="table-responsive">
-                <table class="table table-hover table-sm table-images table-sorter">
+                <table class="table table-hover table-striped table-sorter">
                     <thead>
                     <th scope="col" width="1%" class="sorter-false"></th>
                     <th scope="col" width="25%">Name</th>

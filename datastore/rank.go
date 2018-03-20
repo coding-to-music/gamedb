@@ -31,7 +31,7 @@ type Rank struct {
 	FriendsCount int `datastore:"friends"`
 	FriendsRank  int `datastore:"friends_rank"`
 
-	Rank int `datastore:"-"` // Internal
+	Rank string `datastore:"-"` // Internal
 }
 
 func (rank Rank) GetKey() (key *datastore.Key) {

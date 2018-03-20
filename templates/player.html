@@ -39,7 +39,7 @@
                                 <div class="card-header">Details</div>
                                 <div class="card-body">
 
-                                    <table class="table table-images mb-0">
+                                    <table class="table table-hover mb-0">
                                         <tr>
                                             <th scope="row">Level</th>
                                             <td>{{ .Player.Level }}</td>
@@ -82,7 +82,7 @@
                                 </div>
                                 <div class="card-body">
 
-                                    <table class="table mb-0">
+                                    <table class="table table-hover mb-0">
                                         <tr>
                                             <th scope="row">Level</th>
                                             <td><a href="/players/level">{{ .Ranks.LevelOrdinal }}</a></td>
@@ -115,7 +115,7 @@
                                 <div class="card-header">Bans</div>
                                 <div class="card-body">
 
-                                    <table class="table mb-0">
+                                    <table class="table table-hover mb-0">
                                         <tr>
                                             <th scope="row">Game Bans</th>
                                             <td>{{ .Player.Bans.NumberOfGameBans }}</td>
@@ -175,7 +175,8 @@
                 </div>
                 <div class="tab-pane" id="badges" role="tabpanel">
 
-                    <table class="table mb-0">
+                    {{/* XP Info */}}
+                    <table class="table table-hover mb-0">
                         <tbody>
                         <tr>
                             <th scope="row" width="15%">Level</th>
@@ -200,8 +201,9 @@
                         </tbody>
                     </table>
 
+                    {{/* Badge List */}}
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm table-striped table-images table-sorter mb-0">
+                        <table class="table table-hover table-striped table-sorter mb-0">
                             <thead>
                             <th scope="col">ID</th>
                             <th scope="col">Level</th>
@@ -226,10 +228,11 @@
                 </div>
                 <div class="tab-pane" id="games" role="tabpanel">
 
+                    {{/* Recent Games */}}
                 {{ if gt (len .Player.GamesRecent) 0}}
                     <h5>Recent Games</h5>
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm table-striped table-images table-sorter">
+                        <table class="table table-hover table-striped table-sorter">
                             <thead>
                             <th scope="col" width="1%" class="sorter-false"></th>
                             <th scope="col">Game</th>
@@ -250,9 +253,10 @@
                     </div>
                 {{end}}
 
+                        {{/* Games List */}}
                     <h5>Games Library</h5>
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm table-striped table-images table-sorter">
+                        <table class="table table-hover table-striped table-sorter">
                             <thead>
                             <th scope="col" class="sorter-false"></th>
                             <th scope="col">Game</th>

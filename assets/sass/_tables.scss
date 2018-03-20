@@ -1,8 +1,8 @@
 table.table {
-    thead{
-        th{
+    thead {
+        th {
             color: $dark;
-            a{
+            a {
                 color: $dark;
                 text-decoration: underline;
             }
@@ -18,17 +18,22 @@ table.table {
             margin-right: 0;
         }
     }
-}
-
-table.table-images {
     td.img {
         padding: 0;
         img {
-            height: 36px;
+            height: 48px;
         }
         span {
             display: inline-block;
             margin: .3rem;
+        }
+    }
+}
+
+table.table-sm {
+    td.img {
+        img {
+            height: 32px;
         }
     }
 }
