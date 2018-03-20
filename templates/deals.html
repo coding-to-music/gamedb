@@ -12,18 +12,51 @@
 
             <ul class="nav nav-tabs card-header-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link{{ if eq $.Tab "free" }} active{{ end }}" href="/deals/free" role="tab">Free</a>
+                    <a class="nav-link{{ if eq $.Tab "changes" }} active{{ end }}" href="/deals/changes" role="tab">Price Changes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link{{ if eq $.Tab "changes" }} active{{ end }}" href="/deals/changes" role="tab">Changes</a>
+                    <a class="nav-link{{ if eq $.Tab "free" }} active{{ end }}" href="/deals/free" role="tab">Free Games</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link{{ if eq $.Tab "discounts" }} active{{ end }}" href="/deals/discounts" role="tab">Discounts</a>
+                    <a class="nav-link{{ if eq $.Tab "discounts" }} active{{ end }}" href="/deals/discounts" role="tab">Highest Discounts</a>
                 </li>
             </ul>
 
         </div>
         <div class="card-body">
+
+        {{ if eq $.Tab "changes" }}
+
+            <div class="table-responsive">
+                <table class="table table-hover table-sm table-striped table-images table-sorter">
+                    <thead>
+                    <th scope="col" class="sorter-false"></th>
+                    <th scope="col">Initial</th>
+                    <th scope="col">Final</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Release</th>
+                    <th scope="col">When</th>
+                    </thead>
+                {{ range $key, $value := .Changes }}
+                    <tr data-link="/apps/{{ .AppID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
+                        <td class="img">
+                            <img src="{{.GetLogo}}" class="rounded">
+                        </td>
+                        <td>${{ .GetPriceInitial }}</td>
+                        <td>${{ .PriceFinal }}</td>
+                        <td>{{ .Discount }}%</td>
+                        <td>{{ .Currency }}</td>
+                        <td>${{ .Change }}</td>
+                        <td>{{ .ReleaseDate }}</td>
+                        <td>{{ .CreatedAt }}</td>
+                    </tr>
+                {{ end }}
+                </table>
+            </div>
+
+        {{ end }}
 
         {{ if eq $.Tab "free" }}
 
@@ -31,9 +64,11 @@
                 <table class="table table-hover table-sm table-sorter table-images">
                     <thead>
                     <tr>
-                        <th scope="col" class="sorter-false">Icon</th>
+                        <th scope="col" class="sorter-false" width="1%"></th>
                         <th scope="col">Image</th>
                         <th scope="col">Type</th>
+                        <th scope="col">Platforms</th>
+                        <th scope="col">Install</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -44,6 +79,8 @@
                         </td>
                         <td>{{ .GetName }}</td>
                         <td>{{ .GetType }}</td>
+                        <td>{{ .GetPlatformImages }}</td>
+                        <td><a href="{{ .GetInstallLink }}">Install</a></td>
                     </tr>
                     {{ end }}
                     </tbody>
@@ -52,12 +89,8 @@
 
         {{ end }}
 
-        {{ if eq $.Tab "changes" }}
-            changes
-        {{ end }}
-
         {{ if eq $.Tab "discounts" }}
-            discounts
+            Discounts
         {{ end }}
 
         </div>

@@ -133,7 +133,7 @@
                             </thead>
                         {{ range $key, $value := .Schema.AvailableGameStats.Achievements }}
                             <tr>
-                                <td class="img"><img src="{{ .Icon }}"></td>
+                                <td class="img"><img src="{{ .Icon }}" class="rounded"></td>
                                 <td>{{ .DisplayName }}</td>
                                 <td>{{ .Description }}</td>
                                 <td>{{ index $.Achievements .Name }}%</td>

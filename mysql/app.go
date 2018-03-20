@@ -145,6 +145,10 @@ func (app App) GetAchievements() (achievements steam.AppDetailsAchievements, err
 func (app App) GetPlatforms() (platforms []string, err error) {
 
 	bytes := []byte(app.Platforms)
+	if len(bytes) == 0 {
+		return platforms, nil
+	}
+
 	if err := json.Unmarshal(bytes, &platforms); err != nil {
 		return platforms, err
 	}
@@ -273,7 +277,6 @@ func GetApps(ids []int, columns []string) (apps []App, err error) {
 	return apps, nil
 }
 
-// todo, make a filter struct
 func SearchApps(query url.Values, limit int, sort string, columns []string) (apps []App, err error) {
 
 	db, err := GetDB()
@@ -295,6 +298,11 @@ func SearchApps(query url.Values, limit int, sort string, columns []string) (app
 
 	// Hide ghosts? todo, fix, apps can have no name
 	db = db.Where("name != ''")
+
+	// Type
+	if _, ok := query["type"]; ok {
+		db = db.Where("type = ?", query.Get("type"))
+	}
 
 	// Tags depth
 	if _, ok := query["tags_depth"]; ok {
