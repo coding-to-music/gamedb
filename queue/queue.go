@@ -101,47 +101,42 @@ func (s queue) produce(data []byte) (err error) {
 
 }
 
-func (s queue) consume() (err error) {
+func (s queue) consume() {
 
-	for {
-		fmt.Println("Getting " + s.Name + " messages")
+	ticker := time.NewTicker(5 * time.Second)
 
-		conn, ch, q, closeChan, err := s.getConnection()
+	go func() {
 
-		msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
-		if err != nil {
-			logger.Error(err)
-		}
+		var working bool
 
-		var breakFor = false
+		for _ := range ticker.C {
 
-		for {
-			select {
-			case err = <-closeChan:
+			if working == false {
+				working = true
 
-				logger.Info("change channel closed")
-				time.Sleep(time.Second * 10)
+				fmt.Println("Getting " + s.Name + " messages")
 
-				breakFor = true
-				break
+				conn, ch, q, _, err := s.getConnection()
 
-			case msg := <-msgs:
-				err := s.Callback(msg)
+				msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
 				if err != nil {
-
 					logger.Error(err)
-
-					breakFor = true
-					break
 				}
-			}
 
-			if breakFor {
-				break
+				for v := range msgs {
+
+					err := s.Callback(v)
+					if err != nil {
+						logger.Error(err)
+					}
+
+				}
+
+				conn.Close()
+				ch.Close()
+
+				working = false
 			}
 		}
-
-		conn.Close()
-		ch.Close()
-	}
+	}()
 }
