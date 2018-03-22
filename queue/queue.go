@@ -104,6 +104,7 @@ func (s queue) produce(data []byte) (err error) {
 
 func (s queue) consume() {
 
+	return
 	for {
 
 		conn, ch, q, _, err := s.getConnection()
@@ -127,10 +128,10 @@ func (s queue) consume() {
 		conn.Close()
 		ch.Close()
 
-		time.Sleep(10* time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
 
-func consumeMessages(){
+func consumeMessages() {
 
 }
