@@ -32,23 +32,23 @@
                     <thead>
                     <th scope="col" class="sorter-false"></th>
                     <th scope="col">Game</th>
-                    <th scope="col">Release Date</th>
+                    <th scope="col">Release</th>
                     <th scope="col">Price</th>
                     <th scope="col">Discount</th>
                     <th scope="col">Change</th>
-                    <th scope="col">Time Changed</th>
+                    <th scope="col">Changed</th>
                     </thead>
                 {{ range $key, $value := .Changes }}
                     <tr data-link="/apps/{{ .AppID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
                         <td class="img" width="1%">
                             <img src="{{.GetLogo}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
                         </td>
-                        <td>{{ .AppName }}</td>
-                        <td>{{ .ReleaseDate }}</td>
+                        <td class="text-truncate">{{ .AppName }}</td>
+                        <td nowrap="nowrap">{{ .ReleaseDate }}</td>
                         <td>${{ .GetPriceFinal }}</td>
                         <td>{{ .Discount }}%</td>
                         <td>${{ .Change }}</td>
-                        <td>{{ .GetCreatedDate }}</td>
+                        <td nowrap="nowrap">{{ .GetCreatedDate }}</td>
                     </tr>
                 {{ end }}
                 </table>

@@ -17,7 +17,7 @@ type AppPrice struct {
 	Discount     int       `datastore:"discount"`
 	Currency     string    `datastore:"currency"`
 	Change       int       `datastore:"change"`
-	Logo         string    `datastore:"logo"`
+	Icon         string    `datastore:"logo"`
 	ReleaseDate  string    `datastore:"release_date"`
 }
 
@@ -27,10 +27,10 @@ func (p AppPrice) GetKey() (key *datastore.Key) {
 
 func (p AppPrice) GetLogo() (ret string) {
 
-	if p.Logo == "" {
-		return "/assets/img/no-app-image-banner.jpg"
+	if p.Icon == "" {
+		return "/assets/img/no-app-image-square.jpg"
 	} else {
-		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(p.AppID) + "/" + p.Logo + ".jpg"
+		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(p.AppID) + "/" + p.Icon + ".jpg"
 	}
 }
 

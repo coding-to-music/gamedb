@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/Jleagle/go-helpers/logger"
@@ -103,40 +104,33 @@ func (s queue) produce(data []byte) (err error) {
 
 func (s queue) consume() {
 
-	ticker := time.NewTicker(5 * time.Second)
+	for {
 
-	go func() {
+		conn, ch, q, _, err := s.getConnection()
 
-		var working bool
-
-		for _ := range ticker.C {
-
-			if working == false {
-				working = true
-
-				fmt.Println("Getting " + s.Name + " messages")
-
-				conn, ch, q, _, err := s.getConnection()
-
-				msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
-				if err != nil {
-					logger.Error(err)
-				}
-
-				for v := range msgs {
-
-					err := s.Callback(v)
-					if err != nil {
-						logger.Error(err)
-					}
-
-				}
-
-				conn.Close()
-				ch.Close()
-
-				working = false
-			}
+		msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
+		if err != nil {
+			logger.Error(err)
 		}
-	}()
+
+		fmt.Println("Grabbed " + strconv.Itoa(len(msgs)) + " " + s.Name + " messages")
+
+		for v := range msgs {
+
+			err := s.Callback(v)
+			if err != nil {
+				logger.Error(err)
+			}
+
+		}
+
+		conn.Close()
+		ch.Close()
+
+		time.Sleep(10* time.Second)
+	}
+}
+
+func consumeMessages(){
+
 }

@@ -73,7 +73,7 @@ func processApp(msg amqp.Delivery) (err error) {
 		price.Discount = app.PriceDiscount
 		price.Currency = "usd"
 		price.Change = app.PriceFinal - priceBeforeFill
-		price.Logo = app.Logo
+		price.Icon = app.Icon
 		price.ReleaseDate = app.ReleaseDate
 
 		if price.Change != 0 {
