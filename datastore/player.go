@@ -208,13 +208,12 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 		wg.Add(1)
 		go func(p *Player) {
 
-			//Get summary
+			// Get summary
 			summary, err := steam.GetPlayerSummaries(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
 					errs = append(errs, err)
-				}
-				if !strings.HasPrefix(err.Error(), "not found in steam") {
+				} else if !strings.HasPrefix(err.Error(), "not found in steam") {
 					logger.Error(err)
 				}
 			}
@@ -240,8 +239,9 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
 					errs = append(errs, err)
+				} else {
+					logger.Error(err)
 				}
-				logger.Error(err)
 			}
 
 			p.Games = gamesResponse
@@ -265,8 +265,9 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
 					errs = append(errs, err)
+				} else {
+					logger.Error(err)
 				}
-				logger.Error(err)
 			}
 
 			p.GamesRecent = recentGames
@@ -282,8 +283,9 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
 					errs = append(errs, err)
+				} else {
+					logger.Error(err)
 				}
-				logger.Error(err)
 			}
 
 			p.Badges = badges
@@ -295,13 +297,14 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 		wg.Add(1)
 		go func(p *Player) {
 
-			//Get friends
+			// Get friends
 			friends, err := steam.GetFriendList(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
 					errs = append(errs, err)
+				} else {
+					logger.Error(err)
 				}
-				logger.Error(err)
 			}
 
 			p.Friends = friends
@@ -318,8 +321,9 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
 					errs = append(errs, err)
+				} else {
+					logger.Error(err)
 				}
-				logger.Error(err)
 			}
 
 			p.Level = level
@@ -335,8 +339,9 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
 					errs = append(errs, err)
+				} else {
+					logger.Error(err)
 				}
-				logger.Error(err)
 			}
 
 			p.Bans = bans
@@ -354,8 +359,9 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
 					errs = append(errs, err)
+				} else {
+					logger.Error(err)
 				}
-				logger.Error(err)
 			}
 
 			p.Groups = groups
