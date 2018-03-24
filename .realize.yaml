@@ -1,7 +1,7 @@
 settings:
   files:
     outputs:
-      status: true
+      status: false
       path: ""
       name: logs.txt
     logs:
@@ -9,7 +9,7 @@ settings:
       path: ""
       name: logs.txt
     errors:
-      status: true
+      status: false
       path: ""
       name: logs.txt
   legacy:
