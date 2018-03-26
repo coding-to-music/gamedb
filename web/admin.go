@@ -48,20 +48,23 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//// Get logs
-	//t, err := tail.TailFile(os.Getenv("STEAM_PATH")+"/logs.txt", tail.Config{})
-	//if err != nil {
-	//	logger.Error(err)
-	//}
-	//var errors []string
-	//for line := range t.Lines {
-	//	errors = append(errors, strings.TrimSpace(line.Text)+"\n")
-	//}
+	// Get configs for times
+	configs, err := datastore.GetMultiConfigs([]string{
+		datastore.ConfTagsUpdated,
+		datastore.ConfGenresUpdated,
+		datastore.ConfGenresUpdated,
+		datastore.ConfDonationsUpdated,
+		datastore.ConfRanksUpdated,
+		datastore.ConfAddedAllApps,
+	})
+	if err != nil {
+		logger.Error(err)
+	}
 
 	// Template
 	template := adminTemplate{}
 	template.Fill(r, "Admin")
-	//template.Errors = errors
+	template.Configs = configs
 
 	returnTemplate(w, r, "admin", template)
 	return
@@ -69,7 +72,8 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 type adminTemplate struct {
 	GlobalTemplate
-	Errors []string
+	Errors  []string
+	Configs map[string]datastore.Config
 }
 
 func adminDisableConsumers() {
@@ -94,11 +98,22 @@ func adminApps() {
 		queue.Produce(queue.AppQueue, bytes)
 	}
 
+	//
+	err = datastore.SetConfig(datastore.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
+	if err != nil {
+		logger.Error(err)
+	}
+
 	logger.Info(strconv.Itoa(len(apps)) + " apps added to rabbit")
 }
 
 func adminDeploy() {
 
+	//
+	err := datastore.SetConfig(datastore.ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
+	if err != nil {
+		logger.Error(err)
+	}
 }
 
 func adminDonations() {
@@ -132,6 +147,12 @@ func adminDonations() {
 		_, err = datastore.SaveKind(player.GetKey(), player)
 	}
 
+	//
+	err = datastore.SetConfig(datastore.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	if err != nil {
+		logger.Error(err)
+	}
+
 	logger.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
 
@@ -156,8 +177,6 @@ func adminGenres() {
 		}
 
 		for _, genre := range genres {
-			//logger.Info(genre.Description)
-
 			if _, ok := counts[genre.ID]; ok {
 				counts[genre.ID].Count++
 			} else {
@@ -186,6 +205,12 @@ func adminGenres() {
 		}(v)
 	}
 	wg.Wait()
+
+	//
+	err = datastore.SetConfig(datastore.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
+	if err != nil {
+		logger.Error(err)
+	}
 
 	logger.Info("Genres updated")
 }
@@ -328,6 +353,11 @@ func adminTags() {
 	}
 	wg.Wait()
 
+	err = datastore.SetConfig(datastore.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	if err != nil {
+		logger.Error(err)
+	}
+
 	logger.Info("Tags updated")
 }
 
@@ -468,6 +498,12 @@ func adminRanks() {
 	if err != nil {
 		logger.Error(err)
 		return
+	}
+
+	//
+	err = datastore.SetConfig(datastore.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
+	if err != nil {
+		logger.Error(err)
 	}
 
 	logger.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")

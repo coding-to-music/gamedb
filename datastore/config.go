@@ -1,33 +1,37 @@
 package datastore
 
 import (
+	"strings"
 	"time"
 
 	"cloud.google.com/go/datastore"
 )
 
+const (
+	ConfTagsUpdated      = "tags-updated"
+	ConfRanksUpdated     = "ranks-updated"
+	ConfGenresUpdated    = "genres-updated"
+	ConfDonationsUpdated = "donations-updated"
+	ConfDeployed         = "deployed"
+	ConfAddedAllApps     = "added-all-apps"
+)
+
 type Config struct {
-	CreatedAt time.Time `datastore:"created_at,noindex"`
 	UpdatedAt time.Time `datastore:"updated_at,noindex"`
 	ConfigID  string    `datastore:"config_id"`
-	Value     string    `datastore:"apps,noindex"`
+	Value     string    `datastore:"value,noindex"`
 }
 
 func (c Config) GetKey() (key *datastore.Key) {
-	return datastore.IncompleteKey(KindConfig, nil)
+	return datastore.NameKey(KindConfig, c.ConfigID, nil)
 }
 
-func SetConfig(name string, value string) (err error) {
+func SetConfig(configID string, value string) (err error) {
 
-	config, err := GetConfig(name)
-	if err != nil {
-		return err
-	}
-
-	if config.CreatedAt.IsZero() {
-		config.CreatedAt = time.Now()
-	}
+	config := new(Config)
 	config.UpdatedAt = time.Now()
+	config.ConfigID = configID
+	config.Value = value
 
 	_, err = SaveKind(config.GetKey(), config)
 
@@ -48,9 +52,41 @@ func GetConfig(name string) (config *Config, err error) {
 	if err != nil {
 
 		if err.Error() == ErrorNotFound {
+			config.ConfigID = name
 			return config, nil
 		}
 		return config, err
 	}
 	return config, nil
+}
+
+func GetMultiConfigs(names []string) (configsMap map[string]Config, err error) {
+
+	configsMap = map[string]Config{}
+
+	client, context, err := getDSClient()
+	if err != nil {
+		return configsMap, err
+	}
+
+	var keys []*datastore.Key
+	for _, v := range names {
+		key := datastore.NameKey(KindConfig, v, nil)
+		keys = append(keys, key)
+	}
+
+	configs := make([]Config, len(keys))
+	err = client.GetMulti(context, keys, configs)
+	if err != nil && !strings.Contains(err.Error(), "no such entity") {
+		return configsMap, err
+	}
+
+	// Make into map
+	for _, v := range configs {
+		if v.ConfigID != "" {
+			configsMap[v.ConfigID] = v
+		}
+	}
+
+	return configsMap, nil
 }

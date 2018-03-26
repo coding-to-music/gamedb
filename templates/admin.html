@@ -29,34 +29,34 @@
 
                     <div class="list-group list-group-flush" id="actions">
                         <a href="/admin/re-add-all-apps" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="0">0</small>
+                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "added-all-apps").Value }}"></small>
                             <h5 class="mb-1">Apps</h5>
                             <p class="mb-1">Get every app from steam and add to queue</p>
                         </a>
                     {{ if .IsProduction }}
                         <a href="/admin/deploy" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="0">0</small>
+                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "deployed").Value }}"></small>
                             <h5 class="mb-1">Deploy</h5>
                             <p class="mb-1">Pull master, build and restart</p>
                         </a>
                     {{end}}
                         <a href="/admin/count-donations" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="0">0</small>
+                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "donations-updated").Value }}"></small>
                             <h5 class="mb-1">Donations</h5>
                             <p class="mb-1">Read donations table and calculate totals</p>
                         </a>
                         <a href="/admin/count-genres" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="0">0</small>
+                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "genres-updated").Value }}"></small>
                             <h5 class="mb-1">Genres</h5>
                             <p class="mb-1">Scan all apps for genres, count them, update genres table</p>
                         </a>
                         <a href="/admin/calculate-ranks" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="0">0</small>
+                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "ranks-updated").Value }}"></small>
                             <h5 class="mb-1">Ranks</h5>
                             <p class="mb-1">Scan all players, update ranks table</p>
                         </a>
                         <a href="/admin/count-tags" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="0">0</small>
+                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "tags-updated").Value }}"></small>
                             <h5 class="mb-1">Tags</h5>
                             <p class="mb-1">Scan all apps for tags, count them, update tags table</p>
                         </a>
