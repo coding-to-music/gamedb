@@ -13,6 +13,8 @@ import (
 
 func processApp(msg amqp.Delivery) (err error) {
 
+	return
+
 	// Get message payload
 	message := new(AppMessage)
 

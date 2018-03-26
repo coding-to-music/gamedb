@@ -13,6 +13,8 @@ import (
 
 func processChange(msg amqp.Delivery) (err error) {
 
+	return
+
 	// Get change
 	change := new(datastore.Change)
 
