@@ -31,7 +31,7 @@ type App struct {
 	Publisher              string     `gorm:"not null;column:publisher"`                                      //
 	Packages               string     `gorm:"not null;column:packages;type:json;default:'[]'"`                // JSON
 	MetacriticScore        int8       `gorm:"not null;column:metacritic_score"`                               //
-	MetacriticFullURL      string     `gorm:"not null;column:metacritic_url"`                                 //
+	MetacriticURL          string     `gorm:"not null;column:metacritic_url"`                                 //
 	Categories             string     `gorm:"not null;column:categories;type:json;default:'[]'"`              // JSON
 	Genres                 string     `gorm:"not null;column:genres;type:json;default:'[]'"`                  // JSON
 	Screenshots            string     `gorm:"not null;column:screenshots;type:text;default:'[]'"`             // JSON
@@ -119,6 +119,10 @@ func (app App) GetStoreLink() (string) {
 
 func (app App) GetInstallLink() (template.URL) {
 	return template.URL("steam://install/" + strconv.Itoa(app.ID))
+}
+
+func (app App) GetMetacriticLink() (template.URL) {
+	return template.URL("http://www.metacritic.com/game/" + app.MetacriticURL)
 }
 
 // Used in frontend
@@ -539,7 +543,7 @@ func (app *App) fillFromAPI() (err error) {
 	app.Publisher = strings.Join(response.Data.Publishers, ", ")
 	app.Packages = string(packagesString)
 	app.MetacriticScore = response.Data.Metacritic.Score
-	app.MetacriticFullURL = response.Data.Metacritic.URL
+	app.MetacriticURL = response.Data.Metacritic.URL
 	app.Categories = string(categoriesString)
 	app.Genres = string(genresString)
 	app.Screenshots = string(screenshotsString)
@@ -600,7 +604,7 @@ func (app *App) fillFromPICS() (err error) {
 	app.ReleaseState = js.Common.ReleaseState
 	//app.Platforms = strings.Split(js.Common.OSList, ",") // Can get from API
 	app.MetacriticScore = int8(metacriticScoreInt)
-	app.MetacriticFullURL = js.Common.MetacriticURL
+	app.MetacriticURL = js.Common.MetacriticURL
 	app.StoreTags = string(tags)
 	app.Developer = js.Extended.Developer
 	app.Publisher = js.Extended.Publisher
