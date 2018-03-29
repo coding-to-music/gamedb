@@ -196,7 +196,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		// Get games
 		var gamesSlice []int
 		gamesMap := make(map[int]*playerAppTemplate)
-		for _, v := range player.Games {
+		for _, v := range player.GetGames() {
 			gamesSlice = append(gamesSlice, v.AppID)
 			gamesMap[v.AppID] = &playerAppTemplate{
 				Time: v.PlaytimeForever,

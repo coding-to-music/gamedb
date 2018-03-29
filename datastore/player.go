@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"encoding/json"
 	"errors"
 	"path"
 	"strconv"
@@ -16,33 +17,33 @@ import (
 )
 
 type Player struct {
-	CreatedAt        time.Time                   `datastore:"created_at"`
-	UpdatedAt        time.Time                   `datastore:"updated_at"`
-	FriendsAddedAt   time.Time                   `datastore:"friends_added_at,noindex"`
-	PlayerID         int                         `datastore:"player_id"`
-	VanintyURL       string                      `datastore:"vanity_url,noindex"`
-	Avatar           string                      `datastore:"avatar,noindex"`
-	PersonaName      string                      `datastore:"persona_name,noindex"`
-	RealName         string                      `datastore:"real_name,noindex"`
-	CountryCode      string                      `datastore:"country_code"`
-	StateCode        string                      `datastore:"status_code"`
-	Level            int                         `datastore:"level"`
-	Games            []steam.OwnedGame           `datastore:"games,noindex"`
-	GamesRecent      []steam.RecentlyPlayedGame  `datastore:"games_recent,noindex"`
-	GamesCount       int                         `datastore:"games_count"`
-	Badges           steam.BadgesResponse        `datastore:"badges,noindex"`
-	BadgesCount      int                         `datastore:"badges_count"`
-	PlayTime         int                         `datastore:"play_time"`
-	TimeCreated      time.Time                   `datastore:"time_created"`
-	LastLogOff       time.Time                   `datastore:"time_logged_off"`
-	PrimaryClanID    int                         `datastore:"primary_clan_id"`
-	Friends          []steam.GetFriendListFriend `datastore:"friends,noindex"`
-	FriendsCount     int                         `datastore:"friends_count"`
-	Donated          int                         `datastore:"donated"`
-	Bans             steam.GetPlayerBanResponse  `datastore:"bans"`
-	NumberOfVACBans  int                         `datastore:"bans_cav"`
-	NumberOfGameBans int                         `datastore:"bans_game"`
-	Groups           []int                       `datastore:"groups"`
+	CreatedAt        time.Time                   `datastore:"created_at"`               //
+	UpdatedAt        time.Time                   `datastore:"updated_at"`               //
+	FriendsAddedAt   time.Time                   `datastore:"friends_added_at,noindex"` //
+	PlayerID         int                         `datastore:"player_id"`                //
+	VanintyURL       string                      `datastore:"vanity_url,noindex"`       //
+	Avatar           string                      `datastore:"avatar,noindex"`           //
+	PersonaName      string                      `datastore:"persona_name,noindex"`     //
+	RealName         string                      `datastore:"real_name,noindex"`        //
+	CountryCode      string                      `datastore:"country_code"`             //
+	StateCode        string                      `datastore:"status_code"`              //
+	Level            int                         `datastore:"level"`                    //
+	Games            string                      `datastore:"games,noindex"`            // JSON
+	GamesRecent      []steam.RecentlyPlayedGame  `datastore:"games_recent,noindex"`     //
+	GamesCount       int                         `datastore:"games_count"`              //
+	Badges           steam.BadgesResponse        `datastore:"badges,noindex"`           //
+	BadgesCount      int                         `datastore:"badges_count"`             //
+	PlayTime         int                         `datastore:"play_time"`                //
+	TimeCreated      time.Time                   `datastore:"time_created"`             //
+	LastLogOff       time.Time                   `datastore:"time_logged_off"`          //
+	PrimaryClanID    int                         `datastore:"primary_clan_id"`          //
+	Friends          []steam.GetFriendListFriend `datastore:"friends,noindex"`          //
+	FriendsCount     int                         `datastore:"friends_count"`            //
+	Donated          int                         `datastore:"donated"`                  //
+	Bans             steam.GetPlayerBanResponse  `datastore:"bans"`                     //
+	NumberOfVACBans  int                         `datastore:"bans_cav"`                 //
+	NumberOfGameBans int                         `datastore:"bans_game"`                //
+	Groups           []int                       `datastore:"groups"`                   //
 }
 
 func (p Player) GetKey() (key *datastore.Key) {
@@ -91,6 +92,11 @@ func (p Player) GetAvatar() string {
 
 func (p Player) GetFlag() string {
 	return "/assets/img/flags/" + strings.ToLower(p.CountryCode) + ".png"
+}
+
+func (p Player) GetGames() (x []steam.OwnedGame) {
+	// todo
+	return
 }
 
 func (p Player) shouldUpdate() bool {
@@ -244,7 +250,6 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 				}
 			}
 
-			p.Games = gamesResponse
 			p.GamesCount = len(gamesResponse)
 
 			// Get playtime
@@ -252,7 +257,16 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			for _, v := range gamesResponse {
 				playtime = playtime + v.PlaytimeForever
 			}
+
 			p.PlayTime = playtime
+
+			// Encode to JSON
+			bytes, err := json.Marshal(gamesResponse)
+			if err != nil {
+				logger.Error(err)
+			}
+
+			p.Games = string(bytes)
 
 			wg.Done()
 		}(p)
