@@ -60,3 +60,7 @@ body {
         margin: -12px 20px -12px -20px;
     }
 }
+
+.alert p:last-child {
+    margin-bottom: 0;
+}

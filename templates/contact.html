@@ -12,6 +12,14 @@
     <div class="card">
         <div class="card-body">
 
+        {{ if gt (len .Messages) 0 }}
+            <div class="alert alert-{{if .Success}}success{{else}}danger{{end}}" role="alert">
+            {{ range $k, $v := .Messages }}
+                <p> {{$v}} </p>
+            {{ end }}
+            </div>
+        {{ end }}
+
             <form action="/contact" method="post">
                 <div class="row">
                     <div class="col-sm-6">
