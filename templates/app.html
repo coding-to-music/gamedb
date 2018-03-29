@@ -55,20 +55,13 @@
                             <p>App Type: {{ .App.GetType }}</p>
                             <p>Release State: {{ .App.ReleaseState }}</p>
                             <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>
-
-                        {{ if gt .App.MetacriticScore 0 }}
-                            <p>Metacritic Score:
-                                <a href="{{ .App.MetacriticFullURL }}">{{ .App.MetacriticScore }}</a>
-                            </p>
-                        {{end}}
-
                             <p>Tags: {{ tags .Tags }}</p>
                             <p>Genres: {{ genres .App.GetGenres }}</p>
 
-                            {{/* Packages with app */}}
+                        {{/* Packages with app */}}
                             <h5>Packages</h5>
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped table-sorter">
+                                <table class="table table-hover table-striped table-sorter mb-0">
                                     <thead>
                                     <th scope="col">Package ID</th>
                                     <th scope="col">Billing</th>
@@ -122,9 +115,9 @@
                 </div>
                 <div class="tab-pane" id="achievements" role="tabpanel">
 
-                    {{/* App Achievements */}}
+                {{/* App Achievements */}}
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-sorter">
+                        <table class="table table-hover table-striped table-sorter mb-0">
                             <thead>
                             <tr>
                                 <th scope="col" class="sorter-false"></th>
@@ -174,7 +167,7 @@
                 <div class="tab-pane" id="prices" role="tabpanel">
 
                     <script>var prices = JSON.parse('{{ .Prices }}');</script>
-                    <div id="chart" style="height: 400px;"></div>
+                    <div id="chart" class="mb-0" style="height: 400px;"></div>
 
                 </div>
             </div>
