@@ -112,7 +112,7 @@ type Queue struct {
 		Q2                int           `json:"q2"`
 		Q3                int           `json:"q3"`
 		Q4                int           `json:"q4"`
-		TargetRAMCount    string        `json:"target_ram_count"`
+		TargetRAMCount    int           `json:"target_ram_count"`
 	} `json:"backing_queue_status"`
 	HeadMessageTimestamp       interface{} `json:"head_message_timestamp"`
 	MessageBytesPersistent     int         `json:"message_bytes_persistent"`

@@ -90,6 +90,9 @@ func main() {
 	r.Get("/players/{id:[0-9]+}", web.PlayerHandler)
 	r.Get("/players/{id:[0-9]+}/{slug}", web.PlayerHandler)
 
+	r.Get("/queues", web.QueuesHandler)
+	r.Get("/queues/queues.json", web.QueuesJSONHandler)
+
 	r.Get("/settings", web.SettingsHandler)
 	r.Post("/settings", web.SaveSettingsHandler)
 
@@ -100,7 +103,6 @@ func main() {
 	r.Get("/genres", web.GenresHandler)
 	r.Get("/info", web.InfoHandler)
 	r.Get("/news", web.NewsHandler)
-	r.Get("/queues", web.QueuesHandler)
 	r.Get("/tags", web.TagsHandler)
 	r.Get("/websocket", websockets.Handler)
 
