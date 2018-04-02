@@ -14,6 +14,7 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/steam"
+	"github.com/steam-authority/steam-authority/storage"
 )
 
 type Player struct {
@@ -95,11 +96,30 @@ func (p Player) GetFlag() string {
 }
 
 func (p Player) GetGames() (x []steam.OwnedGame) {
-	// todo
-	return
+
+	var bytes []byte
+	var err error
+
+	if strings.HasPrefix(p.Games, "/") {
+		bytes, err = storage.DownloadGamesJson(p.PlayerID)
+		if err != nil {
+			logger.Error(err)
+		}
+	} else {
+		bytes = []byte(p.Games)
+	}
+
+	err = json.Unmarshal(bytes, &x)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	return x
 }
 
 func (p Player) shouldUpdate() bool {
+
+	return true
 
 	if p.PersonaName == "" {
 		return true
@@ -211,10 +231,10 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 		var errs []error
 		var err error
 
+		// Get summary
 		wg.Add(1)
 		go func(p *Player) {
 
-			// Get summary
 			summary, err := steam.GetPlayerSummaries(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
@@ -237,10 +257,10 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			wg.Done()
 		}(p)
 
+		// Get games
 		wg.Add(1)
 		go func(p *Player) {
 
-			// Get games
 			gamesResponse, err := steam.GetOwnedGames(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
@@ -260,21 +280,25 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			p.PlayTime = playtime
 
-			// Encode to JSON
+			// Encode to JSON bytes
 			bytes, err := json.Marshal(gamesResponse)
 			if err != nil {
 				logger.Error(err)
 			}
 
-			p.Games = string(bytes)
+			if len(bytes) > 1024*10 {
+				p.Games = storage.UploadGamesJson(p.PlayerID, bytes)
+			} else {
+				p.Games = string(bytes)
+			}
 
 			wg.Done()
 		}(p)
 
+		// Get recent games
 		wg.Add(1)
 		go func(p *Player) {
 
-			// Get recent games
 			recentGames, err := steam.GetRecentlyPlayedGames(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
@@ -289,10 +313,10 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			wg.Done()
 		}(p)
 
+		// Get badges
 		wg.Add(1)
 		go func(p *Player) {
 
-			// Get badges
 			badges, err := steam.GetBadges(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
@@ -308,10 +332,10 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			wg.Done()
 		}(p)
 
+		// Get friends
 		wg.Add(1)
 		go func(p *Player) {
 
-			// Get friends
 			friends, err := steam.GetFriendList(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
@@ -327,10 +351,10 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			wg.Done()
 		}(p)
 
+		// Get level
 		wg.Add(1)
 		go func(p *Player) {
 
-			// Get level
 			level, err := steam.GetSteamLevel(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
@@ -345,10 +369,10 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			wg.Done()
 		}(p)
 
+		// Get bans
 		wg.Add(1)
 		go func(p *Player) {
 
-			// Get bans
 			bans, err := steam.GetPlayerBans(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {
@@ -365,10 +389,10 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			wg.Done()
 		}(p)
 
+		// Get groups
 		wg.Add(1)
 		go func(p *Player) {
 
-			// Get groups
 			groups, err := steam.GetUserGroupList(p.PlayerID)
 			if err != nil {
 				if err.Error() == steam.ErrorInvalidJson {

@@ -4,9 +4,12 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"io"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 
 	"cloud.google.com/go/storage"
@@ -14,7 +17,11 @@ import (
 )
 
 const (
-	Img460x215 = "img460x215"
+	FolderImg460x215 = "img460x215"
+)
+
+var (
+	bucket = os.Getenv("STEAM_GOOGLE_BUCKET")
 )
 
 func UploadHeaderImage(appID int) (path string) {
@@ -41,7 +48,7 @@ func UploadHeaderImage(appID int) (path string) {
 
 	// Save image to bucket
 	fileName := "app-img-460x215/" + appIDstring + ".jpg"
-	object := client.Bucket("steam-191600.appspot.com").Object(fileName)
+	object := client.Bucket(bucket).Object(fileName)
 
 	wc := object.NewWriter(ctx)
 	if _, err = io.Copy(wc, resp.Body); err != nil {
@@ -58,4 +65,55 @@ func UploadHeaderImage(appID int) (path string) {
 
 	//
 	return "/" + fileName
+}
+
+func UploadGamesJson(playerID int, gameBytes []byte) string {
+
+	playerIDstring := strconv.Itoa(playerID)
+
+	ctx := context.Background()
+
+	// Creates a client.
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	// Save image to bucket
+	fileName := "player-games/" + playerIDstring + ".json"
+
+	wc := client.Bucket(bucket).Object(fileName).NewWriter(ctx)
+	if _, err = io.Copy(wc, bytes.NewReader(gameBytes)); err != nil {
+		logger.Error(err)
+	}
+	if err := wc.Close(); err != nil {
+		logger.Error(err)
+	}
+
+	//
+	return "/" + fileName
+}
+
+func DownloadGamesJson(playerID int) (bytes []byte, err error) {
+
+	ctx := context.Background()
+
+	// Creates a client.
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	rc, err := client.Bucket(bucket).Object("player-games/" + strconv.Itoa(playerID) + ".json").NewReader(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer rc.Close()
+
+	data, err := ioutil.ReadAll(rc)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
