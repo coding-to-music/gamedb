@@ -45,8 +45,8 @@ type RecentlyPlayedGamesResponse struct {
 type RecentlyPlayedGame struct {
 	AppID           int    `json:"appid"`
 	Name            string `json:"name"`
-	Playtime2Weeks  int  `json:"playtime_2weeks"`
-	PlaytimeForever int  `json:"playtime_forever"`
+	Playtime2Weeks  int    `json:"playtime_2weeks"`
+	PlaytimeForever int    `json:"playtime_forever"`
 	ImgIconURL      string `json:"img_icon_url"`
 	ImgLogoURL      string `json:"img_logo_url"`
 }

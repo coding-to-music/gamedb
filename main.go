@@ -96,6 +96,9 @@ func main() {
 	r.Get("/settings", web.SettingsHandler)
 	r.Post("/settings", web.SaveSettingsHandler)
 
+	r.Get("/browserconfig.xml", web.RootFileHandler)
+	r.Get("/site.webmanifest", web.RootFileHandler)
+
 	// Other
 	r.Get("/", web.HomeHandler)
 	r.Get("/commits", web.CommitsHandler)
@@ -105,6 +108,7 @@ func main() {
 	r.Get("/news", web.NewsHandler)
 	r.Get("/tags", web.TagsHandler)
 	r.Get("/websocket", websockets.Handler)
+	r.Get("/coop", web.CoopHandler)
 
 	// 404
 	r.NotFound(web.Error404Handler)

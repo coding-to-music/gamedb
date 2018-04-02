@@ -152,7 +152,8 @@
                 </div>
                 <div class="tab-pane" id="friends" role="tabpanel">
 
-                    <div class="row friend">
+                    {{/* Friends */}}
+                    <div class="row friend mb-0">
                     {{ range $key, $value := .Friends }}
 
                     {{ if ne .PersonaName "" }}
@@ -256,7 +257,7 @@
                         {{/* Games List */}}
                     <h5>Games Library</h5>
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-sorter">
+                        <table class="table table-hover table-striped table-sorter mb-0">
                             <thead>
                             <th scope="col" class="sorter-false"></th>
                             <th scope="col">Game</th>
