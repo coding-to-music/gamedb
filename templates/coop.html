@@ -61,15 +61,17 @@
                     <th scope="col">Game</th>
                     <th scope="col">Platforms</th>
                     <th scope="col">Achievements</th>
+                    <th scope="col">Tags</th>
                     </thead>
                 {{ range $key, $value := .Games }}
-                    <tr data-link="/apps/{{ .ID }}">
+                    <tr data-link="/apps/{{ .Game.ID }}">
                         <td class="img">
-                            <img src="{{.GetIcon}}" class="rounded">
+                            <img src="{{.Game.GetIcon}}" class="rounded">
                         </td>
-                        <td>{{ .GetName }}</td>
-                        <td class="platforms">{{ .GetPlatformImages }}</td>
-                        <td>{{ comma .GetAchievements.Total }}</td>
+                        <td>{{ .Game.GetName }}</td>
+                        <td class="platforms">{{ .Game.GetPlatformImages }}</td>
+                        <td>{{ comma .Game.GetAchievements.Total }}</td>
+                        <td>{{.Tags}}</td>
                     </tr>
                 {{ end }}
                 </table>

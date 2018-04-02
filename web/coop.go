@@ -93,15 +93,35 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		gamesSlice = append(gamesSlice, v)
 	}
 
-	games, err := mysql.GetApps(gamesSlice, []string{})
+	games, err := mysql.GetApps(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
 		logger.Error(err)
+	}
+
+	// Make visible tags
+	// todo, just keep in memory?
+	coopTags, err := mysql.GetTagsByID(mysql.GetCoopTags())
+	if err != nil {
+		logger.Error(err)
+	}
+
+	var coopTagsInts = map[int]string{}
+	for _, v := range coopTags {
+		coopTagsInts[v.ID] = v.GetName()
+	}
+
+	var templateGames []coopGameTemplate
+	for _, v := range games {
+		templateGames = append(templateGames, coopGameTemplate{
+			Game: v,
+			Tags: v.GetCoopTags(coopTagsInts),
+		})
 	}
 
 	template := coopTemplate{}
 	template.Fill(r, "Co-op")
 	template.Players = players
-	template.Games = games
+	template.Games = templateGames
 
 	returnTemplate(w, r, "coop", template)
 	return
@@ -110,5 +130,10 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 type coopTemplate struct {
 	GlobalTemplate
 	Players []datastore.Player
-	Games   []mysql.App
+	Games   []coopGameTemplate
+}
+
+type coopGameTemplate struct {
+	Game mysql.App
+	Tags string
 }

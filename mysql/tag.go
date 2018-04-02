@@ -37,6 +37,20 @@ func (tag Tag) GetMeanDiscount() string {
 	return fmt.Sprintf("%0.2f", tag.MeanDiscount)
 }
 
+func GetCoopTags() []int {
+	return []int{
+		1685, // Co-op
+		3843, // Online co-op
+		3841, // Local co-op
+		4508, // Co-op campaign
+
+		3859,  // Multiplayer
+		128,   // Massively multiplayer
+		7368,  // Local multiplayer
+		17770, // Asynchronous multiplayer
+	}
+}
+
 func GetAllTags() (tags []Tag, err error) {
 
 	db, err := GetDB()

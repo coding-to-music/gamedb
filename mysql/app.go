@@ -136,6 +136,24 @@ func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err e
 	return screenshots, nil
 }
 
+// Used in template
+func (app App) GetCoopTags(tagMap map[int]string) (string) {
+
+	tags, err := app.GetTags()
+	if err != nil {
+		logger.Error(err)
+	}
+
+	var coopTags []string
+	for _, v := range tags {
+		if val, ok := tagMap[v]; ok {
+			coopTags = append(coopTags, val)
+		}
+	}
+
+	return strings.Join(coopTags, ", ")
+}
+
 func (app App) GetAchievements() (achievements steam.AppDetailsAchievements, err error) {
 
 	bytes := []byte(app.Achievements)
@@ -602,7 +620,7 @@ func (app *App) fillFromPICS() (err error) {
 	app.Name = js.Common.Name
 	app.Type = js.Common.Type
 	app.ReleaseState = js.Common.ReleaseState
-	//app.Platforms = strings.Split(js.Common.OSList, ",") // Can get from API
+	// app.Platforms = strings.Split(js.Common.OSList, ",") // Can get from API
 	app.MetacriticScore = int8(metacriticScoreInt)
 	app.MetacriticURL = js.Common.MetacriticURL
 	app.StoreTags = string(tags)
