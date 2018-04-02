@@ -1,0 +1,88 @@
+{{define "coop"}} {{ template "_header" . }}
+
+<div class="container" id="coop-page">
+
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+
+                <h1 class="display-4"><i class="fas fa-users"></i> Coop</h1>
+                <p class="lead">What to play with friends.</p>
+
+            </div>
+            <div class="col-sm-12 col-lg-6">
+
+                <form id="add">
+                    <div class="input-group input-group-lg mt-4">
+
+                        <input class="form-control" type="number" placeholder="Add Player ID" autocomplete="off" onkeydown="clearField(event, this);" autofocus id="id" required="required">
+                        <div class="input-group-append">
+                            <input type="submit" value="Add" class="input-group-text btn btn-success">
+                        </div>
+                    {{ if .LoggedIn }}
+                        <div class="input-group-append">
+                            <input type="button" value="Add Me" class="input-group-text btn btn-success" data-id="{{.ID}}" id="addme">
+                        </div>
+                    {{end}}
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+        {{if gt (len .Players) 0 }}
+
+            <h5>Players</h5>
+            <div class="players clearfix mb-4">
+            {{ range $key, $value := .Players }}
+            {{ if eq .PlayerID 0 }}
+                <img data-toggle="tooltip" data-placement="top" title="Unknown Player" src="/assets/img/no-player-image.jpg" class="rounded avatar">
+            {{ else }}
+                <a href="{{.GetPath}}">
+                    <img data-toggle="tooltip" data-placement="top" title="{{ .PersonaName }}" src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
+                </a>
+            {{ end }}
+            {{ end }}
+            </div>
+
+        {{ end }}
+
+        {{if gt (len .Players) 1 }}
+
+            <h5>Games</h5>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-sorter mb-0">
+                    <thead>
+                    <th scope="col" width="1%" class="sorter-false"></th>
+                    <th scope="col">Game</th>
+                    <th scope="col">Platforms</th>
+                    <th scope="col">Achievements</th>
+                    </thead>
+                {{ range $key, $value := .Games }}
+                    <tr data-link="/apps/{{ .ID }}">
+                        <td class="img">
+                            <img src="{{.GetIcon}}" class="rounded">
+                        </td>
+                        <td>{{ .GetName }}</td>
+                        <td class="platforms">{{ .GetPlatformImages }}</td>
+                        <td>{{ comma .GetAchievements.Total }}</td>
+                    </tr>
+                {{ end }}
+                </table>
+            </div>
+
+        {{else}}
+            <p class="mb-0">Add at least 2 player IDs</p>
+        {{end}}
+
+
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" }} {{end}}

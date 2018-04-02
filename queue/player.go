@@ -11,7 +11,7 @@ import (
 
 func processPlayer(msg amqp.Delivery) (err error) {
 
-	// return
+	return
 
 	// Get message
 	message := new(PlayerMessage)
