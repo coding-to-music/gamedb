@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
-	"github.com/steam-authority/steam-authority/logger"
 )
 
 const (
@@ -55,15 +54,25 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 	template := experienceTemplate{}
 	template.Fill(r, "Experience")
 	template.Chunks = chunk(rows, CHUNK)
-	template.Level = -1
 
+	// Default calculator levels if logged out
+	template.UserLevelTo = template.UserLevel + 10
+	if template.UserLevel == 0 {
+		template.UserLevel = 10
+		template.UserLevelTo = 20
+	}
+
+	// Highlight level from URL
+	template.Level = -1
 	id := chi.URLParam(r, "id")
 	if id != "" {
 		i, err := strconv.Atoi(id)
 		if err != nil {
-			logger.Error(err)
+			template.Level = -1
+		} else {
+			template.Level = i
 		}
-		template.Level = i
+
 	}
 
 	returnTemplate(w, r, "experience", template)
@@ -86,8 +95,9 @@ func chunk(rows []experienceRow, chunkSize int) (chunked [][]experienceRow) {
 
 type experienceTemplate struct {
 	GlobalTemplate
-	Chunks [][]experienceRow
-	Level  int
+	Chunks      [][]experienceRow
+	Level       int
+	UserLevelTo int
 }
 
 type experienceRow struct {

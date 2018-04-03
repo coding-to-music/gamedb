@@ -87,11 +87,19 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error(err)
 	}
 
+	// Get level
+	level, err := steam.GetSteamLevel(idInt)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	// Save session
 	session.WriteMany(w, r, map[string]string{
 		session.ID:     idString,
 		session.Name:   resp.PersonaName,
 		session.Avatar: resp.AvatarMedium,
 		session.Games:  string(gamesString),
+		session.Level:  strconv.Itoa(level),
 	})
 
 	// Create login record

@@ -224,16 +224,16 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Env     string
-	ID      int
-	Name    string // Username
-	Title   string // page title
-	Avatar  string
-	Level   int
-	Games   []int
-	Path    string // URL
-	IsAdmin bool
-	request *http.Request // Internal
+	Env       string
+	ID        int
+	Name      string // Username
+	Title     string // page title
+	Avatar    string
+	UserLevel int
+	Games     []int
+	Path      string // URL
+	IsAdmin   bool
+	request   *http.Request // Internal
 }
 
 func (t *GlobalTemplate) Fill(r *http.Request, title string) {
@@ -252,7 +252,7 @@ func (t *GlobalTemplate) Fill(r *http.Request, title string) {
 	t.Name, _ = session.Read(r, session.Name)
 	t.Avatar, _ = session.Read(r, session.Avatar)
 	t.Avatar, _ = session.Read(r, session.Avatar)
-	t.Level, _ = strconv.Atoi(level)
+	t.UserLevel, _ = strconv.Atoi(level)
 
 	gamesString, _ := session.Read(r, session.Games)
 	if gamesString != "" {
