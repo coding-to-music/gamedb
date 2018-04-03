@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/queue"
 )
 

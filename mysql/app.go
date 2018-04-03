@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/gosimple/slug"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 )
 

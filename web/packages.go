@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 )
 
@@ -62,9 +62,9 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	banners := make(map[string][]string)
 	var primary []string
 
-	//if pack.GetExtended() == "prerelease" {
-	//	primary = append(primary, "This package is intended for developers and publishers only.")
-	//}
+	// if pack.GetExtended() == "prerelease" {
+	// 	primary = append(primary, "This package is intended for developers and publishers only.")
+	// }
 
 	if len(primary) > 0 {
 		banners["primary"] = primary

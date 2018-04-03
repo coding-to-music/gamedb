@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/go-helpers/logger"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 )
 
@@ -65,7 +65,7 @@ func bulkAddArticles(articles []*Article) (err error) {
 		keys = append(keys, v.GetKey())
 	}
 
-	//fmt.Println("Saving " + strconv.Itoa(articlesLen) + " articles")
+	// fmt.Println("Saving " + strconv.Itoa(articlesLen) + " articles")
 
 	_, err = client.PutMulti(context, keys, articles)
 	if err != nil {

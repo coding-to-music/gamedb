@@ -9,8 +9,9 @@ import (
 	"strings"
 
 	"github.com/99designs/basicauth-go"
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
+	"github.com/rollbar/rollbar-go"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/pics"
 	"github.com/steam-authority/steam-authority/queue"
@@ -20,8 +21,13 @@ import (
 
 func main() {
 
-	logger.SetRollbarKey(os.Getenv("STEAM_ROLLBAR_PRIVATE"))
+	// Rollbar
+	rollbar.SetToken(os.Getenv("STEAM_ROLLBAR_PRIVATE"))
+	rollbar.SetEnvironment(os.Getenv("ENV"))                            // defaults to "development"
+	rollbar.SetCodeVersion("dev-master")                                // optional Git hash/branch/tag (required for GitHub integration)
+	rollbar.SetServerRoot("github.com/steam-authority/steam-authority") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 
+	// Env vars
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
 	if os.Getenv("ENV") == "local" {
 		os.Setenv("STEAM_DOMAIN", os.Getenv("STEAM_DOMAIN_LOCAL"))
@@ -96,6 +102,12 @@ func main() {
 	r.Get("/settings", web.SettingsHandler)
 	r.Post("/settings", web.SaveSettingsHandler)
 
+	r.Get("/stats", web.StatsHandler)
+	r.Get("/stats/genres", web.StatsGenresHandler)
+	r.Get("/stats/tags", web.StatsTagsHandler)
+	r.Get("/stats/developers", web.StatsDevelopersHandler)
+	r.Get("/stats/publishers", web.StatsPublishersHandler)
+
 	r.Get("/browserconfig.xml", web.RootFileHandler)
 	r.Get("/site.webmanifest", web.RootFileHandler)
 
@@ -103,10 +115,8 @@ func main() {
 	r.Get("/", web.HomeHandler)
 	r.Get("/commits", web.CommitsHandler)
 	r.Get("/donate", web.DonateHandler)
-	r.Get("/genres", web.GenresHandler)
 	r.Get("/info", web.InfoHandler)
 	r.Get("/news", web.NewsHandler)
-	r.Get("/tags", web.TagsHandler)
 	r.Get("/websocket", websockets.Handler)
 	r.Get("/coop", web.CoopHandler)
 

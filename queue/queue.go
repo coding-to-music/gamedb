@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Jleagle/go-helpers/logger"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/streadway/amqp"
 )
 

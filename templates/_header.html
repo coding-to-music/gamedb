@@ -76,6 +76,15 @@
                 <li class="nav-item {{if startsWith .Path "/deals" }}active{{end}}">
                     <a class="nav-link" href="/deals">Deals</a>
                 </li>
+                <li class="nav-item dropdown {{if startsWith .Path "/stats" }}active{{end}}">
+                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Stats</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/stats/tags">Tags</a>
+                        <a class="dropdown-item" href="/stats/genres">Genres</a>
+                        <a class="dropdown-item" href="/stats/publishers">Publishers</a>
+                        <a class="dropdown-item" href="/stats/developers">Developers</a>
+                    </div>
+                </li>
                 <li class="nav-item {{if startsWith .Path "/chat" }}active{{end}}">
                     <a class="nav-link" href="/chat">Chat</a>
                 </li>
@@ -114,9 +123,6 @@
                     {{end}}
                         <a class="dropdown-item" href="/packages">Game Packages</a>
                         <a class="dropdown-item" href="/bundles">Game Bundles</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/tags">Game Tags</a>
-                        <a class="dropdown-item" href="/genres">Game Genres</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/experience">Experience</a>
                         <a class="dropdown-item" href="/commits">Commits</a>

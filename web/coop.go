@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 )
 

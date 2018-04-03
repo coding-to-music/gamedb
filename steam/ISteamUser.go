@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 func GetFriendList(id int) (friends []GetFriendListFriend, err error) {

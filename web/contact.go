@@ -9,9 +9,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 func ContactHandler(w http.ResponseWriter, r *http.Request) {

@@ -31,10 +31,6 @@ required = ["github.com/oxequa/realize"]
   name = "github.com/99designs/basicauth-go"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/Jleagle/go-helpers"
-
-[[constraint]]
   name = "github.com/bwmarrin/discordgo"
   version = "0.18.0"
 

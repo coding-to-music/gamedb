@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/steam"

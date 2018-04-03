@@ -1,11 +1,12 @@
 package web
 
 import (
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/steam"
 	"github.com/yohcop/openid-go"
+
 	"encoding/json"
 	"net/http"
 	"os"

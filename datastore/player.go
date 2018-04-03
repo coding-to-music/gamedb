@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 	"github.com/steam-authority/steam-authority/storage"
 )

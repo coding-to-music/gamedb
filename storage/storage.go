@@ -13,7 +13,7 @@ import (
 	"strconv"
 
 	"cloud.google.com/go/storage"
-	"github.com/Jleagle/go-helpers/logger"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 const (

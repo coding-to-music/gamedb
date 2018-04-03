@@ -3,8 +3,8 @@ package queue
 import (
 	"encoding/json"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 	"github.com/streadway/amqp"
 )

@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-chi/chi"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/websockets"
 )
 

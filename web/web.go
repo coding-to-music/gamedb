@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/dustin/go-humanize"
 	"github.com/gosimple/slug"
 	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/steam"
@@ -23,7 +23,12 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	// Load templates needed
 	folder := os.Getenv("STEAM_PATH")
-	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(folder+"/templates/_header.html", folder+"/templates/_footer.html", folder+"/templates/"+page+".html")
+	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
+		folder+"/templates/_header.html",
+		folder+"/templates/_footer.html",
+		folder+"/templates/_stats_header.html",
+		folder+"/templates/"+page+".html",
+	)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 404, err.Error())

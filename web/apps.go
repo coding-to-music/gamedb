@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
 	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/steam"
 )
@@ -120,9 +120,9 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error(err)
 	}
 
-	//sort.Slice(schema.AvailableGameStats.Achievements, func(i, j int) bool {
-	//	return schema.AvailableGameStats.Achievements[i].
-	//})
+	// sort.Slice(schema.AvailableGameStats.Achievements, func(i, j int) bool {
+	// 	return schema.AvailableGameStats.Achievements[i].
+	// })
 
 	// Make banners
 	banners := make(map[string][]string)

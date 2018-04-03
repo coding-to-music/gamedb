@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/google/go-github/github"
+	"github.com/steam-authority/steam-authority/logger"
 	"golang.org/x/oauth2"
 )
 

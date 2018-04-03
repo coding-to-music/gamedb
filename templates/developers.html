@@ -1,0 +1,36 @@
+{{define "developers"}} {{ template "_header" . }}
+
+<div class="container" id="tags-page">
+
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+
+                <h1 class="display-4"><i class="fas fa-star"></i> Developers</h1>
+                <p class="lead">{{ len .Developers }} Developers.</p>
+
+            </div>
+            <div class="col-sm-12 col-lg-6">
+
+                <form class="mt-4">
+                    <div class="input-group input-group-lg mb-4">
+                        <input class="form-control tags-search" type="text" placeholder="Search for a Tag" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+    {{ template "_stats_header" . }}
+        <div class="card-body">
+
+
+        </div>
+    </div>
+
+
+</div>
+
+{{ template "_footer" }} {{end}}

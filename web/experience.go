@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 const (

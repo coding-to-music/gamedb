@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/gorilla/websocket"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 const (

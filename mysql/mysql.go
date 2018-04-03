@@ -3,9 +3,9 @@ package mysql
 import (
 	"os"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 var gormConnection *gorm.DB

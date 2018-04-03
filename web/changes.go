@@ -3,9 +3,9 @@ package web
 import (
 	"net/http"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 )
 
@@ -41,7 +41,7 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 		packagesMap[v.ID] = v
 	}
 
-	//pretty.Println(appsMap)
+	// pretty.Println(appsMap)
 
 	// todo, sort packagesMap by id
 

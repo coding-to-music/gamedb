@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Jleagle/go-helpers/logger"
 	"github.com/dustin/go-humanize"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/queue"
 )
 
