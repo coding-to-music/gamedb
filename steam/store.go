@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 // todo
@@ -85,8 +85,8 @@ func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 	resp := make(map[string]AppDetailsBody)
 	if err := json.Unmarshal(contents, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(contents))
-			pretty.Print(err.Error())
+			logger.Info(string(contents))
+			logger.Info(err.Error())
 		}
 		return app, err
 	}
@@ -256,8 +256,8 @@ func GetPackageDetailsFromStore(id int) (pack PackageDetailsBody, err error) {
 	resp := make(map[string]PackageDetailsBody)
 	if err := json.Unmarshal(contents, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(contents))
-			pretty.Print(err.Error())
+			logger.Info(string(contents))
+			logger.Info(err.Error())
 		}
 		return pack, err
 	}

@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kr/pretty"
 	"github.com/steam-authority/steam-authority/logger"
 )
 
@@ -31,7 +30,7 @@ func GetFriendList(id int) (friends []GetFriendListFriend, err error) {
 	var response = new(GetFriendListBody)
 	if err := json.Unmarshal(bytes, &response); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
+			logger.Info(string(bytes))
 		}
 		return friends, err
 	}
@@ -65,7 +64,7 @@ func ResolveVanityURL(id string) (resp ResolveVanityURLBody, err error) {
 	// Unmarshal JSON
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
+			logger.Info(string(bytes))
 			logger.Error(err)
 		}
 		return resp, err
@@ -117,7 +116,7 @@ func GetPlayerSummaries(id int) (player PlayerSummary, err error) {
 	var resp PlayerSummariesResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
+			logger.Info(string(bytes))
 			logger.Error(err)
 		}
 		return player, err

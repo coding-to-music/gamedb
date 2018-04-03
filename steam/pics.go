@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 func GetPICSInfo(apps []int, packages []int) (jsInfo JsInfo, err error) {
@@ -52,8 +52,8 @@ func GetPICSInfo(apps []int, packages []int) (jsInfo JsInfo, err error) {
 	info := JsInfo{}
 	if err := json.Unmarshal(bytes, &info); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
-			pretty.Print(err.Error())
+			logger.Info(string(bytes))
+			logger.Info(err.Error())
 		}
 		return jsInfo, err
 	}

@@ -39,8 +39,10 @@ type Package struct {
 
 func GetDefaultPackageJSON() Package {
 	return Package{
-		Apps:     "[]",
-		Extended: "{}",
+		Apps:       "[]",
+		Extended:   "{}",
+		Controller: "{}",
+		Platforms:  "[]",
 	}
 }
 
@@ -55,6 +57,10 @@ func (pack Package) GetName() (name string) {
 	}
 
 	return pack.Name
+}
+
+func (pack Package) GetCreatedTime() string {
+	return pack.CreatedAt.Format(time.Kitchen)
 }
 
 func (pack Package) GetBillingType() (string) {
@@ -223,14 +229,16 @@ func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 	return packages, nil
 }
 
-func GetLatestPackages(limit int) (packages []Package, err error) {
+func GetLatestPackages(limit int, page int) (packages []Package, err error) {
 
 	db, err := GetDB()
 	if err != nil {
 		return packages, err
 	}
 
-	db.Limit(limit).Order("created_at DESC").Find(&packages)
+	offset := (page - 1) * 100
+
+	db.Limit(limit).Offset(offset).Order("created_at DESC").Find(&packages)
 	if db.Error != nil {
 		return packages, db.Error
 	}
@@ -278,6 +286,14 @@ func (pack *Package) Fill() (err error) {
 
 	if pack.Extended == "" || pack.Extended == "null" {
 		pack.Extended = "{}"
+	}
+
+	if pack.Controller == "" || pack.Controller == "null" {
+		pack.Controller = "{}"
+	}
+
+	if pack.Platforms == "" || pack.Platforms == "null" {
+		pack.Platforms = "[]"
 	}
 
 	return nil
@@ -334,7 +350,7 @@ func (pack *Package) fillFromAPI() (err error) {
 	pack.ImageHeader = response.Data.HeaderImage
 	pack.ImageLogo = response.Data.SmallLogo
 	pack.ImageHeader = response.Data.HeaderImage
-	//pack.Apps = string(appsString) // Can get from PICS
+	// pack.Apps = string(appsString) // Can get from PICS
 	pack.PriceInitial = response.Data.Price.Initial
 	pack.PriceFinal = response.Data.Price.Final
 	pack.PriceDiscount = response.Data.Price.DiscountPercent

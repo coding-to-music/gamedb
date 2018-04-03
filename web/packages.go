@@ -11,21 +11,29 @@ import (
 
 func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 
-	packages, err := mysql.GetLatestPackages(100)
+	packages, err := mysql.GetLatestPackages(100, 1)
 	if err != nil {
 		logger.Error(err)
 	}
 
+	page, _ := strconv.Atoi(r.URL.Query().Get("p"))
+
 	template := packagesTemplate{}
 	template.Fill(r, "Packages")
 	template.Packages = packages
+	template.Pagination = Pagination{
+		page: page,
+		last: 14,
+		path: "/packages?p=",
+	}
 
 	returnTemplate(w, r, "packages", template)
 }
 
 type packagesTemplate struct {
 	GlobalTemplate
-	Packages []mysql.Package
+	Packages   []mysql.Package
+	Pagination Pagination
 }
 
 func PackageHandler(w http.ResponseWriter, r *http.Request) {

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 // Retrieves the global achievement percentages for the specified app.
@@ -24,7 +24,7 @@ func GetGlobalAchievementPercentagesForApp(appID int) (percentages []Achievement
 	var resp GlobalAchievementPercentagesForAppResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
+			logger.Info(string(bytes))
 		}
 		return percentages, err
 	}
@@ -58,7 +58,7 @@ func GetNumberOfCurrentPlayers(appID int) (players int, err error) {
 	var resp NumberOfCurrentPlayersResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
+			logger.Info(string(bytes))
 		}
 		return players, err
 	}
@@ -89,7 +89,7 @@ func GetSchemaForGame(appID int) (schema GameSchema, err error) {
 	var resp SchemaForGameResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
+			logger.Info(string(bytes))
 		}
 		return schema, err
 	}

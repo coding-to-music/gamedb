@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kr/pretty"
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 // Gets information about a player's recently played games
@@ -27,8 +27,8 @@ func GetRecentlyPlayedGames(playerID int) (games []RecentlyPlayedGame, err error
 	var resp RecentlyPlayedGamesResponse
 	err = json.Unmarshal(bytes, &resp)
 	if err != nil {
-		pretty.Print(err.Error())
-		pretty.Print(string(bytes))
+		logger.Info(err.Error())
+		logger.Info(string(bytes))
 		return games, err
 	}
 

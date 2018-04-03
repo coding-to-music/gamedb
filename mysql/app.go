@@ -56,6 +56,7 @@ type App struct {
 	Schema                 string     `gorm:"not null;column:schema;type:text;default:'{}'"`                  // JSON
 	ComingSoon             bool       `gorm:"not null;column:coming_soon"`                                    //
 	ReleaseDate            string     `gorm:"not null;column:release_date"`                                   //
+	Extended               string     `gorm:"not null;column:extended;default:'{}'"`                          // JSON
 }
 
 func GetDefaultAppJSON() App {
@@ -71,6 +72,7 @@ func GetDefaultAppJSON() App {
 		Packages:               "[]",
 		AchievementPercentages: "[]",
 		Schema:                 "{}",
+		Extended:               "{}",
 	}
 }
 
@@ -470,6 +472,10 @@ func (app *App) Fill() (err error) {
 		app.Schema = "{}"
 	}
 
+	if app.Extended == "" || app.Extended == "null" {
+		app.Extended = "{}"
+	}
+
 	return nil
 }
 
@@ -616,6 +622,12 @@ func (app *App) fillFromPICS() (err error) {
 		metacriticScoreInt, _ = strconv.Atoi(js.Common.MetacriticScore)
 	}
 
+	// Extended
+	extended, err := json.Marshal(js.Extended)
+	if err != nil {
+		return err
+	}
+
 	//
 	app.Name = js.Common.Name
 	app.Type = js.Common.Type
@@ -631,6 +643,7 @@ func (app *App) fillFromPICS() (err error) {
 	app.Logo = js.Common.Logo
 	app.Icon = js.Common.Icon
 	app.ClientIcon = js.Common.ClientIcon
+	app.Extended = string(extended)
 
 	return nil
 }

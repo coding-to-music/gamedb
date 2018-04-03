@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 func GetAppList() (apps []GetAppListApp, err error) {
@@ -19,7 +19,7 @@ func GetAppList() (apps []GetAppListApp, err error) {
 	resp := GetAppListBody{}
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
+			logger.Info(string(bytes))
 		}
 		return apps, err
 	}

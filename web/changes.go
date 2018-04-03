@@ -41,8 +41,6 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 		packagesMap[v.ID] = v
 	}
 
-	// pretty.Println(appsMap)
-
 	// todo, sort packagesMap by id
 
 	// Template

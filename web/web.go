@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"html/template"
+	"math"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gosimple/slug"
-	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
@@ -27,6 +29,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/templates/_header.html",
 		folder+"/templates/_footer.html",
 		folder+"/templates/_stats_header.html",
+		folder+"/templates/_pagination.html",
 		folder+"/templates/"+page+".html",
 	)
 	if err != nil {
@@ -115,7 +118,7 @@ type GlobalTemplate struct {
 	Env     string
 	ID      int
 	Name    string // Username
-	Title   string // Page title
+	Title   string // page title
 	Avatar  string
 	Level   int
 	Games   []int
@@ -148,7 +151,7 @@ func (t *GlobalTemplate) Fill(r *http.Request, title string) {
 		if err != nil {
 			logger.Error(err)
 			if strings.Contains(err.Error(), "cannot unmarshal") {
-				pretty.Print(gamesString)
+				logger.Info(gamesString)
 			}
 		}
 	}
@@ -184,4 +187,45 @@ func (t GlobalTemplate) ShowAd() (bool) {
 	}
 
 	return true
+}
+
+type Pagination struct {
+	page int
+	last int
+	path string
+}
+
+func (t Pagination) GetPages() (ret []int) {
+
+	ret = append(ret, 1)
+	for i := t.GetPage() - 2; i < t.GetPage()+3; i++ {
+		if i >= 1 && i <= t.last {
+			ret = append(ret, i)
+		}
+	}
+	ret = append(ret, t.last)
+
+	ret = helpers.Unique(ret)
+
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i] < ret[j]
+	})
+
+	return ret
+}
+
+func (t Pagination) GetNext() (float64) {
+	return math.Min(float64(t.last), float64(t.GetPage()+1))
+}
+
+func (t Pagination) GetPrev() (float64) {
+	return math.Max(1, float64(t.GetPage()-1))
+}
+
+func (t Pagination) GetPage() (int) {
+	return int(math.Max(1, float64(t.page)))
+}
+
+func (t Pagination) GetLast() (int) {
+	return t.last
 }

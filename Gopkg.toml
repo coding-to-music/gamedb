@@ -63,10 +63,6 @@ required = ["github.com/oxequa/realize"]
   version = "1.9.1"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/kr/pretty"
-
-[[constraint]]
   name = "github.com/sendgrid/sendgrid-go"
   version = "3.4.1"
 

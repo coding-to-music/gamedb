@@ -24,7 +24,7 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 
 func Error404Handler(w http.ResponseWriter, r *http.Request) {
 
-	returnErrorTemplate(w, r, 404, "Page not found")
+	returnErrorTemplate(w, r, 404, "page not found")
 }
 
 func RootFileHandler(w http.ResponseWriter, r *http.Request) {

@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/kr/pretty"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 // Gets the list of supported API calls. This is used to build this documentation.
@@ -20,7 +20,7 @@ func GetSupportedAPIList() (percentages []SupportedAPIListInterface, err error) 
 	var resp SupportedAPIListResponseResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			pretty.Print(string(bytes))
+			logger.Info(string(bytes))
 		}
 		return percentages, err
 	}

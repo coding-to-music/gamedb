@@ -154,18 +154,6 @@
   revision = "04140366298a54a039076d798123ffa108fff46c"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/kr/pretty"
-  packages = ["."]
-  revision = "cfb55aafdaf3ec08f0db22699ab822c50091b1c4"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/kr/text"
-  packages = ["."]
-  revision = "7cafcd837844e784b526369c9bce262804aebc60"
-
-[[projects]]
   name = "github.com/labstack/echo"
   packages = [
     ".",
@@ -479,6 +467,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e1d70b78a3e0cc7d6fac24c64ef3fa10e2bc34e4f804f075fbeb7984089ab20e"
+  inputs-digest = "069b6bf2881cbf267290dd33e14a8ce55c1918f61b62b4bac7b87b7282028cfd"
   solver-name = "gps-cdcl"
   solver-version = 1
