@@ -7,19 +7,128 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/99designs/basicauth-go"
 	"github.com/dustin/go-humanize"
+	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/steam"
+	"github.com/steam-authority/steam-authority/websockets"
 )
+
+func Serve() {
+
+	r := chi.NewRouter()
+
+	r.Mount("/admin", adminRouter())
+
+	r.Get("/apps", AppsHandler)
+	r.Get("/apps/{id}", AppHandler)
+	r.Get("/apps/{id}/{slug}", AppHandler)
+
+	r.Get("/changes", ChangesHandler)
+	r.Get("/changes/{id}", ChangeHandler)
+
+	r.Get("/chat", ChatHandler)
+	r.Get("/chat/{id}", ChatHandler)
+
+	r.Get("/contact", ContactHandler)
+	r.Post("/contact", PostContactHandler)
+
+	r.Get("/deals", DealsHandler)
+	r.Get("/deals/{id}", DealsHandler)
+
+	r.Get("/experience", ExperienceHandler)
+	r.Get("/experience/{id}", ExperienceHandler)
+
+	r.Get("/login", LoginHandler)
+	r.Get("/logout", LogoutHandler)
+	r.Get("/login-callback", LoginCallbackHandler)
+
+	r.Get("/packages", PackagesHandler)
+	r.Get("/packages/{id}", PackageHandler)
+
+	r.Post("/players", PlayerIDHandler)
+	r.Get("/players", RanksHandler)
+	r.Get("/players/{id:[a-z]+}", RanksHandler)
+	r.Get("/players/{id:[0-9]+}", PlayerHandler)
+	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
+
+	r.Get("/queues", QueuesHandler)
+	r.Get("/queues/queues.json", QueuesJSONHandler)
+
+	r.Get("/settings", SettingsHandler)
+	r.Post("/settings", SaveSettingsHandler)
+
+	// Files
+	r.Get("/browserconfig.xml", RootFileHandler)
+	r.Get("/site.webmanifest", RootFileHandler)
+
+	// Other
+	r.Get("/", HomeHandler)
+	r.Get("/commits", CommitsHandler)
+	r.Get("/coop", CoopHandler)
+	r.Get("/developers", StatsDevelopersHandler)
+	r.Get("/donate", DonateHandler)
+	r.Get("/genres", StatsGenresHandler)
+	r.Get("/info", InfoHandler)
+	r.Get("/news", NewsHandler)
+	r.Get("/publishers", StatsPublishersHandler)
+	r.Get("/stats", StatsHandler)
+	r.Get("/tags", StatsTagsHandler)
+	r.Get("/websocket", websockets.Handler)
+
+	// 404
+	r.NotFound(Error404Handler)
+
+	// File server
+	fileServer(r)
+
+	http.ListenAndServe(":8085", r)
+}
+
+func adminRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Use(basicauth.New("Steam", map[string][]string{
+		os.Getenv("STEAM_ADMIN_USER"): {os.Getenv("STEAM_ADMIN_PASS")},
+	}))
+	r.Get("/", AdminHandler)
+	r.Get("/{option}", AdminHandler)
+	r.Post("/{option}", AdminHandler)
+	return r
+}
+
+// FileServer conveniently sets up a http.FileServer handler to serve
+// static files from a http.FileSystem.
+func fileServer(r chi.Router) {
+
+	path := "/assets"
+
+	if strings.ContainsAny(path, "{}*") {
+		logger.Info("FileServer does not permit URL parameters.")
+	}
+
+	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(os.Getenv("STEAM_PATH"), "assets"))))
+
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		path += "/"
+	}
+	path += "*"
+
+	r.Get(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fs.ServeHTTP(w, r)
+	}))
+}
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 

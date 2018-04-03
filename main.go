@@ -5,18 +5,12 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"path/filepath"
-	"strings"
 
-	"github.com/99designs/basicauth-go"
-	"github.com/go-chi/chi"
 	"github.com/rollbar/rollbar-go"
-	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/pics"
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/web"
-	"github.com/steam-authority/steam-authority/websockets"
 )
 
 func main() {
@@ -59,108 +53,10 @@ func main() {
 		queue.RunConsumers()
 	}
 
-	// Routes
-	r := chi.NewRouter()
-
-	r.Mount("/admin", adminRouter())
-
-	r.Get("/apps", web.AppsHandler)
-	r.Get("/apps/{id}", web.AppHandler)
-	r.Get("/apps/{id}/{slug}", web.AppHandler)
-
-	r.Get("/changes", web.ChangesHandler)
-	r.Get("/changes/{id}", web.ChangeHandler)
-
-	r.Get("/chat", web.ChatHandler)
-	r.Get("/chat/{id}", web.ChatHandler)
-
-	r.Get("/contact", web.ContactHandler)
-	r.Post("/contact", web.PostContactHandler)
-
-	r.Get("/deals", web.DealsHandler)
-	r.Get("/deals/{id}", web.DealsHandler)
-
-	r.Get("/experience", web.ExperienceHandler)
-	r.Get("/experience/{id}", web.ExperienceHandler)
-
-	r.Get("/login", web.LoginHandler)
-	r.Get("/logout", web.LogoutHandler)
-	r.Get("/login-callback", web.LoginCallbackHandler)
-
-	r.Get("/packages", web.PackagesHandler)
-	r.Get("/packages/{id}", web.PackageHandler)
-
-	r.Post("/players", web.PlayerIDHandler)
-	r.Get("/players", web.RanksHandler)
-	r.Get("/players/{id:[a-z]+}", web.RanksHandler)
-	r.Get("/players/{id:[0-9]+}", web.PlayerHandler)
-	r.Get("/players/{id:[0-9]+}/{slug}", web.PlayerHandler)
-
-	r.Get("/queues", web.QueuesHandler)
-	r.Get("/queues/queues.json", web.QueuesJSONHandler)
-
-	r.Get("/settings", web.SettingsHandler)
-	r.Post("/settings", web.SaveSettingsHandler)
-
-	r.Get("/stats", web.StatsHandler)
-	r.Get("/stats/genres", web.StatsGenresHandler)
-	r.Get("/stats/tags", web.StatsTagsHandler)
-	r.Get("/stats/developers", web.StatsDevelopersHandler)
-	r.Get("/stats/publishers", web.StatsPublishersHandler)
-
-	r.Get("/browserconfig.xml", web.RootFileHandler)
-	r.Get("/site.webmanifest", web.RootFileHandler)
-
-	// Other
-	r.Get("/", web.HomeHandler)
-	r.Get("/commits", web.CommitsHandler)
-	r.Get("/donate", web.DonateHandler)
-	r.Get("/info", web.InfoHandler)
-	r.Get("/news", web.NewsHandler)
-	r.Get("/websocket", websockets.Handler)
-	r.Get("/coop", web.CoopHandler)
-
-	// 404
-	r.NotFound(web.Error404Handler)
-
-	// File server
-	fileServer(r, "/assets")
-
-	http.ListenAndServe(":8085", r)
+	// Web server
+	web.Serve()
 
 	// Block for goroutines to run forever
 	forever := make(chan bool)
 	<-forever
-}
-
-func adminRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Use(basicauth.New("Steam", map[string][]string{
-		os.Getenv("STEAM_ADMIN_USER"): {os.Getenv("STEAM_ADMIN_PASS")},
-	}))
-	r.Get("/", web.AdminHandler)
-	r.Get("/{option}", web.AdminHandler)
-	r.Post("/{option}", web.AdminHandler)
-	return r
-}
-
-// FileServer conveniently sets up a http.FileServer handler to serve
-// static files from a http.FileSystem.
-func fileServer(r chi.Router, path string) {
-
-	if strings.ContainsAny(path, "{}*") {
-		logger.Info("FileServer does not permit URL parameters.")
-	}
-
-	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(os.Getenv("STEAM_PATH"), "assets"))))
-
-	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
-		path += "/"
-	}
-	path += "*"
-
-	r.Get(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fs.ServeHTTP(w, r)
-	}))
 }
