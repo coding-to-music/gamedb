@@ -3,7 +3,7 @@
 <div class="container" id="player-page">
 
     <div class="jumbotron">
-        <img src="{{ .Player.GetAvatar }}" class="rounded-right" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
+        <img src="{{ .Player.GetAvatar }}" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
         <h1 class="display-4">
             <i class="fas fa-user"></i> {{ .Player.PersonaName }}
         </h1>
