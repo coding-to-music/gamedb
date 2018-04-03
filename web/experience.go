@@ -23,14 +23,12 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i := 0; i <= ROWS+1; i++ {
 
-		diff := int((math.Ceil((float64(i) + 1) / 10)) * 100)
-
 		rows = append(rows, experienceRow{
 			Level: i,
 			Start: int(xp),
 		})
 
-		xp = xp + diff
+		xp = xp + int((math.Ceil((float64(i) + 1) / 10))*100)
 	}
 
 	rows[0] = experienceRow{
@@ -41,7 +39,6 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i := 1; i <= ROWS; i++ {
 
-		// prevRow := rows[i-1]
 		thisRow := rows[i]
 		nextRow := rows[i+1]
 
@@ -106,4 +103,23 @@ type experienceRow struct {
 	End   int
 	Diff  int
 	Count int
+}
+
+func (e experienceRow) GetFriends() (ret int) {
+
+	ret = 750
+
+	if e.Level > 100 {
+		ret = 1250
+	}
+
+	if e.Level > 200 {
+		ret = 1750
+	}
+
+	if e.Level > 300 {
+		ret = 2000
+	}
+
+	return ret
 }

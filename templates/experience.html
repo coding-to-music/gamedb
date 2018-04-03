@@ -37,18 +37,20 @@
                 <table class="table table-hover table-striped">
                     <thead>
                     <tr>
-                        <th scope="col" width="25%">Level</th>
-                        <th scope="col" width="25%">Start XP</th>
-                        <th scope="col" width="25%">End XP</th>
-                        <th scope="col" width="25%">For Next Level</th>
+                        <th scope="col" width="20%">Level</th>
+                        <th scope="col" width="20%">Start XP</th>
+                        <th scope="col" width="20%">End XP</th>
+                        <th scope="col" width="20%">For Next Level</th>
+                        <th scope="col" width="20%">Friends Max</th>
                     </tr>
                     </thead>
                 {{ range $keyx, $valuex := $value }}
                     <tr data-level="{{ .Level }}">
-                        <td width="25%">{{ comma .Level }}</td>
-                        <td width="25%">{{ comma .Start }}</td>
-                        <td width="25%">{{ comma .End }}</td>
-                        <td width="25%">{{ comma .Diff }}</td>
+                        <td width="20%">{{ comma .Level }}</td>
+                        <td width="20%">{{ comma .Start }}</td>
+                        <td width="20%">{{ comma .End }}</td>
+                        <td width="20%">{{ comma .Diff }}</td>
+                        <td width="20%">{{ comma .GetFriends }}</td>
                     </tr>
                 {{ end }}
                 </table>
