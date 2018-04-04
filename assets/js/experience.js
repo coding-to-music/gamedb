@@ -4,20 +4,28 @@ if ($('#xp-page').length > 0) {
     function scroll() {
 
         if (typeof scrollTo === 'string') {
-            window.scroll({
-                top: $(scrollTo).offset().top - 100,
-                left: 0,
-                behavior: 'smooth'
-            });
+
+            var top = $(scrollTo).offset().top - 100;
+
+            // window.scroll({
+            //     top: $(scrollTo).offset().top - 100,
+            //     left: 0,
+            //     behavior: 'smooth'
+            // });
+
+            $('html, body').animate({
+                scrollTop: top,
+                easing: "swing"
+            }, 500);
 
             $('tr').removeClass('table-success');
             $(scrollTo).addClass('table-success');
         }
     }
 
-    $('#xp-page table tr td').click(function () {
+    $("#xp-page").on("click", "[data-level]", function () {
 
-        var level = $(this).parent().attr('data-level');
+        var level = $(this).attr('data-level');
 
         if (history.pushState) {
             history.pushState('data', '', '/experience/' + level);
@@ -25,6 +33,8 @@ if ($('#xp-page').length > 0) {
 
         scrollTo = 'tr[data-level=' + level + ']';
         scroll();
+
+        return false;
     });
 
     scroll();
