@@ -24,7 +24,7 @@ func GetGlobalAchievementPercentagesForApp(appID int) (percentages []Achievement
 	var resp GlobalAchievementPercentagesForAppResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return percentages, err
 	}
@@ -58,7 +58,7 @@ func GetNumberOfCurrentPlayers(appID int) (players int, err error) {
 	var resp NumberOfCurrentPlayersResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return players, err
 	}
@@ -89,7 +89,7 @@ func GetSchemaForGame(appID int) (schema GameSchema, err error) {
 	var resp SchemaForGameResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return schema, err
 	}

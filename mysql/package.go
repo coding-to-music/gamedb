@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gosimple/slug"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 )
 
@@ -139,6 +140,9 @@ func (pack Package) GetApps() (apps []int, err error) {
 
 	bytes := []byte(pack.Apps)
 	if err := json.Unmarshal(bytes, &apps); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return apps, err
 	}
 
@@ -151,6 +155,9 @@ func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
 
 	bytes := []byte(pack.Extended)
 	if err := json.Unmarshal(bytes, &extended); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return extended, err
 	}
 
@@ -161,6 +168,9 @@ func (pack Package) GetPlatforms() (platforms []string, err error) {
 
 	bytes := []byte(pack.Platforms)
 	if err := json.Unmarshal(bytes, &platforms); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return platforms, err
 	}
 

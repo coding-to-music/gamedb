@@ -19,7 +19,7 @@ func GetAppList() (apps []GetAppListApp, err error) {
 	resp := GetAppListBody{}
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return apps, err
 	}

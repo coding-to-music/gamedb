@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/steam-authority/steam-authority/datastore"
@@ -19,6 +20,10 @@ func processPackage(msg amqp.Delivery) (err error) {
 
 	err = json.Unmarshal(msg.Body, message)
 	if err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(msg.Body))
+		}
+
 		msg.Nack(false, false)
 		return nil
 	}

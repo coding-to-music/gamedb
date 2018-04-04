@@ -111,7 +111,11 @@ func (p Player) GetGames() (x []steam.OwnedGame) {
 
 	err = json.Unmarshal(bytes, &x)
 	if err != nil {
-		logger.Error(err)
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		} else {
+			logger.Error(err)
+		}
 	}
 
 	return x

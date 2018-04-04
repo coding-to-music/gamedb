@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 func GetQeueus() (resp []Queue, err error) {
@@ -28,6 +30,9 @@ func GetQeueus() (resp []Queue, err error) {
 
 	// Unmarshal JSON
 	if err := json.Unmarshal(bytes, &resp); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return resp, err
 	}
 

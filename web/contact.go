@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/sendgrid/sendgrid-go"
@@ -82,7 +83,11 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		var str recaptchaResponse
 		err = json.Unmarshal(respBytes, &str)
 		if err != nil {
-			logger.Error(err)
+			if strings.Contains(err.Error(), "cannot unmarshal") {
+				logger.Info(err.Error() + " - " + string(respBytes))
+			} else {
+				logger.Error(err)
+			}
 		}
 
 		if !str.Success {

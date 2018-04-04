@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/steam-authority/steam-authority/helpers"
@@ -27,8 +28,9 @@ func GetRecentlyPlayedGames(playerID int) (games []RecentlyPlayedGame, err error
 	var resp RecentlyPlayedGamesResponse
 	err = json.Unmarshal(bytes, &resp)
 	if err != nil {
-		logger.Info(err.Error())
-		logger.Info(string(bytes))
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return games, err
 	}
 
@@ -76,6 +78,9 @@ func GetOwnedGames(id int) (games []OwnedGame, err error) {
 	var resp OwnedGamesResponse
 	err = json.Unmarshal(bytes, &resp)
 	if err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return games, err
 	}
 
@@ -113,6 +118,9 @@ func GetSteamLevel(id int) (level int, err error) {
 	var resp LevelResponse
 	err = json.Unmarshal(bytes, &resp)
 	if err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return level, err
 	}
 
@@ -140,6 +148,9 @@ func GetBadges(id int) (badges BadgesResponse, err error) {
 	var resp BadgesResponseOuter
 	err = json.Unmarshal(bytes, &resp)
 	if err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return badges, err
 	}
 

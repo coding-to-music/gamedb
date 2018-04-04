@@ -132,6 +132,9 @@ func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err e
 
 	bytes := []byte(app.Screenshots)
 	if err := json.Unmarshal(bytes, &screenshots); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return screenshots, err
 	}
 
@@ -160,6 +163,9 @@ func (app App) GetAchievements() (achievements steam.AppDetailsAchievements, err
 
 	bytes := []byte(app.Achievements)
 	if err := json.Unmarshal(bytes, &achievements); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return achievements, err
 	}
 
@@ -174,6 +180,9 @@ func (app App) GetPlatforms() (platforms []string, err error) {
 	}
 
 	if err := json.Unmarshal(bytes, &platforms); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return platforms, err
 	}
 
@@ -204,6 +213,9 @@ func (app App) GetDLC() (dlcs []int, err error) {
 
 	bytes := []byte(app.DLC)
 	if err := json.Unmarshal(bytes, &dlcs); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return dlcs, err
 	}
 
@@ -214,6 +226,9 @@ func (app App) GetPackages() (packages []int, err error) {
 
 	bytes := []byte(app.Packages)
 	if err := json.Unmarshal(bytes, &packages); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return packages, err
 	}
 
@@ -224,6 +239,9 @@ func (app App) GetGenres() (genres []steam.AppDetailsGenre, err error) {
 
 	bytes := []byte(app.Genres)
 	if err := json.Unmarshal(bytes, &genres); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return genres, err
 	}
 
@@ -234,6 +252,9 @@ func (app App) GetCategories() (categories []string, err error) {
 
 	bytes := []byte(app.Categories)
 	if err := json.Unmarshal(bytes, &categories); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return categories, err
 	}
 
@@ -244,6 +265,9 @@ func (app App) GetTags() (tags []int, err error) {
 
 	bytes := []byte(app.StoreTags)
 	if err := json.Unmarshal(bytes, &tags); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return tags, err
 	}
 

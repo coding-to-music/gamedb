@@ -258,9 +258,10 @@ func (t *GlobalTemplate) Fill(r *http.Request, title string) {
 	if gamesString != "" {
 		err := json.Unmarshal([]byte(gamesString), &t.Games)
 		if err != nil {
-			logger.Error(err)
 			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(gamesString)
+				logger.Info(err.Error() + " - " + gamesString)
+			} else {
+				logger.Error(err)
 			}
 		}
 	}

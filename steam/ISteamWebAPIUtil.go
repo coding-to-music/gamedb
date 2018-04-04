@@ -20,7 +20,7 @@ func GetSupportedAPIList() (percentages []SupportedAPIListInterface, err error) 
 	var resp SupportedAPIListResponseResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return percentages, err
 	}

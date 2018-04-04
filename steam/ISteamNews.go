@@ -23,7 +23,7 @@ func GetNewsForApp(id string) (articles []GetNewsForAppArticle, err error) {
 	var resp *GetNewsForAppBody
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return articles, err
 	}

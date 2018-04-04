@@ -132,6 +132,9 @@ func getLatestChanges() (jsChange JsChange, err error) {
 
 	// Unmarshal JSON
 	if err := json.Unmarshal(contents, &jsChange); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(contents))
+		}
 		return jsChange, err
 	}
 

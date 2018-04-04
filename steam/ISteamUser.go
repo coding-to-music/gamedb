@@ -30,7 +30,7 @@ func GetFriendList(id int) (friends []GetFriendListFriend, err error) {
 	var response = new(GetFriendListBody)
 	if err := json.Unmarshal(bytes, &response); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return friends, err
 	}
@@ -64,8 +64,7 @@ func ResolveVanityURL(id string) (resp ResolveVanityURLBody, err error) {
 	// Unmarshal JSON
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
-			logger.Error(err)
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return resp, err
 	}
@@ -116,8 +115,7 @@ func GetPlayerSummaries(id int) (player PlayerSummary, err error) {
 	var resp PlayerSummariesResponse
 	if err := json.Unmarshal(bytes, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
-			logger.Error(err)
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return player, err
 	}
@@ -169,6 +167,9 @@ func GetPlayerBans(id int) (bans GetPlayerBanResponse, err error) {
 	var resp GetPlayerBansResponse
 	err = json.Unmarshal(bytes, &resp)
 	if err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return bans, err
 	}
 
@@ -207,6 +208,9 @@ func GetUserGroupList(id int) (groups []int, err error) {
 	var resp UserGroupListResponse
 	err = json.Unmarshal(bytes, &resp)
 	if err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
 		return groups, err
 	}
 

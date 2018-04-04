@@ -52,8 +52,7 @@ func GetPICSInfo(apps []int, packages []int) (jsInfo JsInfo, err error) {
 	info := JsInfo{}
 	if err := json.Unmarshal(bytes, &info); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(bytes))
-			logger.Info(err.Error())
+			logger.Info(err.Error() + " - " + string(bytes))
 		}
 		return jsInfo, err
 	}

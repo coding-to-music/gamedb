@@ -86,8 +86,7 @@ func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 	resp := make(map[string]AppDetailsBody)
 	if err := json.Unmarshal(contents, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(contents))
-			logger.Info(err.Error())
+			logger.Info(err.Error() + " - " + string(contents))
 		}
 		return app, err
 	}
@@ -257,8 +256,7 @@ func GetPackageDetailsFromStore(id int) (pack PackageDetailsBody, err error) {
 	resp := make(map[string]PackageDetailsBody)
 	if err := json.Unmarshal(contents, &resp); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(string(contents))
-			logger.Info(err.Error())
+			logger.Info(err.Error() + " - " + string(contents))
 		}
 		return pack, err
 	}

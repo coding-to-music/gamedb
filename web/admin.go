@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -284,7 +285,11 @@ func adminTags() {
 	// Unmarshal JSON
 	var resp []steamTag
 	if err := json.Unmarshal(contents, &resp); err != nil {
-		logger.Error(err)
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(contents))
+		} else {
+			logger.Error(err)
+		}
 		return
 	}
 
