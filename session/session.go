@@ -28,6 +28,10 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 	return session, err
 }
 
+func Save(w http.ResponseWriter, r *http.Request) error {
+	return sessions.Save(r, w)
+}
+
 func Read(r *http.Request, key string) (value string, err error) {
 
 	session, err := getSession(r)

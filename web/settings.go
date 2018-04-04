@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gorilla/sessions"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/session"
@@ -52,6 +51,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	session.Save(w, r)
 
 	// todo, get session data from db not steam
 
@@ -105,9 +106,6 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		session.Level:  strconv.Itoa(level),
 	})
 	if err != nil {
-		if err.Error() == "securecookie: the value is not valid" {
-			sessions.Save(r, w)
-		}
 		logger.Error(err)
 	}
 
