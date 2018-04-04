@@ -52,6 +52,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
+	// todo, get session data from db not steam
+
 	openID, err := openid.Verify(os.Getenv("STEAM_DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
 		returnErrorTemplate(w, r, 500, err.Error())

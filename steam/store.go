@@ -47,35 +47,36 @@ func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 	var b = string(contents)
 
 	// Convert strings to ints
-	regex = regexp.MustCompile(`:"(\d+)"`) // After colon
+	regex = regexp.MustCompile(`:\s?"(\d+)"`) // After colon
 	b = regex.ReplaceAllString(b, `:$1`)
 
-	regex = regexp.MustCompile(`,"(\d+)"`) // After comma
+	regex = regexp.MustCompile(`,\s?"(\d+)"`) // After comma
 	b = regex.ReplaceAllString(b, `,$1`)
 
 	regex = regexp.MustCompile(`"(\d+)",`) // Before comma
 	b = regex.ReplaceAllString(b, `$1,`)
 
-	regex = regexp.MustCompile(`"packages":\["(\d+)"\]`) // Package array with single int
+	regex = regexp.MustCompile(`"packages":\s?\["(\d+)"\]`) // Package array with single int
 	b = regex.ReplaceAllString(b, `"packages":[$1]`)
 
 	// Make some its strings again
-	regex = regexp.MustCompile(`"date":(\d+)`)
+	regex = regexp.MustCompile(`"date":\s?(\d+)`)
 	b = regex.ReplaceAllString(b, `"date":"$1"`)
 
-	regex = regexp.MustCompile(`"name":(\d+)`)
+	regex = regexp.MustCompile(`"name":\s?(\d+)`)
 	b = regex.ReplaceAllString(b, `"name":"$1"`)
 
-	regex = regexp.MustCompile(`"description":(\d+)`)
+	regex = regexp.MustCompile(`"description":\s?(\d+)`)
 	b = regex.ReplaceAllString(b, `"description":"$1"`)
 
-	regex = regexp.MustCompile(`"display_type":(\d+)`)
+	regex = regexp.MustCompile(`"display_type":\s?(\d+)`)
 	b = regex.ReplaceAllString(b, `"display_type":"$1"`)
 
-	regex = regexp.MustCompile(`"legal_notice":(\d+)`)
+	regex = regexp.MustCompile(`"legal_notice":\s?(\d+)`)
 	b = regex.ReplaceAllString(b, `"legal_notice":"$1"`)
 
 	// Fix arrays that should be objects
+	// todo, update to regex to use \s?
 	b = strings.Replace(b, "\"pc_requirements\":[]", "\"pc_requirements\":null", 1)
 	b = strings.Replace(b, "\"mac_requirements\":[]", "\"mac_requirements\":null", 1)
 	b = strings.Replace(b, "\"linux_requirements\":[]", "\"linux_requirements\":null", 1)

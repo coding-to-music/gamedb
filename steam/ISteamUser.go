@@ -103,11 +103,13 @@ func GetPlayerSummaries(id int) (player PlayerSummary, err error) {
 	var regex *regexp.Regexp
 	var b = string(bytes)
 
+	logger.Info(b)
+
 	// Convert strings to ints
-	regex = regexp.MustCompile(`"primaryclanid": "(\d+)"`)
+	regex = regexp.MustCompile(`"primaryclanid":\s?"(\d+)"`)
 	b = regex.ReplaceAllString(b, `"primaryclanid": $1`)
 
-	regex = regexp.MustCompile(`"steamid": "(\d+)"`)
+	regex = regexp.MustCompile(`"steamid":\s?"(\d+)"`)
 	b = regex.ReplaceAllString(b, `"steamid": $1`)
 
 	bytes = []byte(b)
