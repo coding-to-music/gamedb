@@ -1,6 +1,6 @@
 {{define "developers"}} {{ template "_header" . }}
 
-<div class="container" id="tags-page">
+<div class="container" id="developers-page">
 
     <div class="jumbotron">
         <div class="row">
@@ -14,7 +14,7 @@
 
                 <form>
                     <div class="input-group input-group-lg">
-                        <input class="form-control tags-search" type="text" placeholder="Search for a Tag" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
+                        <input class="form-control developers-search" type="text" placeholder="Search for a Developer" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
                     </div>
                 </form>
 
@@ -26,10 +26,25 @@
     {{ template "_stats_header" . }}
         <div class="card-body">
 
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-sorter">
+                    <thead>
+                    <tr>
+                        <th scope="col">Developer</th>
+                    </tr>
+                    </thead>
+                    <tbody class="developers-list">
+                    {{ range $key, $value := .Developers }}
+                    <tr data-link="{{.GetPath}}">
+                        <td width="100%" class="developer-name">{{ .Name }}</td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     </div>
-
 
 </div>
 

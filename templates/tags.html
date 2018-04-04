@@ -26,7 +26,7 @@
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-sorter tags-list">
+                <table class="table table-hover table-striped table-sorter">
                     <thead>
                     <tr>
                         <th scope="col">Tag</th>
@@ -35,16 +35,16 @@
                         <th scope="col" class="sorter-digit" nowrap="nowrap">Avg Discount</th>
                     </tr>
                     </thead>
-
-                {{ range $key, $value := .Tags }}
+                    <tbody class="tags-list">
+                    {{ range $key, $value := .Tags }}
                     <tr data-link="{{.GetPath}}">
                         <td width="25%" class="tag-name">{{ .GetName }}</td>
                         <td width="25%">{{ comma .Apps }}</td>
                         <td width="25%">${{ .GetMeanPrice }}</td>
                         <td width="25%">{{ .GetMeanDiscount }}%</td>
                     </tr>
-                {{ end }}
-
+                    {{ end }}
+                    </tbody>
                 </table>
 
             </div>
