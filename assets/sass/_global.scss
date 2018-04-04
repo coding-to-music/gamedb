@@ -4,16 +4,6 @@ body {
     background-color: $dark;
 }
 
-.card-body {
-    padding: 1.25rem 1.25rem 1rem 1.25rem;
-}
-
-#navbar {
-    .nav-item.dropdown.closer {
-        //margin-left: -10px;
-    }
-}
-
 .navbar-brand {
     padding: 0;
     img {
@@ -28,6 +18,7 @@ body {
 
     h1 {
         white-space: nowrap;
+        font-size: 2.5rem;
     }
     .lead {
         margin: 0;
@@ -36,6 +27,16 @@ body {
         position: relative;
         z-index: 100;
     }
+
+    @media screen and (min-width: 576px) {
+        h1 {
+            font-size: 3.5rem;
+        }
+    }
+}
+
+.card-body {
+    padding: 1.25rem 1.25rem 1rem 1.25rem;
 }
 
 .small-print {

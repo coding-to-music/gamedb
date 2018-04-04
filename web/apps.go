@@ -50,6 +50,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 500, "Invalid App ID: "+id)
 		return
 	}

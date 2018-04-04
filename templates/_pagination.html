@@ -4,9 +4,9 @@
     <ul class="pagination pagination-lg justify-content-center mb-0">
     {{ range $key, $value := .GetPages }}
     {{if eq $.GetPage $value}}
-        <li class="page-item disabled"><span class="page-link" href="{{$.Path}}{{$value}}">{{$value}}</span></li>
+        <li class="page-item disabled"><span class="page-link" href="{{$.GetPath}}{{$value}}">{{$value}}</span></li>
     {{else}}
-        <li class="page-item"><a class="page-link" href="{{$.Path}}{{$value}}">{{$value}}</a></li>
+        <li class="page-item"><a class="page-link" href="{{$.GetPath}}{{$value}}">{{$value}}</a></li>
     {{end}}
     {{ end }}
     </ul>

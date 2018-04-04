@@ -40,6 +40,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 404, err.Error())
 		return
 	}
@@ -48,6 +49,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err.Error() == "no id" {
+			logger.Error(err)
 			returnErrorTemplate(w, r, 404, "We can't find this package in our database, there may not be one with this ID.")
 			return
 		}

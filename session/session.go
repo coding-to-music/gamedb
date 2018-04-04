@@ -15,21 +15,17 @@ const (
 	Games  = "games"
 )
 
+var store = sessions.NewCookieStore([]byte(os.Getenv("STEAM_SESSION_SECRET")))
+
 func getSession(r *http.Request) (*sessions.Session, error) {
 
-	store := sessions.NewCookieStore([]byte(os.Getenv("STEAM_SESSION_SECRET")))
 	session, err := store.Get(r, "steam-authority-session")
-
 	session.Options = &sessions.Options{
 		MaxAge: 0, // Session
 		Path:   "/",
 	}
 
 	return session, err
-}
-
-func Save(w http.ResponseWriter, r *http.Request) error {
-	return sessions.Save(r, w)
 }
 
 func Read(r *http.Request, key string) (value string, err error) {

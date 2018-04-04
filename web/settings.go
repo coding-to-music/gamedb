@@ -29,10 +29,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
 		logger.Error(err)
-		if err.Error() != "securecookie: the value is not valid" {
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
-		}
 	}
 
 	if loggedIn {
@@ -43,6 +39,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var url string
 	url, err = openid.RedirectURL("http://steamcommunity.com/openid", os.Getenv("STEAM_DOMAIN")+"/login-callback", os.Getenv("STEAM_DOMAIN")+"/")
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -52,12 +49,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	session.Save(w, r)
-
 	// todo, get session data from db not steam
 
 	openID, err := openid.Verify(os.Getenv("STEAM_DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -66,6 +62,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	idInt, err := strconv.Atoi(idString)
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -77,6 +74,8 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 			returnErrorTemplate(w, r, 500, err.Error())
 			return
 		}
+
+		logger.Error(err)
 	}
 
 	var gamesSlice []int
@@ -128,6 +127,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -140,6 +140,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get session
 	id, err := session.Read(r, session.ID)
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -147,6 +148,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Convert ID
 	idx, err := strconv.Atoi(id)
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -154,6 +156,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get logins
 	logins, err := datastore.GetLogins(idx, 20)
 	if err != nil {
+		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}

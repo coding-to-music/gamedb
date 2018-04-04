@@ -7,12 +7,11 @@
             <div class="col-sm-12 col-lg-6">
 
                 <h1 class="display-4"><i class="fas fa-tag"></i> Tags</h1>
-                <p class="lead">{{ len .Tags }} Tags.</p>
 
             </div>
             <div class="col-sm-12 col-lg-6">
 
-                <form class="mt-4">
+                <form>
                     <div class="input-group input-group-lg">
                         <input class="form-control tags-search" type="text" placeholder="Search for a Tag" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
                     </div>
@@ -32,8 +31,8 @@
                     <tr>
                         <th scope="col">Tag</th>
                         <th scope="col" class="sorter-digit">Games</th>
-                        <th scope="col" class="sorter-digit">Avg Price</th>
-                        <th scope="col" class="sorter-digit">Avg Discount</th>
+                        <th scope="col" class="sorter-digit" nowrap="nowrap">Avg Price</th>
+                        <th scope="col" class="sorter-digit" nowrap="nowrap">Avg Discount</th>
                     </tr>
                     </thead>
 

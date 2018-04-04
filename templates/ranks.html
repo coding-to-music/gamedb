@@ -32,7 +32,7 @@
                 <table class="table table-hover table-striped" id="ranks">
                     <thead>
                     <th scope="col">Rank</th>
-                    <th scope="col">Player</th>
+                    <th scope="col" colspan="2">Player</th>
                     <th scope="col">Country</th>
                     <th scope="col"><a href="/players/level">Level</a></th>
                     <th scope="col"><a href="/players/games">Games</a></th>
@@ -43,17 +43,17 @@
                 {{ range $key, $value := .Ranks }}
                     <tr data-link="/players/{{ .PlayerID }}/{{ .PersonaName }}">
                         <td>{{ .Rank }}</td>
-                        <td class="img">
+                        <td class="img" width="1%">
                             <img src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
-                            <span>{{ .PersonaName }}</span>
                         </td>
+                        <td>{{ .PersonaName }}</td>
                         <td class="img">
                             <img src="{{ .GetFlag }}" title="{{ .CountryCode }}" class="rounded">
                         </td>
                         <td>{{ comma .Level }}</td>
                         <td>{{ comma .GamesCount }}</td>
                         <td>{{ comma .BadgesCount }}</td>
-                        <td data-toggle="tooltip" data-placement="top" title="{{.GetTimeLong}}">{{ .GetTimeShort }}</td>
+                        <td nowrap="nowrap" data-toggle="tooltip" data-placement="top" title="{{.GetTimeLong}}">{{ .GetTimeShort }}</td>
                         <td>{{ comma .FriendsCount }}</td>
                     </tr>
                 {{ end }}

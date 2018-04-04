@@ -153,11 +153,10 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, "Something has gone wrong, the error has been logged!")
-		return
+		return err
 	} else {
 		// No error, send the content, HTTP 200 response status implied
 		buf.WriteTo(w)
-		return
 	}
 
 	return nil
@@ -338,4 +337,8 @@ func (t Pagination) GetPage() (int) {
 
 func (t Pagination) GetLast() (int) {
 	return t.last
+}
+
+func (t Pagination) GetPath() string {
+	return t.path
 }
