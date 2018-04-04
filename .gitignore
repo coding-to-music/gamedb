@@ -1,10 +1,8 @@
 cmd/protos/
-config/
 generated/
 node_modules/
 vendor/
 
 steam-authority
 debug
-dep-graph.png
-logs.txt
+auth.json

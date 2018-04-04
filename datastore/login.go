@@ -28,7 +28,7 @@ func CreateLogin(playerID int, r *http.Request) (err error) {
 	login.CreatedAt = time.Now()
 	login.PlayerID = playerID
 	login.UserAgent = r.Header.Get("User-Agent")
-	login.IP = r.RemoteAddr
+	login.IP = r.Header.Get("X-Forwarded-For")
 
 	_, err = SaveKind(login.GetKey(), login)
 
