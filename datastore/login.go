@@ -30,6 +30,10 @@ func CreateLogin(playerID int, r *http.Request) (err error) {
 	login.UserAgent = r.Header.Get("User-Agent")
 	login.IP = r.Header.Get("X-Forwarded-For")
 
+	if login.IP == "" {
+		login.IP = "127.0.0.1"
+	}
+
 	_, err = SaveKind(login.GetKey(), login)
 
 	return err
