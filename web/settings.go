@@ -96,13 +96,16 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save session
-	session.WriteMany(w, r, map[string]string{
+	err = session.WriteMany(w, r, map[string]string{
 		session.ID:     idString,
 		session.Name:   resp.PersonaName,
 		session.Avatar: resp.AvatarMedium,
 		session.Games:  string(gamesString),
 		session.Level:  strconv.Itoa(level),
 	})
+	if err != nil {
+		logger.Error(err)
+	}
 
 	// Create login record
 	datastore.CreateLogin(idInt, r)
