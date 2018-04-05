@@ -21,58 +21,60 @@ type App struct {
 	ID                     int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`                  //
 	CreatedAt              *time.Time `gorm:"not null;column:created_at"`                                     //
 	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`                                     //
-	Name                   string     `gorm:"not null;column:name"`                                           //
-	Type                   string     `gorm:"not null;column:type"`                                           //
-	IsFree                 bool       `gorm:"not null;column:is_free;type:tinyint(1)"`                        //
-	DLC                    string     `gorm:"not null;column:dlc;type:json;default:'[]'"`                     // JSON
-	ShortDescription       string     `gorm:"not null;column:description_short"`                              //
-	HeaderImage            string     `gorm:"not null;column:image_header"`                                   //
-	Developer              string     `gorm:"not null;column:developer"`                                      //
-	Publisher              string     `gorm:"not null;column:publisher"`                                      //
-	Packages               string     `gorm:"not null;column:packages;type:json;default:'[]'"`                // JSON
-	MetacriticScore        int8       `gorm:"not null;column:metacritic_score"`                               //
-	MetacriticURL          string     `gorm:"not null;column:metacritic_url"`                                 //
-	Categories             string     `gorm:"not null;column:categories;type:json;default:'[]'"`              // JSON
-	Genres                 string     `gorm:"not null;column:genres;type:json;default:'[]'"`                  // JSON
-	Screenshots            string     `gorm:"not null;column:screenshots;type:text;default:'[]'"`             // JSON
-	Movies                 string     `gorm:"not null;column:movies;type:text;default:'[]'"`                  // JSON
+	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text;default:'[]'"` // JSON
 	Achievements           string     `gorm:"not null;column:achievements;type:text;default:'{}'"`            // JSON
 	Background             string     `gorm:"not null;column:background"`                                     //
-	Platforms              string     `gorm:"not null;column:platforms;type:json;default:'[]'"`               // JSON
+	Categories             string     `gorm:"not null;column:categories;type:json;default:'[]'"`              // JSON
+	ChangeNumber           int        `gorm:"not null;column:change_number"`                                  // PICS
+	ClientIcon             string     `gorm:"not null;column:client_icon"`                                    // PICS
+	ComingSoon             bool       `gorm:"not null;column:coming_soon"`                                    //
+	Developers             string     `gorm:"not null;column:developers;type:json;default:'[]'"`              // JSON
+	DLC                    string     `gorm:"not null;column:dlc;type:json;default:'[]'"`                     // JSON
+	Extended               string     `gorm:"not null;column:extended;default:'{}'"`                          // JSON
 	GameID                 int        `gorm:"not null;column:game_id"`                                        //
 	GameName               string     `gorm:"not null;column:game_name"`                                      //
-	ReleaseState           string     `gorm:"not null;column:release_state"`                                  // PICS
-	StoreTags              string     `gorm:"not null;column:tags;type:json;default:'[]'"`                    // PICS JSON
-	Homepage               string     `gorm:"not null;column:homepage"`                                       // PICS
-	ChangeNumber           int        `gorm:"not null;column:change_number"`                                  // PICS
-	Logo                   string     `gorm:"not null;column:logo"`                                           // PICS
-	Icon                   string     `gorm:"not null;column:icon"`                                           // PICS
-	ClientIcon             string     `gorm:"not null;column:client_icon"`                                    // PICS
+	Genres                 string     `gorm:"not null;column:genres;type:json;default:'[]'"`                  // JSON
 	Ghost                  bool       `gorm:"not null;column:is_ghost;type:tinyint(1)"`                       //
-	PriceInitial           int        `gorm:"not null;column:price_initial"`                                  //
-	PriceFinal             int        `gorm:"not null;column:price_final"`                                    //
+	HeaderImage            string     `gorm:"not null;column:image_header"`                                   //
+	Homepage               string     `gorm:"not null;column:homepage"`                                       // PICS
+	Icon                   string     `gorm:"not null;column:icon"`                                           // PICS
+	IsFree                 bool       `gorm:"not null;column:is_free;type:tinyint(1)"`                        //
+	Logo                   string     `gorm:"not null;column:logo"`                                           // PICS
+	MetacriticScore        int8       `gorm:"not null;column:metacritic_score"`                               //
+	MetacriticURL          string     `gorm:"not null;column:metacritic_url"`                                 //
+	Movies                 string     `gorm:"not null;column:movies;type:text;default:'[]'"`                  // JSON
+	Name                   string     `gorm:"not null;column:name"`                                           //
+	Packages               string     `gorm:"not null;column:packages;type:json;default:'[]'"`                // JSON
+	Platforms              string     `gorm:"not null;column:platforms;type:json;default:'[]'"`               // JSON
 	PriceDiscount          int        `gorm:"not null;column:price_discount"`                                 //
-	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text;default:'[]'"` // JSON
-	Schema                 string     `gorm:"not null;column:schema;type:text;default:'{}'"`                  // JSON
-	ComingSoon             bool       `gorm:"not null;column:coming_soon"`                                    //
+	PriceFinal             int        `gorm:"not null;column:price_final"`                                    //
+	PriceInitial           int        `gorm:"not null;column:price_initial"`                                  //
+	Publishers             string     `gorm:"not null;column:publishers;type:json;default:'[]'"`              // JSON
 	ReleaseDate            string     `gorm:"not null;column:release_date"`                                   //
-	Extended               string     `gorm:"not null;column:extended;default:'{}'"`                          // JSON
+	ReleaseState           string     `gorm:"not null;column:release_state"`                                  // PICS
+	Schema                 string     `gorm:"not null;column:schema;type:text;default:'{}'"`                  // JSON
+	Screenshots            string     `gorm:"not null;column:screenshots;type:text;default:'[]'"`             // JSON
+	ShortDescription       string     `gorm:"not null;column:description_short"`                              //
+	StoreTags              string     `gorm:"not null;column:tags;type:json;default:'[]'"`                    // PICS JSON
+	Type                   string     `gorm:"not null;column:type"`                                           //
 }
 
 func GetDefaultAppJSON() App {
 	return App{
-		StoreTags:              "[]",
-		Categories:             "[]",
-		Genres:                 "[]",
-		Screenshots:            "[]",
-		Movies:                 "[]",
-		Achievements:           "{}",
-		Platforms:              "[]",
-		DLC:                    "[]",
-		Packages:               "[]",
 		AchievementPercentages: "[]",
-		Schema:                 "{}",
+		Achievements:           "{}",
+		Categories:             "[]",
+		Developers:             "[]",
+		DLC:                    "[]",
 		Extended:               "{}",
+		Genres:                 "[]",
+		Movies:                 "[]",
+		Packages:               "[]",
+		Platforms:              "[]",
+		Publishers:             "[]",
+		Schema:                 "{}",
+		Screenshots:            "[]",
+		StoreTags:              "[]",
 	}
 }
 
@@ -272,6 +274,32 @@ func (app App) GetTags() (tags []int, err error) {
 	}
 
 	return tags, nil
+}
+
+func (app App) GetDevelopers() (developers []string, err error) {
+
+	bytes := []byte(app.Developers)
+	if err := json.Unmarshal(bytes, &developers); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
+		return developers, err
+	}
+
+	return developers, nil
+}
+
+func (app App) GetPublishers() (publishers []string, err error) {
+
+	bytes := []byte(app.Publishers)
+	if err := json.Unmarshal(bytes, &publishers); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
+		return publishers, err
+	}
+
+	return publishers, nil
 }
 
 func (app App) GetName() (name string) {
@@ -492,6 +520,14 @@ func (app *App) Fill() (err error) {
 		app.AchievementPercentages = "[]"
 	}
 
+	if app.Developers == "" || app.Developers == "null" {
+		app.Developers = "[]"
+	}
+
+	if app.Publishers == "" || app.Publishers == "null" {
+		app.Publishers = "[]"
+	}
+
 	if app.Schema == "" || app.Schema == "null" {
 		app.Schema = "{}"
 	}
@@ -547,6 +583,18 @@ func (app *App) fillFromAPI() (err error) {
 		return err
 	}
 
+	// Publishers
+	publishersString, err := json.Marshal(response.Data.Publishers)
+	if err != nil {
+		return err
+	}
+
+	// Developers
+	developersString, err := json.Marshal(response.Data.Developers)
+	if err != nil {
+		return err
+	}
+
 	// Categories
 	var categories []int8
 	for _, v := range response.Data.Categories {
@@ -587,8 +635,8 @@ func (app *App) fillFromAPI() (err error) {
 	app.DLC = string(dlcString)
 	app.ShortDescription = response.Data.ShortDescription
 	app.HeaderImage = response.Data.HeaderImage
-	app.Developer = strings.Join(response.Data.Developers, ", ")
-	app.Publisher = strings.Join(response.Data.Publishers, ", ")
+	app.Developers = string(developersString)
+	app.Publishers = string(publishersString)
 	app.Packages = string(packagesString)
 	app.MetacriticScore = response.Data.Metacritic.Score
 	app.MetacriticURL = response.Data.Metacritic.URL
@@ -660,8 +708,8 @@ func (app *App) fillFromPICS() (err error) {
 	app.MetacriticScore = int8(metacriticScoreInt)
 	app.MetacriticURL = js.Common.MetacriticURL
 	app.StoreTags = string(tags)
-	app.Developer = js.Extended.Developer
-	app.Publisher = js.Extended.Publisher
+	// app.Developers = js.Extended.Developer // Store API can handle multiple values
+	// app.Publishers = js.Extended.Publisher // Store API can handle multiple values
 	app.Homepage = js.Extended.Homepage
 	app.ChangeNumber = js.ChangeNumber
 	app.Logo = js.Common.Logo

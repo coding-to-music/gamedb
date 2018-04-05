@@ -271,7 +271,7 @@ func adminQueues(r *http.Request) {
 func adminPublishers() {
 
 	// Get apps from mysql
-	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "publisher"})
+	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "publishers"})
 	if err != nil {
 		logger.Error(err)
 	}
@@ -280,23 +280,30 @@ func adminPublishers() {
 
 	for _, app := range apps {
 
-		key := app.Publisher
-		if key == "" {
-			key = "No Publisher"
+		publishers, err := app.GetPublishers()
+		if err != nil {
+			logger.Error(err)
+			continue
 		}
 
-		if _, ok := counts[key]; ok {
-			counts[key].count++
-			counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
-			counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
-		} else {
-			counts[key] = &adminDeveloper{
-				count:         1,
-				totalPrice:    app.PriceFinal,
-				totalDiscount: app.PriceDiscount,
+		if len(publishers) == 0 {
+			publishers = []string{"No Publishers"}
+		}
+
+		for _, key := range publishers {
+
+			if _, ok := counts[key]; ok {
+				counts[key].count++
+				counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
+				counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
+			} else {
+				counts[key] = &adminDeveloper{
+					count:         1,
+					totalPrice:    app.PriceFinal,
+					totalDiscount: app.PriceDiscount,
+				}
 			}
 		}
-
 	}
 
 	var wg sync.WaitGroup
@@ -342,20 +349,28 @@ func adminDevelopers() {
 
 	for _, app := range apps {
 
-		key := app.Developer
-		if key == "" {
-			key = "No Developer"
+		developers, err := app.GetDevelopers()
+		if err != nil {
+			logger.Error(err)
+			continue
 		}
 
-		if _, ok := counts[key]; ok {
-			counts[key].count++
-			counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
-			counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
-		} else {
-			counts[key] = &adminDeveloper{
-				count:         1,
-				totalPrice:    app.PriceFinal,
-				totalDiscount: app.PriceDiscount,
+		if len(developers) == 0 {
+			developers = []string{"No Developers"}
+		}
+
+		for _, key := range developers {
+
+			if _, ok := counts[key]; ok {
+				counts[key].count++
+				counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
+				counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
+			} else {
+				counts[key] = &adminDeveloper{
+					count:         1,
+					totalPrice:    app.PriceFinal,
+					totalDiscount: app.PriceDiscount,
+				}
 			}
 		}
 	}
