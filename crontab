@@ -10,5 +10,3 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 30 1  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-donations.sh
 40 1  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-developers.sh
 50 1  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-publishers.sh
-
-*  *  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-donations.sh
