@@ -300,3 +300,39 @@ type PackageDetailsBody struct {
 		} `json:"release_date"`
 	} `json:"data"`
 }
+
+func GetTags() (tags []steamTag, err error) {
+
+	// Get tags names
+	response, err := http.Get("http://store.steampowered.com/tagdata/populartags/english")
+	if err != nil {
+		logger.Error(err)
+		return tags, err
+	}
+	defer response.Body.Close()
+
+	// Convert to bytes
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		logger.Error(err)
+		return tags, err
+	}
+
+	// Unmarshal JSON
+	var resp []steamTag
+	if err := json.Unmarshal(contents, &resp); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(contents))
+		} else {
+			logger.Error(err)
+		}
+		return tags, err
+	}
+
+	return tags, nil
+}
+
+type steamTag struct {
+	TagID int    `json:"tagid"`
+	Name  string `json:"name"`
+}

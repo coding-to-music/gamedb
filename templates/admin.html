@@ -60,6 +60,16 @@
                             <h5 class="mb-1">Tags</h5>
                             <p class="mb-1">Scan all apps for tags, count them, update tags table</p>
                         </a>
+                        <a href="/admin/count-developers" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "developers-updated").Value }}"></small>
+                            <h5 class="mb-1">Developers</h5>
+                            <p class="mb-1">Scan all apps for developers, count them, update developers table</p>
+                        </a>
+                        <a href="/admin/count-publishers" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "publishers-updated").Value }}"></small>
+                            <h5 class="mb-1">Publishers</h5>
+                            <p class="mb-1">Scan all apps for publishers, count them, update publishers table</p>
+                        </a>
                     </div>
 
                 </div>

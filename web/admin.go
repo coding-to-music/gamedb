@@ -2,12 +2,10 @@ package web
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -39,6 +37,10 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminRanks()
 	case "count-tags":
 		go adminTags()
+	case "count-developers":
+		go adminDevelopers()
+	case "count-publishers":
+		go adminPublishers()
 	case "disable-consumers":
 		go adminDisableConsumers()
 	}
@@ -57,6 +59,8 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		datastore.ConfDonationsUpdated,
 		datastore.ConfRanksUpdated,
 		datastore.ConfAddedAllApps,
+		datastore.ConfDevelopersUpdated,
+		datastore.ConfPublishersUpdated,
 	})
 	if err != nil {
 		logger.Error(err)
@@ -264,39 +268,94 @@ func adminQueues(r *http.Request) {
 	}
 }
 
+func adminPublishers() {
+
+}
+
+func adminDevelopers() {
+
+	// Get apps from mysql
+	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "publisher", "developer"})
+	if err != nil {
+		logger.Error(err)
+	}
+
+	counts := make(map[string]*adminDeveloper)
+
+	for _, app := range apps {
+
+		dev := app.Developer
+
+		if _, ok := counts[dev]; ok {
+			counts[dev].count++
+			counts[dev].totalPrice = counts[dev].totalPrice + app.PriceFinal
+			counts[dev].totalDiscount = counts[dev].totalDiscount + app.PriceDiscount
+		} else {
+			counts[dev] = &adminDeveloper{
+				count:         1,
+				totalPrice:    app.PriceFinal,
+				totalDiscount: app.PriceDiscount,
+			}
+		}
+	}
+
+	var wg sync.WaitGroup
+
+	for k, v := range counts {
+
+		wg.Add(1)
+		go func(k string, v *adminDeveloper) {
+
+			err := mysql.SaveOrUpdateDeveloper(k, mysql.Developer{
+				Apps:         v.count,
+				MeanPrice:    v.GetMeanPrice(),
+				MeanDiscount: v.GetMeanDiscount(),
+				Name:         k,
+			})
+			if err != nil {
+				logger.Error(err)
+			}
+
+			wg.Done()
+
+		}(k, v)
+	}
+	wg.Wait()
+
+	err = datastore.SetConfig(datastore.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	if err != nil {
+		logger.Error(err)
+	}
+
+	logger.Info("Developers updated")
+}
+
+type adminDeveloper struct {
+	count         int
+	totalPrice    int
+	totalDiscount int
+}
+
+func (t adminDeveloper) GetMeanPrice() float64 {
+	return float64(t.totalPrice) / float64(t.count)
+}
+
+func (t adminDeveloper) GetMeanDiscount() float64 {
+	return float64(t.totalDiscount) / float64(t.count)
+}
+
 // todo, handle tags that no longer have any games.
 func adminTags() {
 
-	// Get tags names
-	response, err := http.Get("http://store.steampowered.com/tagdata/populartags/english")
+	tagsResp, err := steam.GetTags()
 	if err != nil {
 		logger.Error(err)
-		return
-	}
-	defer response.Body.Close()
-
-	// Convert to bytes
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
-	// Unmarshal JSON
-	var resp []steamTag
-	if err := json.Unmarshal(contents, &resp); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(contents))
-		} else {
-			logger.Error(err)
-		}
-		return
 	}
 
 	// Make tag map
 	steamTagMap := make(map[int]string)
-	for _, v := range resp {
-		steamTagMap[v.Tagid] = v.Name
+	for _, v := range tagsResp {
+		steamTagMap[v.TagID] = v.Name
 	}
 
 	// Get apps from mysql
@@ -379,11 +438,6 @@ func (t adminTag) GetMeanPrice() float64 {
 
 func (t adminTag) GetMeanDiscount() float64 {
 	return float64(t.totalDiscount) / float64(t.count)
-}
-
-type steamTag struct {
-	Tagid int    `json:"tagid"`
-	Name  string `json:"name"`
 }
 
 func adminRanks() {

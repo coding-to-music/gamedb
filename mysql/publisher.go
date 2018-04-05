@@ -6,10 +6,13 @@ import (
 )
 
 type Publisher struct {
-	ID        int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
-	CreatedAt *time.Time `gorm:"not null;column:created_at"`
-	UpdatedAt *time.Time `gorm:"not null;column:updated_at"`
-	Name      string     `gorm:"not null;column:name"`
+	ID           int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
+	CreatedAt    *time.Time `gorm:"not null;column:created_at"`
+	UpdatedAt    *time.Time `gorm:"not null;column:updated_at"`
+	Name         string     `gorm:"not null;column:name"`
+	Apps         int        `gorm:"not null;column:apps"`
+	MeanPrice    float64    `gorm:"not null;column:mean_price"`
+	MeanDiscount float64    `gorm:"not null;column:mean_discount"`
 }
 
 func (p Publisher) GetPath() string {
@@ -38,7 +41,7 @@ func SaveOrUpdatePublisher(id int, vals Publisher) (err error) {
 		return err
 	}
 
-	publisher := new(Tag)
+	publisher := new(Publisher)
 	db.Assign(vals).FirstOrCreate(publisher, Publisher{ID: id})
 	if db.Error != nil {
 		return db.Error

@@ -1,19 +1,31 @@
 package mysql
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 )
 
 type Developer struct {
-	ID        int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
-	CreatedAt *time.Time `gorm:"not null;column:created_at"`
-	UpdatedAt *time.Time `gorm:"not null;column:updated_at"`
-	Name      string     `gorm:"not null;column:name"`
+	ID           int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
+	CreatedAt    *time.Time `gorm:"not null;column:created_at"`
+	UpdatedAt    *time.Time `gorm:"not null;column:updated_at"`
+	Name         string     `gorm:"not null;column:name"`
+	Apps         int        `gorm:"not null;column:apps"`
+	MeanPrice    float64    `gorm:"not null;column:mean_price"`
+	MeanDiscount float64    `gorm:"not null;column:mean_discount"`
 }
 
 func (d Developer) GetPath() string {
 	return "/apps?developer=" + strconv.Itoa(d.ID)
+}
+
+func (d Developer) GetMeanPrice() string {
+	return fmt.Sprintf("%0.2f", d.MeanPrice/100)
+}
+
+func (d Developer) GetMeanDiscount() string {
+	return fmt.Sprintf("%0.2f", d.MeanDiscount)
 }
 
 func GetAllDevelopers() (developers []Developer, err error) {
@@ -29,4 +41,20 @@ func GetAllDevelopers() (developers []Developer, err error) {
 	}
 
 	return developers, nil
+}
+
+func SaveOrUpdateDeveloper(name string, vals Developer) (err error) {
+
+	db, err := GetDB()
+	if err != nil {
+		return err
+	}
+
+	developer := new(Developer)
+	db.Assign(vals).FirstOrCreate(developer, Developer{Name: name})
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
 }
