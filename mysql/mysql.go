@@ -20,7 +20,8 @@ func GetDB() (conn *gorm.DB, err error) {
 
 	if gormConnection == nil {
 
-		logger.Info("Connecting to MySQL")
+		//logger.Info("Connecting to MySQL")
+
 		db, err := gorm.Open("mysql", os.Getenv("STEAM_SQL_DSN")+"?parseTime=true")
 		db.LogMode(debug)
 		if err != nil {

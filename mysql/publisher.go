@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -19,6 +20,14 @@ func (p Publisher) GetPath() string {
 	return "/apps?publisher=" + strconv.Itoa(p.ID)
 }
 
+func (p Publisher) GetMeanPrice() string {
+	return fmt.Sprintf("%0.2f", p.MeanPrice/100)
+}
+
+func (p Publisher) GetMeanDiscount() string {
+	return fmt.Sprintf("%0.2f", p.MeanDiscount)
+}
+
 func GetAllPublishers() (publishers []Publisher, err error) {
 
 	db, err := GetDB()
@@ -34,7 +43,7 @@ func GetAllPublishers() (publishers []Publisher, err error) {
 	return publishers, nil
 }
 
-func SaveOrUpdatePublisher(id int, vals Publisher) (err error) {
+func SaveOrUpdatePublisher(name string, vals Publisher) (err error) {
 
 	db, err := GetDB()
 	if err != nil {
@@ -42,7 +51,7 @@ func SaveOrUpdatePublisher(id int, vals Publisher) (err error) {
 	}
 
 	publisher := new(Publisher)
-	db.Assign(vals).FirstOrCreate(publisher, Publisher{ID: id})
+	db.Assign(vals).FirstOrCreate(publisher, Publisher{Name: name})
 	if db.Error != nil {
 		return db.Error
 	}

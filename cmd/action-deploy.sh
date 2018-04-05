@@ -2,21 +2,18 @@
 
 cd ../
 
-# Get the latest version
 echo "### Pulling"
 git fetch origin
 git reset --hard origin/master
 
-# Build
 echo "### Building"
 dep ensure
 go build
 
-# Copy over crontab
+echo "### Copying crontab"
 cp ./crontab /etc/cron.d/steamauthority
 
-# Tell Rollbar
-echo "### Rollbar"
+echo "### Talking to Rollbar"
 curl https://api.rollbar.com/api/1/deploy/ \
   -F access_token=${STEAM_ROLLBAR_PRIVATE} \
   -F environment=${ENV} \
@@ -24,6 +21,5 @@ curl https://api.rollbar.com/api/1/deploy/ \
   -F local_username=Jleagle \
   --silent > /dev/null
 
-# Restart web server & PICS
-echo "### Restart"
+echo "### Restarting"
 /etc/init.d/steam restart

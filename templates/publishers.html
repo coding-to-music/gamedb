@@ -14,7 +14,7 @@
 
                 <form>
                     <div class="input-group input-group-lg">
-                        <input class="form-control publishers-search" type="text" placeholder="Search for a Publisher" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
+                        <input class="form-control" id="search" type="text" placeholder="Search for a Publisher" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
                     </div>
                 </form>
 
@@ -27,16 +27,22 @@
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-sorter">
+                <table class="table table-hover table-striped table-datatable">
                     <thead>
                     <tr>
                         <th scope="col">Publisher</th>
+                        <th scope="col" class="sorter-digit">Games</th>
+                        <th scope="col" class="sorter-digit" nowrap="nowrap">Avg Price</th>
+                        <th scope="col" class="sorter-digit" nowrap="nowrap">Avg Discount</th>
                     </tr>
                     </thead>
                     <tbody class="publishers-list">
                     {{ range $key, $value := .Publishers }}
                     <tr data-link="{{.GetPath}}">
-                        <td width="100%" class="publisher-name">{{ .Name }}</td>
+                        <td>{{ .Name }}</td>
+                        <td>{{ comma .Apps }}</td>
+                        <td>${{ .GetMeanPrice }}</td>
+                        <td>{{ .GetMeanDiscount }}%</td>
                     </tr>
                     {{ end }}
                     </tbody>

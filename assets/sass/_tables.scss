@@ -39,25 +39,11 @@ table.table-sm {
     }
 }
 
-table.table-sorter {
-    thead tr {
-        .tablesorter-header {
-            background: url(/assets/img/tablesorter/bg.gif) no-repeat center left;
-            cursor: pointer;
-            padding-left: 20px;
-            outline: none;
-        }
-        .tablesorter-headerAsc {
-            background-image: url(/assets/img/tablesorter/asc.gif);
-            text-decoration: underline;
-        }
-        .tablesorter-headerDesc {
-            background-image: url(/assets/img/tablesorter/desc.gif);
-            text-decoration: underline;
-        }
-        .sorter-false {
-            background: none !important;
-            cursor: default;
-        }
+table.table-datatable {
+    th:empty::before {
+        content: '';
+    }
+    th:empty::after {
+        content: '';
     }
 }

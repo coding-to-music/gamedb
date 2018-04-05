@@ -118,7 +118,7 @@ func (s queue) consume() {
 		for {
 			select {
 			case err = <-closeChan:
-				logger.Info("change channel closed")
+				//logger.Info("change channel closed")
 				breakFor = true
 				break
 

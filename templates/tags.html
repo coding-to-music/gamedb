@@ -7,13 +7,14 @@
             <div class="col-sm-12 col-lg-6">
 
                 <h1 class="display-4"><i class="fas fa-tag"></i> Tags</h1>
+                <p class="lead">{{ len .Tags }} Tags.</p>
 
             </div>
             <div class="col-sm-12 col-lg-6">
 
                 <form>
                     <div class="input-group input-group-lg">
-                        <input class="form-control tags-search" type="text" placeholder="Search for a Tag" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
+                        <input class="form-control" id="search" type="text" placeholder="Search for a Tag" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
                     </div>
                 </form>
 
@@ -26,7 +27,7 @@
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-sorter">
+                <table class="table table-hover table-striped table-datatable">
                     <thead>
                     <tr>
                         <th scope="col">Tag</th>
@@ -38,10 +39,10 @@
                     <tbody class="tags-list">
                     {{ range $key, $value := .Tags }}
                     <tr data-link="{{.GetPath}}">
-                        <td width="25%" class="tag-name">{{ .GetName }}</td>
-                        <td width="25%">{{ comma .Apps }}</td>
-                        <td width="25%">${{ .GetMeanPrice }}</td>
-                        <td width="25%">{{ .GetMeanDiscount }}%</td>
+                        <td>{{ .GetName }}</td>
+                        <td>{{ comma .Apps }}</td>
+                        <td>${{ .GetMeanPrice }}</td>
+                        <td>{{ .GetMeanDiscount }}%</td>
                     </tr>
                     {{ end }}
                     </tbody>

@@ -8,18 +8,14 @@
             <div class="col-sm-12 col-lg-6">
 
                 <h1 class="display-4"><i class="fas fa-film"></i> Genres</h1>
-                <p class="lead">
-                {{ len .Genres }} Genres.
-                    Sort by <span class="sort" data-sort="genre-name">genre</span>.
-                    Sort by <span class="sort" data-sort="genre-games">games</span>.
-                </p>
+                <p class="lead">{{ len .Genres }} Genres.</p>
 
             </div>
             <div class="col-sm-12 col-lg-6">
 
                 <form>
                     <div class="input-group input-group-lg">
-                        <input class="form-control genres-search" type="text" placeholder="Search for a Genre" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
+                        <input class="form-control" id="search" type="text" placeholder="Search for a Genre" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
                     </div>
                 </form>
 
@@ -32,17 +28,15 @@
     {{ template "_stats_header" . }}
         <div class="card-body">
 
-            <div class="row genres-list">
+            <div class="row">
             {{ range $key, $value := .Genres }}
                 <div class="col-sm-4 mb-2" id="genre_{{ .ID }}">
 
                     <div class="list-group">
                         <a href="{{ .GetPath }}" class="list-group-item list-group-item-action list-group-item-secondary">
                             <i class="fas fa-star"></i>
-                            <h6 class="mb-1 genre-name">{{ .Name }}</h6>
-                            <small>
-                                <span class="genre-games">{{ .Apps }}</span> Games
-                            </small>
+                            <h6 class="mb-1">{{ .Name }}</h6>
+                            <small>{{ .Apps }} Games</small>
                         </a>
                     </div>
 

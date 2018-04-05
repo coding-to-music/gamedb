@@ -4,7 +4,12 @@
     <ul class="nav nav-tabs card-header-tabs" role="tablist">
 
         <li class="nav-item">
-            <a class="nav-link {{if startsWith .Path "/tags" }}active{{end}}" href="/tags" role="tab">Tags</a>
+        {{if startsWith .Path "/tags" }}
+            <span class="nav-link active" role="tab">Tags</span>
+        {{else}}
+            <a class="nav-link" href="/tags" role="tab">Tags</a>
+        {{end}}
+
         </li>
 
         <li class="nav-item">
@@ -16,11 +21,21 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link {{if startsWith .Path "/publishers" }}active{{end}}" href="/publishers" role="tab">Publishers</a>
+        {{if startsWith .Path "/publishers" }}
+            <span class="nav-link active" role="tab">Publishers</span>
+        {{else}}
+            <a class="nav-link" href="/publishers" role="tab">Publishers</a>
+        {{end}}
+
         </li>
 
         <li class="nav-item">
-            <a class="nav-link {{if startsWith .Path "/developers" }}active{{end}}" href="/developers" role="tab">Developers</a>
+        {{if startsWith .Path "/developers" }}
+            <span class="nav-link active" role="tab">Developers</span>
+        {{else}}
+            <a class="nav-link" href="/developers" role="tab">Developers</a>
+        {{end}}
+
         </li>
 
     </ul>

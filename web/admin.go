@@ -270,12 +270,8 @@ func adminQueues(r *http.Request) {
 
 func adminPublishers() {
 
-}
-
-func adminDevelopers() {
-
 	// Get apps from mysql
-	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "publisher", "developer"})
+	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "publisher"})
 	if err != nil {
 		logger.Error(err)
 	}
@@ -284,14 +280,79 @@ func adminDevelopers() {
 
 	for _, app := range apps {
 
-		dev := app.Developer
+		key := app.Publisher
+		if key == "" {
+			key = "No Publisher"
+		}
 
-		if _, ok := counts[dev]; ok {
-			counts[dev].count++
-			counts[dev].totalPrice = counts[dev].totalPrice + app.PriceFinal
-			counts[dev].totalDiscount = counts[dev].totalDiscount + app.PriceDiscount
+		if _, ok := counts[key]; ok {
+			counts[key].count++
+			counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
+			counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
 		} else {
-			counts[dev] = &adminDeveloper{
+			counts[key] = &adminDeveloper{
+				count:         1,
+				totalPrice:    app.PriceFinal,
+				totalDiscount: app.PriceDiscount,
+			}
+		}
+
+	}
+
+	var wg sync.WaitGroup
+
+	for k, v := range counts {
+
+		wg.Add(1)
+		go func(k string, v *adminDeveloper) {
+
+			err := mysql.SaveOrUpdatePublisher(k, mysql.Publisher{
+				Apps:         v.count,
+				MeanPrice:    v.GetMeanPrice(),
+				MeanDiscount: v.GetMeanDiscount(),
+				Name:         k,
+			})
+			if err != nil {
+				logger.Error(err)
+			}
+
+			wg.Done()
+
+		}(k, v)
+	}
+	wg.Wait()
+
+	err = datastore.SetConfig(datastore.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	if err != nil {
+		logger.Error(err)
+	}
+
+	logger.Info("Publishers updated")
+}
+
+func adminDevelopers() {
+
+	// Get apps from mysql
+	apps, err := mysql.SearchApps(url.Values{}, 10, "", []string{"name", "price_final", "price_discount", "developer"})
+	if err != nil {
+		logger.Error(err)
+	}
+
+	counts := make(map[string]*adminDeveloper)
+
+	for _, app := range apps {
+
+		key := app.Developer
+		if key == "" {
+			key = "No Developer"
+		}
+
+		if _, ok := counts[key]; ok {
+			counts[key].count++
+			counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
+			counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
+		} else {
+			counts[key] = &adminDeveloper{
 				count:         1,
 				totalPrice:    app.PriceFinal,
 				totalDiscount: app.PriceDiscount,
