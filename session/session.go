@@ -15,7 +15,10 @@ const (
 	Games  = "games"
 )
 
-var store = sessions.NewCookieStore([]byte(os.Getenv("STEAM_SESSION_SECRET")))
+var store = sessions.NewCookieStore(
+	[]byte(os.Getenv("STEAM_SESSION_AUTHENTICATION")),
+	[]byte(os.Getenv("STEAM_SESSION_ENCRYPTION")),
+)
 
 func getSession(r *http.Request) (*sessions.Session, error) {
 
