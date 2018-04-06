@@ -10,6 +10,7 @@ type Publisher struct {
 	ID           int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
 	CreatedAt    *time.Time `gorm:"not null;column:created_at"`
 	UpdatedAt    *time.Time `gorm:"not null;column:updated_at"`
+	DeletedAt    *time.Time `gorm:"not null;column:deleted_at"`
 	Name         string     `gorm:"not null;column:name"`
 	Apps         int        `gorm:"not null;column:apps"`
 	MeanPrice    float64    `gorm:"not null;column:mean_price"`
@@ -51,7 +52,27 @@ func SaveOrUpdatePublisher(name string, vals Publisher) (err error) {
 	}
 
 	publisher := new(Publisher)
+	publisher.DeletedAt = nil
+
 	db.Assign(vals).FirstOrCreate(publisher, Publisher{Name: name})
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}
+
+func DeletePublisher(id int) (err error) {
+
+	db, err := GetDB()
+	if err != nil {
+		return err
+	}
+
+	publisher := new(Publisher)
+	publisher.ID = id
+
+	db.Delete(publisher)
 	if db.Error != nil {
 		return db.Error
 	}

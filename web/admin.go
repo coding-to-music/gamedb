@@ -2,10 +2,12 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -270,6 +272,18 @@ func adminQueues(r *http.Request) {
 
 func adminPublishers() {
 
+	// Get current publishers, to delete old ones
+	publishers, err := mysql.GetAllPublishers()
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	pubsToDelete := map[string]int{}
+	for _, v := range publishers {
+		pubsToDelete[v.Name] = v.ID
+	}
+
 	// Get apps from mysql
 	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "publishers"})
 	if err != nil {
@@ -287,10 +301,14 @@ func adminPublishers() {
 		}
 
 		if len(publishers) == 0 {
-			publishers = []string{"No Publishers"}
+			publishers = []string{"No Publisher"}
 		}
 
 		for _, key := range publishers {
+
+			key = strings.ToLower(key)
+
+			delete(pubsToDelete, key)
 
 			if _, ok := counts[key]; ok {
 				counts[key].count++
@@ -301,6 +319,7 @@ func adminPublishers() {
 					count:         1,
 					totalPrice:    app.PriceFinal,
 					totalDiscount: app.PriceDiscount,
+					name:          app.GetName(),
 				}
 			}
 		}
@@ -308,6 +327,25 @@ func adminPublishers() {
 
 	var wg sync.WaitGroup
 
+	// Delete old publishers
+	for k, v := range pubsToDelete {
+
+		if k == `["Clamdog Studio"]` {
+			fmt.Println("xx")
+		}
+
+		wg.Add(1)
+
+		// todo, goroutine not working unless it logs something?
+		func() {
+
+			mysql.DeletePublisher(v)
+
+			wg.Done()
+		}()
+	}
+
+	// Update current publishers
 	for k, v := range counts {
 
 		wg.Add(1)
@@ -327,6 +365,7 @@ func adminPublishers() {
 
 		}(k, v)
 	}
+
 	wg.Wait()
 
 	err = datastore.SetConfig(datastore.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
@@ -356,10 +395,12 @@ func adminDevelopers() {
 		}
 
 		if len(developers) == 0 {
-			developers = []string{"No Developers"}
+			developers = []string{"No Developer"}
 		}
 
 		for _, key := range developers {
+
+			key = strings.ToLower(key)
 
 			if _, ok := counts[key]; ok {
 				counts[key].count++
@@ -370,6 +411,7 @@ func adminDevelopers() {
 					count:         1,
 					totalPrice:    app.PriceFinal,
 					totalDiscount: app.PriceDiscount,
+					name:          app.GetName(),
 				}
 			}
 		}
@@ -407,6 +449,7 @@ func adminDevelopers() {
 }
 
 type adminDeveloper struct {
+	name          string
 	count         int
 	totalPrice    int
 	totalDiscount int
