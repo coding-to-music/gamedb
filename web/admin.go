@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
@@ -163,9 +162,21 @@ func adminDonations() {
 	logger.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
 
-// todo, handle genres that no longer have any games.
 func adminGenres() {
 
+	// Get current genres, to delete old ones
+	genres, err := mysql.GetAllGenres()
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	genresToDelete := map[int]int{}
+	for _, v := range genres {
+		genresToDelete[v.ID] = v.ID
+	}
+
+	// Get apps
 	filter := url.Values{}
 	filter.Set("genres_depth", "3")
 
@@ -177,6 +188,7 @@ func adminGenres() {
 	counts := make(map[int]*adminGenreCount)
 
 	for _, app := range apps {
+
 		genres, err := app.GetGenres()
 		if err != nil {
 			logger.Error(err)
@@ -184,6 +196,9 @@ func adminGenres() {
 		}
 
 		for _, genre := range genres {
+
+			delete(genresToDelete, genre.ID)
+
 			if _, ok := counts[genre.ID]; ok {
 				counts[genre.ID].Count++
 			} else {
@@ -197,6 +212,22 @@ func adminGenres() {
 
 	var wg sync.WaitGroup
 
+	// Delete old publishers
+	for _, v := range genresToDelete {
+
+		wg.Add(1)
+		go func() {
+
+			err := mysql.DeleteGenre(v)
+			if err != nil {
+				logger.Error(err)
+			}
+
+			wg.Done()
+		}()
+	}
+
+	// Update current publishers
 	for _, v := range counts {
 
 		wg.Add(1)
@@ -328,18 +359,15 @@ func adminPublishers() {
 	var wg sync.WaitGroup
 
 	// Delete old publishers
-	for k, v := range pubsToDelete {
-
-		if k == `["Clamdog Studio"]` {
-			fmt.Println("xx")
-		}
+	for _, v := range pubsToDelete {
 
 		wg.Add(1)
+		go func() {
 
-		// todo, goroutine not working unless it logs something?
-		func() {
-
-			mysql.DeletePublisher(v)
+			err := mysql.DeletePublisher(v)
+			if err != nil {
+				logger.Error(err)
+			}
 
 			wg.Done()
 		}()
@@ -355,7 +383,7 @@ func adminPublishers() {
 				Apps:         v.count,
 				MeanPrice:    v.GetMeanPrice(),
 				MeanDiscount: v.GetMeanDiscount(),
-				Name:         k,
+				Name:         v.name,
 			})
 			if err != nil {
 				logger.Error(err)
@@ -378,8 +406,20 @@ func adminPublishers() {
 
 func adminDevelopers() {
 
+	// Get current publishers, to delete old ones
+	developers, err := mysql.GetAllPublishers()
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	devsToDelete := map[string]int{}
+	for _, v := range developers {
+		devsToDelete[v.Name] = v.ID
+	}
+
 	// Get apps from mysql
-	apps, err := mysql.SearchApps(url.Values{}, 10, "", []string{"name", "price_final", "price_discount", "developer"})
+	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "developers"})
 	if err != nil {
 		logger.Error(err)
 	}
@@ -402,6 +442,8 @@ func adminDevelopers() {
 
 			key = strings.ToLower(key)
 
+			delete(devsToDelete, key)
+
 			if _, ok := counts[key]; ok {
 				counts[key].count++
 				counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
@@ -419,6 +461,19 @@ func adminDevelopers() {
 
 	var wg sync.WaitGroup
 
+	// Delete old developers
+	for _, v := range devsToDelete {
+
+		wg.Add(1)
+		go func() {
+
+			mysql.DeleteDeveloper(v)
+
+			wg.Done()
+		}()
+	}
+
+	// Update current developers
 	for k, v := range counts {
 
 		wg.Add(1)
@@ -428,7 +483,7 @@ func adminDevelopers() {
 				Apps:         v.count,
 				MeanPrice:    v.GetMeanPrice(),
 				MeanDiscount: v.GetMeanDiscount(),
-				Name:         k,
+				Name:         v.name,
 			})
 			if err != nil {
 				logger.Error(err)
@@ -463,15 +518,26 @@ func (t adminDeveloper) GetMeanDiscount() float64 {
 	return float64(t.totalDiscount) / float64(t.count)
 }
 
-// todo, handle tags that no longer have any games.
 func adminTags() {
 
+	// Get current tags, to delete old ones
+	tags, err := mysql.GetAllTags()
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	tagsToDelete := map[int]int{}
+	for _, tag := range tags {
+		tagsToDelete[tag.ID] = tag.ID
+	}
+
+	// Get tag names from Steam
 	tagsResp, err := steam.GetTags()
 	if err != nil {
 		logger.Error(err)
 	}
 
-	// Make tag map
 	steamTagMap := make(map[int]string)
 	for _, v := range tagsResp {
 		steamTagMap[v.TagID] = v.Name
@@ -495,16 +561,18 @@ func adminTags() {
 			continue
 		}
 
-		for _, tag := range tags {
+		for _, key := range tags {
 
-			if _, ok := counts[tag]; ok {
-				counts[tag].count++
-				counts[tag].totalPrice = counts[tag].totalPrice + app.PriceFinal
-				counts[tag].totalDiscount = counts[tag].totalDiscount + app.PriceDiscount
-				counts[tag].name = steamTagMap[tag]
+			delete(tagsToDelete, key)
+
+			if _, ok := counts[key]; ok {
+				counts[key].count++
+				counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
+				counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
+				counts[key].name = steamTagMap[key]
 			} else {
-				counts[tag] = &adminTag{
-					name:          steamTagMap[tag],
+				counts[key] = &adminTag{
+					name:          steamTagMap[key],
 					count:         1,
 					totalPrice:    app.PriceFinal,
 					totalDiscount: app.PriceDiscount,
@@ -515,6 +583,22 @@ func adminTags() {
 
 	var wg sync.WaitGroup
 
+	// Delete old tags
+	for _, v := range tagsToDelete {
+
+		wg.Add(1)
+		go func() {
+
+			err := mysql.DeleteTag(v)
+			if err != nil {
+				logger.Error(err)
+			}
+
+			wg.Done()
+		}()
+	}
+
+	// Update current tags
 	for k, v := range counts {
 
 		wg.Add(1)
@@ -531,7 +615,6 @@ func adminTags() {
 			}
 
 			wg.Done()
-
 		}(k, v)
 	}
 	wg.Wait()
@@ -610,7 +693,9 @@ func adminRanks() {
 	var rank int
 
 	rank = 0
-	sort.Slice(ranks, func(i, j int) bool { return ranks[i].Level > ranks[j].Level })
+	sort.Slice(ranks, func(i, j int) bool {
+		return ranks[i].Level > ranks[j].Level
+	})
 	for _, v := range ranks {
 		if v.Level != prev {
 			rank++
@@ -621,7 +706,9 @@ func adminRanks() {
 	}
 
 	rank = 0
-	sort.Slice(ranks, func(i, j int) bool { return ranks[i].GamesCount > ranks[j].GamesCount })
+	sort.Slice(ranks, func(i, j int) bool {
+		return ranks[i].GamesCount > ranks[j].GamesCount
+	})
 	for _, v := range ranks {
 		if v.GamesCount != prev {
 			rank++
@@ -632,7 +719,9 @@ func adminRanks() {
 	}
 
 	rank = 0
-	sort.Slice(ranks, func(i, j int) bool { return ranks[i].BadgesCount > ranks[j].BadgesCount })
+	sort.Slice(ranks, func(i, j int) bool {
+		return ranks[i].BadgesCount > ranks[j].BadgesCount
+	})
 	for _, v := range ranks {
 		if v.BadgesCount != prev {
 			rank++
@@ -643,7 +732,9 @@ func adminRanks() {
 	}
 
 	rank = 0
-	sort.Slice(ranks, func(i, j int) bool { return ranks[i].PlayTime > ranks[j].PlayTime })
+	sort.Slice(ranks, func(i, j int) bool {
+		return ranks[i].PlayTime > ranks[j].PlayTime
+	})
 	for _, v := range ranks {
 		if v.PlayTime != prev {
 			rank++
@@ -654,7 +745,9 @@ func adminRanks() {
 	}
 
 	rank = 0
-	sort.Slice(ranks, func(i, j int) bool { return ranks[i].FriendsCount > ranks[j].FriendsCount })
+	sort.Slice(ranks, func(i, j int) bool {
+		return ranks[i].FriendsCount > ranks[j].FriendsCount
+	})
 	for _, v := range ranks {
 		if v.FriendsCount != prev {
 			rank++

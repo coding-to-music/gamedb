@@ -61,3 +61,21 @@ func SaveOrUpdateDeveloper(name string, vals Developer) (err error) {
 
 	return nil
 }
+
+func DeleteDeveloper(id int) (err error) {
+
+	db, err := GetDB()
+	if err != nil {
+		return err
+	}
+
+	developer := new(Developer)
+	developer.ID = id
+
+	db.Delete(developer)
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}

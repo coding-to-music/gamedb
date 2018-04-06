@@ -319,8 +319,7 @@ func GetTags() (tags []steamTag, err error) {
 	}
 
 	// Unmarshal JSON
-	var resp []steamTag
-	if err := json.Unmarshal(contents, &resp); err != nil {
+	if err := json.Unmarshal(contents, &tags); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			logger.Info(err.Error() + " - " + string(contents))
 		} else {

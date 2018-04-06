@@ -10,6 +10,7 @@ type Tag struct {
 	ID           int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
 	CreatedAt    *time.Time `gorm:"not null;column:created_at"`
 	UpdatedAt    *time.Time `gorm:"not null;column:updated_at"`
+	DeletedAt    *time.Time `gorm:"not null;column:deleted_at"`
 	Name         string     `gorm:"not null;column:name"`
 	Apps         int        `gorm:"not null;column:apps"`
 	MeanPrice    float64    `gorm:"not null;column:mean_price"`
@@ -90,6 +91,24 @@ func SaveOrUpdateTag(id int, vals Tag) (err error) {
 
 	tag := new(Tag)
 	db.Assign(vals).FirstOrCreate(tag, Tag{ID: id})
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}
+
+func DeleteTag(id int) (err error) {
+
+	db, err := GetDB()
+	if err != nil {
+		return err
+	}
+
+	tag := new(Tag)
+	tag.ID = id
+
+	db.Delete(tag)
 	if db.Error != nil {
 		return db.Error
 	}
