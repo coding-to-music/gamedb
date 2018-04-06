@@ -22,7 +22,7 @@ type Player struct {
 	UpdatedAt        time.Time                   `datastore:"updated_at"`               //
 	FriendsAddedAt   time.Time                   `datastore:"friends_added_at,noindex"` //
 	PlayerID         int                         `datastore:"player_id"`                //
-	VanintyURL       string                      `datastore:"vanity_url,noindex"`       //
+	VanintyURL       string                      `datastore:"vanity_url"`               //
 	Avatar           string                      `datastore:"avatar,noindex"`           //
 	PersonaName      string                      `datastore:"persona_name,noindex"`     //
 	RealName         string                      `datastore:"real_name,noindex"`        //
@@ -36,15 +36,15 @@ type Player struct {
 	BadgesCount      int                         `datastore:"badges_count"`             //
 	PlayTime         int                         `datastore:"play_time"`                //
 	TimeCreated      time.Time                   `datastore:"time_created"`             //
-	LastLogOff       time.Time                   `datastore:"time_logged_off"`          //
-	PrimaryClanID    int                         `datastore:"primary_clan_id"`          //
+	LastLogOff       time.Time                   `datastore:"time_logged_off,noindex"`  //
+	PrimaryClanID    int                         `datastore:"primary_clan_id,noindex"`  //
 	Friends          []steam.GetFriendListFriend `datastore:"friends,noindex"`          //
 	FriendsCount     int                         `datastore:"friends_count"`            //
 	Donated          int                         `datastore:"donated"`                  //
 	Bans             steam.GetPlayerBanResponse  `datastore:"bans"`                     //
 	NumberOfVACBans  int                         `datastore:"bans_cav"`                 //
 	NumberOfGameBans int                         `datastore:"bans_game"`                //
-	Groups           []int                       `datastore:"groups"`                   //
+	Groups           []int                       `datastore:"groups,noindex"`           //
 }
 
 func (p Player) GetKey() (key *datastore.Key) {
@@ -150,7 +150,7 @@ func (p Player) GetTimeLong() (ret string) {
 
 func GetPlayer(id int) (ret *Player, err error) {
 
-	client, context, err := getDSClient()
+	client, ctx, err := getDSClient()
 	if err != nil {
 		return ret, err
 	}
@@ -160,7 +160,7 @@ func GetPlayer(id int) (ret *Player, err error) {
 	player := new(Player)
 	player.PlayerID = id
 
-	err = client.Get(context, key, player)
+	err = client.Get(ctx, key, player)
 	if err != nil {
 
 		if err.Error() == ErrorNotFound {
@@ -172,7 +172,32 @@ func GetPlayer(id int) (ret *Player, err error) {
 	return player, nil
 }
 
-func GetPlayers(order string, limit int) (players []*Player, err error) {
+func GetPlayerByName(name string) (ret Player, err error) {
+
+	client, ctx, err := getDSClient()
+	if err != nil {
+		return ret, err
+	}
+
+	q := datastore.NewQuery(KindPlayer).Filter("vanity_url =", name).Limit(1)
+
+	var players []Player
+
+	_, err = client.GetAll(ctx, q, &players)
+
+	if err != nil {
+		return ret, err
+	}
+
+	if len(players) > 0 {
+		return players[0], nil
+	}
+
+	return ret, errors.New(ErrorNotFound)
+
+}
+
+func GetPlayers(order string, limit int) (players []Player, err error) {
 
 	client, ctx, err := getDSClient()
 	if err != nil {
@@ -191,7 +216,7 @@ func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 		return friends, errors.New("too many players")
 	}
 
-	client, context, err := getDSClient()
+	client, ctx, err := getDSClient()
 	if err != nil {
 		return friends, err
 	}
@@ -203,7 +228,7 @@ func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 	}
 
 	friends = make([]Player, len(keys))
-	err = client.GetMulti(context, keys, friends)
+	err = client.GetMulti(ctx, keys, friends)
 	if err != nil && !strings.Contains(err.Error(), "no such entity") {
 		return friends, err
 	}
@@ -241,7 +266,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			summary, err := steam.GetPlayerSummaries(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrorInvalidJson {
+				if err.Error() == steam.ErrInvalidJson {
 					errs = append(errs, err)
 				} else if !strings.HasPrefix(err.Error(), "not found in steam") {
 					logger.Error(err)
@@ -267,7 +292,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			gamesResponse, err := steam.GetOwnedGames(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrorInvalidJson {
+				if err.Error() == steam.ErrInvalidJson {
 					errs = append(errs, err)
 				} else {
 					logger.Error(err)
@@ -305,7 +330,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			recentGames, err := steam.GetRecentlyPlayedGames(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrorInvalidJson {
+				if err.Error() == steam.ErrInvalidJson {
 					errs = append(errs, err)
 				} else {
 					logger.Error(err)
@@ -323,7 +348,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			badges, err := steam.GetBadges(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrorInvalidJson {
+				if err.Error() == steam.ErrInvalidJson {
 					errs = append(errs, err)
 				} else {
 					logger.Error(err)
@@ -342,7 +367,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			friends, err := steam.GetFriendList(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrorInvalidJson {
+				if err.Error() == steam.ErrInvalidJson {
 					errs = append(errs, err)
 				} else {
 					logger.Error(err)
@@ -361,7 +386,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			level, err := steam.GetSteamLevel(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrorInvalidJson {
+				if err.Error() == steam.ErrInvalidJson {
 					errs = append(errs, err)
 				} else {
 					logger.Error(err)
@@ -379,7 +404,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			bans, err := steam.GetPlayerBans(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrorInvalidJson {
+				if err.Error() == steam.ErrInvalidJson {
 					errs = append(errs, err)
 				} else {
 					logger.Error(err)
@@ -399,7 +424,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			groups, err := steam.GetUserGroupList(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrorInvalidJson {
+				if err.Error() == steam.ErrInvalidJson {
 					errs = append(errs, err)
 				} else {
 					logger.Error(err)

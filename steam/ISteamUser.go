@@ -11,6 +11,10 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
+var (
+	ErrNoUserFound = errors.New("no user found")
+)
+
 func GetFriendList(id int) (friends []GetFriendListFriend, err error) {
 
 	options := url.Values{}
@@ -70,7 +74,7 @@ func ResolveVanityURL(id string) (resp ResolveVanityURLBody, err error) {
 	}
 
 	if resp.Response.Success != 1 {
-		return resp, errors.New("no user found")
+		return resp, ErrNoUserFound
 	}
 
 	return resp, nil

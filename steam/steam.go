@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ErrorInvalidJson = "invalid character '<' looking for beginning of value"
+	ErrInvalidJson = "invalid character '<' looking for beginning of value"
 )
 
 func get(path string, query url.Values) (bytes []byte, err error) {

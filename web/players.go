@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"path"
 	"sort"
 	"strconv"
 	"sync"
@@ -123,7 +124,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Error(err)
 
 			// API is probably down
-			if v.Error() == steam.ErrorInvalidJson {
+			if v.Error() == steam.ErrInvalidJson {
 				returnErrorTemplate(w, r, 500, "Couldnt fetch player data, steam API may be down?")
 				return
 			}
@@ -267,14 +268,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	template.Player = player
 	template.Friends = friends
 	template.Games = sortedGamesSlice
-	template.Ranks = playerRanksTemplate{
-		Ranks:          *ranks,
-		LevelOrdinal:   humanize.Ordinal(ranks.LevelRank),
-		GamesOrdinal:   humanize.Ordinal(ranks.GamesRank),
-		BadgesOrdinal:  humanize.Ordinal(ranks.BadgesRank),
-		TimeOrdinal:    humanize.Ordinal(ranks.PlayTimeRank),
-		FriendsOrdinal: humanize.Ordinal(ranks.FriendsRank),
-	}
+	template.Ranks = playerRanksTemplate{*ranks}
 
 	returnTemplate(w, r, "player", template)
 }
@@ -295,15 +289,6 @@ type playerAppTemplate struct {
 	Time  int
 }
 
-type playerRanksTemplate struct {
-	Ranks          datastore.Rank
-	LevelOrdinal   string
-	GamesOrdinal   string
-	BadgesOrdinal  string
-	TimeOrdinal    string
-	FriendsOrdinal string
-}
-
 func (g playerAppTemplate) GetPriceHour() string {
 
 	price, err := strconv.ParseFloat(g.Price, 64)
@@ -321,18 +306,66 @@ func (g playerAppTemplate) GetPriceHour() string {
 	return fmt.Sprintf("%0.2f", x)
 }
 
+type playerRanksTemplate struct {
+	Ranks datastore.Rank
+}
+
+func (p playerRanksTemplate) dash(ord string) string {
+	if ord == "0th" {
+		return "-"
+	}
+	return ord
+}
+
+func (p playerRanksTemplate) GetLevel() string {
+	return p.dash(humanize.Ordinal(p.Ranks.LevelRank))
+}
+
+func (p playerRanksTemplate) GetGames() string {
+	return p.dash(humanize.Ordinal(p.Ranks.GamesRank))
+}
+
+func (p playerRanksTemplate) GetBadges() string {
+	return p.dash(humanize.Ordinal(p.Ranks.BadgesRank))
+}
+
+func (p playerRanksTemplate) GetTime() string {
+	return p.dash(humanize.Ordinal(p.Ranks.PlayTimeRank))
+}
+
+func (p playerRanksTemplate) GetFriends() string {
+	return p.dash(humanize.Ordinal(p.Ranks.FriendsRank))
+}
+
 func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	post := r.PostFormValue("id")
+	post = path.Base(post)
 
-	// todo, check DB before doing api call
-
-	id, err := steam.GetID(post)
+	// Check datastore
+	dbPlayer, err := datastore.GetPlayerByName(post)
 	if err != nil {
-		logger.Info(err.Error() + ": " + post)
-		returnErrorTemplate(w, r, 404, "Can't find user: "+post)
+
+		if err.Error() != datastore.ErrorNotFound {
+			logger.Error(err)
+		}
+
+		// Check steam
+		id, err := steam.GetID(post)
+		if err != nil {
+
+			if err != steam.ErrNoUserFound {
+				logger.Error(err)
+			}
+
+			returnErrorTemplate(w, r, 404, "Can't find user: "+post)
+			return
+		}
+
+		http.Redirect(w, r, "/players/"+id, 302)
 		return
 	}
 
-	http.Redirect(w, r, "/players/"+id, 302)
+	http.Redirect(w, r, "/players/"+strconv.Itoa(dbPlayer.PlayerID), 302)
+	return
 }

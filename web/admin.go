@@ -656,7 +656,7 @@ func adminRanks() {
 	}
 
 	newRanks := make(map[int]*datastore.Rank)
-	var players []*datastore.Player
+	var players []datastore.Player
 
 	var wg sync.WaitGroup
 
@@ -672,7 +672,7 @@ func adminRanks() {
 			}
 
 			for _, v := range players {
-				newRanks[v.PlayerID] = datastore.NewRankFromPlayer(*v)
+				newRanks[v.PlayerID] = datastore.NewRankFromPlayer(v)
 				delete(oldKeys, v.PlayerID)
 			}
 

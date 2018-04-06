@@ -7,7 +7,6 @@
         <h1 class="display-4">
             <i class="fas fa-user"></i> {{ .Player.PersonaName }}
         </h1>
-        <p class="lead"></p>
     </div>
 
     <div class="card">
@@ -32,6 +31,7 @@
             <div class="tab-content">
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
+                {{/* Info */}}
                     <div class="row">
                         <div class="col-sm-12 col-md-6 col-lg-4">
 
@@ -41,31 +41,31 @@
 
                                     <table class="table table-hover mb-0">
                                         <tr>
-                                            <th scope="row">Level</th>
-                                            <td>{{ .Player.Level }}</td>
+                                            <th scope="row" nowrap="nowrap">Level</th>
+                                            <td><a href="/experience/{{ .Player.Level }}">{{ .Player.Level }}</a></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">On Steam</th>
+                                            <th scope="row" nowrap="nowrap">On Steam</th>
                                             <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Last Sign Off</th>
+                                            <th scope="row" nowrap="nowrap">Signed Off</th>
                                             <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetLogoffNice }}" data-livestamp="{{ .Player.GetLogoffUnix }}">{{ .Player.GetLogoffNice }}</span></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Last Updated</th>
+                                            <th scope="row" nowrap="nowrap">Last Updated</th>
                                             <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Steam profile</th>
-                                            <td><a href="{{ .Player.GetSteamCommunityLink }}">{{ .Player.VanintyURL }}</a></td>
+                                            <th scope="row" nowrap="nowrap">Profile</th>
+                                            <td class="text-truncate"><a href="{{ .Player.GetSteamCommunityLink }}"><i class="fab fa-steam-square"></i> {{ .Player.VanintyURL }}</a></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Country</th>
-                                            <td class="img"><img class="rounded" data-toggle="tooltip" data-placement="top" title="{{ .Player.CountryCode }}" src="{{.Player.GetFlag}}"></td>
+                                            <th scope="row" nowrap="nowrap">Country</th>
+                                            <td><img class="rounded" data-toggle="tooltip" data-placement="top" title="{{ .Player.CountryCode }}" src="{{.Player.GetFlag}}" style="height: 21px;"></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">State</th>
+                                            <th scope="row" nowrap="nowrap">State</th>
                                             <td>{{ .Player.StateCode }}</td>
                                         </tr>
                                     </table>
@@ -85,23 +85,23 @@
                                     <table class="table table-hover mb-0">
                                         <tr>
                                             <th scope="row">Level</th>
-                                            <td><a href="/players/level">{{ .Ranks.LevelOrdinal }}</a></td>
+                                            <td><a href="/players/level">{{ .Ranks.GetLevel }}</a></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Games</th>
-                                            <td><a href="/players/games">{{ .Ranks.GamesOrdinal }}</a></td>
+                                            <td><a href="/players/games">{{ .Ranks.GetGames }}</a></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Badges</th>
-                                            <td><a href="/players/badges">{{ .Ranks.BadgesOrdinal }}</a></td>
+                                            <td><a href="/players/badges">{{ .Ranks.GetBadges }}</a></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Time</th>
-                                            <td><a href="/players/time">{{ .Ranks.TimeOrdinal }}</a></td>
+                                            <td><a href="/players/time">{{ .Ranks.GetTime }}</a></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Friends</th>
-                                            <td><a href="/players/friends">{{ .Ranks.FriendsOrdinal }}</a></td>
+                                            <td><a href="/players/friends">{{ .Ranks.GetFriends }}</a></td>
                                         </tr>
                                     </table>
 
@@ -152,7 +152,7 @@
                 </div>
                 <div class="tab-pane" id="friends" role="tabpanel">
 
-                    {{/* Friends */}}
+                {{/* Friends */}}
                     <div class="row friend mb-0">
                     {{ range $key, $value := .Friends }}
 
@@ -176,7 +176,7 @@
                 </div>
                 <div class="tab-pane" id="badges" role="tabpanel">
 
-                    {{/* XP Info */}}
+                {{/* XP Info */}}
                     <table class="table table-hover mb-0">
                         <tbody>
                         <tr>
@@ -194,7 +194,7 @@
                         <tr>
                             <th scope="row">This Level</th>
                             <td>
-                                <div class="progress mb-3">
+                                <div class="progress" style="height: 24px;">
                                     <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{.Player.Badges.GetLoadingBar}}%">{{.Player.Badges.GetPercentOfLevel}}%</div>
                                 </div>
                             </td>
@@ -202,7 +202,7 @@
                         </tbody>
                     </table>
 
-                    {{/* Badges */}}
+                {{/* Badges */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead>
@@ -229,7 +229,7 @@
                 </div>
                 <div class="tab-pane" id="games" role="tabpanel">
 
-                    {{/* Recent Games */}}
+                {{/* Recent Games */}}
                 {{ if gt (len .Player.GamesRecent) 0}}
                     <h5>Recent Games</h5>
                     <div class="table-responsive">
@@ -243,7 +243,7 @@
                         {{ range $key, $value := .Player.GamesRecent }}
                             <tr data-link="/apps/{{ .AppID }}">
                                 <td class="img">
-                                    <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgLogoURL }}.jpg" class="rounded">
+                                    <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgIconURL }}.jpg" class="rounded">
                                 </td>
                                 <td>{{ .Name }}</td>
                                 <td>{{ .GetTwoWeeks }}</td>
@@ -254,7 +254,7 @@
                     </div>
                 {{end}}
 
-                        {{/* Games List */}}
+                {{/* Games List */}}
                     <h5>Games Library</h5>
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
