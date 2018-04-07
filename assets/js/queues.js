@@ -1,4 +1,4 @@
-if ($('#queue-page').length > 0) {
+if ($('#queues-page').length > 0) {
 
     // Pause on tab change
     var paused = false;

@@ -73,7 +73,7 @@ func GetAppChanges() (prices []AppPrice, err error) {
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindPriceApp).Order("-created_at").Limit(1000)
+	q := datastore.NewQuery(KindPriceApp).Order("-created_at").Limit(100)
 	q = q.Filter("currency =", "usd")
 
 	_, err = client.GetAll(ctx, q, &prices)
