@@ -29,60 +29,47 @@ func Serve() {
 
 	r := chi.NewRouter()
 
+	r.Get("/", HomeHandler)
 	r.Mount("/admin", adminRouter())
-
 	r.Get("/apps", AppsHandler)
 	r.Get("/apps/{id}", AppHandler)
 	r.Get("/apps/{id}/{slug}", AppHandler)
-
+	r.Get("/browserconfig.xml", RootFileHandler)
 	r.Get("/changes", ChangesHandler)
 	r.Get("/changes/{id}", ChangeHandler)
-
 	r.Get("/chat", ChatHandler)
 	r.Get("/chat/{id}", ChatHandler)
-
+	r.Get("/commits", CommitsHandler)
 	r.Get("/contact", ContactHandler)
 	r.Post("/contact", PostContactHandler)
-
-	r.Get("/deals", DealsHandler)
-	r.Get("/deals/{id}", DealsHandler)
-
+	r.Get("/coop", CoopHandler)
+	r.Get("/discounts", DiscountsHandler)
+	r.Get("/price-changes", PriceChangesHandler)
+	r.Get("/free-games", FreeGamesHandler)
+	r.Get("/deals/{id}", PriceChangesHandler)
+	r.Get("/developers", StatsDevelopersHandler)
+	r.Get("/donate", DonateHandler)
 	r.Get("/experience", ExperienceHandler)
 	r.Get("/experience/{id}", ExperienceHandler)
-
+	r.Get("/genres", StatsGenresHandler)
+	r.Get("/info", InfoHandler)
 	r.Get("/login", LoginHandler)
 	r.Get("/logout", LogoutHandler)
 	r.Get("/login-callback", LoginCallbackHandler)
-
+	r.Get("/news", NewsHandler)
 	r.Get("/packages", PackagesHandler)
 	r.Get("/packages/{id}", PackageHandler)
-
 	r.Post("/players", PlayerIDHandler)
 	r.Get("/players", RanksHandler)
 	r.Get("/players/{id:[a-z]+}", RanksHandler)
 	r.Get("/players/{id:[0-9]+}", PlayerHandler)
 	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
-
+	r.Get("/publishers", StatsPublishersHandler)
 	r.Get("/queues", QueuesHandler)
 	r.Get("/queues/queues.json", QueuesJSONHandler)
-
 	r.Get("/settings", SettingsHandler)
 	r.Post("/settings", SaveSettingsHandler)
-
-	// Files
-	r.Get("/browserconfig.xml", RootFileHandler)
 	r.Get("/site.webmanifest", RootFileHandler)
-
-	// Other
-	r.Get("/", HomeHandler)
-	r.Get("/commits", CommitsHandler)
-	r.Get("/coop", CoopHandler)
-	r.Get("/developers", StatsDevelopersHandler)
-	r.Get("/donate", DonateHandler)
-	r.Get("/genres", StatsGenresHandler)
-	r.Get("/info", InfoHandler)
-	r.Get("/news", NewsHandler)
-	r.Get("/publishers", StatsPublishersHandler)
 	r.Get("/stats", StatsHandler)
 	r.Get("/tags", StatsTagsHandler)
 	r.Get("/websocket", websockets.Handler)
@@ -138,6 +125,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/templates/_header.html",
 		folder+"/templates/_footer.html",
 		folder+"/templates/_stats_header.html",
+		folder+"/templates/_deals_header.html",
 		folder+"/templates/_pagination.html",
 		folder+"/templates/"+page+".html",
 	)

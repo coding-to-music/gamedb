@@ -1,4 +1,4 @@
-{{define "deals"}} {{ template "_header" . }}
+{{define "price_changes"}} {{ template "_header" . }}
 
 <div class="container" id="news-page">
 
@@ -6,15 +6,15 @@
         <div class="row">
             <div class="col-sm-12 col-lg-6">
 
-                <h1 class="display-4"><i class="fas fa-dollar-sign"></i> Deals</h1>
-                <p class="lead">Pick up a bargain</p>
+                <h1 class="display-4"><i class="fas fa-dollar-sign"></i> Price Changes</h1>
+                {{/*<p class="lead">Pick up a bargain</p>*/}}
 
             </div>
             <div class="col-sm-12 col-lg-6">
 
                 <form>
                     <div class="input-group input-group-lg">
-                        <input class="form-control" id="search" type="text" placeholder="Search for a Deal" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
+                        <input class="form-control" id="search" type="text" placeholder="Search Price Changes" required="required" autocomplete="off" autofocus onkeydown="clearField(event, this);">
                     </div>
                 </form>
 
@@ -23,24 +23,8 @@
     </div>
 
     <div class="card">
-        <div class="card-header bg-light text-white">
-
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link{{ if eq $.Tab "changes" }} active{{ end }}" href="/deals/changes" role="tab">Price Changes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link{{ if eq $.Tab "free" }} active{{ end }}" href="/deals/free" role="tab">Free Games</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link{{ if eq $.Tab "discounts" }} active{{ end }}" href="/deals/discounts" role="tab">Highest Discounts</a>
-                </li>
-            </ul>
-
-        </div>
+    {{ template "_deals_header" . }}
         <div class="card-body">
-
-        {{ if eq $.Tab "changes" }}
 
             <form class="mb-4">
                 <div class="form-check form-check-inline">
@@ -83,43 +67,6 @@
                 {{ end }}
                 </table>
             </div>
-
-        {{ end }}
-
-        {{ if eq $.Tab "free" }}
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable">
-                    <thead>
-                    <tr>
-                        <th scope="col" class="sorter-false" width="1%"></th>
-                        <th scope="col">Image</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Platforms</th>
-                        <th scope="col">Install</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{ range $key, $value := .Apps }}
-                    <tr data-link="{{ .GetPath }}">
-                        <td class="img">
-                            <img src="{{ .GetIcon }}" class="rounded">
-                        </td>
-                        <td>{{ .GetName }}</td>
-                        <td>{{ .GetType }}</td>
-                        <td>{{ .GetPlatformImages }}</td>
-                        <td><a href="{{ .GetInstallLink }}">Install</a></td>
-                    </tr>
-                    {{ end }}
-                    </tbody>
-                </table>
-            </div>
-
-        {{ end }}
-
-        {{ if eq $.Tab "discounts" }}
-            Discounts
-        {{ end }}
 
         </div>
     </div>
