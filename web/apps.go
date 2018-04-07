@@ -2,13 +2,13 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi"
 	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/steam"
@@ -84,7 +84,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 	achievementsMap := make(map[string]string)
 	for _, v := range achievements {
-		achievementsMap[v.Name] = fmt.Sprintf("%0.2f", v.Percent)
+		achievementsMap[v.Name] = helpers.DollarsFloat(v.Percent)
 	}
 
 	// Get tags

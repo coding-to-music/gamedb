@@ -3,7 +3,6 @@ package mysql
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"html/template"
 	"net/url"
 	"reflect"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/gosimple/slug"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 )
@@ -110,7 +110,7 @@ func (app App) GetIcon() (ret string) {
 }
 
 func (app App) GetPriceInitial() string {
-	return fmt.Sprintf("%0.2f", float64(app.PriceInitial)/100)
+	return helpers.CentsInt(app.PriceInitial)
 }
 
 func (app App) GetCommunityLink() (string) {

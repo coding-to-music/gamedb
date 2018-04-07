@@ -1,9 +1,10 @@
 package mysql
 
 import (
-	"fmt"
 	"strconv"
 	"time"
+
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 type Tag struct {
@@ -31,11 +32,11 @@ func (tag Tag) GetName() (name string) {
 }
 
 func (tag Tag) GetMeanPrice() string {
-	return fmt.Sprintf("%0.2f", tag.MeanPrice/100)
+	return helpers.CentsFloat(tag.MeanPrice)
 }
 
 func (tag Tag) GetMeanDiscount() string {
-	return fmt.Sprintf("%0.2f", tag.MeanDiscount)
+	return helpers.DollarsFloat(tag.MeanDiscount)
 }
 
 func GetCoopTags() []int {

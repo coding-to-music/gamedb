@@ -1,9 +1,10 @@
 package mysql
 
 import (
-	"fmt"
 	"strconv"
 	"time"
+
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 type Developer struct {
@@ -22,11 +23,11 @@ func (d Developer) GetPath() string {
 }
 
 func (d Developer) GetMeanPrice() string {
-	return fmt.Sprintf("%0.2f", d.MeanPrice/100)
+	return helpers.CentsFloat(d.MeanPrice)
 }
 
 func (d Developer) GetMeanDiscount() string {
-	return fmt.Sprintf("%0.2f", d.MeanDiscount)
+	return helpers.DollarsFloat(d.MeanDiscount)
 }
 
 func GetAllDevelopers() (developers []Developer, err error) {

@@ -1,11 +1,11 @@
 package datastore
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 type AppPrice struct {
@@ -39,15 +39,15 @@ func (p AppPrice) GetCreatedDate() (ret string) {
 }
 
 func (p AppPrice) GetPriceInitial() string {
-	return fmt.Sprintf("%0.2f", float64(p.PriceInitial)/100)
+	return helpers.CentsInt(p.PriceInitial)
 }
 
 func (p AppPrice) GetChange() string {
-	return fmt.Sprintf("%0.2f", float64(p.Change)/100)
+	return helpers.CentsInt(p.Change)
 }
 
 func (p AppPrice) GetPriceFinal() string {
-	return fmt.Sprintf("%0.2f", float64(p.PriceFinal)/100)
+	return helpers.CentsInt(p.PriceFinal)
 }
 
 func GetAppPrices(appID int) (prices []AppPrice, err error) {

@@ -3,7 +3,6 @@ package web
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math"
 	"net/http"
 	"path"
@@ -16,6 +15,7 @@ import (
 	"github.com/go-chi/chi"
 	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
@@ -303,7 +303,7 @@ func (g playerAppTemplate) GetPriceHour() string {
 	if math.IsInf(x, 0) {
 		return "∞"
 	}
-	return fmt.Sprintf("%0.2f", x)
+	return helpers.DollarsFloat(x)
 }
 
 type playerRanksTemplate struct {
