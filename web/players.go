@@ -310,7 +310,8 @@ type playerRanksTemplate struct {
 	Ranks datastore.Rank
 }
 
-func (p playerRanksTemplate) dash(ord string) string {
+func (p playerRanksTemplate) dash(rank int) string {
+	ord := humanize.Ordinal(rank)
 	if ord == "0th" {
 		return "-"
 	}
@@ -318,23 +319,23 @@ func (p playerRanksTemplate) dash(ord string) string {
 }
 
 func (p playerRanksTemplate) GetLevel() string {
-	return p.dash(humanize.Ordinal(p.Ranks.LevelRank))
+	return p.dash(p.Ranks.LevelRank)
 }
 
 func (p playerRanksTemplate) GetGames() string {
-	return p.dash(humanize.Ordinal(p.Ranks.GamesRank))
+	return p.dash(p.Ranks.GamesRank)
 }
 
 func (p playerRanksTemplate) GetBadges() string {
-	return p.dash(humanize.Ordinal(p.Ranks.BadgesRank))
+	return p.dash(p.Ranks.BadgesRank)
 }
 
 func (p playerRanksTemplate) GetTime() string {
-	return p.dash(humanize.Ordinal(p.Ranks.PlayTimeRank))
+	return p.dash(p.Ranks.PlayTimeRank)
 }
 
 func (p playerRanksTemplate) GetFriends() string {
-	return p.dash(humanize.Ordinal(p.Ranks.FriendsRank))
+	return p.dash(p.Ranks.FriendsRank)
 }
 
 func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
