@@ -49,7 +49,7 @@
                         <div class="col-sm-12 col-lg-7">
 
                         {{ if ne .App.GameName "" }}
-                            <p>For Game: <a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
+                            <p>For Game: <a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
                         {{end}}
 
                             <p>App Type: {{ .App.GetType }}</p>

@@ -64,7 +64,7 @@
                     <th scope="col">Tags</th>
                     </thead>
                 {{ range $key, $value := .Games }}
-                    <tr data-link="/apps/{{ .Game.ID }}">
+                    <tr data-link="/games/{{ .Game.ID }}">
                         <td class="img">
                             <img src="{{.Game.GetIcon}}" class="rounded">
                         </td>

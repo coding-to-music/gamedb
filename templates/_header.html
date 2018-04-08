@@ -64,15 +64,25 @@
 
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
-                    <a class="nav-link" href="/players">Players</a>
-                </li>
-                <li class="nav-item {{if startsWith .Path "/apps" }}active{{end}}">
-                    <a class="nav-link" href="/apps">Games</a>
-                </li>
-                <li class="nav-item {{if startsWith .Path "/coop" }}active{{end}}">
-                    <a class="nav-link" href="/coop">Co-op</a>
-                </li>
+
+            {{if startsWith .Path "/players" }}
+                <li class="nav-item active"><span class="nav-link">Players</span></li>
+            {{else}}
+                <li class="nav-item"><a class="nav-link" href="/players">Players</a></li>
+            {{end}}
+
+            {{if startsWith .Path "/games" }}
+                <li class="nav-item active"><span class="nav-link">Games</span></li>
+            {{else}}
+                <li class="nav-item"><a class="nav-link" href="/games">Games</a></li>
+            {{end}}
+
+            {{if startsWith .Path "/coop" }}
+                <li class="nav-item active"><span class="nav-link">Co-op</span></li>
+            {{else}}
+                <li class="nav-item"><a class="nav-link" href="/coop">Co-op</a></li>
+            {{end}}
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Deals</a>
                     <div class="dropdown-menu">
@@ -81,6 +91,7 @@
                         <a class="dropdown-item" href="/discounts">Discounts</a>
                     </div>
                 </li>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Stats</a>
                     <div class="dropdown-menu">
@@ -90,19 +101,28 @@
                         <a class="dropdown-item" href="/developers">Developers</a>
                     </div>
                 </li>
-                <li class="nav-item {{if startsWith .Path "/news" }}active{{end}}">
-                    <a class="nav-link" href="/news">News</a>
-                </li>
-                <li class="nav-item {{if startsWith .Path "/chat" }}active{{end}}">
-                    <a class="nav-link" href="/chat">Chat</a>
-                </li>
+
+            {{if startsWith .Path "/news" }}
+                <li class="nav-item active"><span class="nav-link">News</span></li>
+            {{else}}
+                <li class="nav-item"><a class="nav-link" href="/news">News</a></li>
+            {{end}}
+
+            {{if startsWith .Path "/chat" }}
+                <li class="nav-item active"><span class="nav-link">Chat</span></li>
+            {{else}}
+                <li class="nav-item"><a class="nav-link" href="/chat">Chat</a></li>
+            {{end}}
+
             </ul>
             <ul class="navbar-nav">
+
             {{ if .IsAdmin }}
                 <li class="nav-item {{if startsWith .Path "/admin" }}active{{end}}">
                     <a class="nav-link" href="/admin">Admin</a>
                 </li>
             {{end}}
+
             {{ if .LoggedIn }}
                 <li class="nav-item">
                     <a class="nav-link" href="/players/{{.ID}}">{{.Name}}</a>
@@ -112,12 +132,19 @@
                     <a class="nav-link" href="/login">Login</a>
                 </li>
             {{end}}
-                <li class="nav-item {{if startsWith .Path "/contact" }}active{{end}}">
-                    <a class="nav-link" href="/contact">Contact</a>
-                </li>
-                <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}">
-                    <a class="nav-link" href="/donate">Donate</a>
-                </li>
+
+            {{if startsWith .Path "/contact" }}
+                <li class="nav-item active"><span class="nav-link">Contact</span></li>
+            {{else}}
+                <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+            {{end}}
+
+            {{if startsWith .Path "/donate" }}
+                <li class="nav-item active"><span class="nav-link">Donate</span></li>
+            {{else}}
+                <li class="nav-item"><a class="nav-link" href="/donate">Donate</a></li>
+            {{end}}
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
                     <div class="dropdown-menu">

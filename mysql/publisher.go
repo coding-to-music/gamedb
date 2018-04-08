@@ -19,7 +19,7 @@ type Publisher struct {
 }
 
 func (p Publisher) GetPath() string {
-	return "/apps?publisher=" + strconv.Itoa(p.ID)
+	return "/games?publisher=" + strconv.Itoa(p.ID)
 }
 
 func (p Publisher) GetMeanPrice() string {

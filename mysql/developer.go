@@ -19,7 +19,7 @@ type Developer struct {
 }
 
 func (d Developer) GetPath() string {
-	return "/apps?developer=" + strconv.Itoa(d.ID)
+	return "/games?developer=" + strconv.Itoa(d.ID)
 }
 
 func (d Developer) GetMeanPrice() string {

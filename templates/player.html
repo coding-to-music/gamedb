@@ -220,7 +220,7 @@
                                 <td nowrap="nowrap">{{ .GetTimeNice }}</td>
                                 <td>{{ comma .XP }}</td>
                                 <td>{{ comma .Scarcity }}</td>
-                                <td>{{if ne .AppID 0}}<a href="/apps/{{ .AppID }}">{{ .AppID }}</a>{{end}}</td>
+                                <td>{{if ne .AppID 0}}<a href="/games/{{ .AppID }}">{{ .AppID }}</a>{{end}}</td>
                             </tr>
                         {{ end }}
                         </table>
@@ -241,7 +241,7 @@
                             <th scope="col">All Time</th>
                             </thead>
                         {{ range $key, $value := .Player.GamesRecent }}
-                            <tr data-link="/apps/{{ .AppID }}">
+                            <tr data-link="/games/{{ .AppID }}">
                                 <td class="img">
                                     <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgIconURL }}.jpg" class="rounded">
                                 </td>
@@ -266,7 +266,7 @@
                             <th scope="col" class="sorter-digit">Price/Hour</th>
                             </thead>
                         {{ range $key, $value := .Games }}
-                            <tr{{if ne .ID 0}} data-link="/apps/{{ .ID }}"{{end}}>
+                            <tr{{if ne .ID 0}} data-link="/games/{{ .ID }}"{{end}}>
                                 <td class="img">
                                     <img src="{{ .Icon }}" class="avatar rounded">
                                 </td>

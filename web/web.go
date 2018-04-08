@@ -31,9 +31,6 @@ func Serve() {
 
 	r.Get("/", HomeHandler)
 	r.Mount("/admin", adminRouter())
-	r.Get("/apps", AppsHandler)
-	r.Get("/apps/{id}", AppHandler)
-	r.Get("/apps/{id}/{slug}", AppHandler)
 	r.Get("/browserconfig.xml", RootFileHandler)
 	r.Get("/changes", ChangesHandler)
 	r.Get("/changes/{id}", ChangeHandler)
@@ -44,13 +41,15 @@ func Serve() {
 	r.Post("/contact", PostContactHandler)
 	r.Get("/coop", CoopHandler)
 	r.Get("/discounts", DiscountsHandler)
-	r.Get("/price-changes", PriceChangesHandler)
-	r.Get("/free-games", FreeGamesHandler)
 	r.Get("/deals/{id}", PriceChangesHandler)
 	r.Get("/developers", StatsDevelopersHandler)
 	r.Get("/donate", DonateHandler)
 	r.Get("/experience", ExperienceHandler)
 	r.Get("/experience/{id}", ExperienceHandler)
+	r.Get("/free-games", FreeGamesHandler)
+	r.Get("/games", AppsHandler)
+	r.Get("/games/{id}", AppHandler)
+	r.Get("/games/{id}/{slug}", AppHandler)
 	r.Get("/genres", StatsGenresHandler)
 	r.Get("/info", InfoHandler)
 	r.Get("/login", LoginHandler)
@@ -64,6 +63,7 @@ func Serve() {
 	r.Get("/players/{id:[a-z]+}", RanksHandler)
 	r.Get("/players/{id:[0-9]+}", PlayerHandler)
 	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
+	r.Get("/price-changes", PriceChangesHandler)
 	r.Get("/publishers", StatsPublishersHandler)
 	r.Get("/queues", QueuesHandler)
 	r.Get("/queues/queues.json", QueuesJSONHandler)
@@ -178,7 +178,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"apps": func(a []int, appsMap map[int]mysql.App) template.HTML {
 			var apps []string
 			for _, v := range a {
-				apps = append(apps, "<a href=\"/apps/"+strconv.Itoa(v)+"\">"+appsMap[v].GetName()+"</a>")
+				apps = append(apps, "<a href=\"/games/"+strconv.Itoa(v)+"\">"+appsMap[v].GetName()+"</a>")
 			}
 			return template.HTML("Apps: " + strings.Join(apps, ", "))
 		},
@@ -192,14 +192,14 @@ func getTemplateFuncMap() map[string]interface{} {
 		"tags": func(a []mysql.Tag) template.HTML {
 			var tags []string
 			for _, v := range a {
-				tags = append(tags, "<a href=\"/apps?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
+				tags = append(tags, "<a href=\"/games?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
 			}
 			return template.HTML(strings.Join(tags, ", "))
 		},
 		"genres": func(a []steam.AppDetailsGenre) template.HTML {
 			var genres []string
 			for _, v := range a {
-				genres = append(genres, "<a href=\"/apps?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
+				genres = append(genres, "<a href=\"/games?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
 			}
 			return template.HTML(strings.Join(genres, ", "))
 		},

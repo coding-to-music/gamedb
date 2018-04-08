@@ -14,7 +14,7 @@ type Genre struct {
 }
 
 func (genre Genre) GetPath() string {
-	return "/apps?genre=" + genre.Name
+	return "/games?genre=" + genre.Name
 }
 
 func GetAllGenres() (genres []Genre, err error) {

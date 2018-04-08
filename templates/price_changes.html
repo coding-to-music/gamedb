@@ -53,7 +53,7 @@
                     <th scope="col">Changed</th>
                     </thead>
                 {{ range $key, $value := .Changes }}
-                    <tr data-link="/apps/{{ .AppID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
+                    <tr data-link="/games/{{ .AppID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
                         <td class="img" width="1%">
                             <img src="{{.GetLogo}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
                         </td>

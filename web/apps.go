@@ -72,7 +72,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect to correct slug
 	correctSLug := slugify.Make(app.GetName())
 	if slug != correctSLug {
-		http.Redirect(w, r, "/apps/"+id+"/"+correctSLug, 302)
+		http.Redirect(w, r, "/games/"+id+"/"+correctSLug, 302)
 		return
 	}
 
