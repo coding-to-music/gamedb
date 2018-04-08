@@ -196,17 +196,30 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get donations
+	var donations []datastore.Donation
+	if player.Donated > 0 {
+		donations, err = datastore.GetDonations(player.PlayerID, 10)
+		if err != nil {
+			logger.Error(err)
+			returnErrorTemplate(w, r, 500, err.Error())
+			return
+		}
+	}
+
 	// Template
 	template := settingsTemplate{}
 	template.Fill(r, "Settings")
 	template.Logins = logins
 	template.Player = *player
+	template.Donations = donations
 
 	returnTemplate(w, r, "settings", template)
 }
 
 type settingsTemplate struct {
 	GlobalTemplate
-	Player datastore.Player
-	Logins []datastore.Login
+	Player    datastore.Player
+	Logins    []datastore.Login
+	Donations []datastore.Donation
 }
