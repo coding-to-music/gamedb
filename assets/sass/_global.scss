@@ -1,7 +1,21 @@
 body {
     overflow-y: scroll;
-    //margin-top: 76px;
     background-color: $dark;
+}
+
+div#top {
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 2s;
+    color: #fff;
+    font-size: 30px;
+}
+
+div#top.show {
+    opacity: 1;
 }
 
 .navbar-brand {

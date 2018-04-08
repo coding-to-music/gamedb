@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"errors"
 	"os"
 
 	"github.com/jinzhu/gorm"
@@ -8,8 +9,12 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
-var gormConnection *gorm.DB
-var debug = false
+var (
+	gormConnection *gorm.DB
+	debug          = false
+
+	ErrNotFound = errors.New("not found")
+)
 
 func SetDebug(val bool) {
 	debug = val
@@ -20,7 +25,7 @@ func GetDB() (conn *gorm.DB, err error) {
 
 	if gormConnection == nil {
 
-		//logger.Info("Connecting to MySQL")
+		// logger.Info("Connecting to MySQL")
 
 		db, err := gorm.Open("mysql", os.Getenv("STEAM_SQL_DSN")+"?parseTime=true")
 		db.LogMode(debug)

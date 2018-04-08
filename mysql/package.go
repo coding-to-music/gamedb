@@ -210,7 +210,7 @@ func GetPackage(id int) (pack Package, err error) {
 	}
 
 	if pack.ID == 0 {
-		return pack, errors.New("no id")
+		return pack, ErrNotFound
 	}
 
 	return pack, nil

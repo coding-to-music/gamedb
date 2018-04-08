@@ -68,7 +68,7 @@ func Serve() {
 	r.Get("/queues", QueuesHandler)
 	r.Get("/queues/queues.json", QueuesJSONHandler)
 	r.Get("/settings", SettingsHandler)
-	r.Post("/settings", SaveSettingsHandler)
+	r.Post("/settings", SettingsHandler)
 	r.Get("/site.webmanifest", RootFileHandler)
 	r.Get("/stats", StatsHandler)
 	r.Get("/tags", StatsTagsHandler)

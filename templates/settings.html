@@ -9,19 +9,19 @@
     <div class="card mb-4">
         <div class="card-body">
 
-            <form>
+            <form action="/settings" method="post">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Email" autofocus>
+                    <input type="email" class="form-control" id="email" placeholder="Email" autofocus name="email" value="{{.Player.SettingsEmail}}">
                     <small id="emailHelp" class="form-text text-muted">We currently do not send any emails. May be used in the future.</small>
                 </div>
 
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="hide-profile">
+                    <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{if .Player.SettingsHidden}}checked{{end}}>
                     <label class="form-check-label" for="hide-profile">Hide my profile from all areas</label>
                 </div>
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="browser-alerts">
+                    <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{if .Player.SettingsAlerts}}checked{{end}}>
                     <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>
                 </div>
 
@@ -47,7 +47,7 @@
         <h5 class="card-header">Logins</h5>
         <div class="card-body">
 
-            {{/* User Logins */}}
+        {{/* User Logins */}}
             <div class="table-responsive">
                 <table class="table table-hover table-striped table-datatable">
                     <thead>

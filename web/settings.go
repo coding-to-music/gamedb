@@ -153,6 +153,41 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get player
+	player, err := datastore.GetPlayer(idx)
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 500, err.Error())
+		return
+	}
+
+	// Save form data
+	if r.Method == "POST" {
+
+		// Form validation
+		if err := r.ParseForm(); err != nil {
+			logger.Error(err)
+			returnErrorTemplate(w, r, 500, err.Error())
+			return
+		}
+
+		player.SettingsEmail = r.PostForm.Get("email")
+
+		if r.PostForm.Get("hide") == "1" {
+			player.SettingsHidden = true
+		} else {
+			player.SettingsHidden = false
+		}
+
+		if r.PostForm.Get("alerts") == "1" {
+			player.SettingsAlerts = true
+		} else {
+			player.SettingsAlerts = false
+		}
+
+		player.Save()
+	}
+
 	// Get logins
 	logins, err := datastore.GetLogins(idx, 20)
 	if err != nil {
@@ -165,17 +200,13 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	template := settingsTemplate{}
 	template.Fill(r, "Settings")
 	template.Logins = logins
+	template.Player = *player
 
 	returnTemplate(w, r, "settings", template)
-
-}
-
-func SaveSettingsHandler(w http.ResponseWriter, r *http.Request) {
-
 }
 
 type settingsTemplate struct {
 	GlobalTemplate
-	User   datastore.Player
+	Player datastore.Player
 	Logins []datastore.Login
 }

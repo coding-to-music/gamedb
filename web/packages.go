@@ -40,16 +40,14 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		logger.Error(err)
-		returnErrorTemplate(w, r, 404, err.Error())
+		returnErrorTemplate(w, r, 404, "Invalid package ID")
 		return
 	}
 
 	pack, err := mysql.GetPackage(id)
 	if err != nil {
 
-		if err.Error() == "no id" {
-			logger.Error(err)
+		if err == mysql.ErrNotFound {
 			returnErrorTemplate(w, r, 404, "We can't find this package in our database, there may not be one with this ID.")
 			return
 		}
