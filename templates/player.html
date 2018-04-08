@@ -85,23 +85,23 @@
                                     <table class="table table-hover mb-0">
                                         <tr>
                                             <th scope="row">Level</th>
-                                            <td><a href="/players/level">{{ .Ranks.GetLevel }}</a></td>
+                                            <td><a href="/players/level">{{ .Ranks.GetLevel }}</a> <small>{{ .Ranks.GetLevelPercent }}</small></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Games</th>
-                                            <td><a href="/players/games">{{ .Ranks.GetGames }}</a></td>
+                                            <td><a href="/players/games">{{ .Ranks.GetGames }}</a> <small>{{ .Ranks.GetGamesPercent }}</small></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Badges</th>
-                                            <td><a href="/players/badges">{{ .Ranks.GetBadges }}</a></td>
+                                            <td><a href="/players/badges">{{ .Ranks.GetBadges }}</a> <small>{{ .Ranks.GetBadgesPercent }}</small></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Time</th>
-                                            <td><a href="/players/time">{{ .Ranks.GetTime }}</a></td>
+                                            <td><a href="/players/time">{{ .Ranks.GetTime }}</a> <small>{{ .Ranks.GetTimePercent }}</small></td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Friends</th>
-                                            <td><a href="/players/friends">{{ .Ranks.GetFriends }}</a></td>
+                                            <td><a href="/players/friends">{{ .Ranks.GetFriends }}</a> <small>{{ .Ranks.GetFriendsPercent }}</small></td>
                                         </tr>
                                     </table>
 
