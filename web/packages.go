@@ -83,15 +83,17 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	template.Fill(r, pack.GetName())
 	template.Package = pack
 	template.Apps = apps
-	template.Keys = mysql.PackageKeys
+	template.ExtendedKeys = mysql.PackageExtendedKeys
+	template.ControllerKeys = mysql.PackageControllerKeys
 
 	returnTemplate(w, r, "package", template)
 }
 
 type packageTemplate struct {
 	GlobalTemplate
-	Package mysql.Package
-	Apps    []mysql.App
-	Keys    map[string]string
-	Banners map[string][]string
+	Package        mysql.Package
+	Apps           []mysql.App
+	ExtendedKeys   map[string]string
+	ControllerKeys map[string]string
+	Banners        map[string][]string
 }

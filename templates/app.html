@@ -30,12 +30,16 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
+            {{if gt (len .Achievements) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ .App.GetAchievements.Total }})</a>
                 </li>
+            {{end}}
+            {{if gt (len .Articles) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .Articles }})</a>
                 </li>
+            {{end}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                 </li>
@@ -113,9 +117,10 @@
                     </div>
 
                 </div>
+
+            {{/* App Achievements */}}
                 <div class="tab-pane" id="achievements" role="tabpanel">
 
-                {{/* App Achievements */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead>
@@ -126,12 +131,12 @@
                                 <th scope="col">Completed</th>
                             </tr>
                             </thead>
-                        {{ range $key, $value := .Schema.AvailableGameStats.Achievements }}
+                        {{ range $key, $value := .Achievements }}
                             <tr>
                                 <td class="img"><img src="{{ .Icon }}" class="rounded"></td>
-                                <td>{{ .DisplayName }}</td>
+                                <td>{{ .Name }}</td>
                                 <td>{{ .Description }}</td>
-                                <td>{{ index $.Achievements .Name }}%</td>
+                                <td>{{ .Completed }}%</td>
                             </tr>
                         {{ end }}
                         </table>
@@ -139,6 +144,8 @@
                     </div>
 
                 </div>
+
+            {{/* News */}}
                 <div class="tab-pane" id="news" role="tabpanel">
 
                     <div id="accordion">
@@ -164,11 +171,11 @@
                     </div>
 
                 </div>
-                <div class="tab-pane" id="prices" role="tabpanel">
 
+            {{/* Prices */}}
+                <div class="tab-pane" id="prices" role="tabpanel">
                     <script>var prices = JSON.parse('{{ .Prices }}');</script>
                     <div id="chart" class="mb-0" style="height: 400px;"></div>
-
                 </div>
             </div>
         </div>

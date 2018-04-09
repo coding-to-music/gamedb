@@ -291,9 +291,7 @@ type PackageDetailsBody struct {
 			Mac     bool `json:"mac"`
 			Linux   bool `json:"linux"`
 		} `json:"platforms"`
-		Controller struct {
-			FullGamepad bool `json:"full_gamepad"`
-		} `json:"controller"`
+		Controller map[string]bool `json:"controller"`
 		ReleaseDate struct {
 			ComingSoon bool   `json:"coming_soon"`
 			Date       string `json:"date"`

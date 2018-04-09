@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gosimple/slug"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 )
@@ -149,6 +150,22 @@ func (pack Package) GetApps() (apps []int, err error) {
 	return apps, nil
 }
 
+func (pack Package) GetPriceInitial() string {
+	return helpers.CentsInt(pack.PriceInitial)
+}
+
+func (pack Package) GetPriceFinal() string {
+	return helpers.CentsInt(pack.PriceFinal)
+}
+
+func (pack Package) GetPriceDiscount() string {
+	return helpers.CentsInt(pack.PriceDiscount)
+}
+
+func (pack Package) GetPriceIndividual() string {
+	return helpers.CentsInt(pack.PriceInitial)
+}
+
 func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
 
 	extended = make(map[string]interface{})
@@ -162,6 +179,21 @@ func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
 	}
 
 	return extended, nil
+}
+
+func (pack Package) GetController() (controller map[string]interface{}, err error) {
+
+	controller = make(map[string]interface{})
+
+	bytes := []byte(pack.Controller)
+	if err := json.Unmarshal(bytes, &controller); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
+		return controller, err
+	}
+
+	return controller, nil
 }
 
 func (pack Package) GetPlatforms() (platforms []string, err error) {
@@ -411,7 +443,7 @@ func (pack *Package) fillFromPICS() (err error) {
 }
 
 // todo, make these nice, put into the GetExtended func?
-var PackageKeys = map[string]string{
+var PackageExtendedKeys = map[string]string{
 	"allowcrossregiontradingandgifting":     "Allow Cross Region Trading & Gifting",
 	"allowpurchasefromretrictedcountries":   "Allow Purchase From Retricted Countries",
 	"allowpurchaseinrestrictedcountries":    "Allow Purchase In Restricted Countries",
@@ -447,23 +479,23 @@ var PackageKeys = map[string]string{
 	"grantexpirationdays":                   "Grant Expiration Days",
 	"grantguestpasspackage":                 "Grant Guest Pass Package",
 	"grantpassescount":                      "Grant Passes Count",
-	"hardwarepromotype":                     "hardwarepromotype",
-	"ignorepurchasedateforrefunds":          "ignorepurchasedateforrefunds",
-	"initialperiod":                         "initialperiod",
-	"initialtimeunit":                       "initialtimeunit",
-	"iploginrestriction":                    "iploginrestriction",
-	"languages":                             "languages",
-	"launcheula":                            "launcheula",
-	"legacygamekeyappid":                    "legacygamekeyappid",
-	"lowviolenceinrestrictedcountries":      "lowviolenceinrestrictedcountries",
-	"martinotest":                           "martinotest",
-	"mustownapptopurchase":                  "mustownapptopurchase",
-	"onactivateguestpassmsg":                "onactivateguestpassmsg",
-	"onexpiredmsg":                          "onexpiredmsg",
-	"ongrantguestpassmsg":                   "ongrantguestpassmsg",
-	"onlyallowincountries":                  "onlyallowincountries",
-	"onlyallowrestrictedcountries":          "onlyallowrestrictedcountries",
-	"onlyallowrunincountries":               "onlyallowrunincountries",
+	"hardwarepromotype":                     "Hardware Promo Type",
+	"ignorepurchasedateforrefunds":          "Ignore Purchase Date For Refunds",
+	"initialperiod":                         "Initial Period",
+	"initialtimeunit":                       "Initial Time Unit",
+	"iploginrestriction":                    "IP Login Restriction",
+	"languages":                             "Languages",
+	"launcheula":                            "Launch EULA",
+	"legacygamekeyappid":                    "Legacy Game Key App ID",
+	"lowviolenceinrestrictedcountries":      "Low Violence In Restricted Countries",
+	"martinotest":                           "Martino Test",
+	"mustownapptopurchase":                  "Must Own App To Purchase",
+	"onactivateguestpassmsg":                "On Activate Guest Pass Message",
+	"onexpiredmsg":                          "On Expired Message",
+	"ongrantguestpassmsg":                   "On Grant Guest Pass Message",
+	"onlyallowincountries":                  "Only Allow In Countries",
+	"onlyallowrestrictedcountries":          "Only Allow Restricted Countries",
+	"onlyallowrunincountries":               "Only Allow Run In Countries",
 	"onpurchasegrantguestpasspackage":       "On Purchase Grant Guest Pass Package",
 	"onpurchasegrantguestpasspackage0":      "On Purchase Grant Guest Pass Package 0",
 	"onpurchasegrantguestpasspackage1":      "On Purchase Grant Guest Pass Package 1",
@@ -488,33 +520,37 @@ var PackageKeys = map[string]string{
 	"onpurchasegrantguestpasspackage20":     "On Purchase Grant Guest Pass Package 20",
 	"onpurchasegrantguestpasspackage21":     "On Purchase Grant Guest Pass Package 21",
 	"onpurchasegrantguestpasspackage22":     "On Purchase Grant Guest Pass Package 22",
-	"onquitguestpassmsg":                    "onquitguestpassmsg",
-	"overridetaxtype":                       "overridetaxtype",
-	"permitrunincountries":                  "permitrunincountries",
-	"prohibitrunincountries":                "prohibitrunincountries",
-	"purchaserestrictedcountries":           "purchaserestrictedcountries",
-	"purchaseretrictedcountries":            "purchaseretrictedcountries",
-	"recurringoptions":                      "recurringoptions",
-	"recurringpackageoption":                "recurringpackageoption",
-	"releaseoverride":                       "releaseoverride",
-	"releasestatecountries":                 "releasestatecountries",
-	"releasestateoverride":                  "releasestateoverride",
-	"releasestateoverridecountries":         "releasestateoverridecountries",
-	"relesestateoverride":                   "relesestateoverride",
-	"renewalperiod":                         "renewalperiod",
-	"renewaltimeunit":                       "renewaltimeunit",
-	"requiredps3apploginforpurchase":        "requiredps3apploginforpurchase",
-	"requirespreapproval":                   "requirespreapproval",
-	"restrictedcountries":                   "restrictedcountries",
-	"runrestrictedcountries":                "runrestrictedcountries",
-	"shippableitem":                         "shippableitem",
-	"skipownsallappsinpackagecheck":         "skipownsallappsinpackagecheck",
-	"starttime":                             "starttime",
-	"state":                                 "state",
-	"test":                                  "test",
-	"testchange":                            "testchange",
-	"trading_card_drops":                    "trading_card_drops",
-	"violencerestrictedcountries":           "violencerestrictedcountries",
-	"violencerestrictedterritorycodes":      "violencerestrictedterritorycodes",
-	"virtualitemreward":                     "virtualitemreward",
+	"onquitguestpassmsg":                    "On Quit Guest Pass Message",
+	"overridetaxtype":                       "Override Tax Type",
+	"permitrunincountries":                  "Permit Run In Countries",
+	"prohibitrunincountries":                "Prohibit Run In Countries",
+	"purchaserestrictedcountries":           "Purchase Restricted Countries",
+	"purchaseretrictedcountries":            "Purchase Restricted Countries",
+	"recurringoptions":                      "Recurring Options",
+	"recurringpackageoption":                "Recurring Package Option",
+	"releaseoverride":                       "Release Override",
+	"releasestatecountries":                 "Release State Countries",
+	"releasestateoverride":                  "Release State Override",
+	"releasestateoverridecountries":         "Release State Override Countries",
+	"relesestateoverride":                   "Release State Override",
+	"renewalperiod":                         "Renewal Period",
+	"renewaltimeunit":                       "Renewal Time Unit",
+	"requiredps3apploginforpurchase":        "Required PS3 App Login For Purchase",
+	"requirespreapproval":                   "Requires Preapproval",
+	"restrictedcountries":                   "Restricted Countries",
+	"runrestrictedcountries":                "Run Restricted Countries",
+	"shippableitem":                         "Shippable Item",
+	"skipownsallappsinpackagecheck":         "Skip Owns All Apps In Package Check",
+	"starttime":                             "Start Time",
+	"state":                                 "State",
+	"test":                                  "Test",
+	"testchange":                            "Test Change",
+	"trading_card_drops":                    "Trading Card Drops",
+	"violencerestrictedcountries":           "Violence Restricted Countries",
+	"violencerestrictedterritorycodes":      "Violence Restricted Territory Codes",
+	"virtualitemreward":                     "Virtual Item Reward",
+}
+
+var PackageControllerKeys = map[string]string{
+	"full_gamepad": "Full Gamepad",
 }

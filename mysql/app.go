@@ -372,8 +372,8 @@ func SearchApps(query url.Values, limit int, sort string, columns []string) (app
 		db = db.Select(columns)
 	}
 
-	// Hide ghosts? todo, fix, apps can have no name
-	db = db.Where("name != ''")
+	// Hide ghosts
+	db = db.Where("is_ghost = ?", 0)
 
 	// Type
 	if _, ok := query["type"]; ok {
