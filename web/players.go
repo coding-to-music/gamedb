@@ -221,13 +221,6 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			sortedGamesSlice = append(sortedGamesSlice, v)
 		}
 
-		sort.Slice(sortedGamesSlice, func(i, j int) bool {
-			if sortedGamesSlice[i].Time == sortedGamesSlice[j].Time {
-				return sortedGamesSlice[i].Name < sortedGamesSlice[j].Name
-			}
-			return sortedGamesSlice[i].Time > sortedGamesSlice[j].Time
-		})
-
 		wg.Done()
 
 	}(player)
@@ -243,18 +236,6 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 				logger.Error(err)
 			}
 		}
-
-		wg.Done()
-
-	}(player)
-
-	wg.Add(1)
-	go func(player *datastore.Player) {
-
-		// Badges
-		sort.Slice(player.Badges.Badges, func(i, j int) bool {
-			return player.Badges.Badges[i].CompletionTime > player.Badges.Badges[j].CompletionTime
-		})
 
 		wg.Done()
 

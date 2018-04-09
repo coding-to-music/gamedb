@@ -61,8 +61,12 @@ func (pack Package) GetName() (name string) {
 	return pack.Name
 }
 
-func (pack Package) GetCreatedTime() string {
+func (pack Package) GetCreatedNice() string {
 	return pack.CreatedAt.Format(time.Kitchen)
+}
+
+func (pack Package) GetCreatedUnix() int64 {
+	return pack.CreatedAt.Unix()
 }
 
 func (pack Package) GetBillingType() (string) {

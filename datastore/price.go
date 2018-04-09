@@ -34,7 +34,11 @@ func (p AppPrice) GetLogo() (ret string) {
 	}
 }
 
-func (p AppPrice) GetCreatedDate() (ret string) {
+func (p AppPrice) GetCreatedNice() (ret string) {
+	return p.CreatedAt.Format(time.RFC822)
+}
+
+func (p AppPrice) GetCreatedUnix() (ret string) {
 	return p.CreatedAt.Format(time.RFC822)
 }
 

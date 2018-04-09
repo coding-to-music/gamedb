@@ -99,8 +99,8 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable">
                             <thead>
-                            <th scope="col" width="1%" class="sorter-false"></th>
-                            <th scope="col" width="25%">Name</th>
+                            <th scope="col" width="1%"></th>
+                            <th scope="col" data-sort="asc">Name</th>
                             <th scope="col">Type</th>
                             <th scope="col">Platforms</th>
                             <th scope="col">DLC #</th>
@@ -108,9 +108,9 @@
                         {{ range $key, $value := .Apps }}
                             <tr>
                                 <td class="img">
-                                    <img class="mr-3 rounded" src="{{ .GetIcon }}">
+                                    <img class="rounded" src="{{ .GetIcon }}">
                                 </td>
-                                <td style="white-space:nowrap"><a href="/games/{{.ID}}">{{.GetName}}</a></td>
+                                <td><a href="/games/{{.ID}}">{{.GetName}}</a></td>
                                 <td>{{ .GetType }}</td>
                                 <td class="platforms">{{ .GetPlatformImages }}</td>
                                 <td>{{ len .GetDLC }}</td>

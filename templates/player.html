@@ -85,23 +85,38 @@
                                     <table class="table table-hover mb-0">
                                         <tr>
                                             <th scope="row">Level</th>
-                                            <td><a href="/players/level">{{ .Ranks.GetLevel }}</a> <small>{{ .Ranks.GetLevelPercent }}</small></td>
+                                            <td>
+                                                <a href="/players/level">{{ .Ranks.GetLevel }}</a>
+                                                <small>{{ .Ranks.GetLevelPercent }}</small>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Games</th>
-                                            <td><a href="/players/games">{{ .Ranks.GetGames }}</a> <small>{{ .Ranks.GetGamesPercent }}</small></td>
+                                            <td>
+                                                <a href="/players/games">{{ .Ranks.GetGames }}</a>
+                                                <small>{{ .Ranks.GetGamesPercent }}</small>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Badges</th>
-                                            <td><a href="/players/badges">{{ .Ranks.GetBadges }}</a> <small>{{ .Ranks.GetBadgesPercent }}</small></td>
+                                            <td>
+                                                <a href="/players/badges">{{ .Ranks.GetBadges }}</a>
+                                                <small>{{ .Ranks.GetBadgesPercent }}</small>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Time</th>
-                                            <td><a href="/players/time">{{ .Ranks.GetTime }}</a> <small>{{ .Ranks.GetTimePercent }}</small></td>
+                                            <td>
+                                                <a href="/players/time">{{ .Ranks.GetTime }}</a>
+                                                <small>{{ .Ranks.GetTimePercent }}</small>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Friends</th>
-                                            <td><a href="/players/friends">{{ .Ranks.GetFriends }}</a> <small>{{ .Ranks.GetFriendsPercent }}</small></td>
+                                            <td>
+                                                <a href="/players/friends">{{ .Ranks.GetFriends }}</a>
+                                                <small>{{ .Ranks.GetFriendsPercent }}</small>
+                                            </td>
                                         </tr>
                                     </table>
 
@@ -208,7 +223,7 @@
                             <thead>
                             <th scope="col">ID</th>
                             <th scope="col">Level</th>
-                            <th scope="col">Acquired</th>
+                            <th scope="col" data-sort="desc">Acquired</th>
                             <th scope="col">XP</th>
                             <th scope="col">Owners</th>
                             <th scope="col">App</th>
@@ -217,7 +232,7 @@
                             <tr>
                                 <td>{{ comma .BadgeID }}</td>
                                 <td>{{ comma .Level }}</td>
-                                <td nowrap="nowrap">{{ .GetTimeNice }}</td>
+                                <td data-order="{{.GetTimeUnix}}">{{ .GetTimeNice }}</td>
                                 <td>{{ comma .XP }}</td>
                                 <td>{{ comma .Scarcity }}</td>
                                 <td>{{if ne .AppID 0}}<a href="/games/{{ .AppID }}">{{ .AppID }}</a>{{end}}</td>
@@ -235,9 +250,9 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable">
                             <thead>
-                            <th scope="col" width="1%" class="sorter-false"></th>
+                            <th scope="col" width="1%"></th>
                             <th scope="col">Game</th>
-                            <th scope="col">2 Weeks</th>
+                            <th scope="col" data-sort="desc">2 Weeks</th>
                             <th scope="col">All Time</th>
                             </thead>
                         {{ range $key, $value := .Player.GamesRecent }}
@@ -259,10 +274,10 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead>
-                            <th scope="col" class="sorter-false"></th>
+                            <th scope="col" width="1%"></th>
                             <th scope="col">Game</th>
                             <th scope="col" class="sorter-digit">Price</th>
-                            <th scope="col" class="sorter-digit">Time (Minutes)</th>
+                            <th scope="col" class="sorter-digit" data-sort="desc">Time (Minutes)</th>
                             <th scope="col" class="sorter-digit">Price/Hour</th>
                             </thead>
                         {{ range $key, $value := .Games }}
@@ -272,7 +287,7 @@
                                 </td>
                                 <td>{{ .Name }}</td>
                                 <td>${{ .Price }}</td>
-                                <td>{{ comma .Time }}</td>
+                                <td data-sort="{{.Time}}">{{ comma .Time }}</td>
                                 <td>${{ .GetPriceHour }}</td>
                             </tr>
                         {{ end }}

@@ -18,6 +18,14 @@ func (d Donation) GetKey() (key *datastore.Key) {
 	return datastore.IncompleteKey(KindDonation, nil)
 }
 
+func (d Donation) GetCreatedNice() (ret string) {
+	return d.CreatedAt.Format(time.RFC822)
+}
+
+func (d Donation) GetCreatedUnix() int64 {
+	return d.CreatedAt.Unix()
+}
+
 func GetDonations(playerID int, limit int) (donations []Donation, err error) {
 
 	client, ctx, err := getDSClient()

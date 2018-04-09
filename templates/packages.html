@@ -19,7 +19,7 @@
                     <th scope="col">License Type</th>
                     <th scope="col">Status</th>
                     <th scope="col">Apps</th>
-                    <th scope="col">Time</th>
+                    <th scope="col" data-sort="desc">Time</th>
                     </thead>
                 {{ range $key, $value := .Packages }}
                     <tr data-link="/packages/{{ .ID }}">
@@ -28,7 +28,7 @@
                         <td>{{.GetLicenseType}}</td>
                         <td>{{.GetStatus}}</td>
                         <td>{{len .GetApps}}</td>
-                        <td>{{.GetCreatedTime}}</td>
+                        <td data-sort="{{.GetCreatedUnix}}">{{.GetCreatedNice}}</td>
                     </tr>
                 {{ end }}
                 </table>

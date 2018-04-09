@@ -50,11 +50,13 @@
                     <thead>
                     <tr>
                         <th scope="col">Amount</th>
+                        <th scope="col" data-sort="desc">Date</th>
                     </tr>
                     </thead>
                 {{ range $key, $value := .Donations }}
                     <tr>
                         <td>{{ .Amount }}</td>
+                        <td data-order="{{.GetCreatedUnix}}">{{ .GetCreatedNice }}</td>
                     </tr>
                 {{ end }}
                 </table>
@@ -74,14 +76,14 @@
                 <table class="table table-hover table-striped table-datatable mb-0">
                     <thead>
                     <tr>
-                        <th scope="col">Date</th>
+                        <th scope="col" data-sort="desc">Date</th>
                         <th scope="col">IP</th>
                         <th scope="col">User Agent</th>
                     </tr>
                     </thead>
                 {{ range $key, $value := .Logins }}
                     <tr>
-                        <td nowrap="nowrap">{{ .GetTime }}</td>
+                        <td nowrap="nowrap" data-order="{{.GetCreatedUnix}}">{{ .GetCreatedNice }}</td>
                         <td>{{ .IP }}</td>
                         <td nowrap="nowrap">
                             <span data-toggle="tooltip" data-placement="top" title="{{ .UserAgent }}">{{ printf "%.50s" .UserAgent }}&hellip;</span>

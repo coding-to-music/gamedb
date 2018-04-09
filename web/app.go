@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/steam"
@@ -80,10 +81,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 				achievementsMap[v.Name],
 			})
 		}
-
-		//sort.Slice(achievements, func(i, j int) bool {
-		//	return achievements[i].Completed > achievements[j].Completed
-		//})
 
 		wg.Done()
 	}()
@@ -204,6 +201,10 @@ type appAchievementTemplate struct {
 	Name        string
 	Description string
 	Completed   float64
+}
+
+func (a appAchievementTemplate) GetCompleted() string {
+	return helpers.DollarsFloat(a.Completed)
 }
 
 type hcSeries struct {
