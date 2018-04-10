@@ -26,7 +26,7 @@ func GetGroupsByIDs(ids []int) (groups []Group, err error) {
 		return groups, errors.New("too many groups")
 	}
 
-	client, context, err := getDSClient()
+	client, context, err := getClient()
 	if err != nil {
 		return groups, err
 	}

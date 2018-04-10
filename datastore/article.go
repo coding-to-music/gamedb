@@ -55,7 +55,7 @@ func bulkAddArticles(articles []*Article) (err error) {
 		return nil
 	}
 
-	client, context, err := getDSClient()
+	client, context, err := getClient()
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func bulkAddArticles(articles []*Article) (err error) {
 
 func GetArticles(appID int, limit int) (articles []Article, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return articles, err
 	}

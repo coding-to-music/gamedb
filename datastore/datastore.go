@@ -26,12 +26,19 @@ const (
 	ErrorNotFound = "datastore: no such entity"
 )
 
-func getDSClient() (client *datastore.Client, ctx context.Context, err error) {
+var (
+	client *datastore.Client
+)
+
+func getClient() (ret *datastore.Client, ctx context.Context, err error) {
 
 	ctx = context.Background()
-	client, err = datastore.NewClient(ctx, os.Getenv("STEAM_GOOGLE_PROJECT"))
-	if err != nil {
-		return client, ctx, err
+
+	if client == nil {
+		client, err = datastore.NewClient(ctx, os.Getenv("STEAM_GOOGLE_PROJECT"))
+		if err != nil {
+			return client, ctx, err
+		}
 	}
 
 	return client, ctx, nil
@@ -39,7 +46,7 @@ func getDSClient() (client *datastore.Client, ctx context.Context, err error) {
 
 func SaveKind(key *datastore.Key, data interface{}) (newKey *datastore.Key, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return nil, err
 	}

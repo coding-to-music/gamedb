@@ -29,7 +29,7 @@ func (d Donation) GetCreatedUnix() int64 {
 
 func GetDonations(playerID int, limit int) (donations []Donation, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return donations, err
 	}

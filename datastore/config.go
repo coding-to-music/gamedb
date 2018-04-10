@@ -42,7 +42,7 @@ func SetConfig(configID string, value string) (err error) {
 
 func GetConfig(name string) (config *Config, err error) {
 
-	client, context, err := getDSClient()
+	client, context, err := getClient()
 	if err != nil {
 		return config, err
 	}
@@ -66,7 +66,7 @@ func GetMultiConfigs(names []string) (configsMap map[string]Config, err error) {
 
 	configsMap = map[string]Config{}
 
-	client, context, err := getDSClient()
+	client, context, err := getClient()
 	if err != nil {
 		return configsMap, err
 	}

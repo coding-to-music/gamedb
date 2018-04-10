@@ -46,7 +46,7 @@ func CreateLogin(playerID int, r *http.Request) (err error) {
 
 func GetLogins(playerID int, limit int) (logins []Login, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return logins, err
 	}

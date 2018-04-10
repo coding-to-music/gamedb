@@ -70,7 +70,7 @@ func (rank *Rank) Tidy() *Rank {
 
 func GetRank(playerID int) (rank *Rank, err error) {
 
-	client, context, err := getDSClient()
+	client, context, err := getClient()
 	if err != nil {
 		return rank, err
 	}
@@ -87,7 +87,7 @@ func GetRank(playerID int) (rank *Rank, err error) {
 
 func GetRanksBy(order string) (ranks []Rank, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return ranks, err
 	}
@@ -103,7 +103,7 @@ func GetRankKeys() (keysMap map[int]*datastore.Key, err error) {
 
 	keysMap = make(map[int]*datastore.Key)
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return keysMap, err
 	}
@@ -124,7 +124,7 @@ func GetRankKeys() (keysMap map[int]*datastore.Key, err error) {
 
 func GetRanksCount() (count int, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return count, err
 	}
@@ -168,7 +168,7 @@ func BulkSaveRanks(ranks []*Rank) (err error) {
 		return nil
 	}
 
-	client, context, err := getDSClient()
+	client, context, err := getClient()
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func BulkDeleteRanks(keys map[int]*datastore.Key) (err error) {
 		keysToDelete = append(keysToDelete, v)
 	}
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return err
 	}

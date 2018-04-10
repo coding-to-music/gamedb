@@ -57,7 +57,7 @@ func (p AppPrice) GetPriceFinal() string {
 
 func GetAppPrices(appID int) (prices []AppPrice, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return prices, err
 	}
@@ -73,7 +73,7 @@ func GetAppPrices(appID int) (prices []AppPrice, err error) {
 
 func GetAppChanges() (prices []AppPrice, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return prices, err
 	}
@@ -103,7 +103,7 @@ func (p PackagePrice) GetKey() (key *datastore.Key) {
 
 func GetPackagePrices(packageID int) (prices []PackagePrice, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return prices, err
 	}

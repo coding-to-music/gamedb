@@ -153,7 +153,7 @@ func (p Player) GetTimeLong() (ret string) {
 
 func GetPlayer(id int) (ret *Player, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return ret, err
 	}
@@ -177,7 +177,7 @@ func GetPlayer(id int) (ret *Player, err error) {
 
 func GetPlayerByName(name string) (ret Player, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return ret, err
 	}
@@ -202,7 +202,7 @@ func GetPlayerByName(name string) (ret Player, err error) {
 
 func GetPlayers(order string, limit int) (players []Player, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return players, err
 	}
@@ -219,7 +219,7 @@ func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 		return friends, errors.New("too many players")
 	}
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return friends, err
 	}
@@ -241,7 +241,7 @@ func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 
 func CountPlayers() (count int, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return count, err
 	}

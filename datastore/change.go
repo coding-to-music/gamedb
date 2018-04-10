@@ -35,7 +35,7 @@ func (change Change) GetNiceDate() (string) {
 
 func GetLatestChanges(limit int) (changes []Change, err error) {
 
-	client, ctx, err := getDSClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return changes, err
 	}
@@ -49,7 +49,7 @@ func GetLatestChanges(limit int) (changes []Change, err error) {
 
 func GetChange(id string) (change *Change, err error) {
 
-	client, context, err := getDSClient()
+	client, context, err := getClient()
 	if err != nil {
 		return change, err
 	}
