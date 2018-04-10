@@ -44,7 +44,7 @@
             <div class="table-responsive">
                 <table class="table table-hover table-striped table-datatable">
                     <thead>
-                    <th scope="col" width="1%"></th>
+                    <th scope="col" width="1%" data-disabled></th>
                     <th scope="col">Game</th>
                     <th scope="col">Release</th>
                     <th scope="col">Price</th>
@@ -58,7 +58,7 @@
                             <img src="{{.GetLogo}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
                         </td>
                         <td>{{ .AppName }}</td>
-                        <td nowrap="nowrap">{{ .ReleaseDate }}</td>
+                        <td nowrap="nowrap" data-order="{{ .GetReleaseDateUnix }}">{{ .GetReleaseDateNice }}</td>
                         <td>${{ .GetPriceFinal }}</td>
                         <td>{{ .Discount }}%</td>
                         <td>${{ .GetChange }}</td>

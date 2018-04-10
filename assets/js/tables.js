@@ -4,6 +4,7 @@ $("table.table-datatable").each(function (i) {
 
     var order = [[0, 'asc']];
 
+    // Find default column to sort by
     var $column = $(this).find('thead tr th[data-sort]');
     if ($column.length > 0) {
 
@@ -13,6 +14,13 @@ $("table.table-datatable").each(function (i) {
         order = [[index, sort]];
     }
 
+    // Find
+    var disabled = [];
+    $(this).find('thead tr th[data-disabled]').each(function (i) {
+        disabled.push($(this).index());
+    });
+
+    // Init
     $(this).DataTable({
         "order": order,
         "paging": false,
@@ -25,7 +33,14 @@ $("table.table-datatable").each(function (i) {
         "autoWidth": false,
         "lengthChange": false,
         "stateSave": false,
-        "dom": 't'
+        "dom": 't',
+        "columnDefs": [
+            {
+                "targets": disabled,
+                "orderable": false,
+                "searchable": false
+            }
+        ]
     });
 
 });

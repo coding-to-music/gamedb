@@ -99,7 +99,7 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable">
                             <thead>
-                            <th scope="col" width="1%"></th>
+                            <th scope="col" width="1%" data-disabled></th>
                             <th scope="col" data-sort="asc">Name</th>
                             <th scope="col">Type</th>
                             <th scope="col">Platforms</th>
@@ -112,8 +112,8 @@
                                 </td>
                                 <td><a href="/games/{{.ID}}">{{.GetName}}</a></td>
                                 <td>{{ .GetType }}</td>
-                                <td class="platforms">{{ .GetPlatformImages }}</td>
-                                <td>{{ len .GetDLC }}</td>
+                                <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
+                                <td>{{ comma (len .GetDLC) }}</td>
                             </tr>
                         {{ end }}
                         </table>

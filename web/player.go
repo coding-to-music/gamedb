@@ -2,12 +2,11 @@ package web
 
 import (
 	"encoding/json"
-	"errors"
 	"math"
 	"net/http"
-	"path"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -21,82 +20,6 @@ import (
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/steam"
 )
-
-func RanksHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Normalise the order
-	var ranks []datastore.Rank
-	var err error
-
-	switch chi.URLParam(r, "id") {
-	case "badges":
-		ranks, err = datastore.GetRanksBy("badges_rank")
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].BadgesRank)
-		}
-	case "friends":
-		ranks, err = datastore.GetRanksBy("friends_rank")
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].FriendsRank)
-		}
-	case "games":
-		ranks, err = datastore.GetRanksBy("games_rank")
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].GamesRank)
-		}
-	case "level", "":
-		ranks, err = datastore.GetRanksBy("level_rank")
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].LevelRank)
-		}
-	case "time":
-		ranks, err = datastore.GetRanksBy("play_time_rank")
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].PlayTimeRank)
-		}
-	default:
-		err = errors.New("incorrect sort")
-	}
-
-	if err != nil {
-		logger.Error(err)
-		returnErrorTemplate(w, r, 404, err.Error())
-		return
-	}
-
-	// Count players
-	playersCount, err := datastore.CountPlayers()
-	if err != nil {
-		logger.Error(err)
-	}
-
-	// Count ranks
-	ranksCount, err := datastore.GetRanksCount()
-	if err != nil {
-		logger.Error(err)
-	}
-
-	template := playersTemplate{}
-	template.Fill(r, "Ranks")
-	template.Ranks = ranks
-	template.PlayersCount = playersCount
-	template.RanksCount = ranksCount
-
-	returnTemplate(w, r, "ranks", template)
-	return
-}
-
-type playersTemplate struct {
-	GlobalTemplate
-	Ranks        []datastore.Rank
-	PlayersCount int
-	RanksCount   int
-}
 
 func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -190,35 +113,30 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
-	var sortedGamesSlice []*playerAppTemplate
+	var games = map[int]*playerAppTemplate{}
 	wg.Add(1)
 	go func(player *datastore.Player) {
 
-		// Get games
+		// Get game info from player
 		var gamesSlice []int
-		gamesMap := make(map[int]*playerAppTemplate)
 		for _, v := range player.GetGames() {
 			gamesSlice = append(gamesSlice, v.AppID)
-			gamesMap[v.AppID] = &playerAppTemplate{
+			games[v.AppID] = &playerAppTemplate{
 				Time: v.PlaytimeForever,
 			}
 		}
 
+		// Get game info from app
 		gamesSql, err := mysql.GetApps(gamesSlice, []string{"id", "name", "price_initial", "icon"})
 		if err != nil {
 			logger.Error(err)
 		}
 
 		for _, v := range gamesSql {
-			gamesMap[v.ID].ID = v.ID
-			gamesMap[v.ID].Name = v.GetName()
-			gamesMap[v.ID].Price = v.GetPriceInitial()
-			gamesMap[v.ID].Icon = v.GetIcon()
-		}
-
-		// Sort games
-		for _, v := range gamesMap {
-			sortedGamesSlice = append(sortedGamesSlice, v)
+			games[v.ID].ID = v.ID
+			games[v.ID].Name = v.GetName()
+			games[v.ID].Price = v.GetPriceInitial()
+			games[v.ID].Icon = v.GetIcon()
 		}
 
 		wg.Done()
@@ -262,7 +180,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	template.Fill(r, player.PersonaName)
 	template.Player = player
 	template.Friends = friends
-	template.Games = sortedGamesSlice
+	template.Games = games
 	template.Ranks = playerRanksTemplate{*ranks, players}
 
 	returnTemplate(w, r, "player", template)
@@ -272,7 +190,7 @@ type playerTemplate struct {
 	GlobalTemplate
 	Player  *datastore.Player
 	Friends []datastore.Player
-	Games   []*playerAppTemplate
+	Games   map[int]*playerAppTemplate
 	Ranks   playerRanksTemplate
 }
 
@@ -282,6 +200,11 @@ type playerAppTemplate struct {
 	Price string
 	Icon  string
 	Time  int
+}
+
+func (g playerAppTemplate) GetTimeNice() string {
+
+	return helpers.GetTimeShort(g.Time, 2)
 }
 
 func (g playerAppTemplate) GetPriceHour() string {
@@ -299,6 +222,11 @@ func (g playerAppTemplate) GetPriceHour() string {
 		return "∞"
 	}
 	return helpers.DollarsFloat(x)
+}
+
+func (g playerAppTemplate) GetPriceHourSort() string {
+
+	return strings.Replace(g.GetPriceHour(), "∞", "1000000", 1)
 }
 
 type playerRanksTemplate struct {
@@ -373,37 +301,4 @@ func (p playerRanksTemplate) GetTimePercent() string {
 
 func (p playerRanksTemplate) GetFriendsPercent() string {
 	return p.formatPercent(p.Ranks.FriendsRank)
-}
-
-func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
-
-	post := r.PostFormValue("id")
-	post = path.Base(post)
-
-	// Check datastore
-	dbPlayer, err := datastore.GetPlayerByName(post)
-	if err != nil {
-
-		if err.Error() != datastore.ErrorNotFound {
-			logger.Error(err)
-		}
-
-		// Check steam
-		id, err := steam.GetID(post)
-		if err != nil {
-
-			if err != steam.ErrNoUserFound {
-				logger.Error(err)
-			}
-
-			returnErrorTemplate(w, r, 404, "Can't find user: "+post)
-			return
-		}
-
-		http.Redirect(w, r, "/players/"+id, 302)
-		return
-	}
-
-	http.Redirect(w, r, "/players/"+strconv.Itoa(dbPlayer.PlayerID), 302)
-	return
 }

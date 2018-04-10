@@ -2,10 +2,12 @@ package web
 
 import (
 	"encoding/json"
+	"html/template"
 	"net/http"
 	"strconv"
 	"sync"
 
+	"github.com/CalebQ42/bbConvert"
 	"github.com/go-chi/chi"
 	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
@@ -129,12 +131,26 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
-	var news []datastore.Article
+	var news []appArticleTemplate
 	wg.Add(1)
 	go func() {
 
 		// Get news
-		news, err = datastore.GetArticles(idx, 1000)
+		newsResp, err := datastore.GetArticles(idx, 1000)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		var conv bbConvert.HTMLConverter
+		conv.ImplementDefaults()
+
+		for _, v := range newsResp {
+			news = append(news, appArticleTemplate{
+				Title:    v.Title,
+				Contents: template.HTML(conv.Convert(v.Contents)),
+				Author:   v.Author,
+			})
+		}
 
 		wg.Done()
 	}()
@@ -171,24 +187,24 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	template := appTemplate{}
-	template.Fill(r, app.GetName())
-	template.App = app
-	template.Packages = packages
-	template.Articles = news
-	template.Banners = banners
-	template.Prices = pricesString
-	template.Achievements = achievements
-	template.Tags = tags
+	t := appTemplate{}
+	t.Fill(r, app.GetName())
+	t.App = app
+	t.Packages = packages
+	t.Articles = news
+	t.Banners = banners
+	t.Prices = pricesString
+	t.Achievements = achievements
+	t.Tags = tags
 
-	returnTemplate(w, r, "app", template)
+	returnTemplate(w, r, "app", t)
 }
 
 type appTemplate struct {
 	GlobalTemplate
 	App          mysql.App
 	Packages     []mysql.Package
-	Articles     []datastore.Article
+	Articles     []appArticleTemplate
 	Banners      map[string][]string
 	Prices       string
 	Achievements []appAchievementTemplate
@@ -201,6 +217,12 @@ type appAchievementTemplate struct {
 	Name        string
 	Description string
 	Completed   float64
+}
+
+type appArticleTemplate struct {
+	Title    string
+	Contents template.HTML
+	Author   string
 }
 
 func (a appAchievementTemplate) GetCompleted() string {

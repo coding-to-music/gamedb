@@ -53,11 +53,11 @@ type RecentlyPlayedGame struct {
 	ImgLogoURL      string `json:"img_logo_url"`
 }
 
-func (r RecentlyPlayedGame) GetTwoWeeks() string {
+func (r RecentlyPlayedGame) GetTwoWeeksNice() string {
 	return helpers.GetTimeShort(r.Playtime2Weeks, 2)
 }
 
-func (r RecentlyPlayedGame) GetAllTime() string {
+func (r RecentlyPlayedGame) GetAllTimeNice() string {
 	return helpers.GetTimeShort(r.PlaytimeForever, 2)
 }
 

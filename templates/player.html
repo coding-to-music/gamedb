@@ -250,7 +250,7 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable">
                             <thead>
-                            <th scope="col" width="1%"></th>
+                            <th scope="col" width="1%" data-disabled></th>
                             <th scope="col">Game</th>
                             <th scope="col" data-sort="desc">2 Weeks</th>
                             <th scope="col">All Time</th>
@@ -261,8 +261,8 @@
                                     <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgIconURL }}.jpg" class="rounded">
                                 </td>
                                 <td>{{ .Name }}</td>
-                                <td>{{ .GetTwoWeeks }}</td>
-                                <td>{{ .GetAllTime }}</td>
+                                <td data-order="{{ .Playtime2Weeks }}">{{ .GetTwoWeeksNice }}</td>
+                                <td data-order="{{ .PlaytimeForever }}">{{ .GetAllTimeNice }}</td>
                             </tr>
                         {{ end }}
                         </table>
@@ -274,7 +274,7 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead>
-                            <th scope="col" width="1%"></th>
+                            <th scope="col" width="1%" data-disabled></th>
                             <th scope="col">Game</th>
                             <th scope="col" class="sorter-digit">Price</th>
                             <th scope="col" class="sorter-digit" data-sort="desc">Time (Minutes)</th>
@@ -286,9 +286,9 @@
                                     <img src="{{ .Icon }}" class="avatar rounded">
                                 </td>
                                 <td>{{ .Name }}</td>
-                                <td>${{ .Price }}</td>
-                                <td data-sort="{{.Time}}">{{ comma .Time }}</td>
-                                <td>${{ .GetPriceHour }}</td>
+                                <td data-sort="{{ .Price }}">${{ .Price }}</td>
+                                <td data-sort="{{ .Time }}">{{ .GetTimeNice }}</td>
+                                <td data-sort="{{ .GetPriceHourSort }}">${{ .GetPriceHour }}</td>
                             </tr>
                         {{ end }}
                         </table>

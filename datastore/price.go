@@ -35,11 +35,21 @@ func (p AppPrice) GetLogo() (ret string) {
 }
 
 func (p AppPrice) GetCreatedNice() (ret string) {
-	return p.CreatedAt.Format(time.RFC822)
+	return p.CreatedAt.Format(helpers.DayTime)
 }
 
 func (p AppPrice) GetCreatedUnix() (ret string) {
-	return p.CreatedAt.Format(time.RFC822)
+	return p.CreatedAt.Format(helpers.DayTime)
+}
+
+// todo
+func (p AppPrice) GetReleaseDateNice() (ret string) {
+	return p.CreatedAt.Format(helpers.DayTime)
+}
+
+// todo
+func (p AppPrice) GetReleaseDateUnix() (ret string) {
+	return p.CreatedAt.Format(helpers.DayTime)
 }
 
 func (p AppPrice) GetPriceInitial() string {

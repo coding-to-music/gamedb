@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+const (
+	Day         = "02 Jan"
+	DayTime     = "02 Jan 15:04"
+	DayYearTime = "02 Jan 06 15:04"
+)
+
 func DaysIn(year int, month time.Month) int {
 	return time.Date(year, month+1, 0, 0, 0, 0, 0, time.UTC).Day()
 }
