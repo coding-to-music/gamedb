@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/steam-authority/steam-authority/logger"
@@ -27,6 +28,11 @@ func GetQeueus() (resp []Queue, err error) {
 	if err != nil {
 		return resp, err
 	}
+
+	regex := regexp.MustCompile(`"target_ram_count":\s?(\d+)`)
+	s := regex.ReplaceAllString(string(bytes), `"target_ram_count":"$1"`)
+
+	bytes = []byte(s)
 
 	// Unmarshal JSON
 	if err := json.Unmarshal(bytes, &resp); err != nil {
@@ -117,7 +123,7 @@ type Queue struct {
 		Q2                int           `json:"q2"`
 		Q3                int           `json:"q3"`
 		Q4                int           `json:"q4"`
-		TargetRAMCount    int           `json:"target_ram_count"`
+		TargetRAMCount    string        `json:"target_ram_count"`
 	} `json:"backing_queue_status"`
 	HeadMessageTimestamp       interface{} `json:"head_message_timestamp"`
 	MessageBytesPersistent     int         `json:"message_bytes_persistent"`
