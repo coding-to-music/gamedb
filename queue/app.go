@@ -13,8 +13,6 @@ import (
 
 func processApp(msg amqp.Delivery) (err error) {
 
-	return
-
 	// Get message payload
 	message := new(AppMessage)
 
@@ -80,7 +78,8 @@ func processApp(msg amqp.Delivery) (err error) {
 		price.Currency = "usd"
 		price.Change = app.PriceFinal - priceBeforeFill
 		price.Icon = app.Icon
-		price.ReleaseDate = app.ReleaseDate
+		price.ReleaseDateNice = app.GetReleaseDateNice()
+		price.ReleaseDateUnix = app.GetReleaseDateUnix()
 
 		if price.Change != 0 {
 			_, err = datastore.SaveKind(price.GetKey(), price)

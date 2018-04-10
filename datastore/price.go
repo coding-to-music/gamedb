@@ -9,16 +9,17 @@ import (
 )
 
 type AppPrice struct {
-	CreatedAt    time.Time `datastore:"created_at"`
-	AppID        int       `datastore:"app_id"`
-	AppName      string    `datastore:"app_name"`
-	PriceInitial int       `datastore:"price_initial"`
-	PriceFinal   int       `datastore:"price_final"`
-	Discount     int       `datastore:"discount"`
-	Currency     string    `datastore:"currency"`
-	Change       int       `datastore:"change"`
-	Icon         string    `datastore:"logo"`
-	ReleaseDate  string    `datastore:"release_date"`
+	CreatedAt       time.Time `datastore:"created_at"`
+	AppID           int       `datastore:"app_id"`
+	AppName         string    `datastore:"app_name"`
+	PriceInitial    int       `datastore:"price_initial"`
+	PriceFinal      int       `datastore:"price_final"`
+	Discount        int       `datastore:"discount"`
+	Currency        string    `datastore:"currency"`
+	Change          int       `datastore:"change"`
+	Icon            string    `datastore:"logo"`
+	ReleaseDateNice string    `datastore:"release_date"`
+	ReleaseDateUnix int64     `datastore:"release_date_unix"`
 }
 
 func (p AppPrice) GetKey() (key *datastore.Key) {
@@ -35,21 +36,11 @@ func (p AppPrice) GetLogo() (ret string) {
 }
 
 func (p AppPrice) GetCreatedNice() (ret string) {
-	return p.CreatedAt.Format(helpers.DayTime)
+	return p.CreatedAt.Format(helpers.DateTime)
 }
 
 func (p AppPrice) GetCreatedUnix() (ret string) {
-	return p.CreatedAt.Format(helpers.DayTime)
-}
-
-// todo
-func (p AppPrice) GetReleaseDateNice() (ret string) {
-	return p.CreatedAt.Format(helpers.DayTime)
-}
-
-// todo
-func (p AppPrice) GetReleaseDateUnix() (ret string) {
-	return p.CreatedAt.Format(helpers.DayTime)
+	return p.CreatedAt.Format(helpers.DateTime)
 }
 
 func (p AppPrice) GetPriceInitial() string {

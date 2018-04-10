@@ -3,9 +3,9 @@ package queue
 import (
 	"encoding/json"
 	"strings"
-	"time"
 
 	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/websockets"
@@ -13,8 +13,6 @@ import (
 )
 
 func processChange(msg amqp.Delivery) (err error) {
-
-	return
 
 	// Get change
 	change := new(datastore.Change)
@@ -68,8 +66,8 @@ func processChange(msg amqp.Delivery) (err error) {
 
 		payload := changeWebsocketPayload{
 			ID:            change.ChangeID,
-			CreatedAt:     change.CreatedAt.Unix(),
-			CreatedAtNice: change.CreatedAt.Format(time.RFC822),
+			CreatedAtUnix: change.CreatedAt.Unix(),
+			CreatedAtNice: change.CreatedAt.Format(helpers.DateYearTime),
 			Apps:          apps,
 			Packages:      packages,
 		}
@@ -82,7 +80,7 @@ func processChange(msg amqp.Delivery) (err error) {
 
 type changeWebsocketPayload struct {
 	ID            int                             `json:"id"`
-	CreatedAt     int64                           `json:"created_at"`
+	CreatedAtUnix int64                           `json:"created_at"`
 	CreatedAtNice string                          `json:"created_at_nice"`
 	Apps          []changeAppWebsocketPayload     `json:"apps"`
 	Packages      []changePackageWebsocketPayload `json:"packages"`

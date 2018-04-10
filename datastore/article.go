@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 )
@@ -34,7 +35,7 @@ func (article Article) GetTimestamp() (int64) {
 }
 
 func (article Article) GetNiceDate() (string) {
-	return article.Date.Format(time.RFC822)
+	return article.Date.Format(helpers.DateYear)
 }
 
 func (article *Article) Tidy() *Article {

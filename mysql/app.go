@@ -100,6 +100,41 @@ func (app App) GetType() (ret string) {
 	}
 }
 
+func (app App) getReleaseDate() (t time.Time, err error) {
+
+	t, err = time.Parse("Jan 2, 2006", app.ReleaseDate)
+	if err != nil {
+
+		t, err = time.Parse("Jan 2006", app.ReleaseDate)
+		if err != nil {
+
+			t, err = time.Parse("2006", app.ReleaseDate)
+		}
+	}
+
+	return t, err
+}
+
+func (app App) GetReleaseDateNice() (date string) {
+
+	t, err := app.getReleaseDate()
+	if err != nil {
+		return app.ReleaseDate
+	}
+
+	return t.Format(helpers.DateYear)
+}
+
+func (app App) GetReleaseDateUnix() int64 {
+
+	t, err := app.getReleaseDate()
+	if err != nil {
+		return 0
+	}
+
+	return t.Unix()
+}
+
 func (app App) GetIcon() (ret string) {
 
 	if app.Icon == "" {
@@ -119,6 +154,10 @@ func (app App) GetCommunityLink() (string) {
 
 func (app App) GetStoreLink() (string) {
 	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
+}
+
+func (app App) GetPCGamingWikiLink() (string) {
+	return "https://pcgamingwiki.com/api/appid.php?appid=" + strconv.Itoa(app.ID)
 }
 
 func (app App) GetInstallLink() (template.URL) {

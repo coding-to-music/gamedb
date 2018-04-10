@@ -196,7 +196,7 @@ type BadgeResponse struct {
 }
 
 func (b BadgeResponse) GetTimeNice() string {
-	return time.Unix(b.CompletionTime, 0).Format(time.RFC822)
+	return time.Unix(b.CompletionTime, 0).Format(helpers.DateYear)
 }
 
 func (b BadgeResponse) GetTimeUnix() int64 {

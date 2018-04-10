@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 type Change struct {
@@ -29,7 +30,7 @@ func (change Change) GetTimestamp() (int64) {
 }
 
 func (change Change) GetNiceDate() (string) {
-	return change.CreatedAt.Format(time.RFC822)
+	return change.CreatedAt.Format(helpers.DateYearTime)
 }
 
 func GetLatestChanges(limit int) (changes []Change, err error) {

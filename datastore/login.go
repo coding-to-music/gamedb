@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 type Login struct {
@@ -19,7 +20,7 @@ func (login Login) GetKey() (key *datastore.Key) {
 }
 
 func (login Login) GetCreatedNice() (t string) {
-	return login.CreatedAt.Format(time.RFC822)
+	return login.CreatedAt.Format(helpers.DateTime)
 }
 
 func (login Login) GetCreatedUnix() int64 {

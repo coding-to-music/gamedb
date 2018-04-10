@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-sm-12 col-lg-6">
 
-                <h1 class="display-4"><i class="fas fa-users"></i> Coop</h1>
+                <h1 class="display-4"><i class="fas fa-users"></i> Co-op</h1>
                 <p class="lead">What to play with friends.</p>
 
             </div>
@@ -61,7 +61,7 @@
                     <th scope="col" data-sort="asc">Game</th>
                     <th scope="col" data-disabled>Platforms</th>
                     <th scope="col">Achievements</th>
-                    <th scope="col">Tags</th>
+                    <th scope="col" data-disabled>Co-op Tags</th>
                     </thead>
                 {{ range $key, $value := .Games }}
                     <tr data-link="/games/{{ .Game.ID }}">

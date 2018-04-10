@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 type Donation struct {
@@ -19,7 +20,7 @@ func (d Donation) GetKey() (key *datastore.Key) {
 }
 
 func (d Donation) GetCreatedNice() (ret string) {
-	return d.CreatedAt.Format(time.RFC822)
+	return d.CreatedAt.Format(helpers.DateYear)
 }
 
 func (d Donation) GetCreatedUnix() int64 {

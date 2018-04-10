@@ -1,6 +1,7 @@
 body {
     overflow-y: scroll;
-    background-color: $dark;
+    background: $dark no-repeat center top;
+    background-size: 100%;
 }
 
 div#top {

@@ -63,7 +63,7 @@ func (p Player) GetSteamTimeUnix() (int64) {
 }
 
 func (p Player) GetSteamTimeNice() (string) {
-	return p.TimeCreated.Format(time.RFC822)
+	return p.TimeCreated.Format(helpers.DateYear)
 }
 
 func (p Player) GetLogoffUnix() (int64) {
@@ -71,7 +71,7 @@ func (p Player) GetLogoffUnix() (int64) {
 }
 
 func (p Player) GetLogoffNice() (string) {
-	return p.LastLogOff.Format(time.RFC822)
+	return p.LastLogOff.Format(helpers.DateYearTime)
 }
 
 func (p Player) GetUpdatedUnix() (int64) {
@@ -79,7 +79,7 @@ func (p Player) GetUpdatedUnix() (int64) {
 }
 
 func (p Player) GetUpdatedNice() (string) {
-	return p.UpdatedAt.Format(time.RFC822)
+	return p.UpdatedAt.Format(helpers.DateTime)
 }
 
 func (p Player) GetSteamCommunityLink() string {

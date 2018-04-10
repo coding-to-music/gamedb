@@ -1,17 +1,18 @@
 {{define "app"}} {{ template "_header" . }}
 
-<div class="container" id="app-page">
+<div class="container mt-4" id="app-page" data-bg="{{ .App.Background }}">
 
     <div class="jumbotron">
         <img src="http://cdn.akamai.steamstatic.com/steam/apps/{{ .App.ID }}/header.jpg" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
-        <h1 class="display-4"><i class="fas fa-gamepad"></i> {{.App.GetName}}</h1>
+        <h1 class="display-4"><i class="fas fa-gamepad"></i> {{ .App.GetName }}</h1>
         <p class="lead">
-            <a href="{{ .App.GetCommunityLink }}">Community Page</a>
-            - <a href="{{ .App.GetStoreLink }}">Store Page</a>
+            <a href="{{ .App.GetCommunityLink }}" data-toggle="tooltip" data-placement="top" title="Community Page"><i class="fas fa-users"></i></a>
+            <a href="{{ .App.GetStoreLink }}" data-toggle="tooltip" data-placement="top" title="Store Page"><i class="fas fa-shopping-cart"></i></a>
         {{if ne .App.Homepage ""}}
-            - <a href="{{ .App.Homepage }}">Game Website</a>
+            <a href="{{ .App.Homepage }}" data-toggle="tooltip" data-placement="top" title="Game Website"><i class="fas fa-home"></i></a>
         {{end}}
-            - <a href="{{ .App.GetInstallLink }}">Install</a>
+            <a href="{{ .App.GetInstallLink }}" data-toggle="tooltip" data-placement="top" title="Install"><i class="fas fa-sign-in-alt"></i></a>
+            <a href="{{ .App.GetPCGamingWikiLink }}" data-toggle="tooltip" data-placement="top" title="PC Gaming Wiki"><i class="fab fa-wikipedia-w"></i></a>
         </p>
     </div>
 
@@ -42,6 +43,9 @@
             {{end}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages</a>
                 </li>
             </ul>
         </div>

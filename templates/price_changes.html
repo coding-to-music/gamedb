@@ -58,7 +58,7 @@
                             <img src="{{.GetLogo}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
                         </td>
                         <td>{{ .AppName }}</td>
-                        <td nowrap="nowrap" data-order="{{ .GetReleaseDateUnix }}">{{ .GetReleaseDateNice }}</td>
+                        <td nowrap="nowrap" data-order="{{ .ReleaseDateUnix }}">{{ .ReleaseDateNice }}</td>
                         <td>${{ .GetPriceFinal }}</td>
                         <td>{{ .Discount }}%</td>
                         <td>${{ .GetChange }}</td>
@@ -67,6 +67,8 @@
                 {{ end }}
                 </table>
             </div>
+
+        {{ template "_pagination" .Pagination }}
 
         </div>
     </div>

@@ -23,7 +23,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	template.Packages = packages
 	template.Pagination = Pagination{
 		page: page,
-		last: 14,
+		last: 14, // todo
 		path: "/packages?p=",
 	}
 

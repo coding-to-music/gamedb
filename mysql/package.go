@@ -62,7 +62,7 @@ func (pack Package) GetName() (name string) {
 }
 
 func (pack Package) GetCreatedNice() string {
-	return pack.CreatedAt.Format(helpers.DayYearTime)
+	return pack.CreatedAt.Format(helpers.DateYearTime)
 }
 
 func (pack Package) GetCreatedUnix() int64 {

@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	Day         = "02 Jan"
-	DayTime     = "02 Jan 15:04"
-	DayYearTime = "02 Jan 06 15:04"
+	Date         = "02 Jan"
+	DateTime     = "02 Jan 15:04"
+	DateYear     = "02 Jan 06"
+	DateYearTime = "02 Jan 06 15:04"
 )
 
 func DaysIn(year int, month time.Month) int {

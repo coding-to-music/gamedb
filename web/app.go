@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/CalebQ42/bbConvert"
 	"github.com/go-chi/chi"
@@ -120,6 +121,9 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		for _, v := range pricesResp {
 			prices = append(prices, []int64{v.CreatedAt.Unix(), int64(v.PriceFinal)})
 		}
+
+		// Add current price
+		prices = append(prices, []int64{time.Now().Unix(), int64(app.PriceFinal)})
 
 		pricesBytes, err := json.Marshal(prices)
 		if err != nil {

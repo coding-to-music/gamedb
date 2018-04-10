@@ -2,6 +2,7 @@ package web
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
@@ -15,9 +16,16 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error(err)
 	}
 
+	page, _ := strconv.Atoi(r.URL.Query().Get("p"))
+
 	template := priceChangesTemplate{}
 	template.Fill(r, "Price Changes")
 	template.Changes = changes
+	template.Pagination = Pagination{
+		page: page,
+		last: 14, // todo
+		path: "/price-changes?p=",
+	}
 
 	returnTemplate(w, r, "price_changes", template)
 	return
@@ -25,6 +33,7 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 type priceChangesTemplate struct {
 	GlobalTemplate
-	Apps    []mysql.App
-	Changes []datastore.AppPrice
+	Apps       []mysql.App
+	Changes    []datastore.AppPrice
+	Pagination Pagination
 }
