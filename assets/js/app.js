@@ -16,27 +16,27 @@ if ($('#app-page').length > 0) {
 
     // Price change chart
     Highcharts.chart('chart', {
-        chart: {
-            zoomType: 'x'
-        },
-        title: {
-            text: 'USD to EUR exchange rate over time'
-        },
-        subtitle: {
-            text: document.ontouchstart === undefined ?
-                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-        },
-        xAxis: {
-            type: 'datetime'
-        },
+        chart: {zoomType: 'x'},
+        title: {text: ''},
+        subtitle: {text: ''},
+        xAxis: {title: {text: 'Date'}, type: 'datetime'},
         yAxis: {
             title: {
-                text: 'Exchange rate'
-            }
+                text: 'Price'
+            },
+            type: 'linear',
+            min: 0,
+            allowDecimals: true
         },
-        legend: {
-            enabled: true
-        },
+        legend: {enabled: false},
+        credits: {enabled: false},
+        series: [{
+            type: 'line',
+            name: 'Price',
+            data: prices,
+            step: 'left',
+            color: '#28a745'
+        }],
         annotations: [{
             labelOptions: {
                 backgroundColor: 'rgba(255,255,255,0.5)',
@@ -68,41 +68,6 @@ if ($('#app-page').length > 0) {
                 },
                 text: 'Mont-sur-Monnet'
             }]
-        }],
-        plotOptions: {
-            area: {
-                fillColor: {
-                    linearGradient: {
-                        x1: 0,
-                        y1: 0,
-                        x2: 0,
-                        y2: 1
-                    },
-                    stops: [
-                        [0, Highcharts.getOptions().colors[0]],
-                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                    ]
-                },
-                marker: {
-                    radius: 2
-                },
-                lineWidth: 1,
-                states: {
-                    hover: {
-                        lineWidth: 1
-                    }
-                },
-                threshold: null
-            }
-        },
-        series: [{
-            type: 'area',
-            name: 'USD to EUR',
-            data: prices,
-            step: true
-        }],
-        credits: {
-            enabled: false
-        }
+        }]
     });
 }
