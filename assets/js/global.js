@@ -1,4 +1,4 @@
-// Tablw row links
+// Table row links
 $("[data-link]").click(function () {
     var link = $(this).attr('data-link');
     if (link) {

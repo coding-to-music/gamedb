@@ -174,6 +174,19 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
+	var dlc []mysql.App
+	wg.Add(1)
+	go func() {
+
+		// Get DLC
+		dlc, err = mysql.GetDLC(app, []string{"id", "name"})
+		if err != nil {
+			logger.Error(err)
+		}
+
+		wg.Done()
+	}()
+
 	// Make banners
 	banners := make(map[string][]string)
 	var primary []string
@@ -202,6 +215,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices = pricesString
 	t.Achievements = achievements
 	t.Tags = tags
+	t.DLC = dlc
 
 	returnTemplate(w, r, "app", t)
 }
@@ -210,6 +224,7 @@ type appTemplate struct {
 	GlobalTemplate
 	App          mysql.App
 	Packages     []mysql.Package
+	DLC          []mysql.App
 	Articles     []appArticleTemplate
 	Banners      map[string][]string
 	Prices       string

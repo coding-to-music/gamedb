@@ -473,6 +473,31 @@ func SearchApps(query url.Values, limit int, sort string, columns []string) (app
 	return apps, err
 }
 
+func GetDLC(app App, columns []string) (apps []App, err error) {
+
+	db, err := GetDB()
+	if err != nil {
+		return apps, err
+	}
+
+	dlc, err := app.GetDLC()
+	if err != nil {
+		return apps, err
+	}
+
+	db = db.Where("id in (?)", dlc).Find(&apps)
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	if db.Error != nil {
+		return apps, db.Error
+	}
+
+	return apps, nil
+}
+
 func CountApps() (count int, err error) {
 
 	db, err := GetDB()

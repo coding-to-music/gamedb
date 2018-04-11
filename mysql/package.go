@@ -311,7 +311,7 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 		return packages, err
 	}
 
-	db = db.Where("JSON_CONTAINS(apps, '[" + strconv.Itoa(appID) + "]')").Limit(96).Order("id DESC").Find(&packages)
+	db = db.Where("JSON_CONTAINS(apps, '[" + strconv.Itoa(appID) + "]')").Order("id DESC").Find(&packages)
 
 	if db.Error != nil {
 		return packages, db.Error
