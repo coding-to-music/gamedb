@@ -176,11 +176,11 @@
                         {{ range $key, $value := .Packages }}
                             <tr>
                                 <td>
-                                    <a href="/packages/{{.ID}}">{{.ID}}</a>
+                                    <a href="/packages/{{.ID}}">{{.GetName}}</a>
                                 </td>
-                                <td>{{ .BillingType }}</td>
-                                <td>{{ .LicenseType }}</td>
-                                <td>{{ .Status }}</td>
+                                <td>{{ .GetBillingType }}</td>
+                                <td>{{ .GetLicenseType }}</td>
+                                <td>{{ .GetStatus }}</td>
                                 <td>{{ len .Apps }}</td>
                             </tr>
                         {{ end }}
