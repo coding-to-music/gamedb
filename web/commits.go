@@ -17,6 +17,8 @@ func CommitsHandler(w http.ResponseWriter, r *http.Request) {
 		&oauth2.Token{
 			AccessToken: os.Getenv("STEAM_GITHUB_TOKEN")},
 	)
+
+	// todo, should we re-use these clients?
 	tc := oauth2.NewClient(ctx, ts)
 
 	client := github.NewClient(tc)

@@ -28,7 +28,7 @@ if ($('#app-page').length > 0) {
         },
         yAxis: {
             title: {
-                text: 'Price'
+                text: 'Price ($)'
             },
             type: 'linear',
             min: 0,

@@ -10,6 +10,10 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
+var (
+	cacheRanksCount int
+)
+
 type Rank struct {
 	CreatedAt   time.Time `datastore:"created_at,noindex"`
 	UpdatedAt   time.Time `datastore:"updated_at,noindex"`
@@ -122,20 +126,23 @@ func GetRankKeys() (keysMap map[int]*datastore.Key, err error) {
 	return keysMap, nil
 }
 
-func GetRanksCount() (count int, err error) {
+func CountRanks() (count int, err error) {
 
-	client, ctx, err := getClient()
-	if err != nil {
-		return count, err
+	if cacheRanksCount == 0 {
+
+		client, ctx, err := getClient()
+		if err != nil {
+			return count, err
+		}
+
+		q := datastore.NewQuery(KindRank)
+		cacheRanksCount, err = client.Count(ctx, q)
+		if err != nil {
+			return count, err
+		}
 	}
 
-	q := datastore.NewQuery(KindRank)
-	count, err = client.Count(ctx, q)
-	if err != nil {
-		return count, err
-	}
-
-	return count, nil
+	return cacheRanksCount, nil
 }
 
 func NewRankFromPlayer(player Player) (rank *Rank) {

@@ -17,6 +17,10 @@ import (
 	"github.com/steam-authority/steam-authority/storage"
 )
 
+var (
+	cachePlayersCount int
+)
+
 type Player struct {
 	CreatedAt        time.Time                   `datastore:"created_at"`               //
 	UpdatedAt        time.Time                   `datastore:"updated_at"`               //
@@ -241,18 +245,21 @@ func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 
 func CountPlayers() (count int, err error) {
 
-	client, ctx, err := getClient()
-	if err != nil {
-		return count, err
+	if cachePlayersCount == 0 {
+
+		client, ctx, err := getClient()
+		if err != nil {
+			return count, err
+		}
+
+		q := datastore.NewQuery(KindPlayer)
+		cachePlayersCount, err = client.Count(ctx, q)
+		if err != nil {
+			return count, err
+		}
 	}
 
-	q := datastore.NewQuery(KindPlayer)
-	count, err = client.Count(ctx, q)
-	if err != nil {
-		return count, err
-	}
-
-	return count, nil
+	return cachePlayersCount, nil
 }
 
 func (p *Player) UpdateIfNeeded() (errs []error) {

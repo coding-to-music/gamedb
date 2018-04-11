@@ -170,11 +170,12 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
-		"join":   func(a []string) string { return strings.Join(a, ", ") },
-		"title":  func(a string) string { return strings.Title(a) },
-		"comma":  func(a int) string { return humanize.Comma(int64(a)) },
-		"commaf": func(a float64) string { return humanize.Commaf(a) },
-		"slug":   func(a string) string { return slug.Make(a) },
+		"join":    func(a []string) string { return strings.Join(a, ", ") },
+		"title":   func(a string) string { return strings.Title(a) },
+		"comma":   func(a int) string { return humanize.Comma(int64(a)) },
+		"comma64": func(a int64) string { return humanize.Comma(a) },
+		"commaf":  func(a float64) string { return humanize.Commaf(a) },
+		"slug":    func(a string) string { return slug.Make(a) },
 		"apps": func(a []int, appsMap map[int]mysql.App) template.HTML {
 			var apps []string
 			for _, v := range a {

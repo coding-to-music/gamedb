@@ -8,6 +8,10 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 )
 
+var (
+	cachePricesCount  int
+)
+
 type AppPrice struct {
 	CreatedAt       time.Time `datastore:"created_at"`
 	AppID           int       `datastore:"app_id"`
@@ -90,18 +94,21 @@ func GetAppChanges(limit int, page int) (prices []AppPrice, err error) {
 
 func CountPrices() (count int, err error) {
 
-	client, ctx, err := getClient()
-	if err != nil {
-		return count, err
+	if cachePricesCount == 0 {
+
+		client, ctx, err := getClient()
+		if err != nil {
+			return count, err
+		}
+
+		q := datastore.NewQuery(KindPriceApp)
+		cachePricesCount, err = client.Count(ctx, q)
+		if err != nil {
+			return count, err
+		}
 	}
 
-	q := datastore.NewQuery(KindPriceApp)
-	count, err = client.Count(ctx, q)
-	if err != nil {
-		return count, err
-	}
-
-	return count, nil
+	return cachePricesCount, nil
 }
 
 type PackagePrice struct {

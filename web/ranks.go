@@ -67,7 +67,7 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Count ranks
-	ranksCount, err := datastore.GetRanksCount()
+	ranksCount, err := datastore.CountRanks()
 	if err != nil {
 		logger.Error(err)
 	}

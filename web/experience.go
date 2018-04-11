@@ -9,11 +9,8 @@ import (
 )
 
 const (
-	// ROWS is the number of rows to show.
-	ROWS = 3000
-
-	// CHUNK into tables of this size
-	CHUNK = 100
+	totalRows = 3000
+	chunkRows = 100
 )
 
 func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +18,7 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 	var rows []experienceRow
 	xp := 0
 
-	for i := 0; i <= ROWS+1; i++ {
+	for i := 0; i <= totalRows+1; i++ {
 
 		rows = append(rows, experienceRow{
 			Level: i,
@@ -37,7 +34,7 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 		Diff:  100,
 	}
 
-	for i := 1; i <= ROWS; i++ {
+	for i := 1; i <= totalRows; i++ {
 
 		thisRow := rows[i]
 		nextRow := rows[i+1]
@@ -46,11 +43,11 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 		rows[i].End = nextRow.Start - 1
 	}
 
-	rows = rows[0 : ROWS+1]
+	rows = rows[0 : totalRows+1]
 
 	template := experienceTemplate{}
 	template.Fill(r, "Experience")
-	template.Chunks = chunk(rows, CHUNK)
+	template.Chunks = chunk(rows, chunkRows)
 
 	// Default calculator levels if logged out
 	template.UserLevelTo = template.UserLevel + 10

@@ -116,15 +116,17 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Error(err)
 		}
 
-		var prices [][]int64
+		var prices [][]float64
 
 		for _, v := range pricesResp {
-			prices = append(prices, []int64{v.CreatedAt.Unix(), int64(v.PriceFinal)})
+
+			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceFinal) / 100})
 		}
 
 		// Add current price
-		prices = append(prices, []int64{time.Now().Unix(), int64(app.PriceFinal)})
+		prices = append(prices, []float64{float64(time.Now().Unix()), float64(app.PriceFinal) / 100})
 
+		// Make into a JSON string
 		pricesBytes, err := json.Marshal(prices)
 		if err != nil {
 			logger.Error(err)

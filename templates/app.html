@@ -31,6 +31,17 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC</a>
+                </li>
+            {{if gt (len .Packages) 0}}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ len .Packages }})</a>
+                </li>
+            {{end}}
             {{if gt (len .Achievements) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ len .Achievements }})</a>
@@ -39,14 +50,6 @@
             {{if gt (len .Articles) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .Articles }})</a>
-                </li>
-            {{end}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
-                </li>
-            {{if gt (len .Packages) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ len .Packages }})</a>
                 </li>
             {{end}}
             </ul>
@@ -157,7 +160,7 @@
             {{/* Prices */}}
                 <div class="tab-pane" id="prices" role="tabpanel">
                     <script>var prices = JSON.parse('{{ .Prices }}');</script>
-                    <div id="chart" style="height: 300px;"></div>
+                    <div id="chart"></div>
 
                     <iframe src="https://store.steampowered.com/widget/10090/" frameborder="0" width="100%" height="190" style="margin-bottom: -20px;"></iframe>
                 </div>
@@ -182,7 +185,7 @@
                                 <td>{{ .GetBillingType }}</td>
                                 <td>{{ .GetLicenseType }}</td>
                                 <td>{{ .GetStatus }}</td>
-                                <td>{{ len .Apps }}</td>
+                                <td>{{ comma (len .Apps) }}</td>
                             </tr>
                         {{ end }}
                         </table>
