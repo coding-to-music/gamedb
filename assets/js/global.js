@@ -7,12 +7,12 @@ $("[data-link]").click(function () {
 });
 
 // Clear search on escape
-function clearField(evt, input) {
+$('input#search').on('keyup', function (evt) {
     var code = evt.charCode || evt.keyCode;
     if (code === 27) {
-        input.value = '';
+        $(this).val('');
     }
-}
+});
 
 // Tooptips
 $("body").tooltip({

@@ -9,22 +9,39 @@ import (
 	"github.com/steam-authority/steam-authority/mysql"
 )
 
+const (
+	PackagesLimit = 100
+)
+
 func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 
-	packages, err := mysql.GetLatestPackages(100, 1)
+	// Get page number
+	page, err := strconv.Atoi(r.URL.Query().Get("p"))
+	if err != nil {
+		page = 1
+	}
+
+	// Get total
+	total, err := mysql.CountPackages()
 	if err != nil {
 		logger.Error(err)
 	}
 
-	page, _ := strconv.Atoi(r.URL.Query().Get("p"))
+	// Get packages
+	packages, err := mysql.GetLatestPackages(PackagesLimit, page)
+	if err != nil {
+		logger.Error(err)
+	}
 
+	// Template
 	template := packagesTemplate{}
 	template.Fill(r, "Packages")
 	template.Packages = packages
 	template.Pagination = Pagination{
-		page: page,
-		last: 14, // todo
-		path: "/packages?p=",
+		path:  "/packages?p=",
+		page:  page,
+		limit: PackagesLimit,
+		total: total,
 	}
 
 	returnTemplate(w, r, "packages", template)

@@ -9,22 +9,41 @@ import (
 	"github.com/steam-authority/steam-authority/mysql"
 )
 
+const (
+	PriceChangeLimit = 100
+)
+
 func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
-	changes, err := datastore.GetAppChanges()
+	// Get page number
+	page, err := strconv.Atoi(r.URL.Query().Get("p"))
+	if err != nil {
+		page = 1
+	}
+
+	// Get total changes
+	total, err := datastore.CountPrices()
 	if err != nil {
 		logger.Error(err)
 	}
 
-	page, _ := strconv.Atoi(r.URL.Query().Get("p"))
+	// Get changes
+	changes, err := datastore.GetAppChanges(PriceChangeLimit, page)
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 500, err.Error())
+		return
+	}
 
+	// Template
 	template := priceChangesTemplate{}
 	template.Fill(r, "Price Changes")
 	template.Changes = changes
 	template.Pagination = Pagination{
-		page: page,
-		last: 14, // todo
-		path: "/price-changes?p=",
+		path:  "/price-changes?p=",
+		page:  page,
+		limit: PriceChangeLimit,
+		total: total,
 	}
 
 	returnTemplate(w, r, "price_changes", template)

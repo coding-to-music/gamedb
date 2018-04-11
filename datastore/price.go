@@ -71,19 +71,37 @@ func GetAppPrices(appID int) (prices []AppPrice, err error) {
 	return prices, err
 }
 
-func GetAppChanges() (prices []AppPrice, err error) {
+func GetAppChanges(limit int, page int) (prices []AppPrice, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindPriceApp).Order("-created_at").Limit(100)
+	offset := (page - 1) * limit
+
+	q := datastore.NewQuery(KindPriceApp).Order("-created_at").Limit(limit).Offset(offset)
 	q = q.Filter("currency =", "usd")
 
 	_, err = client.GetAll(ctx, q, &prices)
 
 	return prices, err
+}
+
+func CountPrices() (count int, err error) {
+
+	client, ctx, err := getClient()
+	if err != nil {
+		return count, err
+	}
+
+	q := datastore.NewQuery(KindPriceApp)
+	count, err = client.Count(ctx, q)
+	if err != nil {
+		return count, err
+	}
+
+	return count, nil
 }
 
 type PackagePrice struct {

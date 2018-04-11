@@ -308,6 +308,21 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 	return packages, nil
 }
 
+func CountPackages() (count int, err error) {
+
+	db, err := GetDB()
+	if err != nil {
+		return count, err
+	}
+
+	db.Model(&Package{}).Count(&count)
+	if db.Error != nil {
+		return count, db.Error
+	}
+
+	return count, nil
+}
+
 // GORM callback
 func (pack *Package) Fill() (err error) {
 

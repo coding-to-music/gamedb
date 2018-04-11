@@ -63,10 +63,10 @@
                         {{end}}
 
                             <p>App Type: {{ .App.GetType }}</p>
-                            <p>Release State: {{ .App.ReleaseState }}</p>
+                            <p>Release State: {{ .App.GetReleaseState }}</p>
                             <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>
-                            <p>Tags: {{ tags .Tags }}</p>
                             <p>Genres: {{ genres .App.GetGenres }}</p>
+                            <p>Tags: {{ tags .Tags }}</p>
 
                         </div>
                         <div class="col-sm-12 col-lg-5">

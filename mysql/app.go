@@ -100,6 +100,22 @@ func (app App) GetType() (ret string) {
 	}
 }
 
+func (app App) GetReleaseState() (ret string) {
+
+	switch app.ReleaseState {
+	case "preloadonly":
+		return "Preload Only"
+	case "prerelease":
+		return "Prerelease"
+	case "released":
+		return "Released"
+	case "":
+		return "Unreleased"
+	default:
+		return strings.Title(app.ReleaseState)
+	}
+}
+
 func (app App) getReleaseDate() (t time.Time, err error) {
 
 	t, err = time.Parse("Jan 2, 2006", app.ReleaseDate)

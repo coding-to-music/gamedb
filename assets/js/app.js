@@ -16,10 +16,17 @@ if ($('#app-page').length > 0) {
 
     // Price change chart
     Highcharts.chart('chart', {
-        chart: {zoomType: 'x'},
+        chart: {
+            zoomType: 'x'
+        },
         title: {text: ''},
         subtitle: {text: ''},
-        xAxis: {title: {text: 'Date'}, type: 'datetime'},
+        xAxis: {
+            title: {
+                text: 'Date'
+            },
+            type: 'datetime'
+        },
         yAxis: {
             title: {
                 text: 'Price'
@@ -28,15 +35,20 @@ if ($('#app-page').length > 0) {
             min: 0,
             allowDecimals: true
         },
-        legend: {enabled: false},
-        credits: {enabled: false},
-        series: [{
-            type: 'line',
-            name: 'Price',
-            data: prices,
-            step: 'left',
-            color: '#28a745'
-        }],
+        legend: {
+            enabled: false
+        },
+        credits: {
+            enabled: false
+        },
+        series: [
+            {
+                type: 'line',
+                name: 'Price',
+                data: prices,
+                step: 'right',
+                color: '#28a745'
+            }],
         annotations: [{
             labelOptions: {
                 backgroundColor: 'rgba(255,255,255,0.5)',

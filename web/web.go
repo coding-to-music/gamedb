@@ -287,20 +287,21 @@ func (t GlobalTemplate) ShowAd() (bool) {
 }
 
 type Pagination struct {
-	page int
-	last int
-	path string
+	path  string
+	page  int
+	limit int
+	total int
 }
 
 func (t Pagination) GetPages() (ret []int) {
 
 	ret = append(ret, 1)
 	for i := t.GetPage() - 2; i < t.GetPage()+3; i++ {
-		if i >= 1 && i <= t.last {
+		if i >= 1 && i <= t.GetLast() {
 			ret = append(ret, i)
 		}
 	}
-	ret = append(ret, t.last)
+	ret = append(ret, t.GetLast())
 
 	ret = helpers.Unique(ret)
 
@@ -312,7 +313,7 @@ func (t Pagination) GetPages() (ret []int) {
 }
 
 func (t Pagination) GetNext() (float64) {
-	return math.Min(float64(t.last), float64(t.GetPage()+1))
+	return math.Min(float64(t.GetLast()), float64(t.GetPage()+1))
 }
 
 func (t Pagination) GetPrev() (float64) {
@@ -324,7 +325,7 @@ func (t Pagination) GetPage() (int) {
 }
 
 func (t Pagination) GetLast() (int) {
-	return t.last
+	return int(math.Ceil(float64(t.total) / float64(t.limit)))
 }
 
 func (t Pagination) GetPath() string {
