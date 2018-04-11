@@ -104,7 +104,7 @@
                 {{/* Apps in Package */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable">
-                            <thead>
+                            <thead class="thead-light">
                             <th scope="col" width="1%" data-disabled></th>
                             <th scope="col" data-sort="asc">Name</th>
                             <th scope="col">Type</th>
@@ -112,11 +112,11 @@
                             <th scope="col">DLC #</th>
                             </thead>
                         {{ range $key, $value := .Apps }}
-                            <tr>
+                            <tr data-link="/games/{{.ID}}">
                                 <td class="img">
                                     <img class="rounded" src="{{ .GetIcon }}">
                                 </td>
-                                <td><a href="/games/{{.ID}}">{{.GetName}}</a></td>
+                                <td>{{.GetName}}</td>
                                 <td>{{ .GetType }}</td>
                                 <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
                                 <td>{{ comma (len .GetDLC) }}</td>

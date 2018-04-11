@@ -106,7 +106,7 @@ func (app App) GetReleaseState() (ret string) {
 	case "preloadonly":
 		return "Preload Only"
 	case "prerelease":
-		return "Prerelease"
+		return "Pre Release"
 	case "released":
 		return "Released"
 	case "":

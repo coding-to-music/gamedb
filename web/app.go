@@ -107,6 +107,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	var pricesString string
+	var pricesCount int
 	wg.Add(1)
 	go func() {
 
@@ -115,6 +116,8 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			logger.Error(err)
 		}
+
+		pricesCount = len(pricesResp)
 
 		var prices [][]float64
 
@@ -213,6 +216,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	t.Articles = news
 	t.Banners = banners
 	t.Prices = pricesString
+	t.PricesCount = pricesCount
 	t.Achievements = achievements
 	t.Tags = tags
 	t.DLC = dlc
@@ -228,6 +232,7 @@ type appTemplate struct {
 	Articles     []appArticleTemplate
 	Banners      map[string][]string
 	Prices       string
+	PricesCount  int
 	Achievements []appAchievementTemplate
 	Schema       steam.GameSchema
 	Tags         []mysql.Tag
