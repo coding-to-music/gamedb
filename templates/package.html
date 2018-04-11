@@ -8,94 +8,100 @@
     </div>
 
     <div class="card">
+        <div class="card-header bg-light text-white">
+            <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{len .Package.GetApps}})</a>
+                </li>
+            </ul>
+        </div>
         <div class="card-body">
 
-        {{ range $k, $v := .Banners }}
-            <div class="alert alert-{{ $k }}" role="alert">
-            {{ range $kk, $vv := $v }}
-                <div>{{ $vv }}</div>
-            {{ end }}
-            </div>
-        {{ end }}
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane show active" id="details" role="tabpanel">
 
-            <div class="row">
-                <div class="col-12 col-md-7">
+                    <div class="row">
+                        <div class="col-12 col-md-7">
 
-                {{/* Package Details */}}
-                    <h5>Properties</h5>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <tr>
-                                <td>ReleaseDate</td>
-                                <td>{{ .Package.ReleaseDate }}</td>
-                            </tr>
-                            <tr>
-                                <td>Coming Soon</td>
-                                <td>{{ .Package.ComingSoon }}</td>
-                            </tr>
-                            <tr>
-                                <td>Billing Type</td>
-                                <td>{{ .Package.GetBillingType }}</td>
-                            </tr>
-                            <tr>
-                                <td>License Type</td>
-                                <td>{{ .Package.GetLicenseType }}</td>
-                            </tr>
-                            <tr>
-                                <td>Status</td>
-                                <td>{{ .Package.GetStatus }}</td>
-                            </tr>
-                            <tr>
-                                <td>Change ID</td>
-                                <td>{{ .Package.ChangeID }}</td>
-                            </tr>
-                            <tr>
-                                <td>Platforms</td>
-                                <td class="platforms">{{ .Package.GetPlatformImages }}</td>
-                            </tr>
-                        {{ range $key, $value := .Package.GetExtended }}
-                            <tr>
-                                <td>{{ index $.ExtendedKeys $key }}</td>
-                                <td>{{$value}}</td>
-                            </tr>
-                        {{ end }}
-                        {{ range $key, $value := .Package.GetController }}
-                            <tr>
-                                <td>{{ index $.Keys $key }}</td>
-                                <td>{{$value}}</td>
-                            </tr>
-                        {{ end }}
-                        </table>
+                        {{/* Package Details */}}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <tr>
+                                        <td>ReleaseDate</td>
+                                        <td>{{ .Package.ReleaseDate }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Coming Soon</td>
+                                        <td>{{ .Package.GetComingSoon }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Billing Type</td>
+                                        <td>{{ .Package.GetBillingType }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>License Type</td>
+                                        <td>{{ .Package.GetLicenseType }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status</td>
+                                        <td>{{ .Package.GetStatus }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Change ID</td>
+                                        <td>{{ .Package.ChangeID }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Platforms</td>
+                                        <td class="platforms">{{ .Package.GetPlatformImages }}</td>
+                                    </tr>
+                                {{ range $key, $value := .Package.GetExtended }}
+                                    <tr>
+                                        <td>{{ index $.ExtendedKeys $key }}</td>
+                                        <td>{{$value}}</td>
+                                    </tr>
+                                {{ end }}
+                                {{ range $key, $value := .Package.GetController }}
+                                    <tr>
+                                        <td>{{ index $.Keys $key }}</td>
+                                        <td>{{$value}}</td>
+                                    </tr>
+                                {{ end }}
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="col-12 col-md-5">
+
+                            <table class="table table-hover">
+                                <tr>
+                                    <td>Initial Price</td>
+                                    <td>${{ .Package.GetPriceInitial }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Final Price</td>
+                                    <td>${{ .Package.GetPriceFinal }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Discount Price</td>
+                                    <td>${{ .Package.GetPriceDiscount }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Individual Price</td>
+                                    <td>${{ .Package.GetPriceIndividual }}</td>
+                                </tr>
+                            </table>
+
+                        </div>
                     </div>
 
                 </div>
-                <div class="col-12 col-md-5">
 
-                    <h5>Prices</h5>
-                    <table class="table table-hover">
-                        <tr>
-                            <td>Initial Price</td>
-                            <td>${{ .Package.GetPriceInitial }}</td>
-                        </tr>
-                        <tr>
-                            <td>Final Price</td>
-                            <td>${{ .Package.GetPriceFinal }}</td>
-                        </tr>
-                        <tr>
-                            <td>Discount Price</td>
-                            <td>${{ .Package.GetPriceDiscount }}</td>
-                        </tr>
-                        <tr>
-                            <td>Individual Price</td>
-                            <td>${{ .Package.GetPriceIndividual }}</td>
-                        </tr>
-                    </table>
-
-                </div>
-                <div class="col-12">
+                <div class="tab-pane" id="apps" role="tabpanel">
 
                 {{/* Apps in Package */}}
-                    <h5>Apps ({{len .Package.GetApps}})</h5>
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable">
                             <thead>
@@ -121,6 +127,16 @@
 
                 </div>
             </div>
+
+
+        {{ range $k, $v := .Banners }}
+            <div class="alert alert-{{ $k }}" role="alert">
+            {{ range $kk, $vv := $v }}
+                <div>{{ $vv }}</div>
+            {{ end }}
+            </div>
+        {{ end }}
+
 
         </div>
     </div>

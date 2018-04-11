@@ -1,6 +1,6 @@
 {{define "app"}} {{ template "_header" . }}
 
-<div class="container mt-4" id="app-page" data-bg="{{ .App.Background }}">
+<div class="container" id="app-page" data-bg="{{ .App.Background }}">
 
     <div class="jumbotron">
         <img src="http://cdn.akamai.steamstatic.com/steam/apps/{{ .App.ID }}/header.jpg" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
@@ -33,7 +33,7 @@
                 </li>
             {{if gt (len .Achievements) 0}}
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ .App.GetAchievements.Total }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ len .Achievements }})</a>
                 </li>
             {{end}}
             {{if gt (len .Articles) 0}}
@@ -62,6 +62,7 @@
                             <p>For Game: <a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
                         {{end}}
 
+                            <p>Price: ${{ .App.PriceFinal }}</p>
                             <p>App Type: {{ .App.GetType }}</p>
                             <p>Release State: {{ .App.GetReleaseState }}</p>
                             <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>

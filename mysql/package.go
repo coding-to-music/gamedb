@@ -141,6 +141,18 @@ func (pack Package) GetStatus() (string) {
 	}
 }
 
+func (pack Package) GetComingSoon() (string) {
+
+	switch pack.ComingSoon {
+	case true:
+		return "Yes"
+	case false:
+		return "No"
+	default:
+		return "Unknown"
+	}
+}
+
 func (pack Package) GetApps() (apps []int, err error) {
 
 	bytes := []byte(pack.Apps)
