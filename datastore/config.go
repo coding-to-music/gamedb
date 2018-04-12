@@ -53,7 +53,7 @@ func GetConfig(name string) (config *Config, err error) {
 	err = client.Get(context, key, config)
 	if err != nil {
 
-		if err.Error() == ErrorNotFound {
+		if err == ErrorNotFound {
 			config.ConfigID = name
 			return config, nil
 		}

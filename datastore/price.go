@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	cachePricesCount  int
+	cachePricesCount int
 )
 
 type AppPrice struct {
@@ -47,15 +47,15 @@ func (p AppPrice) GetCreatedUnix() (ret string) {
 	return p.CreatedAt.Format(helpers.DateTime)
 }
 
-func (p AppPrice) GetPriceInitial() string {
+func (p AppPrice) GetPriceInitial() float64 {
 	return helpers.CentsInt(p.PriceInitial)
 }
 
-func (p AppPrice) GetChange() string {
+func (p AppPrice) GetChange() float64 {
 	return helpers.CentsInt(p.Change)
 }
 
-func (p AppPrice) GetPriceFinal() string {
+func (p AppPrice) GetPriceFinal() float64 {
 	return helpers.CentsInt(p.PriceFinal)
 }
 

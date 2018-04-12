@@ -160,7 +160,7 @@ func (app App) GetIcon() (ret string) {
 	}
 }
 
-func (app App) GetPriceInitial() string {
+func (app App) GetPriceInitial() float64 {
 	return helpers.CentsInt(app.PriceInitial)
 }
 

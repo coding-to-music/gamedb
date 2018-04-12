@@ -3,7 +3,7 @@
 <div class="container" id="player-page">
 
     <div class="jumbotron">
-        <img src="{{ .Player.GetAvatar }}" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
+        <img src="{{ .Player.GetAvatar }}" onError="this.onerror=null;this.src='{{.Player.GetDefaultAvatar}}';">
         <h1 class="display-4">
             <i class="fas fa-user"></i> {{ .Player.PersonaName }}
         </h1>
@@ -173,31 +173,44 @@
                 <div class="tab-pane" id="friends" role="tabpanel">
 
                 {{/* Friends */}}
-                    <div class="row friend mb-0">
-                    {{ range $key, $value := .Friends }}
-
-                    {{ if ne .PersonaName "" }}
-                        <a href="{{.GetPath}}" class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-2">
-                            <img src="{{ .GetAvatar }}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
-                            <span class="float-right badge badge-secondary badge-pill">{{ .Level }}</span>
-                            <span>{{ .PersonaName }}</span>
-                        </a>
-                    {{else}}
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-2">
-                            <img src="/assets/img/no-player-image.jpg" class="rounded">
-                            <span class="float-right badge badge-secondary badge-pill">?</span>
-                            <span class="text-muted"><a href="/queues">Queued</a> <i class="fas fa-spinner fa-spin"></i></span>
-                        </div>
-                    {{end}}
-
-                    {{ end }}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0">
+                            <thead class="thead-light">
+                            <th scope="col" width="1%" data-disabled></th>
+                            <th scope="col" data-sort="asc">Player</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Games</th>
+                            <th scope="col">Logged Off</th>
+                            </thead>
+                        {{ range $key, $value := .Friends }}
+                        {{ if ne .PlayerID 0 }}
+                            <tr data-link="{{ .GetPath }}">
+                                <td class="img">
+                                    <img src="{{ .GetAvatar }}" class="avatar rounded" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                                </td>
+                                <td>{{ .PersonaName }}</td>
+                                <td>{{ comma .Level }}</td>
+                                <td>{{ comma .GamesCount }}</td>
+                                <td data-sort="{{ .GetLogoffUnix }}">{{ .GetLogoffNice }}</td>
+                            </tr>
+                        {{else}}
+                            <tr>
+                                <td class="img">
+                                    <img src="{{.GetDefaultAvatar}}" class="avatar rounded">
+                                </td>
+                                <td>Not scanned yet, might be in the <a href="/queues">queue</a>.</td>
+                                <td></td>
+                            </tr>
+                        {{ end }}
+                        {{ end }}
+                        </table>
                     </div>
 
                 </div>
                 <div class="tab-pane" id="badges" role="tabpanel">
 
                 {{/* XP Info */}}
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover">
                         <tbody>
                         <tr>
                             <th scope="row" width="15%">Level</th>
@@ -205,11 +218,11 @@
                         </tr>
                         <tr>
                             <th scope="row">Experience</th>
-                            <td><a href="/experience/{{ .Player.Level }}">{{comma .Player.Badges.PlayerXP}}</a></td>
+                            <td>{{comma .Player.Badges.PlayerXP}}</td>
                         </tr>
                         <tr>
                             <th scope="row">Next Level In</th>
-                            <td><a href="/experience/{{ .Player.Level }}">{{comma .Player.Badges.PlayerXPNeededToLevelUp}}</a></td>
+                            <td>{{comma .Player.Badges.PlayerXPNeededToLevelUp}}</td>
                         </tr>
                         <tr>
                             <th scope="row">This Level</th>
@@ -281,9 +294,9 @@
                             <thead class="thead-light">
                             <th scope="col" width="1%" data-disabled></th>
                             <th scope="col">Game</th>
-                            <th scope="col" class="sorter-digit">Price</th>
-                            <th scope="col" class="sorter-digit" data-sort="desc">Time (Minutes)</th>
-                            <th scope="col" class="sorter-digit">Price/Hour</th>
+                            <th scope="col">Price</th>
+                            <th scope="col" data-sort="desc">Time (Minutes)</th>
+                            <th scope="col">Price/Hour</th>
                             </thead>
                         {{ range $key, $value := .Games }}
                             <tr{{if ne .ID 0}} data-link="/games/{{ .ID }}"{{end}}>

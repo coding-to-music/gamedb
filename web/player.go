@@ -99,7 +99,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			friendsSlice = append(friendsSlice, s)
 		}
 
-		// Get friends for template
+		// Get friends
 		friends, err = datastore.GetPlayersByIDs(friendsSlice)
 		if err != nil {
 			logger.Error(err)
@@ -117,12 +117,17 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player *datastore.Player) {
 
+		// todo, we should store everything the frontend needs on games field, then no need to query it from mysql below
 		// Get game info from player
 		var gamesSlice []int
 		for _, v := range player.GetGames() {
 			gamesSlice = append(gamesSlice, v.AppID)
 			games[v.AppID] = &playerAppTemplate{
-				Time: v.PlaytimeForever,
+				Time:  v.PlaytimeForever,
+				Price: 0,
+				ID:    v.AppID,
+				Name:  v.Name,
+				Icon:  "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg",
 			}
 		}
 
@@ -150,7 +155,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		// Get ranks
 		ranks, err = datastore.GetRank(player.PlayerID)
 		if err != nil {
-			if err.Error() != datastore.ErrorNotFound {
+			if err != datastore.ErrorNotFound {
 				logger.Error(err)
 			}
 		}
@@ -197,7 +202,7 @@ type playerTemplate struct {
 type playerAppTemplate struct {
 	ID    int
 	Name  string
-	Price string
+	Price float64
 	Icon  string
 	Time  int
 }
@@ -209,19 +214,14 @@ func (g playerAppTemplate) GetTimeNice() string {
 
 func (g playerAppTemplate) GetPriceHour() string {
 
-	price, err := strconv.ParseFloat(g.Price, 64)
-	if err != nil {
-		price = 0
-	}
-
-	x := float64(price) / (float64(g.Time) / 60)
+	x := g.Price / (float64(g.Time) / 60)
 	if math.IsNaN(x) {
 		x = 0
 	}
 	if math.IsInf(x, 0) {
 		return "∞"
 	}
-	return helpers.DollarsFloat(x)
+	return strconv.FormatFloat(helpers.DollarsFloat(x), 'f', 2, 64)
 }
 
 func (g playerAppTemplate) GetPriceHourSort() string {
@@ -229,6 +229,7 @@ func (g playerAppTemplate) GetPriceHourSort() string {
 	return strings.Replace(g.GetPriceHour(), "∞", "1000000", 1)
 }
 
+// playerRanksTemplate
 type playerRanksTemplate struct {
 	Ranks   datastore.Rank
 	Players int

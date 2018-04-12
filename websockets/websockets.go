@@ -13,16 +13,13 @@ const (
 	CHANGES = "changes"
 	CHAT    = "chat"
 	NEWS    = "news"
+	PRICES  = "prices"
 )
 
-var connections map[int]*websocket.Conn
+var connections = map[int]*websocket.Conn{}
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-}
-
-func init() {
-	connections = make(map[int]*websocket.Conn)
 }
 
 func HasConnections() (bool) {
@@ -40,13 +37,10 @@ func Send(page string, data interface{}) {
 		if err != nil {
 
 			// Clean up old connections
-			// todo, tidy with https://github.com/gorilla/websocket/issues/104
 			if strings.Contains(err.Error(), "broken pipe") {
+
 				v.Close()
-				_, ok := connections[k]
-				if ok {
-					delete(connections, k)
-				}
+				delete(connections, k)
 
 			} else {
 				logger.Error(err)

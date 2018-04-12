@@ -2,7 +2,6 @@ package datastore
 
 import (
 	"encoding/json"
-	"errors"
 	"path"
 	"strconv"
 	"strings"
@@ -93,9 +92,15 @@ func (p Player) GetSteamCommunityLink() string {
 func (p Player) GetAvatar() string {
 	if strings.HasPrefix(p.Avatar, "http") {
 		return p.Avatar
-	} else {
+	} else if p.Avatar != "" {
 		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/" + p.Avatar
+	} else {
+		return p.GetDefaultAvatar()
 	}
+}
+
+func (p Player) GetDefaultAvatar() string {
+	return "/assets/img/no-player-image.jpg"
 }
 
 func (p Player) GetFlag() string {
@@ -170,7 +175,7 @@ func GetPlayer(id int) (ret *Player, err error) {
 	err = client.Get(ctx, key, player)
 	if err != nil {
 
-		if err.Error() == ErrorNotFound {
+		if err == ErrorNotFound {
 			return player, nil
 		}
 		return player, err
@@ -200,7 +205,7 @@ func GetPlayerByName(name string) (ret Player, err error) {
 		return players[0], nil
 	}
 
-	return ret, errors.New(ErrorNotFound)
+	return ret, ErrorNotFound
 
 }
 
@@ -220,7 +225,7 @@ func GetPlayers(order string, limit int) (players []Player, err error) {
 func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 
 	if len(ids) > 1000 {
-		return friends, errors.New("too many players")
+		return friends, ErrorTooMany
 	}
 
 	client, ctx, err := getClient()

@@ -1,5 +1,7 @@
 package helpers
 
+import "math"
+
 func SliceHasInt(slice []int, i int) bool {
 	for _, v := range slice {
 		if v == i {
@@ -22,4 +24,10 @@ func Unique(arg []int) []int {
 		tempSlice = append(tempSlice, key)
 	}
 	return tempSlice
+}
+
+func FirstInts(slice []int, x int) []int {
+
+	x = int(math.Min(float64(x), float64(len(slice))))
+	return slice[0:x]
 }

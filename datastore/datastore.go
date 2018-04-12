@@ -4,6 +4,7 @@ package datastore
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	"cloud.google.com/go/datastore"
@@ -22,8 +23,9 @@ const (
 	KindRank         = "Rank"
 )
 
-const (
-	ErrorNotFound = "datastore: no such entity"
+var (
+	ErrorNotFound = errors.New("datastore: no such entity")
+	ErrorTooMany  = errors.New("datastore: too many")
 )
 
 var (

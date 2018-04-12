@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 
 	"github.com/dustin/go-humanize"
 	"github.com/steam-authority/steam-authority/logger"
@@ -31,12 +32,25 @@ func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	var queues []queuesQueue
 
 	for _, v := range queuesResp {
+
+		messages := v.Messages
+		rate := v.MessageStats.AckDetails.Rate
+
+		if rate > 0 && messages == 0 {
+			messages = 1
+		}
+
 		queues = append(queues, queuesQueue{
 			v.Name,
-			humanize.Comma(int64(v.Messages)),
-			v.MessageStats.AckDetails.Rate,
+			humanize.Comma(int64(messages)),
+			rate,
 		})
 	}
+
+	// Sort by name, no datatable
+	sort.Slice(queues, func(i int, j int) bool {
+		return queues[i].Name > queues[i].Name
+	})
 
 	// Encode
 	bytes, err := json.Marshal(queues)

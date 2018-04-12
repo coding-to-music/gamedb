@@ -45,9 +45,15 @@ func (rank Rank) GetKey() (key *datastore.Key) {
 func (rank Rank) GetAvatar() string {
 	if strings.HasPrefix(rank.Avatar, "http") {
 		return rank.Avatar
-	} else {
+	} else if rank.Avatar != "" {
 		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/" + rank.Avatar
+	} else {
+		return rank.GetDefaultAvatar()
 	}
+}
+
+func (rank Rank) GetDefaultAvatar() string {
+	return "/assets/img/no-player-image.jpg"
 }
 
 func (rank Rank) GetFlag() string {

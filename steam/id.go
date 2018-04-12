@@ -28,6 +28,7 @@ func GetID(in string) (out string, err error) {
 }
 
 func convert3to64(in string) (out string) {
+
 	parts := strings.Split(in, ":")
 	part := parts[2]
 	part = part[:len(part)-1] // Remove bracket

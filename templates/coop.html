@@ -40,10 +40,10 @@
             <div class="players clearfix mb-4">
             {{ range $key, $value := .Players }}
             {{ if eq .PlayerID 0 }}
-                <img data-toggle="tooltip" data-placement="top" title="Unknown Player" src="/assets/img/no-player-image.jpg" class="rounded avatar">
+                <img data-toggle="tooltip" data-placement="top" title="Unknown Player" src="{{.GetDefaultAvatar}}" class="rounded avatar">
             {{ else }}
                 <a href="{{.GetPath}}">
-                    <img data-toggle="tooltip" data-placement="top" title="{{ .PersonaName }}" src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='/assets/img/no-player-image.jpg';">
+                    <img data-toggle="tooltip" data-placement="top" title="{{ .PersonaName }}" src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
                 </a>
             {{ end }}
             {{ end }}
