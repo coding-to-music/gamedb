@@ -166,19 +166,19 @@ func (pack Package) GetApps() (apps []int, err error) {
 	return apps, nil
 }
 
-func (pack Package) GetPriceInitial() string {
+func (pack Package) GetPriceInitial() float64 {
 	return helpers.CentsInt(pack.PriceInitial)
 }
 
-func (pack Package) GetPriceFinal() string {
+func (pack Package) GetPriceFinal() float64 {
 	return helpers.CentsInt(pack.PriceFinal)
 }
 
-func (pack Package) GetPriceDiscount() string {
+func (pack Package) GetPriceDiscount() float64 {
 	return helpers.CentsInt(pack.PriceDiscount)
 }
 
-func (pack Package) GetPriceIndividual() string {
+func (pack Package) GetPriceIndividual() float64 {
 	return helpers.CentsInt(pack.PriceInitial)
 }
 

@@ -22,11 +22,11 @@ func (p Publisher) GetPath() string {
 	return "/games?publisher=" + strconv.Itoa(p.ID)
 }
 
-func (p Publisher) GetMeanPrice() string {
+func (p Publisher) GetMeanPrice() float64 {
 	return helpers.CentsFloat(p.MeanPrice)
 }
 
-func (p Publisher) GetMeanDiscount() string {
+func (p Publisher) GetMeanDiscount() float64 {
 	return helpers.DollarsFloat(p.MeanDiscount)
 }
 

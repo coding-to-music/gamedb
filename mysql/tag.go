@@ -31,11 +31,11 @@ func (tag Tag) GetName() (name string) {
 	return tag.Name
 }
 
-func (tag Tag) GetMeanPrice() string {
+func (tag Tag) GetMeanPrice() float64 {
 	return helpers.CentsFloat(tag.MeanPrice)
 }
 
-func (tag Tag) GetMeanDiscount() string {
+func (tag Tag) GetMeanDiscount() float64 {
 	return helpers.DollarsFloat(tag.MeanDiscount)
 }
 

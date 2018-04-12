@@ -22,11 +22,11 @@ func (d Developer) GetPath() string {
 	return "/games?developer=" + strconv.Itoa(d.ID)
 }
 
-func (d Developer) GetMeanPrice() string {
+func (d Developer) GetMeanPrice() float64 {
 	return helpers.CentsFloat(d.MeanPrice)
 }
 
-func (d Developer) GetMeanDiscount() string {
+func (d Developer) GetMeanDiscount() float64 {
 	return helpers.DollarsFloat(d.MeanDiscount)
 }
 

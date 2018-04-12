@@ -251,7 +251,7 @@ type appArticleTemplate struct {
 	Author   string
 }
 
-func (a appAchievementTemplate) GetCompleted() string {
+func (a appAchievementTemplate) GetCompleted() float64 {
 	return helpers.DollarsFloat(a.Completed)
 }
 
