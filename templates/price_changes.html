@@ -59,16 +59,16 @@
                     <th scope="col" data-sort="desc">Changed</th>
                     </thead>
                 {{ range $key, $value := .Changes }}
-                    <tr data-link="/games/{{ .AppID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
+                    <tr data-link="{{ .GetPath }}" data-app-id="{{ .AppID }}" data-package-id="{{ .PackageID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
                         <td class="img" width="1%">
                             <img src="{{.GetIcon}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
                         </td>
                         <td>{{ .Name }}</td>
-                        <td nowrap="nowrap" data-order="{{ .ReleaseDateUnix }}">{{ .ReleaseDateNice }}</td>
+                        <td data-order="{{ .ReleaseDateUnix }}" nowrap="nowrap">{{ .ReleaseDateNice }}</td>
                         <td>${{ .GetPriceFinal }}</td>
                         <td>{{ .Discount }}%</td>
                         <td>${{ .GetChange }}</td>
-                        <td nowrap="nowrap" data-order="{{.GetCreatedUnix}}">{{ .GetCreatedNice }}</td>
+                        <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
                     </tr>
                 {{ end }}
                 </table>

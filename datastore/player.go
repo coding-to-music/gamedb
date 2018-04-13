@@ -113,7 +113,7 @@ func (p Player) GetGames() (x []steam.OwnedGame) {
 	var err error
 
 	if strings.HasPrefix(p.Games, "/") {
-		bytes, err = storage.DownloadGamesJson(p.PlayerID)
+		bytes, err = storage.DownloadPlayerGames(p.PlayerID)
 		if err != nil {
 			logger.Error(err)
 		}
@@ -175,7 +175,7 @@ func GetPlayer(id int) (ret *Player, err error) {
 	err = client.Get(ctx, key, player)
 	if err != nil {
 
-		if err == ErrorNotFound {
+		if err == datastore.ErrNoSuchEntity {
 			return player, nil
 		}
 		return player, err
@@ -205,7 +205,7 @@ func GetPlayerByName(name string) (ret Player, err error) {
 		return players[0], nil
 	}
 
-	return ret, ErrorNotFound
+	return ret, datastore.ErrNoSuchEntity
 
 }
 
@@ -331,7 +331,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			}
 
 			if len(bytes) > 1024*10 {
-				p.Games = storage.UploadGamesJson(p.PlayerID, bytes)
+				p.Games = storage.UploadPlayerGames(p.PlayerID, bytes)
 			} else {
 				p.Games = string(bytes)
 			}

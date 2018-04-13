@@ -22,8 +22,8 @@ const (
 )
 
 var (
-	ErrorNotFound = errors.New("datastore: no such entity")
-	ErrorTooMany  = errors.New("datastore: too many")
+	ErrNoSuchEntity = datastore.ErrNoSuchEntity
+	ErrorTooMany    = errors.New("datastore: too many")
 )
 
 var (

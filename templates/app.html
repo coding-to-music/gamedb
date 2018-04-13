@@ -127,12 +127,12 @@
                             <th scope="col" data-sort="desc">Release</th>
                             </thead>
                         {{ range $key, $value := .DLC }}
-                            <tr data-link="/games/{{.ID}}">
+                            <tr data-link="{{.GetPath}}">
                                 <td class="img">
                                     <img class="rounded" src="{{ .GetIcon }}">
                                 </td>
                                 <td>{{.GetName}}</td>
-                                <td data-sort="{{ .GetReleaseDateUnix }}">{{.GetReleaseDateNice}}</td>
+                                <td data-sort="{{ .GetReleaseDateUnix }}" nowrap="nowrap">{{.GetReleaseDateNice}}</td>
                             </tr>
                         {{ end }}
                         </table>

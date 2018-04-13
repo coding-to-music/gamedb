@@ -58,6 +58,7 @@ func Serve() {
 	r.Get("/news", NewsHandler)
 	r.Get("/packages", PackagesHandler)
 	r.Get("/packages/{id}", PackageHandler)
+	r.Get("/packages/{id}/{slug}", PackageHandler)
 	r.Post("/players", PlayerIDHandler)
 	r.Get("/players", RanksHandler)
 	r.Get("/players/{id:[a-z]+}", RanksHandler)

@@ -56,7 +56,7 @@
                 {{ range $key, $value := .Donations }}
                     <tr>
                         <td>{{ .Amount }}</td>
-                        <td data-order="{{.GetCreatedUnix}}">{{ .GetCreatedNice }}</td>
+                        <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
                     </tr>
                 {{ end }}
                 </table>
@@ -83,7 +83,7 @@
                     </thead>
                 {{ range $key, $value := .Logins }}
                     <tr>
-                        <td nowrap="nowrap" data-order="{{.GetCreatedUnix}}">{{ .GetCreatedNice }}</td>
+                        <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
                         <td>{{ .IP }}</td>
                         <td nowrap="nowrap">
                             <span data-toggle="tooltip" data-placement="top" title="{{ .UserAgent }}">{{ printf "%.50s" .UserAgent }}&hellip;</span>

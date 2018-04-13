@@ -36,6 +36,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	template := packagesTemplate{}
 	template.Fill(r, "Packages")
 	template.Packages = packages
+	template.Total = total
 	template.Pagination = Pagination{
 		path:  "/packages?p=",
 		page:  page,
@@ -50,4 +51,5 @@ type packagesTemplate struct {
 	GlobalTemplate
 	Packages   []mysql.Package
 	Pagination Pagination
+	Total      int
 }

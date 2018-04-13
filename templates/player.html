@@ -177,8 +177,8 @@
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
                             <th scope="col" width="1%" data-disabled></th>
-                            <th scope="col" data-sort="asc">Player</th>
-                            <th scope="col">Level</th>
+                            <th scope="col">Player</th>
+                            <th scope="col" data-sort="desc">Level</th>
                             <th scope="col">Games</th>
                             <th scope="col">Logged Off</th>
                             </thead>
@@ -191,7 +191,7 @@
                                 <td>{{ .PersonaName }}</td>
                                 <td>{{ comma .Level }}</td>
                                 <td>{{ comma .GamesCount }}</td>
-                                <td data-sort="{{ .GetLogoffUnix }}">{{ .GetLogoffNice }}</td>
+                                <td data-sort="{{ .GetLogoffUnix }}" nowrap="nowrap">{{ .GetLogoffNice }}</td>
                             </tr>
                         {{else}}
                             <tr>
@@ -199,6 +199,8 @@
                                     <img src="{{.GetDefaultAvatar}}" class="avatar rounded">
                                 </td>
                                 <td>Not scanned yet, might be in the <a href="/queues">queue</a>.</td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                             </tr>
                         {{ end }}
@@ -250,7 +252,7 @@
                             <tr>
                                 <td>{{ comma .BadgeID }}</td>
                                 <td>{{ comma .Level }}</td>
-                                <td data-order="{{.GetTimeUnix}}">{{ .GetTimeNice }}</td>
+                                <td data-order="{{.GetTimeUnix}}" nowrap="nowrap">{{ .GetTimeNice }}</td>
                                 <td>{{ comma .XP }}</td>
                                 <td>{{ comma .Scarcity }}</td>
                                 <td>{{if ne .AppID 0}}<a href="/games/{{ .AppID }}">{{ .AppID }}</a>{{end}}</td>

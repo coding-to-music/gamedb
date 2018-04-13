@@ -51,7 +51,7 @@
                                     </tr>
                                     <tr>
                                         <td>Change ID</td>
-                                        <td>{{ .Package.ChangeID }}</td>
+                                        <td><a href="/changes/{{ .Package.ChangeID }}">{{ comma .Package.ChangeID }}</a></td>
                                     </tr>
                                     <tr>
                                         <td>Platforms</td>
@@ -65,7 +65,7 @@
                                 {{ end }}
                                 {{ range $key, $value := .Package.GetController }}
                                     <tr>
-                                        <td>{{ index $.Keys $key }}</td>
+                                        <td>{{ index $.ExtendedKeys $key }}</td>
                                         <td>{{$value}}</td>
                                     </tr>
                                 {{ end }}
@@ -112,7 +112,7 @@
                             <th scope="col">DLC #</th>
                             </thead>
                         {{ range $key, $value := .Apps }}
-                            <tr data-link="/games/{{.ID}}">
+                            <tr data-link="{{.GetPath}}">
                                 <td class="img">
                                     <img class="rounded" src="{{ .GetIcon }}">
                                 </td>

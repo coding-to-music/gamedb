@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 )
 
@@ -30,6 +31,16 @@ type Price struct {
 
 func (p Price) GetKey() (key *datastore.Key) {
 	return datastore.IncompleteKey(KindPrice, nil)
+}
+
+func (p Price) GetPath() string {
+	if p.AppID != 0 {
+		return "/games/" + strconv.Itoa(p.AppID) + "/" + slug.Make(p.Name)
+	} else if p.PackageID != 0 {
+		return "/packages/" + strconv.Itoa(p.PackageID) + "/" + slug.Make(p.Name)
+	} else {
+		return ""
+	}
 }
 
 func (p Price) GetIcon() (ret string) {

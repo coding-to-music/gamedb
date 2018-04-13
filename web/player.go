@@ -155,7 +155,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		// Get ranks
 		ranks, err = datastore.GetRank(player.PlayerID)
 		if err != nil {
-			if err != datastore.ErrorNotFound {
+			if err != datastore.ErrNoSuchEntity {
 				logger.Error(err)
 			}
 		}

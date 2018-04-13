@@ -79,7 +79,7 @@ func GetDefaultAppJSON() App {
 }
 
 func (app App) GetPath() (ret string) {
-	ret = "/games/" + strconv.Itoa(int(app.ID))
+	ret = "/games/" + strconv.Itoa(app.ID)
 
 	if app.Name != "" {
 		ret = ret + "/" + slug.Make(app.Name)

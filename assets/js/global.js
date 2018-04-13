@@ -14,6 +14,15 @@ $('input#search').on('keyup', function (evt) {
     }
 });
 
+// Auto dropdowns
+$('.nav-item.dropdown').hover(
+    function () {
+        $(this).addClass("show").find('.dropdown-menu').addClass("show");
+    }, function () {
+        $(this).removeClass("show").find('.dropdown-menu').removeClass("show");
+    }
+);
+
 // Tooptips
 $("body").tooltip({
     selector: '[data-toggle="tooltip"]'

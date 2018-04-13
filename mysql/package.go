@@ -49,7 +49,7 @@ func GetDefaultPackageJSON() Package {
 }
 
 func (pack Package) GetPath() string {
-	return "/packages/" + strconv.Itoa(int(pack.ID)) + "/" + slug.Make(pack.Name)
+	return "/packages/" + strconv.Itoa(pack.ID) + "/" + slug.Make(pack.Name)
 }
 
 func (pack Package) GetName() (name string) {
@@ -509,6 +509,7 @@ var PackageExtendedKeys = map[string]string{
 	"foo":                                   "Foo",
 	"freeondemand":                          "Free On Demand",
 	"freeweekend":                           "Free Weekend",
+	"full_gamepad":                          "Full Gamepad",
 	"giftsaredeletable":                     "Gifts Are Deletable",
 	"giftsaremarketable":                    "Gifts Are Marketable",
 	"giftsaretradable":                      "Gifts Are Tradable",

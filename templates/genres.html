@@ -3,7 +3,6 @@
 <div class="container" id="genres-page">
 
     <div class="jumbotron">
-
         <div class="row">
             <div class="col-sm-12 col-lg-6">
 
@@ -19,27 +18,29 @@
 
             </div>
         </div>
-
     </div>
 
     <div class="card">
     {{ template "_stats_header" . }}
         <div class="card-body">
 
-            <div class="row">
-            {{ range $key, $value := .Genres }}
-                <div class="col-sm-4 mb-2" id="genre_{{ .ID }}">
-
-                    <div class="list-group">
-                        <a href="{{ .GetPath }}" class="list-group-item list-group-item-action list-group-item-secondary">
-                            <i class="fas fa-star"></i>
-                            <h6 class="mb-1">{{ .Name }}</h6>
-                            <small>{{ .Apps }} Games</small>
-                        </a>
-                    </div>
-
-                </div>
-            {{ end }}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable mb-0">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Genre</th>
+                        <th scope="col" data-sort="desc">Games</th>
+                    </tr>
+                    </thead>
+                    <tbody class="tags-list">
+                    {{ range $key, $value := .Genres }}
+                    <tr data-link="{{.GetPath}}">
+                        <td>{{ .Name }}</td>
+                        <td>{{ comma .Apps }}</td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
             </div>
 
         </div>
