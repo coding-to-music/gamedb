@@ -53,6 +53,6 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 type priceChangesTemplate struct {
 	GlobalTemplate
 	Apps       []mysql.App
-	Changes    []datastore.AppPrice
+	Changes    []datastore.Price
 	Pagination Pagination
 }

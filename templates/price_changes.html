@@ -61,9 +61,9 @@
                 {{ range $key, $value := .Changes }}
                     <tr data-link="/games/{{ .AppID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
                         <td class="img" width="1%">
-                            <img src="{{.GetLogo}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
+                            <img src="{{.GetIcon}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
                         </td>
-                        <td>{{ .AppName }}</td>
+                        <td>{{ .Name }}</td>
                         <td nowrap="nowrap" data-order="{{ .ReleaseDateUnix }}">{{ .ReleaseDateNice }}</td>
                         <td>${{ .GetPriceFinal }}</td>
                         <td>{{ .Discount }}%</td>

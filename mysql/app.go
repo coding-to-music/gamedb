@@ -100,6 +100,10 @@ func (app App) GetType() (ret string) {
 	}
 }
 
+func (app App) GetDefaultAvatar() string {
+	return "/assets/img/no-app-image-square.jpg"
+}
+
 func (app App) GetReleaseState() (ret string) {
 
 	switch app.ReleaseState {
@@ -116,39 +120,14 @@ func (app App) GetReleaseState() (ret string) {
 	}
 }
 
-func (app App) getReleaseDate() (t time.Time, err error) {
+func (app App) GetReleaseDateNice() string {
 
-	t, err = time.Parse("Jan 2, 2006", app.ReleaseDate)
-	if err != nil {
-
-		t, err = time.Parse("Jan 2006", app.ReleaseDate)
-		if err != nil {
-
-			t, err = time.Parse("2006", app.ReleaseDate)
-		}
-	}
-
-	return t, err
-}
-
-func (app App) GetReleaseDateNice() (date string) {
-
-	t, err := app.getReleaseDate()
-	if err != nil {
-		return app.ReleaseDate
-	}
-
-	return t.Format(helpers.DateYear)
+	return helpers.GetReleaseDateNice(app.ReleaseDate)
 }
 
 func (app App) GetReleaseDateUnix() int64 {
 
-	t, err := app.getReleaseDate()
-	if err != nil {
-		return 0
-	}
-
-	return t.Unix()
+	return helpers.GetReleaseDateUnix(app.ReleaseDate)
 }
 
 func (app App) GetIcon() (ret string) {

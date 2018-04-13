@@ -10,3 +10,4 @@
 # mv ~/.config/gcloud/emulators/datastore/WEB-INF/index.yaml ../index.yaml
 
 # gcloud datastore create-indexes ../index.yaml
+# gcloud datastore cleanup-indexes ../index.yaml

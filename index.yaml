@@ -12,28 +12,15 @@ indexes:
   - name: "created_at"
     direction: "desc"
 
-- kind: "AppPrice"
+- kind: "Price"
   properties:
   - name: "currency"
   - name: "created_at"
     direction: "desc"
 
-- kind: "AppPrice"
+- kind: "Price"
   properties:
   - name: "app_id"
-  - name: "currency"
-  - name: "created_at"
-    direction: "asc"
-
-- kind: "PackagePrice"
-  properties:
-  - name: "currency"
-  - name: "created_at"
-    direction: "desc"
-
-- kind: "PackagePrice"
-  properties:
-  - name: "package_id"
   - name: "currency"
   - name: "created_at"
     direction: "asc"

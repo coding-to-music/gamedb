@@ -51,14 +51,18 @@ func processPackage(msg amqp.Delivery) (err error) {
 	}
 
 	// Save price change
-	price := new(datastore.PackagePrice)
+	price := new(datastore.Price)
 	price.CreatedAt = time.Now()
 	price.PackageID = pack.ID
+	price.Name = pack.GetName()
 	price.PriceInitial = pack.PriceInitial
 	price.PriceFinal = pack.PriceFinal
 	price.Discount = pack.PriceDiscount
 	price.Currency = "usd"
 	price.Change = pack.PriceFinal - priceBeforeFill
+	price.Icon = pack.GetDefaultAvatar()
+	price.ReleaseDateNice = pack.GetReleaseDateNice()
+	price.ReleaseDateUnix = pack.GetReleaseDateUnix()
 
 	if price.Change != 0 {
 		_, err = datastore.SaveKind(price.GetKey(), price)

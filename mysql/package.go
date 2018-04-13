@@ -35,7 +35,7 @@ type Package struct {
 	PriceIndividual int        `gorm:"not null;column:price_individual"`              //
 	Controller      string     `gorm:"not null;column:controller;default:'{}'"`       // JSON
 	ComingSoon      bool       `gorm:"not null;column:coming_soon"`                   //
-	ReleaseDate     *time.Time `gorm:"not null;column:release_date"`                  //
+	ReleaseDate     string     `gorm:"not null;column:release_date"`                  //
 	Platforms       string     `gorm:"not null;column:platforms;default:'[]'"`        // JSON
 }
 
@@ -61,12 +61,26 @@ func (pack Package) GetName() (name string) {
 	return pack.Name
 }
 
+func (pack Package) GetDefaultAvatar() string {
+	return "/assets/img/no-app-image-square.jpg"
+}
+
 func (pack Package) GetCreatedNice() string {
 	return pack.CreatedAt.Format(helpers.DateYearTime)
 }
 
 func (pack Package) GetCreatedUnix() int64 {
 	return pack.CreatedAt.Unix()
+}
+
+func (pack Package) GetReleaseDateNice() string {
+
+	return helpers.GetReleaseDateNice(pack.ReleaseDate)
+}
+
+func (pack Package) GetReleaseDateUnix() int64 {
+
+	return helpers.GetReleaseDateUnix(pack.ReleaseDate)
 }
 
 func (pack Package) GetBillingType() (string) {
@@ -409,15 +423,6 @@ func (pack *Package) fillFromAPI() (err error) {
 		return err
 	}
 
-	// Release date
-	var releaseDate = time.Time{}
-	if response.Data.ReleaseDate.Date != "" {
-		releaseDate, err = time.Parse("2 Jan, 2006", response.Data.ReleaseDate.Date)
-		if err != nil {
-			return err
-		}
-	}
-
 	//
 	pack.Name = response.Data.Name
 	pack.ImageHeader = response.Data.HeaderImage
@@ -430,7 +435,7 @@ func (pack *Package) fillFromAPI() (err error) {
 	pack.PriceIndividual = response.Data.Price.Individual
 	pack.Platforms = string(platformsString)
 	pack.Controller = string(controllerString)
-	pack.ReleaseDate = &releaseDate
+	pack.ReleaseDate = response.Data.ReleaseDate.Date
 	pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
 
 	return nil
