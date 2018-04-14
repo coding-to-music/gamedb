@@ -62,16 +62,16 @@
                                         <td>Platforms</td>
                                         <td class="platforms">{{ .Package.GetPlatformImages }}</td>
                                     </tr>
-                                {{ range $key, $value := .Package.GetExtended }}
+                                {{ range $key, $value := .Package.GetExtendedNice }}
                                     <tr>
-                                        <td>{{ index $.ExtendedKeys $key }}</td>
-                                        <td>{{$value}}</td>
+                                        <td>{{ $key }}</td>
+                                        <td>{{ $value }}</td>
                                     </tr>
                                 {{ end }}
-                                {{ range $key, $value := .Package.GetController }}
+                                {{ range $key, $value := .Package.GetControllerNice }}
                                     <tr>
-                                        <td>{{ index $.ExtendedKeys $key }}</td>
-                                        <td>{{$value}}</td>
+                                        <td>{{ $key }}</td>
+                                        <td>{{ $value }}</td>
                                     </tr>
                                 {{ end }}
                                 </table>

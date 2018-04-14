@@ -121,8 +121,6 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(r, pack.GetName())
 	t.Package = pack
 	t.Apps = apps
-	t.ExtendedKeys = mysql.PackageExtendedKeys
-	t.ControllerKeys = mysql.PackageControllerKeys
 	t.Prices = pricesString
 	t.PricesCount = pricesCount
 
@@ -131,11 +129,9 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 type packageTemplate struct {
 	GlobalTemplate
-	Package        mysql.Package
-	Apps           []mysql.App
-	ExtendedKeys   map[string]string
-	ControllerKeys map[string]string
-	Banners        map[string][]string
-	Prices         string
-	PricesCount    int
+	Package     mysql.Package
+	Apps        []mysql.App
+	Banners     map[string][]string
+	Prices      string
+	PricesCount int
 }

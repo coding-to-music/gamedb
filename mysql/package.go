@@ -196,9 +196,9 @@ func (pack Package) GetPriceIndividual() float64 {
 	return helpers.CentsInt(pack.PriceInitial)
 }
 
-func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
+func (pack Package) GetExtended() (extended map[string]string, err error) {
 
-	extended = make(map[string]interface{})
+	extended = make(map[string]string)
 
 	bytes := []byte(pack.Extended)
 	if err := json.Unmarshal(bytes, &extended); err != nil {
@@ -209,6 +209,30 @@ func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
 	}
 
 	return extended, nil
+}
+
+// Used in temmplate
+func (pack Package) GetExtendedNice() (ret map[string]string, err error) {
+
+	ret = map[string]string{}
+
+	extended, err := pack.GetExtended()
+	if err != nil {
+		logger.Error(err)
+		return ret, err
+	}
+
+	for k, v := range extended {
+
+		if val, ok := PackageExtendedKeys[k]; ok {
+			ret[val] = v
+		} else {
+			logger.Info("Need to add " + k + " to extended map")
+			ret[k] = v
+		}
+	}
+
+	return ret, err
 }
 
 func (pack Package) GetController() (controller map[string]interface{}, err error) {
@@ -224,6 +248,30 @@ func (pack Package) GetController() (controller map[string]interface{}, err erro
 	}
 
 	return controller, nil
+}
+
+// Used in temmplate
+func (pack Package) GetControllerNice() (ret map[string]interface{}, err error) {
+
+	ret = map[string]interface{}{}
+
+	extended, err := pack.GetController()
+	if err != nil {
+		logger.Error(err)
+		return ret, err
+	}
+
+	for k, v := range extended {
+
+		if val, ok := PackageControllerKeys[k]; ok {
+			ret[val] = v
+		} else {
+			logger.Info("Need to add " + k + " to controller map")
+			ret[k] = v
+		}
+	}
+
+	return ret, err
 }
 
 func (pack Package) GetPlatforms() (platforms []string, err error) {
@@ -478,7 +526,6 @@ func (pack *Package) fillFromPICS() (err error) {
 	return nil
 }
 
-// todo, make these nice, put into the GetExtended func?
 var PackageExtendedKeys = map[string]string{
 	"allowcrossregiontradingandgifting":     "Allow Cross Region Trading & Gifting",
 	"allowpurchasefromretrictedcountries":   "Allow Purchase From Retricted Countries",
