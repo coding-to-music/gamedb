@@ -81,7 +81,7 @@ func GetAppPrices(appID int) (prices []Price, err error) {
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(1000)
+	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(100)
 	q = q.Filter("app_id =", appID)
 	q = q.Filter("currency =", "usd")
 
@@ -90,7 +90,28 @@ func GetAppPrices(appID int) (prices []Price, err error) {
 	return prices, err
 }
 
-func GetAppChanges(limit int, page int) (prices []Price, err error) {
+func GetLatestAppPrice(appID int) (price Price, err error) {
+
+	client, ctx, err := getClient()
+	if err != nil {
+		return price, err
+	}
+
+	q := datastore.NewQuery(KindPrice).Order("-created_at").Limit(1)
+	q = q.Filter("app_id =", appID)
+	q = q.Filter("currency =", "usd")
+
+	var prices []Price
+	_, err = client.GetAll(ctx, q, &prices)
+
+	if len(prices) > 0 {
+		return prices[0], nil
+	}
+
+	return price, ErrNoSuchEntity
+}
+
+func GetLatestPrices(limit int, page int) (prices []Price, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {

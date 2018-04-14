@@ -25,12 +25,22 @@ div#top.show {
     opacity: 1;
 }
 
-.navbar-brand {
-    padding: 0;
-    img {
-        height: 40px;
+.navbar{
+    .navbar-brand {
+        padding: 0;
+        img {
+            height: 40px;
+        }
+    }
+
+    .dropdown{
+        .dropdown-menu{
+            margin:0;
+        }
     }
 }
+
+
 
 .jumbotron {
     padding: 2rem;

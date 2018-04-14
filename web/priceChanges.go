@@ -28,7 +28,7 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get changes
-	changes, err := datastore.GetAppChanges(PriceChangeLimit, page)
+	changes, err := datastore.GetLatestPrices(PriceChangeLimit, page)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
