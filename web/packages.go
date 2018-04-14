@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
@@ -20,17 +21,38 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	// Get total
-	total, err := mysql.CountPackages()
-	if err != nil {
-		logger.Error(err)
-	}
+	var wg sync.WaitGroup
 
-	// Get packages
-	packages, err := mysql.GetLatestPackages(packagesLimit, page)
-	if err != nil {
-		logger.Error(err)
-	}
+	// Get total changes
+	var total int
+	wg.Add(1)
+	go func() {
+
+		total, err = mysql.CountPackages()
+		if err != nil {
+			logger.Error(err)
+		}
+
+		wg.Done()
+
+	}()
+
+	// Get changes
+	var packages []mysql.Package
+	wg.Add(1)
+	go func() {
+
+		packages, err = mysql.GetLatestPackages(packagesLimit, page)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		wg.Done()
+
+	}()
+
+	// Wait
+	wg.Wait()
 
 	// Template
 	template := packagesTemplate{}
