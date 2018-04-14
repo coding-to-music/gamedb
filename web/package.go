@@ -1,23 +1,32 @@
 package web
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
+	"sync"
+	"time"
 
 	"github.com/go-chi/chi"
+	slugify "github.com/gosimple/slug"
+	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 )
 
 func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id := chi.URLParam(r, "id")
+	slug := chi.URLParam(r, "slug")
+
+	idx, err := strconv.Atoi(id)
 	if err != nil {
 		returnErrorTemplate(w, r, 404, "Invalid package ID")
 		return
 	}
 
-	pack, err := mysql.GetPackage(id)
+	// Get package
+	pack, err := mysql.GetPackage(idx)
 	if err != nil {
 
 		if err == mysql.ErrNotFound {
@@ -30,15 +39,68 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	appIDs, err := pack.GetApps()
-	if err != nil {
-		logger.Error(err)
+	// Redirect to correct slug
+	correctSLug := slugify.Make(pack.GetName())
+	if slug != correctSLug {
+		http.Redirect(w, r, "/packages/"+id+"/"+correctSLug, 302)
+		return
 	}
 
-	apps, err := mysql.GetApps(appIDs, []string{"id", "icon", "type", "platforms", "dlc"})
-	if err != nil {
-		logger.Error(err)
-	}
+	//
+	var wg sync.WaitGroup
+
+	var apps []mysql.App
+	wg.Add(1)
+	go func() {
+
+		// Get apps
+		appIDs, err := pack.GetApps()
+		if err != nil {
+			logger.Error(err)
+		}
+
+		apps, err = mysql.GetApps(appIDs, []string{"id", "icon", "type", "platforms", "dlc"})
+		if err != nil {
+			logger.Error(err)
+		}
+
+		wg.Done()
+	}()
+
+	var pricesString string
+	var pricesCount int
+	wg.Add(1)
+	go func() {
+
+		// Get prices
+		pricesResp, err := datastore.GetPackagePrices(pack.ID)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		pricesCount = len(pricesResp)
+
+		var prices [][]float64
+
+		for _, v := range pricesResp {
+
+			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceFinal) / 100})
+		}
+
+		// Add current price
+		prices = append(prices, []float64{float64(time.Now().Unix()), float64(pack.PriceFinal) / 100})
+
+		// Make into a JSON string
+		pricesBytes, err := json.Marshal(prices)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		pricesString = string(pricesBytes)
+
+		wg.Done()
+	}()
+
 	// Make banners
 	banners := make(map[string][]string)
 	var primary []string
@@ -51,15 +113,20 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 		banners["primary"] = primary
 	}
 
-	// Template
-	template := packageTemplate{}
-	template.Fill(r, pack.GetName())
-	template.Package = pack
-	template.Apps = apps
-	template.ExtendedKeys = mysql.PackageExtendedKeys
-	template.ControllerKeys = mysql.PackageControllerKeys
+	// Wait
+	wg.Wait()
 
-	returnTemplate(w, r, "package", template)
+	// Template
+	t := packageTemplate{}
+	t.Fill(r, pack.GetName())
+	t.Package = pack
+	t.Apps = apps
+	t.ExtendedKeys = mysql.PackageExtendedKeys
+	t.ControllerKeys = mysql.PackageControllerKeys
+	t.Prices = pricesString
+	t.PricesCount = pricesCount
+
+	returnTemplate(w, r, "package", t)
 }
 
 type packageTemplate struct {
@@ -69,4 +136,6 @@ type packageTemplate struct {
 	ExtendedKeys   map[string]string
 	ControllerKeys map[string]string
 	Banners        map[string][]string
+	Prices         string
+	PricesCount    int
 }

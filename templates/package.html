@@ -16,6 +16,11 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{len .Package.GetApps}})</a>
                 </li>
+            {{if gt .PricesCount 0}}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
+                </li>
+            {{end}}
             </ul>
         </div>
         <div class="card-body">
@@ -126,6 +131,13 @@
                     </div>
 
                 </div>
+
+            {{/* Prices */}}
+                <div class="tab-pane" id="prices" role="tabpanel">
+                    <script>var prices = JSON.parse('{{ .Prices }}');</script>
+                    <div id="chart"></div>
+                </div>
+
             </div>
 
 
