@@ -10,7 +10,7 @@
     <div class="card">
         <div class="card-header bg-light text-white">
 
-            <h5 class="float-right" style="margin-bottom: 0;">
+            <h5 class="float-right mb-0">
                 <span class="badge badge-secondary" id="live-badge">Live</span>
             </h5>
 
@@ -22,13 +22,13 @@
             {{ range $key, $value := .Articles }}
 
                 <li class="media">
-                    <a href="{{ (index $.Apps .AppID).GetPath }}#news">
-                        <img class="mr-3 rounded" src="{{ (index $.Apps .AppID).GetIcon }}">
+                    <a href="{{ .App.GetPath }}#news">
+                        <img class="mr-3 rounded" src="{{ .App.GetIcon }}">
                     </a>
                     <div class="media-body">
-                        <h5 class="mt-0 mb-1"><a href="{{ (index $.Apps .AppID).GetPath }}#news">{{ .Title }}</a></h5>
+                        <h5 class="mt-0 mb-1"><a href="{{ .App.GetPath }}#news">{{ .Article.Title }}</a></h5>
                         <p class="text-muted">
-                            <span>{{ (index $.Apps .AppID).GetName }} - By {{.Author}} @ <span data-toggle="tooltip" data-placement="top" title="{{ .GetNiceDate }}" data-livestamp="{{ .GetTimestamp }}">{{ .GetNiceDate }}</span></span>
+                            <span>{{ .App.GetName }} - By {{ .Article.Author }} @ <span data-toggle="tooltip" data-placement="top" title="{{ .Article.GetNiceDate }}" data-livestamp="{{ .Article.GetTimestamp }}">{{ .Article.GetNiceDate }}</span></span>
                         </p>
                     </div>
                 </li>

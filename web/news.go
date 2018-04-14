@@ -17,18 +17,22 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Filter out artciles with no app id
-	var filteredArticles []datastore.Article
+	// Make template articles
 	var appIDs []int
-
+	var templateArticles []newsArticleTemplate
 	for _, v := range articles {
+
 		if v.AppID != 0 {
-			filteredArticles = append(filteredArticles, v)
+
+			templateArticles = append(templateArticles, newsArticleTemplate{
+				Article: v,
+			})
+
 			appIDs = append(appIDs, v.AppID)
 		}
 	}
 
-	// Get app info
+	// Get apps
 	apps, err := mysql.GetApps(appIDs, []string{"id", "name", "icon"})
 	if err != nil {
 		logger.Error(err)
@@ -37,23 +41,34 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make map of apps
-	appMap := make(map[int]mysql.App)
+	var appsMap = map[int]mysql.App{}
 	for _, v := range apps {
-		appMap[v.ID] = v
+		appsMap[v.ID] = v
+	}
+
+	// Add apps to template
+	for k, v := range templateArticles {
+
+		if val, ok := appsMap[v.Article.AppID]; ok {
+			templateArticles[k].App = val
+		}
 	}
 
 	// Template
-	template := articlesTemplate{}
+	template := newsTemplate{}
 	template.Fill(r, "News")
-	template.Articles = filteredArticles
-	template.Apps = appMap
+	template.Articles = templateArticles
 
 	returnTemplate(w, r, "news", template)
 	return
 }
 
-type articlesTemplate struct {
+type newsTemplate struct {
 	GlobalTemplate
-	Articles []datastore.Article
-	Apps     map[int]mysql.App
+	Articles []newsArticleTemplate
+}
+
+type newsArticleTemplate struct {
+	Article datastore.Article
+	App     mysql.App
 }
