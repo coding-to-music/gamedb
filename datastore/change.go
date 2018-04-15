@@ -37,14 +37,16 @@ func (change Change) GetPath() string {
 	return "/changes/" + strconv.Itoa(change.ChangeID)
 }
 
-func GetLatestChanges(limit int) (changes []Change, err error) {
+func GetLatestChanges(limit int, page int) (changes []Change, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {
 		return changes, err
 	}
 
-	q := datastore.NewQuery(KindChange).Order("-change_id").Limit(limit)
+	offset := (page - 1) * 100
+
+	q := datastore.NewQuery(KindChange).Order("-change_id").Limit(limit).Offset(offset)
 
 	client.GetAll(ctx, q, &changes)
 

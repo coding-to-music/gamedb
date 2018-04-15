@@ -25,7 +25,7 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get changes
 	var changes []structs.ChangesChangeTemplate
-	resp, err := datastore.GetLatestChanges(changesLimit)
+	resp, err := datastore.GetLatestChanges(changesLimit, page)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -123,9 +123,9 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 	template.Fill(r, "Changes")
 	template.Changes = changes
 	template.Pagination = Pagination{
-		path:  "/packages?p=",
+		path:  "/changes?p=",
 		page:  page,
-		limit: packagesLimit,
+		limit: changesLimit,
 		total: changesLimit * 100, // 100 Pages
 	}
 

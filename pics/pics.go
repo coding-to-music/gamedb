@@ -103,7 +103,7 @@ func getLatestChanges() (jsChange JsChange, err error) {
 	// Get the last change
 	if latestChangeSaved == 0 {
 
-		changes, err := datastore.GetLatestChanges(1)
+		changes, err := datastore.GetLatestChanges(1, 1)
 		if err != nil {
 			logger.Error(err)
 		}
