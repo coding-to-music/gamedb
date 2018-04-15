@@ -10,22 +10,62 @@
     <div class="card">
         <div class="card-header">
 
-            <h2>Apps</h2>
-        {{ range $key, $value := .Change.Apps }}
-            <div>
-                <a href="/games/{{ $value }}">App {{ $value }}</a>
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#apps">Apps ({{ len .Apps }})</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#packages">Packages ({{ len .Packages }})</a>
+                </li>
+            </ul>
+
+        </div>
+        <div class="card-body">
+
+            <div class="tab-content">
+                <div class="tab-pane show active" id="apps" role="tabpanel">
+
+                {{/* Apps */}}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable">
+                            <thead class="thead-light">
+                            <th scope="col" width="1%" data-disabled></th>
+                            <th scope="col" data-sort="asc">App</th>
+                            <th scope="col">Type</th>
+                            </thead>
+                        {{ range $key, $value := .Apps }}
+                            <tr data-link="{{.GetPath}}">
+                                <td class="img">
+                                    <img class="rounded" src="{{ .GetIcon }}">
+                                </td>
+                                <td>{{.GetName}}</td>
+                                <td>{{ .GetType }}</td>
+                            </tr>
+                        {{ end }}
+                        </table>
+                    </div>
+
+                </div>
+                <div class="tab-pane" id="packages" role="tabpanel">
+
+                {{/* Packages */}}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable">
+                            <thead class="thead-light">
+                            <th scope="col" data-sort="asc">Package</th>
+                            <th scope="col">Apps #</th>
+                            </thead>
+                        {{ range $key, $value := .Packages }}
+                            <tr data-link="{{.GetPath}}">
+                                <td>{{.GetName}}</td>
+                                <td>{{ len .GetApps }}</td>
+                            </tr>
+                        {{ end }}
+                        </table>
+                    </div>
+
+                </div>
             </div>
-        {{ end }}
-
-            <h2>Packages</h2>
-
-        {{ range $key, $value := .Change.Packages }}
-
-            <div>
-                <a href="/players/{{ $value }}">App {{ $value }}</a>
-            </div>
-
-        {{ end }}
 
         </div>
     </div>

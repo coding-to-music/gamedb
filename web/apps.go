@@ -2,24 +2,51 @@ package web
 
 import (
 	"net/http"
+	"sync"
 
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 )
 
+const (
+	appsSearchLimit = 96
+)
+
 func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
+	var wg sync.WaitGroup
+	var err error
+
 	// Get apps
-	apps, err := mysql.SearchApps(r.URL.Query(), 96, "id DESC", []string{})
-	if err != nil {
-		logger.Error(err)
-	}
+	var apps []mysql.App
+	wg.Add(1)
+	go func() {
+
+		apps, err = mysql.SearchApps(r.URL.Query(), appsSearchLimit, "id DESC", []string{})
+		if err != nil {
+			logger.Error(err)
+		}
+
+		wg.Done()
+
+	}()
 
 	// Get apps count
-	count, err := mysql.CountApps()
-	if err != nil {
-		logger.Error(err)
-	}
+	var count int
+	wg.Add(1)
+	go func() {
+
+		count, err = mysql.CountApps()
+		if err != nil {
+			logger.Error(err)
+		}
+
+		wg.Done()
+
+	}()
+
+	// Wait
+	wg.Wait()
 
 	// Template
 	template := appsTemplate{}

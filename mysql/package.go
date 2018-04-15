@@ -196,9 +196,9 @@ func (pack Package) GetPriceIndividual() float64 {
 	return helpers.CentsInt(pack.PriceInitial)
 }
 
-func (pack Package) GetExtended() (extended map[string]string, err error) {
+func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
 
-	extended = make(map[string]string)
+	extended = make(map[string]interface{})
 
 	bytes := []byte(pack.Extended)
 	if err := json.Unmarshal(bytes, &extended); err != nil {
@@ -212,9 +212,9 @@ func (pack Package) GetExtended() (extended map[string]string, err error) {
 }
 
 // Used in temmplate
-func (pack Package) GetExtendedNice() (ret map[string]string, err error) {
+func (pack Package) GetExtendedNice() (ret map[string]interface{}, err error) {
 
-	ret = map[string]string{}
+	ret = make(map[string]interface{})
 
 	extended, err := pack.GetExtended()
 	if err != nil {

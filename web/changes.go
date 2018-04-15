@@ -3,7 +3,6 @@ package web
 import (
 	"net/http"
 
-	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
@@ -59,30 +58,4 @@ type changesTemplate struct {
 	Changes  []datastore.Change
 	Apps     map[int]mysql.App
 	Packages map[int]mysql.Package
-}
-
-func ChangeHandler(w http.ResponseWriter, r *http.Request) {
-
-	change, err := datastore.GetChange(chi.URLParam(r, "id"))
-	if err != nil {
-		if err.Error() == "datastore: no such entity" {
-			returnErrorTemplate(w, r, 404, "We can't find this change in our database, there may not be one with this ID.")
-			return
-		} else {
-			logger.Error(err)
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
-		}
-	}
-
-	template := changeTemplate{}
-	template.Fill(r, change.GetName())
-	template.Change = change
-
-	returnTemplate(w, r, "change", template)
-}
-
-type changeTemplate struct {
-	GlobalTemplate
-	Change *datastore.Change
 }
