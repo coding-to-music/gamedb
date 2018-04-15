@@ -1,5 +1,18 @@
 if ($('#changes-page').length > 0) {
 
+    // var data = [
+    //     {'s': 'json2html'},
+    //     {'s': 'is'},
+    //     {'s': 'awesome'}
+    // ];
+    //
+    // var transform = {'<>': 'li', 'html': '${s}'};
+    //
+    // // $('ul#test').json2html(data, transform);
+    // var html = json2html.transform(data, transform);
+    // console.log(html);
+
+
     if (window.WebSocket === undefined) {
         console.log('Your browser does not support WebSockets');
     } else {

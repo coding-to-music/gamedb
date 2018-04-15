@@ -10,7 +10,7 @@
     <div class="card">
         <div class="card-header bg-light text-white">
 
-            <h5 class="float-right" style="margin-bottom: 0;">
+            <h5 class="float-right mb-0">
                 <span class="badge badge-secondary" id="live-badge">Live</span>
             </h5>
 
@@ -22,13 +22,25 @@
             {{ range $key, $value := .Changes }}
                 <li class="media">
                     <div class="media-body">
-                        <h5 class="mt-0 mb-1">Change {{ .ChangeID }}</h5>
-                        <p class="text-muted" style="margin-bottom: 0;">
-                            <span data-toggle="tooltip" data-placement="top" title="{{ .GetNiceDate }}" data-livestamp="{{ .GetTimestamp }}">{{ .GetNiceDate }}</span>
-                            <a href="/changes/{{ .ChangeID }}"><i class="fas fa-paperclip" aria-hidden="true"></i></a>
+                        <h5 class="mt-0 mb-1">Change {{ .Change.ChangeID }}</h5>
+                        <p class="text-muted mb0">
+                            <span data-toggle="tooltip" data-placement="top" title="{{ .Change.GetNiceDate }}" data-livestamp="{{ .Change.GetTimestamp }}">{{ .Change.GetNiceDate }}</span>
+                            <a href="{{ .Change.GetPath }}"><i class="fas fa-paperclip" aria-hidden="true"></i></a>
                         </p>
-                        <p class="text-muted" style="margin-bottom: 0;">{{ apps .Apps $.Apps }}</p>
-                        <p class="text-muted">{{ packages .Packages $.Packages }}</p>
+                        <p class="text-muted mb-0">
+
+                        {{ range $key, $value := .Apps }}
+                            <a href="{{.GetPath}}">{{.GetName}}</a>
+                        {{ end }}
+
+                        </p>
+                        <p class="text-muted">
+
+                        {{ range $key, $value := .Packages }}
+                            <a href="{{.GetPath}}">{{.GetName}}</a>
+                        {{ end }}
+
+                        </p>
                     </div>
                 </li>
             {{ end }}

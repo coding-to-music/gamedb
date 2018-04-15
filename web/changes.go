@@ -2,60 +2,138 @@ package web
 
 import (
 	"net/http"
+	"strconv"
+	"sync"
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
+	"github.com/steam-authority/steam-authority/structs"
+)
+
+const (
+	changesLimit = 100
 )
 
 func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Get page number
+	page, err := strconv.Atoi(r.URL.Query().Get("p"))
+	if err != nil {
+		page = 1
+	}
+
 	// Get changes
-	changes, err := datastore.GetLatestChanges(50)
+	var changes []structs.ChangesChangeTemplate
+	resp, err := datastore.GetLatestChanges(changesLimit)
 	if err != nil {
 		logger.Error(err)
 	}
 
-	// Get apps/packages
-	appIDs := make([]int, 0)
-	packageIDs := make([]int, 0)
-	for _, v := range changes {
-		appIDs = append(appIDs, v.Apps...)
-		packageIDs = append(packageIDs, v.Packages...)
+	for _, v := range resp {
+		changes = append(changes, structs.ChangesChangeTemplate{
+			Change: v,
+		})
 	}
 
-	// Get apps for all changes
-	appsMap := make(map[int]mysql.App)
-	apps, err := mysql.GetApps(appIDs, []string{"id", "name"})
+	//
+	var wg = sync.WaitGroup{}
 
-	for _, v := range apps {
-		appsMap[v.ID] = v
-	}
+	// Get apps
+	wg.Add(1)
+	go func() {
 
-	// Get packages for all changes
-	packagesMap := make(map[int]mysql.Package)
-	packages, err := mysql.GetPackages(packageIDs, []string{"id", "name"})
+		// Get app IDs
+		var appIDs []int
+		for _, v := range changes {
+			appIDs = append(appIDs, v.Change.Apps...)
+		}
 
-	for _, v := range packages {
-		packagesMap[v.ID] = v
-	}
+		// Get apps for all changes
+		appsMap := make(map[int]mysql.App)
+		apps, err := mysql.GetApps(appIDs, []string{"id", "name", "icon"})
+		if err != nil {
+			logger.Error(err)
+		}
 
-	// todo, sort packagesMap by id
+		// Make app map
+		for _, v := range apps {
+			appsMap[v.ID] = v
+		}
+
+		// Add app to changes
+		for k, v := range changes {
+
+			for _, vv := range v.Change.Apps {
+
+				if val, ok := appsMap[vv]; ok {
+
+					changes[k].Apps = append(changes[k].Apps, val)
+				}
+			}
+		}
+
+		wg.Done()
+
+	}()
+
+	// Get packages
+	wg.Add(1)
+	go func() {
+
+		// Get package IDs
+		var packageIDs []int
+		for _, v := range changes {
+			packageIDs = append(packageIDs, v.Change.Packages...)
+		}
+
+		// Get packages for all changes
+		packagesMap := make(map[int]mysql.Package)
+		packages, err := mysql.GetPackages(packageIDs, []string{"id", "name"})
+		if err != nil {
+			logger.Error(err)
+		}
+
+		// Make package map
+		for _, v := range packages {
+			packagesMap[v.ID] = v
+		}
+
+		// Add app to changes
+		for k, v := range changes {
+
+			for _, vv := range v.Change.Apps {
+
+				if val, ok := packagesMap[vv]; ok {
+
+					changes[k].Packages = append(changes[k].Packages, val)
+				}
+			}
+		}
+
+		wg.Done()
+
+	}()
+
+	// Wait
+	wg.Wait()
 
 	// Template
 	template := changesTemplate{}
 	template.Fill(r, "Changes")
 	template.Changes = changes
-	template.Apps = appsMap
-	template.Packages = packagesMap
+	template.Pagination = Pagination{
+		path:  "/packages?p=",
+		page:  page,
+		limit: packagesLimit,
+		total: changesLimit * 100, // 100 Pages
+	}
 
 	returnTemplate(w, r, "changes", template)
 }
 
-// todo, Just pass through a new struct with all the correct info instead of changes and maps to get names
 type changesTemplate struct {
 	GlobalTemplate
-	Changes  []datastore.Change
-	Apps     map[int]mysql.App
-	Packages map[int]mysql.Package
+	Changes    []structs.ChangesChangeTemplate
+	Pagination Pagination
 }

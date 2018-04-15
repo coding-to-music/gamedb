@@ -10,7 +10,7 @@ import (
 
 type Change struct {
 	CreatedAt time.Time `datastore:"created_at,noindex"`
-	UpdatedAt time.Time `datastore:"updated_at,noindex"` // Do not use!  (backwards compatibility)
+	UpdatedAt time.Time `datastore:"-"` // Do not use!  (backwards compatibility)
 	ChangeID  int       `datastore:"change_id"`
 	Apps      []int     `datastore:"apps,noindex"`
 	Packages  []int     `datastore:"packages,noindex"`
@@ -31,6 +31,10 @@ func (change Change) GetTimestamp() (int64) {
 
 func (change Change) GetNiceDate() (string) {
 	return change.CreatedAt.Format(helpers.DateYearTime)
+}
+
+func (change Change) GetPath() string {
+	return "/changes/" + strconv.Itoa(change.ChangeID)
 }
 
 func GetLatestChanges(limit int) (changes []Change, err error) {
