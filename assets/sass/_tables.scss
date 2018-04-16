@@ -8,6 +8,11 @@ table.table {
             }
         }
     }
+    td {
+        img {
+            max-height: 21px;
+        }
+    }
     td.platforms {
         font-size: 22px;
         line-height: 48px;
@@ -23,6 +28,7 @@ table.table {
         padding: 0;
         img {
             height: 48px;
+            max-height: 48px;
         }
         span {
             display: inline-block;

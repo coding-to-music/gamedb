@@ -112,7 +112,7 @@ func (p Player) GetFlag() string {
 	return "/assets/img/flags/" + strings.ToLower(p.CountryCode) + ".png"
 }
 
-func (p Player) GetGames() (x []steam.OwnedGame) {
+func (p Player) GetGames() (games []steam.OwnedGame) {
 
 	var bytes []byte
 	var err error
@@ -126,21 +126,21 @@ func (p Player) GetGames() (x []steam.OwnedGame) {
 		bytes = []byte(p.Games)
 	}
 
-	err = json.Unmarshal(bytes, &x)
-	if err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		} else {
-			logger.Error(err)
+	if len(bytes) > 0 {
+		err = json.Unmarshal(bytes, &games)
+		if err != nil {
+			if strings.Contains(err.Error(), "cannot unmarshal") {
+				logger.Info(err.Error() + " - " + string(bytes))
+			} else {
+				logger.Error(err)
+			}
 		}
 	}
 
-	return x
+	return games
 }
 
 func (p Player) shouldUpdate() bool {
-
-	return true
 
 	if p.PersonaName == "" {
 		return true
@@ -153,13 +153,14 @@ func (p Player) shouldUpdate() bool {
 	return false
 }
 
-func isValidPlayerID(id int) bool {
+// todo, improve this..
+func IsValidPlayerID(id int) bool {
 
-	if id == 0 {
+	if id < 10000000000000000 {
 		return false
 	}
 
-	if id < 10000000000000000 {
+	if len(strconv.Itoa(id)) != 17 {
 		return false
 	}
 
@@ -180,7 +181,7 @@ func (p Player) GetTimeLong() (ret string) {
 
 func GetPlayer(id int) (ret *Player, err error) {
 
-	if !isValidPlayerID(id) {
+	if !IsValidPlayerID(id) {
 		return ret, ErrInvalidID
 	}
 
@@ -291,7 +292,7 @@ func CountPlayers() (count int, err error) {
 
 func (p *Player) UpdateIfNeeded() (errs []error) {
 
-	if !isValidPlayerID(p.PlayerID) {
+	if !IsValidPlayerID(p.PlayerID) {
 		return []error{ErrInvalidID}
 	}
 
@@ -496,7 +497,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 func (p *Player) Save() (err error) {
 
-	if !isValidPlayerID(p.PlayerID) {
+	if !IsValidPlayerID(p.PlayerID) {
 		return ErrInvalidID
 	}
 

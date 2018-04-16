@@ -18,7 +18,7 @@ func main() {
 	// Rollbar
 	rollbar.SetToken(os.Getenv("STEAM_ROLLBAR_PRIVATE"))
 	rollbar.SetEnvironment(os.Getenv("ENV"))                            // defaults to "development"
-	rollbar.SetCodeVersion("dev-master")                                // optional Git hash/branch/tag (required for GitHub integration)
+	rollbar.SetCodeVersion("master")                                    // optional Git hash/branch/tag (required for GitHub integration)
 	rollbar.SetServerRoot("github.com/steam-authority/steam-authority") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 
 	// Env vars

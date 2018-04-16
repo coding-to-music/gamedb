@@ -28,8 +28,12 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
-		logger.Error(err)
-		returnErrorTemplate(w, r, 404, err.Error())
+		returnErrorTemplate(w, r, 404, "Invalid Player ID: "+id)
+		return
+	}
+
+	if !datastore.IsValidPlayerID(idx) {
+		returnErrorTemplate(w, r, 404, "Invalid Player ID: "+id)
 		return
 	}
 

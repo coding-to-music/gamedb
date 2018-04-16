@@ -68,7 +68,7 @@
                                         </tr>
                                         <tr>
                                             <th scope="row" nowrap="nowrap">Country</th>
-                                            <td><img class="rounded" data-toggle="tooltip" data-placement="top" title="{{ .Player.CountryCode }}" src="{{.Player.GetFlag}}" style="height: 21px;"></td>
+                                            <td><img class="rounded" data-toggle="tooltip" data-placement="top" title="{{ .Player.CountryCode }}" src="{{.Player.GetFlag}}"></td>
                                         </tr>
                                         <tr>
                                             <th scope="row" nowrap="nowrap">State</th>
@@ -93,35 +93,35 @@
                                             <th scope="row">Level</th>
                                             <td>
                                                 <a href="/players/level">{{ .Ranks.GetLevel }}</a>
-                                                <small>{{ .Ranks.GetLevelPercent }}</small>
+                                                <small>Top {{ .Ranks.GetLevelPercent }}</small>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Games</th>
                                             <td>
                                                 <a href="/players/games">{{ .Ranks.GetGames }}</a>
-                                                <small>{{ .Ranks.GetGamesPercent }}</small>
+                                                <small>Top {{ .Ranks.GetGamesPercent }}</small>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Badges</th>
                                             <td>
                                                 <a href="/players/badges">{{ .Ranks.GetBadges }}</a>
-                                                <small>{{ .Ranks.GetBadgesPercent }}</small>
+                                                <small>Top {{ .Ranks.GetBadgesPercent }}</small>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Time</th>
                                             <td>
                                                 <a href="/players/time">{{ .Ranks.GetTime }}</a>
-                                                <small>{{ .Ranks.GetTimePercent }}</small>
+                                                <small>Top {{ .Ranks.GetTimePercent }}</small>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Friends</th>
                                             <td>
                                                 <a href="/players/friends">{{ .Ranks.GetFriends }}</a>
-                                                <small>{{ .Ranks.GetFriendsPercent }}</small>
+                                                <small>Top {{ .Ranks.GetFriendsPercent }}</small>
                                             </td>
                                         </tr>
                                     </table>
@@ -256,7 +256,7 @@
                                 <td data-order="{{.GetTimeUnix}}" nowrap="nowrap">{{ .GetTimeNice }}</td>
                                 <td>{{ comma .XP }}</td>
                                 <td>{{ comma .Scarcity }}</td>
-                                <td>{{if ne .AppID 0}}<a href="/games/{{ .AppID }}">{{ .AppID }}</a>{{end}}</td>
+                                <td>{{if ne .AppID 0}}<a href="/games/{{ .AppID }}">{{ comma .AppID }}</a>{{end}}</td>
                             </tr>
                         {{ end }}
                         </table>
