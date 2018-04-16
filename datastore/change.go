@@ -53,7 +53,7 @@ func GetLatestChanges(limit int, page int) (changes []Change, err error) {
 	return changes, err
 }
 
-func GetChange(id string) (change *Change, err error) {
+func GetChange(id string) (change Change, err error) {
 
 	client, context, err := getClient()
 	if err != nil {
@@ -62,8 +62,8 @@ func GetChange(id string) (change *Change, err error) {
 
 	key := datastore.NameKey(KindChange, id, nil)
 
-	change = new(Change)
-	err = client.Get(context, key, change)
+	change = Change{}
+	err = client.Get(context, key, &change)
 	if err != nil {
 		return change, err
 	}

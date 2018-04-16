@@ -47,6 +47,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, 303)
 	return
 }
+
 func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// todo, get session data from db not steam
