@@ -13,9 +13,6 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
-// todo
-// http://store.steampowered.com/api/dlcforapp?appid=440
-
 func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 
 	idx := strconv.Itoa(id)

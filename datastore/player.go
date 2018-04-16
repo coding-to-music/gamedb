@@ -155,6 +155,10 @@ func (p Player) shouldUpdate() bool {
 
 func isValidPlayerID(id int) bool {
 
+	if id == 0 {
+		return false
+	}
+
 	if id < 10000000000000000 {
 		return false
 	}
@@ -492,8 +496,8 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 func (p *Player) Save() (err error) {
 
-	if p.PlayerID == 0 {
-		logger.Info("Saving player with ID 0")
+	if !isValidPlayerID(p.PlayerID) {
+		return ErrInvalidID
 	}
 
 	_, err = SaveKind(p.GetKey(), p)

@@ -10,18 +10,24 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func CommitsHandler(w http.ResponseWriter, r *http.Request) {
+var (
+	githubContext = context.Background()
+	githubClient  *github.Client
+)
 
-	ctx := context.Background()
+func init() {
+
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{
 			AccessToken: os.Getenv("STEAM_GITHUB_TOKEN")},
 	)
 
-	// todo, should we re-use these clients?
-	tc := oauth2.NewClient(ctx, ts)
+	tc := oauth2.NewClient(githubContext, ts)
 
-	client := github.NewClient(tc)
+	githubClient = github.NewClient(tc)
+}
+
+func CommitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	options := github.CommitsListOptions{
 		ListOptions: github.ListOptions{
@@ -30,10 +36,10 @@ func CommitsHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	commits, _, err := client.Repositories.ListCommits(ctx, "steam-authority", "steam-authority", &options)
+	commits, _, err := githubClient.Repositories.ListCommits(githubContext, "steam-authority", "steam-authority", &options)
 	if err != nil {
 		logger.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, 500, "Can't connect to GitHub")
 		return
 	}
 

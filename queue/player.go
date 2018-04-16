@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
@@ -50,5 +51,6 @@ func processPlayer(msg amqp.Delivery) (err error) {
 }
 
 type PlayerMessage struct {
+	Time     time.Time
 	PlayerID int
 }

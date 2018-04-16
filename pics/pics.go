@@ -42,6 +42,7 @@ func Run() {
 			bytes, _ := json.Marshal(queue.AppMessage{
 				AppID:    appID,
 				ChangeID: v,
+				Time:     time.Now(),
 			})
 
 			queue.Produce(queue.AppQueue, bytes)
@@ -52,6 +53,7 @@ func Run() {
 			bytes, _ := json.Marshal(queue.PackageMessage{
 				PackageID: packageID,
 				ChangeID:  v,
+				Time:      time.Now(),
 			})
 
 			queue.Produce(queue.PackageQueue, bytes)

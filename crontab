@@ -3,9 +3,9 @@
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-0 0  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-ranks.sh
-0 1  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-tags.sh
-0 2  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-genres.sh
-0 3  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-donations.sh
-0 4  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-developers.sh
-0 5  * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-publishers.sh
+0 0 * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-ranks.sh
+0 1 * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-tags.sh
+0 2 * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-genres.sh
+0 3 * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-donations.sh
+0 4 * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-developers.sh
+0 5 * * * root ~/go/src/github.com/steam-authority/steam-authority/cmd/action-publishers.sh

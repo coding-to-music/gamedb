@@ -76,6 +76,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 				vv, _ := strconv.Atoi(v.SteamID)
 				p, _ := json.Marshal(queue.PlayerMessage{
 					PlayerID: vv,
+					Time:     time.Now(),
 				})
 				queue.Produce(queue.PlayerQueue, p)
 			}

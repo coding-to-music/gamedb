@@ -33,12 +33,12 @@ func processApp(msg amqp.Delivery) (err error) {
 	}
 
 	// Update app
-	app := new(mysql.App)
-
 	db, err := mysql.GetDB()
 	if err != nil {
 		logger.Error(err)
 	}
+
+	app := new(mysql.App)
 
 	db.Attrs(mysql.GetDefaultAppJSON()).FirstOrCreate(app, mysql.App{ID: message.AppID})
 
@@ -92,6 +92,7 @@ func processApp(msg amqp.Delivery) (err error) {
 }
 
 type AppMessage struct {
+	Time     time.Time
 	AppID    int
 	ChangeID int
 }

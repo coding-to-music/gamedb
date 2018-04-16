@@ -76,6 +76,7 @@ func processPackage(msg amqp.Delivery) (err error) {
 }
 
 type PackageMessage struct {
+	Time      time.Time
 	PackageID int
 	ChangeID  int
 }

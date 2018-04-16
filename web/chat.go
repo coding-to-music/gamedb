@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-chi/chi"
@@ -57,35 +58,55 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		id = generalChannelID
 	}
 
+	//
+	var wg sync.WaitGroup
+
 	// Get channels
-	channelsResponse, err := discordSession.GuildChannels(guildID)
-	if err != nil {
-		logger.Error(err)
-	}
+	var channels []*discordgo.Channel
+	wg.Add(1)
+	go func() {
 
-	channels := make([]*discordgo.Channel, 0)
-	for _, v := range channelsResponse {
-		if v.Type == discordgo.ChannelTypeGuildText {
-
-			// Fix channel name
-			v.Name = strings.Title(strings.Replace(v.Name, "-", " ", 1))
-
-			channels = append(channels, v)
+		channelsResponse, err := discordSession.GuildChannels(guildID)
+		if err != nil {
+			logger.Error(err)
 		}
-	}
+
+		for _, v := range channelsResponse {
+			if v.Type == discordgo.ChannelTypeGuildText {
+
+				// Fix channel name
+				v.Name = strings.Title(strings.Replace(v.Name, "-", " ", 1))
+
+				channels = append(channels, v)
+			}
+		}
+
+		wg.Done()
+
+	}()
 
 	// Get messages
-	messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
-	if err != nil {
-		logger.Error(err)
-	}
+	var messages []*discordgo.Message
+	wg.Add(1)
+	go func() {
 
-	messages := make([]*discordgo.Message, 0)
-	for _, v := range messagesResponse {
-		if !v.Author.Bot {
-			messages = append(messages, v)
+		messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
+		if err != nil {
+			logger.Error(err)
 		}
-	}
+
+		for _, v := range messagesResponse {
+			if !v.Author.Bot {
+				messages = append(messages, v)
+			}
+		}
+
+		wg.Done()
+
+	}()
+
+	// Wait
+	wg.Wait()
 
 	// Template
 	template := chatTemplate{}

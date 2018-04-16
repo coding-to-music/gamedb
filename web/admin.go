@@ -18,6 +18,17 @@ import (
 	"github.com/steam-authority/steam-authority/steam"
 )
 
+const (
+	ConfTagsUpdated       = "tags-updated"
+	ConfPublishersUpdated = "publishers-updated"
+	ConfDevelopersUpdated = "developers-updated"
+	ConfRanksUpdated      = "ranks-updated"
+	ConfGenresUpdated     = "genres-updated"
+	ConfDonationsUpdated  = "donations-updated"
+	ConfDeployed          = "deployed"
+	ConfAddedAllApps      = "added-all-apps"
+)
+
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	option := chi.URLParam(r, "option")
@@ -53,15 +64,15 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get configs for times
-	configs, err := datastore.GetMultiConfigs([]string{
-		datastore.ConfTagsUpdated,
-		datastore.ConfGenresUpdated,
-		datastore.ConfGenresUpdated,
-		datastore.ConfDonationsUpdated,
-		datastore.ConfRanksUpdated,
-		datastore.ConfAddedAllApps,
-		datastore.ConfDevelopersUpdated,
-		datastore.ConfPublishersUpdated,
+	configs, err := mysql.GetConfigs([]string{
+		ConfTagsUpdated,
+		ConfGenresUpdated,
+		ConfGenresUpdated,
+		ConfDonationsUpdated,
+		ConfRanksUpdated,
+		ConfAddedAllApps,
+		ConfDevelopersUpdated,
+		ConfPublishersUpdated,
 	})
 	if err != nil {
 		logger.Error(err)
@@ -79,7 +90,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 type adminTemplate struct {
 	GlobalTemplate
 	Errors  []string
-	Configs map[string]datastore.Config
+	Configs map[string]mysql.Config
 }
 
 func adminDisableConsumers() {
@@ -99,13 +110,14 @@ func adminApps() {
 		bytes, _ := json.Marshal(queue.AppMessage{
 			AppID:    v.AppID,
 			ChangeID: 0,
+			Time:     time.Now(),
 		})
 
 		queue.Produce(queue.AppQueue, bytes)
 	}
 
 	//
-	err = datastore.SetConfig(datastore.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
 	if err != nil {
 		logger.Error(err)
 	}
@@ -116,7 +128,7 @@ func adminApps() {
 func adminDeploy() {
 
 	//
-	err := datastore.SetConfig(datastore.ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
+	err := mysql.SetConfig(ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
 	if err != nil {
 		logger.Error(err)
 	}
@@ -154,7 +166,7 @@ func adminDonations() {
 	}
 
 	//
-	err = datastore.SetConfig(datastore.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
 	if err != nil {
 		logger.Error(err)
 	}
@@ -245,7 +257,7 @@ func adminGenres() {
 	wg.Wait()
 
 	//
-	err = datastore.SetConfig(datastore.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
 	if err != nil {
 		logger.Error(err)
 	}
@@ -266,6 +278,7 @@ func adminQueues(r *http.Request) {
 		appID, _ := strconv.Atoi(val)
 		bytes, _ := json.Marshal(queue.AppMessage{
 			AppID: appID,
+			Time:  time.Now(),
 		})
 		queue.Produce(queue.AppQueue, bytes)
 	}
@@ -276,6 +289,7 @@ func adminQueues(r *http.Request) {
 		playerID, _ := strconv.Atoi(val)
 		bytes, _ := json.Marshal(queue.PlayerMessage{
 			PlayerID: playerID,
+			Time:     time.Now(),
 		})
 		queue.Produce(queue.PlayerQueue, bytes)
 	}
@@ -286,6 +300,7 @@ func adminQueues(r *http.Request) {
 		appID, _ := strconv.Atoi(val)
 		bytes, _ := json.Marshal(queue.AppMessage{
 			AppID: appID,
+			Time:  time.Now(),
 		})
 		queue.Produce(queue.AppQueue, bytes)
 	}
@@ -296,6 +311,7 @@ func adminQueues(r *http.Request) {
 		packageID, _ := strconv.Atoi(val)
 		bytes, _ := json.Marshal(queue.PackageMessage{
 			PackageID: packageID,
+			Time:      time.Now(),
 		})
 		queue.Produce(queue.PackageQueue, bytes)
 	}
@@ -396,7 +412,7 @@ func adminPublishers() {
 
 	wg.Wait()
 
-	err = datastore.SetConfig(datastore.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
 	if err != nil {
 		logger.Error(err)
 	}
@@ -495,7 +511,7 @@ func adminDevelopers() {
 	}
 	wg.Wait()
 
-	err = datastore.SetConfig(datastore.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
 	if err != nil {
 		logger.Error(err)
 	}
@@ -619,7 +635,7 @@ func adminTags() {
 	}
 	wg.Wait()
 
-	err = datastore.SetConfig(datastore.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
 	if err != nil {
 		logger.Error(err)
 	}
@@ -772,7 +788,7 @@ func adminRanks() {
 	}
 
 	//
-	err = datastore.SetConfig(datastore.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
 	if err != nil {
 		logger.Error(err)
 	}

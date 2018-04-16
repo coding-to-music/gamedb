@@ -43,7 +43,6 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make a map of all games the players have
 	var allGames = map[int]int{}
-	var gamesSlice []int
 	var gamesSlices [][]int
 	var wg sync.WaitGroup
 
@@ -51,20 +50,20 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		player := players[i]
 
 		wg.Add(1)
-		// todo, use go
-		func(player datastore.Player) {
-			gamesSlice = []int{}
+		go func(player datastore.Player) {
 
+			var x []int
 			for _, vv := range player.GetGames() {
 				allGames[vv.AppID] = vv.AppID
-				gamesSlice = append(gamesSlice, vv.AppID)
+				x = append(x, vv.AppID)
 			}
-
-			gamesSlices = append(gamesSlices, gamesSlice)
+			gamesSlices = append(gamesSlices, x)
 
 			wg.Done()
 		}(player)
 	}
+
+	// Wait
 	wg.Wait()
 
 	// Remove apps that are not in a users apps
@@ -88,7 +87,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert to slice
-	gamesSlice = []int{}
+	var gamesSlice []int
 	for _, v := range allGames {
 		gamesSlice = append(gamesSlice, v)
 	}

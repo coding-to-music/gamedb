@@ -46,6 +46,7 @@ func RunConsumers() {
 	}
 }
 
+// todo, use interface so we can set the payload time in here?
 func Produce(queue string, data []byte) (err error) {
 
 	if val, ok := queues[queue]; ok {
