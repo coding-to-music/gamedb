@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"encoding/json"
+	"errors"
 	"path"
 	"strconv"
 	"strings"
@@ -14,6 +15,10 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 	"github.com/steam-authority/steam-authority/storage"
+)
+
+var (
+	ErrInvalidID = errors.New("invalid id")
 )
 
 var (
@@ -148,6 +153,15 @@ func (p Player) shouldUpdate() bool {
 	return false
 }
 
+func isValidPlayerID(id int) bool {
+
+	if id < 10000000000000000 {
+		return false
+	}
+
+	return true
+}
+
 func (p Player) ShouldUpdateFriends() bool {
 	return p.FriendsAddedAt.Unix() < (time.Now().Unix() - int64(60*60*24*30))
 }
@@ -161,6 +175,10 @@ func (p Player) GetTimeLong() (ret string) {
 }
 
 func GetPlayer(id int) (ret *Player, err error) {
+
+	if !isValidPlayerID(id) {
+		return ret, ErrInvalidID
+	}
 
 	client, ctx, err := getClient()
 	if err != nil {
@@ -268,6 +286,10 @@ func CountPlayers() (count int, err error) {
 }
 
 func (p *Player) UpdateIfNeeded() (errs []error) {
+
+	if !isValidPlayerID(p.PlayerID) {
+		return []error{ErrInvalidID}
+	}
 
 	if p.shouldUpdate() {
 
