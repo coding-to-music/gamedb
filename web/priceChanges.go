@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	PriceChangeLimit = 100
+	priceChangeLimit = 100
 )
 
 func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,7 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		changes, err = datastore.GetLatestPrices(PriceChangeLimit, page)
+		changes, err = datastore.GetLatestPrices(priceChangeLimit, page)
 		if err != nil {
 			logger.Error(err)
 			returnErrorTemplate(w, r, 500, err.Error())
@@ -64,7 +64,7 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	template.Pagination = Pagination{
 		path:  "/price-changes?p=",
 		page:  page,
-		limit: PriceChangeLimit,
+		limit: priceChangeLimit,
 		total: total,
 	}
 

@@ -13,39 +13,48 @@ import (
 	"github.com/steam-authority/steam-authority/steam"
 )
 
+const (
+	ranksLimit = 100
+)
+
 func RanksHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Normalise the order
+	// Get page number
+	page, err := strconv.Atoi(r.URL.Query().Get("p"))
+	if err != nil {
+		page = 1
+	}
+
+	//
 	var ranks []datastore.Rank
-	var err error
 
 	switch chi.URLParam(r, "id") {
 	case "badges":
-		ranks, err = datastore.GetRanksBy("badges_rank")
+		ranks, err = datastore.GetRanksBy("badges_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].BadgesRank)
 		}
 	case "friends":
-		ranks, err = datastore.GetRanksBy("friends_rank")
+		ranks, err = datastore.GetRanksBy("friends_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].FriendsRank)
 		}
 	case "games":
-		ranks, err = datastore.GetRanksBy("games_rank")
+		ranks, err = datastore.GetRanksBy("games_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].GamesRank)
 		}
 	case "level", "":
-		ranks, err = datastore.GetRanksBy("level_rank")
+		ranks, err = datastore.GetRanksBy("level_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].LevelRank)
 		}
 	case "time":
-		ranks, err = datastore.GetRanksBy("play_time_rank")
+		ranks, err = datastore.GetRanksBy("play_time_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].PlayTimeRank)
@@ -77,6 +86,12 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 	template.Ranks = ranks
 	template.PlayersCount = playersCount
 	template.RanksCount = ranksCount
+	template.Pagination = Pagination{
+		path:  "/players?p=",
+		page:  page,
+		limit: ranksLimit,
+		total: ranksCount,
+	}
 
 	returnTemplate(w, r, "ranks", template)
 	return
@@ -87,6 +102,7 @@ type playersTemplate struct {
 	Ranks        []datastore.Rank
 	PlayersCount int
 	RanksCount   int
+	Pagination   Pagination
 }
 
 func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {

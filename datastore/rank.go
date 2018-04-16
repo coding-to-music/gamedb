@@ -95,14 +95,16 @@ func GetRank(playerID int) (rank *Rank, err error) {
 	return rank, err
 }
 
-func GetRanksBy(order string) (ranks []Rank, err error) {
+func GetRanksBy(order string, limit int, page int) (ranks []Rank, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {
 		return ranks, err
 	}
 
-	q := datastore.NewQuery(KindRank).Order(order).Limit(1000)
+	offset := (page - 1) * limit
+
+	q := datastore.NewQuery(KindRank).Order(order).Limit(limit).Offset(offset)
 
 	client.GetAll(ctx, q, &ranks)
 
