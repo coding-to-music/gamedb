@@ -409,7 +409,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 			friends, err := steam.GetFriendList(p.PlayerID)
 			if err != nil {
-				if err.Error() == steam.ErrInvalidJson {
+				if err.Error() == steam.ErrInvalidJson || err == steam.ErrNoUserFound {
 					errs = append(errs, err)
 				} else {
 					logger.Error(err)
