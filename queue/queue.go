@@ -2,9 +2,7 @@ package queue
 
 import (
 	"errors"
-	"fmt"
 	"os"
-	"time"
 
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/streadway/amqp"
@@ -58,7 +56,7 @@ func Produce(queue string, data []byte) (err error) {
 
 type queue struct {
 	Name     string
-	Callback func(msg amqp.Delivery) (err error)
+	Callback func(msg amqp.Delivery)
 }
 
 func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.Queue, closeChannel chan *amqp.Error, err error) {
@@ -107,29 +105,26 @@ func (s queue) consume() {
 	var breakFor = false
 
 	for {
-		fmt.Println("Getting " + s.Name + " messages")
-
 		conn, ch, q, closeChan, err := s.getConnection()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
 
 		msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		for {
 			select {
 			case err = <-closeChan:
-				//logger.Info("change channel closed")
 				breakFor = true
 				break
 
 			case msg := <-msgs:
-				err := s.Callback(msg)
-				if err != nil {
-					logger.Error(err)
-					breakFor = true
-					break
-				}
+				s.Callback(msg)
 			}
 
 			if breakFor {
@@ -139,7 +134,5 @@ func (s queue) consume() {
 
 		conn.Close()
 		ch.Close()
-
-		time.Sleep(time.Second * 10)
 	}
 }

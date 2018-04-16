@@ -8,22 +8,23 @@ import (
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
+	"github.com/steam-authority/steam-authority/steam"
 	"github.com/streadway/amqp"
 )
 
-func processPackage(msg amqp.Delivery) (err error) {
+func processPackage(msg amqp.Delivery) {
 
 	// Get message
 	message := new(PackageMessage)
 
-	err = json.Unmarshal(msg.Body, message)
+	err := json.Unmarshal(msg.Body, message)
 	if err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			logger.Info(err.Error() + " - " + string(msg.Body))
 		}
 
 		msg.Nack(false, false)
-		return nil
+		return
 	}
 
 	// Update package
@@ -42,8 +43,30 @@ func processPackage(msg amqp.Delivery) (err error) {
 
 	priceBeforeFill := pack.PriceFinal
 
-	// Move all the stuff in here to queue?
-	pack.Fill()
+	errs := pack.Update()
+	if len(errs) > 0 {
+
+		for _, v := range errs {
+			logger.Error(v)
+		}
+
+		// API is probably down
+		for _, v := range errs {
+			if v.Error() == steam.ErrInvalidJson {
+				time.Sleep(time.Second * 10)
+				msg.Nack(false, true)
+				return
+			}
+		}
+
+		for _, v := range errs {
+			if strings.HasSuffix(v.Error(), "connect: connection refused") {
+				time.Sleep(time.Second * 10)
+				msg.Nack(false, true)
+				return
+			}
+		}
+	}
 
 	db.Save(pack)
 	if db.Error != nil {
@@ -72,7 +95,7 @@ func processPackage(msg amqp.Delivery) (err error) {
 	}
 
 	msg.Ack(false)
-	return nil
+	return
 }
 
 type PackageMessage struct {

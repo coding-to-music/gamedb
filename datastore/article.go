@@ -66,8 +66,6 @@ func bulkAddArticles(articles []*Article) (err error) {
 		keys = append(keys, v.GetKey())
 	}
 
-	// fmt.Println("Saving " + strconv.Itoa(articlesLen) + " articles")
-
 	_, err = client.PutMulti(context, keys, articles)
 	if err != nil {
 		return err

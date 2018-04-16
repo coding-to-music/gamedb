@@ -26,18 +26,18 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	var pricesCount int
-	wg.Add(1)
-	go func() {
-
-		pricesCount, err = datastore.CountPrices()
-		if err != nil {
-			logger.Error(err)
-		}
-
-		wg.Done()
-
-	}()
+	//var pricesCount int
+	//wg.Add(1)
+	//go func() {
+	//
+	//	pricesCount, err = datastore.CountPrices()
+	//	if err != nil {
+	//		logger.Error(err)
+	//	}
+	//
+	//	wg.Done()
+	//
+	//}()
 
 	var ranksCount int
 	wg.Add(1)
@@ -58,7 +58,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	template.Fill(r, "Home")
 
 	template.PlayersCount = playersCount
-	template.PricesCount = pricesCount
+	//template.PricesCount = pricesCount
 	template.RanksCount = ranksCount
 
 	returnTemplate(w, r, "home", template)

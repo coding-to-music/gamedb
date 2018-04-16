@@ -12,19 +12,19 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processChange(msg amqp.Delivery) (err error) {
+func processChange(msg amqp.Delivery) {
 
 	// Get change
 	change := new(datastore.Change)
 
-	err = json.Unmarshal(msg.Body, change)
+	err := json.Unmarshal(msg.Body, change)
 	if err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			logger.Info(err.Error() + " - " + string(msg.Body))
 		}
 
 		msg.Nack(false, false)
-		return nil
+		return
 	}
 
 	// Save change to DS
@@ -75,7 +75,7 @@ func processChange(msg amqp.Delivery) (err error) {
 	}
 
 	msg.Ack(false)
-	return nil
+	return
 }
 
 type changeWebsocketPayload struct {

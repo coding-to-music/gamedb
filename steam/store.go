@@ -13,6 +13,11 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
+var (
+	ErrGhostApp     = errors.New("no app with id in steam")
+	ErrInvalidAppID = errors.New("invalid app id")
+)
+
 func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 
 	idx := strconv.Itoa(id)
@@ -36,7 +41,7 @@ func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 
 	// Check for no app
 	if string(contents) == "null" {
-		return app, errors.New("invalid app id: " + strconv.Itoa(id))
+		return app, ErrInvalidAppID
 	}
 
 	// Fix values that can change type, causing unmarshal errors
@@ -89,7 +94,7 @@ func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 	}
 
 	if resp[idx].Success == false {
-		return app, errors.New("no app with id in steam")
+		return app, ErrGhostApp
 	}
 
 	return resp[idx], nil
@@ -246,7 +251,7 @@ func GetPackageDetailsFromStore(id int) (pack PackageDetailsBody, err error) {
 
 	// Check for no pack
 	if string(contents) == "null" {
-		return pack, errors.New("invalid package id: " + strconv.Itoa(id))
+		return pack, ErrInvalidAppID
 	}
 
 	// Unmarshal JSON
@@ -259,7 +264,7 @@ func GetPackageDetailsFromStore(id int) (pack PackageDetailsBody, err error) {
 	}
 
 	if resp[idx].Success == false {
-		return pack, errors.New("no package with id in steam")
+		return pack, ErrGhostApp
 	}
 
 	return resp[idx], nil

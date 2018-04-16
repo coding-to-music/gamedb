@@ -298,9 +298,8 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 
 	if p.shouldUpdate() {
 
-		var wg sync.WaitGroup
-		var errs []error
 		var err error
+		var wg sync.WaitGroup
 
 		// Get summary
 		wg.Add(1)
@@ -478,6 +477,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 			wg.Done()
 		}(p)
 
+		// Wait
 		wg.Wait()
 
 		// Fix dates
@@ -492,7 +492,7 @@ func (p *Player) UpdateIfNeeded() (errs []error) {
 		}
 	}
 
-	return
+	return errs
 }
 
 func (p *Player) Save() (err error) {

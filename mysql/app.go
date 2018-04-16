@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gosimple/slug"
@@ -492,47 +493,234 @@ func CountApps() (count int, err error) {
 	return count, nil
 }
 
-func (app *App) Fill() (err error) {
+func (app *App) Update() (errs []error) {
 
-	// Get app details
-	err = app.fillFromAPI()
-	if err != nil {
-		return err
-	}
+	var wg sync.WaitGroup
 
-	// PICS
-	err = app.fillFromPICS()
-	if err != nil {
-		if err.Error() != "no app key in json" {
-			return err
+	// Get details from store API
+	wg.Add(1)
+	go func(app *App) {
+
+		response, err := steam.GetAppDetailsFromStore(app.ID)
+		if err != nil {
+
+			if err == steam.ErrGhostApp {
+				app.Ghost = true
+			}
+
+			if err == steam.ErrInvalidAppID {
+				errs = append(errs, err)
+			}
 		}
-	}
+
+		// Screenshots
+		screenshotsString, err := json.Marshal(response.Data.Screenshots)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Movies
+		moviesString, err := json.Marshal(response.Data.Movies)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Achievements
+		achievementsString, err := json.Marshal(response.Data.Achievements)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// DLC
+		dlcString, err := json.Marshal(response.Data.DLC)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Packages
+		packagesString, err := json.Marshal(response.Data.Packages)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Publishers
+		publishersString, err := json.Marshal(response.Data.Publishers)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Developers
+		developersString, err := json.Marshal(response.Data.Developers)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Categories
+		var categories []int8
+		for _, v := range response.Data.Categories {
+			categories = append(categories, v.ID)
+		}
+
+		categoriesString, err := json.Marshal(categories)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		genresString, err := json.Marshal(response.Data.Genres)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Platforms
+		var platforms []string
+		if response.Data.Platforms.Linux {
+			platforms = append(platforms, "linux")
+		}
+		if response.Data.Platforms.Windows {
+			platforms = append(platforms, "windows")
+		}
+		if response.Data.Platforms.Windows {
+			platforms = append(platforms, "macos")
+		}
+
+		platformsString, err := json.Marshal(platforms)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Other
+		app.Name = response.Data.Name
+		app.Type = response.Data.Type
+		app.IsFree = response.Data.IsFree
+		app.DLC = string(dlcString)
+		app.ShortDescription = response.Data.ShortDescription
+		app.HeaderImage = response.Data.HeaderImage
+		app.Developers = string(developersString)
+		app.Publishers = string(publishersString)
+		app.Packages = string(packagesString)
+		app.MetacriticScore = response.Data.Metacritic.Score
+		app.MetacriticURL = response.Data.Metacritic.URL
+		app.Categories = string(categoriesString)
+		app.Genres = string(genresString)
+		app.Screenshots = string(screenshotsString)
+		app.Movies = string(moviesString)
+		app.Achievements = string(achievementsString)
+		app.Background = response.Data.Background
+		app.Platforms = string(platformsString)
+		app.GameID = response.Data.Fullgame.AppID
+		app.GameName = response.Data.Fullgame.Name
+		app.ReleaseDate = response.Data.ReleaseDate.Date
+		app.ComingSoon = response.Data.ReleaseDate.ComingSoon
+		app.PriceInitial = response.Data.PriceOverview.Initial
+		app.PriceFinal = response.Data.PriceOverview.Final
+		app.PriceDiscount = response.Data.PriceOverview.DiscountPercent
+
+		wg.Done()
+	}(app)
+
+	// Get summary
+	wg.Add(1)
+	go func(app *App) {
+
+		response, err := steam.GetPICSInfo([]int{app.ID}, []int{})
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		var js steam.JsApp
+		if len(response.Apps) > 0 {
+			js = response.Apps[strconv.Itoa(app.ID)]
+		} else {
+			errs = append(errs, errors.New("no app key in json"))
+		}
+
+		// Check if empty
+		app.Ghost = reflect.DeepEqual(js.Common, steam.JsAppCommon{})
+
+		// Tags, convert map to slice
+		var tagsSlice []int
+		for _, v := range js.Common.StoreTags {
+			vv, _ := strconv.Atoi(v)
+			tagsSlice = append(tagsSlice, vv)
+		}
+
+		tags, err := json.Marshal(tagsSlice)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Meta critic
+		var metacriticScoreInt = 0
+		if js.Common.MetacriticScore != "" {
+			metacriticScoreInt, _ = strconv.Atoi(js.Common.MetacriticScore)
+		}
+
+		// Extended
+		extended, err := json.Marshal(js.Extended)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		//
+		app.Name = js.Common.Name
+		app.Type = js.Common.Type
+		app.ReleaseState = js.Common.ReleaseState
+		// app.Platforms = strings.Split(js.Common.OSList, ",") // Can get from API
+		app.MetacriticScore = int8(metacriticScoreInt)
+		app.MetacriticURL = js.Common.MetacriticURL
+		app.StoreTags = string(tags)
+		// app.Developers = js.Extended.Developer // Store API can handle multiple values
+		// app.Publishers = js.Extended.Publisher // Store API can handle multiple values
+		app.Homepage = js.Extended.Homepage
+		app.ChangeNumber = js.ChangeNumber
+		app.Logo = js.Common.Logo
+		app.Icon = js.Common.Icon
+		app.ClientIcon = js.Common.ClientIcon
+		app.Extended = string(extended)
+
+		wg.Done()
+	}(app)
 
 	// Achievement percentages
-	percentages, err := steam.GetGlobalAchievementPercentagesForApp(app.ID)
-	if err != nil {
-		logger.Error(err)
-	}
+	wg.Add(1)
+	go func(app *App) {
 
-	percentagesString, err := json.Marshal(percentages)
-	if err != nil {
-		logger.Error(err)
-	}
+		percentages, err := steam.GetGlobalAchievementPercentagesForApp(app.ID)
+		if err != nil {
+			logger.Error(err)
+		}
 
-	app.AchievementPercentages = string(percentagesString)
+		percentagesString, err := json.Marshal(percentages)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		app.AchievementPercentages = string(percentagesString)
+
+		wg.Done()
+	}(app)
 
 	// Schema
-	schema, err := steam.GetSchemaForGame(app.ID)
-	if err != nil {
-		logger.Error(err)
-	}
+	wg.Add(1)
+	go func(app *App) {
 
-	schemaString, err := json.Marshal(schema)
-	if err != nil {
-		logger.Error(err)
-	}
+		schema, err := steam.GetSchemaForGame(app.ID)
+		if err != nil {
+			logger.Error(err)
+		}
 
-	app.Schema = string(schemaString)
+		schemaString, err := json.Marshal(schema)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		app.Schema = string(schemaString)
+
+		wg.Done()
+	}(app)
+
+	// Wait
+	wg.Wait()
 
 	// Tidy
 	app.Type = strings.ToLower(app.Type)
@@ -595,186 +783,5 @@ func (app *App) Fill() (err error) {
 		app.Extended = "{}"
 	}
 
-	return nil
-}
-
-func (app *App) fillFromAPI() (err error) {
-
-	// Get data
-	response, err := steam.GetAppDetailsFromStore(app.ID)
-	if err != nil {
-
-		// Not all apps can be found
-		if err.Error() == "no app with id in steam" || strings.HasPrefix(err.Error(), "invalid app id:") {
-			return nil
-		}
-
-		return err
-	}
-
-	// Screenshots
-	screenshotsString, err := json.Marshal(response.Data.Screenshots)
-	if err != nil {
-		return err
-	}
-
-	// Movies
-	moviesString, err := json.Marshal(response.Data.Movies)
-	if err != nil {
-		return err
-	}
-
-	// Achievements
-	achievementsString, err := json.Marshal(response.Data.Achievements)
-	if err != nil {
-		return err
-	}
-
-	// DLC
-	dlcString, err := json.Marshal(response.Data.DLC)
-	if err != nil {
-		return err
-	}
-
-	// Packages
-	packagesString, err := json.Marshal(response.Data.Packages)
-	if err != nil {
-		return err
-	}
-
-	// Publishers
-	publishersString, err := json.Marshal(response.Data.Publishers)
-	if err != nil {
-		return err
-	}
-
-	// Developers
-	developersString, err := json.Marshal(response.Data.Developers)
-	if err != nil {
-		return err
-	}
-
-	// Categories
-	var categories []int8
-	for _, v := range response.Data.Categories {
-		categories = append(categories, v.ID)
-	}
-
-	categoriesString, err := json.Marshal(categories)
-	if err != nil {
-		return err
-	}
-
-	genresString, err := json.Marshal(response.Data.Genres)
-	if err != nil {
-		return err
-	}
-
-	// Platforms
-	var platforms []string
-	if response.Data.Platforms.Linux {
-		platforms = append(platforms, "linux")
-	}
-	if response.Data.Platforms.Windows {
-		platforms = append(platforms, "windows")
-	}
-	if response.Data.Platforms.Windows {
-		platforms = append(platforms, "macos")
-	}
-
-	platformsString, err := json.Marshal(platforms)
-	if err != nil {
-		return err
-	}
-
-	// Other
-	app.Name = response.Data.Name
-	app.Type = response.Data.Type
-	app.IsFree = response.Data.IsFree
-	app.DLC = string(dlcString)
-	app.ShortDescription = response.Data.ShortDescription
-	app.HeaderImage = response.Data.HeaderImage
-	app.Developers = string(developersString)
-	app.Publishers = string(publishersString)
-	app.Packages = string(packagesString)
-	app.MetacriticScore = response.Data.Metacritic.Score
-	app.MetacriticURL = response.Data.Metacritic.URL
-	app.Categories = string(categoriesString)
-	app.Genres = string(genresString)
-	app.Screenshots = string(screenshotsString)
-	app.Movies = string(moviesString)
-	app.Achievements = string(achievementsString)
-	app.Background = response.Data.Background
-	app.Platforms = string(platformsString)
-	app.GameID = response.Data.Fullgame.AppID
-	app.GameName = response.Data.Fullgame.Name
-	app.ReleaseDate = response.Data.ReleaseDate.Date
-	app.ComingSoon = response.Data.ReleaseDate.ComingSoon
-	app.PriceInitial = response.Data.PriceOverview.Initial
-	app.PriceFinal = response.Data.PriceOverview.Final
-	app.PriceDiscount = response.Data.PriceOverview.DiscountPercent
-
-	return nil
-}
-
-func (app *App) fillFromPICS() (err error) {
-
-	// Call PICS
-	resp, err := steam.GetPICSInfo([]int{app.ID}, []int{})
-	if err != nil {
-		return err
-	}
-
-	var js steam.JsApp
-	if len(resp.Apps) > 0 {
-		js = resp.Apps[strconv.Itoa(app.ID)]
-	} else {
-		return errors.New("no app key in json")
-	}
-
-	// Check if empty
-	app.Ghost = reflect.DeepEqual(js.Common, steam.JsAppCommon{})
-
-	// Tags, convert map to slice
-	var tagsSlice []int
-	for _, v := range js.Common.StoreTags {
-		vv, _ := strconv.Atoi(v)
-		tagsSlice = append(tagsSlice, vv)
-	}
-
-	tags, err := json.Marshal(tagsSlice)
-	if err != nil {
-		return err
-	}
-
-	// Meta critic
-	var metacriticScoreInt = 0
-	if js.Common.MetacriticScore != "" {
-		metacriticScoreInt, _ = strconv.Atoi(js.Common.MetacriticScore)
-	}
-
-	// Extended
-	extended, err := json.Marshal(js.Extended)
-	if err != nil {
-		return err
-	}
-
-	//
-	app.Name = js.Common.Name
-	app.Type = js.Common.Type
-	app.ReleaseState = js.Common.ReleaseState
-	// app.Platforms = strings.Split(js.Common.OSList, ",") // Can get from API
-	app.MetacriticScore = int8(metacriticScoreInt)
-	app.MetacriticURL = js.Common.MetacriticURL
-	app.StoreTags = string(tags)
-	// app.Developers = js.Extended.Developer // Store API can handle multiple values
-	// app.Publishers = js.Extended.Publisher // Store API can handle multiple values
-	app.Homepage = js.Extended.Homepage
-	app.ChangeNumber = js.ChangeNumber
-	app.Logo = js.Common.Logo
-	app.Icon = js.Common.Icon
-	app.ClientIcon = js.Common.ClientIcon
-	app.Extended = string(extended)
-
-	return nil
+	return errs
 }

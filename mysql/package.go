@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gosimple/slug"
@@ -37,6 +38,7 @@ type Package struct {
 	ComingSoon      bool       `gorm:"not null;column:coming_soon"`                   //
 	ReleaseDate     string     `gorm:"not null;column:release_date"`                  //
 	Platforms       string     `gorm:"not null;column:platforms;default:'[]'"`        // JSON
+	Ghost           bool       `gorm:"not null;column:is_ghost;type:tinyint(1)"`      //
 }
 
 func GetDefaultPackageJSON() Package {
@@ -398,21 +400,106 @@ func CountPackages() (count int, err error) {
 }
 
 // GORM callback
-func (pack *Package) Fill() (err error) {
+func (pack *Package) Update() (errs []error) {
 
-	// Get app details
-	err = pack.fillFromAPI()
-	if err != nil {
-		return err
-	}
+	var wg sync.WaitGroup
 
-	// Get app details from PICS
-	err = pack.fillFromPICS()
-	if err != nil {
-		if err.Error() != "no package key in json" {
-			return err
+	// Get package details
+	wg.Add(1)
+	go func(pack *Package) {
+
+		// Get app details
+		// Get data
+		response, err := steam.GetPackageDetailsFromStore(pack.ID)
+		if err != nil {
+
+			if err == steam.ErrGhostApp {
+				pack.Ghost = true
+			}
+
+			if err == steam.ErrInvalidAppID {
+				errs = append(errs, err)
+			}
 		}
-	}
+
+		// Controller
+		controllerString, err := json.Marshal(response.Data.Controller)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Platforms
+		var platforms []string
+		if response.Data.Platforms.Linux {
+			platforms = append(platforms, "linux")
+		}
+		if response.Data.Platforms.Windows {
+			platforms = append(platforms, "windows")
+		}
+		if response.Data.Platforms.Windows {
+			platforms = append(platforms, "macos")
+		}
+
+		platformsString, err := json.Marshal(platforms)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		//
+		pack.Name = response.Data.Name
+		pack.ImageHeader = response.Data.HeaderImage
+		pack.ImageLogo = response.Data.SmallLogo
+		pack.ImageHeader = response.Data.HeaderImage
+		// pack.Apps = string(appsString) // Can get from PICS
+		pack.PriceInitial = response.Data.Price.Initial
+		pack.PriceFinal = response.Data.Price.Final
+		pack.PriceDiscount = response.Data.Price.DiscountPercent
+		pack.PriceIndividual = response.Data.Price.Individual
+		pack.Platforms = string(platformsString)
+		pack.Controller = string(controllerString)
+		pack.ReleaseDate = response.Data.ReleaseDate.Date
+		pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
+
+		wg.Done()
+	}(pack)
+
+	// Get package details from PICS
+	wg.Add(1)
+	go func(pack *Package) {
+
+		resp, err := steam.GetPICSInfo([]int{}, []int{pack.ID})
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		var pics steam.JsPackage
+		if val, ok := resp.Packages[strconv.Itoa(pack.ID)]; ok {
+			pics = val
+		} else {
+			errs = append(errs, errors.New("no package key in json"))
+		}
+
+		// Apps
+		appsString, err := json.Marshal(pics.AppIDs)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		// Extended
+		extended, err := json.Marshal(pics.Extended)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		pack.ID = pics.PackageID
+		pack.Apps = string(appsString)
+		pack.BillingType = pics.BillingType
+		pack.LicenseType = pics.LicenseType
+		pack.Status = pics.Status
+		pack.Extended = string(extended)
+
+		wg.Done()
+	}(pack)
 
 	// Default JSON values
 	if pack.Apps == "" || pack.Apps == "null" {
@@ -431,99 +518,7 @@ func (pack *Package) Fill() (err error) {
 		pack.Platforms = "[]"
 	}
 
-	return nil
-}
-
-func (pack *Package) fillFromAPI() (err error) {
-
-	// Get data
-	response, err := steam.GetPackageDetailsFromStore(pack.ID)
-	if err != nil {
-
-		// Not all packages can be found
-		if err.Error() == "no package with id in steam" || strings.HasPrefix(err.Error(), "invalid package id:") {
-			return nil
-		}
-
-		return err
-	}
-
-	// Controller
-	controllerString, err := json.Marshal(response.Data.Controller)
-	if err != nil {
-		return err
-	}
-
-	// Platforms
-	var platforms []string
-	if response.Data.Platforms.Linux {
-		platforms = append(platforms, "linux")
-	}
-	if response.Data.Platforms.Windows {
-		platforms = append(platforms, "windows")
-	}
-	if response.Data.Platforms.Windows {
-		platforms = append(platforms, "macos")
-	}
-
-	platformsString, err := json.Marshal(platforms)
-	if err != nil {
-		return err
-	}
-
-	//
-	pack.Name = response.Data.Name
-	pack.ImageHeader = response.Data.HeaderImage
-	pack.ImageLogo = response.Data.SmallLogo
-	pack.ImageHeader = response.Data.HeaderImage
-	// pack.Apps = string(appsString) // Can get from PICS
-	pack.PriceInitial = response.Data.Price.Initial
-	pack.PriceFinal = response.Data.Price.Final
-	pack.PriceDiscount = response.Data.Price.DiscountPercent
-	pack.PriceIndividual = response.Data.Price.Individual
-	pack.Platforms = string(platformsString)
-	pack.Controller = string(controllerString)
-	pack.ReleaseDate = response.Data.ReleaseDate.Date
-	pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
-
-	return nil
-}
-
-func (pack *Package) fillFromPICS() (err error) {
-
-	// Call PICS
-	resp, err := steam.GetPICSInfo([]int{}, []int{pack.ID})
-	if err != nil {
-		return err
-	}
-
-	var pics steam.JsPackage
-	if val, ok := resp.Packages[strconv.Itoa(pack.ID)]; ok {
-		pics = val
-	} else {
-		return errors.New("no package key in json")
-	}
-
-	// Apps
-	appsString, err := json.Marshal(pics.AppIDs)
-	if err != nil {
-		return err
-	}
-
-	// Extended
-	extended, err := json.Marshal(pics.Extended)
-	if err != nil {
-		return err
-	}
-
-	pack.ID = pics.PackageID
-	pack.Apps = string(appsString)
-	pack.BillingType = pics.BillingType
-	pack.LicenseType = pics.LicenseType
-	pack.Status = pics.Status
-	pack.Extended = string(extended)
-
-	return nil
+	return errs
 }
 
 var PackageExtendedKeys = map[string]string{

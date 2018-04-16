@@ -12,7 +12,6 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
-	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
@@ -24,7 +23,6 @@ import (
 func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
-	slug := chi.URLParam(r, "slug")
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
@@ -47,24 +45,26 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	errs := player.UpdateIfNeeded()
 	if len(errs) > 0 {
 		for _, v := range errs {
+			logger.Error(v)
+		}
 
-			logger.Error(err)
-
-			// API is probably down
+		// API is probably down
+		for _, v := range errs {
 			if v.Error() == steam.ErrInvalidJson {
 				returnErrorTemplate(w, r, 500, "Couldnt fetch player data, steam API may be down?")
 				return
 			}
+		}
 
-			returnErrorTemplate(w, r, 500, err.Error())
+		for _, v := range errs {
+			returnErrorTemplate(w, r, 500, v.Error())
 			return
 		}
 	}
 
 	// Redirect to correct slug
-	correctSLug := slugify.Make(player.PersonaName)
-	if slug != "" && slug != correctSLug {
-		http.Redirect(w, r, "/players/"+id+"/"+correctSLug, 302)
+	if r.URL.Path != player.GetPath() {
+		http.Redirect(w, r, player.GetPath(), 302)
 		return
 	}
 

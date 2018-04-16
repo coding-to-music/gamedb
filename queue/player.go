@@ -11,19 +11,19 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processPlayer(msg amqp.Delivery) (err error) {
+func processPlayer(msg amqp.Delivery) {
 
 	// Get message
 	message := new(PlayerMessage)
 
-	err = json.Unmarshal(msg.Body, message)
+	err := json.Unmarshal(msg.Body, message)
 	if err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			logger.Info(err.Error() + " - " + string(msg.Body))
 		}
 
 		msg.Nack(false, false)
-		return nil
+		return
 	}
 
 	// Update player
@@ -35,19 +35,21 @@ func processPlayer(msg amqp.Delivery) (err error) {
 	errs := player.UpdateIfNeeded()
 	if len(errs) > 0 {
 		for _, v := range errs {
+			logger.Error(v)
+		}
 
-			logger.Error(err)
-
-			// API is probably down
+		// API is probably down
+		for _, v := range errs {
 			if v.Error() == steam.ErrInvalidJson {
+				time.Sleep(time.Second * 10)
 				msg.Nack(false, true)
-				return nil
+				return
 			}
 		}
 	}
 
 	msg.Ack(false)
-	return nil
+	return
 }
 
 type PlayerMessage struct {

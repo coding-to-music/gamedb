@@ -11,6 +11,10 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
+var (
+	ErrPICSNoResponse = errors.New("empty response from pics")
+)
+
 func GetPICSInfo(apps []int, packages []int) (jsInfo JsInfo, err error) {
 
 	var stringApps []string
@@ -39,7 +43,7 @@ func GetPICSInfo(apps []int, packages []int) (jsInfo JsInfo, err error) {
 	}
 
 	if len(bytes) == 0 {
-		return jsInfo, errors.New("empty response from pics")
+		return jsInfo, ErrPICSNoResponse
 	}
 
 	// Fix arrays that should be objects

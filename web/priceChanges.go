@@ -24,19 +24,19 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	// Get total changes
-	var total int
-	wg.Add(1)
-	go func() {
-
-		total, err = datastore.CountPrices()
-		if err != nil {
-			logger.Error(err)
-		}
-
-		wg.Done()
-
-	}()
+	//// Get total changes
+	//var total int
+	//wg.Add(1)
+	//go func() {
+	//
+	//	total, err = datastore.CountPrices()
+	//	if err != nil {
+	//		logger.Error(err)
+	//	}
+	//
+	//	wg.Done()
+	//
+	//}()
 
 	// Get changes
 	var changes []datastore.Price
@@ -65,7 +65,7 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 		path:  "/price-changes?p=",
 		page:  page,
 		limit: priceChangeLimit,
-		total: total,
+		total: priceChangeLimit * 10,
 	}
 
 	returnTemplate(w, r, "price_changes", template)

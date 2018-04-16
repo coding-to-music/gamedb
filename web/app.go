@@ -10,7 +10,6 @@ import (
 
 	"github.com/CalebQ42/bbConvert"
 	"github.com/go-chi/chi"
-	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
@@ -21,7 +20,6 @@ import (
 func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
-	slug := chi.URLParam(r, "slug")
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
@@ -45,9 +43,8 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect to correct slug
-	correctSLug := slugify.Make(app.GetName())
-	if slug != correctSLug {
-		http.Redirect(w, r, "/games/"+id+"/"+correctSLug, 302)
+	if r.URL.Path != app.GetPath() {
+		http.Redirect(w, r, app.GetPath(), 302)
 		return
 	}
 

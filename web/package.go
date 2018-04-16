@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	slugify "github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
@@ -17,7 +16,6 @@ import (
 func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
-	slug := chi.URLParam(r, "slug")
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
@@ -40,9 +38,8 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect to correct slug
-	correctSLug := slugify.Make(pack.GetName())
-	if slug != correctSLug {
-		http.Redirect(w, r, "/packages/"+id+"/"+correctSLug, 302)
+	if r.URL.Path != pack.GetPath() {
+		http.Redirect(w, r, pack.GetPath(), 302)
 		return
 	}
 
