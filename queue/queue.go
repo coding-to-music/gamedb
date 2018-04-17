@@ -2,7 +2,9 @@ package queue
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/streadway/amqp"
@@ -56,7 +58,7 @@ func Produce(queue string, data []byte) (err error) {
 
 type queue struct {
 	Name     string
-	Callback func(msg amqp.Delivery)
+	Callback func(msg amqp.Delivery) (ack bool, requeue bool)
 }
 
 func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.Queue, closeChannel chan *amqp.Error, err error) {
@@ -91,7 +93,14 @@ func (s queue) produce(data []byte) (err error) {
 		return err
 	}
 
-	err = ch.Publish("", q.Name, false, false, amqp.Publishing{DeliveryMode: amqp.Persistent, ContentType: "application/json", Body: data})
+	err = ch.Publish("", q.Name, false, false, amqp.Publishing{
+		DeliveryMode: amqp.Persistent,
+		ContentType:  "application/json",
+		Body:         data,
+		Headers: amqp.Table{
+			"trys": 0,
+		},
+	})
 	if err != nil {
 		logger.Error(err)
 	}
@@ -124,7 +133,38 @@ func (s queue) consume() {
 				break
 
 			case msg := <-msgs:
-				s.Callback(msg)
+
+				// Increment consumed header
+				if msg.Headers == nil {
+					msg.Headers = amqp.Table{}
+				}
+
+				trys, ok := msg.Headers["trys"].(int)
+				if ok {
+					msg.Headers["trys"] = trys + 1
+				} else {
+					msg.Headers["trys"] = 1
+				}
+
+				if trys > 1 {
+					fmt.Println(trys)
+				}
+
+				// Process message
+				ack, requeue := s.Callback(msg)
+				if ack {
+					msg.Ack(false)
+				} else {
+
+					if requeue {
+						go func() {
+							time.Sleep(time.Second * 10 * time.Duration(trys)) // Exponential backoff
+							msg.Nack(false, requeue)
+						}()
+					} else {
+						msg.Nack(false, requeue)
+					}
+				}
 			}
 
 			if breakFor {

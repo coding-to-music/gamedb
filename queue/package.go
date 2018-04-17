@@ -12,7 +12,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processPackage(msg amqp.Delivery) {
+func processPackage(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message
 	message := new(PackageMessage)
@@ -23,8 +23,7 @@ func processPackage(msg amqp.Delivery) {
 			logger.Info(err.Error() + " - " + string(msg.Body))
 		}
 
-		msg.Nack(false, false)
-		return
+		return false, false
 	}
 
 	// Update package
@@ -50,20 +49,9 @@ func processPackage(msg amqp.Delivery) {
 			logger.Error(v)
 		}
 
-		// API is probably down
 		for _, v := range errs {
-			if v.Error() == steam.ErrInvalidJson {
-				time.Sleep(time.Second * 10)
-				msg.Nack(false, true)
-				return
-			}
-		}
-
-		for _, v := range errs {
-			if strings.HasSuffix(v.Error(), "connect: connection refused") {
-				time.Sleep(time.Second * 10)
-				msg.Nack(false, true)
-				return
+			if v.Error() == steam.ErrInvalidJson || v == steam.ErrBadResponse || strings.HasSuffix(v.Error(), "connect: connection refused") {
+				return false, true
 			}
 		}
 	}
@@ -104,8 +92,7 @@ func processPackage(msg amqp.Delivery) {
 		}
 	}
 
-	msg.Ack(false)
-	return
+	return true, false
 }
 
 type PackageMessage struct {

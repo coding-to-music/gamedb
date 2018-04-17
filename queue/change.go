@@ -12,7 +12,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processChange(msg amqp.Delivery) {
+func processChange(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get change
 	change := new(datastore.Change)
@@ -23,8 +23,7 @@ func processChange(msg amqp.Delivery) {
 			logger.Info(err.Error() + " - " + string(msg.Body))
 		}
 
-		msg.Nack(false, false)
-		return
+		return false, false
 	}
 
 	// Save change to DS
@@ -74,8 +73,7 @@ func processChange(msg amqp.Delivery) {
 		websockets.Send(websockets.CHANGES, payload)
 	}
 
-	msg.Ack(false)
-	return
+	return true, false
 }
 
 type changeWebsocketPayload struct {

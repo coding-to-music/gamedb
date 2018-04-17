@@ -508,7 +508,7 @@ func (app *App) Update() (errs []error) {
 				app.Ghost = true
 			}
 
-			if err == steam.ErrInvalidAppID {
+			if err == steam.ErrBadResponse {
 				errs = append(errs, err)
 			}
 		}

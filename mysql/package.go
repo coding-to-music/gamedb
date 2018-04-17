@@ -413,11 +413,11 @@ func (pack *Package) Update() (errs []error) {
 		response, err := steam.GetPackageDetailsFromStore(pack.ID)
 		if err != nil {
 
-			if err == steam.ErrGhostApp {
+			if err == steam.ErrGhostPackage {
 				pack.Ghost = true
 			}
 
-			if err == steam.ErrInvalidAppID {
+			if err == steam.ErrBadResponse {
 				errs = append(errs, err)
 			}
 		}

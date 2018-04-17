@@ -11,7 +11,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processPlayer(msg amqp.Delivery) {
+func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message
 	message := new(PlayerMessage)
@@ -22,8 +22,7 @@ func processPlayer(msg amqp.Delivery) {
 			logger.Info(err.Error() + " - " + string(msg.Body))
 		}
 
-		msg.Nack(false, false)
-		return
+		return false, false
 	}
 
 	// Update player
@@ -41,15 +40,12 @@ func processPlayer(msg amqp.Delivery) {
 		// API is probably down
 		for _, v := range errs {
 			if v.Error() == steam.ErrInvalidJson {
-				time.Sleep(time.Second * 10)
-				msg.Nack(false, true)
-				return
+				return false, true
 			}
 		}
 	}
 
-	msg.Ack(false)
-	return
+	return true, false
 }
 
 type PlayerMessage struct {

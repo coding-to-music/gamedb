@@ -48,6 +48,76 @@ func (article *Article) Tidy() *Article {
 	return article
 }
 
+func GetArticles(appID int, limit int) (articles []Article, err error) {
+
+	client, ctx, err := getClient()
+	if err != nil {
+		return articles, err
+	}
+
+	q := datastore.NewQuery(KindArticle).Order("-date").Limit(limit)
+
+	if appID != 0 {
+		q = q.Filter("app_id =", appID)
+	}
+
+	client.GetAll(ctx, q, &articles)
+
+	return articles, err
+}
+
+func GetNewArticles(appID int) (articles []*Article, err error) {
+
+	// Get latest article from database
+	var latestTime int64
+
+	latest, err := GetArticles(appID, 1)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	if len(latest) > 0 {
+		latestTime = latest[0].Date.Unix()
+	}
+
+	// Get app articles from Steam
+	resp, err := steam.GetNewsForApp(strconv.Itoa(appID))
+
+	var articlePointers []*Article
+	for _, v := range resp {
+
+		if v.Date > latestTime {
+
+			articleID, err := strconv.Atoi(v.GID)
+			if err != nil {
+				logger.Error(err)
+			}
+
+			article := new(Article)
+			article.ArticleID = articleID
+			article.Title = v.Title
+			article.URL = v.URL
+			article.IsExternal = v.IsExternalURL
+			article.Author = v.Author
+			article.Contents = v.Contents
+			article.FeedLabel = v.Feedlabel
+			article.Date = time.Unix(int64(v.Date), 0)
+			article.FeedName = v.Feedname
+			article.FeedType = int8(v.FeedType)
+			article.AppID = v.Appid
+
+			articlePointers = append(articlePointers, article)
+		}
+	}
+
+	err = bulkAddArticles(articlePointers)
+	if err != nil {
+		return articles, err
+	}
+
+	return articles, nil
+}
+
 func bulkAddArticles(articles []*Article) (err error) {
 
 	articlesLen := len(articles)
@@ -72,64 +142,4 @@ func bulkAddArticles(articles []*Article) (err error) {
 	}
 
 	return nil
-}
-
-func GetArticles(appID int, limit int) (articles []Article, err error) {
-
-	client, ctx, err := getClient()
-	if err != nil {
-		return articles, err
-	}
-
-	q := datastore.NewQuery(KindArticle).Order("-date").Limit(limit)
-
-	if appID != 0 {
-		q = q.Filter("app_id =", appID)
-	}
-
-	client.GetAll(ctx, q, &articles)
-
-	return articles, err
-}
-
-func ConvertSteamToArticle(steam steam.GetNewsForAppArticle) (article Article) {
-
-	articleID, err := strconv.Atoi(steam.Gid)
-	if err != nil {
-		logger.Error(err)
-	}
-
-	article.ArticleID = articleID
-	article.Title = steam.Title
-	article.URL = steam.URL
-	article.IsExternal = steam.IsExternalURL
-	article.Author = steam.Author
-	article.Contents = steam.Contents
-	article.FeedLabel = steam.Feedlabel
-	article.Date = time.Unix(int64(steam.Date), 0)
-	article.FeedName = steam.Feedname
-	article.FeedType = int8(steam.FeedType)
-	article.AppID = steam.Appid
-
-	return article
-}
-
-func GetArticlesFromSteam(appID int) (articles []*Article, err error) {
-
-	// Get app articles
-	resp, err := steam.GetNewsForApp(strconv.Itoa(appID))
-
-	var articlePointers []*Article
-	for _, v := range resp {
-
-		article := ConvertSteamToArticle(v)
-		articlePointers = append(articlePointers, &article)
-	}
-
-	err = bulkAddArticles(articlePointers)
-	if err != nil {
-		return articles, err
-	}
-
-	return articles, nil
 }

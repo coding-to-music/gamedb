@@ -12,7 +12,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processApp(msg amqp.Delivery) {
+func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message payload
 	message := new(AppMessage)
@@ -23,12 +23,11 @@ func processApp(msg amqp.Delivery) {
 			logger.Info(err.Error() + " - " + string(msg.Body))
 		}
 
-		msg.Nack(false, false)
-		return
+		return false, false
 	}
 
 	// Get news
-	_, err = datastore.GetArticlesFromSteam(message.AppID)
+	_, err = datastore.GetNewArticles(message.AppID)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -56,20 +55,9 @@ func processApp(msg amqp.Delivery) {
 			logger.Error(v)
 		}
 
-		// API is probably down
 		for _, v := range errs {
-			if v.Error() == steam.ErrInvalidJson {
-				time.Sleep(time.Second * 10)
-				msg.Nack(false, true)
-				return
-			}
-		}
-
-		for _, v := range errs {
-			if strings.HasSuffix(v.Error(), "connect: connection refused") {
-				time.Sleep(time.Second * 10)
-				msg.Nack(false, true)
-				return
+			if v.Error() == steam.ErrInvalidJson || v == steam.ErrBadResponse || strings.HasSuffix(v.Error(), "connect: connection refused") {
+				return false, true
 			}
 		}
 	}
@@ -110,9 +98,7 @@ func processApp(msg amqp.Delivery) {
 		}
 	}
 
-	// Ack
-	msg.Ack(false)
-	return
+	return true, false
 }
 
 type AppMessage struct {

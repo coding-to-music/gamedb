@@ -8,7 +8,6 @@ then
 #    gcloud beta emulators datastore start &
 
     bash ./cmd/pics.sh >> /dev/null
-    dep ensure
     realize start
 
 else

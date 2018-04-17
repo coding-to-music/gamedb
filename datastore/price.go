@@ -122,6 +122,7 @@ func GetLatestPrices(limit int, page int) (prices []Price, err error) {
 
 	q := datastore.NewQuery(KindPrice).Order("-created_at").Limit(limit).Offset(offset)
 	q = q.Filter("currency =", "usd")
+	q = q.Filter("first =", false)
 
 	_, err = client.GetAll(ctx, q, &prices)
 
