@@ -10,10 +10,6 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 )
 
-var (
-	cachePricesCount int
-)
-
 type Price struct {
 	CreatedAt       time.Time `datastore:"created_at"`
 	AppID           int       `datastore:"app_id"`
@@ -27,6 +23,7 @@ type Price struct {
 	Icon            string    `datastore:"logo"`
 	ReleaseDateNice string    `datastore:"release_date"`
 	ReleaseDateUnix int64     `datastore:"release_date_unix"`
+	First           bool      `datastore:"first"`
 }
 
 func (p Price) GetKey() (key *datastore.Key) {
@@ -74,14 +71,18 @@ func (p Price) GetPriceFinal() float64 {
 	return helpers.CentsInt(p.PriceFinal)
 }
 
-func GetAppPrices(appID int) (prices []Price, err error) {
+func GetAppPrices(appID int, limit int) (prices []Price, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(100)
+	if limit == 0 {
+		limit = 100
+	}
+
+	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(limit)
 	q = q.Filter("app_id =", appID)
 	q = q.Filter("currency =", "usd")
 
@@ -90,14 +91,18 @@ func GetAppPrices(appID int) (prices []Price, err error) {
 	return prices, err
 }
 
-func GetPackagePrices(packageID int) (prices []Price, err error) {
+func GetPackagePrices(packageID int, limit int) (prices []Price, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(100)
+	if limit == 0 {
+		limit = 100
+	}
+
+	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(limit)
 	q = q.Filter("package_id =", packageID)
 	q = q.Filter("currency =", "usd")
 

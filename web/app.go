@@ -109,7 +109,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get prices
-		pricesResp, err := datastore.GetAppPrices(app.ID)
+		pricesResp, err := datastore.GetAppPrices(app.ID, 0)
 		if err != nil {
 			logger.Error(err)
 		}

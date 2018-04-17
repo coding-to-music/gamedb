@@ -94,6 +94,16 @@ func processApp(msg amqp.Delivery) {
 	price.ReleaseDateUnix = app.GetReleaseDateUnix()
 
 	if price.Change != 0 {
+
+		prices, err := datastore.GetAppPrices(app.ID, 1)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		if len(prices) == 0 {
+			price.First = true
+		}
+
 		_, err = datastore.SaveKind(price.GetKey(), price)
 		if err != nil {
 			logger.Error(err)

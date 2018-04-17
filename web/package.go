@@ -70,7 +70,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get prices
-		pricesResp, err := datastore.GetPackagePrices(pack.ID)
+		pricesResp, err := datastore.GetPackagePrices(pack.ID, 0)
 		if err != nil {
 			logger.Error(err)
 		}
