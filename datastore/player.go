@@ -26,36 +26,37 @@ var (
 )
 
 type Player struct {
-	CreatedAt        time.Time                   `datastore:"created_at"`               //
-	UpdatedAt        time.Time                   `datastore:"updated_at"`               //
-	FriendsAddedAt   time.Time                   `datastore:"friends_added_at,noindex"` //
-	PlayerID         int                         `datastore:"player_id"`                //
-	VanintyURL       string                      `datastore:"vanity_url"`               //
-	Avatar           string                      `datastore:"avatar,noindex"`           //
-	PersonaName      string                      `datastore:"persona_name,noindex"`     //
-	RealName         string                      `datastore:"real_name,noindex"`        //
-	CountryCode      string                      `datastore:"country_code"`             //
-	StateCode        string                      `datastore:"status_code"`              //
-	Level            int                         `datastore:"level"`                    //
-	Games            string                      `datastore:"games,noindex"`            // JSON
-	GamesRecent      []steam.RecentlyPlayedGame  `datastore:"games_recent,noindex"`     //
-	GamesCount       int                         `datastore:"games_count"`              //
-	Badges           steam.BadgesResponse        `datastore:"badges,noindex"`           //
-	BadgesCount      int                         `datastore:"badges_count"`             //
-	PlayTime         int                         `datastore:"play_time"`                //
-	TimeCreated      time.Time                   `datastore:"time_created"`             //
-	LastLogOff       time.Time                   `datastore:"time_logged_off,noindex"`  //
-	PrimaryClanID    int                         `datastore:"primary_clan_id,noindex"`  //
-	Friends          []steam.GetFriendListFriend `datastore:"friends,noindex"`          //
-	FriendsCount     int                         `datastore:"friends_count"`            //
-	Donated          int                         `datastore:"donated"`                  //
-	Bans             steam.GetPlayerBanResponse  `datastore:"bans"`                     //
-	NumberOfVACBans  int                         `datastore:"bans_cav"`                 //
-	NumberOfGameBans int                         `datastore:"bans_game"`                //
-	Groups           []int                       `datastore:"groups,noindex"`           //
-	SettingsEmail    string                      `datastore:"settings_email"`           //
-	SettingsHidden   bool                        `datastore:"settings_hidden"`          //
-	SettingsAlerts   bool                        `datastore:"settings_alerts,noindex"`  //
+	CreatedAt        time.Time                   `datastore:"created_at"`                //
+	UpdatedAt        time.Time                   `datastore:"updated_at"`                //
+	FriendsAddedAt   time.Time                   `datastore:"friends_added_at,noindex"`  //
+	PlayerID         int                         `datastore:"player_id"`                 //
+	VanintyURL       string                      `datastore:"vanity_url"`                //
+	Avatar           string                      `datastore:"avatar,noindex"`            //
+	PersonaName      string                      `datastore:"persona_name,noindex"`      //
+	RealName         string                      `datastore:"real_name,noindex"`         //
+	CountryCode      string                      `datastore:"country_code"`              //
+	StateCode        string                      `datastore:"status_code"`               //
+	Level            int                         `datastore:"level"`                     //
+	Games            string                      `datastore:"games,noindex"`             // JSON
+	GamesRecent      []steam.RecentlyPlayedGame  `datastore:"games_recent,noindex"`      //
+	GamesCount       int                         `datastore:"games_count"`               //
+	Badges           steam.BadgesResponse        `datastore:"badges,noindex"`            //
+	BadgesCount      int                         `datastore:"badges_count"`              //
+	PlayTime         int                         `datastore:"play_time"`                 //
+	TimeCreated      time.Time                   `datastore:"time_created"`              //
+	LastLogOff       time.Time                   `datastore:"time_logged_off,noindex"`   //
+	PrimaryClanID    int                         `datastore:"primary_clan_id,noindex"`   //
+	Friends          []steam.GetFriendListFriend `datastore:"friends,noindex"`           //
+	FriendsCount     int                         `datastore:"friends_count"`             //
+	Donated          int                         `datastore:"donated"`                   //
+	Bans             steam.GetPlayerBanResponse  `datastore:"bans"`                      //
+	NumberOfVACBans  int                         `datastore:"bans_cav"`                  //
+	NumberOfGameBans int                         `datastore:"bans_game"`                 //
+	Groups           []int                       `datastore:"groups,noindex"`            //
+	SettingsEmail    string                      `datastore:"settings_email"`            //
+	SettingsPassword string                      `datastore:"settings_password,noindex"` //
+	SettingsHidden   bool                        `datastore:"settings_hidden"`           //
+	SettingsAlerts   bool                        `datastore:"settings_alerts,noindex"`   //
 }
 
 func (p Player) GetKey() (key *datastore.Key) {
@@ -219,7 +220,6 @@ func GetPlayerByName(name string) (ret Player, err error) {
 	var players []Player
 
 	_, err = client.GetAll(ctx, q, &players)
-
 	if err != nil {
 		return ret, err
 	}
@@ -229,7 +229,29 @@ func GetPlayerByName(name string) (ret Player, err error) {
 	}
 
 	return ret, datastore.ErrNoSuchEntity
+}
 
+func GetPlayersByEmail(email string) (ret []Player, err error) {
+
+	client, ctx, err := getClient()
+	if err != nil {
+		return ret, err
+	}
+
+	q := datastore.NewQuery(KindPlayer).Filter("settings_email =", email).Limit(1)
+
+	var players []Player
+
+	_, err = client.GetAll(ctx, q, &players)
+	if err != nil {
+		return ret, err
+	}
+
+	if len(players) == 0 {
+		return ret, datastore.ErrNoSuchEntity
+	}
+
+	return players, nil
 }
 
 func GetPlayers(order string, limit int) (players []Player, err error) {

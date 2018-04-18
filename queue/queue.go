@@ -2,7 +2,6 @@ package queue
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -17,6 +16,8 @@ const (
 	AppQueue     = "Apps"
 	PackageQueue = "Packages"
 	PlayerQueue  = "Players"
+
+	HeaderRetry = "retry"
 )
 
 var (
@@ -98,7 +99,7 @@ func (s queue) produce(data []byte) (err error) {
 		ContentType:  "application/json",
 		Body:         data,
 		Headers: amqp.Table{
-			"trys": 0,
+			HeaderRetry: int16(0),
 		},
 	})
 	if err != nil {
@@ -134,23 +135,6 @@ func (s queue) consume() {
 
 			case msg := <-msgs:
 
-				// Increment consumed header
-				if msg.Headers == nil {
-					msg.Headers = amqp.Table{}
-				}
-
-				trys, ok := msg.Headers["trys"].(int)
-				if ok {
-					msg.Headers["trys"] = trys + 1
-				} else {
-					msg.Headers["trys"] = 1
-				}
-
-				if trys > 1 {
-					fmt.Println(trys)
-				}
-
-				// Process message
 				ack, requeue := s.Callback(msg)
 				if ack {
 					msg.Ack(false)
@@ -158,13 +142,16 @@ func (s queue) consume() {
 
 					if requeue {
 						go func() {
-							time.Sleep(time.Second * 10 * time.Duration(trys)) // Exponential backoff
+							retrys := incRetrys(&msg)
+							time.Sleep(time.Second * 10 * time.Duration(retrys)) // Exponential backoff
 							msg.Nack(false, requeue)
 						}()
 					} else {
 						msg.Nack(false, requeue)
 					}
 				}
+
+				time.Sleep(time.Second * 2)
 			}
 
 			if breakFor {
@@ -175,4 +162,35 @@ func (s queue) consume() {
 		conn.Close()
 		ch.Close()
 	}
+}
+
+func incRetrys(msg *amqp.Delivery) int16 {
+
+	var retrys int16
+
+	if msg.Headers == nil {
+
+		msg.Headers = amqp.Table{}
+		retrys = 1
+
+	} else {
+
+		retrysInterface, ok := msg.Headers[HeaderRetry]
+		if ok {
+
+			retrysInt, ok := retrysInterface.(int16)
+			if ok {
+				retrys = retrysInt + 1
+			} else {
+				retrys = 1
+			}
+
+		} else {
+			retrys = 1
+		}
+	}
+
+	msg.Headers[HeaderRetry] = retrys
+
+	return retrys
 }
