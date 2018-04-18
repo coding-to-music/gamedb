@@ -42,7 +42,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	errs := player.UpdateIfNeeded()
+	errs := player.Update(r.UserAgent())
 	if len(errs) > 0 {
 		for _, v := range errs {
 			logger.Error(v)

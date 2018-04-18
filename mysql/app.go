@@ -13,51 +13,57 @@ import (
 
 	"github.com/gosimple/slug"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steam"
 )
 
 type App struct {
-	ID                     int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`                  //
-	CreatedAt              *time.Time `gorm:"not null;column:created_at"`                                     //
-	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`                                     //
-	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text;default:'[]'"` // JSON
-	Achievements           string     `gorm:"not null;column:achievements;type:text;default:'{}'"`            // JSON
-	Background             string     `gorm:"not null;column:background"`                                     //
-	Categories             string     `gorm:"not null;column:categories;type:json;default:'[]'"`              // JSON
-	ChangeNumber           int        `gorm:"not null;column:change_number"`                                  // PICS
-	ClientIcon             string     `gorm:"not null;column:client_icon"`                                    // PICS
-	ComingSoon             bool       `gorm:"not null;column:coming_soon"`                                    //
-	Developers             string     `gorm:"not null;column:developers;type:json;default:'[]'"`              // JSON
-	DLC                    string     `gorm:"not null;column:dlc;type:json;default:'[]'"`                     // JSON
-	Extended               string     `gorm:"not null;column:extended;default:'{}'"`                          // JSON
-	GameID                 int        `gorm:"not null;column:game_id"`                                        //
-	GameName               string     `gorm:"not null;column:game_name"`                                      //
-	Genres                 string     `gorm:"not null;column:genres;type:json;default:'[]'"`                  // JSON
-	Ghost                  bool       `gorm:"not null;column:is_ghost;type:tinyint(1)"`                       //
-	HeaderImage            string     `gorm:"not null;column:image_header"`                                   //
-	Homepage               string     `gorm:"not null;column:homepage"`                                       // PICS
-	Icon                   string     `gorm:"not null;column:icon"`                                           // PICS
-	IsFree                 bool       `gorm:"not null;column:is_free;type:tinyint(1)"`                        //
-	Logo                   string     `gorm:"not null;column:logo"`                                           // PICS
-	MetacriticScore        int8       `gorm:"not null;column:metacritic_score"`                               //
-	MetacriticURL          string     `gorm:"not null;column:metacritic_url"`                                 //
-	Movies                 string     `gorm:"not null;column:movies;type:text;default:'[]'"`                  // JSON
-	Name                   string     `gorm:"not null;column:name"`                                           //
-	Packages               string     `gorm:"not null;column:packages;type:json;default:'[]'"`                // JSON
-	Platforms              string     `gorm:"not null;column:platforms;type:json;default:'[]'"`               // JSON
-	PriceDiscount          int        `gorm:"not null;column:price_discount"`                                 //
-	PriceFinal             int        `gorm:"not null;column:price_final"`                                    //
-	PriceInitial           int        `gorm:"not null;column:price_initial"`                                  //
-	Publishers             string     `gorm:"not null;column:publishers;type:json;default:'[]'"`              // JSON
-	ReleaseDate            string     `gorm:"not null;column:release_date"`                                   //
-	ReleaseState           string     `gorm:"not null;column:release_state"`                                  // PICS
-	Schema                 string     `gorm:"not null;column:schema;type:text;default:'{}'"`                  // JSON
-	Screenshots            string     `gorm:"not null;column:screenshots;type:text;default:'[]'"`             // JSON
-	ShortDescription       string     `gorm:"not null;column:description_short"`                              //
-	StoreTags              string     `gorm:"not null;column:tags;type:json;default:'[]'"`                    // PICS JSON
-	Type                   string     `gorm:"not null;column:type"`                                           //
+	ID                     int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
+	CreatedAt              *time.Time `gorm:"not null;column:created_at"`
+	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`
+	ScannedAt              *time.Time `gorm:"not null;column:scanned_at"`
+	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text;default:'[]'"`
+	Achievements           string     `gorm:"not null;column:achievements;type:text;default:'{}'"`
+	Background             string     `gorm:"not null;column:background"`
+	Categories             string     `gorm:"not null;column:categories;type:json;default:'[]'"`
+	ChangeNumber           int        `gorm:"not null;column:change_number"`
+	ClientIcon             string     `gorm:"not null;column:client_icon"`
+	ComingSoon             bool       `gorm:"not null;column:coming_soon"`
+	Developers             string     `gorm:"not null;column:developers;type:json;default:'[]'"`
+	DLC                    string     `gorm:"not null;column:dlc;type:json;default:'[]'"`
+	Extended               string     `gorm:"not null;column:extended;default:'{}'"`
+	GameID                 int        `gorm:"not null;column:game_id"`
+	GameName               string     `gorm:"not null;column:game_name"`
+	Genres                 string     `gorm:"not null;column:genres;type:json;default:'[]'"`
+	Ghost                  bool       `gorm:"not null;column:is_ghost;type:tinyint(1)"`
+	HeaderImage            string     `gorm:"not null;column:image_header"`
+	Homepage               string     `gorm:"not null;column:homepage"`
+	Icon                   string     `gorm:"not null;column:icon"`
+	IsFree                 bool       `gorm:"not null;column:is_free;type:tinyint(1)"`
+	Logo                   string     `gorm:"not null;column:logo"`
+	MetacriticScore        int8       `gorm:"not null;column:metacritic_score"`
+	MetacriticURL          string     `gorm:"not null;column:metacritic_url"`
+	Movies                 string     `gorm:"not null;column:movies;type:text;default:'[]'"`
+	Name                   string     `gorm:"not null;column:name"`
+	Packages               string     `gorm:"not null;column:packages;type:json;default:'[]'"`
+	Platforms              string     `gorm:"not null;column:platforms;type:json;default:'[]'"`
+	PriceDiscount          int        `gorm:"not null;column:price_discount"`
+	PriceFinal             int        `gorm:"not null;column:price_final"`
+	PriceInitial           int        `gorm:"not null;column:price_initial"`
+	Publishers             string     `gorm:"not null;column:publishers;type:json;default:'[]'"`
+	ReleaseDate            string     `gorm:"not null;column:release_date"`
+	ReleaseState           string     `gorm:"not null;column:release_state"`
+	Schema                 string     `gorm:"not null;column:schema;type:text;default:'{}'"`
+	Screenshots            string     `gorm:"not null;column:screenshots;type:text;default:'[]'"`
+	ShortDescription       string     `gorm:"not null;column:description_short"`
+	StoreTags              string     `gorm:"not null;column:tags;type:json;default:'[]'"`
+	Type                   string     `gorm:"not null;column:type"`
+	Reviews                string     `gorm:"not null;column:reviews"`
+	ReviewsScore           float64    `gorm:"not null;column:reviews_score"`
+	ReviewsPositive        int        `gorm:"not null;column:reviews_positive"`
+	ReviewsNegative        int        `gorm:"not null;column:reviews_negative"`
 }
 
 func GetDefaultAppJSON() App {
@@ -272,6 +278,24 @@ func (app App) GetPackages() (packages []int, err error) {
 	return packages, nil
 }
 
+func (app App) GetReviews() (reviews steam.ReviewsResponse, err error) {
+
+	bytes := []byte(app.Reviews)
+
+	if len(bytes) == 0 {
+		return reviews, nil
+	}
+
+	if err := json.Unmarshal(bytes, &reviews); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		}
+		return reviews, err
+	}
+
+	return reviews, nil
+}
+
 func (app App) GetGenres() (genres []steam.AppDetailsGenre, err error) {
 
 	bytes := []byte(app.Genres)
@@ -344,6 +368,19 @@ func (app App) GetName() (name string) {
 	}
 
 	return app.Name
+}
+
+func (app App) shouldUpdate(userAgent string) bool {
+
+	if helpers.IsBot(userAgent) {
+		return false
+	}
+
+	if app.ScannedAt.Unix() < (time.Now().Unix() - int64(60*60*24)) { // 1 Day
+		return true
+	}
+
+	return false
 }
 
 func GetApp(id int) (app App, err error) {
@@ -493,7 +530,79 @@ func CountApps() (count int, err error) {
 	return count, nil
 }
 
-func (app *App) Update() (errs []error) {
+func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
+
+	if app.shouldUpdate(userAgent) {
+
+		var err error
+		var wg sync.WaitGroup
+
+		// Update news
+		wg.Add(1)
+		go func(p *App) {
+
+			var articles []*datastore.Article
+
+			articles, err = datastore.GetNewArticles(app.ID)
+			if err != nil {
+				errs = append(errs, err)
+			}
+
+			err = datastore.BulkAddArticles(articles)
+			if err != nil {
+				errs = append(errs, err)
+			}
+
+			wg.Done()
+		}(app)
+
+		// Update reviews
+		wg.Add(1)
+		go func(p *App) {
+
+			var reviewsResp steam.ReviewsResponse
+
+			reviewsResp, err = steam.GetReviews(app.ID)
+			if err != nil {
+				errs = append(errs, err)
+			}
+
+			reviewsBytes, err := json.Marshal(reviewsResp)
+			if err != nil {
+				errs = append(errs, err)
+			}
+
+			app.Reviews = string(reviewsBytes)
+			app.ReviewsScore = reviewsResp.QuerySummary.ReviewScore
+			app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
+			app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
+
+			wg.Done()
+		}(app)
+
+		// Wait
+		wg.Wait()
+
+		// Fix dates
+		t := time.Now()
+		app.ScannedAt = &t
+
+		// Save
+		db, err := GetDB()
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		db.Save(app)
+		if db.Error != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	return errs
+}
+
+func (app *App) UpdateFromPICS() (errs []error) {
 
 	var wg sync.WaitGroup
 

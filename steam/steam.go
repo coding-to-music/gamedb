@@ -12,6 +12,8 @@ const (
 	ErrInvalidJson = "invalid character '<' looking for beginning of value"
 )
 
+// todo, handle error codes crrectly.. https://partner.steamgames.com/doc/webapi_overview/responses
+
 func get(path string, query url.Values) (bytes []byte, err error) {
 
 	query.Add("format", "json")

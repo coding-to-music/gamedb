@@ -141,13 +141,17 @@ func (p Player) GetGames() (games []steam.OwnedGame) {
 	return games
 }
 
-func (p Player) shouldUpdate() bool {
+func (p Player) shouldUpdate(userAgent string) bool {
+
+	if helpers.IsBot(userAgent) {
+		return false
+	}
 
 	if p.PersonaName == "" {
 		return true
 	}
 
-	if p.UpdatedAt.Unix() < (time.Now().Unix() - int64(60*60*24)) {
+	if p.UpdatedAt.Unix() < (time.Now().Unix() - int64(60*60*24)) { // 1 Day
 		return true
 	}
 
@@ -312,13 +316,13 @@ func CountPlayers() (count int, err error) {
 	return cachePlayersCount, nil
 }
 
-func (p *Player) UpdateIfNeeded() (errs []error) {
+func (p *Player) Update(userAgent string) (errs []error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
 		return []error{ErrInvalidID}
 	}
 
-	if p.shouldUpdate() {
+	if p.shouldUpdate(userAgent) {
 
 		var err error
 		var wg sync.WaitGroup

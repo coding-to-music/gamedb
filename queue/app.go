@@ -26,12 +26,6 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 		return false, false
 	}
 
-	// Get news
-	_, err = datastore.GetNewArticles(message.AppID)
-	if err != nil {
-		logger.Error(err)
-	}
-
 	// Update app
 	db, err := mysql.GetDB()
 	if err != nil {
@@ -48,7 +42,7 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	priceBeforeFill := app.PriceFinal
 
-	errs := app.Update()
+	errs := app.UpdateFromPICS()
 	if len(errs) > 0 {
 
 		for _, v := range errs {

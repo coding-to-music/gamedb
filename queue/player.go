@@ -31,7 +31,7 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 		logger.Error(err)
 	}
 
-	errs := player.UpdateIfNeeded()
+	errs := player.Update("")
 	if len(errs) > 0 {
 		for _, v := range errs {
 			logger.Error(v)

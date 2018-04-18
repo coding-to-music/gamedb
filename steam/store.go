@@ -337,3 +337,84 @@ type steamTag struct {
 	TagID int    `json:"tagid"`
 	Name  string `json:"name"`
 }
+
+func GetReviews(appID int) (reviews ReviewsResponse, err error) {
+
+	query := url.Values{}
+	query.Set("json", "1")
+	query.Set("filter", "all")
+	query.Set("language", "all")
+	query.Set("day_range", "all")
+	query.Set("start_offset", "0")
+	query.Set("review_type", "all")
+	query.Set("purchase_type", "all")
+
+	response, err := http.Get("http://store.steampowered.com/appreviews/" + strconv.Itoa(appID) + "?" + query.Encode())
+	if err != nil {
+		return reviews, err
+	}
+	defer response.Body.Close()
+
+	// Convert to bytes
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return reviews, err
+	}
+
+	// Unmarshal JSON
+	if err := json.Unmarshal(contents, &reviews); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(contents))
+		} else {
+			logger.Error(err)
+		}
+		return reviews, err
+	}
+
+	return reviews, nil
+}
+
+type ReviewsResponse struct {
+	Success      int                    `json:"success"`
+	QuerySummary ReviewsSummaryResponse `json:"query_summary"`
+	Reviews []struct {
+		Recommendationid string `json:"recommendationid"`
+		Author struct {
+			Steamid              string `json:"steamid"`
+			NumGamesOwned        int    `json:"num_games_owned"`
+			NumReviews           int    `json:"num_reviews"`
+			PlaytimeForever      int    `json:"playtime_forever"`
+			PlaytimeLastTwoWeeks int    `json:"playtime_last_two_weeks"`
+			LastPlayed           int    `json:"last_played"`
+		} `json:"author"`
+		Language                 string `json:"language"`
+		Review                   string `json:"review"`
+		TimestampCreated         int    `json:"timestamp_created"`
+		TimestampUpdated         int    `json:"timestamp_updated"`
+		VotedUp                  bool   `json:"voted_up"`
+		VotesUp                  int    `json:"votes_up"`
+		VotesFunny               int    `json:"votes_funny"`
+		WeightedVoteScore        string `json:"weighted_vote_score"`
+		CommentCount             int    `json:"comment_count"`
+		SteamPurchase            bool   `json:"steam_purchase"`
+		ReceivedForFree          bool   `json:"received_for_free"`
+		WrittenDuringEarlyAccess bool   `json:"written_during_early_access"`
+	} `json:"reviews"`
+}
+
+type ReviewsSummaryResponse struct {
+	NumReviews      int     `json:"num_reviews"`
+	ReviewScore     float64 `json:"review_score"`
+	ReviewScoreDesc string  `json:"review_score_desc"`
+	TotalPositive   int     `json:"total_positive"`
+	TotalNegative   int     `json:"total_negative"`
+	TotalReviews    int     `json:"total_reviews"`
+}
+
+func (r ReviewsSummaryResponse) GetPositivePerent() float64 {
+	return float64(r.TotalPositive) / float64(r.TotalReviews) * 100
+}
+
+func (r ReviewsSummaryResponse) GetNegativePerent() float64 {
+	return float64(r.TotalNegative) / float64(r.TotalReviews) * 100
+}

@@ -56,6 +56,14 @@
                     <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .Articles }})</a>
                 </li>
             {{end}}
+            {{if gt .App.GetReviews.QuerySummary.TotalReviews 0}}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .App.GetReviews.QuerySummary.TotalReviews }})</a>
+                </li>
+            {{end}}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media</a>
+                </li>
             </ul>
         </div>
         <div class="card-body">
@@ -219,6 +227,44 @@
                         {{ end }}
                         </table>
                     </div>
+
+                </div>
+
+            {{/* Reviews */}}
+                <div class="tab-pane" id="reviews" role="tabpanel">
+
+                    <table class="table table-hover">
+                        <tbody>
+                        <tr>
+                            <th scope="row" width="15%">Score</th>
+                            <td>{{ .App.ReviewsScore }}/10</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" width="20%">Positive / Negative</th>
+                            <td>
+                                <div class="progress" style="height: 24px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ .Reviews.QuerySummary.GetPositivePerent }}%">
+                                    {{ comma .Reviews.QuerySummary.TotalPositive }}
+                                    </div>
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: {{ .Reviews.QuerySummary.GetNegativePerent }}%">
+                                    {{ comma .Reviews.QuerySummary.TotalNegative }}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                {{ range $key, $value := .Reviews.Reviews }}
+                    x
+                {{ end }}
+
+                </div>
+
+            {{/* Media */}}
+                <div class="tab-pane" id="media" role="tabpanel">
+
+                    Media
 
                 </div>
             </div>

@@ -83,7 +83,6 @@ func GetNewArticles(appID int) (articles []*Article, err error) {
 	// Get app articles from Steam
 	resp, err := steam.GetNewsForApp(strconv.Itoa(appID))
 
-	var articlePointers []*Article
 	for _, v := range resp {
 
 		if v.Date > latestTime {
@@ -106,19 +105,14 @@ func GetNewArticles(appID int) (articles []*Article, err error) {
 			article.FeedType = int8(v.FeedType)
 			article.AppID = v.Appid
 
-			articlePointers = append(articlePointers, article)
+			articles = append(articles, article)
 		}
-	}
-
-	err = bulkAddArticles(articlePointers)
-	if err != nil {
-		return articles, err
 	}
 
 	return articles, nil
 }
 
-func bulkAddArticles(articles []*Article) (err error) {
+func BulkAddArticles(articles []*Article) (err error) {
 
 	articlesLen := len(articles)
 	if articlesLen == 0 {

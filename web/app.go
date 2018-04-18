@@ -48,6 +48,9 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update news, reviews etc
+	app.UpdateFromRequest(r.UserAgent())
+
 	//
 	var wg sync.WaitGroup
 
@@ -218,6 +221,9 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	t.Tags = tags
 	t.DLC = dlc
 
+	reviews, err := app.GetReviews()
+	t.Reviews = reviews
+
 	returnTemplate(w, r, "app", t)
 }
 
@@ -233,6 +239,7 @@ type appTemplate struct {
 	Achievements []appAchievementTemplate
 	Schema       steam.GameSchema
 	Tags         []mysql.Tag
+	Reviews      steam.ReviewsResponse
 }
 
 type appAchievementTemplate struct {
