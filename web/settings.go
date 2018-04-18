@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -103,12 +104,25 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Get games
+	games := player.GetGames()
+	var gamesSlice []int
+	for _, v := range games {
+		gamesSlice = append(gamesSlice, v.AppID)
+	}
+
+	gamesString, err := json.Marshal(gamesSlice)
+	if err != nil {
+		logger.Error(err)
+	}
+
 	// Template
 	template := settingsTemplate{}
 	template.Fill(r, "Settings")
 	template.Logins = logins
 	template.Player = *player
 	template.Donations = donations
+	template.Games = string(gamesString)
 
 	returnTemplate(w, r, "settings", template)
 }
@@ -118,4 +132,5 @@ type settingsTemplate struct {
 	Player    datastore.Player
 	Logins    []datastore.Login
 	Donations []datastore.Donation
+	Games     string
 }

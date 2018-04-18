@@ -63,7 +63,7 @@
                         <td class="img" width="1%">
                             <img src="{{.GetIcon}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
                         </td>
-                        <td>{{ .Name }}</td>
+                        <td data-app-id="{{ .AppID }}">{{ .Name }}</td>
                         <td data-order="{{ .ReleaseDateUnix }}" nowrap="nowrap">{{ .ReleaseDateNice }}</td>
                         <td>${{ .GetPriceFinal }}</td>
                         <td>{{ .Discount }}%</td>

@@ -302,11 +302,11 @@
                             <th scope="col">Price/Hour</th>
                             </thead>
                         {{ range $key, $value := .Games }}
-                            <tr{{if ne .ID 0}} data-link="/games/{{ .ID }}"{{end}}>
+                            <tr {{if ne .ID 0}}data-link="/games/{{ .ID }}"{{end}}>
                                 <td class="img">
                                     <img src="{{ .Icon }}" class="avatar rounded">
                                 </td>
-                                <td>{{ .Name }}</td>
+                                <td data-app-id="{{ .ID }}">{{ .Name }}</td>
                                 <td data-sort="{{ .Price }}">${{ .Price }}</td>
                                 <td data-sort="{{ .Time }}">{{ .GetTimeNice }}</td>
                                 <td data-sort="{{ .GetPriceHourSort }}">${{ .GetPriceHour }}</td>

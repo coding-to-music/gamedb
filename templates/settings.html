@@ -117,4 +117,10 @@
 
 </div>
 
+{{ if ne .Games "" }}
+<script>
+    localStorage.setItem("games", '{{ .Games }}');
+</script>
+{{ end }}
+
 {{ template "_footer" }} {{end}}

@@ -49,3 +49,16 @@ showTopLink();
 $top.click(function () {
     $('html, body').animate({scrollTop: 0}, 'slow');
 });
+
+// Highlight owned games
+var games = localStorage.getItem('games');
+if (games !== '') {
+    games = JSON.parse(games);
+
+    $('[data-app-id]').each(function () {
+        var id = $(this).attr('data-app-id');
+        if (games.indexOf(parseInt(id)) !== -1) {
+            $(this).addClass('bold')
+        }
+    });
+}

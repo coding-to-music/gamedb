@@ -68,7 +68,7 @@
                         <td class="img">
                             <img src="{{.Game.GetIcon}}" class="rounded">
                         </td>
-                        <td>{{ .Game.GetName }}</td>
+                        <td data-app-id="{{ .Game.ID }}">{{ .Game.GetName }}</td>
                         <td class="platforms">{{ .Game.GetPlatformImages }}</td>
                         <td>{{ comma .Game.GetAchievements.Total }}</td>
                         <td>{{.Tags}}</td>

@@ -51,7 +51,14 @@ func GetDefaultPackageJSON() Package {
 }
 
 func (pack Package) GetPath() string {
-	return "/packages/" + strconv.Itoa(pack.ID) + "/" + slug.Make(pack.Name)
+
+	s := "/packages/" + strconv.Itoa(pack.ID)
+
+	if pack.Name != "" {
+		s = s + "/" + slug.Make(pack.GetName())
+	}
+
+	return s
 }
 
 func (pack Package) GetName() (name string) {

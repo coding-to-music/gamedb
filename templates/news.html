@@ -28,7 +28,7 @@
                     <div class="media-body">
                         <h5 class="mt-0 mb-1"><a href="{{ .App.GetPath }}#news">{{ .Article.Title }}</a></h5>
                         <p class="text-muted">
-                            <span>{{ .App.GetName }} - By {{ .Article.Author }} @ <span data-toggle="tooltip" data-placement="top" title="{{ .Article.GetNiceDate }}" data-livestamp="{{ .Article.GetTimestamp }}">{{ .Article.GetNiceDate }}</span></span>
+                            <span><span data-app-id="{{ .App.ID }}">{{ .App.GetName }}</span> - By {{ .Article.Author }} @ <span data-toggle="tooltip" data-placement="top" title="{{ .Article.GetNiceDate }}" data-livestamp="{{ .Article.GetTimestamp }}">{{ .Article.GetNiceDate }}</span></span>
                         </p>
                     </div>
                 </li>

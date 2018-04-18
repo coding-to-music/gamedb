@@ -121,7 +121,7 @@
                                 <td class="img">
                                     <img class="rounded" src="{{ .GetIcon }}">
                                 </td>
-                                <td>{{.GetName}}</td>
+                                <td data-app-id="{{ .ID }}">{{.GetName}}</td>
                                 <td>{{ .GetType }}</td>
                                 <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
                                 <td>{{ comma (len .GetDLC) }}</td>

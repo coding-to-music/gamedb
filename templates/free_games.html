@@ -41,7 +41,7 @@
                         <td class="img">
                             <img src="{{ .GetIcon }}" class="rounded">
                         </td>
-                        <td>{{ .GetName }}</td>
+                        <td data-app-id="{{ .ID }}">{{ .GetName }}</td>
                         <td>{{ .GetType }}</td>
                         <td class="platforms">{{ .GetPlatformImages }}</td>
                         <td><a href="{{ .GetInstallLink }}">Install</a></td>
