@@ -16,14 +16,6 @@
         </p>
     </div>
 
-{{ range $k, $v := .Banners }}
-    <div class="alert alert-{{ $k }}" role="alert">
-    {{ range $kk, $vv := $v }}
-        <div>{{ $vv }}</div>
-    {{ end }}
-    </div>
-{{ end }}
-
     <div class="card">
         <div class="card-header bg-light text-white">
 
@@ -72,48 +64,16 @@
             {{/* Info */}}
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-7">
+                {{ if ne .App.GameName "" }}
+                    <p>For Game: <a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
+                {{end}}
 
-                        {{ if ne .App.GameName "" }}
-                            <p>For Game: <a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
-                        {{end}}
-
-                            <p>Price: ${{ .App.PriceFinal }}</p>
-                            <p>App Type: {{ .App.GetType }}</p>
-                            <p>Release State: {{ .App.GetReleaseState }}</p>
-                            <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>
-                            <p>Genres: {{ genres .App.GetGenres }}</p>
-                            <p>Tags: {{ tags .Tags }}</p>
-
-                        </div>
-                        <div class="col-sm-12 col-lg-5">
-
-                            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                                <ol class="carousel-indicators">
-                                {{ range $key, $value := .App.GetScreenshots }}
-                                    <li data-target="#carouselExampleIndicators" data-slide-to="{{ $key }}" class="{{if eq $key 0}}active{{end}}"></li>
-                                {{ end }}
-                                </ol>
-                                <div class="carousel-inner">
-                                {{ range $key, $value := .App.GetScreenshots }}
-                                    <div class="carousel-item {{if eq $key 0}}active{{end}}">
-                                        <img class="d-block w-100" style="width:50%;" src="{{ .PathFull }}">
-                                    </div>
-                                {{ end }}
-                                </div>
-                                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
+                    <p>Price: ${{ .App.PriceFinal }}</p>
+                    <p>App Type: {{ .App.GetType }}</p>
+                    <p>Release State: {{ .App.GetReleaseState }}</p>
+                    <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>
+                    <p>Genres: {{ genres .App.GetGenres }}</p>
+                    <p>Tags: {{ tags .Tags }}</p>
 
                 </div>
 
@@ -264,7 +224,28 @@
             {{/* Media */}}
                 <div class="tab-pane" id="media" role="tabpanel">
 
-                    Media
+                    <div id="mediaCarousel" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                        {{ range $key, $value := .App.GetScreenshots }}
+                            <li data-target="#mediaCarousel" data-slide-to="{{ $key }}" class="{{if eq $key 0}}active{{end}}"></li>
+                        {{ end }}
+                        </ol>
+                        <div class="carousel-inner">
+                        {{ range $key, $value := .App.GetScreenshots }}
+                            <div class="carousel-item {{if eq $key 0}}active{{end}}">
+                                <img class="d-block w-100" src="{{ .PathFull }}">
+                            </div>
+                        {{ end }}
+                        </div>
+                        <a class="carousel-control-prev" href="#mediaCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#mediaCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
 
                 </div>
             </div>

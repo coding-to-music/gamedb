@@ -199,21 +199,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
-	// Make banners
-	banners := make(map[string][]string)
-	var primary []string
-
-	if app.ReleaseState == "prerelease" {
-		primary = append(primary, "This game is not released yet!")
-	}
-	if app.Type == "movie" {
-		primary = append(primary, "This listing is for a movie")
-	}
-
-	if len(primary) > 0 {
-		banners["primary"] = primary
-	}
-
 	// Wait
 	wg.Wait()
 
@@ -223,7 +208,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	t.App = app
 	t.Packages = packages
 	t.Articles = news
-	t.Banners = banners
 	t.Prices = pricesString
 	t.PricesCount = pricesCount
 	t.Achievements = achievements
@@ -242,7 +226,6 @@ type appTemplate struct {
 	Packages     []mysql.Package
 	DLC          []mysql.App
 	Articles     []appArticleTemplate
-	Banners      map[string][]string
 	Prices       string
 	PricesCount  int
 	Achievements []appAchievementTemplate
