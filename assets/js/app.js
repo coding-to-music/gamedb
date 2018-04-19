@@ -12,4 +12,14 @@ if ($('#app-page').length > 0) {
 
     $collapseBoxes.collapse();
     $collapseBoxes.first().collapse('show');
+
+    // Fix links
+    $('#news a').each(function () {
+
+        var href = $(this).attr('href');
+        if (!href.startsWith('http')) {
+            $(this).attr('href', 'http://' + href);
+        }
+
+    });
 }

@@ -27,12 +27,6 @@
   revision = "2a93ba0f464da2a77748a1dc2e9e5bea8bbdd4b9"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/CalebQ42/bbConvert"
-  packages = ["."]
-  revision = "4d7de4d47ea5a57440e9add54b743fd9e043d349"
-
-[[projects]]
   name = "github.com/beevik/etree"
   packages = ["."]
   revision = "15a30b44cfd6c5a16a7ddfe271bf146aaf2d3195"
@@ -505,6 +499,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bd99d91266072e26435aa8c29562e183ecda33859577c968cb29791062d53b20"
+  inputs-digest = "cdbedf615e9812fe9d7ebb2bead3971f61ee1e2b3880bc89ae335b92178b0294"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -638,5 +638,6 @@ var PackageExtendedKeys = map[string]string{
 }
 
 var PackageControllerKeys = map[string]string{
-	"full_gamepad": "Full Gamepad",
+	"full_gamepad":                         "Full Gamepad",
+	"allowpurchasefromrestrictedcountries": "Allow Purchase From Restricted Countries",
 }

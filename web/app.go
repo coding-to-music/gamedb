@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/CalebQ42/bbConvert"
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
@@ -150,13 +149,23 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Error(err)
 		}
 
-		var conv bbConvert.HTMLConverter
-		conv.ImplementDefaults()
+		// todo, use a different bbcode library that works for app 418460 & 218620
+		// todo, add http to links here instead of JS
+		//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
+		//var conv bbConvert.HTMLConverter
+		//conv.ImplementDefaults()
 
 		for _, v := range newsResp {
+
+			// Fix broken links
+			//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
+
+			// Convert BBCdoe to HTML
+			//v.Contents = conv.Convert(v.Contents)
+
 			news = append(news, appArticleTemplate{
 				Title:    v.Title,
-				Contents: template.HTML(conv.Convert(v.Contents)),
+				Contents: template.HTML(v.Contents),
 				Author:   v.Author,
 			})
 		}

@@ -361,6 +361,13 @@ func GetReviews(appID int) (reviews ReviewsResponse, err error) {
 		return reviews, err
 	}
 
+	b := string(contents)
+
+	regex := regexp.MustCompile(`"comment_count":\s?"(\d+)"`)
+	b = regex.ReplaceAllString(b, `"comment_count": $1`)
+
+	contents = []byte(b)
+
 	// Unmarshal JSON
 	if err := json.Unmarshal(contents, &reviews); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {

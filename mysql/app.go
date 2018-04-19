@@ -16,6 +16,7 @@ import (
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/steam"
 )
 
@@ -518,17 +519,40 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	db, err := GetDB()
+	// Try Memcache
+	client := memcache.GetClient()
+	item, err := client.Get(memcache.AppsCount.Key)
+	if err != nil {
+
+		// Try MySQL
+		db, err := GetDB()
+		if err != nil {
+			return count, err
+		}
+
+		db.Model(&App{}).Count(&count)
+		if db.Error != nil {
+			return count, db.Error
+		}
+
+		// Save to Memcache
+		i := memcache.AppsCount
+		i.Value = []byte(strconv.Itoa(count))
+		err = client.Set(&memcache.AppsCount)
+		if err != nil {
+			return count, err
+		}
+
+		return count, nil
+	}
+
+	// Return Memcache
+	val, err := strconv.Atoi(string(item.Value))
 	if err != nil {
 		return count, err
 	}
 
-	db.Model(&App{}).Count(&count)
-	if db.Error != nil {
-		return count, db.Error
-	}
-
-	return count, nil
+	return val, nil
 }
 
 func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
