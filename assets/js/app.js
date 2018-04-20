@@ -17,7 +17,7 @@ if ($('#app-page').length > 0) {
     $('#news a').each(function () {
 
         var href = $(this).attr('href');
-        if (!href.startsWith('http')) {
+        if (href && !(href.startsWith('http'))) {
             $(this).attr('href', 'http://' + href);
         }
 

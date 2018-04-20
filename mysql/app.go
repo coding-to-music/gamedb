@@ -598,7 +598,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 			}
 
 			app.Reviews = string(reviewsBytes)
-			app.ReviewsScore = reviewsResp.QuerySummary.ReviewScore
+			app.ReviewsScore = reviewsResp.QuerySummary.GetPositivePerent()
 			app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
 			app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
 

@@ -30,3 +30,7 @@ func GetClient() *memcache.Client {
 
 	return client
 }
+
+func Set(key string, fn func() []byte) {
+
+}

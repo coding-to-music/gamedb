@@ -48,14 +48,16 @@
                     <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .Articles }})</a>
                 </li>
             {{end}}
-            {{if gt .App.GetReviews.QuerySummary.TotalReviews 0}}
+            {{if gt .ReviewsCount.TotalReviews 0}}
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .App.GetReviews.QuerySummary.TotalReviews }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .ReviewsCount.TotalReviews }})</a>
                 </li>
             {{end}}
+            {{if gt (len .App.GetScreenshots) 0}}
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media</a>
+                    <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
                 </li>
+            {{end}}
             </ul>
         </div>
         <div class="card-body">
@@ -202,12 +204,12 @@
                         <tr>
                             <th scope="row" width="20%">Positive / Negative</th>
                             <td>
-                                <div class="progress" style="height: 24px;">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ .Reviews.QuerySummary.GetPositivePerent }}%">
-                                    {{ comma .Reviews.QuerySummary.TotalPositive }}
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ .ReviewsCount.GetPositivePerent }}%">
+                                    {{ comma .ReviewsCount.TotalPositive }}
                                     </div>
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: {{ .Reviews.QuerySummary.GetNegativePerent }}%">
-                                    {{ comma .Reviews.QuerySummary.TotalNegative }}
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: {{ .ReviewsCount.GetNegativePerent }}%">
+                                    {{ comma .ReviewsCount.TotalNegative }}
                                     </div>
                                 </div>
                             </td>
@@ -215,8 +217,13 @@
                         </tbody>
                     </table>
 
-                {{ range $key, $value := .Reviews.Reviews }}
-                    x
+                {{ range $key, $value := .Reviews }}
+
+                    <blockquote class="blockquote">
+                        <p class="mb-0">{{.Review}}</p>
+                        <footer class="blockquote-footer"><a href="{{.Player.GetPath}}">{{.Player.GetName}}</a></footer>
+                    </blockquote>
+
                 {{ end }}
 
                 </div>

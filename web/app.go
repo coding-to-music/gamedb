@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -61,6 +62,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		achievementsResp, err := steam.GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		achievementsMap := make(map[string]float64)
@@ -72,6 +74,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		schema, err := steam.GetSchemaForGame(app.ID)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		// Make template struct
@@ -95,11 +98,13 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		tagIDs, err := app.GetTags()
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		tags, err = mysql.GetTagsByID(tagIDs)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		wg.Done()
@@ -114,6 +119,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		pricesResp, err := datastore.GetAppPrices(app.ID, 0)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		pricesCount = len(pricesResp)
@@ -132,6 +138,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		pricesBytes, err := json.Marshal(prices)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		pricesString = string(pricesBytes)
@@ -147,6 +154,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		newsResp, err := datastore.GetArticles(idx, 1000)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		// todo, use a different bbcode library that works for app 418460 & 218620
@@ -181,6 +189,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		packages, err = mysql.GetPackagesAppIsIn(app.ID)
 		if err != nil {
 			logger.Error(err)
+			return
 		}
 
 		wg.Done()
@@ -194,6 +203,66 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		dlc, err = mysql.GetDLC(app, []string{"id", "name"})
 		if err != nil {
 			logger.Error(err)
+			return
+		}
+
+		wg.Done()
+	}()
+
+	// Get reviews
+	var reviews []appReviewTemplate
+	var reviewsCount steam.ReviewsSummaryResponse
+	wg.Add(1)
+	go func() {
+
+		reviewsResponse, err := app.GetReviews()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+
+		reviewsCount = reviewsResponse.QuerySummary
+
+		// Make slice of playerIDs
+		var playerIDs []int
+		for _, v := range reviewsResponse.Reviews {
+			playerIDs = append(playerIDs, v.Author.SteamID)
+		}
+
+		players, err := datastore.GetPlayersByIDs(playerIDs)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+
+		// Make map of players
+		var playersMap = map[int]datastore.Player{}
+		for _, v := range players {
+			playersMap[v.PlayerID] = v
+		}
+
+		// Make template slice
+		for _, v := range reviewsResponse.Reviews {
+
+			var player datastore.Player
+			if val, ok := playersMap[v.Author.SteamID]; ok {
+				player = val
+
+				fmt.Println(player.PersonaName)
+			} else {
+				player := datastore.Player{}
+				player.PlayerID = v.Author.SteamID
+				player.PersonaName = "Unknown"
+
+				fmt.Println(player.PersonaName)
+			}
+
+			// todo, why is PersonaName blank nomatter what
+
+			reviews = append(reviews, appReviewTemplate{
+				Review: v.Review,
+				Player: player,
+			})
 		}
 
 		wg.Done()
@@ -213,9 +282,8 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	t.Achievements = achievements
 	t.Tags = tags
 	t.DLC = dlc
-
-	reviews, err := app.GetReviews()
 	t.Reviews = reviews
+	t.ReviewsCount = reviewsCount
 
 	returnTemplate(w, r, "app", t)
 }
@@ -231,7 +299,8 @@ type appTemplate struct {
 	Achievements []appAchievementTemplate
 	Schema       steam.GameSchema
 	Tags         []mysql.Tag
-	Reviews      steam.ReviewsResponse
+	Reviews      []appReviewTemplate
+	ReviewsCount steam.ReviewsSummaryResponse
 }
 
 type appAchievementTemplate struct {
@@ -245,6 +314,11 @@ type appArticleTemplate struct {
 	Title    string
 	Contents template.HTML
 	Author   string
+}
+
+type appReviewTemplate struct {
+	Review string
+	Player datastore.Player
 }
 
 func (a appAchievementTemplate) GetCompleted() float64 {

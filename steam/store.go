@@ -29,7 +29,11 @@ func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 	query.Set("cc", "us") // Currency
 	query.Set("l", "en")  // Language
 
-	response, err := http.Get("http://store.steampowered.com/api/appdetails?" + query.Encode())
+	path := "http://store.steampowered.com/api/appdetails?" + query.Encode()
+
+	logs.AddLog(path)
+
+	response, err := http.Get(path)
 	if err != nil {
 		return app, err
 	}
@@ -239,7 +243,11 @@ func GetPackageDetailsFromStore(id int) (pack PackageDetailsBody, err error) {
 	query.Set("cc", "us") // Currency
 	query.Set("l", "en")  // Language
 
-	response, err := http.Get("http://store.steampowered.com/api/packagedetails?" + query.Encode())
+	path := "http://store.steampowered.com/api/packagedetails?" + query.Encode()
+
+	logs.AddLog(path)
+
+	response, err := http.Get(path)
 	if err != nil {
 		return pack, err
 	}
@@ -305,8 +313,12 @@ type PackageDetailsBody struct {
 
 func GetTags() (tags []steamTag, err error) {
 
+	path := "http://store.steampowered.com/tagdata/populartags/english"
+
+	logs.AddLog(path)
+
 	// Get tags names
-	response, err := http.Get("http://store.steampowered.com/tagdata/populartags/english")
+	response, err := http.Get(path)
 	if err != nil {
 		logger.Error(err)
 		return tags, err
@@ -349,7 +361,11 @@ func GetReviews(appID int) (reviews ReviewsResponse, err error) {
 	query.Set("review_type", "all")
 	query.Set("purchase_type", "all")
 
-	response, err := http.Get("http://store.steampowered.com/appreviews/" + strconv.Itoa(appID) + "?" + query.Encode())
+	path := "http://store.steampowered.com/appreviews/" + strconv.Itoa(appID) + "?" + query.Encode()
+
+	logs.AddLog(path)
+
+	response, err := http.Get(path)
 	if err != nil {
 		return reviews, err
 	}
@@ -365,6 +381,9 @@ func GetReviews(appID int) (reviews ReviewsResponse, err error) {
 
 	regex := regexp.MustCompile(`"comment_count":\s?"(\d+)"`)
 	b = regex.ReplaceAllString(b, `"comment_count": $1`)
+
+	regex = regexp.MustCompile(`"steamid":\s?"(\d+)"`)
+	b = regex.ReplaceAllString(b, `"steamid": $1`)
 
 	contents = []byte(b)
 
@@ -387,12 +406,12 @@ type ReviewsResponse struct {
 	Reviews []struct {
 		Recommendationid string `json:"recommendationid"`
 		Author struct {
-			Steamid              string `json:"steamid"`
-			NumGamesOwned        int    `json:"num_games_owned"`
-			NumReviews           int    `json:"num_reviews"`
-			PlaytimeForever      int    `json:"playtime_forever"`
-			PlaytimeLastTwoWeeks int    `json:"playtime_last_two_weeks"`
-			LastPlayed           int    `json:"last_played"`
+			SteamID              int `json:"steamid"`
+			NumGamesOwned        int `json:"num_games_owned"`
+			NumReviews           int `json:"num_reviews"`
+			PlaytimeForever      int `json:"playtime_forever"`
+			PlaytimeLastTwoWeeks int `json:"playtime_last_two_weeks"`
+			LastPlayed           int `json:"last_played"`
 		} `json:"author"`
 		Language                 string `json:"language"`
 		Review                   string `json:"review"`

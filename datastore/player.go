@@ -67,6 +67,10 @@ func (p Player) GetPath() string {
 	return "/players/" + strconv.Itoa(p.PlayerID) + "/" + slug.Make(p.PersonaName)
 }
 
+func (p Player) GetName() string {
+	return p.PersonaName
+}
+
 func (p Player) GetSteamTimeUnix() (int64) {
 	return p.TimeCreated.Unix()
 }
