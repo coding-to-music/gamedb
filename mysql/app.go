@@ -3,6 +3,7 @@ package mysql
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"html/template"
 	"net/url"
 	"reflect"
@@ -20,8 +21,12 @@ import (
 	"github.com/steam-authority/steam-authority/steam"
 )
 
+var (
+	ErrInvalidID = errors.New("invalid app id")
+)
+
 type App struct {
-	ID                     int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
+	ID                     int        `gorm:"not null;column:id;primary_key"`
 	CreatedAt              *time.Time `gorm:"not null;column:created_at"`
 	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`
 	ScannedAt              *time.Time `gorm:"not null;column:scanned_at"`
@@ -170,6 +175,15 @@ func (app App) GetInstallLink() (template.URL) {
 
 func (app App) GetMetacriticLink() (template.URL) {
 	return template.URL("http://www.metacritic.com/game/" + app.MetacriticURL)
+}
+
+func IsValidAppID(id int) bool {
+
+	if id == 0 {
+		return false
+	}
+
+	return true
 }
 
 // Used in frontend
@@ -374,14 +388,6 @@ func (app App) GetName() (name string) {
 
 func (app App) shouldUpdate(userAgent string) bool {
 
-	if helpers.IsBot(userAgent) {
-		return false
-	}
-
-	if app.ScannedAt.Unix() < (time.Now().Unix() - int64(60*60*24)) { // 1 Day
-		return true
-	}
-
 	return false
 }
 
@@ -547,9 +553,12 @@ func CountApps() (count int, err error) {
 	}
 
 	// Return Memcache
-	val, err := strconv.Atoi(string(item.Value))
-	if err != nil {
-		return count, err
+	val := 0
+	if len(item.Value) > 0 {
+		val, err = strconv.Atoi(string(item.Value))
+		if err != nil {
+			return count, err
+		}
 	}
 
 	return val, nil
@@ -557,77 +566,91 @@ func CountApps() (count int, err error) {
 
 func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
-	if app.shouldUpdate(userAgent) {
+	if !IsValidAppID(app.ID) {
+		return []error{ErrInvalidID}
+	}
 
-		var err error
-		var wg sync.WaitGroup
+	if helpers.IsBot(userAgent) {
+		return errs
+	}
 
-		// Update news
-		wg.Add(1)
-		go func(p *App) {
+	if app.ScannedAt.Unix() < (time.Now().Unix() - int64(60*60*24)) { // 1 Day
+		return errs
+	}
 
-			var articles []*datastore.Article
+	var err error
+	var wg sync.WaitGroup
 
-			articles, err = datastore.GetNewArticles(app.ID)
-			if err != nil {
-				errs = append(errs, err)
-			}
+	// Update news
+	wg.Add(1)
+	go func(p *App) {
 
-			err = datastore.BulkAddArticles(articles)
-			if err != nil {
-				errs = append(errs, err)
-			}
+		var articles []*datastore.Article
 
-			wg.Done()
-		}(app)
-
-		// Update reviews
-		wg.Add(1)
-		go func(p *App) {
-
-			var reviewsResp steam.ReviewsResponse
-
-			reviewsResp, err = steam.GetReviews(app.ID)
-			if err != nil {
-				errs = append(errs, err)
-			}
-
-			reviewsBytes, err := json.Marshal(reviewsResp)
-			if err != nil {
-				errs = append(errs, err)
-			}
-
-			app.Reviews = string(reviewsBytes)
-			app.ReviewsScore = reviewsResp.QuerySummary.GetPositivePerent()
-			app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
-			app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
-
-			wg.Done()
-		}(app)
-
-		// Wait
-		wg.Wait()
-
-		// Fix dates
-		t := time.Now()
-		app.ScannedAt = &t
-
-		// Save
-		db, err := GetDB()
+		articles, err = datastore.GetNewArticles(app.ID)
 		if err != nil {
 			errs = append(errs, err)
 		}
 
-		db.Save(app)
-		if db.Error != nil {
+		err = datastore.BulkAddArticles(articles)
+		if err != nil {
 			errs = append(errs, err)
 		}
+
+		wg.Done()
+	}(app)
+
+	// Update reviews
+	wg.Add(1)
+	go func(p *App) {
+
+		var reviewsResp steam.ReviewsResponse
+
+		reviewsResp, err = steam.GetReviews(app.ID)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		reviewsBytes, err := json.Marshal(reviewsResp)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		app.Reviews = string(reviewsBytes)
+		app.ReviewsScore = reviewsResp.QuerySummary.GetPositivePerent()
+		app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
+		app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
+
+		wg.Done()
+	}(app)
+
+	// Wait
+	wg.Wait()
+
+	// Fix dates
+	t := time.Now()
+	app.ScannedAt = &t
+
+	// Save
+	db, err := GetDB()
+	if err != nil {
+		errs = append(errs, err)
+	}
+
+	db.Save(app)
+	if db.Error != nil {
+		errs = append(errs, err)
 	}
 
 	return errs
 }
 
 func (app *App) UpdateFromPICS() (errs []error) {
+
+	if !IsValidAppID(app.ID) {
+		fmt.Println(app.ID)
+		return []error{ErrInvalidID}
+	}
 
 	var wg sync.WaitGroup
 

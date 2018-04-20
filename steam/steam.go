@@ -18,7 +18,7 @@ const (
 )
 
 const (
-	countCalls = true
+	countCalls = false
 	logCalls   = false
 )
 
@@ -73,9 +73,9 @@ func (s steamLogs) AddLog(path string) {
 		s.logs = map[int]steamLog{}
 	}
 
-	path = strings.Replace(path, key, "-", 1)
-	path = strings.Replace(path, "http://api.steampowered.com", "Steam API: ", 1)
-	path = strings.Replace(path, "http://store.steampowered.com", "Store API: ", 1)
+	//path = strings.Replace(path, key, "-", 1)
+	//path = strings.Replace(path, "http://api.steampowered.com", "Steam API: ", 1)
+	//path = strings.Replace(path, "http://store.steampowered.com", "Store API: ", 1)
 
 	if logCalls {
 		logger.Info(path)

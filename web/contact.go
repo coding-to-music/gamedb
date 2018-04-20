@@ -1,18 +1,13 @@
 package web
 
 import (
-	"bytes"
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
-	"strings"
-	"time"
 
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/recaptcha"
 )
 
 func ContactHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,17 +19,10 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	returnTemplate(w, r, "contact", template)
 }
 
-type contactTemplate struct {
-	GlobalTemplate
-	RecaptchaPublic string
-	Messages        []string
-	Success         bool
-}
-
 func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
-	template := new(contactTemplate)
+	template := contactTemplate{}
 	template.Fill(r, "Contact")
 	template.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
@@ -55,46 +43,21 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Recaptcha
-	if r.PostForm.Get("g-recaptcha-response") != "" {
+	var success bool
+	var err error
 
-		form := url.Values{}
-		form.Add("secret", os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
-		form.Add("response", r.PostForm.Get("g-recaptcha-response"))
-		form.Add("remoteip", r.RemoteAddr)
+	response := r.PostForm.Get("g-recaptcha-response")
+	if response != "" {
 
-		req, err := http.NewRequest("POST", "https://www.google.com/recaptcha/api/siteverify", bytes.NewBufferString(form.Encode()))
+		success, err = recaptcha.Check(os.Getenv("STEAM_RECAPTCHA_PRIVATE"), response, r.RemoteAddr)
 		if err != nil {
-			logger.Error(err)
-		}
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			logger.Error(err)
-		}
-		defer resp.Body.Close()
-
-		respBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			logger.Error(err)
-		}
-
-		var str recaptchaResponse
-		err = json.Unmarshal(respBytes, &str)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + string(respBytes))
-			} else {
+			if err != recaptcha.ErrInvalidInputs {
 				logger.Error(err)
 			}
 		}
+	}
 
-		if !str.Success {
-			template.Messages = append(template.Messages, "Please check the captcha.")
-		}
-
-	} else {
+	if !success {
 		template.Messages = append(template.Messages, "Please check the captcha.")
 	}
 
@@ -124,9 +87,9 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 	returnTemplate(w, r, "contact", template)
 }
 
-type recaptchaResponse struct {
-	Success     bool      `json:"success"`
-	ChallengeTS time.Time `json:"challenge_ts"`
-	Hostname    string    `json:"hostname"`
-	ErrorCodes  []string  `json:"error-codes"`
+type contactTemplate struct {
+	GlobalTemplate
+	RecaptchaPublic string
+	Messages        []string
+	Success         bool
 }

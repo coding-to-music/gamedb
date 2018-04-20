@@ -26,15 +26,18 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 		return false, false
 	}
 
+	app := new(mysql.App)
+
 	// Update app
 	db, err := mysql.GetDB()
 	if err != nil {
 		logger.Error(err)
 	}
 
-	app := new(mysql.App)
-
 	db.Attrs(mysql.GetDefaultAppJSON()).FirstOrCreate(app, mysql.App{ID: message.AppID})
+	if db.Error != nil {
+		logger.Error(db.Error)
+	}
 
 	if message.ChangeID != 0 {
 		app.ChangeNumber = message.ChangeID
@@ -58,7 +61,7 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	db.Save(app)
 	if db.Error != nil {
-		logger.Error(err)
+		logger.Error(db.Error)
 	}
 
 	// Save price change

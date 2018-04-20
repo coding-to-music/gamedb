@@ -11,6 +11,7 @@ import (
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/recaptcha"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/steam"
 	"github.com/yohcop/openid-go"
@@ -39,13 +40,39 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Recaptcha
+		var success bool
+		var err error
+
+		response := r.PostForm.Get("g-recaptcha-response")
+		if response != "" {
+
+			success, err = recaptcha.Check(os.Getenv("STEAM_RECAPTCHA_PRIVATE"), response, r.RemoteAddr)
+			if err != nil {
+				if err != recaptcha.ErrInvalidInputs {
+					logger.Error(err)
+				}
+			}
+		}
+
+		if !success {
+			returnErrorTemplate(w, r, 401, "Please check the captcha")
+			return
+		}
+
+		// Field validation
 		email := r.PostForm.Get("email")
 		password := r.PostForm.Get("password")
+
+		if email == "" || password == "" {
+			returnErrorTemplate(w, r, 401, "Please fill in your username and password")
+			return
+		}
 
 		players, err := datastore.GetPlayersByEmail(email)
 		if err != nil {
 			if err == datastore.ErrNoSuchEntity {
-				returnErrorTemplate(w, r, 500, "Invalid credentials")
+				returnErrorTemplate(w, r, 401, "Invalid credentials")
 				return
 			} else {
 				logger.Error(err)
@@ -67,21 +94,23 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	template := loginTemplate{}
-	template.Fill(r, "Login")
-	template.Message = "xx"
-	template.Success = success
+	t := loginTemplate{}
+	t.Fill(r, "Login")
+	t.Message = "xx"
+	t.Success = success
+	t.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
-	returnTemplate(w, r, "login", template)
+	returnTemplate(w, r, "login", t)
 	return
 
 }
 
 type loginTemplate struct {
 	GlobalTemplate
-	Username string
-	Message  string
-	Success  bool
+	Username        string
+	Message         string
+	Success         bool
+	RecaptchaPublic string
 }
 
 func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {

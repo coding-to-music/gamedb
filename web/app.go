@@ -20,11 +20,19 @@ import (
 func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
+	if id == "" {
+		returnErrorTemplate(w, r, 400, "Invalid App ID")
+		return
+	}
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
-		logger.Error(err)
-		returnErrorTemplate(w, r, 500, "Invalid App ID: "+id)
+		returnErrorTemplate(w, r, 400, "Invalid App ID: "+id)
+		return
+	}
+
+	if !mysql.IsValidAppID(idx) {
+		returnErrorTemplate(w, r, 400, "Invalid App ID: "+id)
 		return
 	}
 
@@ -49,7 +57,10 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update news, reviews etc
-	app.UpdateFromRequest(r.UserAgent())
+	errs := app.UpdateFromRequest(r.UserAgent())
+	for _, v := range errs {
+		logger.Error(v)
+	}
 
 	//
 	var wg sync.WaitGroup
@@ -250,14 +261,11 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 				fmt.Println(player.PersonaName)
 			} else {
-				player := datastore.Player{}
+				player = datastore.Player{}
 				player.PlayerID = v.Author.SteamID
 				player.PersonaName = "Unknown"
 
-				fmt.Println(player.PersonaName)
 			}
-
-			// todo, why is PersonaName blank nomatter what
 
 			reviews = append(reviews, appReviewTemplate{
 				Review: v.Review,

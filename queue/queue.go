@@ -10,19 +10,20 @@ import (
 )
 
 const (
-	namespace = "STEAM_"
+	enableConsumers = true
+	namespace       = "STEAM_"
+	HeaderRetry     = "retry"
+)
 
+const (
 	ChangeQueue  = "Changes"
 	AppQueue     = "Apps"
 	PackageQueue = "Packages"
 	PlayerQueue  = "Players"
-
-	HeaderRetry = "retry"
 )
 
 var (
-	queues          map[string]queue
-	enableConsumers bool = true
+	queues map[string]queue
 )
 
 func init() {
@@ -42,8 +43,10 @@ func init() {
 
 func RunConsumers() {
 
-	for _, v := range queues {
-		go v.consume()
+	if enableConsumers {
+		for _, v := range queues {
+			go v.consume()
+		}
 	}
 }
 

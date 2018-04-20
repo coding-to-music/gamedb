@@ -35,6 +35,9 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool) {
 	pack := new(mysql.Package)
 
 	db.Attrs(mysql.GetDefaultPackageJSON()).FirstOrCreate(pack, mysql.Package{ID: message.PackageID})
+	if db.Error != nil {
+		logger.Error(db.Error)
+	}
 
 	if message.ChangeID != 0 {
 		pack.ChangeID = message.ChangeID

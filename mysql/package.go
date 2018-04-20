@@ -16,7 +16,7 @@ import (
 )
 
 type Package struct {
-	ID              int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"` //
+	ID              int        `gorm:"not null;column:id;primary_key"` //
 	CreatedAt       *time.Time `gorm:"not null;column:created_at"`                    //
 	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`                    //
 	Name            string     `gorm:"not null;column:name"`                          //
