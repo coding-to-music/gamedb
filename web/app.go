@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -258,13 +257,10 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			var player datastore.Player
 			if val, ok := playersMap[v.Author.SteamID]; ok {
 				player = val
-
-				fmt.Println(player.PersonaName)
 			} else {
 				player = datastore.Player{}
 				player.PlayerID = v.Author.SteamID
 				player.PersonaName = "Unknown"
-
 			}
 
 			reviews = append(reviews, appReviewTemplate{

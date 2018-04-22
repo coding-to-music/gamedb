@@ -3,7 +3,6 @@ package mysql
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"html/template"
 	"net/url"
 	"reflect"
@@ -648,7 +647,6 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 func (app *App) UpdateFromPICS() (errs []error) {
 
 	if !IsValidAppID(app.ID) {
-		fmt.Println(app.ID)
 		return []error{ErrInvalidID}
 	}
 
