@@ -1,12 +1,14 @@
-package stackdriver
+package logger
 
 import (
-	"context"
-	"fmt"
-	"os"
-	"runtime/debug"
+"context"
+"fmt"
+"os"
 
-	"cloud.google.com/go/logging"
+
+
+
+"cloud.google.com/go/logging"
 )
 
 const (
@@ -38,14 +40,14 @@ func getLog(name ...string) (*logging.Logger) {
 	}
 }
 
-func Error(err error, log ...string) {
-	getLog(log...).Log(logging.Entry{Payload: err.Error() + "\n\r" + string(debug.Stack()), Severity: logging.Error})
-}
-
-func Info(payload string, log ...string) {
-	getLog(log...).Log(logging.Entry{Payload: payload, Severity: logging.Info})
-}
-
-func Critical(err error, log ...string) {
-	getLog(log...).LogSync(ctx, logging.Entry{Payload: err.Error(), Severity: logging.Critical})
-}
+//func Error(err error, log ...string) {
+//	getLog(log...).Log(logging.Entry{Payload: err.Error() + "\n\r" + string(debug.Stack()), Severity: logging.Error})
+//}
+//
+//func Info(payload string, log ...string) {
+//	getLog(log...).Log(logging.Entry{Payload: payload, Severity: logging.Info})
+//}
+//
+//func Critical(err error, log ...string) {
+//	getLog(log...).LogSync(ctx, logging.Entry{Payload: err.Error(), Severity: logging.Critical})
+//}

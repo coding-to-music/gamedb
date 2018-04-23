@@ -2,7 +2,6 @@ package web
 
 import (
 	"bytes"
-	"encoding/json"
 	"html/template"
 	"math"
 	"net/http"
@@ -43,6 +42,7 @@ func Serve() {
 	r.Get("/discounts", DiscountsHandler)
 	r.Get("/developers", StatsDevelopersHandler)
 	r.Get("/donate", DonateHandler)
+	r.Get("/esi/header", HeaderHandler)
 	r.Get("/experience", ExperienceHandler)
 	r.Get("/experience/{id}", ExperienceHandler)
 	r.Get("/free-games", FreeGamesHandler)
@@ -123,6 +123,8 @@ func fileServer(r chi.Router) {
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
+	w.Header().Set("Content-Type", "text/html")
+
 	// Load templates needed
 	folder := os.Getenv("STEAM_PATH")
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
@@ -132,6 +134,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/templates/_deals_header.html",
 		folder+"/templates/_pagination.html",
 		folder+"/templates/"+page+".html",
+		folder+"/templates/esi_header.html",
 	)
 	if err != nil {
 		logger.Error(err)
@@ -225,6 +228,7 @@ type GlobalTemplate struct {
 	Games     []int
 	Path      string // URL
 	IsAdmin   bool
+	Cache     bool
 	request   *http.Request // Internal
 }
 
@@ -243,24 +247,24 @@ func (t *GlobalTemplate) Fill(r *http.Request, title string) {
 	t.ID, _ = strconv.Atoi(id)
 	t.Name, _ = session.Read(r, session.Name)
 	t.Avatar, _ = session.Read(r, session.Avatar)
-	t.Avatar, _ = session.Read(r, session.Avatar)
 	t.UserLevel, _ = strconv.Atoi(level)
 
-	gamesString, _ := session.Read(r, session.Games)
-	if gamesString != "" {
-		err := json.Unmarshal([]byte(gamesString), &t.Games)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + gamesString)
-			} else {
-				logger.Error(err)
-			}
-		}
-	}
+	//gamesString, _ := session.Read(r, session.Games)
+	//if gamesString != "" {
+	//	err := json.Unmarshal([]byte(gamesString), &t.Games)
+	//	if err != nil {
+	//		if strings.Contains(err.Error(), "cannot unmarshal") {
+	//			logger.Info(err.Error() + " - " + gamesString)
+	//		} else {
+	//			logger.Error(err)
+	//		}
+	//	}
+	//}
 
 	// From request
 	t.Path = r.URL.Path
 	t.IsAdmin = r.Header.Get("Authorization") != ""
+	t.Cache = r.Header.Get("X-Cache") == "HIT"
 }
 
 func (t GlobalTemplate) LoggedIn() (bool) {

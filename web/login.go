@@ -1,7 +1,6 @@
 package web
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -175,10 +174,10 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		gamesSlice = append(gamesSlice, v.AppID)
 	}
 
-	gamesString, err := json.Marshal(gamesSlice)
-	if err != nil {
-		logger.Error(err)
-	}
+	//gamesString, err := json.Marshal(gamesSlice)
+	//if err != nil {
+	//	logger.Error(err)
+	//}
 
 	// Get level
 	level, err := steam.GetSteamLevel(idInt)
@@ -191,8 +190,8 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		session.ID:     idString,
 		session.Name:   resp.PersonaName,
 		session.Avatar: resp.AvatarMedium,
-		session.Games:  string(gamesString),
-		session.Level:  strconv.Itoa(level),
+		//session.Games:  string(gamesString),
+		session.Level: strconv.Itoa(level),
 	})
 	if err != nil {
 		logger.Error(err)

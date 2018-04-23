@@ -1,6 +1,7 @@
 package web
 
 import (
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -8,20 +9,44 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
+func HeaderHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Load templates needed
+	folder := os.Getenv("STEAM_PATH")
+	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(folder + "/templates/esi_header.html")
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 404, err.Error())
+		return
+	}
+
+	// Template
+	tp := GlobalTemplate{}
+	tp.Fill(r, "Header")
+
+	// Write a respone
+	err = t.ExecuteTemplate(w, "esi_header", tp)
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 500, "Something has gone wrong, the error has been logged!")
+		return
+	}
+}
+
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
 
-	template := staticTemplate{}
-	template.Fill(r, "Info")
+	t := staticTemplate{}
+	t.Fill(r, "Info")
 
-	returnTemplate(w, r, "info", template)
+	returnTemplate(w, r, "info", t)
 }
 
 func DonateHandler(w http.ResponseWriter, r *http.Request) {
 
-	template := staticTemplate{}
-	template.Fill(r, "Donate")
+	t := staticTemplate{}
+	t.Fill(r, "Donate")
 
-	returnTemplate(w, r, "donate", template)
+	returnTemplate(w, r, "donate", t)
 }
 
 func Error404Handler(w http.ResponseWriter, r *http.Request) {
