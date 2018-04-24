@@ -13,6 +13,9 @@ go build
 echo "### Copying crontab"
 cp ./crontab /etc/cron.d/steamauthority
 
+echo "### Copying varnish VCL"
+cp ./varnish.vcl /usr/local/etc/varnish/default.vcl
+
 echo "### Talking to Rollbar"
 curl https://api.rollbar.com/api/1/deploy/ \
   -F access_token=${STEAM_ROLLBAR_PRIVATE} \
