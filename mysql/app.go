@@ -524,43 +524,28 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	// Try Memcache
-	client := memcache.GetClient()
-	item, err := client.Get(memcache.AppsCount.Key)
-	if err != nil {
+	err = memcache.GetSet(memcache.AppsCount.Key, &count, func() (value interface{}, expiration int32, err error) {
 
-		// Try MySQL
+		expiration = 60 * 60 * 24
+
 		db, err := GetDB()
 		if err != nil {
-			return count, err
+			return count, expiration, err
 		}
 
 		db.Model(&App{}).Count(&count)
 		if db.Error != nil {
-			return count, db.Error
+			return count, expiration, db.Error
 		}
 
-		// Save to Memcache
-		i := memcache.AppsCount
-		i.Value = []byte(strconv.Itoa(count))
-		err = client.Set(&memcache.AppsCount)
-		if err != nil {
-			return count, err
-		}
+		return value, expiration, nil
+	})
 
-		return count, nil
+	if err != nil {
+		return count, err
 	}
 
-	// Return Memcache
-	val := 0
-	if len(item.Value) > 0 {
-		val, err = strconv.Atoi(string(item.Value))
-		if err != nil {
-			return count, err
-		}
-	}
-
-	return val, nil
+	return count, nil
 }
 
 func (app *App) UpdateFromRequest(userAgent string) (errs []error) {

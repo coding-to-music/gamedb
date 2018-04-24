@@ -6,6 +6,7 @@ import (
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/mysql"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +53,19 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
+	var appsCount int
+	wg.Add(1)
+	go func() {
+
+		appsCount, err = mysql.CountApps()
+		if err != nil {
+			logger.Error(err)
+		}
+
+		wg.Done()
+
+	}()
+
 	wg.Wait()
 
 	template := homeTemplate{}
@@ -60,6 +74,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	template.PlayersCount = playersCount
 	//template.PricesCount = pricesCount
 	template.RanksCount = ranksCount
+	template.AppsCount = appsCount
 
 	returnTemplate(w, r, "home", template)
 }
@@ -69,4 +84,5 @@ type homeTemplate struct {
 	PlayersCount int
 	PricesCount  int
 	RanksCount   int
+	AppsCount    int
 }
