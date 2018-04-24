@@ -424,7 +424,7 @@ func (pack *Package) Update() (errs []error) {
 				pack.Ghost = true
 			}
 
-			if err == steam.ErrBadResponse {
+			if err == steam.ErrNullResponse {
 				errs = append(errs, err)
 			}
 		}

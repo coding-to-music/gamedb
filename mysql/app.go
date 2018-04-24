@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	ErrInvalidID = errors.New("invalid app id")
+	ErrInvalidID = UpdateError{"invalid app id", true, false}
 )
 
 type App struct {
@@ -663,7 +663,7 @@ func (app *App) UpdateFromPICS() (errs []error) {
 				app.Ghost = true
 			}
 
-			if err == steam.ErrBadResponse {
+			if err == steam.ErrNullResponse {
 				errs = append(errs, err)
 			}
 		}

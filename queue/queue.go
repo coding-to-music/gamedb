@@ -141,17 +141,17 @@ func (s queue) consume() {
 				ack, requeue := s.Callback(msg)
 				if ack {
 					msg.Ack(false)
+				} else if requeue {
+
+					go func() {
+						retrys := incRetrys(&msg)
+						time.Sleep(time.Second * 10 * time.Duration(retrys)) // Exponential backoff
+						msg.Nack(false, true)
+					}()
+
 				} else {
 
-					if requeue {
-						go func() {
-							retrys := incRetrys(&msg)
-							time.Sleep(time.Second * 10 * time.Duration(retrys)) // Exponential backoff
-							msg.Nack(false, requeue)
-						}()
-					} else {
-						msg.Nack(false, requeue)
-					}
+					msg.Nack(false, false)
 				}
 
 				time.Sleep(time.Second * 2)

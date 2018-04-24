@@ -35,3 +35,25 @@ func GetDB() (conn *gorm.DB, err error) {
 
 	return gormConnection, nil
 }
+
+type UpdateError struct {
+	err  string
+	hard bool
+	log  bool
+}
+
+func (e UpdateError) Error() string {
+	return e.err
+}
+
+func (e UpdateError) IsHard() bool {
+	return e.hard
+}
+
+func (e UpdateError) IsSoft() bool {
+	return !e.hard
+}
+
+func (e UpdateError) Log() bool {
+	return e.log
+}

@@ -16,8 +16,7 @@ import (
 var (
 	ErrGhostApp     = errors.New("steam: store: no app with id in steam")
 	ErrGhostPackage = errors.New("steam: store: no package with id in steam")
-
-	ErrBadResponse = errors.New("steam: store: bad response") // Response can be "null"
+	ErrNullResponse = errors.New("steam: store: bad response")
 )
 
 func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
@@ -47,7 +46,7 @@ func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {
 
 	// Check for no app
 	if string(contents) == "null" {
-		return app, ErrBadResponse
+		return app, ErrNullResponse
 	}
 
 	// Fix values that can change type, causing unmarshal errors
@@ -261,7 +260,7 @@ func GetPackageDetailsFromStore(id int) (pack PackageDetailsBody, err error) {
 
 	// Check for no pack
 	if string(contents) == "null" {
-		return pack, ErrBadResponse
+		return pack, ErrNullResponse
 	}
 
 	// Unmarshal JSON

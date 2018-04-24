@@ -8,7 +8,6 @@ import (
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
-	"github.com/steam-authority/steam-authority/steam"
 	"github.com/streadway/amqp"
 )
 
@@ -47,17 +46,23 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	errs := pack.Update()
 	if len(errs) > 0 {
-
-		for _, v := range errs {
-			logger.Error(v)
-		}
-
-		for _, v := range errs {
-			if v.Error() == steam.ErrInvalidJson || v == steam.ErrBadResponse || strings.HasSuffix(v.Error(), "connect: connection refused") {
-				return false, true
+		// Nack on hard fails
+		for _, err = range errs {
+			if err, ok := err.(mysql.UpdateError); ok {
+				if err.IsHard() {
+					return false, false
+				}
 			}
 		}
+		// Retry on all other errors
+		for _, err = range errs {
+			logger.Error(err)
+			return false, true
+		}
 	}
+	//if v.Error() == steam.ErrInvalidJson || v == steam.ErrNullResponse || strings.HasSuffix(v.Error(), "connect: connection refused") {
+	//	return false, true
+	//}
 
 	db.Save(pack)
 	if db.Error != nil {
