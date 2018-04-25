@@ -205,6 +205,10 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func login(player datastore.Player) {
+
+}
+
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	session.Clear(w, r)
