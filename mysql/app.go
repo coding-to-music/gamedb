@@ -558,7 +558,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		return errs
 	}
 
-	if app.ScannedAt.Unix() < (time.Now().Unix() - int64(60*60*24)) { // 1 Day
+	if (app.ScannedAt != nil) && (app.ScannedAt.Unix() < (time.Now().Unix() - int64(60*60*24))) { // 1 Days
 		return errs
 	}
 
