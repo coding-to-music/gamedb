@@ -32,22 +32,6 @@ func getClient() *memcache.Client {
 	return client
 }
 
-func Set(key string, v interface{}, expiration int32) error {
-
-	bytes, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	client := getClient()
-	item := new(memcache.Item)
-	item.Key = key
-	item.Value = bytes
-	item.Expiration = expiration
-
-	return client.Set(item)
-}
-
 func Get(key string, i interface{}) error {
 
 	client := getClient()
@@ -65,23 +49,64 @@ func Get(key string, i interface{}) error {
 	return nil
 }
 
-func GetSet(key string, i interface{}, f func() (value interface{}, expiration int32, err error)) error {
+func Set(key string, i interface{}, expiration int32) error {
+
+	bytes, err := json.Marshal(i)
+	if err != nil {
+		return err
+	}
+
+	client := getClient()
+	item := new(memcache.Item)
+	item.Key = key
+	item.Value = bytes
+	item.Expiration = expiration
+
+	return client.Set(item)
+}
+
+func GetSet(key string, i interface{}, f func(j interface{}) (expiration int32, err error)) error {
 
 	err := Get(key, i)
-	if err == ErrCacheMiss {
 
-		bytes, expiration, err := f()
+	if err == ErrCacheMiss || (err != nil && err.Error() == "EOF") {
+
+		expiration, err := f(i)
 		if err != nil {
 			return err
 		}
 
-		err = Set(key, bytes, expiration)
+		err = Set(key, i, expiration)
 		if err != nil {
 			return err
 		}
 
-		err = nil
+		return nil
 	}
 
 	return err
+}
+
+func Inc(key string) (err error) {
+
+	client := getClient()
+	_, err = client.Increment(key, 1)
+
+	return err
+}
+
+func Dec(key string) (err error) {
+
+	client := getClient()
+	_, err = client.Decrement(key, 1)
+
+	return err
+}
+
+// todo, add button to admin
+func Wipe() (err error) {
+
+	client := getClient()
+
+	return client.DeleteAll()
 }

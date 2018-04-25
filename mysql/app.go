@@ -524,21 +524,21 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	err = memcache.GetSet(memcache.AppsCount.Key, &count, func() (value interface{}, expiration int32, err error) {
+	err = memcache.GetSet(memcache.AppsCount.Key, &count, func(count interface{}) (expiration int32, err error) {
 
 		expiration = 60 * 60 * 24
 
 		db, err := GetDB()
 		if err != nil {
-			return count, expiration, err
+			return expiration, err
 		}
 
-		db.Model(&App{}).Count(&count)
+		db.Model(&App{}).Count(count)
 		if db.Error != nil {
-			return count, expiration, db.Error
+			return expiration, db.Error
 		}
 
-		return value, expiration, nil
+		return expiration, nil
 	})
 
 	if err != nil {
