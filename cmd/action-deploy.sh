@@ -13,8 +13,9 @@ go build
 echo "### Copying crontab"
 cp ./crontab /etc/cron.d/steamauthority
 
-echo "### Copying varnish VCL"
+echo "### Updating Varnish"
 cp ./varnish.vcl /usr/local/etc/varnish/default.vcl
+/etc/init.d/varnish reload
 
 echo "### Talking to Rollbar"
 curl https://api.rollbar.com/api/1/deploy/ \
