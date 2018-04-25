@@ -4,16 +4,40 @@
 
     <div class="jumbotron">
         <h1 class="display-4">Steam Authority</h1>
-        <p class="lead">See where you come against the rest of the world</p>
+        <p class="lead"></p>
     </div>
 
     <div class="card">
         <div class="card-body">
-            <p>Under construction</p>
-            <p>Players: {{ comma .PlayersCount}}</p>
-            <p>Prices: {{ comma .PricesCount}}</p>
-            <p>Ranks: {{ comma .RanksCount}}</p>
-            <p>Apps: {{ comma .AppsCount}}</p>
+
+            <div class="row">
+
+                <div class="col-12">
+
+                    <h5>Under Development</h5>
+                    <p>Data might be wrong as the site is currently being worked on.
+                        <br/>Please consider looking at the <a href="/donate">donate</a> page to help pay server costs while under development.</p>
+
+                    <h5>Stats</h5>
+                    <table class="table table-hover">
+                        <tr>
+                            <th scope="row">Ranked Players</th>
+                            <td>{{ comma .RanksCount}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Apps</th>
+                            <td>{{ comma .AppsCount}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Packages</th>
+                            <td>{{ comma .PackagesCount}}</td>
+                        </tr>
+                    </table>
+
+                </div>
+
+            </div>
+
         </div>
     </div>
 
