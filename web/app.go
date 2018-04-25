@@ -182,6 +182,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			//v.Contents = conv.Convert(v.Contents)
 
 			news = append(news, appArticleTemplate{
+				ID:       v.ArticleID,
 				Title:    v.Title,
 				Contents: template.HTML(v.Contents),
 				Author:   v.Author,
@@ -315,6 +316,7 @@ type appAchievementTemplate struct {
 }
 
 type appArticleTemplate struct {
+	ID       int
 	Title    string
 	Contents template.HTML
 	Author   string
