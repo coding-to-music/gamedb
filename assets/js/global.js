@@ -52,13 +52,14 @@ $top.click(function () {
 
 // Highlight owned games
 var games = localStorage.getItem('games');
-if (games !== '') {
+if (games != null) {
     games = JSON.parse(games);
-
-    $('[data-app-id]').each(function () {
-        var id = $(this).attr('data-app-id');
-        if (games.indexOf(parseInt(id)) !== -1) {
-            $(this).addClass('bold')
-        }
-    });
+    if (games != null) {
+        $('[data-app-id]').each(function () {
+            var id = $(this).attr('data-app-id');
+            if (games.indexOf(parseInt(id)) !== -1) {
+                $(this).addClass('bold')
+            }
+        });
+    }
 }
