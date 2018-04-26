@@ -8,11 +8,9 @@ import (
 )
 
 const (
-	UserID     = "id"
-	UserName   = "name"
-	UserAvatar = "avatar"
-	UserLevel  = "level"
-	UserGames  = "games"
+	UserID    = "id"
+	UserName  = "name"
+	UserLevel = "level"
 )
 
 var store = sessions.NewCookieStore(

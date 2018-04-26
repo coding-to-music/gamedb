@@ -25,7 +25,7 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#badges" role="tab">Badges ({{ .Player.BadgesCount }})</a>
                 </li>
-            {{ if ne .Player.PlayerID .ID }}
+            {{ if ne .Player.PlayerID .UserID }}
                 <li class="nav-item ml-auto">
                     <a class="nav-link" href="/coop?p={{ .Player.PlayerID }}{{ if .LoggedIn }}&p={{ .UserID }}{{end}}" role="tab">Co-op</a>
                 </li>

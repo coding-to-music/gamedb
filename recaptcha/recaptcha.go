@@ -3,23 +3,25 @@ package recaptcha
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
 )
 
+const Response = "g-recaptcha-response"
+
 var privateKey string
 
-var ErrEmptySecret = errors.New("empty secret")
-var ErrEmptyResponse = errors.New("empty response")
+var ErrEmptySecret = Error{"empty secret", false}
+var ErrEmptyResponse = Error{"empty response", false}
+var ErrNotChecked = Error{"captcha not checked", true}
 
 func SetPrivateKey(key string) {
 	privateKey = key
 }
 
-func Check(secret string, response string, ip string) (sucess bool, err error) {
+func Check(secret string, response string, ip string) (err error) {
 
 	form := url.Values{}
 	form.Add("secret", secret)
@@ -27,58 +29,57 @@ func Check(secret string, response string, ip string) (sucess bool, err error) {
 	form.Add("remoteip", ip)
 
 	if secret == "" {
-		return false, ErrEmptySecret
+		return ErrEmptySecret
 	}
 
 	if response == "" {
-		return false, ErrEmptyResponse
+		return ErrEmptyResponse
 	}
 
 	req, err := http.NewRequest("POST", "https://www.google.com/recaptcha/api/siteverify", bytes.NewBufferString(form.Encode()))
 	if err != nil {
-		return false, err
+		return Error{err.Error(), false}
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return false, err
+		return Error{err.Error(), false}
 	}
 	defer resp.Body.Close()
 
 	responseBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return false, err
+		return Error{err.Error(), false}
 	}
 
 	var responseStruct recaptchaResponse
 	err = json.Unmarshal(responseBytes, &responseStruct)
 	if err != nil {
-		return false, err
+		return Error{err.Error(), false}
 	}
 
-	return responseStruct.Success, nil
+	if !responseStruct.Success {
+		return ErrNotChecked
+	}
+
+	return nil
 }
 
-func CheckFromRequest(r *http.Request) (success bool, err error) {
+func CheckFromRequest(r *http.Request) (err error) {
 
 	// Form validation
 	if err := r.ParseForm(); err != nil {
-		return false, err
+		return Error{err.Error(), false}
 	}
 
-	response := r.PostForm.Get("g-recaptcha-response")
+	response := r.PostForm.Get(Response)
 	if response == "" {
-		return false, ErrEmptyResponse
+		return ErrNotChecked
 	}
 
-	success, err = Check(privateKey, response, r.RemoteAddr)
-	if err != nil {
-		return false, err
-	}
-
-	return success, nil
+	return Check(privateKey, response, r.RemoteAddr)
 }
 
 type recaptchaResponse struct {
@@ -86,4 +87,17 @@ type recaptchaResponse struct {
 	ChallengeTS time.Time `json:"challenge_ts"`
 	Hostname    string    `json:"hostname"`
 	ErrorCodes  []string  `json:"error-codes"`
+}
+
+type Error struct {
+	error     string
+	userError bool
+}
+
+func (r Error) Error() string {
+	return r.error
+}
+
+func (r Error) IsUserError() bool {
+	return r.userError
 }

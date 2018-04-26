@@ -17,26 +17,32 @@ import (
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
+	var err error
+
 	if r.Method == "POST" {
 
 		var ErrInvalidCreds = errors.New("invalid username or password")
 		var ErrInvalidCaptcha = errors.New("please check the captcha")
 
-		success, code, err := func() (success bool, code int, err error) {
+		err = func() (err error) {
 
 			// Parse form
 			if err := r.ParseForm(); err != nil {
-				return false, 500, err
+				return err
 			}
 
 			// Recaptcha
-			success, err = recaptcha.CheckFromRequest(r)
+			err = recaptcha.CheckFromRequest(r)
 			if err != nil {
-				return false, 500, err
-			}
-
-			if !success {
-				return false, 401, ErrInvalidCaptcha
+				e, ok := err.(recaptcha.Error)
+				if ok {
+					if e.IsUserError() {
+						return ErrInvalidCaptcha
+					} else {
+						logger.Error(e)
+						return err
+					}
+				}
 			}
 
 			// Field validation
@@ -44,72 +50,65 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			password := r.PostForm.Get("password")
 
 			if email == "" || password == "" {
-				return false, 401, ErrInvalidCreds
+				return ErrInvalidCreds
 			}
 
+			// Get players that match the email
 			players, err := datastore.GetPlayersByEmail(email)
 			if err != nil {
 				if err == datastore.ErrNoSuchEntity {
-					return false, 401, ErrInvalidCreds
+					return ErrInvalidCreds
 				} else {
-					return false, 500, err
+					return err
 				}
 			}
 
 			if len(players) == 0 {
-				return false, 401, ErrInvalidCreds
+				return ErrInvalidCreds
 			}
 
 			var player datastore.Player
+			var success bool
+			for _, v := range players {
 
-			for _, player := range players {
-
-				err = bcrypt.CompareHashAndPassword([]byte(player.SettingsPassword), []byte(password))
+				err = bcrypt.CompareHashAndPassword([]byte(v.SettingsPassword), []byte(password))
 				if err == nil {
 					success = true
+					player = v
 					break
 				}
 			}
 
 			if success {
 
-				// Save session
-				err = session.WriteMany(w, r, map[string]string{
-					session.UserID:    strconv.Itoa(player.PlayerID),
-					session.UserName:  player.PersonaName,
-					session.UserLevel: strconv.Itoa(player.Level),
-				})
+				err = login(w, r, player)
 				if err != nil {
-					logger.Error(err)
-					returnErrorTemplate(w, r, 500, err.Error())
-					return
+					return err
 				}
 
-				// Create login record
-				err = datastore.CreateLogin(player.PlayerID, r)
-				if err != nil {
-					logger.Error(err)
-					returnErrorTemplate(w, r, 500, err.Error())
-					return
-				}
+				return nil
+			} else {
+				return ErrInvalidCreds
 			}
-
 		}()
 
-		if err == ErrInvalidCreds || err == ErrInvalidCaptcha {
-			code = 401
+		// Redirect
+		if err == nil {
+			http.Redirect(w, r, "/settings", 302)
+			return
 		}
 	}
 
 	t := loginTemplate{}
 	t.Fill(r, "Login")
-	t.Message = message
-	t.Success = success
+	t.Success = err == nil
+	if err != nil {
+		t.Message = err.Error()
+	}
 	t.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
 	returnTemplate(w, r, "login", t)
 	return
-
 }
 
 type loginTemplate struct {
@@ -175,22 +174,12 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	player, err := datastore.GetPlayer(idInt)
 	if player.PlayerID == 0 {
 		errs := player.Update("")
+		for _, v := range errs {
+			logger.Error(v) // Handle these better
+		}
 	}
 
-	// Save session
-	err = session.WriteMany(w, r, map[string]string{
-		session.UserID:    strconv.Itoa(player.PlayerID),
-		session.UserName:  player.PersonaName,
-		session.UserLevel: strconv.Itoa(player.Level),
-	})
-	if err != nil {
-		logger.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
-		return
-	}
-
-	// Create login record
-	err = datastore.CreateLogin(player.PlayerID, r)
+	err = login(w, r, *player)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
@@ -199,6 +188,28 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	http.Redirect(w, r, "/settings", 302)
+	return
+}
+
+func login(w http.ResponseWriter, r *http.Request, player datastore.Player) (err error) {
+
+	// Save session
+	err = session.WriteMany(w, r, map[string]string{
+		session.UserID:    strconv.Itoa(player.PlayerID),
+		session.UserName:  player.PersonaName,
+		session.UserLevel: strconv.Itoa(player.Level),
+	})
+	if err != nil {
+		return err
+	}
+
+	// Create login record
+	err = datastore.CreateLogin(player.PlayerID, r)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {

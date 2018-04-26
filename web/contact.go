@@ -43,22 +43,17 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Recaptcha
-	var success bool
-	var err error
-
-	response := r.PostForm.Get("g-recaptcha-response")
-	if response != "" {
-
-		success, err = recaptcha.Check(os.Getenv("STEAM_RECAPTCHA_PRIVATE"), response, r.RemoteAddr)
-		if err != nil {
-			if err != recaptcha.ErrInvalidInputs {
-				logger.Error(err)
+	err := recaptcha.CheckFromRequest(r)
+	if err != nil {
+		e, ok := err.(recaptcha.Error)
+		if ok {
+			if e.IsUserError() {
+				template.Messages = append(template.Messages, "Please check the captcha.")
+			} else {
+				template.Messages = append(template.Messages, "Something went wrong.")
+				logger.Error(e)
 			}
 		}
-	}
-
-	if !success {
-		template.Messages = append(template.Messages, "Please check the captcha.")
 	}
 
 	// Send

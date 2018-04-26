@@ -219,17 +219,21 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Env       string
-	ID        int
-	Name      string // Username
-	Title     string // page title
-	Avatar    string
+	Env string
+
+	// User
+	UserID    int
+	UserName  string // Username
 	UserLevel int
-	Games     []int
-	Path      string // URL
-	IsAdmin   bool
-	Cache     bool
-	request   *http.Request // Internal
+
+	//
+	Title   string // page title
+	Avatar  string
+	Path    string // URL
+	IsAdmin bool
+
+	//
+	request *http.Request // Internal
 }
 
 func (t *GlobalTemplate) Fill(r *http.Request, title string) {
@@ -244,31 +248,17 @@ func (t *GlobalTemplate) Fill(r *http.Request, title string) {
 	id, _ := session.Read(r, session.UserID)
 	level, _ := session.Read(r, session.UserLevel)
 
-	t.ID, _ = strconv.Atoi(id)
-	t.Name, _ = session.Read(r, session.UserName)
-	t.Avatar, _ = session.Read(r, session.UserAvatar)
+	t.UserID, _ = strconv.Atoi(id)
+	t.UserName, _ = session.Read(r, session.UserName)
 	t.UserLevel, _ = strconv.Atoi(level)
-
-	//gamesString, _ := session.Read(r, session.Games)
-	//if gamesString != "" {
-	//	err := json.Unmarshal([]byte(gamesString), &t.Games)
-	//	if err != nil {
-	//		if strings.Contains(err.Error(), "cannot unmarshal") {
-	//			logger.Info(err.Error() + " - " + gamesString)
-	//		} else {
-	//			logger.Error(err)
-	//		}
-	//	}
-	//}
 
 	// From request
 	t.Path = r.URL.Path
 	t.IsAdmin = r.Header.Get("Authorization") != ""
-	t.Cache = r.Header.Get("X-Cache") == "HIT"
 }
 
 func (t GlobalTemplate) LoggedIn() (bool) {
-	return t.ID > 0
+	return t.UserID > 0
 }
 
 func (t GlobalTemplate) IsLocal() (bool) {

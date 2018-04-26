@@ -23,6 +23,10 @@
         </div>
         <div class="card-body">
 
+        {{if ne .Message ""}}
+            <div class="alert alert-danger" role="alert">{{ title .Message }}</div>
+        {{end}}
+
             <div class="row">
                 <div class="col-12 col-sm-12 col-md-8 col-lg-6">
 
