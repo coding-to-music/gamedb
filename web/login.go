@@ -1,101 +1,109 @@
 package web
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"os"
 	"path"
 	"strconv"
-	"strings"
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/recaptcha"
 	"github.com/steam-authority/steam-authority/session"
-	"github.com/steam-authority/steam-authority/steam"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// todo
-// For the demo, we use in-memory infinite storage nonce and discovery
-// cache. In your app, do not use this as it will eat up memory and never
-// free it. Use your own implementation, on a better database system.
-// If you have multiple servers for example, you may need to share at least
-// the nonceStore between them.
-var nonceStore = openid.NewSimpleNonceStore()
-var discoveryCache = openid.NewSimpleDiscoveryCache()
-
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-
-	var success bool
 
 	if r.Method == "POST" {
 
-		// Form validation
-		if err := r.ParseForm(); err != nil {
-			logger.Error(err)
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
-		}
+		var ErrInvalidCreds = errors.New("invalid username or password")
+		var ErrInvalidCaptcha = errors.New("please check the captcha")
 
-		// Recaptcha
-		var success bool
-		var err error
+		success, code, err := func() (success bool, code int, err error) {
 
-		response := r.PostForm.Get("g-recaptcha-response")
-		if response != "" {
+			// Parse form
+			if err := r.ParseForm(); err != nil {
+				return false, 500, err
+			}
 
-			success, err = recaptcha.Check(os.Getenv("STEAM_RECAPTCHA_PRIVATE"), response, r.RemoteAddr)
+			// Recaptcha
+			success, err = recaptcha.CheckFromRequest(r)
 			if err != nil {
-				if err != recaptcha.ErrInvalidInputs {
-					logger.Error(err)
+				return false, 500, err
+			}
+
+			if !success {
+				return false, 401, ErrInvalidCaptcha
+			}
+
+			// Field validation
+			email := r.PostForm.Get("email")
+			password := r.PostForm.Get("password")
+
+			if email == "" || password == "" {
+				return false, 401, ErrInvalidCreds
+			}
+
+			players, err := datastore.GetPlayersByEmail(email)
+			if err != nil {
+				if err == datastore.ErrNoSuchEntity {
+					return false, 401, ErrInvalidCreds
+				} else {
+					return false, 500, err
 				}
 			}
-		}
 
-		if !success {
-			returnErrorTemplate(w, r, 401, "Please check the captcha")
-			return
-		}
-
-		// Field validation
-		email := r.PostForm.Get("email")
-		password := r.PostForm.Get("password")
-
-		if email == "" || password == "" {
-			returnErrorTemplate(w, r, 401, "Please fill in your username and password")
-			return
-		}
-
-		players, err := datastore.GetPlayersByEmail(email)
-		if err != nil {
-			if err == datastore.ErrNoSuchEntity {
-				returnErrorTemplate(w, r, 401, "Invalid credentials")
-				return
-			} else {
-				logger.Error(err)
-				returnErrorTemplate(w, r, 500, err.Error())
-				return
+			if len(players) == 0 {
+				return false, 401, ErrInvalidCreds
 			}
-		}
 
-		for _, v := range players {
+			var player datastore.Player
 
-			err = bcrypt.CompareHashAndPassword([]byte(v.SettingsPassword), []byte(password))
-			if err == nil {
+			for _, player := range players {
 
-				// todo, do login
-				fmt.Println("logging in")
-				success = true
-				break
+				err = bcrypt.CompareHashAndPassword([]byte(player.SettingsPassword), []byte(password))
+				if err == nil {
+					success = true
+					break
+				}
 			}
+
+			if success {
+
+				// Save session
+				err = session.WriteMany(w, r, map[string]string{
+					session.UserID:    strconv.Itoa(player.PlayerID),
+					session.UserName:  player.PersonaName,
+					session.UserLevel: strconv.Itoa(player.Level),
+				})
+				if err != nil {
+					logger.Error(err)
+					returnErrorTemplate(w, r, 500, err.Error())
+					return
+				}
+
+				// Create login record
+				err = datastore.CreateLogin(player.PlayerID, r)
+				if err != nil {
+					logger.Error(err)
+					returnErrorTemplate(w, r, 500, err.Error())
+					return
+				}
+			}
+
+		}()
+
+		if err == ErrInvalidCreds || err == ErrInvalidCaptcha {
+			code = 401
 		}
 	}
 
 	t := loginTemplate{}
 	t.Fill(r, "Login")
-	t.Message = "xx"
+	t.Message = message
 	t.Success = success
 	t.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
@@ -136,10 +144,18 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// todo
+// For the demo, we use in-memory infinite storage nonce and discovery
+// cache. In your app, do not use this as it will eat up memory and never
+// free it. Use your own implementation, on a better database system.
+// If you have multiple servers for example, you may need to share at least
+// the nonceStore between them.
+var nonceStore = openid.NewSimpleNonceStore()
+var discoveryCache = openid.NewSimpleDiscoveryCache()
+
 func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	// todo, get session data from db not steam
-
+	// Get ID from OpenID
 	openID, err := openid.Verify(os.Getenv("STEAM_DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
 		logger.Error(err)
@@ -147,66 +163,42 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idString := path.Base(openID)
-
-	idInt, err := strconv.Atoi(idString)
+	// Convert to int
+	idInt, err := strconv.Atoi(path.Base(openID))
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
 
-	// Set session from steam
-	resp, err := steam.GetPlayerSummaries(idInt)
-	if err != nil {
-		if !strings.HasPrefix(err.Error(), "not found in steam") {
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
-		}
-
-		logger.Error(err)
-	}
-
-	var gamesSlice []int
-	gamesResp, err := steam.GetOwnedGames(idInt)
-
-	for _, v := range gamesResp {
-		gamesSlice = append(gamesSlice, v.AppID)
-	}
-
-	//gamesString, err := json.Marshal(gamesSlice)
-	//if err != nil {
-	//	logger.Error(err)
-	//}
-
-	// Get level
-	level, err := steam.GetSteamLevel(idInt)
-	if err != nil {
-		logger.Error(err)
+	// Check if we have the player
+	player, err := datastore.GetPlayer(idInt)
+	if player.PlayerID == 0 {
+		errs := player.Update("")
 	}
 
 	// Save session
 	err = session.WriteMany(w, r, map[string]string{
-		session.ID:     idString,
-		session.Name:   resp.PersonaName,
-		session.Avatar: resp.AvatarMedium,
-		//session.Games:  string(gamesString),
-		session.Level: strconv.Itoa(level),
+		session.UserID:    strconv.Itoa(player.PlayerID),
+		session.UserName:  player.PersonaName,
+		session.UserLevel: strconv.Itoa(player.Level),
 	})
 	if err != nil {
 		logger.Error(err)
+		returnErrorTemplate(w, r, 500, err.Error())
+		return
 	}
 
 	// Create login record
-	datastore.CreateLogin(idInt, r)
+	err = datastore.CreateLogin(player.PlayerID, r)
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 500, err.Error())
+		return
+	}
 
 	// Redirect
 	http.Redirect(w, r, "/settings", 302)
-	return
-}
-
-func login(player datastore.Player) {
-
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {

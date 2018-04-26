@@ -146,10 +146,10 @@
                         <div class="card mb-1">
                             <div class="card-header">
                                 <h5 class="mb-0 text-truncate">
-                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{.ID}}">{{ .Title }}</button>
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ .ID }}">{{ .Title }}</button>
                                 </h5>
                             </div>
-                            <div id="collapse{{.ID}}" class="collapse" data-parent="#accordion">
+                            <div id="collapse{{ .ID }}" class="collapse" data-parent="#accordion">
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
                                         <p class="mb-0">{{ .Contents }}</p>
@@ -179,7 +179,7 @@
                         {{ range $key, $value := .Packages }}
                             <tr>
                                 <td>
-                                    <a href="/packages/{{.ID}}">{{.GetName}}</a>
+                                    <a href="/packages/{{ .ID }}">{{.GetName}}</a>
                                 </td>
                                 <td>{{ .GetBillingType }}</td>
                                 <td>{{ .GetLicenseType }}</td>

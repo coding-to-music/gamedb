@@ -26,7 +26,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get session
-	id, err := session.Read(r, session.ID)
+	id, err := session.Read(r, session.UserID)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())

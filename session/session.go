@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	ID     = "id"
-	Name   = "name"
-	Avatar = "avatar"
-	Level  = "level"
-	Games  = "games"
+	UserID     = "id"
+	UserName   = "name"
+	UserAvatar = "avatar"
+	UserLevel  = "level"
+	UserGames  = "games"
 )
 
 var store = sessions.NewCookieStore(
@@ -124,6 +124,6 @@ func SetFlash(w http.ResponseWriter, r *http.Request, flash string) (err error) 
 }
 
 func IsLoggedIn(r *http.Request) (val bool, err error) {
-	read, err := Read(r, ID)
+	read, err := Read(r, UserID)
 	return read != "", err
 }

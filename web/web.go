@@ -241,12 +241,12 @@ func (t *GlobalTemplate) Fill(r *http.Request, title string) {
 	t.Env = os.Getenv("ENV")
 
 	// From session
-	id, _ := session.Read(r, session.ID)
-	level, _ := session.Read(r, session.Level)
+	id, _ := session.Read(r, session.UserID)
+	level, _ := session.Read(r, session.UserLevel)
 
 	t.ID, _ = strconv.Atoi(id)
-	t.Name, _ = session.Read(r, session.Name)
-	t.Avatar, _ = session.Read(r, session.Avatar)
+	t.Name, _ = session.Read(r, session.UserName)
+	t.Avatar, _ = session.Read(r, session.UserAvatar)
 	t.UserLevel, _ = strconv.Atoi(level)
 
 	//gamesString, _ := session.Read(r, session.Games)

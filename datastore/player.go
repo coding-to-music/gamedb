@@ -145,23 +145,6 @@ func (p Player) GetGames() (games []steam.OwnedGame) {
 	return games
 }
 
-func (p Player) shouldUpdate(userAgent string) bool {
-
-	if helpers.IsBot(userAgent) {
-		return false
-	}
-
-	if p.PersonaName == "" {
-		return true
-	}
-
-	if p.UpdatedAt.Unix() < (time.Now().Unix() - int64(60*60*24)) { // 1 Day
-		return true
-	}
-
-	return false
-}
-
 // todo, improve this..
 func IsValidPlayerID(id int) bool {
 
@@ -207,6 +190,7 @@ func GetPlayer(id int) (ret *Player, err error) {
 	err = client.Get(ctx, key, player)
 	if err != nil {
 
+		// todo, should this just return the error?
 		if err == datastore.ErrNoSuchEntity {
 			return player, nil
 		}
@@ -326,200 +310,205 @@ func (p *Player) Update(userAgent string) (errs []error) {
 		return []error{ErrInvalidID}
 	}
 
-	if p.shouldUpdate(userAgent) {
+	if helpers.IsBot(userAgent) {
+		return []error{}
+	}
 
-		var err error
-		var wg sync.WaitGroup
+	if p.UpdatedAt.Unix() > (time.Now().Unix() - int64(60*60*24)) { // 1 Day
+		return []error{}
+	}
 
-		// Get summary
-		wg.Add(1)
-		go func(p *Player) {
+	var err error
+	var wg sync.WaitGroup
 
-			summary, err := steam.GetPlayerSummaries(p.PlayerID)
-			if err != nil {
-				if err.Error() == steam.ErrInvalidJson {
-					errs = append(errs, err)
-				} else if !strings.HasPrefix(err.Error(), "not found in steam") {
-					logger.Error(err)
-				}
-			}
+	// Get summary
+	wg.Add(1)
+	go func(p *Player) {
 
-			p.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
-			p.VanintyURL = path.Base(summary.ProfileURL)
-			p.RealName = summary.RealName
-			p.CountryCode = summary.LOCCountryCode
-			p.StateCode = summary.LOCStateCode
-			p.PersonaName = summary.PersonaName
-			p.TimeCreated = time.Unix(summary.TimeCreated, 0)
-			p.LastLogOff = time.Unix(summary.LastLogOff, 0)
-			p.PrimaryClanID = summary.PrimaryClanID
-
-			wg.Done()
-		}(p)
-
-		// Get games
-		wg.Add(1)
-		go func(p *Player) {
-
-			gamesResponse, err := steam.GetOwnedGames(p.PlayerID)
-			if err != nil {
-				if err.Error() == steam.ErrInvalidJson {
-					errs = append(errs, err)
-				} else {
-					logger.Error(err)
-				}
-			}
-
-			p.GamesCount = len(gamesResponse)
-
-			// Get playtime
-			var playtime = 0
-			for _, v := range gamesResponse {
-				playtime = playtime + v.PlaytimeForever
-			}
-
-			p.PlayTime = playtime
-
-			// Encode to JSON bytes
-			bytes, err := json.Marshal(gamesResponse)
-			if err != nil {
+		summary, err := steam.GetPlayerSummaries(p.PlayerID)
+		if err != nil {
+			if err.Error() == steam.ErrInvalidJson {
+				errs = append(errs, err)
+			} else if !strings.HasPrefix(err.Error(), "not found in steam") {
 				logger.Error(err)
 			}
-
-			if len(bytes) > 1024*10 {
-				p.Games = storage.UploadPlayerGames(p.PlayerID, bytes)
-			} else {
-				p.Games = string(bytes)
-			}
-
-			wg.Done()
-		}(p)
-
-		// Get recent games
-		wg.Add(1)
-		go func(p *Player) {
-
-			recentGames, err := steam.GetRecentlyPlayedGames(p.PlayerID)
-			if err != nil {
-				if err.Error() == steam.ErrInvalidJson {
-					errs = append(errs, err)
-				} else {
-					logger.Error(err)
-				}
-			}
-
-			p.GamesRecent = recentGames
-
-			wg.Done()
-		}(p)
-
-		// Get badges
-		wg.Add(1)
-		go func(p *Player) {
-
-			badges, err := steam.GetBadges(p.PlayerID)
-			if err != nil {
-				if err.Error() == steam.ErrInvalidJson {
-					errs = append(errs, err)
-				} else {
-					logger.Error(err)
-				}
-			}
-
-			p.Badges = badges
-			p.BadgesCount = len(badges.Badges)
-
-			wg.Done()
-		}(p)
-
-		// Get friends
-		wg.Add(1)
-		go func(p *Player) {
-
-			friends, err := steam.GetFriendList(p.PlayerID)
-			if err != nil {
-				if err.Error() == steam.ErrInvalidJson || err == steam.ErrNoUserFound {
-					errs = append(errs, err)
-				} else {
-					logger.Error(err)
-				}
-			}
-
-			p.Friends = friends
-			p.FriendsCount = len(friends)
-
-			wg.Done()
-		}(p)
-
-		// Get level
-		wg.Add(1)
-		go func(p *Player) {
-
-			level, err := steam.GetSteamLevel(p.PlayerID)
-			if err != nil {
-				if err.Error() == steam.ErrInvalidJson {
-					errs = append(errs, err)
-				} else {
-					logger.Error(err)
-				}
-			}
-
-			p.Level = level
-
-			wg.Done()
-		}(p)
-
-		// Get bans
-		wg.Add(1)
-		go func(p *Player) {
-
-			bans, err := steam.GetPlayerBans(p.PlayerID)
-			if err != nil {
-				if err.Error() == steam.ErrInvalidJson {
-					errs = append(errs, err)
-				} else {
-					logger.Error(err)
-				}
-			}
-
-			p.Bans = bans
-			p.NumberOfGameBans = bans.NumberOfGameBans
-			p.NumberOfVACBans = bans.NumberOfVACBans
-
-			wg.Done()
-		}(p)
-
-		// Get groups
-		wg.Add(1)
-		go func(p *Player) {
-
-			groups, err := steam.GetUserGroupList(p.PlayerID)
-			if err != nil {
-				if err.Error() == steam.ErrInvalidJson {
-					errs = append(errs, err)
-				} else {
-					logger.Error(err)
-				}
-			}
-
-			p.Groups = groups
-
-			wg.Done()
-		}(p)
-
-		// Wait
-		wg.Wait()
-
-		// Fix dates
-		p.UpdatedAt = time.Now()
-		if p.CreatedAt.IsZero() {
-			p.CreatedAt = time.Now()
 		}
 
-		err = p.Save()
+		p.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
+		p.VanintyURL = path.Base(summary.ProfileURL)
+		p.RealName = summary.RealName
+		p.CountryCode = summary.LOCCountryCode
+		p.StateCode = summary.LOCStateCode
+		p.PersonaName = summary.PersonaName
+		p.TimeCreated = time.Unix(summary.TimeCreated, 0)
+		p.LastLogOff = time.Unix(summary.LastLogOff, 0)
+		p.PrimaryClanID = summary.PrimaryClanID
+
+		wg.Done()
+	}(p)
+
+	// Get games
+	wg.Add(1)
+	go func(p *Player) {
+
+		gamesResponse, err := steam.GetOwnedGames(p.PlayerID)
 		if err != nil {
-			errs = append(errs, err)
+			if err.Error() == steam.ErrInvalidJson {
+				errs = append(errs, err)
+			} else {
+				logger.Error(err)
+			}
 		}
+
+		p.GamesCount = len(gamesResponse)
+
+		// Get playtime
+		var playtime = 0
+		for _, v := range gamesResponse {
+			playtime = playtime + v.PlaytimeForever
+		}
+
+		p.PlayTime = playtime
+
+		// Encode to JSON bytes
+		bytes, err := json.Marshal(gamesResponse)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		if len(bytes) > 1024*10 {
+			p.Games = storage.UploadPlayerGames(p.PlayerID, bytes)
+		} else {
+			p.Games = string(bytes)
+		}
+
+		wg.Done()
+	}(p)
+
+	// Get recent games
+	wg.Add(1)
+	go func(p *Player) {
+
+		recentGames, err := steam.GetRecentlyPlayedGames(p.PlayerID)
+		if err != nil {
+			if err.Error() == steam.ErrInvalidJson {
+				errs = append(errs, err)
+			} else {
+				logger.Error(err)
+			}
+		}
+
+		p.GamesRecent = recentGames
+
+		wg.Done()
+	}(p)
+
+	// Get badges
+	wg.Add(1)
+	go func(p *Player) {
+
+		badges, err := steam.GetBadges(p.PlayerID)
+		if err != nil {
+			if err.Error() == steam.ErrInvalidJson {
+				errs = append(errs, err)
+			} else {
+				logger.Error(err)
+			}
+		}
+
+		p.Badges = badges
+		p.BadgesCount = len(badges.Badges)
+
+		wg.Done()
+	}(p)
+
+	// Get friends
+	wg.Add(1)
+	go func(p *Player) {
+
+		friends, err := steam.GetFriendList(p.PlayerID)
+		if err != nil {
+			if err.Error() == steam.ErrInvalidJson || err == steam.ErrNoUserFound {
+				errs = append(errs, err)
+			} else {
+				logger.Error(err)
+			}
+		}
+
+		p.Friends = friends
+		p.FriendsCount = len(friends)
+
+		wg.Done()
+	}(p)
+
+	// Get level
+	wg.Add(1)
+	go func(p *Player) {
+
+		level, err := steam.GetSteamLevel(p.PlayerID)
+		if err != nil {
+			if err.Error() == steam.ErrInvalidJson {
+				errs = append(errs, err)
+			} else {
+				logger.Error(err)
+			}
+		}
+
+		p.Level = level
+
+		wg.Done()
+	}(p)
+
+	// Get bans
+	wg.Add(1)
+	go func(p *Player) {
+
+		bans, err := steam.GetPlayerBans(p.PlayerID)
+		if err != nil {
+			if err.Error() == steam.ErrInvalidJson {
+				errs = append(errs, err)
+			} else {
+				logger.Error(err)
+			}
+		}
+
+		p.Bans = bans
+		p.NumberOfGameBans = bans.NumberOfGameBans
+		p.NumberOfVACBans = bans.NumberOfVACBans
+
+		wg.Done()
+	}(p)
+
+	// Get groups
+	wg.Add(1)
+	go func(p *Player) {
+
+		groups, err := steam.GetUserGroupList(p.PlayerID)
+		if err != nil {
+			if err.Error() == steam.ErrInvalidJson {
+				errs = append(errs, err)
+			} else {
+				logger.Error(err)
+			}
+		}
+
+		p.Groups = groups
+
+		wg.Done()
+	}(p)
+
+	// Wait
+	wg.Wait()
+
+	// Fix dates
+	p.UpdatedAt = time.Now()
+	if p.CreatedAt.IsZero() {
+		p.CreatedAt = time.Now()
+	}
+
+	err = p.Save()
+	if err != nil {
+		errs = append(errs, err)
 	}
 
 	return errs

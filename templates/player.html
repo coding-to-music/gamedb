@@ -27,7 +27,7 @@
                 </li>
             {{ if ne .Player.PlayerID .ID }}
                 <li class="nav-item ml-auto">
-                    <a class="nav-link" href="/coop?p={{ .Player.PlayerID }}{{ if .LoggedIn }}&p={{.ID}}{{end}}" role="tab">Co-op</a>
+                    <a class="nav-link" href="/coop?p={{ .Player.PlayerID }}{{ if .LoggedIn }}&p={{ .UserID }}{{end}}" role="tab">Co-op</a>
                 </li>
             {{end}}
             </ul>

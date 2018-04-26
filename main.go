@@ -10,6 +10,7 @@ import (
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/pics"
 	"github.com/steam-authority/steam-authority/queue"
+	"github.com/steam-authority/steam-authority/recaptcha"
 	"github.com/steam-authority/steam-authority/web"
 )
 
@@ -21,8 +22,13 @@ func main() {
 	rollbar.SetCodeVersion("master")                                    // optional Git hash/branch/tag (required for GitHub integration)
 	rollbar.SetServerRoot("github.com/steam-authority/steam-authority") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 
-	// Env vars
+	// Recaptcha
+	recaptcha.SetPrivateKey(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
+
+	// Google
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
+
+	// Env vars
 	if os.Getenv("ENV") == "local" {
 		os.Setenv("STEAM_DOMAIN", os.Getenv("STEAM_DOMAIN_LOCAL"))
 	} else {
@@ -56,7 +62,7 @@ func main() {
 	// Web server
 	web.Serve()
 
-	// Block for goroutines to run forever
+	// Block forever for goroutines to run
 	forever := make(chan bool)
 	<-forever
 }
