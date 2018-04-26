@@ -6,11 +6,11 @@ import (
 	_ "net/http/pprof"
 	"os"
 
+	"github.com/Jleagle/recaptcha-go"
 	"github.com/rollbar/rollbar-go"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/pics"
 	"github.com/steam-authority/steam-authority/queue"
-	"github.com/steam-authority/steam-authority/recaptcha"
 	"github.com/steam-authority/steam-authority/web"
 )
 

@@ -7,9 +7,9 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/Jleagle/recaptcha-go"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/recaptcha"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"

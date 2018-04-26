@@ -27,6 +27,12 @@
   revision = "2a93ba0f464da2a77748a1dc2e9e5bea8bbdd4b9"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/Jleagle/recaptcha-go"
+  packages = ["."]
+  revision = "2bd808cc50151d1b62cf0a367791be91ca33aced"
+
+[[projects]]
   name = "github.com/beevik/etree"
   packages = ["."]
   revision = "15a30b44cfd6c5a16a7ddfe271bf146aaf2d3195"
@@ -499,6 +505,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "cdbedf615e9812fe9d7ebb2bead3971f61ee1e2b3880bc89ae335b92178b0294"
+  inputs-digest = "fe2fa2b9b5ffdda7083c084c3f40abf0e3f7c431866ce8d03f5644878ca23bb9"
   solver-name = "gps-cdcl"
   solver-version = 1

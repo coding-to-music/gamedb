@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Jleagle/recaptcha-go"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/recaptcha"
 )
 
 func ContactHandler(w http.ResponseWriter, r *http.Request) {
