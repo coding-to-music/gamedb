@@ -34,14 +34,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			// Recaptcha
 			err = recaptcha.CheckFromRequest(r)
 			if err != nil {
-				e, ok := err.(recaptcha.Error)
-				if ok {
-					if e.IsUserError() {
-						return ErrInvalidCaptcha
-					} else {
-						logger.Error(e)
-						return err
-					}
+				if err == recaptcha.ErrNotChecked {
+					return ErrInvalidCaptcha
+				} else {
+					logger.Error(err)
+					return err
 				}
 			}
 

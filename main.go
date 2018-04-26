@@ -23,7 +23,7 @@ func main() {
 	rollbar.SetServerRoot("github.com/steam-authority/steam-authority") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 
 	// Recaptcha
-	recaptcha.SetPrivateKey(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
+	recaptcha.SetSecret(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
 
 	// Google
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))

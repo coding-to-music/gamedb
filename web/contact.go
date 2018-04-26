@@ -45,14 +45,11 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 	// Recaptcha
 	err := recaptcha.CheckFromRequest(r)
 	if err != nil {
-		e, ok := err.(recaptcha.Error)
-		if ok {
-			if e.IsUserError() {
-				template.Messages = append(template.Messages, "Please check the captcha.")
-			} else {
-				template.Messages = append(template.Messages, "Something went wrong.")
-				logger.Error(e)
-			}
+		if err == recaptcha.ErrNotChecked {
+			template.Messages = append(template.Messages, "Please check the captcha.")
+		} else {
+			template.Messages = append(template.Messages, "Something went wrong.")
+			logger.Error(err)
 		}
 	}
 
