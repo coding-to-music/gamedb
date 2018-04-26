@@ -52,37 +52,60 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Save form data
 	if r.Method == "POST" {
 
-		// Form validation
+		// Parse form
 		if err := r.ParseForm(); err != nil {
 			logger.Error(err)
 			returnErrorTemplate(w, r, 500, err.Error())
 			return
 		}
 
-		player.SettingsEmail = r.PostForm.Get("email")
+		// Save password
+		password := r.PostForm.Get("password")
 
-		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(r.PostForm.Get("password")), 14)
-		if err != nil {
-			logger.Error(err)
-			returnErrorTemplate(w, r, 500, "Something went wrong encrypting your password")
+		if len(password) < 8 {
+			session.SetFlash(w, r, "Password must be at least 8 characters long")
+			http.Redirect(w, r, "/settings", 302)
 			return
+		} else {
+
+			passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+			if err != nil {
+				logger.Error(err)
+				session.SetFlash(w, r, "Something went wrong encrypting your password")
+				http.Redirect(w, r, "/settings", 302)
+				return
+			}
+
+			player.SettingsPassword = string(passwordBytes)
 		}
 
-		player.SettingsPassword = string(passwordBytes)
+		// Save email
+		player.SettingsEmail = r.PostForm.Get("email")
 
+		// Save hidden
 		if r.PostForm.Get("hide") == "1" {
 			player.SettingsHidden = true
 		} else {
 			player.SettingsHidden = false
 		}
 
+		// Save alerts
 		if r.PostForm.Get("alerts") == "1" {
 			player.SettingsAlerts = true
 		} else {
 			player.SettingsAlerts = false
 		}
 
-		player.Save()
+		err = player.Save()
+		if err != nil {
+			logger.Error(err)
+			session.SetFlash(w, r, "Something went wrong saving settings")
+		} else {
+			session.SetFlash(w, r, "Settings saved")
+		}
+
+		http.Redirect(w, r, "/settings", 302)
+		return
 	}
 
 	// Get logins
@@ -116,6 +139,12 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error(err)
 	}
 
+	// Get flashes
+	flashes, err := session.GetFlashes(w, r)
+	if err != nil {
+		logger.Error(err)
+	}
+
 	// Template
 	template := settingsTemplate{}
 	template.Fill(r, "Settings")
@@ -123,6 +152,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	template.Player = *player
 	template.Donations = donations
 	template.Games = string(gamesString)
+	template.Messages = flashes
 
 	returnTemplate(w, r, "settings", template)
 }
@@ -133,4 +163,5 @@ type settingsTemplate struct {
 	Logins    []datastore.Login
 	Donations []datastore.Donation
 	Games     string
+	Messages  []interface{}
 }

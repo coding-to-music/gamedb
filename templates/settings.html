@@ -9,6 +9,14 @@
     <div class="card mb-4">
         <div class="card-body">
 
+        {{ if gt (len .Messages) 0 }}
+            <div class="alert alert-primary" role="alert">
+            {{ range $k, $v := .Messages }}
+                <p> {{$v}} </p>
+            {{ end }}
+            </div>
+        {{ end }}
+
             <form action="/settings" method="post">
 
                 <div class="row">
