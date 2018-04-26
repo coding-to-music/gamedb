@@ -30,7 +30,7 @@
   branch = "master"
   name = "github.com/Jleagle/recaptcha-go"
   packages = ["."]
-  revision = "feafd6d54e056416948dc72ef3f7cc0b8dd06c1e"
+  revision = "db62f6804311376e65447a24a511e22da7e98308"
 
 [[projects]]
   name = "github.com/beevik/etree"
