@@ -17,7 +17,7 @@ const (
 
 func CoopHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Convert to ints
+	// Get player ints
 	var playerInts []int
 	for _, v := range r.URL.Query()["p"] {
 		i, err := strconv.Atoi(v)
@@ -35,16 +35,30 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get playerStrings
-	players, err := datastore.GetPlayersByIDs(playerInts)
-	if err != nil {
-		logger.Error(err)
+	// Get players, one at a time so we can get the missing ones
+	var players []datastore.Player
+	var wg sync.WaitGroup
+	for _, v := range playerInts {
+		wg.Add(1)
+		go func(id int) {
+
+			player, err := datastore.GetPlayer(id)
+			if err != nil {
+				logger.Error(err)
+			}
+
+			player.Update(r.UserAgent()) // todo, handle errors
+
+			players = append(players, *player)
+
+			wg.Done()
+		}(v)
 	}
+	wg.Wait()
 
 	// Make a map of all games the players have
 	var allGames = map[int]int{}
 	var gamesSlices [][]int
-	var wg sync.WaitGroup
 
 	for i := 0; i < len(players); i++ {
 		player := players[i]

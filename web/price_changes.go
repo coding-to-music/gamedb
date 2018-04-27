@@ -3,7 +3,6 @@ package web
 import (
 	"net/http"
 	"strconv"
-	"sync"
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
@@ -22,40 +21,13 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	var wg sync.WaitGroup
-
-	//// Get total changes
-	//var total int
-	//wg.Add(1)
-	//go func() {
-	//
-	//	total, err = datastore.CountPrices()
-	//	if err != nil {
-	//		logger.Error(err)
-	//	}
-	//
-	//	wg.Done()
-	//
-	//}()
-
 	// Get changes
-	var changes []datastore.Price
-	wg.Add(1)
-	go func() {
-
-		changes, err = datastore.GetLatestPrices(priceChangeLimit, page)
-		if err != nil {
-			logger.Error(err)
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
-		}
-
-		wg.Done()
-
-	}()
-
-	// Wait
-	wg.Wait()
+	changes, err := datastore.GetLatestPrices(priceChangeLimit, page)
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 500, err.Error())
+		return
+	}
 
 	// Template
 	template := priceChangesTemplate{}

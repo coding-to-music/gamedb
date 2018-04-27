@@ -217,7 +217,7 @@ func GetPlayerByName(name string) (ret Player, err error) {
 	}
 
 	if len(players) > 0 {
-		return players[0], nil
+		return players[0], nil // Success
 	}
 
 	return ret, datastore.ErrNoSuchEntity

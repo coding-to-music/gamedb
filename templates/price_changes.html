@@ -56,6 +56,7 @@
                     <th scope="col">Price</th>
                     <th scope="col">Discount</th>
                     <th scope="col">Change</th>
+                    <th scope="col">(%)</th>
                     <th scope="col" data-sort="desc">Changed</th>
                     </thead>
                 {{ range $key, $value := .Changes }}
@@ -68,6 +69,7 @@
                         <td>${{ .GetPriceFinal }}</td>
                         <td>{{ .Discount }}%</td>
                         <td>${{ .GetChange }}</td>
+                        <td>{{ .GetChangePercent }}%</td>
                         <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
                     </tr>
                 {{ end }}

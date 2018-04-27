@@ -71,6 +71,19 @@ func (p Price) GetPriceFinal() float64 {
 	return helpers.CentsInt(p.PriceFinal)
 }
 
+func (p Price) GetChangePercent() float64 {
+
+	if p.Change < 0 {
+		// Green
+		old := p.PriceFinal + p.Change
+		return helpers.CentsInt(old / p.Change)
+	} else {
+		// Red
+		old := p.PriceFinal + p.Change
+		return helpers.CentsInt(old / p.Change)
+	}
+}
+
 func GetAppPrices(appID int, limit int) (prices []Price, err error) {
 
 	client, ctx, err := getClient()
