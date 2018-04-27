@@ -59,7 +59,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := changeTemplate{}
-	template.Fill(r, change.GetName())
+	template.Fill(w, r, change.GetName())
 	template.Change = change
 	template.Apps = apps
 	template.Packages = packages

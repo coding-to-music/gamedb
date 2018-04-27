@@ -46,7 +46,7 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 	rows = rows[0 : totalRows+1]
 
 	template := experienceTemplate{}
-	template.Fill(r, "Experience")
+	template.Fill(w, r, "Experience")
 	template.Chunks = chunk(rows, chunkRows)
 
 	// Default calculator levels if logged out

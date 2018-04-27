@@ -118,7 +118,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	template := coopTemplate{}
-	template.Fill(r, "Co-op")
+	template.Fill(w, r, "Co-op")
 	template.Players = players
 	template.Games = templateGames
 

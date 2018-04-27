@@ -22,7 +22,7 @@ func HeaderHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	tp := GlobalTemplate{}
-	tp.Fill(r, "Header")
+	tp.Fill(w, r, "Header")
 
 	// Write a respone
 	err = t.ExecuteTemplate(w, "esi_header", tp)
@@ -36,7 +36,7 @@ func HeaderHandler(w http.ResponseWriter, r *http.Request) {
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := staticTemplate{}
-	t.Fill(r, "Info")
+	t.Fill(w, r, "Info")
 
 	returnTemplate(w, r, "info", t)
 }
@@ -44,7 +44,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 func DonateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := staticTemplate{}
-	t.Fill(r, "Donate")
+	t.Fill(w, r, "Donate")
 
 	returnTemplate(w, r, "donate", t)
 }

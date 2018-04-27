@@ -59,7 +59,7 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := priceChangesTemplate{}
-	template.Fill(r, "Price Changes")
+	template.Fill(w, r, "Price Changes")
 	template.Changes = changes
 	template.Pagination = Pagination{
 		path:  "/price-changes?p=",

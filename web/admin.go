@@ -80,7 +80,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := adminTemplate{}
-	template.Fill(r, "Admin")
+	template.Fill(w, r, "Admin")
 	template.Configs = configs
 
 	returnTemplate(w, r, "admin", template)

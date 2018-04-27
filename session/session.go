@@ -96,14 +96,14 @@ func Clear(w http.ResponseWriter, r *http.Request) (err error) {
 	return nil
 }
 
-func GetFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{}, err error) {
+func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes []interface{}, err error) {
 
 	session, err := getSession(r)
 	if err != nil {
 		return nil, err
 	}
 
-	flashes = session.Flashes()
+	flashes = session.Flashes(group)
 	err = session.Save(r, w)
 	if err != nil {
 		return nil, err
@@ -112,13 +112,28 @@ func GetFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{}, 
 	return flashes, nil
 }
 
-func SetFlash(w http.ResponseWriter, r *http.Request, flash string) (err error) {
+func GetGoodFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{}, err error) {
+	return getFlashes(w, r, "good")
+}
+
+func GetBadFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{}, err error) {
+	return getFlashes(w, r, "bad")
+}
+
+func setFlash(w http.ResponseWriter, r *http.Request, flash string, group string) (err error) {
 
 	session, err := getSession(r)
-
-	session.AddFlash(flash)
+	session.AddFlash(flash, group)
 
 	return session.Save(r, w)
+}
+
+func SetGoodFlash(w http.ResponseWriter, r *http.Request, flash string) (err error) {
+	return setFlash(w, r, flash, "good")
+}
+
+func SetBadFlash(w http.ResponseWriter, r *http.Request, flash string) (err error) {
+	return setFlash(w, r, flash, "bad")
 }
 
 func IsLoggedIn(r *http.Request) (val bool, err error) {

@@ -17,7 +17,7 @@ func StatsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := statsDevelopersTemplate{}
-	template.Fill(r, "Developers")
+	template.Fill(w, r, "Developers")
 	template.Developers = developers
 
 	returnTemplate(w, r, "developers", template)

@@ -278,7 +278,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appTemplate{}
-	t.Fill(r, app.GetName())
+	t.Fill(w, r, app.GetName())
 	t.App = app
 	t.Packages = packages
 	t.Articles = news

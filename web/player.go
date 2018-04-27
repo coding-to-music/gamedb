@@ -187,7 +187,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := playerTemplate{}
-	template.Fill(r, player.PersonaName)
+	template.Fill(w, r, player.PersonaName)
 	template.Player = player
 	template.Friends = friends
 	template.Games = games

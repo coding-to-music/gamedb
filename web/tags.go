@@ -18,7 +18,7 @@ func StatsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := statsTagsTemplate{}
-	template.Fill(r, "Tags")
+	template.Fill(w, r, "Tags")
 	template.Tags = tags
 
 	returnTemplate(w, r, "tags", template)

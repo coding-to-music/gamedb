@@ -82,7 +82,7 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	template := playersTemplate{}
-	template.Fill(r, "Ranks")
+	template.Fill(w, r, "Ranks")
 	template.Ranks = ranks
 	template.PlayersCount = playersCount
 	template.RanksCount = ranksCount

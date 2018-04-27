@@ -7,7 +7,7 @@ import (
 func DiscountsHandler(w http.ResponseWriter, r *http.Request) {
 
 	template := discountsTemplate{}
-	template.Fill(r, "Discounts")
+	template.Fill(w, r, "Discounts")
 
 	returnTemplate(w, r, "discounts", template)
 	return

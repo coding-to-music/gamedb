@@ -32,7 +32,7 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	template := freeGamesTemplate{}
-	template.Fill(r, "Free Games")
+	template.Fill(w, r, "Free Games")
 	template.Apps = apps
 
 	returnTemplate(w, r, "free_games", template)

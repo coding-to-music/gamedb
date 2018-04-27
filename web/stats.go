@@ -8,7 +8,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := statsTemplate{}
-	template.Fill(r, "Stats")
+	template.Fill(w, r, "Stats")
 
 	returnTemplate(w, r, "stats", template)
 }

@@ -56,7 +56,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := newsTemplate{}
-	template.Fill(r, "News")
+	template.Fill(w, r, "News")
 	template.Articles = templateArticles
 
 	returnTemplate(w, r, "news", template)

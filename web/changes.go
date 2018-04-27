@@ -120,7 +120,7 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := changesTemplate{}
-	template.Fill(r, "Changes")
+	template.Fill(w, r, "Changes")
 	template.Changes = changes
 	template.Pagination = Pagination{
 		path:  "/changes?p=",

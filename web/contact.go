@@ -13,7 +13,7 @@ import (
 func ContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	template := contactTemplate{}
-	template.Fill(r, "Contact")
+	template.Fill(w, r, "Contact")
 	template.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
 	returnTemplate(w, r, "contact", template)
@@ -23,7 +23,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := contactTemplate{}
-	template.Fill(r, "Contact")
+	template.Fill(w, r, "Contact")
 	template.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
 	// Form validation

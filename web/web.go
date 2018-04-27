@@ -133,6 +133,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/templates/_stats_header.html",
 		folder+"/templates/_deals_header.html",
 		folder+"/templates/_pagination.html",
+		folder+"/templates/_flashes.html",
 		folder+"/templates/"+page+".html",
 		folder+"/templates/esi_header.html",
 	)
@@ -162,7 +163,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, code int, messa
 	w.WriteHeader(code)
 
 	tmpl := errorTemplate{}
-	tmpl.Fill(r, "Error")
+	tmpl.Fill(w, r, "Error")
 	tmpl.Code = code
 	tmpl.Message = message
 
@@ -227,6 +228,10 @@ type GlobalTemplate struct {
 	UserLevel int
 
 	//
+	FlashesGood []interface{}
+	FlashesBad  []interface{}
+
+	//
 	Title   string // page title
 	Avatar  string
 	Path    string // URL
@@ -236,10 +241,23 @@ type GlobalTemplate struct {
 	request *http.Request // Internal
 }
 
-func (t *GlobalTemplate) Fill(r *http.Request, title string) {
+func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title string) {
 
 	t.Title = title
 	t.request = r
+
+	// Flashes
+	good, err := session.GetGoodFlashes(w, r)
+	if err != nil {
+		logger.Error(err)
+	}
+	t.FlashesGood = good
+
+	bad, err := session.GetBadFlashes(w, r)
+	if err != nil {
+		logger.Error(err)
+	}
+	t.FlashesBad = bad
 
 	// From ENV
 	t.Env = os.Getenv("ENV")

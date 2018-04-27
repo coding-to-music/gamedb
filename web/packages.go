@@ -56,7 +56,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := packagesTemplate{}
-	template.Fill(r, "Packages")
+	template.Fill(w, r, "Packages")
 	template.Packages = packages
 	template.Total = total
 	template.Pagination = Pagination{

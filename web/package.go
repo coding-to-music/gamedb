@@ -115,7 +115,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := packageTemplate{}
-	t.Fill(r, pack.GetName())
+	t.Fill(w, r, pack.GetName())
 	t.Package = pack
 	t.Apps = apps
 	t.Prices = pricesString

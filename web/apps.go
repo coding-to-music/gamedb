@@ -50,7 +50,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	template := appsTemplate{}
-	template.Fill(r, "Games")
+	template.Fill(w, r, "Games")
 	template.Apps = apps
 	template.Count = count
 

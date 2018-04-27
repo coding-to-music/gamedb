@@ -63,7 +63,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.PostForm.Get("password")
 
 		if len(password) < 8 {
-			session.SetFlash(w, r, "Password must be at least 8 characters long")
+			session.SetBadFlash(w, r, "Password must be at least 8 characters long")
 			http.Redirect(w, r, "/settings", 302)
 			return
 		} else {
@@ -71,7 +71,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 			passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 			if err != nil {
 				logger.Error(err)
-				session.SetFlash(w, r, "Something went wrong encrypting your password")
+				session.SetBadFlash(w, r, "Something went wrong encrypting your password")
 				http.Redirect(w, r, "/settings", 302)
 				return
 			}
@@ -99,9 +99,9 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		err = player.Save()
 		if err != nil {
 			logger.Error(err)
-			session.SetFlash(w, r, "Something went wrong saving settings")
+			session.SetBadFlash(w, r, "Something went wrong saving settings")
 		} else {
-			session.SetFlash(w, r, "Settings saved")
+			session.SetGoodFlash(w, r, "Settings saved")
 		}
 
 		http.Redirect(w, r, "/settings", 302)
@@ -139,20 +139,13 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error(err)
 	}
 
-	// Get flashes
-	flashes, err := session.GetFlashes(w, r)
-	if err != nil {
-		logger.Error(err)
-	}
-
 	// Template
 	template := settingsTemplate{}
-	template.Fill(r, "Settings")
+	template.Fill(w, r, "Settings")
 	template.Logins = logins
 	template.Player = *player
 	template.Donations = donations
 	template.Games = string(gamesString)
-	template.Messages = flashes
 
 	returnTemplate(w, r, "settings", template)
 }

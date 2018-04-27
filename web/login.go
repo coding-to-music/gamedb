@@ -92,13 +92,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Redirect
 		if err == nil {
+			session.SetGoodFlash(w, r, "Login successful")
 			http.Redirect(w, r, "/settings", 302)
 			return
 		}
 	}
 
 	t := loginTemplate{}
-	t.Fill(r, "Login")
+	t.Fill(w, r, "Login")
 	t.Success = err == nil
 	if err != nil {
 		t.Message = err.Error()

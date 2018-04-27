@@ -44,7 +44,7 @@ func CommitsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	template := commitsTemplate{}
-	template.Fill(r, "Commits")
+	template.Fill(w, r, "Commits")
 	template.Commits = commits
 
 	returnTemplate(w, r, "commits", template)

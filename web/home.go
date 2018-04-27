@@ -56,7 +56,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	template := homeTemplate{}
-	template.Fill(r, "Home")
+	template.Fill(w, r, "Home")
 
 	template.RanksCount = ranksCount
 	template.AppsCount = appsCount
