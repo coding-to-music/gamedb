@@ -63,21 +63,22 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		// Save password
 		password := r.PostForm.Get("password")
 
-		if len(password) < 8 {
-			session.SetBadFlash(w, r, "Password must be at least 8 characters long")
-			http.Redirect(w, r, "/settings", 302)
-			return
-		} else {
-
-			passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-			if err != nil {
-				logger.Error(err)
-				session.SetBadFlash(w, r, "Something went wrong encrypting your password")
+		if len(password) > 0 {
+			if len(password) < 8 {
+				session.SetBadFlash(w, r, "Password must be at least 8 characters long")
 				http.Redirect(w, r, "/settings", 302)
 				return
+			} else {
+				passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+				if err != nil {
+					logger.Error(err)
+					session.SetBadFlash(w, r, "Something went wrong encrypting your password")
+					http.Redirect(w, r, "/settings", 302)
+					return
+				} else {
+					player.SettingsPassword = string(passwordBytes)
+				}
 			}
-
-			player.SettingsPassword = string(passwordBytes)
 		}
 
 		// Save email
