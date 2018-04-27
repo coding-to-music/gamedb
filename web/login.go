@@ -32,7 +32,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Recaptcha
-			recaptcha.SetSecret(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
 			err = recaptcha.CheckFromRequest(r)
 			if err != nil {
 				if err == recaptcha.ErrNotChecked {
