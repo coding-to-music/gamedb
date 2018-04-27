@@ -6,112 +6,129 @@
         <h1 class="display-4"><i class="fas fa-cog"></i> Settings</h1>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
+    <div class="card">
+        <div class="card-header">
 
-        {{ template "_flashes" . }}
+            <h5 class="float-right mb-0">
+                <a href="/donate" class="badge badge-success">Donate</a>
+            </h5>
 
-            <form action="/settings" method="post">
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#settings" role="tab">Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#donations" role="tab">Donations ({{ len .Donations }})</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#logins" role="tab">Logins ({{ len .Logins }})</a>
+                </li>
+            </ul>
 
-                <div class="row">
-                    <div class="col-12 col-lg-6">
+        </div>
+        <div class="card-body" style="position: relative;">
 
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Email" autofocus name="email" value="{{.Player.SettingsEmail}}">
-                            <small id="emailHelp" class="form-text text-muted">Currently only used for login purposes.</small>
+            <div class="tab-content">
+
+            {{/* Settings */}}
+                <div class="tab-pane show active" id="settings" role="tabpanel">
+
+                {{ template "_flashes" . }}
+
+                    <form action="/settings" method="post">
+
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Email" autofocus name="email" value="{{.Player.SettingsEmail}}">
+                                    <small id="emailHelp" class="form-text text-muted">Currently only used for login purposes.</small>
+                                </div>
+
+                            </div>
+                            <div class="col-12 col-lg-6">
+
+                                <div class="form-group">
+                                    <label for="email">Password</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+                                    <small id="emailHelp" class="form-text text-muted">Fill in to change.</small>
+                                </div>
+
+                            </div>
+                            <div class="col-12">
+
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{if .Player.SettingsHidden}}checked{{end}}>
+                                    <label class="form-check-label" for="hide-profile">Hide my profile from all areas</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{if .Player.SettingsAlerts}}checked{{end}}>
+                                    <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-3">Save</button>
+
+                            </div>
                         </div>
 
-                    </div>
-                    <div class="col-12 col-lg-6">
+                    </form>
 
-                        <div class="form-group">
-                            <label for="email">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Password" name="password">
-                            <small id="emailHelp" class="form-text text-muted">Fill in to change.</small>
-                        </div>
-
-                    </div>
-                    <div class="col-12">
-
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{if .Player.SettingsHidden}}checked{{end}}>
-                            <label class="form-check-label" for="hide-profile">Hide my profile from all areas</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{if .Player.SettingsAlerts}}checked{{end}}>
-                            <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary mt-3">Save</button>
-
-                    </div>
                 </div>
 
-            </form>
+            {{/* Donations */}}
+                <div class="tab-pane" id="donations" role="tabpanel">
 
-        </div>
-    </div>
+                {{if eq (len .Donations) 0 }}
+                    <p class="mb-0">No donations.</p>
+                {{else}}
 
-    <div class="card mb-4">
-        <h5 class="card-header">
-            <span class="float-right" style="margin-bottom: 0;">
-                <a href="/donate" class="badge badge-success">Donate</a>
-            </span>
-            <span>Donations</span>
-        </h5>
-        <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Amount</th>
+                                <th scope="col" data-sort="desc">Date</th>
+                            </tr>
+                            </thead>
+                        {{ range $key, $value := .Donations }}
+                            <tr>
+                                <td>{{ .Amount }}</td>
+                                <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
+                            </tr>
+                        {{ end }}
+                        </table>
+                    </div>
 
-        {{if eq (len .Donations) 0 }}
-            <p class="mb-0">No donations.</p>
-        {{else}}
+                {{end}}
 
-        {{/* Donations */}}
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable mb-0">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Amount</th>
-                        <th scope="col" data-sort="desc">Date</th>
-                    </tr>
-                    </thead>
-                {{ range $key, $value := .Donations }}
-                    <tr>
-                        <td>{{ .Amount }}</td>
-                        <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
-                    </tr>
-                {{ end }}
-                </table>
-            </div>
+                </div>
 
-        {{end}}
+            {{/* Logins */}}
+                <div class="tab-pane" id="logins" role="tabpanel">
 
-        </div>
-    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" data-sort="desc">Date</th>
+                                <th scope="col">IP</th>
+                                <th scope="col">User Agent</th>
+                            </tr>
+                            </thead>
+                        {{ range $key, $value := .Logins }}
+                            <tr>
+                                <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
+                                <td>{{ .IP }}</td>
+                                <td nowrap="nowrap">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ .UserAgent }}">{{ printf "%.50s" .UserAgent }}&hellip;</span>
+                                </td>
+                            </tr>
+                        {{ end }}
+                        </table>
+                    </div>
 
-    <div class="card">
-        <h5 class="card-header">Logins</h5>
-        <div class="card-body">
+                </div>
 
-        {{/* User Logins */}}
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable mb-0">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col" data-sort="desc">Date</th>
-                        <th scope="col">IP</th>
-                        <th scope="col">User Agent</th>
-                    </tr>
-                    </thead>
-                {{ range $key, $value := .Logins }}
-                    <tr>
-                        <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
-                        <td>{{ .IP }}</td>
-                        <td nowrap="nowrap">
-                            <span data-toggle="tooltip" data-placement="top" title="{{ .UserAgent }}">{{ printf "%.50s" .UserAgent }}&hellip;</span>
-                        </td>
-                    </tr>
-                {{ end }}
-                </table>
             </div>
 
         </div>
