@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
@@ -108,24 +109,40 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var wg sync.WaitGroup
+
 	// Get logins
-	logins, err := datastore.GetLogins(idx, 20)
-	if err != nil {
-		logger.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
-		return
-	}
+	var logins []datastore.Login
+	wg.Add(1)
+	go func(player *datastore.Player) {
+
+		logins, err = datastore.GetLogins(player.PlayerID, 20)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		wg.Done()
+
+	}(player)
 
 	// Get donations
 	var donations []datastore.Donation
-	if player.Donated > 0 {
-		donations, err = datastore.GetDonations(player.PlayerID, 10)
-		if err != nil {
-			logger.Error(err)
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
+	wg.Add(1)
+	go func(player *datastore.Player) {
+
+		if player.Donated > 0 {
+			donations, err = datastore.GetDonations(player.PlayerID, 10)
+			if err != nil {
+				logger.Error(err)
+			}
 		}
-	}
+
+		wg.Done()
+
+	}(player)
+
+	// Wait
+	wg.Wait()
 
 	// Get games
 	games := player.GetGames()
