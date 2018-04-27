@@ -92,3 +92,8 @@ div#top.show {
 .bold {
     font-weight: bold;
 }
+
+.tooltip-inner {
+    //min-width: 200px;
+    max-width: 300px !important;
+}
