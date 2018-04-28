@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"math"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -70,10 +69,10 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
+	// Queue friends
 	wg.Add(1)
 	go func(player *datastore.Player) {
 
-		// Queue friends
 		if player.ShouldUpdateFriends() {
 
 			for _, v := range player.Friends {
@@ -93,7 +92,8 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
-	var friends []datastore.Player
+	// Get friends
+	var friends = map[int]datastore.Player{}
 	wg.Add(1)
 	go func(player *datastore.Player) {
 
@@ -102,22 +102,33 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		for _, v := range player.Friends {
 			s, _ := strconv.Atoi(v.SteamID)
 			friendsSlice = append(friendsSlice, s)
+			friends[s] = datastore.Player{
+				PlayerID: s,
+			}
 		}
 
 		// Get friends
-		friends, err = datastore.GetPlayersByIDs(friendsSlice)
+		friendsResp, err := datastore.GetPlayersByIDs(friendsSlice)
 		if err != nil {
 			logger.Error(err)
 		}
 
-		sort.Slice(friends, func(i, j int) bool {
-			return friends[i].Level > friends[j].Level
-		})
+		// Fill in the map
+		for _, v := range friendsResp {
+			if v.PlayerID!=0 {
+				friends[v.PlayerID] = v
+			}
+		}
+
+		//sort.Slice(friends, func(i, j int) bool {
+		//	return friends[i].Level > friends[j].Level
+		//})
 
 		wg.Done()
 
 	}(player)
 
+	// Get games
 	var games = map[int]*playerAppTemplate{}
 	wg.Add(1)
 	go func(player *datastore.Player) {
@@ -153,11 +164,11 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
+	// Get ranks
 	var ranks *datastore.Rank
 	wg.Add(1)
 	go func(player *datastore.Player) {
 
-		// Get ranks
 		ranks, err = datastore.GetRank(player.PlayerID)
 		if err != nil {
 			if err != datastore.ErrNoSuchEntity {
@@ -169,11 +180,11 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
+	// Number of players
 	var players int
 	wg.Add(1)
 	go func(player *datastore.Player) {
 
-		// Number of players
 		players, err = datastore.CountPlayers()
 		if err != nil {
 			logger.Error(err)
@@ -199,7 +210,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 type playerTemplate struct {
 	GlobalTemplate
 	Player  *datastore.Player
-	Friends []datastore.Player
+	Friends map[int]datastore.Player
 	Games   map[int]*playerAppTemplate
 	Ranks   playerRanksTemplate
 }

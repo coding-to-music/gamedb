@@ -64,7 +64,12 @@ func (p Player) GetKey() (key *datastore.Key) {
 }
 
 func (p Player) GetPath() string {
-	return "/players/" + strconv.Itoa(p.PlayerID) + "/" + slug.Make(p.PersonaName)
+
+	x := "/players/" + strconv.Itoa(p.PlayerID)
+	if p.PersonaName != "" {
+		x = x + "/" + slug.Make(p.PersonaName)
+	}
+	return x
 }
 
 func (p Player) GetName() string {

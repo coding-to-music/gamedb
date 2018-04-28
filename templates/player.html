@@ -83,9 +83,7 @@
                         <div class="col-sm-12 col-md-6 col-lg-4">
 
                             <div class="card mb-4">
-                                <div class="card-header">Ranks
-                                    <small class="text-muted float-right">Ranks get updated at midnight (GMT).</small>
-                                </div>
+                                <div class="card-header">Ranks</div>
                                 <div class="card-body">
 
                                     <table class="table table-hover mb-0">
@@ -184,7 +182,7 @@
                             <th scope="col">Logged Off</th>
                             </thead>
                         {{ range $key, $value := .Friends }}
-                        {{ if ne .PlayerID 0 }}
+                        {{ if ne .PersonaName "" }}
                             <tr data-link="{{ .GetPath }}">
                                 <td class="img">
                                     <img src="{{ .GetAvatar }}" class="avatar rounded" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
@@ -195,7 +193,7 @@
                                 <td data-sort="{{ .GetLogoffUnix }}" nowrap="nowrap">{{ .GetLogoffNice }}</td>
                             </tr>
                         {{else}}
-                            <tr>
+                            <tr data-link="{{ .GetPath }}">
                                 <td class="img">
                                     <img src="{{.GetDefaultAvatar}}" class="avatar rounded">
                                 </td>
