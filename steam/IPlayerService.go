@@ -171,6 +171,10 @@ type BadgesResponse struct {
 
 func (b BadgesResponse) GetPercentOfLevel() int {
 
+	if b.PlayerXP == 0 {
+		return 0
+	}
+
 	start := b.PlayerXPNeededCurrentLevel
 	finish := b.PlayerXPNeededToLevelUp + b.PlayerXP
 	levelRange := finish - start
