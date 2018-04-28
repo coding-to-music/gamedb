@@ -71,15 +71,11 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Count players
 	playersCount, err := datastore.CountPlayers()
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	// Count ranks
 	ranksCount, err := datastore.CountRanks()
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	template := playersTemplate{}
 	template.Fill(w, r, "Ranks")

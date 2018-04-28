@@ -19,9 +19,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		ranksCount, err = datastore.CountRanks()
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 
@@ -32,9 +30,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		appsCount, err = mysql.CountApps()
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 
@@ -45,9 +41,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		packagesCount, err = mysql.CountPackages()
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 

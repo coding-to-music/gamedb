@@ -52,14 +52,10 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get apps
 		appIDs, err := pack.GetApps()
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		apps, err = mysql.GetApps(appIDs, []string{"id", "icon", "type", "platforms", "dlc"})
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 	}()
@@ -71,9 +67,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get prices
 		pricesResp, err := datastore.GetPackagePrices(pack.ID, 0)
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		pricesCount = len(pricesResp)
 
@@ -89,9 +83,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Make into a JSON string
 		pricesBytes, err := json.Marshal(prices)
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		pricesString = string(pricesBytes)
 

@@ -26,9 +26,7 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 	// Get changes
 	var changes []structs.ChangesChangeTemplate
 	resp, err := datastore.GetLatestChanges(changesLimit, page)
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	for _, v := range resp {
 		changes = append(changes, structs.ChangesChangeTemplate{
@@ -52,9 +50,7 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 		// Get apps for all changes
 		appsMap := make(map[int]mysql.App)
 		apps, err := mysql.GetApps(appIDs, []string{"id", "name", "icon"})
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		// Make app map
 		for _, v := range apps {
@@ -90,9 +86,7 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 		// Get packages for all changes
 		packagesMap := make(map[int]mysql.Package)
 		packages, err := mysql.GetPackages(packageIDs, []string{"id", "name"})
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		// Make package map
 		for _, v := range packages {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/rollbar/rollbar-go"
+	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/pics"
 	"github.com/steam-authority/steam-authority/queue"
@@ -60,9 +61,15 @@ func main() {
 	}
 
 	// Web server
-	web.Serve()
+	err := web.Serve()
+	if err != nil {
 
-	// Block forever for goroutines to run
-	forever := make(chan bool)
-	<-forever
+		logger.Error(err)
+
+	} else {
+
+		// Block forever for goroutines to run
+		forever := make(chan bool)
+		<-forever
+	}
 }

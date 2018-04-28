@@ -156,6 +156,10 @@ func (app App) GetPriceInitial() float64 {
 	return helpers.CentsInt(app.PriceInitial)
 }
 
+func (app App) GetPriceFinal() float64 {
+	return helpers.CentsInt(app.PriceFinal)
+}
+
 func (app App) GetReviewScore() float64 {
 	return helpers.DollarsFloat(app.ReviewsScore)
 }

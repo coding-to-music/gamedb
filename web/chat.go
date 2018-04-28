@@ -27,9 +27,7 @@ func init() {
 
 	// Get client
 	discordSession, err = discordgo.New("Bot " + os.Getenv("STEAM_DISCORD_BOT_TOKEN"))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	// Add websocket listener
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -45,9 +43,7 @@ func init() {
 
 	// Open connection
 	err = discordSession.Open()
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 }
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,9 +63,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		channelsResponse, err := discordSession.GuildChannels(guildID)
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		for _, v := range channelsResponse {
 			if v.Type == discordgo.ChannelTypeGuildText {
@@ -91,9 +85,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		for _, v := range messagesResponse {
 			if !v.Author.Bot {

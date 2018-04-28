@@ -54,9 +54,7 @@ func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Encode
 	bytes, err := json.Marshal(queues)
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(bytes)

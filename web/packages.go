@@ -29,9 +29,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		total, err = mysql.CountPackages()
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 
@@ -43,9 +41,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		packages, err = mysql.GetLatestPackages(packagesLimit, page)
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 

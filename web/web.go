@@ -24,7 +24,7 @@ import (
 	"github.com/steam-authority/steam-authority/websockets"
 )
 
-func Serve() {
+func Serve() error {
 
 	r := chi.NewRouter()
 
@@ -84,7 +84,7 @@ func Serve() {
 	// File server
 	fileServer(r)
 
-	http.ListenAndServe(":8085", r)
+	return http.ListenAndServe(":8085", r)
 }
 
 func adminRouter() http.Handler {
@@ -248,15 +248,11 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// Flashes
 	good, err := session.GetGoodFlashes(w, r)
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 	t.FlashesGood = good
 
 	bad, err := session.GetBadFlashes(w, r)
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 	t.FlashesBad = bad
 
 	// From ENV

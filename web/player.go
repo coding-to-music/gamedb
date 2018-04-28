@@ -2,10 +2,8 @@ package web
 
 import (
 	"encoding/json"
-	"math"
 	"net/http"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -109,13 +107,11 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get friends
 		friendsResp, err := datastore.GetPlayersByIDs(friendsSlice)
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		// Fill in the map
 		for _, v := range friendsResp {
-			if v.PlayerID!=0 {
+			if v.PlayerID != 0 {
 				friends[v.PlayerID] = v
 			}
 		}
@@ -130,6 +126,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get games
 	var games = map[int]*playerAppTemplate{}
+	var gameStats = playerAppStatsTemplate{}
 	wg.Add(1)
 	go func(player *datastore.Player) {
 
@@ -148,16 +145,21 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get game info from app
-		gamesSql, err := mysql.GetApps(gamesSlice, []string{"id", "name", "price_initial", "icon"})
-		if err != nil {
-			logger.Error(err)
-		}
+		gamesSql, err := mysql.GetApps(gamesSlice, []string{"id", "name", "price_final", "icon"})
+		logger.Error(err)
 
 		for _, v := range gamesSql {
+
 			games[v.ID].ID = v.ID
 			games[v.ID].Name = v.GetName()
-			games[v.ID].Price = v.GetPriceInitial()
+			games[v.ID].Price = v.GetPriceFinal()
 			games[v.ID].Icon = v.GetIcon()
+
+			// Game stats
+			gameStats.All.Fill(games[v.ID])
+			if games[v.ID].Time > 0 {
+				gameStats.Played.Fill(games[v.ID])
+			}
 		}
 
 		wg.Done()
@@ -186,9 +188,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player *datastore.Player) {
 
 		players, err = datastore.CountPlayers()
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 	}(player)
@@ -197,22 +197,24 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	template := playerTemplate{}
-	template.Fill(w, r, player.PersonaName)
-	template.Player = player
-	template.Friends = friends
-	template.Games = games
-	template.Ranks = playerRanksTemplate{*ranks, players}
+	t := playerTemplate{}
+	t.Fill(w, r, player.PersonaName)
+	t.Player = player
+	t.Friends = friends
+	t.Games = games
+	t.Ranks = playerRanksTemplate{*ranks, players}
+	t.GameStats = gameStats
 
-	returnTemplate(w, r, "player", template)
+	returnTemplate(w, r, "player", t)
 }
 
 type playerTemplate struct {
 	GlobalTemplate
-	Player  *datastore.Player
-	Friends map[int]datastore.Player
-	Games   map[int]*playerAppTemplate
-	Ranks   playerRanksTemplate
+	Player    *datastore.Player
+	Friends   map[int]datastore.Player
+	Games     map[int]*playerAppTemplate
+	GameStats playerAppStatsTemplate
+	Ranks     playerRanksTemplate
 }
 
 type playerAppTemplate struct {
@@ -228,21 +230,37 @@ func (g playerAppTemplate) GetTimeNice() string {
 	return helpers.GetTimeShort(g.Time, 2)
 }
 
-func (g playerAppTemplate) GetPriceHour() string {
+func (g playerAppTemplate) GetPriceHour() float64 {
 
-	x := g.Price / (float64(g.Time) / 60)
-	if math.IsNaN(x) {
-		x = 0
+	if g.Price == 0 {
+		return 0
 	}
-	if math.IsInf(x, 0) {
+
+	if g.Time == 0 {
+		return -1
+	}
+
+	return g.Price / (float64(g.Time) / 60)
+}
+
+func (g playerAppTemplate) GetPriceHourNice() string {
+
+	x := g.GetPriceHour()
+	if x == -1 {
 		return "∞"
 	}
+
 	return strconv.FormatFloat(helpers.DollarsFloat(x), 'f', 2, 64)
 }
 
 func (g playerAppTemplate) GetPriceHourSort() string {
 
-	return strings.Replace(g.GetPriceHour(), "∞", "1000000", 1)
+	x := g.GetPriceHour()
+	if x == -1 {
+		return "1000000"
+	}
+
+	return strconv.FormatFloat(helpers.DollarsFloat(x), 'f', 2, 64)
 }
 
 // playerRanksTemplate
@@ -318,4 +336,43 @@ func (p playerRanksTemplate) GetTimePercent() string {
 
 func (p playerRanksTemplate) GetFriendsPercent() string {
 	return p.formatPercent(p.Ranks.FriendsRank)
+}
+
+type playerAppStatsTemplate struct {
+	Played playerAppStatsInnerTemplate
+	All    playerAppStatsInnerTemplate
+}
+
+type playerAppStatsInnerTemplate struct {
+	count     int
+	price     float64
+	priceHour float64
+	time      int
+}
+
+func (p *playerAppStatsInnerTemplate) Fill(app *playerAppTemplate) {
+
+	p.count++
+	p.price = p.price + app.Price
+	p.priceHour = p.priceHour + app.GetPriceHour()
+	p.time = p.time + app.Time
+}
+
+func (p playerAppStatsInnerTemplate) GetAveragePrice() float64 {
+	return helpers.DollarsFloat(p.price / float64(p.count))
+}
+
+func (p playerAppStatsInnerTemplate) GetTotalPrice() float64 {
+	return helpers.DollarsFloat(p.price)
+}
+
+func (p playerAppStatsInnerTemplate) GetAveragePriceHour() float64 {
+	return helpers.DollarsFloat(p.priceHour / float64(p.count))
+}
+func (p playerAppStatsInnerTemplate) GetAverageTime() string {
+	return helpers.GetTimeShort(int(float64(p.time)/float64(p.count)), 2)
+}
+
+func (p playerAppStatsInnerTemplate) GetTotalTime() string {
+	return helpers.GetTimeShort(p.time, 2)
 }

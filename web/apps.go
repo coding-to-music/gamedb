@@ -23,9 +23,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		apps, err = mysql.SearchApps(r.URL.Query(), appsSearchLimit, "id DESC", []string{})
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 
@@ -37,9 +35,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		count, err = mysql.CountApps()
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 

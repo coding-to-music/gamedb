@@ -74,9 +74,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		ConfDevelopersUpdated,
 		ConfPublishersUpdated,
 	})
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	// Template
 	template := adminTemplate{}
@@ -118,9 +116,7 @@ func adminApps() {
 
 	//
 	err = mysql.SetConfig(ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	logger.Info(strconv.Itoa(len(apps)) + " apps added to rabbit")
 }
@@ -129,9 +125,7 @@ func adminDeploy() {
 
 	//
 	err := mysql.SetConfig(ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 }
 
 func adminDonations() {
@@ -167,9 +161,7 @@ func adminDonations() {
 
 	//
 	err = mysql.SetConfig(ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	logger.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
@@ -193,9 +185,7 @@ func adminGenres() {
 	filter.Set("genres_depth", "3")
 
 	apps, err := mysql.SearchApps(filter, 0, "", []string{})
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	counts := make(map[int]*adminGenreCount)
 
@@ -231,9 +221,7 @@ func adminGenres() {
 		go func() {
 
 			err := mysql.DeleteGenre(v)
-			if err != nil {
-				logger.Error(err)
-			}
+			logger.Error(err)
 
 			wg.Done()
 		}()
@@ -246,9 +234,7 @@ func adminGenres() {
 		go func(v *adminGenreCount) {
 
 			err := mysql.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
-			if err != nil {
-				logger.Error(err)
-			}
+			logger.Error(err)
 
 			wg.Done()
 
@@ -258,9 +244,7 @@ func adminGenres() {
 
 	//
 	err = mysql.SetConfig(ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	logger.Info("Genres updated")
 }
@@ -333,9 +317,7 @@ func adminPublishers() {
 
 	// Get apps from mysql
 	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "publishers"})
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
 
@@ -381,9 +363,7 @@ func adminPublishers() {
 		go func() {
 
 			err := mysql.DeletePublisher(v)
-			if err != nil {
-				logger.Error(err)
-			}
+			logger.Error(err)
 
 			wg.Done()
 		}()
@@ -401,9 +381,7 @@ func adminPublishers() {
 				MeanDiscount: v.GetMeanDiscount(),
 				Name:         v.name,
 			})
-			if err != nil {
-				logger.Error(err)
-			}
+			logger.Error(err)
 
 			wg.Done()
 
@@ -413,9 +391,7 @@ func adminPublishers() {
 	wg.Wait()
 
 	err = mysql.SetConfig(ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	logger.Info("Publishers updated")
 }
@@ -436,9 +412,7 @@ func adminDevelopers() {
 
 	// Get apps from mysql
 	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "developers"})
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
 
@@ -501,9 +475,7 @@ func adminDevelopers() {
 				MeanDiscount: v.GetMeanDiscount(),
 				Name:         v.name,
 			})
-			if err != nil {
-				logger.Error(err)
-			}
+			logger.Error(err)
 
 			wg.Done()
 
@@ -512,9 +484,7 @@ func adminDevelopers() {
 	wg.Wait()
 
 	err = mysql.SetConfig(ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	logger.Info("Developers updated")
 }
@@ -550,9 +520,7 @@ func adminTags() {
 
 	// Get tag names from Steam
 	tagsResp, err := steam.GetTags()
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	steamTagMap := make(map[int]string)
 	for _, v := range tagsResp {
@@ -564,9 +532,7 @@ func adminTags() {
 	filter.Set("tags_depth", "2")
 
 	apps, err := mysql.SearchApps(filter, 0, "", []string{"name", "price_final", "price_discount", "tags"})
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	counts := make(map[int]*adminTag)
 	for _, app := range apps {
@@ -606,9 +572,7 @@ func adminTags() {
 		go func() {
 
 			err := mysql.DeleteTag(v)
-			if err != nil {
-				logger.Error(err)
-			}
+			logger.Error(err)
 
 			wg.Done()
 		}()
@@ -626,9 +590,7 @@ func adminTags() {
 				MeanDiscount: v.GetMeanDiscount(),
 				Name:         v.name,
 			})
-			if err != nil {
-				logger.Error(err)
-			}
+			logger.Error(err)
 
 			wg.Done()
 		}(k, v)
@@ -636,9 +598,7 @@ func adminTags() {
 	wg.Wait()
 
 	err = mysql.SetConfig(ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	logger.Info("Tags updated")
 }
@@ -789,9 +749,7 @@ func adminRanks() {
 
 	//
 	err = mysql.SetConfig(ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	logger.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
 }

@@ -118,9 +118,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player *datastore.Player) {
 
 		logins, err = datastore.GetLogins(player.PlayerID, 20)
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 
@@ -133,9 +131,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if player.Donated > 0 {
 			donations, err = datastore.GetDonations(player.PlayerID, 10)
-			if err != nil {
-				logger.Error(err)
-			}
+			logger.Error(err)
 		}
 
 		wg.Done()
@@ -153,9 +149,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	gamesString, err := json.Marshal(gamesSlice)
-	if err != nil {
-		logger.Error(err)
-	}
+	logger.Error(err)
 
 	// Template
 	template := settingsTemplate{}
