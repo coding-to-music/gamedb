@@ -58,7 +58,7 @@ if (games != null) {
         $('[data-app-id]').each(function () {
             var id = $(this).attr('data-app-id');
             if (games.indexOf(parseInt(id)) !== -1) {
-                $(this).addClass('bold')
+                $(this).addClass('font-weight-bold')
             }
         });
     }
