@@ -199,6 +199,11 @@ func getTemplateFuncMap() map[string]interface{} {
 			return template.HTML("Packages: " + strings.Join(packages, ", "))
 		},
 		"tags": func(a []mysql.Tag) template.HTML {
+
+			sort.Slice(a, func(i, j int) bool {
+				return a[i].Name < a[j].Name
+			})
+
 			var tags []string
 			for _, v := range a {
 				tags = append(tags, "<a href=\"/games?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
@@ -206,6 +211,11 @@ func getTemplateFuncMap() map[string]interface{} {
 			return template.HTML(strings.Join(tags, ", "))
 		},
 		"genres": func(a []steam.AppDetailsGenre) template.HTML {
+
+			sort.Slice(a, func(i, j int) bool {
+				return a[i].Description < a[j].Description
+			})
+
 			var genres []string
 			for _, v := range a {
 				genres = append(genres, "<a href=\"/games?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
