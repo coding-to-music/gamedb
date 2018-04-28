@@ -13,6 +13,7 @@ var ErrCacheMiss = memcache.ErrCacheMiss
 var (
 	// Counts
 	AppsCount     = memcache.Item{Key: "apps-count", Expiration: 60 * 60 * 24}
+	FreeAppsCount = memcache.Item{Key: "free-apps-count", Expiration: 60 * 60 * 24}
 	PackagesCount = memcache.Item{Key: "packages-count", Expiration: 60 * 60 * 24}
 	PlayersCount  = memcache.Item{Key: "players-count", Expiration: 60 * 60 * 24}
 
@@ -21,6 +22,7 @@ var (
 	Genres     = memcache.Item{Key: "genres", Expiration: 60 * 60 * 24}
 	Publishers = memcache.Item{Key: "publishers", Expiration: 60 * 60 * 24}
 	Tags       = memcache.Item{Key: "tags", Expiration: 60 * 60 * 24}
+	FreeGames  = memcache.Item{Key: "free-games", Expiration: 0}
 )
 
 func getClient() *memcache.Client {
@@ -65,18 +67,18 @@ func Set(key string, i interface{}, expiration int32) error {
 	return client.Set(item)
 }
 
-func GetSet(key string, i interface{}, f func(j interface{}) (expiration int32, err error)) error {
+func GetSet(item memcache.Item, value interface{}, f func(j interface{}) (err error)) error {
 
-	err := Get(key, i)
+	err := Get(item.Key, value)
 
 	if err == ErrCacheMiss || (err != nil && err.Error() == "EOF") {
 
-		expiration, err := f(i)
+		err := f(value)
 		if err != nil {
 			return err
 		}
 
-		err = Set(key, i, expiration)
+		err = Set(item.Key, value, item.Expiration)
 		if err != nil {
 			return err
 		}

@@ -1,5 +1,7 @@
 {{define "_pagination"}}
 
+{{ if gt (len .GetPages) 0 }}
+
 <nav>
     <ul class="pagination pagination-lg justify-content-center mb-0">
     {{ range $key, $value := .GetPages }}
@@ -11,5 +13,7 @@
     {{ end }}
     </ul>
 </nav>
+
+{{end}}
 
 {{end}}

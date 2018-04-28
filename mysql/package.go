@@ -365,7 +365,7 @@ func GetLatestPackages(limit int, page int) (packages []Package, err error) {
 		return packages, err
 	}
 
-	offset := (page - 1) * 100
+	offset := (page - 1) * limit
 
 	db.Limit(limit).Offset(offset).Order("created_at DESC").Find(&packages)
 	if db.Error != nil {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
+	"regexp"
 	"strconv"
 	"sync"
 	"time"
@@ -264,9 +265,15 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 				player.PersonaName = "Unknown"
 			}
 
+			// Remove extra new lines
+			regex := regexp.MustCompile("[\n]{3,}") // After comma
+			v.Review = regex.ReplaceAllString(v.Review, "\n\n")
+
 			reviews = append(reviews, appReviewTemplate{
 				Review: v.Review,
 				Player: player,
+				Date:   time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
+				Votes:  v.VotesUp,
 			})
 		}
 
@@ -325,6 +332,8 @@ type appArticleTemplate struct {
 type appReviewTemplate struct {
 	Review string
 	Player datastore.Player
+	Date   string
+	Votes  int
 }
 
 func (a appAchievementTemplate) GetCompleted() float64 {

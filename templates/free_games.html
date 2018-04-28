@@ -43,7 +43,7 @@
                             <img src="{{ .GetIcon }}" class="rounded">
                         </td>
                         <td data-app-id="{{ .ID }}">{{ .GetName }}</td>
-                        <td>{{ .ReviewsScore }}</td>
+                        <td>{{ .GetReviewScore }}</td>
                         <td>{{ .GetType }}</td>
                         <td class="platforms">{{ .GetPlatformImages }}</td>
                         <td><a href="{{ .GetInstallLink }}">Install</a></td>
@@ -52,6 +52,8 @@
                     </tbody>
                 </table>
             </div>
+
+        {{ template "_pagination" .Pagination }}
 
         </div>
     </div>

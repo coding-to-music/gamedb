@@ -354,7 +354,7 @@ func GetReviews(appID int) (reviews ReviewsResponse, err error) {
 	query := url.Values{}
 	query.Set("json", "1")
 	query.Set("filter", "all")
-	query.Set("language", "all")
+	//query.Set("language", "all")
 	query.Set("day_range", "all")
 	query.Set("start_offset", "0")
 	query.Set("review_type", "all")
@@ -414,8 +414,8 @@ type ReviewsResponse struct {
 		} `json:"author"`
 		Language                 string `json:"language"`
 		Review                   string `json:"review"`
-		TimestampCreated         int    `json:"timestamp_created"`
-		TimestampUpdated         int    `json:"timestamp_updated"`
+		TimestampCreated         int64  `json:"timestamp_created"`
+		TimestampUpdated         int64  `json:"timestamp_updated"`
 		VotedUp                  bool   `json:"voted_up"`
 		VotesUp                  int    `json:"votes_up"`
 		VotesFunny               int    `json:"votes_funny"`

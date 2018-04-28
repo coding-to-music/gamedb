@@ -156,6 +156,10 @@ func (app App) GetPriceInitial() float64 {
 	return helpers.CentsInt(app.PriceInitial)
 }
 
+func (app App) GetReviewScore() float64 {
+	return helpers.DollarsFloat(app.ReviewsScore)
+}
+
 func (app App) GetCommunityLink() (string) {
 	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
 }
@@ -524,21 +528,19 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	err = memcache.GetSet(memcache.AppsCount.Key, &count, func(count interface{}) (expiration int32, err error) {
-
-		expiration = 60 * 60 * 24
+	err = memcache.GetSet(memcache.AppsCount, &count, func(count interface{}) (err error) {
 
 		db, err := GetDB()
 		if err != nil {
-			return expiration, err
+			return err
 		}
 
 		db.Model(&App{}).Count(count)
 		if db.Error != nil {
-			return expiration, db.Error
+			return db.Error
 		}
 
-		return expiration, nil
+		return nil
 	})
 
 	if err != nil {
@@ -558,7 +560,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		return errs
 	}
 
-	if (app.ScannedAt != nil) && (app.ScannedAt.Unix() < (time.Now().Unix() - int64(60*60*24))) { // 1 Days
+	if (app.ScannedAt != nil) && (app.ScannedAt.Unix() > (time.Now().Unix() - int64(60*60*24))) { // 1 Days
 		return errs
 	}
 
