@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/steam"
 )
 
@@ -24,6 +25,10 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		page = 1
 	}
+
+	// Get config
+	config, err := mysql.GetConfig(mysql.ConfRanksUpdated)
+	logger.Error(err)
 
 	//
 	var ranks []datastore.Rank
@@ -77,19 +82,20 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 	ranksCount, err := datastore.CountRanks()
 	logger.Error(err)
 
-	template := playersTemplate{}
-	template.Fill(w, r, "Ranks")
-	template.Ranks = ranks
-	template.PlayersCount = playersCount
-	template.RanksCount = ranksCount
-	template.Pagination = Pagination{
+	t := playersTemplate{}
+	t.Fill(w, r, "Ranks")
+	t.Ranks = ranks
+	t.PlayersCount = playersCount
+	t.RanksCount = ranksCount
+	t.Date = config.Value
+	t.Pagination = Pagination{
 		path:  "/players?p=",
 		page:  page,
 		limit: ranksLimit,
 		total: ranksCount,
 	}
 
-	returnTemplate(w, r, "ranks", template)
+	returnTemplate(w, r, "ranks", t)
 	return
 }
 
@@ -99,6 +105,7 @@ type playersTemplate struct {
 	PlayersCount int
 	RanksCount   int
 	Pagination   Pagination
+	Date         string
 }
 
 func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
