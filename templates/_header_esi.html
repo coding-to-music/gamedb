@@ -1,0 +1,144 @@
+{{define "_header_esi"}}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/assets/compiled.min.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/sa-bg-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/sa-bg-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/assets/img/safari-pinned-tab.svg" color="#343a40">
+    <link rel="shortcut icon" href="/assets/img/sa-bg-48x48.ico">
+
+    <meta name="apple-mobile-web-app-title" content="Steam Authority">
+    <meta name="application-name" content="Steam Authority">
+    <meta name="msapplication-TileColor" content="#343a40">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    <meta name="theme-color" content="#343a40">
+    <meta name="google" content="notranslate">
+
+    <title>{{.Title}} - Steam Authority</title>
+
+    <script async src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-125104-31');
+        gtag('set', {'user_id': '{{ .UserID }}'});
+    </script>
+{{ if .ShowAd }}
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-5468884371420326",
+            enable_page_level_ads: true
+        });
+    </script>
+{{ end }}
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="/assets/img/sa-500x500.png">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
+                        <a class="nav-link" href="/players">Players</a>
+                    </li>
+                    <li class="nav-item {{if startsWith .Path "/games" }}active{{end}}">
+                        <a class="nav-link" href="/games">Games</a>
+                    </li>
+                    <li class="nav-item {{if startsWith .Path "/coop" }}active{{end}}">
+                        <a class="nav-link" href="/coop">Co-op</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Deals</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/price-changes">Price Changes</a>
+                            <a class="dropdown-item" href="/free-games">Free Games</a>
+                            <a class="dropdown-item" href="/discounts">Discounts</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Stats</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/tags">Tags</a>
+                            <a class="dropdown-item" href="/genres">Genres</a>
+                            <a class="dropdown-item" href="/publishers">Publishers</a>
+                            <a class="dropdown-item" href="/developers">Developers</a>
+                        </div>
+                    </li>
+                    <li class="nav-item {{if startsWith .Path "/news" }}active{{end}}">
+                        <a class="nav-link" href="/news">News</a>
+                    </li>
+                    <li class="nav-item {{if startsWith .Path "/chat" }}active{{end}}">
+                        <a class="nav-link" href="/chat">Chat</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                {{ if .IsAdmin }}
+                    <li class="nav-item {{if startsWith .Path "/admin" }}active{{end}}">
+                        <a class="nav-link" href="/admin">Admin</a>
+                    </li>
+                {{end}}
+                {{ if .LoggedIn }}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/players/{{ .UserID }}">{{.UserName}}</a>
+                    </li>
+                {{else}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                {{end}}
+                    <li class="nav-item {{if startsWith .Path "/contact" }}active{{end}}">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}">
+                        <a class="nav-link" href="/donate">Donate</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
+                        <div class="dropdown-menu">
+                        {{ if .LoggedIn }}
+                            <a class="dropdown-item" href="/settings">Settings</a>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                            <div class="dropdown-divider"></div>
+                        {{end}}
+                            <a class="dropdown-item" href="/packages">Packages</a>
+                            <a class="dropdown-item" href="/experience">Experience</a>
+                            <a class="dropdown-item" href="/commits">Commits</a>
+                            <a class="dropdown-item" href="/changes">Changes</a>
+                            <a class="dropdown-item" href="/queues">Queues</a>
+                            <a class="dropdown-item" href="/info">Info</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+{{end}}

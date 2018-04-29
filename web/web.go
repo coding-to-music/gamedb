@@ -129,13 +129,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	folder := os.Getenv("STEAM_PATH")
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/templates/_header.html",
+		folder+"/templates/_header_esi.html",
 		folder+"/templates/_footer.html",
 		folder+"/templates/_stats_header.html",
 		folder+"/templates/_deals_header.html",
 		folder+"/templates/_pagination.html",
 		folder+"/templates/_flashes.html",
 		folder+"/templates/"+page+".html",
-		folder+"/templates/esi_header.html",
 	)
 	if err != nil {
 		logger.Error(err)
