@@ -176,7 +176,7 @@ func (p Player) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(p.PlayTime, 5)
 }
 
-func GetPlayer(id int) (ret *Player, err error) {
+func GetPlayer(id int) (ret Player, err error) {
 
 	if !IsValidPlayerID(id) {
 		return ret, ErrInvalidID
@@ -189,20 +189,12 @@ func GetPlayer(id int) (ret *Player, err error) {
 
 	key := datastore.NameKey(KindPlayer, strconv.Itoa(id), nil)
 
-	player := new(Player)
+	player := Player{}
 	player.PlayerID = id
 
-	err = client.Get(ctx, key, player)
-	if err != nil {
+	err = client.Get(ctx, key, &player)
 
-		// todo, should this just return the error?
-		if err == datastore.ErrNoSuchEntity {
-			return player, nil
-		}
-		return player, err
-	}
-
-	return player, nil
+	return player, err
 }
 
 func GetPlayerByName(name string) (ret Player, err error) {

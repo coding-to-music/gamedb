@@ -170,14 +170,16 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if we have the player
 	player, err := datastore.GetPlayer(idInt)
-	if player.PlayerID == 0 {
+
+	// Get player if they're new
+	if player.PersonaName == "" {
 		errs := player.Update("")
 		for _, v := range errs {
-			logger.Error(v) // Handle these better
+			logger.Error(v) // todo, Handle these better
 		}
 	}
 
-	err = login(w, r, *player)
+	err = login(w, r, player)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())

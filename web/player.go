@@ -34,8 +34,12 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	player, err := datastore.GetPlayer(idx)
 	if err != nil {
-		logger.Error(err)
-		returnErrorTemplate(w, r, 404, err.Error())
+		if err == datastore.ErrNoSuchEntity {
+			returnErrorTemplate(w, r, 404, err.Error())
+		} else {
+			logger.Error(err)
+			returnErrorTemplate(w, r, 500, err.Error())
+		}
 		return
 	}
 
@@ -69,7 +73,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Queue friends
 	wg.Add(1)
-	go func(player *datastore.Player) {
+	go func(player datastore.Player) {
 
 		if player.ShouldUpdateFriends() {
 
@@ -93,7 +97,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Get friends
 	var friends = map[int]datastore.Player{}
 	wg.Add(1)
-	go func(player *datastore.Player) {
+	go func(player datastore.Player) {
 
 		// Make friend ID slice
 		var friendsSlice []int
@@ -128,7 +132,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	var games = map[int]*playerAppTemplate{}
 	var gameStats = playerAppStatsTemplate{}
 	wg.Add(1)
-	go func(player *datastore.Player) {
+	go func(player datastore.Player) {
 
 		// todo, we should store everything the frontend needs on games field, then no need to query it from mysql below
 		// Get game info from player
@@ -169,7 +173,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Get ranks
 	var ranks *datastore.Rank
 	wg.Add(1)
-	go func(player *datastore.Player) {
+	go func(player datastore.Player) {
 
 		ranks, err = datastore.GetRank(player.PlayerID)
 		if err != nil {
@@ -185,7 +189,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Number of players
 	var players int
 	wg.Add(1)
-	go func(player *datastore.Player) {
+	go func(player datastore.Player) {
 
 		players, err = datastore.CountPlayers()
 		logger.Error(err)
@@ -210,7 +214,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 type playerTemplate struct {
 	GlobalTemplate
-	Player    *datastore.Player
+	Player    datastore.Player
 	Friends   map[int]datastore.Player
 	Games     map[int]*playerAppTemplate
 	GameStats playerAppStatsTemplate

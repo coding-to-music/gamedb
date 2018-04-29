@@ -44,12 +44,15 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 
 			player, err := datastore.GetPlayer(id)
 			if err != nil {
-				logger.Error(err)
+				if err != datastore.ErrNoSuchEntity {
+					logger.Error(err)
+					return
+				}
 			}
 
 			player.Update(r.UserAgent()) // todo, handle errors
 
-			players = append(players, *player)
+			players = append(players, player)
 
 			wg.Done()
 		}(v)

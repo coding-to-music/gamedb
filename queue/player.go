@@ -28,7 +28,10 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 	// Update player
 	player, err := datastore.GetPlayer(message.PlayerID)
 	if err != nil {
-		logger.Error(err)
+		if err != datastore.ErrNoSuchEntity {
+			logger.Error(err)
+			return false, true
+		}
 	}
 
 	errs := player.Update("")
