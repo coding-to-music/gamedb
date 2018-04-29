@@ -9,22 +9,30 @@ import (
 
 func StatsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Get config
+	config, err := mysql.GetConfig(mysql.ConfDevelopersUpdated)
+	logger.Error(err)
+
 	// Get developers
 	developers, err := mysql.GetAllDevelopers()
 	if err != nil {
 		logger.Error(err)
+		returnErrorTemplate(w, r, 500, "Error getting developers")
+		return
 	}
 
 	// Template
-	template := statsDevelopersTemplate{}
-	template.Fill(w, r, "Developers")
-	template.Developers = developers
+	t := statsDevelopersTemplate{}
+	t.Fill(w, r, "Developers")
+	t.Developers = developers
+	t.Date = config.Value
 
-	returnTemplate(w, r, "developers", template)
+	returnTemplate(w, r, "developers", t)
 	return
 }
 
 type statsDevelopersTemplate struct {
 	GlobalTemplate
 	Developers []mysql.Developer
+	Date       string
 }

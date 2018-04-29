@@ -9,6 +9,11 @@ import (
 
 func StatsGenresHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Get config
+	config, err := mysql.GetConfig(mysql.ConfGenresUpdated)
+	logger.Error(err)
+
+	// Get genres
 	genres, err := mysql.GetAllGenres()
 	if err != nil {
 		logger.Error(err)
@@ -17,15 +22,17 @@ func StatsGenresHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Template
-	template := statsGenresTemplate{}
-	template.Fill(w, r, "Genres")
-	template.Genres = genres
+	t := statsGenresTemplate{}
+	t.Fill(w, r, "Genres")
+	t.Genres = genres
+	t.Date = config.Value
 
-	returnTemplate(w, r, "genres", template)
+	returnTemplate(w, r, "genres", t)
 	return
 }
 
 type statsGenresTemplate struct {
 	GlobalTemplate
 	Genres []mysql.Genre
+	Date   string
 }

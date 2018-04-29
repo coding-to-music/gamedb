@@ -18,17 +18,6 @@ import (
 	"github.com/steam-authority/steam-authority/steam"
 )
 
-const (
-	ConfTagsUpdated       = "tags-updated"
-	ConfPublishersUpdated = "publishers-updated"
-	ConfDevelopersUpdated = "developers-updated"
-	ConfRanksUpdated      = "ranks-updated"
-	ConfGenresUpdated     = "genres-updated"
-	ConfDonationsUpdated  = "donations-updated"
-	ConfDeployed          = "deployed"
-	ConfAddedAllApps      = "added-all-apps"
-)
-
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	option := chi.URLParam(r, "option")
@@ -65,14 +54,14 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get configs for times
 	configs, err := mysql.GetConfigs([]string{
-		ConfTagsUpdated,
-		ConfGenresUpdated,
-		ConfGenresUpdated,
-		ConfDonationsUpdated,
-		ConfRanksUpdated,
-		ConfAddedAllApps,
-		ConfDevelopersUpdated,
-		ConfPublishersUpdated,
+		mysql.ConfTagsUpdated,
+		mysql.ConfGenresUpdated,
+		mysql.ConfGenresUpdated,
+		mysql.ConfDonationsUpdated,
+		mysql.ConfRanksUpdated,
+		mysql.ConfAddedAllApps,
+		mysql.ConfDevelopersUpdated,
+		mysql.ConfPublishersUpdated,
 	})
 	logger.Error(err)
 
@@ -115,7 +104,7 @@ func adminApps() {
 	}
 
 	//
-	err = mysql.SetConfig(ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(mysql.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info(strconv.Itoa(len(apps)) + " apps added to rabbit")
@@ -124,7 +113,7 @@ func adminApps() {
 func adminDeploy() {
 
 	//
-	err := mysql.SetConfig(ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
+	err := mysql.SetConfig(mysql.ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 }
 
@@ -160,7 +149,7 @@ func adminDonations() {
 	}
 
 	//
-	err = mysql.SetConfig(ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(mysql.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
@@ -243,7 +232,7 @@ func adminGenres() {
 	wg.Wait()
 
 	//
-	err = mysql.SetConfig(ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(mysql.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Genres updated")
@@ -390,7 +379,7 @@ func adminPublishers() {
 
 	wg.Wait()
 
-	err = mysql.SetConfig(ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(mysql.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Publishers updated")
@@ -483,7 +472,7 @@ func adminDevelopers() {
 	}
 	wg.Wait()
 
-	err = mysql.SetConfig(ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(mysql.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Developers updated")
@@ -597,7 +586,7 @@ func adminTags() {
 	}
 	wg.Wait()
 
-	err = mysql.SetConfig(ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(mysql.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Tags updated")
@@ -748,7 +737,7 @@ func adminRanks() {
 	}
 
 	//
-	err = mysql.SetConfig(ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = mysql.SetConfig(mysql.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")

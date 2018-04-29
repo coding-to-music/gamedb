@@ -2,19 +2,31 @@ package mysql
 
 import (
 	"time"
+
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 type Genre struct {
-	ID        int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"` //
-	CreatedAt *time.Time `gorm:"not null;column:created_at"`
-	UpdatedAt *time.Time `gorm:"not null;column:updated_at"`
-	DeletedAt *time.Time `gorm:"not null;column:deleted_at"`
-	Name      string     `gorm:"not null;column:name"`
-	Apps      int        `gorm:"not null;column:apps"`
+	ID           int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"` //
+	CreatedAt    *time.Time `gorm:"not null;column:created_at"`
+	UpdatedAt    *time.Time `gorm:"not null;column:updated_at"`
+	DeletedAt    *time.Time `gorm:"not null;column:deleted_at"`
+	Name         string     `gorm:"not null;column:name"`
+	Apps         int        `gorm:"not null;column:apps"`
+	MeanPrice    float64    `gorm:"not null;column:mean_price"`
+	MeanDiscount float64    `gorm:"not null;column:mean_discount"`
 }
 
-func (genre Genre) GetPath() string {
-	return "/games?genre=" + genre.Name
+func (g Genre) GetPath() string {
+	return "/games?genre=" + g.Name
+}
+
+func (g Genre) GetMeanPrice() float64 {
+	return helpers.CentsFloat(g.MeanPrice)
+}
+
+func (g Genre) GetMeanDiscount() float64 {
+	return helpers.DollarsFloat(g.MeanDiscount)
 }
 
 func GetAllGenres() (genres []Genre, err error) {
@@ -24,7 +36,7 @@ func GetAllGenres() (genres []Genre, err error) {
 		return genres, err
 	}
 
-	db.Limit(1000).Order("name ASC").Find(&genres)
+	db.Limit(1000).Find(&genres)
 	if db.Error != nil {
 		return genres, db.Error
 	}

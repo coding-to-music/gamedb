@@ -9,6 +9,11 @@ import (
 
 func StatsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Get config
+	config, err := mysql.GetConfig(mysql.ConfTagsUpdated)
+	logger.Error(err)
+
+	// Get tags
 	tags, err := mysql.GetAllTags()
 	if err != nil {
 		logger.Error(err)
@@ -17,15 +22,17 @@ func StatsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Template
-	template := statsTagsTemplate{}
-	template.Fill(w, r, "Tags")
-	template.Tags = tags
+	t := statsTagsTemplate{}
+	t.Fill(w, r, "Tags")
+	t.Tags = tags
+	t.Date = config.Value
 
-	returnTemplate(w, r, "tags", template)
+	returnTemplate(w, r, "tags", t)
 	return
 }
 
 type statsTagsTemplate struct {
 	GlobalTemplate
 	Tags []mysql.Tag
+	Date string
 }

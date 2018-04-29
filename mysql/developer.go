@@ -37,7 +37,7 @@ func GetAllDevelopers() (developers []Developer, err error) {
 		return developers, err
 	}
 
-	db = db.Limit(1000).Order("name ASC").Find(&developers)
+	db = db.Limit(1000).Find(&developers)
 	if db.Error != nil {
 		return developers, db.Error
 	}

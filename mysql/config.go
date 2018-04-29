@@ -6,6 +6,17 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
+const (
+	ConfTagsUpdated       = "tags-updated"
+	ConfPublishersUpdated = "publishers-updated"
+	ConfDevelopersUpdated = "developers-updated"
+	ConfRanksUpdated      = "ranks-updated"
+	ConfGenresUpdated     = "genres-updated"
+	ConfDonationsUpdated  = "donations-updated"
+	ConfDeployed          = "deployed"
+	ConfAddedAllApps      = "added-all-apps"
+)
+
 type Config struct {
 	ID        string     `gorm:"not null;column:id;primary_key"`
 	UpdatedAt *time.Time `gorm:"not null;column:updated_at"`
@@ -40,7 +51,7 @@ func GetConfig(id string) (config Config, err error) {
 		return config, err
 	}
 
-	db.First(&config, id)
+	db.Where("id = ?", id).First(&config)
 	if db.Error != nil {
 		return config, db.Error
 	}
