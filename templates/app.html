@@ -143,7 +143,7 @@
                     <div id="accordion">
 
                     {{ range $key, $value := .Articles }}
-                        <div class="card mb-1">
+                        <article class="card mb-1">
                             <div class="card-header">
                                 <h5 class="mb-0 text-truncate">
                                     <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ .ID }}">{{ .Title }}</button>
@@ -157,7 +157,7 @@
                                     </blockquote>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     {{ end }}
 
                     </div>
