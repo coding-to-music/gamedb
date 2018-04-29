@@ -47,7 +47,7 @@
                     </thead>
                 {{ range $key, $value := .Ranks }}
                     <tr data-link="/players/{{ .PlayerID }}/{{ .PersonaName }}">
-                        <td>{{ .Rank }}</td>
+                        <td class="font-weight-bold">{{ .Rank }}</td>
                         <td class="img" width="1%">
                             <img src="{{ .GetAvatar }}" class="rounded" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
                         </td>
