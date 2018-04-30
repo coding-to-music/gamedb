@@ -171,7 +171,7 @@ func NewRankFromPlayer(player Player) (rank *Rank) {
 	rank.GamesCount = player.GamesCount
 	rank.BadgesCount = player.BadgesCount
 	rank.PlayTime = player.PlayTime
-	rank.FriendsCount = len(player.Friends)
+	rank.FriendsCount = player.FriendsCount
 
 	return rank
 }

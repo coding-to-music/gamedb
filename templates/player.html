@@ -219,17 +219,17 @@
                         </tr>
                         <tr>
                             <th scope="row">Experience</th>
-                            <td>{{comma .Player.Badges.PlayerXP}}</td>
+                            <td>{{ comma .Badges.PlayerXP }}</td>
                         </tr>
                         <tr>
                             <th scope="row">Next Level In</th>
-                            <td>{{comma .Player.Badges.PlayerXPNeededToLevelUp}}</td>
+                            <td>{{ comma .Badges.PlayerXPNeededToLevelUp }}</td>
                         </tr>
                         <tr>
                             <th scope="row">This Level</th>
                             <td>
                                 <div class="progress">
-                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{.Player.Badges.GetLoadingBar}}%">{{.Player.Badges.GetPercentOfLevel}}%</div>
+                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{ .Badges.GetLoadingBar }}%">{{ .Badges.GetPercentOfLevel }}%</div>
                                 </div>
                             </td>
                         </tr>
@@ -247,7 +247,7 @@
                             <th scope="col">Owners</th>
                             <th scope="col">App</th>
                             </thead>
-                        {{ range $key, $value := .Player.Badges.Badges }}
+                        {{ range $key, $value := .Badges.Badges }}
                             <tr>
                                 <td>{{ comma .BadgeID }}</td>
                                 <td>{{ comma .Level }}</td>

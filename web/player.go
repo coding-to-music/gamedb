@@ -77,7 +77,8 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 		if player.ShouldUpdateFriends() {
 
-			for _, v := range player.Friends {
+			// todo, merge this with the go routine below that gets friends also, less calls to storage
+			for _, v := range player.GetFriends() {
 				vv, _ := strconv.Atoi(v.SteamID)
 				p, _ := json.Marshal(queue.PlayerMessage{
 					PlayerID: vv,
@@ -101,7 +102,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Make friend ID slice
 		var friendsSlice []int
-		for _, v := range player.Friends {
+		for _, v := range player.GetFriends() {
 			s, _ := strconv.Atoi(v.SteamID)
 			friendsSlice = append(friendsSlice, s)
 			friends[s] = datastore.Player{
@@ -208,6 +209,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Games = games
 	t.Ranks = playerRanksTemplate{*ranks, players}
 	t.GameStats = gameStats
+	t.Badges = player.GetBadges()
 
 	returnTemplate(w, r, "player", t)
 }
@@ -219,6 +221,7 @@ type playerTemplate struct {
 	Games     map[int]*playerAppTemplate
 	GameStats playerAppStatsTemplate
 	Ranks     playerRanksTemplate
+	Badges    steam.BadgesResponse
 }
 
 type playerAppTemplate struct {

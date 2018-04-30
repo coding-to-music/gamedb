@@ -26,37 +26,37 @@ var (
 )
 
 type Player struct {
-	CreatedAt        time.Time                   `datastore:"created_at"`                //
-	UpdatedAt        time.Time                   `datastore:"updated_at"`                //
-	FriendsAddedAt   time.Time                   `datastore:"friends_added_at,noindex"`  //
-	PlayerID         int                         `datastore:"player_id"`                 //
-	VanintyURL       string                      `datastore:"vanity_url"`                //
-	Avatar           string                      `datastore:"avatar,noindex"`            //
-	PersonaName      string                      `datastore:"persona_name,noindex"`      //
-	RealName         string                      `datastore:"real_name,noindex"`         //
-	CountryCode      string                      `datastore:"country_code"`              //
-	StateCode        string                      `datastore:"status_code"`               //
-	Level            int                         `datastore:"level"`                     //
-	Games            string                      `datastore:"games,noindex"`             // JSON
-	GamesRecent      []steam.RecentlyPlayedGame  `datastore:"games_recent,noindex"`      //
-	GamesCount       int                         `datastore:"games_count"`               //
-	Badges           steam.BadgesResponse        `datastore:"badges,noindex"`            //
-	BadgesCount      int                         `datastore:"badges_count"`              //
-	PlayTime         int                         `datastore:"play_time"`                 //
-	TimeCreated      time.Time                   `datastore:"time_created"`              //
-	LastLogOff       time.Time                   `datastore:"time_logged_off,noindex"`   //
-	PrimaryClanID    int                         `datastore:"primary_clan_id,noindex"`   //
-	Friends          []steam.GetFriendListFriend `datastore:"friends,noindex"`           //
-	FriendsCount     int                         `datastore:"friends_count"`             //
-	Donated          int                         `datastore:"donated"`                   //
-	Bans             steam.GetPlayerBanResponse  `datastore:"bans"`                      //
-	NumberOfVACBans  int                         `datastore:"bans_cav"`                  //
-	NumberOfGameBans int                         `datastore:"bans_game"`                 //
-	Groups           []int                       `datastore:"groups,noindex"`            //
-	SettingsEmail    string                      `datastore:"settings_email"`            //
-	SettingsPassword string                      `datastore:"settings_password,noindex"` //
-	SettingsHidden   bool                        `datastore:"settings_hidden"`           //
-	SettingsAlerts   bool                        `datastore:"settings_alerts,noindex"`   //
+	CreatedAt        time.Time                  `datastore:"created_at"`                //
+	UpdatedAt        time.Time                  `datastore:"updated_at"`                //
+	FriendsAddedAt   time.Time                  `datastore:"friends_added_at,noindex"`  //
+	PlayerID         int                        `datastore:"player_id"`                 //
+	VanintyURL       string                     `datastore:"vanity_url"`                //
+	Avatar           string                     `datastore:"avatar,noindex"`            //
+	PersonaName      string                     `datastore:"persona_name,noindex"`      //
+	RealName         string                     `datastore:"real_name,noindex"`         //
+	CountryCode      string                     `datastore:"country_code"`              //
+	StateCode        string                     `datastore:"status_code"`               //
+	Level            int                        `datastore:"level"`                     //
+	Games            string                     `datastore:"games,noindex"`             // JSON
+	GamesRecent      []steam.RecentlyPlayedGame `datastore:"games_recent,noindex"`      //
+	GamesCount       int                        `datastore:"games_count"`               //
+	Badges           string                     `datastore:"badges,noindex"`            // JSON
+	BadgesCount      int                        `datastore:"badges_count"`              //
+	PlayTime         int                        `datastore:"play_time"`                 //
+	TimeCreated      time.Time                  `datastore:"time_created"`              //
+	LastLogOff       time.Time                  `datastore:"time_logged_off,noindex"`   //
+	PrimaryClanID    int                        `datastore:"primary_clan_id,noindex"`   //
+	Friends          string                     `datastore:"friends,noindex"`           // JSON
+	FriendsCount     int                        `datastore:"friends_count"`             //
+	Donated          int                        `datastore:"donated"`                   //
+	Bans             steam.GetPlayerBanResponse `datastore:"bans"`                      //
+	NumberOfVACBans  int                        `datastore:"bans_cav"`                  //
+	NumberOfGameBans int                        `datastore:"bans_game"`                 //
+	Groups           []int                      `datastore:"groups,noindex"`            //
+	SettingsEmail    string                     `datastore:"settings_email"`            //
+	SettingsPassword string                     `datastore:"settings_password,noindex"` //
+	SettingsHidden   bool                       `datastore:"settings_hidden"`           //
+	SettingsAlerts   bool                       `datastore:"settings_alerts,noindex"`   //
 }
 
 func (p Player) GetKey() (key *datastore.Key) {
@@ -128,7 +128,7 @@ func (p Player) GetGames() (games []steam.OwnedGame) {
 	var err error
 
 	if strings.HasPrefix(p.Games, "/") {
-		bytes, err = storage.DownloadPlayerGames(p.PlayerID)
+		bytes, err = storage.Download(storage.PathGames(p.PlayerID))
 		if err != nil {
 			logger.Error(err)
 		}
@@ -150,7 +150,63 @@ func (p Player) GetGames() (games []steam.OwnedGame) {
 	return games
 }
 
-// todo, improve this..
+func (p Player) GetBadges() (badges steam.BadgesResponse) {
+
+	var bytes []byte
+	var err error
+
+	if strings.HasPrefix(p.Badges, "/") {
+		bytes, err = storage.Download(storage.PathBadges(p.PlayerID))
+		if err != nil {
+			logger.Error(err)
+		}
+	} else {
+		bytes = []byte(p.Badges)
+	}
+
+	if len(bytes) > 0 {
+		err = json.Unmarshal(bytes, &badges)
+		if err != nil {
+			if strings.Contains(err.Error(), "cannot unmarshal") {
+				logger.Info(err.Error() + " - " + string(bytes))
+			} else {
+				logger.Error(err)
+			}
+		}
+	}
+
+	return badges
+}
+
+func (p Player) GetFriends() (friends []steam.GetFriendListFriend) {
+
+	var bytes []byte
+	var err error
+
+	if strings.HasPrefix(p.Friends, "/") {
+		bytes, err = storage.Download(storage.PathFriends(p.PlayerID))
+		if err != nil {
+			logger.Error(err)
+		}
+	} else {
+		bytes = []byte(p.Friends)
+	}
+
+	if len(bytes) > 0 {
+		err = json.Unmarshal(bytes, &friends)
+		if err != nil {
+			if strings.Contains(err.Error(), "cannot unmarshal") {
+				logger.Info(err.Error() + " - " + string(bytes))
+			} else {
+				logger.Error(err)
+			}
+		}
+	}
+
+	return friends
+}
+
+// todo, check this is acurate
 func IsValidPlayerID(id int) bool {
 
 	if id < 10000000000000000 {
@@ -373,8 +429,16 @@ func (p *Player) Update(userAgent string) (errs []error) {
 			logger.Error(err)
 		}
 
+		// Upload
 		if len(bytes) > 1024*10 {
-			p.Games = storage.UploadPlayerGames(p.PlayerID, bytes)
+			storagePath := storage.PathGames(p.PlayerID)
+			err = storage.Upload(storagePath, bytes, false)
+			if err != nil {
+				logger.Error(err)
+				p.Games = ""
+			} else {
+				p.Games = storagePath
+			}
 		} else {
 			p.Games = string(bytes)
 		}
@@ -404,7 +468,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		badges, err := steam.GetBadges(p.PlayerID)
+		badgesResponse, err := steam.GetBadges(p.PlayerID)
 		if err != nil {
 			if err.Error() == steam.ErrInvalidJson {
 				errs = append(errs, err)
@@ -413,8 +477,27 @@ func (p *Player) Update(userAgent string) (errs []error) {
 			}
 		}
 
-		p.Badges = badges
-		p.BadgesCount = len(badges.Badges)
+		p.BadgesCount = len(badgesResponse.Badges)
+
+		// Encode to JSON bytes
+		bytes, err := json.Marshal(badgesResponse)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		// Upload
+		if len(bytes) > 1024*10 {
+			storagePath := storage.PathBadges(p.PlayerID)
+			err = storage.Upload(storagePath, bytes, false)
+			if err != nil {
+				logger.Error(err)
+				p.Badges = ""
+			} else {
+				p.Badges = storagePath
+			}
+		} else {
+			p.Badges = string(bytes)
+		}
 
 		wg.Done()
 	}(p)
@@ -423,7 +506,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		friends, err := steam.GetFriendList(p.PlayerID)
+		friendsResponse, err := steam.GetFriendList(p.PlayerID)
 		if err != nil {
 			if err.Error() == steam.ErrInvalidJson || err == steam.ErrNoUserFound {
 				errs = append(errs, err)
@@ -432,8 +515,27 @@ func (p *Player) Update(userAgent string) (errs []error) {
 			}
 		}
 
-		p.Friends = friends
-		p.FriendsCount = len(friends)
+		p.FriendsCount = len(friendsResponse)
+
+		// Encode to JSON bytes
+		bytes, err := json.Marshal(friendsResponse)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		// Upload
+		if len(bytes) > 1024*10 {
+			storagePath := storage.PathFriends(p.PlayerID)
+			err = storage.Upload(storagePath, bytes, false)
+			if err != nil {
+				logger.Error(err)
+				p.Friends = ""
+			} else {
+				p.Friends = storagePath
+			}
+		} else {
+			p.Friends = string(bytes)
+		}
 
 		wg.Done()
 	}(p)
