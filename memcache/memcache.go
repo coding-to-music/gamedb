@@ -43,9 +43,11 @@ func Get(key string, i interface{}) error {
 		return err
 	}
 
-	err = json.Unmarshal(item.Value, i)
-	if err != nil {
-		return err
+	if len(item.Value) > 0 {
+		err = json.Unmarshal(item.Value, i)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
