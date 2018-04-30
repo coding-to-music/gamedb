@@ -8,6 +8,7 @@ import (
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
+	"github.com/steam-authority/steam-authority/steam"
 	"github.com/streadway/amqp"
 )
 
@@ -56,7 +57,9 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 		}
 		// Retry on all other errors
 		for _, err = range errs {
-			logger.Error(err)
+			if err != steam.ErrNullResponse {
+				logger.Error(err)
+			}
 			return false, true
 		}
 	}

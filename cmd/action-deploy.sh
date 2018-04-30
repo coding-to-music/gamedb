@@ -14,7 +14,7 @@ echo "### Copying crontab"
 cp ./crontab /etc/cron.d/steamauthority
 
 echo "### Updating Varnish"
-cp ./varnish.vcl /usr/local/etc/varnish/default.vcl
+cp ./varnish.vcl /etc/varnish/default.vcl
 /etc/init.d/varnish reload
 
 echo "### Talking to Rollbar"

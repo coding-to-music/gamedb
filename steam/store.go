@@ -16,7 +16,7 @@ import (
 var (
 	ErrGhostApp     = errors.New("steam: store: no app with id in steam")
 	ErrGhostPackage = errors.New("steam: store: no package with id in steam")
-	ErrNullResponse = errors.New("steam: store: bad response")
+	ErrNullResponse = errors.New("steam: store: null response")
 )
 
 func GetAppDetailsFromStore(id int) (app AppDetailsBody, err error) {

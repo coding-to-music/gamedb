@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/steam"
@@ -40,6 +41,8 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminTags()
 	case "count-developers":
 		go adminDevelopers()
+	case "wipe-memcache":
+		go adminMemcache()
 	case "count-publishers":
 		go adminPublishers()
 	case "disable-consumers":
@@ -741,4 +744,12 @@ func adminRanks() {
 	logger.Error(err)
 
 	logger.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
+}
+
+func adminMemcache() {
+
+	err := memcache.Wipe()
+	logger.Error(err)
+
+	logger.Info("Memcache wiped")
 }
