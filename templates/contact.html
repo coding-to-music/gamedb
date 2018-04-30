@@ -49,12 +49,12 @@
                     <div class="col-sm-12">
 
                         <label for="message">Captcha</label>
-                        <div class="g-recaptcha" data-sitekey="{{.RecaptchaPublic}}"></div>
+                        <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
 
                     </div>
                     <div class="col-sm-12 mt-4">
 
-                        <button type="submit" class="btn btn-primary">Send</button>
+                        <button type="submit" class="btn btn-success" disabled>Send</button>
 
                     </div>
                 </div>

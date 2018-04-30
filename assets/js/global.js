@@ -63,3 +63,8 @@ if (games != null) {
         });
     }
 }
+
+// Recaptcha callback
+function recaptchaCallback() {
+    $('form button[type=submit]').prop("disabled", false);
+}
