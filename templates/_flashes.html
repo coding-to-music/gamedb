@@ -3,7 +3,7 @@
 {{ if gt (len .FlashesGood) 0 }}
 <div class="alert alert-success" role="alert">
 {{ range $k, $v := .FlashesGood }}
-    <p> {{$v}} </p>
+    <p> {{ title $v }} </p>
 {{ end }}
 </div>
 {{ end }}
@@ -11,7 +11,7 @@
 {{ if gt (len .FlashesBad) 0 }}
 <div class="alert alert-danger" role="alert">
 {{ range $k, $v := .FlashesBad }}
-    <p> {{$v}} </p>
+    <p> {{ title $v }} </p>
 {{ end }}
 </div>
 {{ end }}
