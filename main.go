@@ -10,8 +10,6 @@ import (
 	"github.com/rollbar/rollbar-go"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
-	"github.com/steam-authority/steam-authority/pics"
-	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/web"
 )
 
@@ -53,11 +51,11 @@ func main() {
 	}
 
 	if *flagPics {
-		go pics.Run()
+		//go pics.Run()
 	}
 
 	if *flagConsumers {
-		queue.RunConsumers()
+		//queue.RunConsumers()
 	}
 
 	// Web server

@@ -83,6 +83,7 @@ func Download(path string) (bytes []byte, err error) {
 		return bytes, err
 	}
 
+	// Download
 	rc, err := client.Bucket(bucket).Object(path).NewReader(ctx)
 	if err != nil {
 		return bytes, err
@@ -95,10 +96,12 @@ func Download(path string) (bytes []byte, err error) {
 	}
 
 	// Decode
-	data, err = snappy.Decode(nil, data)
+	bytes, err = snappy.Decode(nil, data)
 	if err != nil {
-		return bytes, err
+		logger.Error(err)
+		// data is not encoded? Return as is.
+		bytes = data
 	}
 
-	return data, nil
+	return bytes, nil
 }
