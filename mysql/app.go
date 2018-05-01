@@ -160,6 +160,14 @@ func (app App) GetPriceFinal() float64 {
 	return helpers.CentsInt(app.PriceFinal)
 }
 
+func (app App) GetPriceFinalNice() string {
+	if app.PriceFinal == 0 {
+		return "Free"
+	} else {
+		return "$" + strconv.FormatFloat(app.GetPriceFinal(), 'f', 2, 64)
+	}
+}
+
 func (app App) GetReviewScore() float64 {
 	return helpers.DollarsFloat(app.ReviewsScore)
 }

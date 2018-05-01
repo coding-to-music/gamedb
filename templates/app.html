@@ -70,7 +70,7 @@
                     <p>For Game: <a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
                 {{end}}
 
-                    <p>Price: ${{ .App.PriceFinal }}</p>
+                    <p>Price: {{ .App.GetPriceFinalNice }}</p>
                     <p>App Type: {{ .App.GetType }}</p>
                     <p>Release State: {{ .App.GetReleaseState }}</p>
                     <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>

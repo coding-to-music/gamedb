@@ -38,13 +38,14 @@ type loginTemplate struct {
 
 func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	var ErrInvalidCreds = errors.New("invalid username or password")
-	var ErrInvalidCaptcha = errors.New("please check the captcha")
-
 	err := func() (err error) {
+
+		var ErrInvalidCreds = errors.New("invalid username or password")
+		var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 		// Parse form
 		if err := r.ParseForm(); err != nil {
+			logger.Error(err)
 			return err
 		}
 
@@ -73,6 +74,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			if err == datastore.ErrNoSuchEntity {
 				return ErrInvalidCreds
 			} else {
+				logger.Error(err)
 				return err
 			}
 		}
@@ -97,6 +99,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 			err = login(w, r, player)
 			if err != nil {
+				logger.Error(err)
 				return err
 			}
 

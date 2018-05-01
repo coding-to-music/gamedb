@@ -1,6 +1,7 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 	"os"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/session"
 )
 
 func ContactHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,43 +21,55 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	returnTemplate(w, r, "contact", template)
 }
 
+type contactTemplate struct {
+	GlobalTemplate
+	RecaptchaPublic string
+	Messages        []string
+	Success         bool
+}
+
 func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Template
-	template := contactTemplate{}
-	template.Fill(w, r, "Contact")
-	template.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
+	err := func() (err error) {
 
-	// Form validation
-	if err := r.ParseForm(); err != nil {
-		logger.Error(err)
-		template.Messages = append(template.Messages, err.Error())
-	}
+		var ErrSomething = errors.New("something went wrong")
 
-	if r.PostForm.Get("name") == "" {
-		template.Messages = append(template.Messages, "Please fill in your name.")
-	}
-	if r.PostForm.Get("email") == "" {
-		template.Messages = append(template.Messages, "Please fill in your email.")
-	}
-	if r.PostForm.Get("message") == "" {
-		template.Messages = append(template.Messages, "Please fill in a message.")
-	}
-
-	// Recaptcha
-	err := recaptcha.CheckFromRequest(r)
-	if err != nil {
-		if err == recaptcha.ErrNotChecked {
-			template.Messages = append(template.Messages, "Please check the captcha.")
-		} else {
-			template.Messages = append(template.Messages, "Something went wrong.")
+		// Parse form
+		if err := r.ParseForm(); err != nil {
 			logger.Error(err)
+			return err
 		}
-	}
 
-	// Send
-	if len(template.Messages) == 0 {
+		// Backup
+		session.WriteMany(w, r, map[string]string{
+			"name":    r.PostForm.Get("name"),
+			"email":   r.PostForm.Get("email"),
+			"message": r.PostForm.Get("message"),
+		})
 
+		// Form validation
+		if r.PostForm.Get("name") == "" {
+			return errors.New("please fill in your name")
+		}
+		if r.PostForm.Get("email") == "" {
+			return errors.New("please fill in your email")
+		}
+		if r.PostForm.Get("message") == "" {
+			return errors.New("please fill in a message")
+		}
+
+		// Recaptcha
+		err = recaptcha.CheckFromRequest(r)
+		if err != nil {
+			if err == recaptcha.ErrNotChecked {
+				return errors.New("please check the captcha")
+			} else {
+				logger.Error(err)
+				return ErrSomething
+			}
+		}
+
+		// Send
 		message := mail.NewSingleEmail(
 			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
 			"Steam Authority Contact Form",
@@ -65,23 +79,29 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		client := sendgrid.NewSendClient(os.Getenv("STEAM_SENDGRID"))
 
-		_, err := client.Send(message)
+		_, err = client.Send(message)
 		if err != nil {
-			template.Success = false
-			template.Messages = append(template.Messages, "Something went wrong")
 			logger.Error(err)
-		} else {
-			template.Success = true
-			template.Messages = append(template.Messages, "Message sent.")
+			return ErrSomething
 		}
+
+		session.WriteMany(w, r, map[string]string{
+			"name":    "",
+			"email":   "",
+			"message": "",
+		})
+
+		return nil
+	}()
+
+	// Redirect
+	if err != nil {
+		session.SetGoodFlash(w, r, err.Error())
+		http.Redirect(w, r, "/contact", 302)
+	} else {
+		session.SetGoodFlash(w, r, "Message sent!")
+		http.Redirect(w, r, "/contact", 302)
 	}
 
-	returnTemplate(w, r, "contact", template)
-}
-
-type contactTemplate struct {
-	GlobalTemplate
-	RecaptchaPublic string
-	Messages        []string
-	Success         bool
+	return
 }
