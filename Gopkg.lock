@@ -115,6 +115,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/golang/snappy"
+  packages = ["."]
+  revision = "553a641470496b2327abcac10b36396bd98e45c9"
+
+[[projects]]
   name = "github.com/google/go-github"
   packages = ["github"]
   revision = "e48060a28fac52d0f1cb758bc8b87c07bac4a87d"
@@ -504,6 +510,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fe2fa2b9b5ffdda7083c084c3f40abf0e3f7c431866ce8d03f5644878ca23bb9"
+  inputs-digest = "2a2c9617c4b6b11b394dbc704efeb1a82abddb76304470d30373e580b0131a6e"
   solver-name = "gps-cdcl"
   solver-version = 1

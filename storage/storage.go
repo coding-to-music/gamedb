@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"cloud.google.com/go/storage"
+	"github.com/golang/snappy"
 	"github.com/steam-authority/steam-authority/logger"
 )
 
@@ -42,6 +43,9 @@ func getClient() (c *storage.Client, ctx context.Context, err error) {
 }
 
 func Upload(path string, data []byte, public bool) (err error) {
+
+	// Encode
+	data = snappy.Encode(nil, data)
 
 	// Get client
 	client, ctx, err := getClient()
@@ -76,18 +80,24 @@ func Download(path string) (bytes []byte, err error) {
 	// Get client
 	client, ctx, err := getClient()
 	if err != nil {
-		return nil, err
+		return bytes, err
 	}
 
 	rc, err := client.Bucket(bucket).Object(path).NewReader(ctx)
 	if err != nil {
-		return nil, err
+		return bytes, err
 	}
 	defer rc.Close()
 
 	data, err := ioutil.ReadAll(rc)
 	if err != nil {
-		return nil, err
+		return bytes, err
+	}
+
+	// Decode
+	data, err = snappy.Decode(nil, data)
+	if err != nil {
+		return bytes, err
 	}
 
 	return data, nil
