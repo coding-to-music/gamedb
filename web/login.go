@@ -17,11 +17,8 @@ import (
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
-	var err error
-
 	t := loginTemplate{}
 	t.Fill(w, r, "Login")
-	t.Success = err == nil
 	t.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
 	returnTemplate(w, r, "login", t)
@@ -30,9 +27,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 type loginTemplate struct {
 	GlobalTemplate
-	Username        string
-	Message         string
-	Success         bool
 	RecaptchaPublic string
 }
 
@@ -48,6 +42,9 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Error(err)
 			return err
 		}
+
+		// Backup
+		session.Write(w, r, "login-email", r.PostForm.Get("email"))
 
 		// Recaptcha
 		err = recaptcha.CheckFromRequest(r)
@@ -83,6 +80,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			return ErrInvalidCreds
 		}
 
+		// Check password matches
 		var player datastore.Player
 		var success bool
 		for _, v := range players {
@@ -95,18 +93,21 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if success {
-
-			err = login(w, r, player)
-			if err != nil {
-				logger.Error(err)
-				return err
-			}
-
-			return nil
-		} else {
+		if !success {
 			return ErrInvalidCreds
 		}
+
+		// Log user in
+		err = login(w, r, player)
+		if err != nil {
+			logger.Error(err)
+			return err
+		}
+
+		// Remove backup
+		session.Write(w, r, "login-email", "")
+
+		return nil
 	}()
 
 	// Redirect

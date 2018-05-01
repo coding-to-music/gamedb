@@ -42,9 +42,9 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Backup
 		session.WriteMany(w, r, map[string]string{
-			"name":    r.PostForm.Get("name"),
-			"email":   r.PostForm.Get("email"),
-			"message": r.PostForm.Get("message"),
+			"login-name":    r.PostForm.Get("name"),
+			"login-email":   r.PostForm.Get("email"),
+			"login-message": r.PostForm.Get("message"),
 		})
 
 		// Form validation
@@ -85,10 +85,11 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 			return ErrSomething
 		}
 
+		// Remove backup
 		session.WriteMany(w, r, map[string]string{
-			"name":    "",
-			"email":   "",
-			"message": "",
+			"login-name":    "",
+			"login-email":   "",
+			"login-message": "",
 		})
 
 		return nil

@@ -237,9 +237,10 @@ type GlobalTemplate struct {
 	UserName  string // Username
 	UserLevel int
 
-	//
+	// Session
 	FlashesGood []interface{}
 	FlashesBad  []interface{}
+	Session     map[interface{}]interface{}
 
 	//
 	Title   string // page title
@@ -253,32 +254,43 @@ type GlobalTemplate struct {
 
 func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title string) {
 
-	t.Title = title
+	var err error
+
 	t.request = r
 
-	// Flashes
-	good, err := session.GetGoodFlashes(w, r)
-	logger.Error(err)
-	t.FlashesGood = good
-
-	bad, err := session.GetBadFlashes(w, r)
-	logger.Error(err)
-	t.FlashesBad = bad
-
-	// From ENV
+	t.Title = title
 	t.Env = os.Getenv("ENV")
-
-	// From session
-	id, _ := session.Read(r, session.UserID)
-	level, _ := session.Read(r, session.UserLevel)
-
-	t.UserID, _ = strconv.Atoi(id)
-	t.UserName, _ = session.Read(r, session.UserName)
-	t.UserLevel, _ = strconv.Atoi(level)
-
-	// From request
 	t.Path = r.URL.Path
 	t.IsAdmin = r.Header.Get("Authorization") != ""
+
+	// Session
+	id, err := session.Read(r, session.UserID)
+	logger.Error(err)
+
+	level, err := session.Read(r, session.UserLevel)
+	logger.Error(err)
+
+	t.UserID, err = strconv.Atoi(id)
+	if err != nil {
+		t.UserID = 0
+	}
+
+	t.UserName, err = session.Read(r, session.UserName)
+	logger.Error(err)
+
+	t.UserLevel, err = strconv.Atoi(level)
+	if err != nil {
+		t.UserLevel = 0
+	}
+
+	t.Session, err = session.ReadAll(r)
+	logger.Error(err)
+
+	t.FlashesGood, err = session.GetGoodFlashes(w, r)
+	logger.Error(err)
+
+	t.FlashesBad, err = session.GetBadFlashes(w, r)
+	logger.Error(err)
 }
 
 func (t GlobalTemplate) LoggedIn() (bool) {
@@ -298,6 +310,7 @@ func (t GlobalTemplate) ShowAd() (bool) {
 	noAds := []string{
 		"/admin",
 		"/donate",
+		"/settings",
 	}
 
 	for _, v := range noAds {
