@@ -236,7 +236,7 @@ func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
 	return games, nil
 }
 
-func (p Player) GetPlayerBans() (bans steam.GetPlayerBanResponse, err error) {
+func (p Player) GetBans() (bans steam.GetPlayerBanResponse, err error) {
 
 	bytes := []byte(p.GamesRecent)
 

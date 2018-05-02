@@ -137,27 +137,27 @@
                                     <table class="table mb-0">
                                         <tr>
                                             <th scope="row">Game Bans</th>
-                                            <td>{{ .Player.Bans.NumberOfGameBans }}</td>
+                                            <td>{{ .Bans.NumberOfGameBans }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">VAC Bans</th>
-                                            <td>{{ .Player.Bans.NumberOfVACBans }}</td>
+                                            <td>{{ .Bans.NumberOfVACBans }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Community Banned</th>
-                                            <td>{{.Player.Bans.CommunityBanned}}</td>
+                                            <td>{{.Bans.CommunityBanned}}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Economy Ban</th>
-                                            <td>{{ .Player.Bans.EconomyBan }}</td>
+                                            <td>{{ .Bans.EconomyBan }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">VAC Banned</th>
-                                            <td>{{ .Player.Bans.VACBanned }}</td>
+                                            <td>{{ .Bans.VACBanned }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Last Ban</th>
-                                            <td>{{ .Player.Bans.DaysSinceLastBan }} days</td>
+                                            <td>{{ .Bans.DaysSinceLastBan }} days</td>
                                         </tr>
                                     </table>
 
@@ -318,7 +318,7 @@
                     </div>
 
                 {{/* Recent Games */}}
-                {{ if gt (len .Player.GamesRecent) 0}}
+                {{ if gt (len .RecentGames) 0}}
                     <h5>Recent Games</h5>
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
@@ -328,7 +328,7 @@
                             <th scope="col" data-sort="desc">2 Weeks</th>
                             <th scope="col">All Time</th>
                             </thead>
-                        {{ range $key, $value := .Player.GamesRecent }}
+                        {{ range $key, $value := .RecentGames }}
                             <tr data-link="/games/{{ .AppID }}">
                                 <td class="img">
                                     <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgIconURL }}.jpg" class="rounded">

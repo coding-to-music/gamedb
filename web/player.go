@@ -34,13 +34,11 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	player, err := datastore.GetPlayer(idx)
 	if err != nil {
-		if err == datastore.ErrNoSuchEntity {
-			returnErrorTemplate(w, r, 404, err.Error())
-		} else {
+		if err != datastore.ErrNoSuchEntity {
 			logger.Error(err)
 			returnErrorTemplate(w, r, 500, err.Error())
+			return
 		}
-		return
 	}
 
 	errs := player.Update(r.UserAgent())
@@ -71,14 +69,21 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	// Queue friends
+	// Get friends
+	var friends = map[int]datastore.Player{}
 	wg.Add(1)
 	go func(player datastore.Player) {
 
+		resp, err := player.GetFriends()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+
+		// Queue friends to be scanned
 		if player.ShouldUpdateFriends() {
 
-			// todo, merge this with the go routine below that gets friends also, less calls to storage
-			for _, v := range player.GetFriends() {
+			for _, v := range resp {
 				vv, _ := strconv.Atoi(v.SteamID)
 				p, _ := json.Marshal(queue.PlayerMessage{
 					PlayerID: vv,
@@ -88,29 +93,20 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			player.FriendsAddedAt = time.Now()
-			player.Save()
+
+			err = player.Save()
+			logger.Error(err)
 		}
 
-		wg.Done()
-
-	}(player)
-
-	// Get friends
-	var friends = map[int]datastore.Player{}
-	wg.Add(1)
-	go func(player datastore.Player) {
-
-		// Make friend ID slice
+		// Make friend ID slice & map
 		var friendsSlice []int
-		for _, v := range player.GetFriends() {
+		for _, v := range resp {
 			s, _ := strconv.Atoi(v.SteamID)
 			friendsSlice = append(friendsSlice, s)
-			friends[s] = datastore.Player{
-				PlayerID: s,
-			}
+			friends[s] = datastore.Player{PlayerID: s}
 		}
 
-		// Get friends
+		// Get friends from DS
 		friendsResp, err := datastore.GetPlayersByIDs(friendsSlice)
 		logger.Error(err)
 
@@ -120,10 +116,6 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 				friends[v.PlayerID] = v
 			}
 		}
-
-		//sort.Slice(friends, func(i, j int) bool {
-		//	return friends[i].Level > friends[j].Level
-		//})
 
 		wg.Done()
 
@@ -136,9 +128,16 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player datastore.Player) {
 
 		// todo, we should store everything the frontend needs on games field, then no need to query it from mysql below
+
+		resp, err := player.GetGames()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+
 		// Get game info from player
 		var gamesSlice []int
-		for _, v := range player.GetGames() {
+		for _, v := range resp {
 			gamesSlice = append(gamesSlice, v.AppID)
 			games[v.AppID] = &playerAppTemplate{
 				Time:  v.PlaytimeForever,
@@ -203,19 +202,39 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player datastore.Player) {
 
-		badges = player.GetBadges()
-		logger.Error(err)
+		badges, err = player.GetBadges()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
 
 		wg.Done()
 	}(player)
 
 	// Get recent games
-	var recentGames steam.BadgesResponse
+	var recentGames []steam.RecentlyPlayedGame
 	wg.Add(1)
 	go func(player datastore.Player) {
 
-		recentGames = player.GetRecentGames()
-		logger.Error(err)
+		recentGames, err = player.GetRecentGames()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+
+		wg.Done()
+	}(player)
+
+	// Get bans
+	var bans steam.GetPlayerBanResponse
+	wg.Add(1)
+	go func(player datastore.Player) {
+
+		bans, err = player.GetBans()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
 
 		wg.Done()
 	}(player)
@@ -232,18 +251,22 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Ranks = playerRanksTemplate{*ranks, players}
 	t.GameStats = gameStats
 	t.Badges = badges
+	t.RecentGames = recentGames
+	t.Bans = bans
 
 	returnTemplate(w, r, "player", t)
 }
 
 type playerTemplate struct {
 	GlobalTemplate
-	Player    datastore.Player
-	Friends   map[int]datastore.Player
-	Games     map[int]*playerAppTemplate
-	GameStats playerAppStatsTemplate
-	Ranks     playerRanksTemplate
-	Badges    steam.BadgesResponse
+	Player      datastore.Player
+	Friends     map[int]datastore.Player
+	Games       map[int]*playerAppTemplate
+	GameStats   playerAppStatsTemplate
+	Ranks       playerRanksTemplate
+	Badges      steam.BadgesResponse
+	RecentGames []steam.RecentlyPlayedGame
+	Bans        steam.GetPlayerBanResponse
 }
 
 type playerAppTemplate struct {

@@ -61,18 +61,32 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
+	// Get games
+	var games string
+	wg.Add(1)
+	go func(player datastore.Player) {
+
+		resp, err := player.GetGames()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		var gamesSlice []int
+		for _, v := range resp {
+			gamesSlice = append(gamesSlice, v.AppID)
+		}
+
+		bytes, err := json.Marshal(gamesSlice)
+		logger.Error(err)
+
+		games = string(bytes)
+
+		wg.Done()
+
+	}(player)
+
 	// Wait
 	wg.Wait()
-
-	// Get games
-	games := player.GetGames()
-	var gamesSlice []int
-	for _, v := range games {
-		gamesSlice = append(gamesSlice, v.AppID)
-	}
-
-	gamesString, err := json.Marshal(gamesSlice)
-	logger.Error(err)
 
 	// Template
 	template := settingsTemplate{}
@@ -80,7 +94,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	template.Logins = logins
 	template.Player = player
 	template.Donations = donations
-	template.Games = string(gamesString)
+	template.Games = games
 
 	returnTemplate(w, r, "settings", template)
 }

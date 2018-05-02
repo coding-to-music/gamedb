@@ -70,7 +70,12 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		go func(player datastore.Player) {
 
 			var x []int
-			for _, vv := range player.GetGames() {
+			resp, err := player.GetGames()
+			if err != nil {
+				logger.Error(err)
+				return
+			}
+			for _, vv := range resp {
 				allGames[vv.AppID] = vv.AppID
 				x = append(x, vv.AppID)
 			}
