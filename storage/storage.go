@@ -22,9 +22,10 @@ var (
 )
 
 var (
-	PathGames   = func(playerID int) (string) { return "/player-games/" + strconv.Itoa(playerID) + ".json" }
-	PathBadges  = func(playerID int) (string) { return "/player-badges/" + strconv.Itoa(playerID) + ".json" }
-	PathFriends = func(playerID int) (string) { return "/player-friends/" + strconv.Itoa(playerID) + ".json" }
+	PathGames       = func(playerID int) (string) { return "/player-games/" + strconv.Itoa(playerID) + ".json" }
+	PathBadges      = func(playerID int) (string) { return "/player-badges/" + strconv.Itoa(playerID) + ".json" }
+	PathFriends     = func(playerID int) (string) { return "/player-friends/" + strconv.Itoa(playerID) + ".json" }
+	PathRecentGames = func(playerID int) (string) { return "/player-recent-games/" + strconv.Itoa(playerID) + ".json" }
 )
 
 func getClient() (c *storage.Client, ctx context.Context, err error) {

@@ -198,6 +198,28 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}(player)
 
+	// Get badges
+	var badges steam.BadgesResponse
+	wg.Add(1)
+	go func(player datastore.Player) {
+
+		badges = player.GetBadges()
+		logger.Error(err)
+
+		wg.Done()
+	}(player)
+
+	// Get recent games
+	var recentGames steam.BadgesResponse
+	wg.Add(1)
+	go func(player datastore.Player) {
+
+		recentGames = player.GetRecentGames()
+		logger.Error(err)
+
+		wg.Done()
+	}(player)
+
 	// Wait
 	wg.Wait()
 
@@ -209,7 +231,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Games = games
 	t.Ranks = playerRanksTemplate{*ranks, players}
 	t.GameStats = gameStats
-	t.Badges = player.GetBadges()
+	t.Badges = badges
 
 	returnTemplate(w, r, "player", t)
 }
