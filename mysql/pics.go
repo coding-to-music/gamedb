@@ -1,4 +1,4 @@
-package steam
+package mysql
 
 import (
 	"encoding/json"

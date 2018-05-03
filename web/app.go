@@ -14,7 +14,6 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
-	"github.com/steam-authority/steam-authority/steam"
 )
 
 func AppHandler(w http.ResponseWriter, r *http.Request) {

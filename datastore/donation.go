@@ -9,7 +9,7 @@ import (
 
 type Donation struct {
 	CreatedAt time.Time `datastore:"created_at"`
-	PlayerID  int       `datastore:"player_id"`
+	PlayerID  int64     `datastore:"player_id"`
 	Amount    int       `datastore:"amount"`
 	AmountUSD int       `datastore:"amount_usd"`
 	Currency  string    `datastore:"currency"`

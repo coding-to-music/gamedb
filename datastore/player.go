@@ -13,7 +13,6 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/steam"
 	"github.com/steam-authority/steam-authority/storage"
 )
 
@@ -31,7 +30,7 @@ type Player struct {
 	CreatedAt        time.Time `datastore:"created_at"`                //
 	UpdatedAt        time.Time `datastore:"updated_at"`                //
 	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"`  //
-	PlayerID         int       `datastore:"player_id"`                 //
+	PlayerID         int64     `datastore:"player_id"`                 //
 	VanintyURL       string    `datastore:"vanity_url"`                //
 	Avatar           string    `datastore:"avatar,noindex"`            //
 	PersonaName      string    `datastore:"persona_name,noindex"`      //
@@ -54,7 +53,7 @@ type Player struct {
 	Bans             string    `datastore:"bans"`                      // JSON
 	NumberOfVACBans  int       `datastore:"bans_cav"`                  //
 	NumberOfGameBans int       `datastore:"bans_game"`                 //
-	Groups           []int     `datastore:"groups,noindex"`            //
+	Groups           []int     `datastore:"groups,noindex"`            // // todo, make json?
 	SettingsEmail    string    `datastore:"settings_email"`            //
 	SettingsPassword string    `datastore:"settings_password,noindex"` //
 	SettingsHidden   bool      `datastore:"settings_hidden"`           //

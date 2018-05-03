@@ -17,7 +17,7 @@ var (
 type Rank struct {
 	CreatedAt   time.Time `datastore:"created_at,noindex"`
 	UpdatedAt   time.Time `datastore:"updated_at,noindex"`
-	PlayerID    int       `datastore:"player_id,noindex"`
+	PlayerID    int64     `datastore:"player_id,noindex"`
 	VanintyURL  string    `datastore:"vality_url,noindex"`
 	Avatar      string    `datastore:"avatar,noindex"`
 	PersonaName string    `datastore:"persona_name,noindex"`

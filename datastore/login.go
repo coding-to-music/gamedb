@@ -10,7 +10,7 @@ import (
 
 type Login struct {
 	CreatedAt time.Time `datastore:"created_at"`
-	PlayerID  int       `datastore:"player_id"`
+	PlayerID  int64     `datastore:"player_id"`
 	UserAgent string    `datastore:"user_agent,noindex"`
 	IP        string    `datastore:"ip,noindex"`
 }

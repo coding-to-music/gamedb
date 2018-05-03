@@ -16,7 +16,6 @@ import (
 	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
-	"github.com/steam-authority/steam-authority/steam"
 )
 
 func AdminHandler(w http.ResponseWriter, r *http.Request) {

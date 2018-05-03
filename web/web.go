@@ -20,7 +20,6 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
-	"github.com/steam-authority/steam-authority/steam"
 	"github.com/steam-authority/steam-authority/websockets"
 )
 
