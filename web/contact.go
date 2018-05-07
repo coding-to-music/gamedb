@@ -14,11 +14,11 @@ import (
 
 func ContactHandler(w http.ResponseWriter, r *http.Request) {
 
-	template := contactTemplate{}
-	template.Fill(w, r, "Contact")
-	template.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
+	t := contactTemplate{}
+	t.Fill(w, r, "Contact")
+	t.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
 
-	returnTemplate(w, r, "contact", template)
+	returnTemplate(w, r, "contact", t)
 }
 
 type contactTemplate struct {

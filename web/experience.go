@@ -45,31 +45,31 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 
 	rows = rows[0 : totalRows+1]
 
-	template := experienceTemplate{}
-	template.Fill(w, r, "Experience")
-	template.Chunks = chunk(rows, chunkRows)
+	t := experienceTemplate{}
+	t.Fill(w, r, "Experience")
+	t.Chunks = chunk(rows, chunkRows)
 
 	// Default calculator levels if logged out
-	template.UserLevelTo = template.UserLevel + 10
-	if template.UserLevel == 0 {
-		template.UserLevel = 10
-		template.UserLevelTo = 20
+	t.UserLevelTo = t.UserLevel + 10
+	if t.UserLevel == 0 {
+		t.UserLevel = 10
+		t.UserLevelTo = 20
 	}
 
 	// Highlight level from URL
-	template.Level = -1
+	t.Level = -1
 	id := chi.URLParam(r, "id")
 	if id != "" {
 		i, err := strconv.Atoi(id)
 		if err != nil {
-			template.Level = -1
+			t.Level = -1
 		} else {
-			template.Level = i
+			t.Level = i
 		}
 
 	}
 
-	returnTemplate(w, r, "experience", template)
+	returnTemplate(w, r, "experience", t)
 }
 
 func chunk(rows []experienceRow, chunkSize int) (chunked [][]experienceRow) {

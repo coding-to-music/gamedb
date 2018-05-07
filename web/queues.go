@@ -12,10 +12,10 @@ import (
 
 func QueuesHandler(w http.ResponseWriter, r *http.Request) {
 
-	template := queuesTemplate{}
-	template.Fill(w, r, "Queues")
+	t := queuesTemplate{}
+	t.Fill(w, r, "Queues")
 
-	returnTemplate(w, r, "queues", template)
+	returnTemplate(w, r, "queues", t)
 	return
 }
 

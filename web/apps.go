@@ -45,12 +45,12 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	template := appsTemplate{}
-	template.Fill(w, r, "Games")
-	template.Apps = apps
-	template.Count = count
+	t := appsTemplate{}
+	t.Fill(w, r, "Games")
+	t.Apps = apps
+	t.Count = count
 
-	returnTemplate(w, r, "apps", template)
+	returnTemplate(w, r, "apps", t)
 }
 
 type appsTemplate struct {

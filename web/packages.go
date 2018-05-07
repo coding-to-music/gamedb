@@ -51,18 +51,18 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	template := packagesTemplate{}
-	template.Fill(w, r, "Packages")
-	template.Packages = packages
-	template.Total = total
-	template.Pagination = Pagination{
+	t := packagesTemplate{}
+	t.Fill(w, r, "Packages")
+	t.Packages = packages
+	t.Total = total
+	t.Pagination = Pagination{
 		path:  "/packages?p=",
 		page:  page,
 		limit: packagesLimit,
 		total: total,
 	}
 
-	returnTemplate(w, r, "packages", template)
+	returnTemplate(w, r, "packages", t)
 }
 
 type packagesTemplate struct {

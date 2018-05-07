@@ -101,13 +101,13 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	template := chatTemplate{}
-	template.Fill(w, r, "Chat")
-	template.Channels = channels
-	template.Messages = messages
-	template.ChannelID = id
+	t := chatTemplate{}
+	t.Fill(w, r, "Chat")
+	t.Channels = channels
+	t.Messages = messages
+	t.ChannelID = id
 
-	returnTemplate(w, r, "chat", template)
+	returnTemplate(w, r, "chat", t)
 }
 
 type chatTemplate struct {

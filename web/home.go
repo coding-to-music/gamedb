@@ -49,14 +49,14 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	template := homeTemplate{}
-	template.Fill(w, r, "Home")
+	t := homeTemplate{}
+	t.Fill(w, r, "Home")
 
-	template.RanksCount = ranksCount
-	template.AppsCount = appsCount
-	template.PackagesCount = packagesCount
+	t.RanksCount = ranksCount
+	t.AppsCount = appsCount
+	t.PackagesCount = packagesCount
 
-	returnTemplate(w, r, "home", template)
+	returnTemplate(w, r, "home", t)
 }
 
 type homeTemplate struct {

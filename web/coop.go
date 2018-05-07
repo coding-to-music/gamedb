@@ -139,12 +139,12 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	template := coopTemplate{}
-	template.Fill(w, r, "Co-op")
-	template.Players = players
-	template.Games = templateGames
+	t := coopTemplate{}
+	t.Fill(w, r, "Co-op")
+	t.Players = players
+	t.Games = templateGames
 
-	returnTemplate(w, r, "coop", template)
+	returnTemplate(w, r, "coop", t)
 	return
 }
 

@@ -58,13 +58,13 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	template := changeTemplate{}
-	template.Fill(w, r, change.GetName())
-	template.Change = change
-	template.Apps = apps
-	template.Packages = packages
+	t := changeTemplate{}
+	t.Fill(w, r, change.GetName())
+	t.Change = change
+	t.Apps = apps
+	t.Packages = packages
 
-	returnTemplate(w, r, "change", template)
+	returnTemplate(w, r, "change", t)
 }
 
 type changeTemplate struct {

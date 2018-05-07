@@ -6,10 +6,10 @@ import (
 
 func DiscountsHandler(w http.ResponseWriter, r *http.Request) {
 
-	template := discountsTemplate{}
-	template.Fill(w, r, "Discounts")
+	t := discountsTemplate{}
+	t.Fill(w, r, "Discounts")
 
-	returnTemplate(w, r, "discounts", template)
+	returnTemplate(w, r, "discounts", t)
 	return
 }
 

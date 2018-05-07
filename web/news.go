@@ -55,11 +55,11 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Template
-	template := newsTemplate{}
-	template.Fill(w, r, "News")
-	template.Articles = templateArticles
+	t := newsTemplate{}
+	t.Fill(w, r, "News")
+	t.Articles = templateArticles
 
-	returnTemplate(w, r, "news", template)
+	returnTemplate(w, r, "news", t)
 	return
 }
 

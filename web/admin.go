@@ -68,11 +68,11 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Error(err)
 
 	// Template
-	template := adminTemplate{}
-	template.Fill(w, r, "Admin")
-	template.Configs = configs
+	t:= adminTemplate{}
+	t.Fill(w, r, "Admin")
+	t.Configs = configs
 
-	returnTemplate(w, r, "admin", template)
+	returnTemplate(w, r, "admin", t)
 	return
 }
 

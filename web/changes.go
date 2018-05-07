@@ -113,17 +113,17 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	template := changesTemplate{}
-	template.Fill(w, r, "Changes")
-	template.Changes = changes
-	template.Pagination = Pagination{
+	t := changesTemplate{}
+	t.Fill(w, r, "Changes")
+	t.Changes = changes
+	t.Pagination = Pagination{
 		path:  "/changes?p=",
 		page:  page,
 		limit: changesLimit,
 		total: changesLimit * 100, // 100 Pages
 	}
 
-	returnTemplate(w, r, "changes", template)
+	returnTemplate(w, r, "changes", t)
 }
 
 type changesTemplate struct {

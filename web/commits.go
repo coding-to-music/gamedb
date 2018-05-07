@@ -43,11 +43,11 @@ func CommitsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	template := commitsTemplate{}
-	template.Fill(w, r, "Commits")
-	template.Commits = commits
+	t := commitsTemplate{}
+	t.Fill(w, r, "Commits")
+	t.Commits = commits
 
-	returnTemplate(w, r, "commits", template)
+	returnTemplate(w, r, "commits", t)
 }
 
 type commitsTemplate struct {

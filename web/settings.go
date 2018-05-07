@@ -89,14 +89,14 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	template := settingsTemplate{}
-	template.Fill(w, r, "Settings")
-	template.Logins = logins
-	template.Player = player
-	template.Donations = donations
-	template.Games = games
+	t := settingsTemplate{}
+	t.Fill(w, r, "Settings")
+	t.Logins = logins
+	t.Player = player
+	t.Donations = donations
+	t.Games = games
 
-	returnTemplate(w, r, "settings", template)
+	returnTemplate(w, r, "settings", t)
 }
 
 func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {

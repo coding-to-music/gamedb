@@ -30,17 +30,17 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Template
-	template := priceChangesTemplate{}
-	template.Fill(w, r, "Price Changes")
-	template.Changes = changes
-	template.Pagination = Pagination{
+	t := priceChangesTemplate{}
+	t.Fill(w, r, "Price Changes")
+	t.Changes = changes
+	t.Pagination = Pagination{
 		path:  "/price-changes?p=",
 		page:  page,
 		limit: priceChangeLimit,
 		total: priceChangeLimit * 10,
 	}
 
-	returnTemplate(w, r, "price_changes", template)
+	returnTemplate(w, r, "price_changes", t)
 	return
 }
 
