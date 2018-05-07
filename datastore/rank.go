@@ -35,11 +35,11 @@ type Rank struct {
 	FriendsCount int `datastore:"friends"`
 	FriendsRank  int `datastore:"friends_rank"`
 
-	Rank string `datastore:"-"` // Internal
+	Rank string `datastore:"-"`
 }
 
 func (rank Rank) GetKey() (key *datastore.Key) {
-	return datastore.NameKey(KindRank, strconv.Itoa(rank.PlayerID), nil)
+	return datastore.NameKey(KindRank, strconv.FormatInt(rank.PlayerID, 10), nil)
 }
 
 func (rank Rank) GetAvatar() string {
@@ -78,14 +78,14 @@ func (rank *Rank) Tidy() *Rank {
 	return rank
 }
 
-func GetRank(playerID int) (rank *Rank, err error) {
+func GetRank(playerID int64) (rank *Rank, err error) {
 
 	client, context, err := getClient()
 	if err != nil {
 		return rank, err
 	}
 
-	key := datastore.NameKey(KindRank, strconv.Itoa(playerID), nil)
+	key := datastore.NameKey(KindRank, strconv.FormatInt(playerID, 10), nil)
 
 	rank = new(Rank)
 	rank.PlayerID = playerID

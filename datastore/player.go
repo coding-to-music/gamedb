@@ -10,9 +10,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/steami"
 	"github.com/steam-authority/steam-authority/storage"
 )
 
@@ -53,7 +55,7 @@ type Player struct {
 	Bans             string    `datastore:"bans"`                      // JSON
 	NumberOfVACBans  int       `datastore:"bans_cav"`                  //
 	NumberOfGameBans int       `datastore:"bans_game"`                 //
-	Groups           []int     `datastore:"groups,noindex"`            // // todo, make json?
+	Groups           []int     `datastore:"groups,noindex"`            //
 	SettingsEmail    string    `datastore:"settings_email"`            //
 	SettingsPassword string    `datastore:"settings_password,noindex"` //
 	SettingsHidden   bool      `datastore:"settings_hidden"`           //
@@ -61,12 +63,12 @@ type Player struct {
 }
 
 func (p Player) GetKey() (key *datastore.Key) {
-	return datastore.NameKey(KindPlayer, strconv.Itoa(p.PlayerID), nil)
+	return datastore.NameKey(KindPlayer, strconv.FormatInt(p.PlayerID, 10), nil)
 }
 
 func (p Player) GetPath() string {
 
-	x := "/players/" + strconv.Itoa(p.PlayerID)
+	x := "/players/" + strconv.FormatInt(p.PlayerID, 10)
 	if p.PersonaName != "" {
 		x = x + "/" + slug.Make(p.PersonaName)
 	}
@@ -102,7 +104,7 @@ func (p Player) GetUpdatedNice() (string) {
 }
 
 func (p Player) GetSteamCommunityLink() string {
-	return "http://steamcommunity.com/profiles/" + strconv.Itoa(p.PlayerID)
+	return "http://steamcommunity.com/profiles/" + strconv.FormatInt(p.PlayerID, 10)
 }
 
 func (p Player) GetAvatar() string {
@@ -179,7 +181,7 @@ func (p Player) GetBadges() (badges steam.BadgesResponse, err error) {
 	return badges, nil
 }
 
-func (p Player) GetFriends() (friends []steam.GetFriendListFriend, err error) {
+func (p Player) GetFriends() (friends steam.FriendsList, err error) {
 
 	var bytes []byte
 
@@ -255,13 +257,13 @@ func (p Player) GetBans() (bans steam.GetPlayerBanResponse, err error) {
 }
 
 // todo, check this is acurate
-func IsValidPlayerID(id int) bool {
+func IsValidPlayerID(id int64) bool {
 
 	if id < 10000000000000000 {
 		return false
 	}
 
-	if len(strconv.Itoa(id)) != 17 {
+	if len(strconv.FormatInt(id, 10)) != 17 {
 		return false
 	}
 
@@ -280,7 +282,7 @@ func (p Player) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(p.PlayTime, 5)
 }
 
-func GetPlayer(id int) (ret Player, err error) {
+func GetPlayer(id int64) (ret Player, err error) {
 
 	if !IsValidPlayerID(id) {
 		return ret, ErrInvalidID
@@ -291,7 +293,7 @@ func GetPlayer(id int) (ret Player, err error) {
 		return ret, err
 	}
 
-	key := datastore.NameKey(KindPlayer, strconv.Itoa(id), nil)
+	key := datastore.NameKey(KindPlayer, strconv.FormatInt(id, 10), nil)
 
 	player := Player{}
 	player.PlayerID = id
@@ -426,13 +428,15 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		summary, err := steam.GetPlayerSummaries(p.PlayerID)
+		summary, _, err := steami.Steam().GetPlayer(p.PlayerID)
 		if err != nil {
-			if err.Error() == steam.ErrInvalidJson {
-				errs = append(errs, err)
-				return
-			} else if !strings.HasPrefix(err.Error(), "not found in steam") {
-				logger.Error(err)
+			if err, ok := err.(steam.Error); ok {
+				if err.IsHardFail() {
+					errs = append(errs, err)
+					return
+				} else {
+					logger.Error(err)
+				}
 			}
 		}
 
@@ -453,28 +457,30 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		gamesResponse, err := steam.GetOwnedGames(p.PlayerID)
+		resp, _, err := steami.Steam().GetOwnedGames(p.PlayerID)
 		if err != nil {
-			if err.Error() == steam.ErrInvalidJson {
-				errs = append(errs, err)
-				return
-			} else {
-				logger.Error(err)
+			if err, ok := err.(steam.Error); ok {
+				if err.IsHardFail() {
+					errs = append(errs, err)
+					return
+				} else {
+					logger.Error(err)
+				}
 			}
 		}
 
-		p.GamesCount = len(gamesResponse)
+		p.GamesCount = len(resp.Games)
 
 		// Get playtime
 		var playtime = 0
-		for _, v := range gamesResponse {
+		for _, v := range resp.Games {
 			playtime = playtime + v.PlaytimeForever
 		}
 
 		p.PlayTime = playtime
 
 		// Encode to JSON bytes
-		bytes, err := json.Marshal(gamesResponse)
+		bytes, err := json.Marshal(resp)
 		if err != nil {
 			logger.Error(err)
 		}
@@ -500,13 +506,15 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		recentResponse, err := steam.GetRecentlyPlayedGames(p.PlayerID)
+		recentResponse, _, err := steami.Steam().GetRecentlyPlayedGames(p.PlayerID)
 		if err != nil {
-			if err.Error() == steam.ErrInvalidJson {
-				errs = append(errs, err)
-				return
-			} else {
-				logger.Error(err)
+			if err, ok := err.(steam.Error); ok {
+				if err.IsHardFail() {
+					errs = append(errs, err)
+					return
+				} else {
+					logger.Error(err)
+				}
 			}
 		}
 
@@ -537,13 +545,15 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		badgesResponse, err := steam.GetBadges(p.PlayerID)
+		badgesResponse, _, err := steami.Steam().GetBadges(p.PlayerID)
 		if err != nil {
-			if err.Error() == steam.ErrInvalidJson {
-				errs = append(errs, err)
-				return
-			} else {
-				logger.Error(err)
+			if err, ok := err.(steam.Error); ok {
+				if err.IsHardFail() {
+					errs = append(errs, err)
+					return
+				} else {
+					logger.Error(err)
+				}
 			}
 		}
 
@@ -576,20 +586,22 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		friendsResponse, err := steam.GetFriendList(p.PlayerID)
+		resp, _, err := steami.Steam().GetFriendList(p.PlayerID)
 		if err != nil {
-			if err.Error() == steam.ErrInvalidJson || err == steam.ErrNoUserFound {
-				errs = append(errs, err)
-				return
-			} else {
-				logger.Error(err)
+			if err, ok := err.(steam.Error); ok {
+				if err.IsHardFail() {
+					errs = append(errs, err)
+					return
+				} else {
+					logger.Error(err)
+				}
 			}
 		}
 
-		p.FriendsCount = len(friendsResponse)
+		p.FriendsCount = len(resp.Friends)
 
 		// Encode to JSON bytes
-		bytes, err := json.Marshal(friendsResponse)
+		bytes, err := json.Marshal(resp)
 		if err != nil {
 			logger.Error(err)
 		}
@@ -615,13 +627,15 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		level, err := steam.GetSteamLevel(p.PlayerID)
+		level, _, err := steami.Steam().GetSteamLevel(p.PlayerID)
 		if err != nil {
-			if err.Error() == steam.ErrInvalidJson {
-				errs = append(errs, err)
-				return
-			} else {
-				logger.Error(err)
+			if err, ok := err.(steam.Error); ok {
+				if err.IsHardFail() {
+					errs = append(errs, err)
+					return
+				} else {
+					logger.Error(err)
+				}
 			}
 		}
 
@@ -634,13 +648,15 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		bans, err := steam.GetPlayerBans(p.PlayerID)
+		bans, _, err := steami.Steam().GetPlayerBans(p.PlayerID)
 		if err != nil {
-			if err.Error() == steam.ErrInvalidJson {
-				errs = append(errs, err)
-				return
-			} else {
-				logger.Error(err)
+			if err, ok := err.(steam.Error); ok {
+				if err.IsHardFail() {
+					errs = append(errs, err)
+					return
+				} else {
+					logger.Error(err)
+				}
 			}
 		}
 
@@ -662,17 +678,19 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 
-		groups, err := steam.GetUserGroupList(p.PlayerID)
+		resp, _, err := steami.Steam().GetUserGroupList(p.PlayerID)
 		if err != nil {
-			if err.Error() == steam.ErrInvalidJson {
-				errs = append(errs, err)
-				return
-			} else {
-				logger.Error(err)
+			if err, ok := err.(steam.Error); ok {
+				if err.IsHardFail() {
+					errs = append(errs, err)
+					return
+				} else {
+					logger.Error(err)
+				}
 			}
 		}
 
-		p.Groups = groups
+		p.Groups = resp.GetIDs()
 
 		wg.Done()
 	}(p)

@@ -13,7 +13,6 @@ import (
 const (
 	KindArticle  = "Article"
 	KindChange   = "Change"
-	KindConfig   = "Config"
 	KindDonation = "Donation"
 	KindLogin    = "Login"
 	KindPlayer   = "Player"

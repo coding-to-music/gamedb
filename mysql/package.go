@@ -9,9 +9,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/steami"
 )
 
 type Package struct {
@@ -37,7 +39,6 @@ type Package struct {
 	ComingSoon      bool       `gorm:"not null;column:coming_soon"`              //
 	ReleaseDate     string     `gorm:"not null;column:release_date"`             //
 	Platforms       string     `gorm:"not null;column:platforms;default:'[]'"`   // JSON
-	Ghost           bool       `gorm:"not null;column:is_ghost;type:tinyint(1)"` //
 }
 
 func GetDefaultPackageJSON() Package {
@@ -416,12 +417,8 @@ func (pack *Package) Update() (errs []error) {
 
 		// Get app details
 		// Get data
-		response, err := steam.GetPackageDetailsFromStore(pack.ID)
+		response, _, err := steami.Steam().GetPackageDetailsFromStore(pack.ID)
 		if err != nil {
-
-			if err == steam.ErrGhostPackage {
-				pack.Ghost = true
-			}
 
 			if err == steam.ErrNullResponse {
 				errs = append(errs, err)
@@ -473,12 +470,12 @@ func (pack *Package) Update() (errs []error) {
 	wg.Add(1)
 	go func(pack *Package) {
 
-		resp, err := steam.GetPICSInfo([]int{}, []int{pack.ID})
+		resp, err := GetPICSInfo([]int{}, []int{pack.ID})
 		if err != nil {
 			errs = append(errs, err)
 		}
 
-		var pics steam.JsPackage
+		var pics JsPackage
 		if val, ok := resp.Packages[strconv.Itoa(pack.ID)]; ok {
 			pics = val
 		} else {

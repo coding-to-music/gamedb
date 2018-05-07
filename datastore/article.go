@@ -7,12 +7,13 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/steami"
 )
 
 type Article struct {
 	CreatedAt  time.Time `datastore:"created_at,noindex"`
 	UpdatedAt  time.Time `datastore:"updated_at,noindex"`
-	ArticleID  int       `datastore:"article_id,noindex"`
+	ArticleID  int64     `datastore:"article_id,noindex"`
 	AppID      int       `datastore:"app_id"`
 	Title      string    `datastore:"title,noindex"`
 	URL        string    `datastore:"url,noindex"`
@@ -26,7 +27,7 @@ type Article struct {
 }
 
 func (article Article) GetKey() (key *datastore.Key) {
-	return datastore.NameKey(KindArticle, strconv.Itoa(article.ArticleID), nil)
+	return datastore.NameKey(KindArticle, strconv.FormatInt(article.ArticleID, 10), nil)
 }
 
 func (article Article) GetTimestamp() (int64) {
@@ -80,19 +81,14 @@ func GetNewArticles(appID int) (articles []*Article, err error) {
 	}
 
 	// Get app articles from Steam
-	resp, err := steam.GetNewsForApp(strconv.Itoa(appID))
+	resp, _, err := steami.Steam().GetNews(appID)
 
-	for _, v := range resp {
+	for _, v := range resp.Items {
 
 		if v.Date > latestTime {
 
-			articleID, err := strconv.Atoi(v.GID)
-			if err != nil {
-				logger.Error(err)
-			}
-
 			article := new(Article)
-			article.ArticleID = articleID
+			article.ArticleID = v.GID
 			article.Title = v.Title
 			article.URL = v.URL
 			article.IsExternal = v.IsExternalURL
@@ -102,7 +98,7 @@ func GetNewArticles(appID int) (articles []*Article, err error) {
 			article.Date = time.Unix(int64(v.Date), 0)
 			article.FeedName = v.Feedname
 			article.FeedType = int8(v.FeedType)
-			article.AppID = v.Appid
+			article.AppID = v.AppID
 
 			articles = append(articles, article)
 		}

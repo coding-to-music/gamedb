@@ -141,22 +141,3 @@ func GetLatestPrices(limit int, page int) (prices []Price, err error) {
 
 	return prices, err
 }
-
-//func CountPrices() (count int, err error) {
-//
-//	if cachePricesCount == 0 {
-//
-//		client, ctx, err := getClient()
-//		if err != nil {
-//			return count, err
-//		}
-//
-//		q := datastore.NewQuery(KindPrice)
-//		cachePricesCount, err = client.Count(ctx, q)
-//		if err != nil {
-//			return count, err
-//		}
-//	}
-//
-//	return cachePricesCount, nil
-//}

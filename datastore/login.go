@@ -27,7 +27,7 @@ func (login Login) GetCreatedUnix() int64 {
 	return login.CreatedAt.Unix()
 }
 
-func CreateLogin(playerID int, r *http.Request) (err error) {
+func CreateLogin(playerID int64, r *http.Request) (err error) {
 
 	login := new(Login)
 	login.CreatedAt = time.Now()

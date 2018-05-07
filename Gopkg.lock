@@ -30,13 +30,19 @@
   branch = "master"
   name = "github.com/Jleagle/recaptcha-go"
   packages = ["."]
-  revision = "db62f6804311376e65447a24a511e22da7e98308"
+  revision = "aeb7b808b3c2efd18ae03551734ba07bcefa6a12"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/Jleagle/steam-go"
+  packages = ["steam"]
+  revision = "0ff76e30fd8fc7b0263daf20fb6d9a2883ff3015"
 
 [[projects]]
   name = "github.com/beevik/etree"
   packages = ["."]
-  revision = "15a30b44cfd6c5a16a7ddfe271bf146aaf2d3195"
-  version = "v1.0.0"
+  revision = "9d7e8feddccb4ed1b8afb54e368bd323d2ff652c"
+  version = "v1.0.1"
 
 [[projects]]
   branch = "master"
@@ -111,8 +117,8 @@
     "ptypes/timestamp",
     "ptypes/wrappers"
   ]
-  revision = "925541529c1fa6821df4e44ce2723319eb2be768"
-  version = "v1.0.0"
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -172,7 +178,7 @@
   branch = "master"
   name = "github.com/ikeikeikeike/go-sitemap-generator"
   packages = ["stm"]
-  revision = "c2885e1559dc8edf3bde9919448d5c983c7e92ec"
+  revision = "8ab27100e31c513b532c4dc3d2230ca1d7bcf511"
 
 [[projects]]
   name = "github.com/imdario/mergo"
@@ -322,8 +328,8 @@
     "trace/internal",
     "trace/propagation"
   ]
-  revision = "0095aec66ae14801c6711210f6f0716411cefdd3"
-  version = "v0.8.0"
+  revision = "10cec2c05ea2cfb8b0d856711daedc49d8a45c56"
+  version = "v0.9.0"
 
 [[projects]]
   branch = "master"
@@ -338,7 +344,7 @@
     "salsa20/salsa",
     "ssh/terminal"
   ]
-  revision = "dccd99e89d39b13e12f1103c72e3bc49eb40a833"
+  revision = "4ec37c66abab2c7e02ae775328b2ff001c3f025a"
 
 [[projects]]
   branch = "master"
@@ -353,11 +359,10 @@
     "http2/hpack",
     "idna",
     "internal/timeseries",
-    "lex/httplex",
     "trace",
     "websocket"
   ]
-  revision = "5f9ae10d9af5b1c89ae6904293b14b064d4ada23"
+  revision = "d11bb6cd8e3c4e60239c9cb20ef68586d74500d0"
 
 [[projects]]
   branch = "master"
@@ -369,7 +374,7 @@
     "jws",
     "jwt"
   ]
-  revision = "6881fee410a5daf86371371f9ad451b95e168b71"
+  revision = "cdc340f7c179dbbfa4afd43b7614e8fcadde4269"
 
 [[projects]]
   branch = "master"
@@ -384,7 +389,7 @@
     "unix",
     "windows"
   ]
-  revision = "bb9c189858d91f42db229b04d45a4c3d23a7662a"
+  revision = "7db1c3b1a98089d0071c84f646ff5c96aad43682"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -424,7 +429,7 @@
     "transport/grpc",
     "transport/http"
   ]
-  revision = "7189e88bae5257f93194cdcff65d1a4c0068d1ff"
+  revision = "20530fd5d65ad2caee87891f9896d7547cb400c9"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -462,7 +467,7 @@
     "googleapis/type/latlng",
     "protobuf/field_mask"
   ]
-  revision = "7fd901a49ba6a7f87732eb344f6e3c5b19d1b200"
+  revision = "86e600f69ee4704c6efbf6a2a40a5c10700e76c2"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -510,6 +515,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2a2c9617c4b6b11b394dbc704efeb1a82abddb76304470d30373e580b0131a6e"
+  inputs-digest = "43da159a69a1265e2bc5032d176c09d631a2c0e4c98c6cc35b72e75be93440d8"
   solver-name = "gps-cdcl"
   solver-version = 1

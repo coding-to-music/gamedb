@@ -5,18 +5,19 @@ import (
 	"errors"
 	"html/template"
 	"net/url"
-	"reflect"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
+	"github.com/steam-authority/steam-authority/steami"
 )
 
 var (
@@ -41,7 +42,6 @@ type App struct {
 	GameID                 int        `gorm:"not null;column:game_id"`
 	GameName               string     `gorm:"not null;column:game_name"`
 	Genres                 string     `gorm:"not null;column:genres;type:json;default:'[]'"`
-	Ghost                  bool       `gorm:"not null;column:is_ghost;type:tinyint(1)"`
 	HeaderImage            string     `gorm:"not null;column:image_header"`
 	Homepage               string     `gorm:"not null;column:homepage"`
 	Icon                   string     `gorm:"not null;column:icon"`
@@ -466,9 +466,6 @@ func SearchApps(query url.Values, limit int, sort string, columns []string) (app
 		db = db.Select(columns)
 	}
 
-	// Hide ghosts
-	db = db.Where("is_ghost = ?", 0)
-
 	// Type
 	if _, ok := query["type"]; ok {
 		db = db.Where("type = ?", query.Get("type"))
@@ -603,7 +600,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		var reviewsResp steam.ReviewsResponse
 
-		reviewsResp, err = steam.GetReviews(app.ID)
+		reviewsResp, _, err = steami.Steam().GetReviews(app.ID)
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -654,12 +651,8 @@ func (app *App) UpdateFromPICS() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		response, err := steam.GetAppDetailsFromStore(app.ID)
+		response, _, err := steami.Steam().GetAppDetailsFromStore(app.ID)
 		if err != nil {
-
-			if err == steam.ErrGhostApp {
-				app.Ghost = true
-			}
 
 			if err == steam.ErrNullResponse {
 				errs = append(errs, err)
@@ -775,20 +768,17 @@ func (app *App) UpdateFromPICS() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		response, err := steam.GetPICSInfo([]int{app.ID}, []int{})
+		resp, err := GetPICSInfo([]int{app.ID}, []int{})
 		if err != nil {
 			errs = append(errs, err)
 		}
 
-		var js steam.JsApp
-		if len(response.Apps) > 0 {
-			js = response.Apps[strconv.Itoa(app.ID)]
+		var js JsApp
+		if len(resp.Apps) > 0 {
+			js = resp.Apps[strconv.Itoa(app.ID)]
 		} else {
 			errs = append(errs, errors.New("no app key in json"))
 		}
-
-		// Check if empty
-		app.Ghost = reflect.DeepEqual(js.Common, steam.JsAppCommon{})
 
 		// Tags, convert map to slice
 		var tagsSlice []int
@@ -838,7 +828,7 @@ func (app *App) UpdateFromPICS() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		percentages, err := steam.GetGlobalAchievementPercentagesForApp(app.ID)
+		percentages, _, err := steami.Steam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
 			logger.Error(err)
 		}
@@ -857,7 +847,7 @@ func (app *App) UpdateFromPICS() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		schema, err := steam.GetSchemaForGame(app.ID)
+		schema, _, err := steami.Steam().GetSchemaForGame(app.ID)
 		if err != nil {
 			logger.Error(err)
 		}
