@@ -171,23 +171,23 @@ func (app App) GetReviewScore() float64 {
 	return helpers.DollarsFloat(app.ReviewsScore)
 }
 
-func (app App) GetCommunityLink() (string) {
+func (app App) GetCommunityLink() string {
 	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
 }
 
-func (app App) GetStoreLink() (string) {
+func (app App) GetStoreLink() string {
 	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
 }
 
-func (app App) GetPCGamingWikiLink() (string) {
+func (app App) GetPCGamingWikiLink() string {
 	return "https://pcgamingwiki.com/api/appid.php?appid=" + strconv.Itoa(app.ID)
 }
 
-func (app App) GetInstallLink() (template.URL) {
+func (app App) GetInstallLink() template.URL {
 	return template.URL("steam://install/" + strconv.Itoa(app.ID))
 }
 
-func (app App) GetMetacriticLink() (template.URL) {
+func (app App) GetMetacriticLink() template.URL {
 	return template.URL("http://www.metacritic.com/game/" + app.MetacriticURL)
 }
 
@@ -215,7 +215,7 @@ func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err e
 }
 
 // Used in template
-func (app App) GetCoopTags(tagMap map[int]string) (string) {
+func (app App) GetCoopTags(tagMap map[int]string) string {
 
 	tags, err := app.GetTags()
 	if err != nil {
