@@ -111,9 +111,9 @@ func GetRanksBy(order string, limit int, page int) (ranks []Rank, err error) {
 	return ranks, err
 }
 
-func GetRankKeys() (keysMap map[int]*datastore.Key, err error) {
+func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
-	keysMap = make(map[int]*datastore.Key)
+	keysMap = make(map[int64]*datastore.Key)
 
 	client, ctx, err := getClient()
 	if err != nil {
@@ -127,7 +127,7 @@ func GetRankKeys() (keysMap map[int]*datastore.Key, err error) {
 	}
 
 	for _, v := range keys {
-		playerId, _ := strconv.Atoi(v.Name)
+		playerId, _ := strconv.ParseInt(v.Name, 10, 64)
 		keysMap[playerId] = v
 	}
 
@@ -208,7 +208,7 @@ func BulkSaveRanks(ranks []*Rank) (err error) {
 	return nil
 }
 
-func BulkDeleteRanks(keys map[int]*datastore.Key) (err error) {
+func BulkDeleteRanks(keys map[int64]*datastore.Key) (err error) {
 
 	// Make map a slice
 	var keysToDelete []*datastore.Key

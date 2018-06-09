@@ -27,7 +27,7 @@ func (d Donation) GetCreatedUnix() int64 {
 	return d.CreatedAt.Unix()
 }
 
-func GetDonations(playerID int, limit int) (donations []Donation, err error) {
+func GetDonations(playerID int64, limit int) (donations []Donation, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {

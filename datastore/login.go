@@ -44,7 +44,7 @@ func CreateLogin(playerID int64, r *http.Request) (err error) {
 	return err
 }
 
-func GetLogins(playerID int, limit int) (logins []Login, err error) {
+func GetLogins(playerID int64, limit int) (logins []Login, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {

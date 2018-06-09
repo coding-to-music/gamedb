@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
@@ -20,7 +21,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	idx, err := strconv.Atoi(id)
+	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		returnErrorTemplate(w, r, 404, "Invalid Player ID: "+id)
 		return
@@ -46,13 +47,13 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Error(v)
 		}
 
-		// API is probably down
-		for _, v := range errs {
-			if v.Error() == steam.ErrInvalidJson {
-				returnErrorTemplate(w, r, 500, "Couldnt fetch player data, steam API may be down?")
-				return
-			}
-		}
+		// API is probably down, todo
+		//for _, v := range errs {
+		//	if v.Error() == steami.Steam().ErrInvalidJson {
+		//		returnErrorTemplate(w, r, 500, "Couldnt fetch player data, steam API may be down?")
+		//		return
+		//	}
+		//}
 
 		for _, v := range errs {
 			returnErrorTemplate(w, r, 500, v.Error())
@@ -69,7 +70,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get friends
-	var friends = map[int]datastore.Player{}
+	var friends = map[int64]datastore.Player{}
 	wg.Add(1)
 	go func(player datastore.Player) {
 
@@ -82,10 +83,9 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		// Queue friends to be scanned
 		if player.ShouldUpdateFriends() {
 
-			for _, v := range resp {
-				vv, _ := strconv.Atoi(v.SteamID)
+			for _, v := range resp.Friends {
 				p, _ := json.Marshal(queue.PlayerMessage{
-					PlayerID: vv,
+					PlayerID: v.SteamID,
 					Time:     time.Now(),
 				})
 				queue.Produce(queue.PlayerQueue, p)
@@ -98,11 +98,10 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Make friend ID slice & map
-		var friendsSlice []int
-		for _, v := range resp {
-			s, _ := strconv.Atoi(v.SteamID)
-			friendsSlice = append(friendsSlice, s)
-			friends[s] = datastore.Player{PlayerID: s}
+		var friendsSlice []int64
+		for _, v := range resp.Friends {
+			friendsSlice = append(friendsSlice, v.SteamID)
+			friends[v.SteamID] = datastore.Player{PlayerID: v.SteamID}
 		}
 
 		// Get friends from DS
@@ -259,7 +258,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 type playerTemplate struct {
 	GlobalTemplate
 	Player      datastore.Player
-	Friends     map[int]datastore.Player
+	Friends     map[int64]datastore.Player
 	Games       map[int]*playerAppTemplate
 	GameStats   playerAppStatsTemplate
 	Ranks       playerRanksTemplate

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/99designs/basicauth-go"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"

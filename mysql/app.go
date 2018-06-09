@@ -639,7 +639,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	return errs
 }
 
-func (app *App) UpdateFromPICS() (errs []error) {
+func (app *App) UpdateFromAPI() (errs []error) {
 
 	if !IsValidAppID(app.ID) {
 		return []error{ErrInvalidID}
@@ -651,7 +651,7 @@ func (app *App) UpdateFromPICS() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		response, _, err := steami.Steam().GetAppDetailsFromStore(app.ID)
+		response, _, err := steami.Steam().GetAppDetails(app.ID)
 		if err != nil {
 
 			if err == steam.ErrNullResponse {
@@ -760,66 +760,6 @@ func (app *App) UpdateFromPICS() (errs []error) {
 		app.PriceInitial = response.Data.PriceOverview.Initial
 		app.PriceFinal = response.Data.PriceOverview.Final
 		app.PriceDiscount = response.Data.PriceOverview.DiscountPercent
-
-		wg.Done()
-	}(app)
-
-	// Get summary
-	wg.Add(1)
-	go func(app *App) {
-
-		resp, err := GetPICSInfo([]int{app.ID}, []int{})
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		var js JsApp
-		if len(resp.Apps) > 0 {
-			js = resp.Apps[strconv.Itoa(app.ID)]
-		} else {
-			errs = append(errs, errors.New("no app key in json"))
-		}
-
-		// Tags, convert map to slice
-		var tagsSlice []int
-		for _, v := range js.Common.StoreTags {
-			vv, _ := strconv.Atoi(v)
-			tagsSlice = append(tagsSlice, vv)
-		}
-
-		tags, err := json.Marshal(tagsSlice)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Meta critic
-		var metacriticScoreInt = 0
-		if js.Common.MetacriticScore != "" {
-			metacriticScoreInt, _ = strconv.Atoi(js.Common.MetacriticScore)
-		}
-
-		// Extended
-		extended, err := json.Marshal(js.Extended)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		//
-		app.Name = js.Common.Name
-		app.Type = js.Common.Type
-		app.ReleaseState = js.Common.ReleaseState
-		// app.Platforms = strings.Split(js.Common.OSList, ",") // Can get from API
-		app.MetacriticScore = int8(metacriticScoreInt)
-		app.MetacriticURL = js.Common.MetacriticURL
-		app.StoreTags = string(tags)
-		// app.Developers = js.Extended.Developer // Store API can handle multiple values
-		// app.Publishers = js.Extended.Publisher // Store API can handle multiple values
-		app.Homepage = js.Extended.Homepage
-		app.ChangeNumber = js.ChangeNumber
-		app.Logo = js.Common.Logo
-		app.Icon = js.Common.Icon
-		app.ClientIcon = js.Common.ClientIcon
-		app.Extended = string(extended)
 
 		wg.Done()
 	}(app)

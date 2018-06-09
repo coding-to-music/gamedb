@@ -200,7 +200,7 @@ func getPlayerForSettings(w http.ResponseWriter, r *http.Request) (player datast
 	}
 
 	// Convert ID
-	idx, err := strconv.Atoi(id)
+	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return player, err
 	}

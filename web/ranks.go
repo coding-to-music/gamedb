@@ -6,11 +6,13 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
+	"github.com/steam-authority/steam-authority/steami"
 )
 
 const (
@@ -121,7 +123,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check steam
-		id, err := steam.GetID(post)
+		id, err := steami.Steam().GetID(post)
 		if err != nil {
 
 			if err != steam.ErrNoUserFound {
@@ -132,10 +134,10 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.Redirect(w, r, "/players/"+id, 302)
+		http.Redirect(w, r, "/players/"+strconv.FormatInt(id, 10), 302)
 		return
 	}
 
-	http.Redirect(w, r, "/players/"+strconv.Itoa(dbPlayer.PlayerID), 302)
+	http.Redirect(w, r, "/players/"+strconv.FormatInt(dbPlayer.PlayerID, 10), 302)
 	return
 }

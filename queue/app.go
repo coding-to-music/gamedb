@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
@@ -44,7 +45,7 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	priceBeforeFill := app.PriceFinal
 
-	errs := app.UpdateFromPICS()
+	errs := app.UpdateFromAPI()
 	if len(errs) > 0 {
 		// Nack on hard fails
 		for _, err = range errs {

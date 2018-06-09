@@ -26,6 +26,21 @@ func Unique(arg []int) []int {
 	return tempSlice
 }
 
+func Unique64(arg []int64) []int64 {
+
+	tempMap := make(map[int64]uint8)
+
+	for idx := range arg {
+		tempMap[arg[idx]] = 0
+	}
+
+	tempSlice := make([]int64, 0)
+	for key := range tempMap {
+		tempSlice = append(tempSlice, key)
+	}
+	return tempSlice
+}
+
 func FirstInts(slice []int, x int) []int {
 
 	x = int(math.Min(float64(x), float64(len(slice))))

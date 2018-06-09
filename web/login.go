@@ -166,7 +166,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert to int
-	idInt, err := strconv.Atoi(path.Base(openID))
+	idInt, err := strconv.ParseInt(path.Base(openID), 10, 64)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
@@ -200,7 +200,7 @@ func login(w http.ResponseWriter, r *http.Request, player datastore.Player) (err
 
 	// Save session
 	err = session.WriteMany(w, r, map[string]string{
-		session.UserID:    strconv.Itoa(player.PlayerID),
+		session.UserID:    strconv.FormatInt(player.PlayerID, 10),
 		session.UserName:  player.PersonaName,
 		session.UserLevel: strconv.Itoa(player.Level),
 	})

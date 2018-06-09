@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"encoding/json"
-	"errors"
 	"html/template"
 	"strconv"
 	"strings"
@@ -417,7 +416,7 @@ func (pack *Package) Update() (errs []error) {
 
 		// Get app details
 		// Get data
-		response, _, err := steami.Steam().GetPackageDetailsFromStore(pack.ID)
+		response, _, err := steami.Steam().GetPackageDetails(pack.ID)
 		if err != nil {
 
 			if err == steam.ErrNullResponse {
@@ -462,44 +461,6 @@ func (pack *Package) Update() (errs []error) {
 		pack.Controller = string(controllerString)
 		pack.ReleaseDate = response.Data.ReleaseDate.Date
 		pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
-
-		wg.Done()
-	}(pack)
-
-	// Get package details from PICS
-	wg.Add(1)
-	go func(pack *Package) {
-
-		resp, err := GetPICSInfo([]int{}, []int{pack.ID})
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		var pics JsPackage
-		if val, ok := resp.Packages[strconv.Itoa(pack.ID)]; ok {
-			pics = val
-		} else {
-			errs = append(errs, errors.New("no package key in json"))
-		}
-
-		// Apps
-		appsString, err := json.Marshal(pics.AppIDs)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Extended
-		extended, err := json.Marshal(pics.Extended)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		pack.ID = pics.PackageID
-		pack.Apps = string(appsString)
-		pack.BillingType = pics.BillingType
-		pack.LicenseType = pics.LicenseType
-		pack.Status = pics.Status
-		pack.Extended = string(extended)
 
 		wg.Done()
 	}(pack)

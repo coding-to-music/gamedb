@@ -9,11 +9,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
+	"github.com/steam-authority/steam-authority/steami"
 )
 
 func AppHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,19 +71,19 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get achievements
-		achievementsResp, err := steam.GetGlobalAchievementPercentagesForApp(app.ID)
+		achievementsResp,_, err := steami.Steam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
 			logger.Error(err)
 			return
 		}
 
 		achievementsMap := make(map[string]float64)
-		for _, v := range achievementsResp {
+		for _, v := range achievementsResp.GlobalAchievementPercentage {
 			achievementsMap[v.Name] = v.Percent
 		}
 
 		// Get schema
-		schema, err := steam.GetSchemaForGame(app.ID)
+		schema, _, err := steami.Steam().GetSchemaForGame(app.ID)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -235,7 +237,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		reviewsCount = reviewsResponse.QuerySummary
 
 		// Make slice of playerIDs
-		var playerIDs []int
+		var playerIDs []int64
 		for _, v := range reviewsResponse.Reviews {
 			playerIDs = append(playerIDs, v.Author.SteamID)
 		}
@@ -247,7 +249,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Make map of players
-		var playersMap = map[int]datastore.Player{}
+		var playersMap = map[int64]datastore.Player{}
 		for _, v := range players {
 			playersMap[v.PlayerID] = v
 		}
@@ -308,7 +310,7 @@ type appTemplate struct {
 	Prices       string
 	PricesCount  int
 	Achievements []appAchievementTemplate
-	Schema       steam.GameSchema
+	Schema       steam.SchemaForGame
 	Tags         []mysql.Tag
 	Reviews      []appReviewTemplate
 	ReviewsCount steam.ReviewsSummaryResponse
@@ -322,7 +324,7 @@ type appAchievementTemplate struct {
 }
 
 type appArticleTemplate struct {
-	ID       int
+	ID       int64
 	Title    string
 	Contents template.HTML
 	Author   string

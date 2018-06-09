@@ -362,7 +362,7 @@ func GetPlayers(order string, limit int) (players []Player, err error) {
 	return players, err
 }
 
-func GetPlayersByIDs(ids []int) (friends []Player, err error) {
+func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
 
 	if len(ids) > 1000 {
 		return friends, ErrorTooMany
@@ -375,7 +375,7 @@ func GetPlayersByIDs(ids []int) (friends []Player, err error) {
 
 	var keys []*datastore.Key
 	for _, v := range ids {
-		key := datastore.NameKey(KindPlayer, strconv.Itoa(v), nil)
+		key := datastore.NameKey(KindPlayer, strconv.FormatInt(v, 10), nil)
 		keys = append(keys, key)
 	}
 

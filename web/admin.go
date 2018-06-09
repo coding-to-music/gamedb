@@ -10,12 +10,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
+	"github.com/steam-authority/steam-authority/steami"
 )
 
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +70,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Error(err)
 
 	// Template
-	t:= adminTemplate{}
+	t := adminTemplate{}
 	t.Fill(w, r, "Admin")
 	t.Configs = configs
 
@@ -89,13 +91,14 @@ func adminDisableConsumers() {
 func adminApps() {
 
 	// Get apps
-	apps, err := steam.GetAppList()
+	// todo, page through results
+	apps, _, err := steami.Steam().GetAppList(steam.GetAppList{})
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
-	for _, v := range apps {
+	for _, v := range apps.Apps {
 		bytes, _ := json.Marshal(queue.AppMessage{
 			AppID:    v.AppID,
 			ChangeID: 0,
@@ -109,7 +112,7 @@ func adminApps() {
 	err = mysql.SetConfig(mysql.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
-	logger.Info(strconv.Itoa(len(apps)) + " apps added to rabbit")
+	logger.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
 
 func adminDeploy() {
@@ -128,7 +131,7 @@ func adminDonations() {
 	}
 
 	// map[player]total
-	counts := make(map[int]int)
+	counts := make(map[int64]int)
 
 	for _, v := range donations {
 
@@ -261,7 +264,7 @@ func adminQueues(r *http.Request) {
 	if val := r.PostForm.Get("player-id"); val != "" {
 
 		logger.Info("Player: " + val)
-		playerID, _ := strconv.Atoi(val)
+		playerID, _ := strconv.ParseInt(val, 10, 64)
 		bytes, _ := json.Marshal(queue.PlayerMessage{
 			PlayerID: playerID,
 			Time:     time.Now(),
@@ -510,11 +513,11 @@ func adminTags() {
 	}
 
 	// Get tag names from Steam
-	tagsResp, err := steam.GetTags()
+	tagsResp, _, err := steami.Steam().GetTags()
 	logger.Error(err)
 
 	steamTagMap := make(map[int]string)
-	for _, v := range tagsResp {
+	for _, v := range tagsResp.Tags {
 		steamTagMap[v.TagID] = v.Name
 	}
 
@@ -622,7 +625,7 @@ func adminRanks() {
 		return
 	}
 
-	newRanks := make(map[int]*datastore.Rank)
+	newRanks := make(map[int64]*datastore.Rank)
 	var players []datastore.Player
 
 	var wg sync.WaitGroup

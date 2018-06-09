@@ -25,7 +25,7 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 	}
 
 	// Update player
-	player, err := datastore.GetPlayer(message.PlayerID)
+	player, err := datastore.GetPlayer(int64(message.PlayerID))
 	if err != nil {
 		if err != datastore.ErrNoSuchEntity {
 			logger.Error(err)
@@ -39,12 +39,12 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 			logger.Error(v)
 		}
 
-		// API is probably down
-		for _, v := range errs {
-			if v.Error() == steam.ErrInvalidJson {
-				return false, true
-			}
-		}
+		// API is probably down, todo
+		//for _, v := range errs {
+		//	if v.Error() == steam.ErrInvalidJson {
+		//		return false, true
+		//	}
+		//}
 	}
 
 	return true, false
@@ -52,5 +52,5 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 
 type PlayerMessage struct {
 	Time     time.Time
-	PlayerID int
+	PlayerID int64
 }

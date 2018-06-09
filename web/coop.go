@@ -18,16 +18,16 @@ const (
 func CoopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get player ints
-	var playerInts []int
+	var playerInts []int64
 	for _, v := range r.URL.Query()["p"] {
-		i, err := strconv.Atoi(v)
+		i, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
 			logger.Error(err)
 		}
 		playerInts = append(playerInts, i)
 	}
 
-	playerInts = helpers.Unique(playerInts)
+	playerInts = helpers.Unique64(playerInts)
 
 	// Check for max number of players
 	if len(playerInts) > maxPlayers {
@@ -40,7 +40,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 	for _, v := range playerInts {
 		wg.Add(1)
-		go func(id int) {
+		go func(id int64) {
 
 			player, err := datastore.GetPlayer(id)
 			if err != nil {
