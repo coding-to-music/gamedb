@@ -40,15 +40,6 @@
         gtag('config', 'UA-125104-31');
         gtag('set', {'user_id': '{{ .UserID }}'});
     </script>
-{{ if .ShowAd }}
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-5468884371420326",
-            enable_page_level_ads: true
-        });
-    </script>
-{{ end }}
 </head>
 
 <body>
@@ -79,7 +70,7 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="/price-changes">Price Changes</a>
                             <a class="dropdown-item" href="/free-games">Free Games</a>
-                            {{/*<a class="dropdown-item" href="/discounts">Discounts</a>*/}}
+                        {{/*<a class="dropdown-item" href="/discounts">Discounts</a>*/}}
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -140,5 +131,22 @@
         </div>
     </nav>
 </header>
+
+{{ if and (.ShowAd) (not .IsLocal) }}
+<div class="container" style="text-align: center;">
+    <script type="text/javascript">
+        (function () {
+            if (window.CHITIKA === undefined) {
+                window.CHITIKA = {'units': []};
+            }
+            var unit = {"calltype": "async[2]", "publisher": "jleagle", "width": 728, "height": 90, "sid": "Chitika Default"};
+            var placement_id = window.CHITIKA.units.length;
+            window.CHITIKA.units.push(unit);
+            document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
+        }());
+    </script>
+    <script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
+</div>
+{{ end }}
 
 {{end}}
