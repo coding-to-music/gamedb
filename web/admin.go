@@ -99,7 +99,7 @@ func adminApps() {
 	}
 
 	for _, v := range apps.Apps {
-		bytes, _ := json.Marshal(queue.AppMessage{
+		bytes, _ := json.Marshal(queue.RabbitMessageApp{
 			AppID:    v.AppID,
 			ChangeID: 0,
 			Time:     time.Now(),
@@ -254,7 +254,7 @@ func adminQueues(r *http.Request) {
 
 		logger.Info("Change: " + val)
 		appID, _ := strconv.Atoi(val)
-		bytes, _ := json.Marshal(queue.AppMessage{
+		bytes, _ := json.Marshal(queue.RabbitMessageApp{
 			AppID: appID,
 			Time:  time.Now(),
 		})
@@ -265,7 +265,7 @@ func adminQueues(r *http.Request) {
 
 		logger.Info("Player: " + val)
 		playerID, _ := strconv.ParseInt(val, 10, 64)
-		bytes, _ := json.Marshal(queue.PlayerMessage{
+		bytes, _ := json.Marshal(queue.RabbitMessagePlayer{
 			PlayerID: playerID,
 			Time:     time.Now(),
 		})
@@ -276,7 +276,7 @@ func adminQueues(r *http.Request) {
 
 		logger.Info("App: " + val)
 		appID, _ := strconv.Atoi(val)
-		bytes, _ := json.Marshal(queue.AppMessage{
+		bytes, _ := json.Marshal(queue.RabbitMessageApp{
 			AppID: appID,
 			Time:  time.Now(),
 		})

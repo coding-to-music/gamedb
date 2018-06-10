@@ -84,7 +84,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		if player.ShouldUpdateFriends() {
 
 			for _, v := range resp.Friends {
-				p, _ := json.Marshal(queue.PlayerMessage{
+				p, _ := json.Marshal(queue.RabbitMessagePlayer{
 					PlayerID: v.SteamID,
 					Time:     time.Now(),
 				})

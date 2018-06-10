@@ -13,7 +13,7 @@ import (
 func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message
-	message := new(PlayerMessage)
+	message := new(RabbitMessagePlayer)
 
 	err := json.Unmarshal(msg.Body, message)
 	if err != nil {
@@ -50,7 +50,7 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 	return true, false
 }
 
-type PlayerMessage struct {
+type RabbitMessagePlayer struct {
 	Time     time.Time
 	PlayerID int64
 }

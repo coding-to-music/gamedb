@@ -15,7 +15,7 @@ import (
 func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message payload
-	message := new(AppMessage)
+	message := new(RabbitMessageApp)
 
 	err := json.Unmarshal(msg.Body, message)
 	if err != nil {
@@ -106,7 +106,7 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 	return true, false
 }
 
-type AppMessage struct {
+type RabbitMessageApp struct {
 	Time     time.Time
 	AppID    int
 	ChangeID int

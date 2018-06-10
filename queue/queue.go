@@ -11,7 +11,7 @@ import (
 
 const (
 	enableConsumers = true
-	namespace       = "STEAM_"
+	namespace       = "Steam_"
 	HeaderRetry     = "retry"
 )
 
@@ -20,6 +20,7 @@ const (
 	AppQueue     = "Apps"
 	PackageQueue = "Packages"
 	PlayerQueue  = "Players"
+	PicsQueue    = "Updater_Product_Data"
 )
 
 var (
@@ -29,10 +30,11 @@ var (
 func init() {
 
 	qs := []queue{
-		{Name: ChangeQueue, Callback: processChange},
-		{Name: AppQueue, Callback: processApp},
-		{Name: PackageQueue, Callback: processPackage},
-		{Name: PlayerQueue, Callback: processPlayer},
+		//{Name: ChangeQueue, Callback: processChange},
+		//{Name: AppQueue, Callback: processApp},
+		//{Name: PackageQueue, Callback: processPackage},
+		//{Name: PlayerQueue, Callback: processPlayer},
+		{Name: PicsQueue, Callback: processPics},
 	}
 
 	queues = make(map[string]queue)
@@ -154,7 +156,7 @@ func (s queue) consume() {
 					msg.Nack(false, false)
 				}
 
-				time.Sleep(time.Second * 2)
+				time.Sleep(time.Second * 0)
 			}
 
 			if breakFor {
