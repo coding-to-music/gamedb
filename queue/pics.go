@@ -31,22 +31,6 @@ func processPics(msg amqp.Delivery) (ack bool, requeue bool) {
 }
 
 type RabbitMessagePics struct {
-	MetaDataOnly    bool                                `json:"MetaDataOnly"`
-	ResponsePending bool                                `json:"ResponsePending"`
-	UnknownPackages []interface{}                       `json:"UnknownPackages"`
-	UnknownApps     []interface{}                       `json:"UnknownApps"`
-	Apps            map[string]RabbitMessagePicsProduct `json:"Apps"`
-	Packages        map[string]RabbitMessagePicsProduct `json:"Packages"`
-	JobID struct {
-		SequentialCount int    `json:"SequentialCount"`
-		StartTime       string `json:"StartTime"`
-		ProcessID       int    `json:"ProcessID"`
-		BoxID           int    `json:"BoxID"`
-		Value           int64  `json:"Value"`
-	} `json:"JobID"`
-}
-
-type RabbitMessagePicsProduct struct {
 	ID           int                        `json:"ID"`
 	ChangeNumber int                        `json:"ChangeNumber"`
 	MissingToken bool                       `json:"MissingToken"`
