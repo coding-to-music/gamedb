@@ -16,11 +16,14 @@ const (
 )
 
 const (
+	//
 	ChangeQueue  = "Changes"
 	AppQueue     = "Apps"
 	PackageQueue = "Packages"
 	PlayerQueue  = "Players"
-	PicsQueue    = "Updater_Product_Data"
+	//
+	PicsQueue   = "Updater_Product_Data"
+	PicsChanges = "Updater_Changes"
 )
 
 var (
@@ -34,7 +37,8 @@ func init() {
 		//{Name: AppQueue, Callback: processApp},
 		//{Name: PackageQueue, Callback: processPackage},
 		//{Name: PlayerQueue, Callback: processPlayer},
-		{Name: PicsQueue, Callback: processPics},
+		{Name: PicsQueue, Callback: processPicsInfo},
+		{Name: PicsQueue, Callback: processPicsChanges},
 	}
 
 	queues = make(map[string]queue)
