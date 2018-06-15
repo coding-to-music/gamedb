@@ -37,8 +37,8 @@ func init() {
 		//{Name: AppQueue, Callback: processApp},
 		//{Name: PackageQueue, Callback: processPackage},
 		//{Name: PlayerQueue, Callback: processPlayer},
-		{Name: PicsQueue, Callback: processPicsInfo},
-		{Name: PicsQueue, Callback: processPicsChanges},
+		//{Name: PicsQueue, Callback: processPicsInfo},
+		{Name: PicsChanges, Callback: processPicsChanges},
 	}
 
 	queues = make(map[string]queue)
