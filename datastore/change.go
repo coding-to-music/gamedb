@@ -78,29 +78,46 @@ func GetChange(id string) (change Change, err error) {
 	return change, nil
 }
 
-// todo, handle more than 500
 func BulkAddAChanges(changes []*Change) (err error) {
 
-	changesLen := len(changes)
-	if changesLen == 0 {
+	if len(changes) == 0 {
 		return nil
 	}
 
-	client, context, err := getClient()
+	client, ctx, err := getClient()
 	if err != nil {
 		return err
 	}
 
-	keys := make([]*datastore.Key, 0, changesLen)
+	chunks := chunkChanges(changes, 500)
 
-	for _, v := range changes {
-		keys = append(keys, v.GetKey())
-	}
+	for _, chunk := range chunks {
 
-	_, err = client.PutMulti(context, keys, changes)
-	if err != nil {
-		return err
+		keys := make([]*datastore.Key, 0, len(chunk))
+		for _, v := range chunk {
+			keys = append(keys, v.GetKey())
+		}
+
+		_, err = client.PutMulti(ctx, keys, chunk)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
+
+	for i := 0; i < len(changes); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(changes) {
+			end = len(changes)
+		}
+
+		divided = append(divided, changes[i:end])
+	}
+
+	return divided
 }

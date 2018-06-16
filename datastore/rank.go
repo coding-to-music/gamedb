@@ -178,8 +178,7 @@ func NewRankFromPlayer(player Player) (rank *Rank) {
 
 func BulkSaveRanks(ranks []*Rank) (err error) {
 
-	ranksLen := len(ranks)
-	if ranksLen == 0 {
+	if len(ranks) == 0 {
 		return nil
 	}
 
@@ -192,9 +191,7 @@ func BulkSaveRanks(ranks []*Rank) (err error) {
 
 	for _, v := range chunks {
 
-		ranksLen := len(v)
-
-		keys := make([]*datastore.Key, 0, ranksLen)
+		keys := make([]*datastore.Key, 0, len(v))
 		for _, vv := range v {
 			keys = append(keys, vv.GetKey())
 		}
@@ -209,6 +206,10 @@ func BulkSaveRanks(ranks []*Rank) (err error) {
 }
 
 func BulkDeleteRanks(keys map[int64]*datastore.Key) (err error) {
+
+	if len(keys) == 0 {
+		return nil
+	}
 
 	// Make map a slice
 	var keysToDelete []*datastore.Key
@@ -234,16 +235,16 @@ func BulkDeleteRanks(keys map[int64]*datastore.Key) (err error) {
 	return nil
 }
 
-func chunkRanks(logs []*Rank, chunkSize int) (divided [][]*Rank) {
+func chunkRanks(ranks []*Rank, chunkSize int) (divided [][]*Rank) {
 
-	for i := 0; i < len(logs); i += chunkSize {
+	for i := 0; i < len(ranks); i += chunkSize {
 		end := i + chunkSize
 
-		if end > len(logs) {
-			end = len(logs)
+		if end > len(ranks) {
+			end = len(ranks)
 		}
 
-		divided = append(divided, logs[i:end])
+		divided = append(divided, ranks[i:end])
 	}
 
 	return divided
