@@ -9,8 +9,7 @@ import (
 )
 
 type Change struct {
-	CreatedAt time.Time `datastore:"created_at,noindex"`
-	UpdatedAt time.Time `datastore:"updated_at,noindex"` // Do not use!  (backwards compatibility)
+	CreatedAt time.Time `datastore:"created_at"`
 	ChangeID  int       `datastore:"change_id"`
 	Apps      []int     `datastore:"apps,noindex"`
 	Packages  []int     `datastore:"packages,noindex"`
@@ -35,6 +34,14 @@ func (change Change) GetNiceDate() (string) {
 
 func (change Change) GetPath() string {
 	return "/changes/" + strconv.Itoa(change.ChangeID)
+}
+
+func (change *Change) AddApp(app int) {
+	change.Apps = append(change.Apps, app)
+}
+
+func (change *Change) AddPackage(pack int) {
+	change.Packages = append(change.Packages, pack)
 }
 
 func GetLatestChanges(limit int, page int) (changes []Change, err error) {
@@ -69,4 +76,31 @@ func GetChange(id string) (change Change, err error) {
 	}
 
 	return change, nil
+}
+
+// todo, handle more than 500
+func BulkAddAChanges(changes []*Change) (err error) {
+
+	changesLen := len(changes)
+	if changesLen == 0 {
+		return nil
+	}
+
+	client, context, err := getClient()
+	if err != nil {
+		return err
+	}
+
+	keys := make([]*datastore.Key, 0, changesLen)
+
+	for _, v := range changes {
+		keys = append(keys, v.GetKey())
+	}
+
+	_, err = client.PutMulti(context, keys, changes)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

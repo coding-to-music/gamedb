@@ -105,7 +105,7 @@ func adminApps() {
 			Time:     time.Now(),
 		})
 
-		queue.Produce(queue.AppQueue, bytes)
+		queue.Produce(queue.QueueApps, bytes)
 	}
 
 	//
@@ -258,7 +258,7 @@ func adminQueues(r *http.Request) {
 			AppID: appID,
 			Time:  time.Now(),
 		})
-		queue.Produce(queue.AppQueue, bytes)
+		queue.Produce(queue.QueueApps, bytes)
 	}
 
 	if val := r.PostForm.Get("player-id"); val != "" {
@@ -269,7 +269,7 @@ func adminQueues(r *http.Request) {
 			PlayerID: playerID,
 			Time:     time.Now(),
 		})
-		queue.Produce(queue.PlayerQueue, bytes)
+		queue.Produce(queue.QueuePlayers, bytes)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
@@ -280,7 +280,7 @@ func adminQueues(r *http.Request) {
 			AppID: appID,
 			Time:  time.Now(),
 		})
-		queue.Produce(queue.AppQueue, bytes)
+		queue.Produce(queue.QueueApps, bytes)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
@@ -291,7 +291,7 @@ func adminQueues(r *http.Request) {
 			PackageID: packageID,
 			Time:      time.Now(),
 		})
-		queue.Produce(queue.PackageQueue, bytes)
+		queue.Produce(queue.QueuePackages, bytes)
 	}
 }
 

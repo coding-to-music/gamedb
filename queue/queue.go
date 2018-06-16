@@ -12,18 +12,16 @@ import (
 const (
 	enableConsumers = true
 	namespace       = "Steam_"
-	HeaderRetry     = "retry"
+	headerRetry     = "retry"
 )
 
 const (
-	//
-	ChangeQueue  = "Changes"
-	AppQueue     = "Apps"
-	PackageQueue = "Packages"
-	PlayerQueue  = "Players"
-	//
-	PicsQueue   = "Updater_Product_Data"
-	PicsChanges = "Updater_Changes"
+	QueueApps         = "Updater_Apps"
+	QueueAppsData     = "Updater_Apps_Data"
+	QueuePackages     = "Updater_Packages"
+	QueuePackagesData = "Updater_Packages_Data"
+	QueueChanges      = "Updater_Changes"
+	QueuePlayers      = "Players"
 )
 
 var (
@@ -33,12 +31,10 @@ var (
 func init() {
 
 	qs := []queue{
-		//{Name: ChangeQueue, Callback: processChange},
-		//{Name: AppQueue, Callback: processApp},
-		//{Name: PackageQueue, Callback: processPackage},
-		//{Name: PlayerQueue, Callback: processPlayer},
-		//{Name: PicsQueue, Callback: processPicsInfo},
-		{Name: PicsChanges, Callback: processPicsChanges},
+		{Name: QueueChanges, Callback: processChange},
+		//{Name: QueueApps, Callback: processProduct},
+		//{Name: QueuePackages, Callback: processProduct},
+		//{Name: QueuePlayers, Callback: processPlayer},
 	}
 
 	queues = make(map[string]queue)
@@ -108,7 +104,7 @@ func (s queue) produce(data []byte) (err error) {
 		ContentType:  "application/json",
 		Body:         data,
 		Headers: amqp.Table{
-			HeaderRetry: int16(0),
+			headerRetry: int16(0),
 		},
 	})
 	if err != nil {
@@ -184,7 +180,7 @@ func incRetrys(msg *amqp.Delivery) int16 {
 
 	} else {
 
-		retrysInterface, ok := msg.Headers[HeaderRetry]
+		retrysInterface, ok := msg.Headers[headerRetry]
 		if ok {
 
 			retrysInt, ok := retrysInterface.(int16)
@@ -199,7 +195,7 @@ func incRetrys(msg *amqp.Delivery) int16 {
 		}
 	}
 
-	msg.Headers[HeaderRetry] = retrys
+	msg.Headers[headerRetry] = retrys
 
 	return retrys
 }
