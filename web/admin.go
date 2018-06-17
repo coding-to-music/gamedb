@@ -99,13 +99,7 @@ func adminApps() {
 	}
 
 	for _, v := range apps.Apps {
-		bytes, _ := json.Marshal(queue.RabbitMessageApp{
-			AppID:    v.AppID,
-			ChangeID: 0,
-			Time:     time.Now(),
-		})
-
-		queue.Produce(queue.QueueApps, bytes)
+		queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.AppID)))
 	}
 
 	//
@@ -253,12 +247,7 @@ func adminQueues(r *http.Request) {
 	if val := r.PostForm.Get("change-id"); val != "" {
 
 		logger.Info("Change: " + val)
-		appID, _ := strconv.Atoi(val)
-		bytes, _ := json.Marshal(queue.RabbitMessageApp{
-			AppID: appID,
-			Time:  time.Now(),
-		})
-		queue.Produce(queue.QueueApps, bytes)
+		queue.Produce(queue.QueueApps, []byte(val))
 	}
 
 	if val := r.PostForm.Get("player-id"); val != "" {
@@ -275,23 +264,13 @@ func adminQueues(r *http.Request) {
 	if val := r.PostForm.Get("app-id"); val != "" {
 
 		logger.Info("App: " + val)
-		appID, _ := strconv.Atoi(val)
-		bytes, _ := json.Marshal(queue.RabbitMessageApp{
-			AppID: appID,
-			Time:  time.Now(),
-		})
-		queue.Produce(queue.QueueApps, bytes)
+		queue.Produce(queue.QueueApps, []byte(val))
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
 		logger.Info("Package: " + val)
-		packageID, _ := strconv.Atoi(val)
-		bytes, _ := json.Marshal(queue.PackageMessage{
-			PackageID: packageID,
-			Time:      time.Now(),
-		})
-		queue.Produce(queue.QueuePackages, bytes)
+		queue.Produce(queue.QueuePackages, []byte(val))
 	}
 }
 

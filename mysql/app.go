@@ -394,7 +394,7 @@ func (app App) GetPublishers() (publishers []string, err error) {
 func (app App) GetName() (name string) {
 
 	if app.Name == "" {
-		app.Name = "App " + strconv.Itoa(app.ID)
+		return "App " + strconv.Itoa(app.ID)
 	}
 
 	return app.Name

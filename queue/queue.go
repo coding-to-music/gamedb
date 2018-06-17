@@ -2,6 +2,7 @@ package queue
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 
 const (
 	enableConsumers = true
-	namespace       = "Steam_"
+	Namespace       = "Steam_"
 	headerRetry     = "retry"
 )
 
@@ -32,8 +33,8 @@ func init() {
 
 	qs := []queue{
 		{Name: QueueChanges, Callback: processChange},
-		//{Name: QueueApps, Callback: processProduct},
-		//{Name: QueuePackages, Callback: processProduct},
+		//{Name: QueueAppsData, Callback: processApp},
+		{Name: QueuePackagesData, Callback: processPackage},
 		//{Name: QueuePlayers, Callback: processPlayer},
 	}
 
@@ -64,7 +65,7 @@ func Produce(queue string, data []byte) (err error) {
 
 type queue struct {
 	Name     string
-	Callback func(msg amqp.Delivery) (ack bool, requeue bool)
+	Callback func(msg amqp.Delivery) (ack bool, requeue bool, err error)
 }
 
 func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.Queue, closeChannel chan *amqp.Error, err error) {
@@ -82,7 +83,7 @@ func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.
 		logger.Error(err)
 	}
 
-	q, err = ch.QueueDeclare(namespace+s.Name, true, false, false, false, nil)
+	q, err = ch.QueueDeclare(Namespace+s.Name, true, false, false, false, nil)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -140,7 +141,10 @@ func (s queue) consume() {
 
 			case msg := <-msgs:
 
-				ack, requeue := s.Callback(msg)
+				ack, requeue, err := s.Callback(msg)
+				if err != nil {
+					fmt.Println(err.Error())
+				}
 				if ack {
 					msg.Ack(false)
 				} else if requeue {

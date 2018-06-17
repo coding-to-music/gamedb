@@ -2,7 +2,6 @@ package queue
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
 
@@ -14,18 +13,18 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processChange(msg amqp.Delivery) (ack bool, requeue bool) {
+func processChange(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	// Get change
 	message := new(RabbitMessageChanges)
 
-	err := json.Unmarshal(msg.Body, message)
+	err = json.Unmarshal(msg.Body, message)
 	if err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			logger.Info(err.Error() + " - " + string(msg.Body))
 		}
 
-		return false, false
+		return false, false, err
 	}
 
 	// Group products by change id
@@ -64,8 +63,7 @@ func processChange(msg amqp.Delivery) (ack bool, requeue bool) {
 	// Save change to DS
 	err = datastore.BulkAddAChanges(changesSlice)
 	if err != nil {
-		fmt.Println(err.Error())
-		return false, true
+		return false, true, err
 	}
 
 	// Send websocket
@@ -135,7 +133,7 @@ func processChange(msg amqp.Delivery) (ack bool, requeue bool) {
 		websockets.Send(websockets.CHANGES, ws)
 	}
 
-	return true, false
+	return true, false, nil
 }
 
 type RabbitMessageChanges struct {

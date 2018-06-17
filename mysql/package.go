@@ -16,28 +16,29 @@ import (
 )
 
 type Package struct {
-	ID              int        `gorm:"not null;column:id;primary_key"`           //
-	CreatedAt       *time.Time `gorm:"not null;column:created_at"`               //
-	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`               //
-	Name            string     `gorm:"not null;column:name"`                     //
-	ImagePage       string     `gorm:"not null;column:image_page"`               //
-	ImageHeader     string     `gorm:"not null;column:image_header"`             //
-	ImageLogo       string     `gorm:"not null;column:image_logo"`               //
-	BillingType     int8       `gorm:"not null;column:billing_type"`             //
-	LicenseType     int8       `gorm:"not null;column:license_type"`             //
-	Status          int8       `gorm:"not null;column:status"`                   //
-	Apps            string     `gorm:"not null;column:apps;default:'[]'"`        // JSON
-	ChangeID        int        `gorm:"not null;column:change_id"`                //
-	Extended        string     `gorm:"not null;column:extended;default:'{}'"`    // JSON
-	PurchaseText    string     `gorm:"not null;column:purchase_text"`            //
-	PriceInitial    int        `gorm:"not null;column:price_initial"`            //
-	PriceFinal      int        `gorm:"not null;column:price_final"`              //
-	PriceDiscount   int        `gorm:"not null;column:price_discount"`           //
-	PriceIndividual int        `gorm:"not null;column:price_individual"`         //
-	Controller      string     `gorm:"not null;column:controller;default:'{}'"`  // JSON
-	ComingSoon      bool       `gorm:"not null;column:coming_soon"`              //
-	ReleaseDate     string     `gorm:"not null;column:release_date"`             //
-	Platforms       string     `gorm:"not null;column:platforms;default:'[]'"`   // JSON
+	ID              int        `gorm:"not null;column:id;primary_key"`          //
+	CreatedAt       *time.Time `gorm:"not null;column:created_at"`              //
+	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`              //
+	Name            string     `gorm:"not null;column:name"`                    //
+	ImagePage       string     `gorm:"not null;column:image_page"`              //
+	ImageHeader     string     `gorm:"not null;column:image_header"`            //
+	ImageLogo       string     `gorm:"not null;column:image_logo"`              //
+	BillingType     int8       `gorm:"not null;column:billing_type"`            //
+	LicenseType     int8       `gorm:"not null;column:license_type"`            //
+	Status          int8       `gorm:"not null;column:status"`                  //
+	Apps            string     `gorm:"not null;column:apps;default:'[]'"`       // JSON
+	ChangeID        int        `gorm:"not null;column:change_id"`               //
+	Extended        string     `gorm:"not null;column:extended;default:'{}'"`   // JSON (TEXT)
+	PurchaseText    string     `gorm:"not null;column:purchase_text"`           //
+	PriceInitial    int        `gorm:"not null;column:price_initial"`           //
+	PriceFinal      int        `gorm:"not null;column:price_final"`             //
+	PriceDiscount   int        `gorm:"not null;column:price_discount"`          //
+	PriceIndividual int        `gorm:"not null;column:price_individual"`        //
+	Controller      string     `gorm:"not null;column:controller;default:'{}'"` // JSON (TEXT)
+	ComingSoon      bool       `gorm:"not null;column:coming_soon"`             //
+	ReleaseDate     string     `gorm:"not null;column:release_date"`            //
+	Platforms       string     `gorm:"not null;column:platforms;default:'[]'"`  // JSON
+	RawPICS         string     `gorm:"not null;column:raw_pics;default:'{}'"`   // JSON (TEXT)
 }
 
 func GetDefaultPackageJSON() Package {
