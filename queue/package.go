@@ -15,7 +15,7 @@ import (
 func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	// Get message
-	message := new(RabbitMessagePackage)
+	message := new(RabbitMessageProduct)
 
 	err = json.Unmarshal(msg.Body, message)
 	if err != nil {
@@ -81,7 +81,7 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	flatMap := map[string]interface{}{}
 
-	loop(flatMap, "", message.KeyValues, true)
+	//loop(flatMap, "", message.KeyValues, true)
 
 	for k, v := range flatMap {
 		println(k + ": " + v.(string))
@@ -159,21 +159,4 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	}
 
 	return true, false, nil
-}
-
-type RabbitMessagePackage struct {
-	ID           int                           `json:"ID"`
-	ChangeNumber int                           `json:"ChangeNumber"`
-	MissingToken bool                          `json:"MissingToken"`
-	SHAHash      string                        `json:"SHAHash"`
-	KeyValues    RabbitMessagePackageKeyValues `json:"KeyValues"`
-	OnlyPublic   bool                          `json:"OnlyPublic"`
-	UseHTTP      bool                          `json:"UseHttp"`
-	HTTPURI      interface{}                   `json:"HttpUri"`
-}
-
-type RabbitMessagePackageKeyValues struct {
-	Name     string                          `json:"Name"`
-	Value    interface{}                     `json:"Value"`
-	Children []RabbitMessagePackageKeyValues `json:"Children"`
 }

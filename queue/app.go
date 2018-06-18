@@ -1,20 +1,17 @@
 package queue
 
 import (
-"encoding/json"
-"strings"
+	"encoding/json"
+	"strings"
 
-
-
-"github.com/steam-authority/steam-authority/logger"
-"github.com/streadway/amqp"
-
+	"github.com/steam-authority/steam-authority/logger"
+	"github.com/streadway/amqp"
 )
 
 func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message payload
-	message := new(RabbitMessageApp)
+	message := new(RabbitMessageProduct)
 
 	err := json.Unmarshal(msg.Body, message)
 	if err != nil {
@@ -105,21 +102,4 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 	//}
 	//
 	//return true, false
-}
-
-type RabbitMessageApp struct {
-	ID           int                       `json:"ID"`
-	ChangeNumber int                       `json:"ChangeNumber"`
-	MissingToken bool                      `json:"MissingToken"`
-	SHAHash      string                    `json:"SHAHash"`
-	KeyValues    RabbitMessageAppKeyValues `json:"KeyValues"`
-	OnlyPublic   bool                      `json:"OnlyPublic"`
-	UseHTTP      bool                      `json:"UseHttp"`
-	HTTPURI      interface{}               `json:"HttpUri"`
-}
-
-type RabbitMessageAppKeyValues struct {
-	Name     string                      `json:"Name"`
-	Value    interface{}                 `json:"Value"`
-	Children []RabbitMessageAppKeyValues `json:"Children"`
 }
