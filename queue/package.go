@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -26,43 +27,8 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 		return false, false, err
 	}
 
-	// Read PICS JSON
-	var root = map[string]string{}
-	var extended = map[string]string{}
-	var appids []string
-	var depotids []string
-	var appitems []string
-
-	// Base
-	root["name"] = message.KeyValues.Name
-
-	for _, v := range message.KeyValues.Children {
-		if v.Value != nil {
-			root[v.Name] = v.Value.(string)
-		} else if v.Name == "extended" {
-			// Extended
-			for _, vv := range v.Children {
-				extended[vv.Name] = vv.Value.(string)
-			}
-		} else if v.Name == "appids" {
-			// App IDs
-			for _, vv := range v.Children {
-				appids = append(appids, vv.Value.(string))
-			}
-		} else if v.Name == "depotids" {
-			// Depot IDs
-			for _, vv := range v.Children {
-				depotids = append(depotids, vv.Value.(string))
-			}
-		} else if v.Name == "appitems" {
-			// App Items
-			for _, vv := range v.Children {
-				appitems = append(appitems, vv.Value.(string))
-			}
-		} else {
-			fmt.Printf("Package %s has a '%s' section", root["packageid"], v.Name)
-		}
-	}
+	x, _ := json.Marshal(message.KeyValues)
+	y, _ := json.Marshal(message.KeyValues.Convert())
 
 	// Update package
 	db, err := mysql.GetDB()

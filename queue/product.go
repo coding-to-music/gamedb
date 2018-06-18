@@ -20,11 +20,20 @@ type RabbitMessageProductKeyValues struct {
 type KeyValueMap map[string]KeyValueStruct
 
 type KeyValueStruct struct {
-	Name     string                          `json:"Name"`
-	Value    interface{}                     `json:"Value"`
-	Children []RabbitMessageProductKeyValues `json:"Children"`
+	Name     string      `json:"Name"`
+	Value    interface{} `json:"Value"`
+	Children KeyValueMap `json:"Children"`
 }
 
-func (n *KeyValueMap) Init() error {
-	return nil
+func (i RabbitMessageProductKeyValues) Convert() (o KeyValueStruct) {
+
+	o.Name = i.Name
+	o.Value = i.Value
+	o.Children = KeyValueMap{}
+
+	for _, v := range i.Children {
+		o.Children[v.Name] = v.Convert()
+	}
+
+	return o
 }
