@@ -17,18 +17,17 @@ type RabbitMessageProductKeyValues struct {
 	Children []RabbitMessageProductKeyValues `json:"Children"`
 }
 
-type KeyValueMap map[string]KeyValueStruct
-
-type KeyValueStruct struct {
-	Name     string      `json:"Name"`
-	Value    interface{} `json:"Value"`
-	Children KeyValueMap `json:"Children"`
-}
-
 func (i RabbitMessageProductKeyValues) Convert() (o KeyValueStruct) {
 
+	var valueString string
+	if i.Value == nil {
+		valueString = ""
+	} else {
+		valueString = i.Value.(string)
+	}
+
 	o.Name = i.Name
-	o.Value = i.Value
+	o.Value = valueString
 	o.Children = KeyValueMap{}
 
 	for _, v := range i.Children {
@@ -36,4 +35,20 @@ func (i RabbitMessageProductKeyValues) Convert() (o KeyValueStruct) {
 	}
 
 	return o
+}
+
+type KeyValueMap map[string]KeyValueStruct
+
+type KeyValueStruct struct {
+	Name     string      `json:"Name"`
+	Value    string      `json:"Value"`
+	Children KeyValueMap `json:"Children"`
+}
+
+func (m KeyValueMap) GetValueSlice() []string {
+	var ret []string
+	for _, v := range m {
+		ret = append(ret, v.Value)
+	}
+	return ret
 }
