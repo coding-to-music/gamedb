@@ -2,8 +2,7 @@ package queue
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -27,19 +26,29 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 		return false, false, err
 	}
 
-	x, _ := json.Marshal(message.KeyValues)
-	y, _ := json.Marshal(message.KeyValues.Convert())
-
 	// Update package
 	db, err := mysql.GetDB()
 	if err != nil {
 		logger.Error(err)
 	}
 
+	keyValueMap := message.KeyValues.Convert()
+
 	pack := new(mysql.Package)
 
-	// Save raw data
-	bytes, err := json.Marshal(message.KeyValues)
+	pack.Name = keyValueMap.Name
+	pack.BillingType = keyValueMap.Children["billingtype"].Value
+	pack.LicenseType = keyValueMap.Children["licensetype"].Value
+	pack.Status = keyValueMap.Children["status"].Value
+
+	// Package ID
+	pack.ID, err = strconv.Atoi(keyValueMap.Children["packageid"].Value)
+	if err != nil {
+		return false, false, err
+	}
+
+	// Raw PICS data
+	bytes, err := json.Marshal(keyValueMap)
 	if err != nil {
 		println(err.Error())
 	}
@@ -52,8 +61,6 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	for k, v := range flatMap {
 		println(k + ": " + v.(string))
 	}
-
-	println(" ")
 
 	return false, true, nil
 
