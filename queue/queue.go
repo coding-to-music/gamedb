@@ -145,18 +145,13 @@ func (s queue) consume() {
 				if err != nil {
 					fmt.Println(err.Error())
 				}
+
 				if ack {
 					msg.Ack(false)
 				} else if requeue {
-
-					go func() {
-						retrys := incRetrys(&msg)
-						time.Sleep(time.Second * 10 * time.Duration(retrys)) // Exponential backoff
-						msg.Nack(false, true)
-					}()
-
+					time.Sleep(time.Second * 1)
+					msg.Nack(false, true)
 				} else {
-
 					msg.Nack(false, false)
 				}
 
@@ -171,35 +166,4 @@ func (s queue) consume() {
 		conn.Close()
 		ch.Close()
 	}
-}
-
-func incRetrys(msg *amqp.Delivery) int16 {
-
-	var retrys int16
-
-	if msg.Headers == nil {
-
-		msg.Headers = amqp.Table{}
-		retrys = 1
-
-	} else {
-
-		retrysInterface, ok := msg.Headers[headerRetry]
-		if ok {
-
-			retrysInt, ok := retrysInterface.(int16)
-			if ok {
-				retrys = retrysInt + 1
-			} else {
-				retrys = 1
-			}
-
-		} else {
-			retrys = 1
-		}
-	}
-
-	msg.Headers[headerRetry] = retrys
-
-	return retrys
 }
