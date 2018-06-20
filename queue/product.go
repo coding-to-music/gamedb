@@ -45,10 +45,18 @@ type KeyValueStruct struct {
 	Children KeyValueMap `json:"Children"`
 }
 
-func (m KeyValueMap) GetValueSlice() []string {
+func (m KeyValueMap) GetValuesSlice() []string {
 	var ret []string
 	for _, v := range m {
 		ret = append(ret, v.Value)
+	}
+	return ret
+}
+
+func (m KeyValueMap) GetValuesMap() map[string]string {
+	var ret = map[string]string{}
+	for _, v := range m {
+		ret[v.Name] = v.Value
 	}
 	return ret
 }

@@ -74,7 +74,7 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 	//price := new(datastore.Price)
 	//price.CreatedAt = time.Now()
 	//price.AppID = app.ID
-	//price.Name = app.GetName()
+	//price.PICSName = app.GetName()
 	//price.PriceInitial = app.PriceInitial
 	//price.PriceFinal = app.PriceFinal
 	//price.Discount = app.PriceDiscount

@@ -3,6 +3,7 @@ package queue
 import (
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"time"
 
@@ -11,9 +12,10 @@ import (
 )
 
 const (
-	enableConsumers = true
-	Namespace       = "Steam_"
-	headerRetry     = "retry"
+	enableConsumers  = true
+	Namespace        = "Steam_"
+	UpdaterNamespace = Namespace + "Updater_"
+	headerTry        = "try"
 )
 
 const (
@@ -33,9 +35,9 @@ func init() {
 
 	qs := []queue{
 		{Name: QueueChanges, Callback: processChange},
-		//{Name: QueueAppsData, Callback: processApp},
+		//{PICSName: QueueAppsData, Callback: processApp},
 		{Name: QueuePackagesData, Callback: processPackage},
-		//{Name: QueuePlayers, Callback: processPlayer},
+		//{PICSName: QueuePlayers, Callback: processPlayer},
 	}
 
 	queues = make(map[string]queue)
@@ -53,11 +55,20 @@ func RunConsumers() {
 	}
 }
 
-// todo, use interface so we can set the payload time in here?
-func Produce(queue string, data []byte) (err error) {
+type ProduceOptions struct {
+	QueueConstant string
+	Data          []byte
+	Try           uint32
+}
 
-	if val, ok := queues[queue]; ok {
-		return val.produce(data)
+func Produce(options ProduceOptions) (err error) {
+
+	if options.Try == 0 {
+		options.Try = 1
+	}
+
+	if val, ok := queues[options.QueueConstant]; ok {
+		return val.produce(options)
 	}
 
 	return errors.New("no such queue")
@@ -91,7 +102,7 @@ func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.
 	return conn, ch, q, closeChannel, err
 }
 
-func (s queue) produce(data []byte) (err error) {
+func (s queue) produce(options ProduceOptions) (err error) {
 
 	conn, ch, q, _, err := s.getConnection()
 	defer conn.Close()
@@ -103,9 +114,9 @@ func (s queue) produce(data []byte) (err error) {
 	err = ch.Publish("", q.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
-		Body:         data,
+		Body:         options.Data,
 		Headers: amqp.Table{
-			headerRetry: int16(0),
+			headerTry: options.Try,
 		},
 	})
 	if err != nil {
@@ -149,8 +160,12 @@ func (s queue) consume() {
 				if ack {
 					msg.Ack(false)
 				} else if requeue {
-					time.Sleep(time.Second * 1)
-					msg.Nack(false, true)
+
+					go func() {
+						time.Sleep(time.Second * 1) // todo, backoff
+						msg.Nack(false, true)
+					}()
+
 				} else {
 					msg.Nack(false, false)
 				}
@@ -166,4 +181,9 @@ func (s queue) consume() {
 		conn.Close()
 		ch.Close()
 	}
+}
+
+func canclulateBackoffTime(try uint32) float64 {
+
+	return math.Pow(1.3, float64(try))
 }

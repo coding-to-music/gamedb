@@ -16,37 +16,37 @@ import (
 )
 
 type Package struct {
-	ID              int        `gorm:"not null;column:id;primary_key"`          //
-	CreatedAt       *time.Time `gorm:"not null;column:created_at"`              //
-	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`              //
-	Name            string     `gorm:"not null;column:name"`                    //
-	ImagePage       string     `gorm:"not null;column:image_page"`              //
-	ImageHeader     string     `gorm:"not null;column:image_header"`            //
-	ImageLogo       string     `gorm:"not null;column:image_logo"`              //
-	BillingType     int8       `gorm:"not null;column:billing_type"`            //
-	LicenseType     int8       `gorm:"not null;column:license_type"`            //
-	Status          int8       `gorm:"not null;column:status"`                  //
-	Apps            string     `gorm:"not null;column:apps;default:'[]'"`       // JSON
-	ChangeID        int        `gorm:"not null;column:change_id"`               //
-	Extended        string     `gorm:"not null;column:extended;default:'{}'"`   // JSON (TEXT)
-	PurchaseText    string     `gorm:"not null;column:purchase_text"`           //
-	PriceInitial    int        `gorm:"not null;column:price_initial"`           //
-	PriceFinal      int        `gorm:"not null;column:price_final"`             //
-	PriceDiscount   int        `gorm:"not null;column:price_discount"`          //
-	PriceIndividual int        `gorm:"not null;column:price_individual"`        //
-	Controller      string     `gorm:"not null;column:controller;default:'{}'"` // JSON (TEXT)
-	ComingSoon      bool       `gorm:"not null;column:coming_soon"`             //
-	ReleaseDate     string     `gorm:"not null;column:release_date"`            //
-	Platforms       string     `gorm:"not null;column:platforms;default:'[]'"`  // JSON
-	RawPICS         string     `gorm:"not null;column:raw_pics;default:'{}'"`   // JSON (TEXT)
+	ID              int        `gorm:"not null;column:id;primary_key"`      //
+	CreatedAt       *time.Time `gorm:"not null;column:created_at"`          //
+	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`          //
+	PICSName        string     `gorm:"not null;column:name"`                //
+	ImagePage       string     `gorm:"not null;column:image_page"`          //
+	ImageHeader     string     `gorm:"not null;column:image_header"`        //
+	ImageLogo       string `gorm:"not null;column:image_logo"`              //
+	PICSBillingType int8   `gorm:"not null;column:billing_type"`            //
+	PICSLicenseType int8   `gorm:"not null;column:license_type"`            //
+	PICSStatus      int8   `gorm:"not null;column:status"`                  //
+	Apps            string `gorm:"not null;column:apps;default:'[]'"`       // JSON
+	ChangeID        int    `gorm:"not null;column:change_id"`               //
+	PICSExtended    string `gorm:"not null;column:extended;default:'{}'"`   // JSON (TEXT)
+	PurchaseText    string `gorm:"not null;column:purchase_text"`           //
+	PriceInitial    int    `gorm:"not null;column:price_initial"`           //
+	PriceFinal      int    `gorm:"not null;column:price_final"`             //
+	PriceDiscount   int    `gorm:"not null;column:price_discount"`          //
+	PriceIndividual int    `gorm:"not null;column:price_individual"`        //
+	Controller      string `gorm:"not null;column:controller;default:'{}'"` // JSON (TEXT)
+	ComingSoon      bool   `gorm:"not null;column:coming_soon"`             //
+	ReleaseDate     string `gorm:"not null;column:release_date"`            //
+	Platforms       string `gorm:"not null;column:platforms;default:'[]'"`  // JSON
+	PICSRaw         string `gorm:"not null;column:raw_pics;default:'{}'"`   // JSON (TEXT)
 }
 
 func GetDefaultPackageJSON() Package {
 	return Package{
-		Apps:       "[]",
-		Extended:   "{}",
-		Controller: "{}",
-		Platforms:  "[]",
+		Apps:         "[]",
+		PICSExtended: "{}",
+		Controller:   "{}",
+		Platforms:    "[]",
 	}
 }
 
@@ -54,7 +54,7 @@ func (pack Package) GetPath() string {
 
 	s := "/packages/" + strconv.Itoa(pack.ID)
 
-	if pack.Name != "" {
+	if pack.PICSName != "" {
 		s = s + "/" + slug.Make(pack.GetName())
 	}
 
@@ -63,11 +63,11 @@ func (pack Package) GetPath() string {
 
 func (pack Package) GetName() (name string) {
 
-	if pack.Name == "" {
-		pack.Name = "Package " + strconv.Itoa(pack.ID)
+	if pack.PICSName == "" {
+		pack.PICSName = "Package " + strconv.Itoa(pack.ID)
 	}
 
-	return pack.Name
+	return pack.PICSName
 }
 
 func (pack Package) GetDefaultAvatar() string {
@@ -92,9 +92,9 @@ func (pack Package) GetReleaseDateUnix() int64 {
 	return helpers.GetReleaseDateUnix(pack.ReleaseDate)
 }
 
-func (pack Package) GetBillingType() (string) {
+func (pack Package) GetBillingType() string {
 
-	switch pack.BillingType {
+	switch pack.PICSBillingType {
 	case 0:
 		return "No Cost"
 	case 1:
@@ -132,9 +132,9 @@ func (pack Package) GetBillingType() (string) {
 	}
 }
 
-func (pack Package) GetLicenseType() (string) {
+func (pack Package) GetLicenseType() string {
 
-	switch pack.LicenseType {
+	switch pack.PICSLicenseType {
 	case 0:
 		return "No License"
 	case 1:
@@ -152,9 +152,9 @@ func (pack Package) GetLicenseType() (string) {
 	}
 }
 
-func (pack Package) GetStatus() (string) {
+func (pack Package) GetStatus() string {
 
-	switch pack.Status {
+	switch pack.PICSStatus {
 	case 0:
 		return "Available"
 	case 2:
@@ -164,7 +164,7 @@ func (pack Package) GetStatus() (string) {
 	}
 }
 
-func (pack Package) GetComingSoon() (string) {
+func (pack Package) GetComingSoon() string {
 
 	switch pack.ComingSoon {
 	case true:
@@ -209,7 +209,7 @@ func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
 
 	extended = make(map[string]interface{})
 
-	bytes := []byte(pack.Extended)
+	bytes := []byte(pack.PICSExtended)
 	if err := json.Unmarshal(bytes, &extended); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			logger.Info(err.Error() + " - " + string(bytes))
@@ -449,7 +449,6 @@ func (pack *Package) Update() (errs []error) {
 		}
 
 		//
-		pack.Name = response.Data.Name
 		pack.ImageHeader = response.Data.HeaderImage
 		pack.ImageLogo = response.Data.SmallLogo
 		pack.ImageHeader = response.Data.HeaderImage
@@ -471,8 +470,8 @@ func (pack *Package) Update() (errs []error) {
 		pack.Apps = "[]"
 	}
 
-	if pack.Extended == "" || pack.Extended == "null" {
-		pack.Extended = "{}"
+	if pack.PICSExtended == "" || pack.PICSExtended == "null" {
+		pack.PICSExtended = "{}"
 	}
 
 	if pack.Controller == "" || pack.Controller == "null" {

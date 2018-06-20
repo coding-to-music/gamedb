@@ -36,14 +36,23 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	pack := new(mysql.Package)
 
-	pack.Name = keyValueMap.Name
-	pack.BillingType = keyValueMap.Children["billingtype"].Value
-	pack.LicenseType = keyValueMap.Children["licensetype"].Value
-	pack.Status = keyValueMap.Children["status"].Value
+	pack.PICSName = keyValueMap.Name
+
+	var i int64
+
+	i, err = strconv.ParseInt(keyValueMap.Children["billingtype"].Value, 10, 8)
+	pack.PICSBillingType = int8(i)
+
+	i, err = strconv.ParseInt(keyValueMap.Children["licensetype"].Value, 10, 8)
+	pack.PICSLicenseType = int8(i)
+
+	i, err = strconv.ParseInt(keyValueMap.Children["status"].Value, 10, 8)
+	pack.PICSStatus = int8(i)
 
 	// Package ID
 	pack.ID, err = strconv.Atoi(keyValueMap.Children["packageid"].Value)
 	if err != nil {
+		return false, true, err
 		return false, false, err
 	}
 
@@ -52,23 +61,21 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	if err != nil {
 		println(err.Error())
 	}
-	pack.RawPICS = string(bytes)
+	pack.PICSRaw = string(bytes)
 
-	flatMap := map[string]interface{}{}
-
-	//loop(flatMap, "", message.KeyValues, true)
-
-	for k, v := range flatMap {
-		println(k + ": " + v.(string))
+	bytes, err = json.Marshal(keyValueMap.Children["extended"])
+	if err != nil {
+		println(err.Error())
 	}
+	pack.PICSExtended = string(bytes)
 
 	return false, true, nil
 
-	//db.Attrs(mysql.GetDefaultPackageJSON()).FirstOrCreate(pack, mysql.Package{ID: message.PackageID})
-	//if db.Error != nil {
-	//	logger.Error(db.Error)
-	//}
-	//
+	db.Attrs(mysql.GetDefaultPackageJSON()).FirstOrCreate(pack, mysql.Package{ID: pack.ID})
+	if db.Error != nil {
+		logger.Error(db.Error)
+	}
+
 	//if message.ChangeID != 0 {
 	//	pack.ChangeID = message.ChangeID
 	//}
