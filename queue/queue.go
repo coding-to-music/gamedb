@@ -162,7 +162,14 @@ func (s queue) consume() {
 				} else if requeue {
 
 					go func() {
-						time.Sleep(time.Second * 1) // todo, backoff
+
+						try := getTry(msg)
+
+						backoffSleep(msg)
+						Produce(ProduceOptions{
+
+						})
+
 						msg.Nack(false, true)
 					}()
 
@@ -183,7 +190,34 @@ func (s queue) consume() {
 	}
 }
 
-func canclulateBackoffTime(try uint32) float64 {
+func getTry(msg *amqp.Delivery) (ret int) {
 
-	return math.Pow(1.3, float64(try))
+	if msg.Headers == nil {
+		msg.Headers = amqp.Table{
+			headerTry: 1,
+		}
+	}
+
+	if val, ok := msg.Headers[headerTry]; ok {
+
+		if ok {
+			ret = val.(int)
+		} else {
+			msg.Headers[headerTry] = 1
+			ret = 1
+		}
+	}
+
+	return ret
+}
+
+func backoffSleep(msg amqp.Delivery) {
+
+	var min float64 = 1
+	var max float64 = 600
+
+	var seconds = math.Pow(1.3, float64(try))
+	var minmaxed = math.Min(min+seconds, max)
+
+	time.Sleep(time.Second * time.Duration(math.Round(minmaxed)))
 }
