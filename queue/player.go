@@ -51,6 +51,7 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 }
 
 type RabbitMessagePlayer struct {
+	Retry    RabbitMessageDelay
 	Time     time.Time
 	PlayerID int64
 }

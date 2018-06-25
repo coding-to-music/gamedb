@@ -2,10 +2,7 @@ package queue
 
 import (
 	"errors"
-	"fmt"
-	"math"
 	"os"
-	"time"
 
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/streadway/amqp"
@@ -25,6 +22,7 @@ const (
 	QueuePackagesData = "Updater_Packages_Data"
 	QueueChanges      = "Updater_Changes"
 	QueuePlayers      = "Players"
+	QueueDelays       = "Delays"
 )
 
 var (
@@ -38,6 +36,7 @@ func init() {
 		//{PICSName: QueueAppsData, Callback: processApp},
 		{Name: QueuePackagesData, Callback: processPackage},
 		//{PICSName: QueuePlayers, Callback: processPlayer},
+		{Name: QueueDelays, Callback: processDelay},
 	}
 
 	queues = make(map[string]queue)
@@ -61,14 +60,10 @@ type ProduceOptions struct {
 	Try           uint32
 }
 
-func Produce(options ProduceOptions) (err error) {
+func Produce(queue string, data []byte) (err error) {
 
-	if options.Try == 0 {
-		options.Try = 1
-	}
-
-	if val, ok := queues[options.QueueConstant]; ok {
-		return val.produce(options)
+	if val, ok := queues[queue]; ok {
+		return val.produce()
 	}
 
 	return errors.New("no such queue")
@@ -102,7 +97,7 @@ func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.
 	return conn, ch, q, closeChannel, err
 }
 
-func (s queue) produce(options ProduceOptions) (err error) {
+func (s queue) produce(data []byte) (err error) {
 
 	conn, ch, q, _, err := s.getConnection()
 	defer conn.Close()
@@ -114,10 +109,7 @@ func (s queue) produce(options ProduceOptions) (err error) {
 	err = ch.Publish("", q.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
-		Body:         options.Data,
-		Headers: amqp.Table{
-			headerTry: options.Try,
-		},
+		Body:         data,
 	})
 	if err != nil {
 		logger.Error(err)
@@ -154,30 +146,22 @@ func (s queue) consume() {
 
 				ack, requeue, err := s.Callback(msg)
 				if err != nil {
-					fmt.Println(err.Error())
+					logger.Error(err)
 				}
 
 				if ack {
 					msg.Ack(false)
-				} else if requeue {
-
-					go func() {
-
-						try := getTry(msg)
-
-						backoffSleep(msg)
-						Produce(ProduceOptions{
-
-						})
-
-						msg.Nack(false, true)
-					}()
-
 				} else {
+
+					if requeue {
+						requeueMessage(msg, q.Name)
+						if err != nil {
+							logger.Error(err)
+						}
+					}
+
 					msg.Nack(false, false)
 				}
-
-				time.Sleep(time.Second * 0)
 			}
 
 			if breakFor {
@@ -188,36 +172,4 @@ func (s queue) consume() {
 		conn.Close()
 		ch.Close()
 	}
-}
-
-func getTry(msg *amqp.Delivery) (ret int) {
-
-	if msg.Headers == nil {
-		msg.Headers = amqp.Table{
-			headerTry: 1,
-		}
-	}
-
-	if val, ok := msg.Headers[headerTry]; ok {
-
-		if ok {
-			ret = val.(int)
-		} else {
-			msg.Headers[headerTry] = 1
-			ret = 1
-		}
-	}
-
-	return ret
-}
-
-func backoffSleep(msg amqp.Delivery) {
-
-	var min float64 = 1
-	var max float64 = 600
-
-	var seconds = math.Pow(1.3, float64(try))
-	var minmaxed = math.Min(min+seconds, max)
-
-	time.Sleep(time.Second * time.Duration(math.Round(minmaxed)))
 }

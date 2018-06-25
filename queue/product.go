@@ -1,6 +1,7 @@
 package queue
 
 type RabbitMessageProduct struct {
+	Retry        RabbitMessageDelay
 	ID           int                           `json:"ID"`
 	ChangeNumber int                           `json:"ChangeNumber"`
 	MissingToken bool                          `json:"MissingToken"`

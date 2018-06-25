@@ -137,6 +137,7 @@ func processChange(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 }
 
 type RabbitMessageChanges struct {
+	Retry               RabbitMessageDelay
 	LastChangeNumber    int  `json:"LastChangeNumber"`
 	CurrentChangeNumber int  `json:"CurrentChangeNumber"`
 	RequiresFullUpdate  bool `json:"RequiresFullUpdate"`
