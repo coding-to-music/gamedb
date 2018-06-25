@@ -37,6 +37,9 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	pack := new(mysql.Package)
 
 	pack.PICSName = keyValueMap.Name
+	pack.PICSChangeID = message.ChangeNumber
+
+	pack.PICSAppIDs = keyValueMap.Children["appids"].GetInts()
 
 	var i int64
 
@@ -49,14 +52,12 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	i, err = strconv.ParseInt(keyValueMap.Children["status"].Value, 10, 8)
 	pack.PICSStatus = int8(i)
 
-	// Package ID
 	pack.ID, err = strconv.Atoi(keyValueMap.Children["packageid"].Value)
 	if err != nil {
 		return false, true, err
 		return false, false, err
 	}
 
-	// Raw PICS data
 	bytes, err := json.Marshal(keyValueMap)
 	if err != nil {
 		println(err.Error())
@@ -76,8 +77,8 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 		logger.Error(db.Error)
 	}
 
-	//if message.ChangeID != 0 {
-	//	pack.ChangeID = message.ChangeID
+	//if message.PICSChangeID != 0 {
+	//	pack.PICSChangeID = message.PICSChangeID
 	//}
 
 	priceBeforeFill := pack.PriceFinal

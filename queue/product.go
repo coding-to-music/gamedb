@@ -1,5 +1,11 @@
 package queue
 
+import (
+	"strconv"
+
+	"github.com/steam-authority/steam-authority/logger"
+)
+
 type RabbitMessageProduct struct {
 	Retry        RabbitMessageDelay
 	ID           int                           `json:"ID"`
@@ -46,17 +52,29 @@ type KeyValueStruct struct {
 	Children KeyValueMap `json:"Children"`
 }
 
-func (m KeyValueMap) GetValuesSlice() []string {
+func (m KeyValueStruct) GetStrings() []string {
 	var ret []string
-	for _, v := range m {
+	for _, v := range m.Children {
 		ret = append(ret, v.Value)
 	}
 	return ret
 }
 
-func (m KeyValueMap) GetValuesMap() map[string]string {
+func (m KeyValueStruct) GetInts() []int {
+	var ret []int
+	for _, v := range m.GetStrings() {
+		i, err := strconv.Atoi(v)
+		if err != nil {
+			logger.Error(err)
+		}
+		ret = append(ret, i)
+	}
+	return ret
+}
+
+func (m KeyValueStruct) GetStringsMap() map[string]string {
 	var ret = map[string]string{}
-	for _, v := range m {
+	for _, v := range m.Children {
 		ret[v.Name] = v.Value
 	}
 	return ret

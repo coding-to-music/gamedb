@@ -37,8 +37,8 @@ func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
 	//	logger.Error(db.Error)
 	//}
 	//
-	//if message.ChangeID != 0 {
-	//	app.ChangeNumber = message.ChangeID
+	//if message.PICSChangeID != 0 {
+	//	app.ChangeNumber = message.PICSChangeID
 	//}
 	//
 	//priceBeforeFill := app.PriceFinal

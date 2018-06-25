@@ -16,19 +16,23 @@ import (
 )
 
 type Package struct {
-	ID              int        `gorm:"not null;column:id;primary_key"`      //
-	CreatedAt       *time.Time `gorm:"not null;column:created_at"`          //
-	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`          //
-	PICSName        string     `gorm:"not null;column:name"`                //
-	ImagePage       string     `gorm:"not null;column:image_page"`          //
-	ImageHeader     string     `gorm:"not null;column:image_header"`        //
+	ID        int        `gorm:"not null;column:id;primary_key"` //
+	CreatedAt *time.Time `gorm:"not null;column:created_at"`     //
+	UpdatedAt *time.Time `gorm:"not null;column:updated_at"`     //
+
+	PICSName        string `gorm:"not null;column:name"`                   //
+	PICSChangeID    int    `gorm:"not null;column:change_id"`              //
+	PICSBillingType int8   `gorm:"not null;column:billing_type"`           //
+	PICSLicenseType int8   `gorm:"not null;column:license_type"`           //
+	PICSStatus      int8   `gorm:"not null;column:status"`                 //
+	PICSExtended    string `gorm:"not null;column:extended;default:'{}'"`  // JSON (TEXT)
+	PICSAppIDs      string `gorm:"not null;column:app_ids;default:'[]'"`   // JSON
+	PICSDepotIDs    string `gorm:"not null;column:depot_ids;default:'[]'"` // JSON
+	PICSRaw         string `gorm:"not null;column:raw_pics;default:'{}'"`  // JSON (TEXT)
+
+	ImagePage       string `gorm:"not null;column:image_page"`              //
+	ImageHeader     string `gorm:"not null;column:image_header"`            //
 	ImageLogo       string `gorm:"not null;column:image_logo"`              //
-	PICSBillingType int8   `gorm:"not null;column:billing_type"`            //
-	PICSLicenseType int8   `gorm:"not null;column:license_type"`            //
-	PICSStatus      int8   `gorm:"not null;column:status"`                  //
-	Apps            string `gorm:"not null;column:apps;default:'[]'"`       // JSON
-	ChangeID        int    `gorm:"not null;column:change_id"`               //
-	PICSExtended    string `gorm:"not null;column:extended;default:'{}'"`   // JSON (TEXT)
 	PurchaseText    string `gorm:"not null;column:purchase_text"`           //
 	PriceInitial    int    `gorm:"not null;column:price_initial"`           //
 	PriceFinal      int    `gorm:"not null;column:price_final"`             //
@@ -38,12 +42,11 @@ type Package struct {
 	ComingSoon      bool   `gorm:"not null;column:coming_soon"`             //
 	ReleaseDate     string `gorm:"not null;column:release_date"`            //
 	Platforms       string `gorm:"not null;column:platforms;default:'[]'"`  // JSON
-	PICSRaw         string `gorm:"not null;column:raw_pics;default:'{}'"`   // JSON (TEXT)
 }
 
 func GetDefaultPackageJSON() Package {
 	return Package{
-		Apps:         "[]",
+		PICSAppIDs:   "[]",
 		PICSExtended: "{}",
 		Controller:   "{}",
 		Platforms:    "[]",
@@ -178,7 +181,7 @@ func (pack Package) GetComingSoon() string {
 
 func (pack Package) GetApps() (apps []int, err error) {
 
-	bytes := []byte(pack.Apps)
+	bytes := []byte(pack.PICSAppIDs)
 	if err := json.Unmarshal(bytes, &apps); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			logger.Info(err.Error() + " - " + string(bytes))
@@ -452,7 +455,7 @@ func (pack *Package) Update() (errs []error) {
 		pack.ImageHeader = response.Data.HeaderImage
 		pack.ImageLogo = response.Data.SmallLogo
 		pack.ImageHeader = response.Data.HeaderImage
-		// pack.Apps = string(appsString) // Can get from PICS
+		// pack.PICSAppIDs = string(appsString) // Can get from PICS
 		pack.PriceInitial = response.Data.Price.Initial
 		pack.PriceFinal = response.Data.Price.Final
 		pack.PriceDiscount = response.Data.Price.DiscountPercent
@@ -466,8 +469,8 @@ func (pack *Package) Update() (errs []error) {
 	}(pack)
 
 	// Default JSON values
-	if pack.Apps == "" || pack.Apps == "null" {
-		pack.Apps = "[]"
+	if pack.PICSAppIDs == "" || pack.PICSAppIDs == "null" {
+		pack.PICSAppIDs = "[]"
 	}
 
 	if pack.PICSExtended == "" || pack.PICSExtended == "null" {
