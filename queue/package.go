@@ -53,7 +53,7 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 				i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
 				pack.PICSStatus = int8(i64)
 			default:
-				logger.Info(v.Name + " field in PICS ignored")
+				logger.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeID) + ")")
 			}
 
 		} else {
