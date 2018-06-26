@@ -26,11 +26,12 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 		return false, false, err
 	}
 
-	// just do it all manually
+	// Create mysql row data
 	pack := new(mysql.Package)
 
 	pack.PICSChangeID = message.ChangeNumber
 	pack.PICSName = message.KeyValues.Name
+	pack.PICSRaw = string(msg.Body)
 
 	for _, v := range message.KeyValues.Children {
 
@@ -109,53 +110,15 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	// Update package
 	db, err := mysql.GetDB()
 	if err != nil {
-		logger.Error(err)
-	}
-
-	keyValueMap := message.KeyValues.Convert()
-
-	pack := new(mysql.Package)
-
-	pack.PICSName = keyValueMap.Name
-	pack.PICSChangeID = message.ChangeNumber
-
-	pack.PICSAppIDs = keyValueMap.Children["appids"].GetInts()
-
-	var i int64
-
-	i, err = strconv.ParseInt(keyValueMap.Children["billingtype"].Value, 10, 8)
-	pack.PICSBillingType = int8(i)
-
-	i, err = strconv.ParseInt(keyValueMap.Children["licensetype"].Value, 10, 8)
-	pack.PICSLicenseType = int8(i)
-
-	i, err = strconv.ParseInt(keyValueMap.Children["status"].Value, 10, 8)
-	pack.PICSStatus = int8(i)
-
-	pack.ID, err = strconv.Atoi(keyValueMap.Children["packageid"].Value)
-	if err != nil {
 		return false, true, err
-		return false, false, err
 	}
-
-	bytes, err := json.Marshal(keyValueMap)
-	if err != nil {
-		println(err.Error())
-	}
-	pack.PICSRaw = string(bytes)
-
-	bytes, err = json.Marshal(keyValueMap.Children["extended"])
-	if err != nil {
-		println(err.Error())
-	}
-	pack.PICSExtended = string(bytes)
-
-	return false, true, nil
 
 	db.Attrs(mysql.GetDefaultPackageJSON()).FirstOrCreate(pack, mysql.Package{ID: pack.ID})
 	if db.Error != nil {
 		logger.Error(db.Error)
 	}
+
+	return false, true, err
 
 	//if message.PICSChangeID != 0 {
 	//	pack.PICSChangeID = message.PICSChangeID
