@@ -26,6 +26,84 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 		return false, false, err
 	}
 
+	// just do it all manually
+	pack := new(mysql.Package)
+
+	pack.PICSChangeID = message.ChangeNumber
+	pack.PICSName = message.KeyValues.Name
+
+	for _, v := range message.KeyValues.Children {
+
+		var err error
+		var i int
+		var i64 int64
+
+		if v.Value != nil {
+
+			switch v.Name {
+			case "billingtype":
+				i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+				pack.PICSBillingType = int8(i64)
+			case "licensetype":
+				i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+				pack.PICSLicenseType = int8(i64)
+			case "status":
+				i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+				pack.PICSStatus = int8(i64)
+			default:
+				logger.Info(v.Name + " field in PICS ignored")
+			}
+
+		} else {
+
+			switch v.Name {
+			case "appids":
+
+				var appIDs []int
+				for _, vv := range v.Children {
+					i, err = strconv.Atoi(vv.Value.(string))
+					appIDs = append(appIDs, i)
+				}
+				pack.SetAppIDs(appIDs)
+
+			case "depotids":
+
+				var depotIDs []int
+				for _, vv := range v.Children {
+					i, err = strconv.Atoi(vv.Value.(string))
+					depotIDs = append(depotIDs, i)
+				}
+				pack.SetDepotIDs(depotIDs)
+
+			case "appitems":
+
+				var appItems = map[string]string{}
+				for _, vv := range v.Children {
+					if len(vv.Children) == 1 {
+						appItems[vv.Name] = vv.Children[0].Value.(string)
+					}
+				}
+				pack.SetAppItems(appItems)
+
+			case "extended":
+
+				var extended = mysql.Extended{}
+				for _, vv := range v.Children {
+					extended[vv.Name] = vv.Value.(string)
+				}
+				pack.SetExtended(extended)
+
+			default:
+				logger.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeID) + ")")
+			}
+
+		}
+
+		if err != nil {
+			logger.Error(err)
+		}
+	}
+
 	// Update package
 	db, err := mysql.GetDB()
 	if err != nil {

@@ -27,6 +27,7 @@ type Package struct {
 	PICSStatus      int8   `gorm:"not null;column:status"`                 //
 	PICSExtended    string `gorm:"not null;column:extended;default:'{}'"`  // JSON (TEXT)
 	PICSAppIDs      string `gorm:"not null;column:app_ids;default:'[]'"`   // JSON
+	PICSAppItems    string `gorm:"not null;column:app_items;default:'{}'"` // JSON (TEXT)
 	PICSDepotIDs    string `gorm:"not null;column:depot_ids;default:'[]'"` // JSON
 	PICSRaw         string `gorm:"not null;column:raw_pics;default:'{}'"`  // JSON (TEXT)
 
@@ -179,7 +180,7 @@ func (pack Package) GetComingSoon() string {
 	}
 }
 
-func (pack Package) GetApps() (apps []int, err error) {
+func (pack Package) GetAppIDs() (apps []int, err error) {
 
 	bytes := []byte(pack.PICSAppIDs)
 	if err := json.Unmarshal(bytes, &apps); err != nil {
@@ -190,6 +191,27 @@ func (pack Package) GetApps() (apps []int, err error) {
 	}
 
 	return apps, nil
+}
+
+func (pack *Package) SetAppIDs(apps []int) (err error) {
+
+	bytes, err := json.Marshal(apps)
+	pack.PICSAppIDs = string(bytes)
+	return err
+}
+
+func (pack *Package) SetDepotIDs(apps []int) (err error) {
+
+	bytes, err := json.Marshal(apps)
+	pack.PICSDepotIDs = string(bytes)
+	return err
+}
+
+func (pack *Package) SetAppItems(items map[string]string) (err error) {
+
+	bytes, err := json.Marshal(items)
+	pack.PICSAppItems = string(bytes)
+	return err
 }
 
 func (pack Package) GetPriceInitial() float64 {
@@ -206,6 +228,15 @@ func (pack Package) GetPriceDiscount() float64 {
 
 func (pack Package) GetPriceIndividual() float64 {
 	return helpers.CentsInt(pack.PriceInitial)
+}
+
+type Extended map[string]string
+
+func (pack *Package) SetExtended(extended Extended) (err error) {
+
+	bytes, err := json.Marshal(extended)
+	pack.PICSExtended = string(bytes)
+	return err
 }
 
 func (pack Package) GetExtended() (extended map[string]interface{}, err error) {

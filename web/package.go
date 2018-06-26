@@ -51,7 +51,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get apps
-		appIDs, err := pack.GetApps()
+		appIDs, err := pack.GetAppIDs()
 		logger.Error(err)
 
 		apps, err = mysql.GetApps(appIDs, []string{"id", "icon", "type", "platforms", "dlc"})

@@ -11,6 +11,15 @@ func SliceHasInt(slice []int, i int) bool {
 	return false
 }
 
+func SliceHasString(slice []string, i string) bool {
+	for _, v := range slice {
+		if v == i {
+			return true
+		}
+	}
+	return false
+}
+
 func Unique(arg []int) []int {
 
 	tempMap := make(map[int]uint8)
