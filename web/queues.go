@@ -108,7 +108,6 @@ func GetQeueus() (resp []Queue, err error) {
 	var filtered []Queue
 	for _, v := range resp {
 		if strings.HasPrefix(v.Name, queue.Namespace) {
-			v.Name = strings.Replace(v.Name, queue.UpdaterNamespace, "", 1)
 			v.Name = strings.Replace(v.Name, queue.Namespace, "", 1)
 			filtered = append(filtered, v)
 		}

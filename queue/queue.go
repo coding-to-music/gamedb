@@ -9,10 +9,9 @@ import (
 )
 
 const (
-	enableConsumers  = true
-	Namespace        = "Steam_"
-	UpdaterNamespace = Namespace + "Updater_"
-	headerTry        = "try"
+	enableConsumers = true
+	Namespace       = "Steam_"
+	headerTry       = "try"
 )
 
 const (
@@ -63,10 +62,10 @@ type ProduceOptions struct {
 func Produce(queue string, data []byte) (err error) {
 
 	if val, ok := queues[queue]; ok {
-		return val.produce()
+		return val.produce(data)
 	}
 
-	return errors.New("no such queue")
+	return errors.New("no such queue: " + queue)
 }
 
 type queue struct {
