@@ -29,6 +29,7 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	// Create mysql row data
 	pack := new(mysql.Package)
 
+	pack.ID = message.ID
 	pack.PICSChangeID = message.ChangeNumber
 	pack.PICSName = message.KeyValues.Name
 	pack.PICSRaw = string(msg.Body)
@@ -42,8 +43,6 @@ func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 		if v.Value != nil {
 
 			switch v.Name {
-			case "packageid":
-				pack.ID, err = strconv.Atoi(v.Value.(string))
 			case "billingtype":
 				i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
 				pack.PICSBillingType = int8(i64)
