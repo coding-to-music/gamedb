@@ -88,7 +88,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 					PlayerID: v.SteamID,
 					Time:     time.Now(),
 				})
-				queue.Produce(queue.ProduceOptions{queue.QueuePlayers, p, 1})
+				queue.Produce(queue.QueuePlayers, p)
 			}
 
 			player.FriendsAddedAt = time.Now()

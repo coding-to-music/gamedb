@@ -1,17 +1,17 @@
 package queue
 
 import (
+	"encoding/json"
 	"errors"
 	"os"
+	"time"
 
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/streadway/amqp"
 )
 
 const (
-	enableConsumers = true
-	Namespace       = "Steam_"
-	headerTry       = "try"
+	Namespace = "Steam_"
 )
 
 const (
@@ -46,17 +46,9 @@ func init() {
 
 func RunConsumers() {
 
-	if enableConsumers {
-		for _, v := range queues {
-			go v.consume()
-		}
+	for _, v := range queues {
+		go v.consume()
 	}
-}
-
-type ProduceOptions struct {
-	QueueConstant string
-	Data          []byte
-	Try           uint32
 }
 
 func Produce(queue string, data []byte) (err error) {
@@ -153,7 +145,7 @@ func (s queue) consume() {
 				} else {
 
 					if requeue {
-						requeueMessage(msg, q.Name)
+						err = s.requeueMessage(msg)
 						if err != nil {
 							logger.Error(err)
 						}
@@ -171,4 +163,23 @@ func (s queue) consume() {
 		conn.Close()
 		ch.Close()
 	}
+}
+
+func (s queue) requeueMessage(msg amqp.Delivery) error {
+
+	delayMessage := RabbitMessageDelay{}
+	delayMessage.Attempt = 1
+	delayMessage.StartTime = time.Now()
+	delayMessage.SetEndTime()
+	delayMessage.Queue = s.Name
+	delayMessage.Message = string(msg.Body)
+
+	data, err := json.Marshal(delayMessage)
+	if err != nil {
+		return err
+	}
+
+	Produce(QueueDelays, data)
+
+	return nil
 }

@@ -1,9 +1,7 @@
 package queue
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
 	"math"
 	"time"
 
@@ -14,98 +12,54 @@ func processDelay(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	time.Sleep(time.Second) // Minimum 1 second wait
 
-	queue := getQueueFromBytes(msg.Body)
+	delayMessage := RabbitMessageDelay{}
 
-	retrySTuff, err := getRetryStuffFromMessageBytes(queue, msg.Body)
+	err = json.Unmarshal(msg.Body, &delayMessage)
 	if err != nil {
 		return false, true, err
 		return false, false, err
 	}
 
-	if retrySTuff.EndTime.Unix() > time.Now().Unix() {
+	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
 
 		// Re-delay
+		delayMessage.IncrementAttempts()
+
+		bytes, err := json.Marshal(delayMessage)
+		if err != nil {
+			return false, true, err
+			return false, false, err
+		}
+
+		// todo, handle returns from Produce and processDelay
+		Produce(delayMessage.Queue, bytes)
 
 	} else {
 
 		// Add to original queue
-
+		Produce(delayMessage.Queue, []byte(delayMessage.Message))
 	}
-
-	Produce(ProduceOptions{QueueApps, ), 1})
-}
-
-func getQueueFromBytes(data []byte) (string) {
-
-	var localStr string
-	err := json.NewDecoder(bytes.NewReader(data)).Decode(&struct {
-		String *string `json:"jsonParam"`
-	}{&localStr})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return localStr
-}
-
-func getRetryStuffFromMessageBytes(queue string, bytes []byte) (stuff RabbitMessageDelay, err error) {
-
-	switch queue {
-	case QueueAppsData, QueuePackagesData:
-		obj := RabbitMessageProduct{}
-		err = json.Unmarshal(bytes, &obj)
-		return obj.Retry, err
-	case QueueChanges:
-		obj := RabbitMessageChanges{}
-		err = json.Unmarshal(bytes, &obj)
-		return obj.Retry, err
-	case QueuePlayers:
-		obj := RabbitMessagePlayer{}
-		err = json.Unmarshal(bytes, &obj)
-		return obj.Retry, err
-	case QueueDelays:
-		obj := RabbitMessageDelay{}
-		err = json.Unmarshal(bytes, &obj)
-		return obj, err
-	}
-
-	return stuff, errors.New("unrecognised queue")
-}
-
-func requeueMessage(msg amqp.Delivery, queue string) error {
-
-	delayMessage := RabbitMessageDelay{}
-	delayMessage.Try = 1
-	delayMessage.StartTime = time.Now()
-	delayMessage.SetEndFromTrys()
-	delayMessage.Queue = queue
-
-	data, err := json.Marshal(delayMessage)
-	if err != nil {
-		return err
-	}
-
-	Produce(queue, data)
 }
 
 type RabbitMessageDelay struct {
-	Try       int
+	Attempt   int
 	StartTime time.Time
 	EndTime   time.Time
-	Queue     string
+	Queue     string // The queue it came from
+	Message   string
 }
 
-func (d *RabbitMessageDelay) IncrementTrys() {
-	d.Try++
-	d.SetEndFromTrys()
+func (d *RabbitMessageDelay) IncrementAttempts() {
+	d.Attempt++
+	d.SetEndTime()
 }
 
-func (d *RabbitMessageDelay) SetEndFromTrys() {
+func (d *RabbitMessageDelay) SetEndTime() {
 
 	var min float64 = 1
 	var max float64 = 600
 
-	var seconds = math.Pow(1.3, float64(d.Try))
+	var seconds = math.Pow(1.3, float64(d.Attempt))
 	var minmaxed = math.Min(min+seconds, max)
 	var rounded = math.Round(minmaxed)
 

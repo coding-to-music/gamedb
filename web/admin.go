@@ -99,7 +99,7 @@ func adminApps() {
 	}
 
 	for _, v := range apps.Apps {
-		queue.Produce(queue.ProduceOptions{queue.QueueApps, []byte(strconv.Itoa(v.AppID)), 1})
+		queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.AppID)))
 	}
 
 	//
@@ -258,19 +258,19 @@ func adminQueues(r *http.Request) {
 			PlayerID: playerID,
 			Time:     time.Now(),
 		})
-		queue.Produce(queue.ProduceOptions{queue.QueuePlayers, bytes, 1})
+		queue.Produce(queue.QueuePlayers, bytes)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
 		logger.Info("App: " + val)
-		queue.Produce(queue.ProduceOptions{queue.QueueApps, []byte(val), 1})
+		queue.Produce(queue.QueueApps, []byte(val))
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
 		logger.Info("Package: " + val)
-		queue.Produce(queue.ProduceOptions{queue.QueuePackages, []byte(val), 1})
+		queue.Produce(queue.QueuePackages, []byte(val))
 	}
 }
 
