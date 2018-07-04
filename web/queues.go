@@ -11,7 +11,6 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/queue"
 )
 
 func QueuesHandler(w http.ResponseWriter, r *http.Request) {
@@ -107,8 +106,8 @@ func GetQeueus() (resp []Queue, err error) {
 
 	var filtered []Queue
 	for _, v := range resp {
-		if strings.HasPrefix(v.Name, queue.Namespace) {
-			v.Name = strings.Replace(v.Name, queue.Namespace, "", 1)
+		if strings.HasPrefix(v.Name, "Steam_") {
+			v.Name = strings.Replace(v.Name, "Steam_", "", 1)
 			filtered = append(filtered, v)
 		}
 	}

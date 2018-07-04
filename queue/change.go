@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
@@ -14,6 +15,8 @@ import (
 )
 
 func processChange(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+
+	fmt.Println("Processing change message")
 
 	// Get change
 	message := new(RabbitMessageChanges)

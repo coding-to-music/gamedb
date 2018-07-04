@@ -258,7 +258,7 @@ func adminQueues(r *http.Request) {
 			PlayerID: playerID,
 			Time:     time.Now(),
 		})
-		queue.Produce(queue.QueuePlayers, bytes)
+		queue.Produce(queue.QueueProfiles, bytes)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {

@@ -2,7 +2,10 @@ package queue
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/streadway/amqp"
@@ -10,35 +13,50 @@ import (
 
 func processDelay(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
-	time.Sleep(time.Second) // Minimum 1 second wait
+	//time.Sleep(time.Second) // Minimum 1 second wait
+
+	if len(msg.Body) == 0 {
+		return false, false, errors.New("empty msg")//todo, make global var
+	}
 
 	delayMessage := RabbitMessageDelay{}
 
 	err = json.Unmarshal(msg.Body, &delayMessage)
 	if err != nil {
-		return false, true, err
 		return false, false, err
+	}
+
+	if len(delayMessage.Message) == 0 {
+		return false, false, errors.New("empty msg")
 	}
 
 	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
 
 		// Re-delay
+		fmt.Println("Re-delay: attemp: " + strconv.Itoa(delayMessage.Attempt))
+
 		delayMessage.IncrementAttempts()
 
 		bytes, err := json.Marshal(delayMessage)
 		if err != nil {
-			return false, true, err
 			return false, false, err
 		}
 
-		// todo, handle returns from Produce and processDelay
-		Produce(delayMessage.Queue, bytes)
+		err = Produce(delayMessage.Queue, bytes)
 
 	} else {
 
 		// Add to original queue
-		Produce(delayMessage.Queue, []byte(delayMessage.Message))
+		fmt.Println("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
+
+		err = Produce(delayMessage.Queue, []byte(delayMessage.Message))
 	}
+
+	if err != nil {
+		return false, true, err
+	}
+
+	return true, false, nil
 }
 
 type RabbitMessageDelay struct {

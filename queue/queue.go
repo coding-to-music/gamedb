@@ -11,31 +11,30 @@ import (
 )
 
 const (
-	Namespace = "Steam_"
-)
-
-const (
-	QueueApps         = "Updater_Apps"
-	QueueAppsData     = "Updater_Apps_Data"
-	QueuePackages     = "Updater_Packages"
-	QueuePackagesData = "Updater_Packages_Data"
-	QueueChanges      = "Updater_Changes"
-	QueuePlayers      = "Players"
-	QueueDelays       = "Delays"
+	QueueApps         = "Steam_Apps"
+	QueueAppsData     = "Steam_Apps_Data"
+	QueueChangesData  = "Steam_Changes_Data"
+	QueueDelaysData   = "Steam_Delays_Data"
+	QueuePackages     = "Steam_Packages"
+	QueuePackagesData = "Steam_Packages_Data"
+	QueueProfiles     = "Steam_Profiles"
+	QueueProfilesData = "Steam_Profiles_Data"
 )
 
 var (
 	queues map[string]queue
+
+	errInvalidQueue = errors.New("invalid queue")
 )
 
 func init() {
 
 	qs := []queue{
-		{Name: QueueChanges, Callback: processChange},
+		{Name: QueueChangesData, Callback: processChange},
 		//{PICSName: QueueAppsData, Callback: processApp},
 		{Name: QueuePackagesData, Callback: processPackage},
-		//{PICSName: QueuePlayers, Callback: processPlayer},
-		{Name: QueueDelays, Callback: processDelay},
+		//{PICSName: QueueProfiles, Callback: processPlayer},
+		{Name: QueueDelaysData, Callback: processDelay},
 	}
 
 	queues = make(map[string]queue)
@@ -57,7 +56,7 @@ func Produce(queue string, data []byte) (err error) {
 		return val.produce(data)
 	}
 
-	return errors.New("no such queue: " + queue)
+	return errInvalidQueue
 }
 
 type queue struct {
@@ -80,7 +79,7 @@ func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.
 		logger.Error(err)
 	}
 
-	q, err = ch.QueueDeclare(Namespace+s.Name, true, false, false, false, nil)
+	q, err = ch.QueueDeclare(s.Name, true, false, false, false, nil)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -179,7 +178,7 @@ func (s queue) requeueMessage(msg amqp.Delivery) error {
 		return err
 	}
 
-	Produce(QueueDelays, data)
+	Produce(QueueDelaysData, data)
 
 	return nil
 }
