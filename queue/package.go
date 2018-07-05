@@ -12,10 +12,23 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processPackage(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+type RabbitMessagePackage struct {
+	baseQueue
+	RabbitMessageProduct
+}
+
+func (d RabbitMessagePackage) getQueueName() string {
+	return QueuePackagesData
+}
+
+func (d RabbitMessagePackage) getRetryData() RabbitMessageDelay {
+	return RabbitMessageDelay{}
+}
+
+func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	// Get message
-	message := new(RabbitMessageProduct)
+	message := new(RabbitMessagePackage)
 
 	err = json.Unmarshal(msg.Body, message)
 	if err != nil {

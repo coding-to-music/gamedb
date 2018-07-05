@@ -8,10 +8,19 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processApp(msg amqp.Delivery) (ack bool, requeue bool) {
+type RabbitMessageApp struct {
+	baseQueue
+	RabbitMessageProduct
+}
+
+func (d RabbitMessageApp) getQueueName() string {
+	return QueueAppsData
+}
+
+func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message payload
-	message := new(RabbitMessageProduct)
+	message := new(RabbitMessageApp)
 
 	err := json.Unmarshal(msg.Body, message)
 	if err != nil {

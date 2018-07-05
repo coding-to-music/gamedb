@@ -10,6 +10,16 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type RabbitMessagePlayer struct {
+	baseQueue
+	Time     time.Time
+	PlayerID int64
+}
+
+func (d RabbitMessagePlayer) getQueueName() string {
+	return QueueProfilesData
+}
+
 func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message
@@ -48,10 +58,4 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 	}
 
 	return true, false
-}
-
-type RabbitMessagePlayer struct {
-	Retry    RabbitMessageDelay
-	Time     time.Time
-	PlayerID int64
 }

@@ -22,24 +22,29 @@ const (
 )
 
 var (
-	queues map[string]queue
+	queues = map[string]queueInterface{}
 
 	errInvalidQueue = errors.New("invalid queue")
+	errEmptyMessage = errors.New("empty message")
 )
 
-func init() {
+type queueInterface interface {
+	getQueueName() (string)
+	getRetryData() (RabbitMessageDelay)
+	process(msg amqp.Delivery) (ack bool, requeue bool, err error)
+	consume()
+	produce(data []byte) (err error)
+}
 
-	qs := []queue{
-		{Name: QueueChangesData, Callback: processChange},
-		//{PICSName: QueueAppsData, Callback: processApp},
-		{Name: QueuePackagesData, Callback: processPackage},
-		//{PICSName: QueueProfiles, Callback: processPlayer},
-		{Name: QueueDelaysData, Callback: processDelay},
+func init() {
+	qs := []queueInterface{
+		RabbitMessageChanges{},
+		RabbitMessageDelay{},
+		RabbitMessagePackage{},
 	}
 
-	queues = make(map[string]queue)
 	for _, v := range qs {
-		queues[v.Name] = v
+		queues[v.getQueueName()] = v
 	}
 }
 
@@ -59,12 +64,15 @@ func Produce(queue string, data []byte) (err error) {
 	return errInvalidQueue
 }
 
-type queue struct {
-	Name     string
-	Callback func(msg amqp.Delivery) (ack bool, requeue bool, err error)
+type baseQueue struct {
+	Queue     string
+	Attempt   int
+	StartTime time.Time // Time first placed in queues
+	EndTime   time.Time // Time to retry from delay queue
+	chanx     chan amqp.Delivery `json:"-"`
 }
 
-func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.Queue, closeChannel chan *amqp.Error, err error) {
+func (s baseQueue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.Queue, closeChannel chan *amqp.Error, err error) {
 
 	closeChannel = make(chan *amqp.Error)
 
@@ -79,7 +87,7 @@ func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.
 		logger.Error(err)
 	}
 
-	q, err = ch.QueueDeclare(s.Name, true, false, false, false, nil)
+	q, err = ch.QueueDeclare(s.Queue, true, false, false, false, nil)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -87,7 +95,7 @@ func (s queue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.
 	return conn, ch, q, closeChannel, err
 }
 
-func (s queue) produce(data []byte) (err error) {
+func (s baseQueue) produce(data []byte) (err error) {
 
 	conn, ch, q, _, err := s.getConnection()
 	defer conn.Close()
@@ -109,7 +117,7 @@ func (s queue) produce(data []byte) (err error) {
 
 }
 
-func (s queue) consume() {
+func (s baseQueue) consume() {
 
 	var breakFor = false
 
@@ -134,7 +142,13 @@ func (s queue) consume() {
 
 			case msg := <-msgs:
 
-				ack, requeue, err := s.Callback(msg)
+				// todo, send to channel to pickup on process
+
+				if s.chanx == nil{
+					s.chanx= make(chan int)
+				}
+
+				ack, requeue, err := s.process(msg)
 				if err != nil {
 					logger.Error(err)
 				}
@@ -164,13 +178,13 @@ func (s queue) consume() {
 	}
 }
 
-func (s queue) requeueMessage(msg amqp.Delivery) error {
+func (s baseQueue) requeueMessage(msg amqp.Delivery) error {
 
 	delayMessage := RabbitMessageDelay{}
 	delayMessage.Attempt = 1
 	delayMessage.StartTime = time.Now()
 	delayMessage.SetEndTime()
-	delayMessage.Queue = s.Name
+	delayMessage.Queue = s.Queue
 	delayMessage.Message = string(msg.Body)
 
 	data, err := json.Marshal(delayMessage)

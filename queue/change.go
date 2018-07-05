@@ -14,7 +14,39 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processChange(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+type RabbitMessageChanges struct {
+	baseQueue
+	LastChangeNumber    int  `json:"LastChangeNumber"`
+	CurrentChangeNumber int  `json:"CurrentChangeNumber"`
+	RequiresFullUpdate  bool `json:"RequiresFullUpdate"`
+	PackageChanges map[string]struct {
+		ID           int  `json:"ID"`
+		ChangeNumber int  `json:"ChangeNumber"`
+		NeedsToken   bool `json:"NeedsToken"`
+	} `json:"PackageChanges"`
+	AppChanges map[string]struct {
+		ID           int  `json:"ID"`
+		ChangeNumber int  `json:"ChangeNumber"`
+		NeedsToken   bool `json:"NeedsToken"`
+	} `json:"AppChanges"`
+	JobID struct {
+		SequentialCount int    `json:"SequentialCount"`
+		StartTime       string `json:"StartTime"`
+		ProcessID       int    `json:"ProcessID"`
+		BoxID           int    `json:"BoxID"`
+		Value           int64  `json:"Value"`
+	} `json:"JobID"`
+}
+
+func (d RabbitMessageChanges) getQueueName() string {
+	return QueueChangesData
+}
+
+func (d RabbitMessageChanges) getRetryData() RabbitMessageDelay {
+	return RabbitMessageDelay{}
+}
+
+func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	fmt.Println("Processing change message")
 
@@ -137,28 +169,4 @@ func processChange(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	}
 
 	return true, false, nil
-}
-
-type RabbitMessageChanges struct {
-	Retry               RabbitMessageDelay
-	LastChangeNumber    int  `json:"LastChangeNumber"`
-	CurrentChangeNumber int  `json:"CurrentChangeNumber"`
-	RequiresFullUpdate  bool `json:"RequiresFullUpdate"`
-	PackageChanges map[string]struct {
-		ID           int  `json:"ID"`
-		ChangeNumber int  `json:"ChangeNumber"`
-		NeedsToken   bool `json:"NeedsToken"`
-	} `json:"PackageChanges"`
-	AppChanges map[string]struct {
-		ID           int  `json:"ID"`
-		ChangeNumber int  `json:"ChangeNumber"`
-		NeedsToken   bool `json:"NeedsToken"`
-	} `json:"AppChanges"`
-	JobID struct {
-		SequentialCount int    `json:"SequentialCount"`
-		StartTime       string `json:"StartTime"`
-		ProcessID       int    `json:"ProcessID"`
-		BoxID           int    `json:"BoxID"`
-		Value           int64  `json:"Value"`
-	} `json:"JobID"`
 }

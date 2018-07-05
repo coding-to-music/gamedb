@@ -2,7 +2,6 @@ package queue
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -11,12 +10,25 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func processDelay(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+type RabbitMessageDelay struct {
+	baseQueue
+	Message string
+}
+
+func (d RabbitMessageDelay) getQueueName() string {
+	return QueueDelaysData
+}
+
+func (d RabbitMessageDelay) getRetryData() RabbitMessageDelay {
+	return RabbitMessageDelay{}
+}
+
+func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	//time.Sleep(time.Second) // Minimum 1 second wait
 
 	if len(msg.Body) == 0 {
-		return false, false, errors.New("empty msg")//todo, make global var
+		return false, false, errEmptyMessage
 	}
 
 	delayMessage := RabbitMessageDelay{}
@@ -27,7 +39,7 @@ func processDelay(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	}
 
 	if len(delayMessage.Message) == 0 {
-		return false, false, errors.New("empty msg")
+		return false, false, errEmptyMessage
 	}
 
 	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
@@ -57,14 +69,6 @@ func processDelay(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 	}
 
 	return true, false, nil
-}
-
-type RabbitMessageDelay struct {
-	Attempt   int
-	StartTime time.Time
-	EndTime   time.Time
-	Queue     string // The queue it came from
-	Message   string
 }
 
 func (d *RabbitMessageDelay) IncrementAttempts() {
