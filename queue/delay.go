@@ -12,7 +12,8 @@ import (
 
 type RabbitMessageDelay struct {
 	baseQueue
-	Message string
+	OriginalQueue   string
+	OriginalMessage string
 }
 
 func (d RabbitMessageDelay) getQueueName() string {
@@ -38,7 +39,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 		return false, false, err
 	}
 
-	if len(delayMessage.Message) == 0 {
+	if len(delayMessage.OriginalMessage) == 0 {
 		return false, false, errEmptyMessage
 	}
 
@@ -54,14 +55,14 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 			return false, false, err
 		}
 
-		err = Produce(delayMessage.Queue, bytes)
+		err = Produce(delayMessage.getQueueName(), bytes)
 
 	} else {
 
 		// Add to original queue
 		fmt.Println("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
 
-		err = Produce(delayMessage.Queue, []byte(delayMessage.Message))
+		err = Produce(delayMessage.getQueueName(), []byte(delayMessage.OriginalMessage))
 	}
 
 	if err != nil {

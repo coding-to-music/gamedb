@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -39,8 +40,8 @@ type queueInterface interface {
 func init() {
 	qs := []queueInterface{
 		RabbitMessageChanges{},
-		RabbitMessageDelay{},
-		RabbitMessagePackage{},
+		//RabbitMessageDelay{},
+		//RabbitMessagePackage{},
 	}
 
 	for _, v := range qs {
@@ -51,6 +52,9 @@ func init() {
 func RunConsumers() {
 
 	for _, v := range queues {
+
+		fmt.Println(v.getQueueName() + "X")
+
 		go v.consume()
 	}
 }
@@ -65,11 +69,9 @@ func Produce(queue string, data []byte) (err error) {
 }
 
 type baseQueue struct {
-	Queue     string
 	Attempt   int
 	StartTime time.Time // Time first placed in queues
 	EndTime   time.Time // Time to retry from delay queue
-	chanx     chan amqp.Delivery `json:"-"`
 }
 
 func (s baseQueue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.Queue, closeChannel chan *amqp.Error, err error) {
@@ -87,7 +89,7 @@ func (s baseQueue) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q a
 		logger.Error(err)
 	}
 
-	q, err = ch.QueueDeclare(s.Queue, true, false, false, false, nil)
+	q, err = ch.QueueDeclare(s.getQueueName(), true, false, false, false, nil)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -114,10 +116,11 @@ func (s baseQueue) produce(data []byte) (err error) {
 	}
 
 	return nil
-
 }
 
 func (s baseQueue) consume() {
+
+	fmt.Println(s.StartTime)
 
 	var breakFor = false
 
@@ -142,11 +145,10 @@ func (s baseQueue) consume() {
 
 			case msg := <-msgs:
 
-				// todo, send to channel to pickup on process
-
-				if s.chanx == nil{
-					s.chanx= make(chan int)
-				}
+				// todo, send to channel to pickup on process?
+				//if s.chanx == nil {
+				//	s.chanx = make(chan amqp.Delivery)
+				//}
 
 				ack, requeue, err := s.process(msg)
 				if err != nil {
@@ -184,8 +186,7 @@ func (s baseQueue) requeueMessage(msg amqp.Delivery) error {
 	delayMessage.Attempt = 1
 	delayMessage.StartTime = time.Now()
 	delayMessage.SetEndTime()
-	delayMessage.Queue = s.Queue
-	delayMessage.Message = string(msg.Body)
+	delayMessage.OriginalMessage = string(msg.Body)
 
 	data, err := json.Marshal(delayMessage)
 	if err != nil {
