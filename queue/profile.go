@@ -10,20 +10,19 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitMessagePlayer struct {
-	baseQueue
+type RabbitMessageProfile struct {
 	Time     time.Time
 	PlayerID int64
 }
 
-func (d RabbitMessagePlayer) getQueueName() string {
+func (d RabbitMessageProfile) getQueueName() string {
 	return QueueProfilesData
 }
 
 func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	// Get message
-	message := new(RabbitMessagePlayer)
+	message := new(RabbitMessageProfile)
 
 	err := json.Unmarshal(msg.Body, message)
 	if err != nil {

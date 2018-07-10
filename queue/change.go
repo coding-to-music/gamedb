@@ -15,7 +15,6 @@ import (
 )
 
 type RabbitMessageChanges struct {
-	baseQueue
 	LastChangeNumber    int  `json:"LastChangeNumber"`
 	CurrentChangeNumber int  `json:"CurrentChangeNumber"`
 	RequiresFullUpdate  bool `json:"RequiresFullUpdate"`

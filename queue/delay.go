@@ -11,7 +11,6 @@ import (
 )
 
 type RabbitMessageDelay struct {
-	baseQueue
 	OriginalQueue   string
 	OriginalMessage string
 }

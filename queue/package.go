@@ -13,7 +13,6 @@ import (
 )
 
 type RabbitMessagePackage struct {
-	baseQueue
 	RabbitMessageProduct
 }
 

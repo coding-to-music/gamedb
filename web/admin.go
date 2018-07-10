@@ -92,7 +92,7 @@ func adminApps() {
 
 	// Get apps
 	// todo, page through results
-	apps, _, err := steami.Steam().GetAppList(steam.GetAppList{})
+	apps, _, err := steami.Steam().GetAppList(steam.GetAppListOptions{})
 	if err != nil {
 		logger.Error(err)
 		return
@@ -254,7 +254,7 @@ func adminQueues(r *http.Request) {
 
 		logger.Info("Player: " + val)
 		playerID, _ := strconv.ParseInt(val, 10, 64)
-		bytes, _ := json.Marshal(queue.RabbitMessagePlayer{
+		bytes, _ := json.Marshal(queue.RabbitMessageProfile{
 			PlayerID: playerID,
 			Time:     time.Now(),
 		})
