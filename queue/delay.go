@@ -3,7 +3,6 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
-	"math"
 	"strconv"
 	"time"
 
@@ -69,21 +68,4 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 	}
 
 	return true, false, nil
-}
-
-func (d *RabbitMessageDelay) IncrementAttempts() {
-	d.Attempt++
-	d.SetEndTime()
-}
-
-func (d *RabbitMessageDelay) SetEndTime() {
-
-	var min float64 = 1
-	var max float64 = 600
-
-	var seconds = math.Pow(1.3, float64(d.Attempt))
-	var minmaxed = math.Min(min+seconds, max)
-	var rounded = math.Round(minmaxed)
-
-	d.EndTime = d.StartTime.Add(time.Second * time.Duration(rounded))
 }

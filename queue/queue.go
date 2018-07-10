@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"time"
 
@@ -67,7 +68,7 @@ func Produce(queue string, data []byte) (err error) {
 
 type rabbitMessageBase struct {
 	Attempt   int
-	StartTime time.Time // Time first placed in queues
+	StartTime time.Time // Time first placed in delay queue
 	EndTime   time.Time // Time to retry from delay queue
 	Message   queueInterface
 }
@@ -143,11 +144,6 @@ func (s rabbitMessageBase) consume() {
 
 			case msg := <-msgs:
 
-				// todo, send to channel to pickup on process?
-				//if s.chanx == nil {
-				//	s.chanx = make(chan amqp.Delivery)
-				//}
-
 				ack, requeue, err := s.Message.process(msg)
 				if err != nil {
 					logger.Error(err)
@@ -180,13 +176,19 @@ func (s rabbitMessageBase) consume() {
 
 func (s rabbitMessageBase) requeueMessage(msg amqp.Delivery) error {
 
-	delayMessage := RabbitMessageDelay{}
-	delayMessage.Attempt = 1
-	delayMessage.StartTime = time.Now()
-	delayMessage.SetEndTime()
-	delayMessage.OriginalMessage = string(msg.Body)
+	delayeMessage := rabbitMessageBase{
+		Attempt:   s.Attempt,
+		StartTime: s.StartTime,
+		EndTime:   s.EndTime,
+		Message: RabbitMessageDelay{
+			OriginalMessage: string(msg.Body),
+			OriginalQueue:   s.Message.getQueueName(),
+		},
+	}
 
-	data, err := json.Marshal(delayMessage)
+	delayeMessage.IncrementAttempts()
+
+	data, err := json.Marshal(delayeMessage)
 	if err != nil {
 		return err
 	}
@@ -194,4 +196,19 @@ func (s rabbitMessageBase) requeueMessage(msg amqp.Delivery) error {
 	Produce(QueueDelaysData, data)
 
 	return nil
+}
+
+func (s *rabbitMessageBase) IncrementAttempts() {
+
+	s.Attempt++
+
+	// Update end time
+	var min float64 = 1
+	var max float64 = 600
+
+	var seconds = math.Pow(1.3, float64(s.Attempt))
+	var minmaxed = math.Min(min+seconds, max)
+	var rounded = math.Round(minmaxed)
+
+	s.EndTime = s.StartTime.Add(time.Second * time.Duration(rounded))
 }
