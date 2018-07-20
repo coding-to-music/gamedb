@@ -49,6 +49,7 @@ func Serve() error {
 	r.Get("/games", AppsHandler)
 	r.Get("/games/{id}", AppHandler)
 	r.Get("/games/{id}/{slug}", AppHandler)
+	r.Get("/health-check", HealthCheckHandler)
 	r.Get("/genres", StatsGenresHandler)
 	r.Get("/info", InfoHandler)
 	r.Get("/login", LoginHandler)

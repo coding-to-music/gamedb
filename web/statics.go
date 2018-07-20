@@ -1,12 +1,23 @@
 package web
 
 import (
+	"bytes"
 	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/steam-authority/steam-authority/logger"
 )
+
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := http.Response{
+		Body: ioutil.NopCloser(bytes.NewBufferString("OK")),
+	}
+
+	buff := bytes.NewBuffer(nil)
+	t.Write(buff)
+}
 
 func HeaderHandler(w http.ResponseWriter, r *http.Request) {
 
