@@ -1,23 +1,16 @@
-FROM scratch
-COPY steam-authority /steam-authority
-COPY templates /templates
-COPY node_modules /node_modules
-COPY assets /assets
-EXPOSE 8085
-CMD ["/steam-authority"]
-
-
-
-
-
-FROM golang:1.10.3
+FROM golang:1.10.3 AS build-env
+RUN apk --no-cache add ca-certificates
+RUN mkdir -p /go/src/github.com/steam-authority/steam-authority/
 WORKDIR /go/src/github.com/steam-authority/steam-authority/
-RUN go get -d -v golang.org/x/net/html
-COPY app.go .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+COPY . /go/src/github.com/steam-authority/steam-authority/
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
-COPY --from=0 /go/src/github.com/alexellis/href-counter/app .
-CMD ["./app"]
+COPY --from=build-env /go/src/github.com/steam-authority/steam-authority/steam-authority .
+COPY templates /templates
+COPY node_modules /node_modules
+COPY assets /assets
+EXPOSE 80:8081
+CMD ["./steam-authority"]

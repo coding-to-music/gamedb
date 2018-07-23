@@ -18,8 +18,8 @@
     "logging/internal",
     "storage"
   ]
-  revision = "777200caa7fb8936aed0f12b1fd79af64cc83ec9"
-  version = "v0.24.0"
+  revision = "aad3f485ee528456e0768f20397b4d9dd941e755"
+  version = "v0.25.0"
 
 [[projects]]
   branch = "master"
@@ -49,7 +49,7 @@
   branch = "master"
   name = "github.com/bradfitz/gomemcache"
   packages = ["memcache"]
-  revision = "7886924cd2b307eb286bd679327a834be7bc5579"
+  revision = "bc664df9673713a0ccf26e3b55a673ec7301088b"
 
 [[projects]]
   name = "github.com/bwmarrin/discordgo"
@@ -67,7 +67,7 @@
   branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
-  revision = "02af3965c54e8cacf948b97fef38925c4120652c"
+  revision = "9f541cc9db5d55bce703bd99987c9d5cb8eea45e"
 
 [[projects]]
   name = "github.com/fatih/color"
@@ -365,7 +365,7 @@
     "trace",
     "websocket"
   ]
-  revision = "292b43bbf7cb8d35ddf40f8d5100ef3837cced3f"
+  revision = "d0887baf81f4598189d4e12a37c6da86f0bba4d0"
 
 [[projects]]
   branch = "master"
@@ -392,7 +392,7 @@
     "unix",
     "windows"
   ]
-  revision = "1b2967e3c290b7c545b3db0deeda16e9be4f98a2"
+  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -432,7 +432,7 @@
     "transport/grpc",
     "transport/http"
   ]
-  revision = "ac730e38c5514b49097b1459b3acbe1bf905e930"
+  revision = "28dc565badee2b2dc1169cda0938e2eb1d295ba2"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -472,7 +472,7 @@
     "googleapis/type/latlng",
     "protobuf/field_mask"
   ]
-  revision = "e92b116572682a5b432ddd840aeaba2a559eeff1"
+  revision = "2731d4fa720b67f9fe38e9051a2a9b38e4609260"
 
 [[projects]]
   name = "google.golang.org/grpc"

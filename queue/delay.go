@@ -10,6 +10,7 @@ import (
 )
 
 type RabbitMessageDelay struct {
+	rabbitMessageBase
 	OriginalQueue   string
 	OriginalMessage string
 }
