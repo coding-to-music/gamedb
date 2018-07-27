@@ -7,7 +7,7 @@ RUN dep ensure
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
 
 FROM alpine:3.8
-RUN apk update && apk add ca-certificates && apk add nodejs && apk add curl && curl -L https://www.npmjs.com/install.sh | sh && npm install && npm audit fix
+RUN apk update && apk add ca-certificates && apk add nodejs && apk add curl && curl -L https://www.npmjs.com/install.sh | sh && npm install
 WORKDIR /root/
 COPY --from=build-env /go/src/github.com/steam-authority/steam-authority/steam-authority .
 COPY templates /templates
