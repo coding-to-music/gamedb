@@ -15,5 +15,6 @@ COPY assets /assets
 COPY site.webmanifest /site.webmanifest
 COPY robots.txt /robots.txt
 COPY browserconfig.xml /browserconfig.xml
+COPY package.json /package.json
 EXPOSE 80:8081
 CMD ["./steam-authority"]
