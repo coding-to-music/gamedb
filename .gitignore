@@ -2,7 +2,7 @@ cmd/protos/
 generated/
 node_modules/
 vendor/
+tmp/
 
 steam-authority
 debug
-auth.json
