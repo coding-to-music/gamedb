@@ -2,6 +2,8 @@ FROM golang:1.10.3 AS build-env
 RUN mkdir -p /go/src/github.com/steam-authority/steam-authority/
 WORKDIR /go/src/github.com/steam-authority/steam-authority/
 COPY . /go/src/github.com/steam-authority/steam-authority/
+RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+RUN dep ensure
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
 
 FROM alpine:3.8
