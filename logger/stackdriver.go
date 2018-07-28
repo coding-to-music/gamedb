@@ -1,14 +1,11 @@
 package logger
 
 import (
-"context"
-"fmt"
-"os"
+	"context"
+	"fmt"
+	"os"
 
-
-
-
-"cloud.google.com/go/logging"
+	"cloud.google.com/go/logging"
 )
 
 const (
@@ -25,7 +22,7 @@ func init() {
 	var err error
 	client, err = logging.NewClient(ctx, os.Getenv("STEAM_GOOGLE_PROJECT"))
 	if err != nil {
-		fmt.Println("error creating google logging client")
+		fmt.Println(err.Error())
 	}
 }
 
