@@ -22,7 +22,7 @@ curl https://api.rollbar.com/api/1/deploy/ \
   -F access_token=${STEAM_ROLLBAR_PRIVATE} \
   -F environment=${ENV} \
   -F revision=$(git log -n 1 --pretty=format:"%H") \
-  -F local_username=Jleagle \
+  -F local_username=${STEAM_ROLLBAR_USER} \
   --silent > /dev/null
 
 echo "### Restarting"
