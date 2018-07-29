@@ -9,14 +9,16 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
 
 # Runtime image
 FROM alpine:3.8
-COPY package.json /package.json
-RUN apk update && apk add ca-certificates && apk add nodejs && apk add curl && curl -L https://www.npmjs.com/install.sh | sh && npm install && mkdir /app && touch /app/google-auth.json
 WORKDIR /root/
-COPY --from=build-env /go/src/github.com/steam-authority/steam-authority/steam-authority .
-COPY templates /templates
-COPY assets /assets
-COPY site.webmanifest /site.webmanifest
-COPY robots.txt /robots.txt
-COPY browserconfig.xml /browserconfig.xml
+COPY package.json ./package.json
+COPY --from=build-env /go/src/github.com/steam-authority/steam-authority/steam-authority ./
+COPY templates ./templates
+COPY assets ./assets
+COPY site.webmanifest ./site.webmanifest
+COPY robots.txt ./robots.txt
+COPY browserconfig.xml ./browserconfig.xml
+RUN touch ./google-auth.json
+RUN apk update && apk add ca-certificates && apk add nodejs && apk add curl
+RUN curl -L https://www.npmjs.com/install.sh | sh && npm install
 EXPOSE 80:8081
 CMD ["./steam-authority"]
