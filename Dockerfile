@@ -1,6 +1,5 @@
 # Build image
 FROM golang:1.10.3 AS build-env
-RUN mkdir -p /go/src/github.com/steam-authority/steam-authority/
 WORKDIR /go/src/github.com/steam-authority/steam-authority/
 COPY . /go/src/github.com/steam-authority/steam-authority/
 RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
