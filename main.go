@@ -26,7 +26,9 @@ func main() {
 	recaptcha.SetSecret(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
 
 	// Google
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
+	}
 
 	// Env vars
 	if os.Getenv("ENV") == "local" {
