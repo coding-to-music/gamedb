@@ -18,7 +18,7 @@ COPY site.webmanifest ./site.webmanifest
 COPY robots.txt ./robots.txt
 COPY browserconfig.xml ./browserconfig.xml
 RUN touch ./google-auth.json
-RUN apk update && apk add ca-certificates && apk add nodejs && apk add curl
+RUN apk update && apk add ca-certificates nodejs curl bash git openssh
 RUN curl -L https://www.npmjs.com/install.sh | sh && npm install
 EXPOSE 80:8081
 CMD ["./steam-authority"]
