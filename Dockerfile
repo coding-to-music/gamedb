@@ -2,7 +2,7 @@
 FROM golang:1.10-alpine AS build-env
 WORKDIR /go/src/github.com/steam-authority/steam-authority/
 COPY . /go/src/github.com/steam-authority/steam-authority/
-RUN apk update && apk add curl
+RUN apk update && apk add curl git openssh
 RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 RUN dep ensure
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
@@ -18,7 +18,7 @@ COPY site.webmanifest ./site.webmanifest
 COPY robots.txt ./robots.txt
 COPY browserconfig.xml ./browserconfig.xml
 RUN touch ./google-auth.json
-RUN apk update && apk add ca-certificates nodejs curl bash git openssh
+RUN apk update && apk add ca-certificates nodejs curl bash
 RUN curl -L https://www.npmjs.com/install.sh | sh && npm install
 EXPOSE 80:8081
 CMD ["./steam-authority"]
