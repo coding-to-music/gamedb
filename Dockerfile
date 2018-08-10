@@ -2,6 +2,7 @@
 FROM golang:1.10-alpine AS build-env
 WORKDIR /go/src/github.com/steam-authority/steam-authority/
 COPY . /go/src/github.com/steam-authority/steam-authority/
+RUN apk update && apk add curl
 RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 RUN dep ensure
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
