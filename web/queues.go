@@ -75,7 +75,9 @@ type queuesQueue struct {
 
 func GetQeueus() (resp []Queue, err error) {
 
-	req, err := http.NewRequest("GET", os.Getenv("STEAM_DOMAIN_RABBIT")+"/api/queues", nil)
+	managementURL := "http://localhost:" + os.Getenv("STEAM_RABBIT_MANAGEMENT_PORT")
+
+	req, err := http.NewRequest("GET", managementURL+"/api/queues", nil)
 	req.SetBasicAuth("guest", "guest")
 
 	client := &http.Client{}
@@ -119,19 +121,19 @@ type Queue struct {
 	MessagesDetails struct {
 		Rate float64 `json:"rate"`
 	} `json:"messages_details"`
-	Messages int `json:"messages"`
+	Messages                      int `json:"messages"`
 	MessagesUnacknowledgedDetails struct {
 		Rate float64 `json:"rate"`
 	} `json:"messages_unacknowledged_details"`
 	MessagesUnacknowledged int `json:"messages_unacknowledged"`
-	MessagesReadyDetails struct {
+	MessagesReadyDetails   struct {
 		Rate float64 `json:"rate"`
 	} `json:"messages_ready_details"`
-	MessagesReady int `json:"messages_ready"`
+	MessagesReady     int `json:"messages_ready"`
 	ReductionsDetails struct {
 		Rate float64 `json:"rate"`
 	} `json:"reductions_details"`
-	Reductions int `json:"reductions"`
+	Reductions   int `json:"reductions"`
 	MessageStats struct {
 		DeliverGetDetails struct {
 			Rate float64 `json:"rate"`
@@ -140,33 +142,33 @@ type Queue struct {
 		AckDetails struct {
 			Rate float64 `json:"rate"`
 		} `json:"ack_details"`
-		Ack int `json:"ack"`
+		Ack              int `json:"ack"`
 		RedeliverDetails struct {
 			Rate float64 `json:"rate"`
 		} `json:"redeliver_details"`
-		Redeliver int `json:"redeliver"`
+		Redeliver           int `json:"redeliver"`
 		DeliverNoAckDetails struct {
 			Rate float64 `json:"rate"`
 		} `json:"deliver_no_ack_details"`
-		DeliverNoAck int `json:"deliver_no_ack"`
+		DeliverNoAck   int `json:"deliver_no_ack"`
 		DeliverDetails struct {
 			Rate float64 `json:"rate"`
 		} `json:"deliver_details"`
-		Deliver int `json:"deliver"`
+		Deliver         int `json:"deliver"`
 		GetNoAckDetails struct {
 			Rate float64 `json:"rate"`
 		} `json:"get_no_ack_details"`
-		GetNoAck int `json:"get_no_ack"`
+		GetNoAck   int `json:"get_no_ack"`
 		GetDetails struct {
 			Rate float64 `json:"rate"`
 		} `json:"get_details"`
-		Get int `json:"get"`
+		Get            int `json:"get"`
 		PublishDetails struct {
 			Rate float64 `json:"rate"`
 		} `json:"publish_details"`
 		Publish int `json:"publish"`
 	} `json:"message_stats"`
-	Node string `json:"node"`
+	Node      string `json:"node"`
 	Arguments struct {
 	} `json:"arguments"`
 	Exclusive            bool   `json:"exclusive"`
@@ -176,7 +178,7 @@ type Queue struct {
 	Name                 string `json:"name"`
 	MessageBytesPagedOut int    `json:"message_bytes_paged_out"`
 	MessagesPagedOut     int    `json:"messages_paged_out"`
-	BackingQueueStatus struct {
+	BackingQueueStatus   struct {
 		AvgAckEgressRate  float64       `json:"avg_ack_egress_rate"`
 		AvgAckIngressRate float64       `json:"avg_ack_ingress_rate"`
 		AvgEgressRate     float64       `json:"avg_egress_rate"`
@@ -201,7 +203,7 @@ type Queue struct {
 	MessagesUnacknowledgedRAM  int         `json:"messages_unacknowledged_ram"`
 	MessagesReadyRAM           int         `json:"messages_ready_ram"`
 	MessagesRAM                int         `json:"messages_ram"`
-	GarbageCollection struct {
+	GarbageCollection          struct {
 		MinorGcs        int `json:"minor_gcs"`
 		FullsweepAfter  int `json:"fullsweep_after"`
 		MinHeapSize     int `json:"min_heap_size"`

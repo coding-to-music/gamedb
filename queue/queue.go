@@ -77,7 +77,12 @@ func (s rabbitMessageBase) getConnection() (conn *amqp.Connection, ch *amqp.Chan
 
 	closeChannel = make(chan *amqp.Error)
 
-	conn, err = amqp.Dial(os.Getenv("STEAM_AMQP"))
+	username := os.Getenv("STEAM_RABBIT_USER")
+	password := os.Getenv("STEAM_RABBIT_PASS")
+	host := os.Getenv("STEAM_RABBIT_HOST")
+	port := os.Getenv("STEAM_RABBIT_PORT")
+
+	conn, err = amqp.Dial("amqp://" + username + ":" + password + "@" + host + ":" + port)
 	conn.NotifyClose(closeChannel)
 	if err != nil {
 		logger.Error(err)
