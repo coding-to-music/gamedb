@@ -28,7 +28,7 @@ func init() {
 
 func getLog(name ...string) (*logging.Logger) {
 
-	env := os.Getenv("ENV")
+	env := os.Getenv("STEAM_ENV")
 
 	if len(name) > 0 {
 		return client.Logger(env + "_" + name[0])

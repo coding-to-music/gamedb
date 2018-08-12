@@ -260,7 +260,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.request = r
 
 	t.Title = title
-	t.Env = os.Getenv("ENV")
+	t.Env = os.Getenv("STEAM_ENV")
 	t.Path = r.URL.Path
 	t.IsAdmin = r.Header.Get("Authorization") != ""
 

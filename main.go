@@ -18,7 +18,7 @@ func main() {
 
 	// Rollbar
 	rollbar.SetToken(os.Getenv("STEAM_ROLLBAR_PRIVATE"))
-	rollbar.SetEnvironment(os.Getenv("ENV"))                            // defaults to "development"
+	rollbar.SetEnvironment(os.Getenv("STEAM_ENV"))                      // defaults to "development"
 	rollbar.SetCodeVersion("master")                                    // optional Git hash/branch/tag (required for GitHub integration)
 	rollbar.SetServerRoot("github.com/steam-authority/steam-authority") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// Env vars
-	if os.Getenv("ENV") == "local" {
+	if os.Getenv("STEAM_ENV") == "local" {
 		os.Setenv("STEAM_DOMAIN", os.Getenv("STEAM_DOMAIN_LOCAL"))
 	} else {
 		os.Setenv("STEAM_DOMAIN", "https://steamauthority.net")

@@ -18,7 +18,7 @@ func Error(err error) {
 
 		fmt.Println(time.Now().Format(time.Stamp) + ": " + err.Error())
 
-		if os.Getenv("ENV") == prod {
+		if os.Getenv("STEAM_ENV") == prod {
 			rollbar.Error(rollbar.ERR, err)
 		}
 	}
@@ -28,7 +28,7 @@ func Info(message string) {
 
 	fmt.Println(time.Now().Format(time.Stamp) + ": " + message)
 
-	if os.Getenv("ENV") == prod {
+	if os.Getenv("STEAM_ENV") == prod {
 		rollbar.Message(rollbar.INFO, message)
 	}
 }

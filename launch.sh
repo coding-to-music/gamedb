@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "${ENV}" == "local" ]
+if [ "${STEAM_ENV}" == "local" ]
 then
 
 #    gcloud config set project ${STEAM_GOOGLE_PROJECT}
