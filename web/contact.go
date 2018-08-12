@@ -72,7 +72,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		// Send
 		message := mail.NewSingleEmail(
 			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
-			"Steam Authority Contact Form",
+			"Game DB Contact Form",
 			mail.NewEmail(os.Getenv("STEAM_ADMIN_NAME"), os.Getenv("STEAM_ADMIN_EMAIL")),
 			r.PostForm.Get("message"),
 			r.PostForm.Get("message"),

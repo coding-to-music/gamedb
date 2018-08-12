@@ -1,1 +1,1 @@
-# Steam Authority
+# Game DB
