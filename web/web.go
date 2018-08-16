@@ -231,23 +231,20 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Env string
+	Title     string // page title
+	Avatar    string
+	Path      string // URL
+	Env       string
 
 	// User
-	UserID    int
 	UserName  string // Username
+	UserID    int
 	UserLevel int
 
 	// Session
 	FlashesGood []interface{}
 	FlashesBad  []interface{}
 	Session     map[interface{}]interface{}
-
-	//
-	Title   string // page title
-	Avatar  string
-	Path    string // URL
-	IsAdmin bool
 
 	//
 	request *http.Request // Internal
@@ -258,17 +255,12 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	var err error
 
 	t.request = r
-
 	t.Title = title
 	t.Env = os.Getenv("STEAM_ENV")
 	t.Path = r.URL.Path
-	t.IsAdmin = r.Header.Get("Authorization") != ""
 
-	// Session
+	// User ID
 	id, err := session.Read(r, session.UserID)
-	logger.Error(err)
-
-	level, err := session.Read(r, session.UserLevel)
 	logger.Error(err)
 
 	t.UserID, err = strconv.Atoi(id)
@@ -276,7 +268,12 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 		t.UserID = 0
 	}
 
+	// User name
 	t.UserName, err = session.Read(r, session.UserName)
+	logger.Error(err)
+
+	// Level
+	level, err := session.Read(r, session.UserLevel)
 	logger.Error(err)
 
 	t.UserLevel, err = strconv.Atoi(level)
@@ -284,17 +281,19 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 		t.UserLevel = 0
 	}
 
-	t.Session, err = session.ReadAll(r)
-	logger.Error(err)
-
+	// Flashes
 	t.FlashesGood, err = session.GetGoodFlashes(w, r)
 	logger.Error(err)
 
 	t.FlashesBad, err = session.GetBadFlashes(w, r)
 	logger.Error(err)
+
+	// All session data
+	t.Session, err = session.ReadAll(r)
+	logger.Error(err)
 }
 
-func (t GlobalTemplate) LoggedIn() (bool) {
+func (t GlobalTemplate) IsLoggedIn() (bool) {
 	return t.UserID > 0
 }
 
@@ -302,8 +301,16 @@ func (t GlobalTemplate) IsLocal() (bool) {
 	return t.Env == "local"
 }
 
+func (t GlobalTemplate) IsVarnished() (bool) {
+	return t.request.Header.Get("through-varnish") == "true"
+}
+
 func (t GlobalTemplate) IsProduction() (bool) {
 	return t.Env == "production"
+}
+
+func (t GlobalTemplate) IsAdmin() (bool) {
+	return t.request.Header.Get("Authorization") != ""
 }
 
 func (t GlobalTemplate) ShowAd() (bool) {
