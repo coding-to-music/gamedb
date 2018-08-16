@@ -19,7 +19,7 @@
                         <div class="input-group-append">
                             <input type="submit" value="Add" class="input-group-text btn btn-success">
                         </div>
-                    {{ if .LoggedIn }}
+                    {{ if .IsLoggedIn }}
                         <div class="input-group-append">
                             <input type="button" value="Add Me" class="input-group-text btn btn-success" data-id="{{ .UserID }}" id="addme">
                         </div>

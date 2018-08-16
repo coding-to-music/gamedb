@@ -6,7 +6,7 @@
         <h1 class="display-4"><i class="fas fa-level-up-alt"></i> Experience</h1>
         <p class="lead">
             Check how much XP you need to go up a level.
-        {{ if .LoggedIn }}You are level <a href="/experience/{{.UserLevel}}" data-level="{{.UserLevel}}">{{.UserLevel}}</a>.{{end}}
+        {{ if .IsLoggedIn }}You are level <a href="/experience/{{.UserLevel}}" data-level="{{.UserLevel}}">{{.UserLevel}}</a>.{{end}}
         </p>
     </div>
 
