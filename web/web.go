@@ -85,7 +85,7 @@ func Serve() error {
 	// File server
 	fileServer(r)
 
-	return http.ListenAndServe(":8081", r)
+	return http.ListenAndServe(":8080", r)
 }
 
 func adminRouter() http.Handler {
@@ -231,10 +231,10 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Title     string // page title
-	Avatar    string
-	Path      string // URL
-	Env       string
+	Title  string // page title
+	Avatar string
+	Path   string // URL
+	Env    string
 
 	// User
 	UserName  string // Username
