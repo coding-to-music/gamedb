@@ -16,6 +16,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
@@ -27,6 +28,14 @@ import (
 func Serve() error {
 
 	r := chi.NewRouter()
+	r.Use(middleware.Compress(5))
+	r.Use(middleware.DefaultCompress)
+	r.Use(middleware.GetHead)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.RedirectSlashes)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Get("/", HomeHandler)
 	r.Mount("/admin", adminRouter())
