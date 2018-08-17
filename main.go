@@ -46,7 +46,7 @@ func main() {
 	flag.Parse()
 
 	if *flagPprof {
-		go http.ListenAndServe(":8080", nil)
+		go http.ListenAndServe(":8081", nil)
 	}
 
 	if *flagDebug {

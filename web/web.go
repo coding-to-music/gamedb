@@ -85,7 +85,7 @@ func Serve() error {
 	// File server
 	fileServer(r)
 
-	return http.ListenAndServe(":8080", r)
+	return http.ListenAndServe(":8081", r)
 }
 
 func adminRouter() http.Handler {
