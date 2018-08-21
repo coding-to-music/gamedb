@@ -2,6 +2,7 @@ package web
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -21,8 +22,12 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 func HeaderHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := GlobalTemplate{}
+	t := headerTemplate{}
 	t.Fill(w, r, "Header")
+
+	bytesx, err := json.Marshal(t.Session)
+	logger.Error(err)
+	t.JSON = string(bytesx)
 
 	returnTemplate(w, r, "_header_esi", t)
 }
@@ -59,6 +64,11 @@ func RootFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(data)
 
+}
+
+type headerTemplate struct {
+	GlobalTemplate
+	JSON string
 }
 
 type staticTemplate struct {
