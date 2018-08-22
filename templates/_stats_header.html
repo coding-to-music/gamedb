@@ -5,33 +5,33 @@
 
         <li class="nav-item">
         {{if startsWith .Path "/tags" }}
-            <span class="nav-link active" role="tab">Tags</span>
+            <span class="nav-link active" role="tab"><i class="fas fa-tag"></i> Tags</span>
         {{else}}
-            <a class="nav-link" href="/tags" role="tab">Tags</a>
+            <a class="nav-link" href="/tags" role="tab"><i class="fas fa-tag"></i> Tags</a>
         {{end}}
         </li>
 
         <li class="nav-item">
         {{if startsWith .Path "/genres" }}
-            <span class="nav-link active" role="tab">Genres</span>
+            <span class="nav-link active" role="tab"><i class="fas fa-film"></i> Genres</span>
         {{else}}
-            <a class="nav-link" href="/genres" role="tab">Genres</a>
+            <a class="nav-link" href="/genres" role="tab"><i class="fas fa-film"></i> Genres</a>
         {{end}}
         </li>
 
         <li class="nav-item">
         {{if startsWith .Path "/publishers" }}
-            <span class="nav-link active" role="tab">Publishers</span>
+            <span class="nav-link active" role="tab"><i class="fas fa-star"></i> Publishers</span>
         {{else}}
-            <a class="nav-link" href="/publishers" role="tab">Publishers</a>
+            <a class="nav-link" href="/publishers" role="tab"><i class="fas fa-star"></i> Publishers</a>
         {{end}}
         </li>
 
         <li class="nav-item">
         {{if startsWith .Path "/developers" }}
-            <span class="nav-link active" role="tab">Developers</span>
+            <span class="nav-link active" role="tab"><i class="fas fa-star"></i> Developers</span>
         {{else}}
-            <a class="nav-link" href="/developers" role="tab">Developers</a>
+            <a class="nav-link" href="/developers" role="tab"><i class="fas fa-star"></i> Developers</a>
         {{end}}
         </li>
 
