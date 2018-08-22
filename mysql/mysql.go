@@ -24,13 +24,7 @@ func GetDB() (conn *gorm.DB, err error) {
 
 	if gormConnection == nil {
 
-		username := os.Getenv("STEAM_MYSQL_USERNAME")
-		password := os.Getenv("STEAM_MYSQL_PASSWORD")
-		database := os.Getenv("STEAM_MYSQL_DATABASE")
-		host := os.Getenv("STEAM_MYSQL_HOST")
-		port := os.Getenv("STEAM_MYSQL_PORT")
-
-		db, err := gorm.Open("mysql", username+":"+password+"@tcp("+host+":"+port+")/"+database+"?parseTime=true")
+		db, err := gorm.Open("mysql", os.Getenv("STEAM_MYSQL_DSN"))
 		db.LogMode(debug)
 		if err != nil {
 			return db, nil
