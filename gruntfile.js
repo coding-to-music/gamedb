@@ -72,7 +72,7 @@ module.exports = function (grunt) {
         notify: {
             done: {
                 options: {
-                    message: 'Done @ ' + new Date().getMinutes() + ":" + new Date().getSeconds() + '!'
+                    message: 'Done @ ' + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + '!'
                 }
             }
         }
