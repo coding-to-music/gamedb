@@ -65,10 +65,14 @@ div#top.show {
     }
 }
 
-.chitikaAdContainer{
-    padding: 0;
-    margin: 0 0 10px 0;
-    height: 90px;
+.ad {
+    text-align: center;
+
+    .chitikaAdContainer {
+        padding: 0;
+        margin: 0 0 10px 0;
+        height: 90px;
+    }
 }
 
 .card-body {

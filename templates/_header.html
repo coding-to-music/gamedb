@@ -27,14 +27,11 @@
     <title>{{.Title}} - Game DB</title>
 
 {{if .IsVarnished }}
-
+    <!--suppress XmlUnboundNsPrefix -->
     <esi:include src="/esi/header"/>
-
 {{else}}
-
     {{ template "_header_esi" . }}
-
-    {{end}}
+{{end}}
 
     <script async src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
@@ -141,21 +138,21 @@
     </nav>
 </header>
 
-{{ if and (.ShowAd) (not .IsLocal) }}
-<div class="container" style="text-align: center;">
+<div class="container ad">
     <script type="text/javascript">
-        (function () {
-            if (window.CHITIKA === undefined) {
-                window.CHITIKA = {'units': []};
-            }
-            var unit = {"calltype": "async[2]", "publisher": "jleagle", "width": 728, "height": 90, "sid": "Chitika Default"};
-            var placement_id = window.CHITIKA.units.length;
-            window.CHITIKA.units.push(unit);
-            document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
-        }());
+        if (user.showAds && !user.isLocal) {
+            (function () {
+                if (window.CHITIKA === undefined) {
+                    window.CHITIKA = {'units': []};
+                }
+                var unit = {"calltype": "async[2]", "publisher": "jleagle", "width": 728, "height": 90, "sid": "Chitika Default"};
+                var placement_id = window.CHITIKA.units.length;
+                window.CHITIKA.units.push(unit);
+                document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
+            }());
+        }
     </script>
     <script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
 </div>
-{{ end }}
 
 {{end}}
