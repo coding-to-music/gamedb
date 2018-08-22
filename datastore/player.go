@@ -56,10 +56,6 @@ type Player struct {
 	NumberOfVACBans  int       `datastore:"bans_cav"`                  //
 	NumberOfGameBans int       `datastore:"bans_game"`                 //
 	Groups           []int     `datastore:"groups,noindex"`            //
-	SettingsEmail    string    `datastore:"settings_email"`            //
-	SettingsPassword string    `datastore:"settings_password,noindex"` //
-	SettingsHidden   bool      `datastore:"settings_hidden"`           //
-	SettingsAlerts   bool      `datastore:"settings_alerts,noindex"`   //
 }
 
 func (p Player) GetKey() (key *datastore.Key) {

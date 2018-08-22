@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
@@ -81,8 +82,9 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check password matches
-		var player datastore.Player
+		var player mysql.User
 		var success bool
+		// todo, probably dont need to loop anymore..
 		for _, v := range players {
 
 			err = bcrypt.CompareHashAndPassword([]byte(v.SettingsPassword), []byte(password))
