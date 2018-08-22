@@ -183,6 +183,10 @@ func (app App) GetPCGamingWikiLink() string {
 	return "https://pcgamingwiki.com/api/appid.php?appid=" + strconv.Itoa(app.ID)
 }
 
+func (app App) GetHeaderImage() string {
+	return "http://cdn.akamai.steamstatic.com/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
+}
+
 func (app App) GetInstallLink() template.URL {
 	return template.URL("steam://install/" + strconv.Itoa(app.ID))
 }
