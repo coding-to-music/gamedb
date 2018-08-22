@@ -11,13 +11,14 @@ import (
 )
 
 const (
-	KindArticle  = "Article"
-	KindChange   = "Change"
-	KindDonation = "Donation"
-	KindLogin    = "Login"
-	KindPlayer   = "Player"
-	KindPrice    = "Price"
-	KindRank     = "Rank"
+	KindArticle        = "Article"
+	KindChange         = "Change"
+	KindDonation       = "Donation"
+	KindLogin          = "Login"
+	KindPlayer         = "Player"
+	KindPrice          = "Price"
+	KindRank           = "Rank"
+	KindAppReviewScore = "AppReviewScore"
 )
 
 var (
