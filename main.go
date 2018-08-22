@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/rollbar/rollbar-go"
+	"github.com/steam-authority/steam-authority/config"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
@@ -15,6 +16,9 @@ import (
 )
 
 func main() {
+
+	// Viper config
+	config.Init()
 
 	// Rollbar
 	rollbar.SetToken(os.Getenv("STEAM_ROLLBAR_PRIVATE"))

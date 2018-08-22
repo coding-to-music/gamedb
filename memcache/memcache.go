@@ -2,9 +2,9 @@ package memcache
 
 import (
 	"encoding/json"
-	"os"
 
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/spf13/viper"
 )
 
 var client *memcache.Client
@@ -28,7 +28,7 @@ var (
 func getClient() *memcache.Client {
 
 	if client == nil {
-		client = memcache.New(os.Getenv("STEAM_MEMCACHE"))
+		client = memcache.New(viper.GetString("MEMCACHE_DSN"))
 	}
 
 	return client

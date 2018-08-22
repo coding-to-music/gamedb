@@ -19,6 +19,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gosimple/slug"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
@@ -95,7 +96,7 @@ func Serve() error {
 	// File server
 	fileServer(r)
 
-	return http.ListenAndServe(":"+os.Getenv("STEAM_PORT"), r)
+	return http.ListenAndServe("0.0.0.0:"+viper.GetString("PORT"), r)
 }
 
 func adminRouter() http.Handler {
