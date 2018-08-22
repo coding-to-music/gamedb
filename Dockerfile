@@ -20,5 +20,4 @@ COPY browserconfig.xml ./browserconfig.xml
 RUN touch ./google-auth.json
 RUN apk update && apk add ca-certificates nodejs curl bash
 RUN curl -L https://www.npmjs.com/install.sh | sh && npm install
-EXPOSE 80:8081
 CMD ["./steam-authority"]
