@@ -94,7 +94,7 @@ func Serve() error {
 	// File server
 	fileServer(r)
 
-	return http.ListenAndServe(":8081", r)
+	return http.ListenAndServe(":"+os.Getenv("STEAM_PORT"), r)
 }
 
 func adminRouter() http.Handler {
