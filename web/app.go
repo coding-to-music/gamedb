@@ -71,7 +71,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get achievements
-		achievementsResp,_, err := steami.Steam().GetGlobalAchievementPercentagesForApp(app.ID)
+		achievementsResp, _, err := steami.Steam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
 			logger.Error(err)
 			return
