@@ -2,6 +2,7 @@ package web
 
 import (
 	"bytes"
+	"encoding/json"
 	"html/template"
 	"math"
 	"net/http"
@@ -320,6 +321,22 @@ func (t GlobalTemplate) IsProduction() (bool) {
 
 func (t GlobalTemplate) IsAdmin() (bool) {
 	return t.request.Header.Get("Authorization") != ""
+}
+
+func (t GlobalTemplate) GetUserJSON() (string) {
+
+	stringMap := map[string]interface{}{
+		"userID":     t.UserID,
+		"userLevel":  t.UserLevel,
+		"userName":   t.UserName,
+		"isLoggedIn": t.IsLoggedIn(),
+		"isLocal":    t.IsLocal(),
+		"showAds":    t.ShowAd(),
+	}
+
+	bytesx, err := json.Marshal(stringMap)
+	logger.Error(err)
+	return string(bytesx)
 }
 
 func (t GlobalTemplate) ShowAd() (bool) {

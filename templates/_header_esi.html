@@ -1,7 +1,5 @@
 {{define "_header_esi"}}
-
 <script>
-    var user = JSON.parse('{{ .JSON }}');
+    const user = JSON.parse('{{ .GetUserJSON }}');
 </script>
-
 {{end}}
