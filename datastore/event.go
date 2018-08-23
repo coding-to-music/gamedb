@@ -8,30 +8,36 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 )
 
-type Login struct {
+const (
+	EVENT_LOGIN = "login"
+)
+
+type Event struct {
 	CreatedAt time.Time `datastore:"created_at"`
+	Type      string    `datastore:"type"`
 	PlayerID  int64     `datastore:"player_id"`
 	UserAgent string    `datastore:"user_agent,noindex"`
 	IP        string    `datastore:"ip,noindex"`
 }
 
-func (login Login) GetKey() (key *datastore.Key) {
-	return datastore.IncompleteKey(KindLogin, nil)
+func (login Event) GetKey() (key *datastore.Key) {
+	return datastore.IncompleteKey(KindEvent, nil)
 }
 
-func (login Login) GetCreatedNice() (t string) {
+func (login Event) GetCreatedNice() (t string) {
 	return login.CreatedAt.Format(helpers.DateTime)
 }
 
-func (login Login) GetCreatedUnix() int64 {
+func (login Event) GetCreatedUnix() int64 {
 	return login.CreatedAt.Unix()
 }
 
-func CreateLogin(playerID int64, r *http.Request) (err error) {
+func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) {
 
-	login := new(Login)
+	login := new(Event)
 	login.CreatedAt = time.Now()
 	login.PlayerID = playerID
+	login.Type = eventType
 	login.UserAgent = r.Header.Get("User-Agent")
 	login.IP = r.Header.Get("X-Forwarded-For")
 
@@ -44,15 +50,19 @@ func CreateLogin(playerID int64, r *http.Request) (err error) {
 	return err
 }
 
-func GetLogins(playerID int64, limit int) (logins []Login, err error) {
+func GetEvents(playerID int64, limit int, eventType string) (logins []Event, err error) {
 
 	client, ctx, err := getClient()
 	if err != nil {
 		return logins, err
 	}
 
-	q := datastore.NewQuery(KindLogin).Order("-created_at").Limit(limit)
+	q := datastore.NewQuery(KindEvent).Order("-created_at").Limit(limit)
 	q = q.Filter("player_id =", playerID)
+
+	if eventType != "" {
+		q = q.Filter("type =", eventType)
+	}
 
 	client.GetAll(ctx, q, &logins)
 

@@ -14,7 +14,7 @@ const (
 	KindArticle        = "Article"
 	KindChange         = "Change"
 	KindDonation       = "Donation"
-	KindLogin          = "Login"
+	KindEvent          = "Event"
 	KindPlayer         = "Player"
 	KindPrice          = "Price"
 	KindRank           = "Rank"

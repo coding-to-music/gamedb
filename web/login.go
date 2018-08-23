@@ -211,7 +211,7 @@ func login(w http.ResponseWriter, r *http.Request, player datastore.Player) (err
 	}
 
 	// Create login record
-	err = datastore.CreateLogin(player.PlayerID, r)
+	err = datastore.CreateEvent(r, player.PlayerID, datastore.EVENT_LOGIN)
 	if err != nil {
 		return err
 	}

@@ -40,7 +40,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player datastore.Player) {
 
-		logins, err = datastore.GetLogins(player.PlayerID, 20)
+		logins, err = datastore.GetEvents(player.PlayerID, 20, datastore.EVENT_LOGIN)
 		logger.Error(err)
 
 		wg.Done()
