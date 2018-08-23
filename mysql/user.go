@@ -36,20 +36,10 @@ func GetUser(playerID int64) (user User, err error) {
 		return user, err
 	}
 
-	if createIfMissing {
-		db.FirstOrCreate(&user, User{PlayerID: playerID})
-	} else {
-
-	}
-
+	db.FirstOrCreate(&user, User{PlayerID: playerID})
 	if db.Error != nil {
 		return user, db.Error
 	}
 
-	if app.ID == 0 {
-		return app, errors.New("no id")
-	}
-
-	return app, nil
-
+	return user, nil
 }

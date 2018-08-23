@@ -123,7 +123,12 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user
-	mysql.GetUser(player.PlayerID)
+	user, err := mysql.GetUser(player.PlayerID)
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 500, err.Error())
+		return
+	}
 
 	// Save password
 	password := r.PostForm.Get("password")
