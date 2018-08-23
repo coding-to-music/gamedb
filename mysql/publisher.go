@@ -8,14 +8,14 @@ import (
 )
 
 type Publisher struct {
-	ID           int        `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
-	CreatedAt    *time.Time `gorm:"not null;column:created_at"`
-	UpdatedAt    *time.Time `gorm:"not null;column:updated_at"`
-	DeletedAt    *time.Time `gorm:"not null;column:deleted_at"`
-	Name         string     `gorm:"not null;column:name"`
-	Apps         int        `gorm:"not null;column:apps"`
-	MeanPrice    float64    `gorm:"not null;column:mean_price"`
-	MeanDiscount float64    `gorm:"not null;column:mean_discount"`
+	ID           int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
+	CreatedAt    *time.Time `gorm:"not null"`
+	UpdatedAt    *time.Time `gorm:"not null"`
+	DeletedAt    *time.Time `gorm:""`
+	Name         string     `gorm:"not null;index:name"`
+	Apps         int        `gorm:"not null"`
+	MeanPrice    float64    `gorm:"not null"`
+	MeanDiscount float64    `gorm:"not null"`
 }
 
 func (p Publisher) GetPath() string {

@@ -5,14 +5,13 @@ import (
 )
 
 type User struct {
-	ID               int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
-	CreatedAt        *time.Time `gorm:"not null"`
-	UpdatedAt        *time.Time `gorm:"not null"`
-	PlayerID         int64      `gorm:"not null"`
-	SettingsEmail    string     `gorm:"not null"`
-	SettingsPassword string     `gorm:"not null"`
-	SettingsHidden   bool       `gorm:"not null"`
-	SettingsAlerts   bool       `gorm:"not null"`
+	PlayerID    int64      `gorm:"not null;primary_key"`
+	CreatedAt   *time.Time `gorm:"not null"`
+	UpdatedAt   *time.Time `gorm:"not null"`
+	Email       string     `gorm:"not null;index:email"`
+	Password    string     `gorm:"not null"`
+	HideProfile bool       `gorm:"not null"`
+	ShowAlerts  bool       `gorm:"not null"`
 }
 
 func GetUsersByEmail(email string) (users []User, err error) {
@@ -42,7 +41,6 @@ func GetUser(playerID int64) (user User, err error) {
 	} else {
 
 	}
-
 
 	if db.Error != nil {
 		return user, db.Error
