@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	UserID    = "id"
-	UserName  = "name"
-	UserLevel = "level"
+	PlayerID    = "id"
+	PlayerName  = "name"
+	PlayerLevel = "level"
 )
 
 var store = sessions.NewCookieStore(
@@ -137,6 +137,6 @@ func SetBadFlash(w http.ResponseWriter, r *http.Request, flash string) (err erro
 }
 
 func IsLoggedIn(r *http.Request) (val bool, err error) {
-	read, err := Read(r, UserID)
+	read, err := Read(r, PlayerID)
 	return read != "", err
 }

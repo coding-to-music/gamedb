@@ -40,11 +40,10 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Parse form
 		if err := r.ParseForm(); err != nil {
-			logger.Error(err)
 			return err
 		}
 
-		// Backup
+		// Save email so they don't need to keep typing it
 		session.Write(w, r, "login-email", r.PostForm.Get("email"))
 
 		// Recaptcha
@@ -53,7 +52,6 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			if err == recaptcha.ErrNotChecked {
 				return ErrInvalidCaptcha
 			} else {
-				logger.Error(err)
 				return err
 			}
 		}
@@ -66,31 +64,24 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			return ErrInvalidCreds
 		}
 
-		// Get players that match the email
-		players, err := datastore.GetPlayersByEmail(email)
+		// Get users that match the email
+		users, err := mysql.GetUsersByEmail(email)
 		if err != nil {
-			if err == datastore.ErrNoSuchEntity {
-				return ErrInvalidCreds
-			} else {
-				logger.Error(err)
-				return err
-			}
+			return err
 		}
 
-		if len(players) == 0 {
+		if len(users) == 0 {
 			return ErrInvalidCreds
 		}
 
 		// Check password matches
-		var player mysql.User
+		var user mysql.User
 		var success bool
-		// todo, probably dont need to loop anymore..
-		for _, v := range players {
+		for _, user := range users {
 
-			err = bcrypt.CompareHashAndPassword([]byte(v.SettingsPassword), []byte(password))
+			err = bcrypt.CompareHashAndPassword([]byte(user.SettingsPassword), []byte(password))
 			if err == nil {
 				success = true
-				player = v
 				break
 			}
 		}
@@ -99,14 +90,19 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			return ErrInvalidCreds
 		}
 
+		// Get player from user
+		player, err := datastore.GetPlayer(user.PlayerID)
+		if err != nil {
+			return errors.New("no corresponding player")
+		}
+
 		// Log user in
 		err = login(w, r, player)
 		if err != nil {
-			logger.Error(err)
 			return err
 		}
 
-		// Remove backup
+		// Remove form prefill on success
 		session.Write(w, r, "login-email", "")
 
 		return nil
@@ -114,6 +110,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	if err != nil {
+		logger.Error(err)
 		session.SetGoodFlash(w, r, err.Error())
 		http.Redirect(w, r, "/login", 302)
 	} else {
@@ -202,9 +199,9 @@ func login(w http.ResponseWriter, r *http.Request, player datastore.Player) (err
 
 	// Save session
 	err = session.WriteMany(w, r, map[string]string{
-		session.UserID:    strconv.FormatInt(player.PlayerID, 10),
-		session.UserName:  player.PersonaName,
-		session.UserLevel: strconv.Itoa(player.Level),
+		session.PlayerID:    strconv.FormatInt(player.PlayerID, 10),
+		session.PlayerName:  player.PersonaName,
+		session.PlayerLevel: strconv.Itoa(player.Level),
 	})
 	if err != nil {
 		return err

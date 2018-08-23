@@ -9,6 +9,7 @@ import (
 
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,7 +20,7 @@ var (
 
 func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
-	player, err := getPlayerForSettings(w, r)
+	player, err := getPlayerFfromSession(w, r)
 	if err != nil {
 		if err == errNotLoggedIn {
 			session.SetBadFlash(w, r, "please login")
@@ -36,7 +37,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get logins
-	var logins []datastore.Login
+	var logins []datastore.Event
 	wg.Add(1)
 	go func(player datastore.Player) {
 
@@ -101,7 +102,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	player, err := getPlayerForSettings(w, r)
+	player, err := getPlayerFfromSession(w, r)
 	if err != nil {
 		if err == errNotLoggedIn {
 			session.SetBadFlash(w, r, "please login")
@@ -120,6 +121,9 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
+
+	// Get user
+	mysql.GetUser(player.PlayerID)
 
 	// Save password
 	password := r.PostForm.Get("password")
@@ -175,13 +179,13 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 type settingsTemplate struct {
 	GlobalTemplate
 	Player    datastore.Player
-	Logins    []datastore.Login
+	Logins    []datastore.Event
 	Donations []datastore.Donation
 	Games     string
 	Messages  []interface{}
 }
 
-func getPlayerForSettings(w http.ResponseWriter, r *http.Request) (player datastore.Player, err error) {
+func getPlayerFfromSession(w http.ResponseWriter, r *http.Request) (player datastore.Player, err error) {
 
 	// Check if logged in
 	loggedIn, err := session.IsLoggedIn(r)
@@ -194,7 +198,7 @@ func getPlayerForSettings(w http.ResponseWriter, r *http.Request) (player datast
 	}
 
 	// Get session
-	id, err := session.Read(r, session.UserID)
+	id, err := session.Read(r, session.PlayerID)
 	if err != nil {
 		return player, err
 	}

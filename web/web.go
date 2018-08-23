@@ -90,11 +90,11 @@ func Serve() error {
 	r.Get("/tags", StatsTagsHandler)
 	r.Get("/websocket", websockets.Handler)
 
-	// 404
-	r.NotFound(Error404Handler)
-
 	// File server
 	fileServer(r)
+
+	// 404
+	r.NotFound(Error404Handler)
 
 	return http.ListenAndServe("0.0.0.0:"+viper.GetString("PORT"), r)
 }
@@ -271,7 +271,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Path = r.URL.Path
 
 	// User ID
-	id, err := session.Read(r, session.UserID)
+	id, err := session.Read(r, session.PlayerID)
 	logger.Error(err)
 
 	t.UserID, err = strconv.Atoi(id)
@@ -280,11 +280,11 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	// User name
-	t.UserName, err = session.Read(r, session.UserName)
+	t.UserName, err = session.Read(r, session.PlayerName)
 	logger.Error(err)
 
 	// Level
-	level, err := session.Read(r, session.UserLevel)
+	level, err := session.Read(r, session.PlayerLevel)
 	logger.Error(err)
 
 	t.UserLevel, err = strconv.Atoi(level)
