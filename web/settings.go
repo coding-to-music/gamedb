@@ -20,7 +20,7 @@ var (
 
 func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
-	player, err := getPlayerFfromSession(w, r)
+	player, err := getPlayer(r, 0)
 	if err != nil {
 		if err == errNotLoggedIn {
 			session.SetBadFlash(w, r, "please login")
@@ -37,11 +37,11 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get logins
-	var logins []datastore.Event
+	var events []datastore.Event
 	wg.Add(1)
 	go func(player datastore.Player) {
 
-		logins, err = datastore.GetEvents(player.PlayerID, 20, datastore.EVENT_LOGIN)
+		events, err = datastore.GetEvents(player.PlayerID, 20, datastore.EVENT_LOGIN)
 		logger.Error(err)
 
 		wg.Done()
@@ -86,14 +86,30 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
+	// Get User
+	var user mysql.User
+	wg.Add(1)
+	go func(player datastore.Player) {
+
+		user, err = getUser(r, 0)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+
+		wg.Done()
+
+	}(player)
+
 	// Wait
 	wg.Wait()
 
 	// Template
 	t := settingsTemplate{}
 	t.Fill(w, r, "Settings")
-	t.Logins = logins
+	t.Events = events
 	t.Player = player
+	t.User = user
 	t.Donations = donations
 	t.Games = games
 
@@ -102,7 +118,8 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	player, err := getPlayerFfromSession(w, r)
+	// Get player
+	player, err := getPlayer(r, 0)
 	if err != nil {
 		if err == errNotLoggedIn {
 			session.SetBadFlash(w, r, "please login")
@@ -115,16 +132,16 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Parse form
-	if err := r.ParseForm(); err != nil {
+	// Get user
+	user, err := getUser(r, 0)
+	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
 
-	// Get user
-	user, err := mysql.GetUser(player.PlayerID)
-	if err != nil {
+	// Parse form
+	if err := r.ParseForm(); err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
@@ -146,26 +163,26 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, "/settings", 302)
 				return
 			} else {
-				player.SettingsPassword = string(passwordBytes)
+				user.Password = string(passwordBytes)
 			}
 		}
 	}
 
 	// Save email
-	player.SettingsEmail = r.PostForm.Get("email")
+	user.Email = r.PostForm.Get("email")
 
 	// Save hidden
 	if r.PostForm.Get("hide") == "1" {
-		player.SettingsHidden = true
+		user.HideProfile = true
 	} else {
-		player.SettingsHidden = false
+		user.HideProfile = false
 	}
 
 	// Save alerts
 	if r.PostForm.Get("alerts") == "1" {
-		player.SettingsAlerts = true
+		user.ShowAlerts = true
 	} else {
-		player.SettingsAlerts = false
+		user.ShowAlerts = false
 	}
 
 	err = player.Save()
@@ -184,41 +201,70 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 type settingsTemplate struct {
 	GlobalTemplate
 	Player    datastore.Player
-	Logins    []datastore.Event
+	User      mysql.User
+	Events    []datastore.Event
 	Donations []datastore.Donation
 	Games     string
 	Messages  []interface{}
 }
 
-func getPlayerFfromSession(w http.ResponseWriter, r *http.Request) (player datastore.Player, err error) {
+func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 
 	// Check if logged in
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
-		return player, errNotLoggedIn
+		return playerID, errNotLoggedIn
 	}
 
 	if !loggedIn {
-		return player, errNotLoggedIn
+		return playerID, errNotLoggedIn
 	}
 
 	// Get session
 	id, err := session.Read(r, session.PlayerID)
 	if err != nil {
-		return player, err
+		return playerID, err
 	}
 
 	// Convert ID
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		return player, err
+		return playerID, err
 	}
 
-	// Get player
-	player, err = datastore.GetPlayer(idx)
+	return idx, nil
+}
+
+func getPlayer(r *http.Request, playerID int64) (player datastore.Player, err error) {
+
+	if playerID == 0 {
+		playerID, err = getPlayerIDFromSession(r)
+		if err != nil {
+			return player, err
+		}
+	}
+
+	player, err = datastore.GetPlayer(playerID)
 	if err != nil {
 		return player, err
 	}
 
 	return player, nil
+}
+
+func getUser(r *http.Request, playerID int64) (user mysql.User, err error) {
+
+	if playerID == 0 {
+		playerID, err = getPlayerIDFromSession(r)
+		if err != nil {
+			return user, err
+		}
+	}
+
+	user, err = mysql.GetUser(playerID)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }

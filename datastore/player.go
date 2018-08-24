@@ -296,8 +296,25 @@ func GetPlayer(id int64) (ret Player, err error) {
 	player.PlayerID = id
 
 	err = client.Get(ctx, key, &player)
+	if err != nil {
+		if err, ok := err.(*datastore.ErrFieldMismatch); ok {
 
-	return player, err
+			old := []string{
+				"settings_email",
+				"settings_password",
+				"settings_alerts",
+				"settings_hidden",
+			}
+
+			if !helpers.SliceHasString(old, err.FieldName) {
+				return player, err
+			}
+		} else {
+			return player, err
+		}
+	}
+
+	return player, nil
 }
 
 func GetPlayerByName(name string) (ret Player, err error) {
@@ -428,282 +445,61 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	// Get summary
 	wg.Add(1)
 	go func(p *Player) {
-
-		summary, _, err := steami.Steam().GetPlayer(p.PlayerID)
-		if err != nil {
-			if err, ok := err.(steam.Error); ok {
-				if err.IsHardFail() {
-					errs = append(errs, err)
-					return
-				} else {
-					logger.Error(err)
-				}
-			}
-		}
-
-		p.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
-		p.VanintyURL = path.Base(summary.ProfileURL)
-		p.RealName = summary.RealName
-		p.CountryCode = summary.LOCCountryCode
-		p.StateCode = summary.LOCStateCode
-		p.PersonaName = summary.PersonaName
-		p.TimeCreated = time.Unix(summary.TimeCreated, 0)
-		p.LastLogOff = time.Unix(summary.LastLogOff, 0)
-		p.PrimaryClanID = summary.PrimaryClanID
-
+		err = p.updateSummary()
 		wg.Done()
 	}(p)
 
 	// Get games
 	wg.Add(1)
 	go func(p *Player) {
-
-		resp, _, err := steami.Steam().GetOwnedGames(p.PlayerID)
-		if err != nil {
-			if err, ok := err.(steam.Error); ok {
-				if err.IsHardFail() {
-					errs = append(errs, err)
-					return
-				} else {
-					logger.Error(err)
-				}
-			}
-		}
-
-		p.GamesCount = len(resp.Games)
-
-		// Get playtime
-		var playtime = 0
-		for _, v := range resp.Games {
-			playtime = playtime + v.PlaytimeForever
-		}
-
-		p.PlayTime = playtime
-
-		// Encode to JSON bytes
-		bytes, err := json.Marshal(resp)
-		if err != nil {
-			logger.Error(err)
-		}
-
-		// Upload
-		if len(bytes) > maxBytesToStore {
-			storagePath := storage.PathGames(p.PlayerID)
-			err = storage.Upload(storagePath, bytes, false)
-			if err != nil {
-				logger.Error(err)
-				p.Games = ""
-			} else {
-				p.Games = storagePath
-			}
-		} else {
-			p.Games = string(bytes)
-		}
-
+		err = p.updateGames()
 		wg.Done()
 	}(p)
 
 	// Get recent games
 	wg.Add(1)
 	go func(p *Player) {
-
-		recentResponse, _, err := steami.Steam().GetRecentlyPlayedGames(p.PlayerID)
-		if err != nil {
-			if err, ok := err.(steam.Error); ok {
-				if err.IsHardFail() {
-					errs = append(errs, err)
-					return
-				} else {
-					logger.Error(err)
-				}
-			}
-		}
-
-		// Encode to JSON bytes
-		bytes, err := json.Marshal(recentResponse)
-		if err != nil {
-			logger.Error(err)
-		}
-
-		// Upload
-		if len(bytes) > maxBytesToStore {
-			storagePath := storage.PathRecentGames(p.PlayerID)
-			err = storage.Upload(storagePath, bytes, false)
-			if err != nil {
-				logger.Error(err)
-				p.GamesRecent = ""
-			} else {
-				p.GamesRecent = storagePath
-			}
-		} else {
-			p.GamesRecent = string(bytes)
-		}
-
+		err = p.updateRecentGames()
 		wg.Done()
 	}(p)
 
 	// Get badges
 	wg.Add(1)
 	go func(p *Player) {
-
-		badgesResponse, _, err := steami.Steam().GetBadges(p.PlayerID)
-		if err != nil {
-			if err, ok := err.(steam.Error); ok {
-				if err.IsHardFail() {
-					errs = append(errs, err)
-					return
-				} else {
-					logger.Error(err)
-				}
-			}
-		}
-
-		p.BadgesCount = len(badgesResponse.Badges)
-
-		// Encode to JSON bytes
-		bytes, err := json.Marshal(badgesResponse)
-		if err != nil {
-			logger.Error(err)
-		}
-
-		// Upload
-		if len(bytes) > maxBytesToStore {
-			storagePath := storage.PathBadges(p.PlayerID)
-			err = storage.Upload(storagePath, bytes, false)
-			if err != nil {
-				logger.Error(err)
-				p.Badges = ""
-			} else {
-				p.Badges = storagePath
-			}
-		} else {
-			p.Badges = string(bytes)
-		}
-
+		err = p.updateBades()
 		wg.Done()
 	}(p)
 
 	// Get friends
 	wg.Add(1)
 	go func(p *Player) {
-
-		resp, _, err := steami.Steam().GetFriendList(p.PlayerID)
-		if err != nil {
-			if err, ok := err.(steam.Error); ok {
-				if err.IsHardFail() {
-					errs = append(errs, err)
-					return
-				} else {
-					logger.Error(err)
-				}
-			}
-		}
-
-		p.FriendsCount = len(resp.Friends)
-
-		// Encode to JSON bytes
-		bytes, err := json.Marshal(resp)
-		if err != nil {
-			logger.Error(err)
-		}
-
-		// Upload
-		if len(bytes) > maxBytesToStore {
-			storagePath := storage.PathFriends(p.PlayerID)
-			err = storage.Upload(storagePath, bytes, false)
-			if err != nil {
-				logger.Error(err)
-				p.Friends = ""
-			} else {
-				p.Friends = storagePath
-			}
-		} else {
-			p.Friends = string(bytes)
-		}
-
+		err = p.updateFriends()
 		wg.Done()
 	}(p)
 
 	// Get level
 	wg.Add(1)
 	go func(p *Player) {
-
-		level, _, err := steami.Steam().GetSteamLevel(p.PlayerID)
-		if err != nil {
-			if err, ok := err.(steam.Error); ok {
-				if err.IsHardFail() {
-					errs = append(errs, err)
-					return
-				} else {
-					logger.Error(err)
-				}
-			}
-		}
-
-		p.Level = level
-
+		err = p.updateLevel()
 		wg.Done()
 	}(p)
 
 	// Get bans
 	wg.Add(1)
 	go func(p *Player) {
-
-		bans, _, err := steami.Steam().GetPlayerBans(p.PlayerID)
-		if err != nil {
-			if err, ok := err.(steam.Error); ok {
-				if err.IsHardFail() {
-					errs = append(errs, err)
-					return
-				} else {
-					logger.Error(err)
-				}
-			}
-		}
-
-		p.NumberOfGameBans = bans.NumberOfGameBans
-		p.NumberOfVACBans = bans.NumberOfVACBans
-
-		// Encode to JSON bytes
-		bytes, err := json.Marshal(bans)
-		if err != nil {
-			logger.Error(err)
-		}
-
-		p.Bans = string(bytes)
-
+		err = p.updateBans()
 		wg.Done()
 	}(p)
 
 	// Get groups
 	wg.Add(1)
 	go func(p *Player) {
-
-		resp, _, err := steami.Steam().GetUserGroupList(p.PlayerID)
-		if err != nil {
-			if err, ok := err.(steam.Error); ok {
-				if err.IsHardFail() {
-					errs = append(errs, err)
-					return
-				} else {
-					logger.Error(err)
-				}
-			}
-		}
-
-		p.Groups = resp.GetIDs()
-
+		p.updateGroups()
 		wg.Done()
 	}(p)
 
 	// Wait
 	wg.Wait()
-
-	// Fix dates
-	p.UpdatedAt = time.Now()
-	if p.CreatedAt.IsZero() {
-		p.CreatedAt = time.Now()
-	}
 
 	err = p.Save()
 	if err != nil {
@@ -713,10 +509,207 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	return errs
 }
 
+func (p *Player) updateSummary() (error) {
+
+	summary, _, err := steami.Steam().GetPlayer(p.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	p.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
+	p.VanintyURL = path.Base(summary.ProfileURL)
+	p.RealName = summary.RealName
+	p.CountryCode = summary.LOCCountryCode
+	p.StateCode = summary.LOCStateCode
+	p.PersonaName = summary.PersonaName
+	p.TimeCreated = time.Unix(summary.TimeCreated, 0)
+	p.LastLogOff = time.Unix(summary.LastLogOff, 0)
+	p.PrimaryClanID = summary.PrimaryClanID
+
+	return err
+}
+
+func (p *Player) updateGames() (error) {
+
+	resp, _, err := steami.Steam().GetOwnedGames(p.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	p.GamesCount = len(resp.Games)
+
+	// Get playtime
+	var playtime = 0
+	for _, v := range resp.Games {
+		playtime = playtime + v.PlaytimeForever
+	}
+
+	p.PlayTime = playtime
+
+	// Encode to JSON bytes
+	bytes, err := json.Marshal(resp)
+	if err != nil {
+		return err
+	}
+
+	// Upload
+	if len(bytes) > maxBytesToStore {
+		storagePath := storage.PathGames(p.PlayerID)
+		err = storage.Upload(storagePath, bytes, false)
+		if err != nil {
+			return err
+		}
+		p.Games = storagePath
+	} else {
+		p.Games = string(bytes)
+	}
+
+	return nil
+}
+
+func (p *Player) updateRecentGames() (error) {
+
+	recentResponse, _, err := steami.Steam().GetRecentlyPlayedGames(p.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	// Encode to JSON bytes
+	bytes, err := json.Marshal(recentResponse)
+	if err != nil {
+		return err
+	}
+
+	// Upload
+	if len(bytes) > maxBytesToStore {
+		storagePath := storage.PathRecentGames(p.PlayerID)
+		err = storage.Upload(storagePath, bytes, false)
+		if err != nil {
+			return err
+		}
+		p.GamesRecent = storagePath
+	} else {
+		p.GamesRecent = string(bytes)
+	}
+
+	return nil
+}
+
+func (p *Player) updateBades() (error) {
+
+	badgesResponse, _, err := steami.Steam().GetBadges(p.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	p.BadgesCount = len(badgesResponse.Badges)
+
+	// Encode to JSON bytes
+	bytes, err := json.Marshal(badgesResponse)
+	if err != nil {
+		return err
+	}
+
+	// Upload
+	if len(bytes) > maxBytesToStore {
+		storagePath := storage.PathBadges(p.PlayerID)
+		err = storage.Upload(storagePath, bytes, false)
+		if err != nil {
+			return err
+		}
+		p.Badges = storagePath
+	} else {
+		p.Badges = string(bytes)
+	}
+
+	return nil
+}
+
+func (p *Player) updateFriends() (error) {
+
+	resp, _, err := steami.Steam().GetFriendList(p.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	p.FriendsCount = len(resp.Friends)
+
+	// Encode to JSON bytes
+	bytes, err := json.Marshal(resp)
+	if err != nil {
+		return err
+	}
+
+	// Upload
+	if len(bytes) > maxBytesToStore {
+		storagePath := storage.PathFriends(p.PlayerID)
+		err = storage.Upload(storagePath, bytes, false)
+		if err != nil {
+			return err
+		}
+		p.Friends = storagePath
+	} else {
+		p.Friends = string(bytes)
+	}
+
+	return nil
+}
+
+func (p *Player) updateLevel() (error) {
+
+	level, _, err := steami.Steam().GetSteamLevel(p.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	p.Level = level
+
+	return nil
+}
+
+func (p *Player) updateBans() (error) {
+
+	bans, _, err := steami.Steam().GetPlayerBans(p.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	p.NumberOfGameBans = bans.NumberOfGameBans
+	p.NumberOfVACBans = bans.NumberOfVACBans
+
+	// Encode to JSON bytes
+	bytes, err := json.Marshal(bans)
+	if err != nil {
+		return err
+	}
+
+	p.Bans = string(bytes)
+
+	return nil
+}
+
+func (p *Player) updateGroups() (error) {
+
+	resp, _, err := steami.Steam().GetUserGroupList(p.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	p.Groups = resp.GetIDs()
+
+	return nil
+}
+
 func (p *Player) Save() (err error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
 		return ErrInvalidID
+	}
+
+	// Fix dates
+	p.UpdatedAt = time.Now()
+	if p.CreatedAt.IsZero() {
+		p.CreatedAt = time.Now()
 	}
 
 	_, err = SaveKind(p.GetKey(), p)

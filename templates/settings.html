@@ -21,7 +21,7 @@
                     <a class="nav-link" data-toggle="tab" href="#donations" role="tab">Donations ({{ len .Donations }})</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#logins" role="tab">Logins ({{ len .Logins }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#events" role="tab">Events ({{ len .Events }})</a>
                 </li>
             </ul>
 
@@ -42,7 +42,7 @@
 
                                 <div class="form-group">
                                     <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" placeholder="Email" autofocus name="email" value="{{.Player.SettingsEmail}}">
+                                    <input type="email" class="form-control" id="email" placeholder="Email" autofocus name="email" value="{{ .User.Email }}">
                                     <small id="emailHelp" class="form-text text-muted">Currently only used for login purposes.</small>
                                 </div>
 
@@ -59,11 +59,11 @@
                             <div class="col-12">
 
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{if .Player.SettingsHidden}}checked{{end}}>
+                                    <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{ if .User.HideProfile }}checked{{ end }}>
                                     <label class="form-check-label" for="hide-profile">Hide my profile from all areas</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{if .Player.SettingsAlerts}}checked{{end}}>
+                                    <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{ if .User.ShowAlerts }}checked{{ end }}>
                                     <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>
                                 </div>
                                 <button type="submit" class="btn btn-success mt-3">Save</button>
@@ -103,21 +103,23 @@
 
                 </div>
 
-            {{/* Logins */}}
-                <div class="tab-pane" id="logins" role="tabpanel">
+            {{/* Events */}}
+                <div class="tab-pane" id="events" role="tabpanel">
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col" data-sort="desc">Date</th>
+                                <th scope="col">Type</th>
                                 <th scope="col">IP</th>
                                 <th scope="col">User Agent</th>
                             </tr>
                             </thead>
-                        {{ range $key, $value := .Logins }}
+                        {{ range $key, $value := .Events }}
                             <tr>
                                 <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
+                                <td>{{ .Type }}</td>
                                 <td>{{ .IP }}</td>
                                 <td nowrap="nowrap">
                                     <span data-toggle="tooltip" data-placement="top" title="{{ .UserAgent }}">{{ printf "%.50s" .UserAgent }}&hellip;</span>

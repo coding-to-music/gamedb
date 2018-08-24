@@ -79,7 +79,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		var success bool
 		for _, user := range users {
 
-			err = bcrypt.CompareHashAndPassword([]byte(user.SettingsPassword), []byte(password))
+			err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 			if err == nil {
 				success = true
 				break
