@@ -21,7 +21,8 @@ import (
 const maxBytesToStore = 1024 * 10
 
 var (
-	ErrInvalidID = errors.New("invalid id")
+	ErrInvalidID   = errors.New("invalid id")
+	ErrInvalidName = errors.New("invalid name")
 )
 
 var (
@@ -29,33 +30,33 @@ var (
 )
 
 type Player struct {
-	CreatedAt        time.Time `datastore:"created_at"`                //
-	UpdatedAt        time.Time `datastore:"updated_at"`                //
-	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"`  //
-	PlayerID         int64     `datastore:"player_id"`                 //
-	VanintyURL       string    `datastore:"vanity_url"`                //
-	Avatar           string    `datastore:"avatar,noindex"`            //
-	PersonaName      string    `datastore:"persona_name,noindex"`      //
-	RealName         string    `datastore:"real_name,noindex"`         //
-	CountryCode      string    `datastore:"country_code"`              //
-	StateCode        string    `datastore:"status_code"`               //
-	Level            int       `datastore:"level"`                     //
-	Games            string    `datastore:"games,noindex"`             // JSON
-	GamesRecent      string    `datastore:"games_recent,noindex"`      // JSON
-	GamesCount       int       `datastore:"games_count"`               //
-	Badges           string    `datastore:"badges,noindex"`            // JSON
-	BadgesCount      int       `datastore:"badges_count"`              //
-	PlayTime         int       `datastore:"play_time"`                 //
-	TimeCreated      time.Time `datastore:"time_created"`              //
-	LastLogOff       time.Time `datastore:"time_logged_off,noindex"`   //
-	PrimaryClanID    int       `datastore:"primary_clan_id,noindex"`   //
-	Friends          string    `datastore:"friends,noindex"`           // JSON
-	FriendsCount     int       `datastore:"friends_count"`             //
-	Donated          int       `datastore:"donated"`                   //
-	Bans             string    `datastore:"bans"`                      // JSON
-	NumberOfVACBans  int       `datastore:"bans_cav"`                  //
-	NumberOfGameBans int       `datastore:"bans_game"`                 //
-	Groups           []int     `datastore:"groups,noindex"`            //
+	CreatedAt        time.Time `datastore:"created_at"`               //
+	UpdatedAt        time.Time `datastore:"updated_at"`               //
+	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"` //
+	PlayerID         int64     `datastore:"player_id"`                //
+	VanintyURL       string    `datastore:"vanity_url"`               //
+	Avatar           string    `datastore:"avatar,noindex"`           //
+	PersonaName      string    `datastore:"persona_name,noindex"`     //
+	RealName         string    `datastore:"real_name,noindex"`        //
+	CountryCode      string    `datastore:"country_code"`             //
+	StateCode        string    `datastore:"status_code"`              //
+	Level            int       `datastore:"level"`                    //
+	Games            string    `datastore:"games,noindex"`            // JSON
+	GamesRecent      string    `datastore:"games_recent,noindex"`     // JSON
+	GamesCount       int       `datastore:"games_count"`              //
+	Badges           string    `datastore:"badges,noindex"`           // JSON
+	BadgesCount      int       `datastore:"badges_count"`             //
+	PlayTime         int       `datastore:"play_time"`                //
+	TimeCreated      time.Time `datastore:"time_created"`             //
+	LastLogOff       time.Time `datastore:"time_logged_off,noindex"`  //
+	PrimaryClanID    int       `datastore:"primary_clan_id,noindex"`  //
+	Friends          string    `datastore:"friends,noindex"`          // JSON
+	FriendsCount     int       `datastore:"friends_count"`            //
+	Donated          int       `datastore:"donated"`                  //
+	Bans             string    `datastore:"bans"`                     // JSON
+	NumberOfVACBans  int       `datastore:"bans_cav"`                 //
+	NumberOfGameBans int       `datastore:"bans_game"`                //
+	Groups           []int     `datastore:"groups,noindex"`           //
 }
 
 func (p Player) GetKey() (key *datastore.Key) {
@@ -300,6 +301,10 @@ func GetPlayer(id int64) (ret Player, err error) {
 }
 
 func GetPlayerByName(name string) (ret Player, err error) {
+
+	if len(name) == 0 {
+		return ret, ErrInvalidName
+	}
 
 	client, ctx, err := getClient()
 	if err != nil {
