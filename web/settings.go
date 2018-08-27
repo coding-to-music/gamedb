@@ -118,20 +118,6 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Get player
-	player, err := getPlayer(r, 0)
-	if err != nil {
-		if err == errNotLoggedIn {
-			session.SetBadFlash(w, r, "please login")
-			http.Redirect(w, r, "/login", 302)
-			return
-		} else {
-			logger.Error(err)
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
-		}
-	}
-
 	// Get user
 	user, err := getUser(r, 0)
 	if err != nil {
@@ -185,7 +171,7 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		user.ShowAlerts = false
 	}
 
-	err = player.Save()
+	err = user.SaveOrUpdateUser()
 	if err != nil {
 		logger.Error(err)
 		session.SetBadFlash(w, r, "Something went wrong saving settings")

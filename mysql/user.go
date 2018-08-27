@@ -43,3 +43,19 @@ func GetUser(playerID int64) (user User, err error) {
 
 	return user, nil
 }
+
+func (u User) SaveOrUpdateUser() (err error) {
+
+	db, err := GetDB()
+	if err != nil {
+		return err
+	}
+
+	user := new(User)
+	db.Assign(u).FirstOrCreate(user, User{PlayerID: u.PlayerID})
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}
