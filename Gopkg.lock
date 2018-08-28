@@ -56,6 +56,14 @@
   revision = "d5ac06b79388a5112abd6f9029857d106aec4616"
 
 [[projects]]
+  digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
+  name = "github.com/Masterminds/squirrel"
+  packages = ["."]
+  pruneopts = ""
+  revision = "a6b93000bd219143c56c16e6cb1c4b91da3f224b"
+  version = "v1.0"
+
+[[projects]]
   digest = "1:b5f28f7eda54d2695765c778c951a2ace52c06afb7da1f7e0c7485baa5b02100"
   name = "github.com/beevik/etree"
   packages = ["."]
@@ -313,6 +321,22 @@
   pruneopts = ""
   revision = "d6898124de917583f5ff5592ef931d1dfe0ddc05"
   version = "0.2.6"
+
+[[projects]]
+  branch = "master"
+  digest = "1:0fe2dd9762093b9d72e4c9eeb4f0832fb6582428cee2c62b074e1c9aa68564d8"
+  name = "github.com/lann/builder"
+  packages = ["."]
+  pruneopts = ""
+  revision = "47ae307949d02aa1f1069fdafc00ca08e1dbabac"
+
+[[projects]]
+  branch = "master"
+  digest = "1:bfb195bbfe4edff0d8a078dd59d7567aae6f3c0d1a2cdf855fdcdd23c9b3bd8d"
+  name = "github.com/lann/ps"
+  packages = ["."]
+  pruneopts = ""
+  revision = "62de8c46ede02a7675c4c79c84883eb164cb71e3"
 
 [[projects]]
   digest = "1:961dc3b1d11f969370533390fdf203813162980c858e1dabe827b60940c909a5"
@@ -742,6 +766,7 @@
     "github.com/99designs/basicauth-go",
     "github.com/Jleagle/recaptcha-go",
     "github.com/Jleagle/steam-go/steam",
+    "github.com/Masterminds/squirrel",
     "github.com/bradfitz/gomemcache/memcache",
     "github.com/bwmarrin/discordgo",
     "github.com/dustin/go-humanize",
