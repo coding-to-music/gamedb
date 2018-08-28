@@ -2,8 +2,6 @@ package mysql
 
 import (
 	"time"
-
-	"github.com/Masterminds/squirrel"
 )
 
 type User struct {
@@ -48,27 +46,7 @@ func GetUser(playerID int64) (user User, err error) {
 
 func (u User) SaveOrUpdateUser() (err error) {
 
-	db, err := GetDB()
-	if err != nil {
-		return err
-	}
-
-	squirrel.coun
-
-	builder := squirrel.Select("id").Where("id = ?", u.PlayerID)
-	row, err := SelectFirst(builder)
-
-
-	updateBuilder := squirrel.Update("users")
-	updateBuilder.Set("DateScanned", time.Now().Unix())
-	updateBuilder.Where("player_id = ?", u.PlayerID)
-	updateBuilder.on
-
-	user := new(User)
-	db.Assign(u).FirstOrCreate(user, User{PlayerID: u.PlayerID})
-	if db.Error != nil {
-		return db.Error
-	}
+	result, err := RawQuery("INSERT INTO users (player_id, email, password, hide_profile, show_alerts) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE machine_name=VALUES(machine_name);")
 
 	return nil
 }

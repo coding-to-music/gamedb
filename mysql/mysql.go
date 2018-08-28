@@ -139,8 +139,19 @@ func Update(builder squirrel.UpdateBuilder) (result sql.Result, err error) {
 	return result, nil
 }
 
-func RawQuery() {
+func RawQuery(query string, args []interface{}) (result sql.Result, err error) {
 
+	prep, err := getPrepareStatement(query)
+	if err != nil {
+		return result, err
+	}
+
+	result, err = prep.Exec(args...)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
 
 var mysqlPrepareStatements map[string]*sql.Stmt
