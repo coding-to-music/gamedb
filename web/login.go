@@ -77,11 +77,12 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Check password matches
 		var user mysql.User
 		var success bool
-		for _, user := range users {
+		for _, v := range users {
 
-			err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+			err = bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(password))
 			if err == nil {
 				success = true
+				user = v
 				break
 			}
 		}
