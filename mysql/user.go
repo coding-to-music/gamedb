@@ -21,7 +21,7 @@ func GetUsersByEmail(email string) (users []User, err error) {
 		return users, err
 	}
 
-	db = db.Limit(100).Where("id = (?)", email).Order("created_at DESC").Find(&users)
+	db = db.Limit(100).Where("email = (?)", email).Order("created_at ASC").Find(&users)
 	if db.Error != nil {
 		return users, db.Error
 	}
