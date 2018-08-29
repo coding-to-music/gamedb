@@ -237,6 +237,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"unix":       func(t time.Time) int64 { return t.Unix() },
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
 		"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
+		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 	}
 }
 

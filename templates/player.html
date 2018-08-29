@@ -229,7 +229,7 @@
                             <th scope="row">This Level</th>
                             <td>
                                 <div class="progress">
-                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{ .Badges.GetLoadingBar }}%">{{ .Badges.GetPercentOfLevel }}%</div>
+                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{ max 5 .Badges.GetPercentOfLevel }}%">{{ .Badges.GetPercentOfLevel }}%</div>
                                 </div>
                             </td>
                         </tr>

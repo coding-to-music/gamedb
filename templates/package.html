@@ -14,7 +14,7 @@
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{len .Package.GetApps}})</a>
+                    <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{ len .Package.GetAppIDs }})</a>
                 </li>
             {{if gt .PricesCount 0}}
                 <li class="nav-item">
@@ -56,7 +56,7 @@
                                     </tr>
                                     <tr>
                                         <td>Change ID</td>
-                                        <td><a href="/changes/{{ .Package.ChangeID }}">{{ comma .Package.ChangeID }}</a></td>
+                                        <td><a href="/changes/{{ .Package.PICSChangeID }}">{{ comma .Package.PICSChangeID }}</a></td>
                                     </tr>
                                     <tr>
                                         <td>Platforms</td>

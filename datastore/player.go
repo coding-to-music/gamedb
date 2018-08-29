@@ -124,18 +124,19 @@ func (p Player) GetFlag() string {
 
 func (p Player) GetGames() (games []steam.OwnedGame, err error) {
 
-	var bytes []byte
+	if len(p.Games) > 0 {
 
-	if strings.HasPrefix(p.Games, "/") {
-		bytes, err = storage.Download(storage.PathGames(p.PlayerID))
-		if err != nil {
-			return games, err
+		var bytes []byte
+
+		if strings.HasPrefix(p.Games, "/") {
+			bytes, err = storage.Download(storage.PathGames(p.PlayerID))
+			if err != nil {
+				return games, err
+			}
+		} else {
+			bytes = []byte(p.Games)
 		}
-	} else {
-		bytes = []byte(p.Games)
-	}
 
-	if len(bytes) > 0 {
 		err = json.Unmarshal(bytes, &games)
 		if err != nil {
 			if strings.Contains(err.Error(), "cannot unmarshal") {
@@ -208,6 +209,10 @@ func (p Player) GetFriends() (friends steam.FriendsList, err error) {
 
 func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
 
+	if p.GamesRecent == "" {
+		return
+	}
+
 	var bytes []byte
 
 	if strings.HasPrefix(p.GamesRecent, "/") {
@@ -219,16 +224,14 @@ func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
 		bytes = []byte(p.GamesRecent)
 	}
 
-	if len(bytes) > 0 {
-		err = json.Unmarshal(bytes, &games)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + string(bytes))
-			} else {
-				logger.Error(err)
-			}
-			return games, err
+	err = json.Unmarshal(bytes, &games)
+	if err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			logger.Info(err.Error() + " - " + string(bytes))
+		} else {
+			logger.Error(err)
 		}
+		return games, err
 	}
 
 	return games, nil
@@ -236,7 +239,7 @@ func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
 
 func (p Player) GetBans() (bans steam.GetPlayerBanResponse, err error) {
 
-	bytes := []byte(p.GamesRecent)
+	bytes := []byte(p.Bans)
 
 	if len(bytes) > 0 {
 		err = json.Unmarshal(bytes, &bans)
@@ -374,7 +377,12 @@ func GetPlayers(order string, limit int) (players []Player, err error) {
 		return players, err
 	}
 
-	q := datastore.NewQuery(KindPlayer).Order(order).Limit(limit)
+	q := datastore.NewQuery(KindPlayer).Order(order)
+
+	if limit > 0 {
+		q = q.Limit(limit)
+	}
+
 	_, err = client.GetAll(ctx, q, &players)
 
 	return players, err
@@ -446,6 +454,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateSummary()
+		logger.Error(err)
 		wg.Done()
 	}(p)
 
@@ -453,6 +462,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateGames()
+		logger.Error(err)
 		wg.Done()
 	}(p)
 
@@ -460,6 +470,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateRecentGames()
+		logger.Error(err)
 		wg.Done()
 	}(p)
 
@@ -467,6 +478,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateBades()
+		logger.Error(err)
 		wg.Done()
 	}(p)
 
@@ -474,6 +486,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateFriends()
+		logger.Error(err)
 		wg.Done()
 	}(p)
 
@@ -481,6 +494,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateLevel()
+		logger.Error(err)
 		wg.Done()
 	}(p)
 
@@ -488,6 +502,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateBans()
+		logger.Error(err)
 		wg.Done()
 	}(p)
 
@@ -495,6 +510,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		p.updateGroups()
+		logger.Error(err)
 		wg.Done()
 	}(p)
 
@@ -547,7 +563,7 @@ func (p *Player) updateGames() (error) {
 	p.PlayTime = playtime
 
 	// Encode to JSON bytes
-	bytes, err := json.Marshal(resp)
+	bytes, err := json.Marshal(resp.Games)
 	if err != nil {
 		return err
 	}
@@ -575,7 +591,7 @@ func (p *Player) updateRecentGames() (error) {
 	}
 
 	// Encode to JSON bytes
-	bytes, err := json.Marshal(recentResponse)
+	bytes, err := json.Marshal(recentResponse.Games)
 	if err != nil {
 		return err
 	}

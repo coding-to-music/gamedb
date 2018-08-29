@@ -23,12 +23,12 @@
                     </thead>
                 {{ range $key, $value := .Packages }}
                     <tr data-link="/packages/{{ .ID }}">
-                        <td>{{.GetName}}</td>
-                        <td>{{.GetBillingType}}</td>
-                        <td>{{.GetLicenseType}}</td>
-                        <td>{{.GetStatus}}</td>
-                        <td>{{len .GetApps}}</td>
-                        <td data-sort="{{.GetCreatedUnix}}" nowrap="nowrap">{{.GetCreatedNice}}</td>
+                        <td>{{ .GetName }}</td>
+                        <td>{{ .GetBillingType }}</td>
+                        <td>{{ .GetLicenseType }}</td>
+                        <td>{{ .GetStatus }}</td>
+                        <td>{{ len .GetAppIDs }}</td>
+                        <td data-sort="{{ .GetCreatedUnix }}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
                     </tr>
                 {{ end }}
                 </table>
