@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
@@ -10,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	ds "cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/datastore"
@@ -48,6 +50,8 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminPublishers()
 	case "disable-consumers":
 		go adminDisableConsumers()
+	case "dev":
+		go adminDev()
 	}
 
 	// Redirect away after action
@@ -733,4 +737,35 @@ func adminMemcache() {
 	logger.Error(err)
 
 	logger.Info("Memcache wiped")
+}
+
+func adminDev() {
+
+	return
+
+	logger.Info("Dev")
+
+	players, err := datastore.GetPlayers("__key__", 0)
+
+	logger.Info("Got players")
+
+	if err != nil {
+
+		logger.Error(err)
+
+		if _, ok := err.(*ds.ErrFieldMismatch); ok {
+
+		} else {
+			return
+		}
+	}
+
+	for _, v := range players {
+		v.Games = ""
+		err := v.Save()
+		logger.Error(err)
+		fmt.Print(".")
+	}
+
+	logger.Info("Done")
 }
