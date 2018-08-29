@@ -16,7 +16,7 @@ func Steam() (*steam.Steam) {
 		s := steam.Steam{
 			Key:        os.Getenv("STEAM_API_KEY"),
 			LogChannel: steamLogs,
-			Throttle:   true,
+			Throttle:   false, // todo, this doesnt work!
 			Format:     "json",
 		}
 
