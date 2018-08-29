@@ -196,15 +196,17 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get badges
-	var badges steam.BadgesResponse
+	var badges steam.BadgesInfo
 	wg.Add(1)
 	go func(player datastore.Player) {
 
-		badges, err = player.GetBadges()
+		resp, err := player.GetBadges()
 		if err != nil {
 			logger.Error(err)
 			return
 		}
+
+		badges = resp.Response
 
 		wg.Done()
 	}(player)
@@ -262,7 +264,7 @@ type playerTemplate struct {
 	Games       map[int]*playerAppTemplate
 	GameStats   playerAppStatsTemplate
 	Ranks       playerRanksTemplate
-	Badges      steam.BadgesResponse
+	Badges      steam.BadgesInfo
 	RecentGames []steam.RecentlyPlayedGame
 	Bans        steam.GetPlayerBanResponse
 }

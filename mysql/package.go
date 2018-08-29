@@ -16,41 +16,41 @@ import (
 )
 
 type Package struct {
-	ID        int        `gorm:"not null;column:id;primary_key"` //
-	CreatedAt *time.Time `gorm:"not null;column:created_at"`     //
-	UpdatedAt *time.Time `gorm:"not null;column:updated_at"`     //
+	ID        int        `gorm:"not null;primary_key"` //
+	CreatedAt *time.Time `gorm:"not null"`             //
+	UpdatedAt *time.Time `gorm:"not null"`             //
 
-	PICSName        string `gorm:"not null;column:name"`                   //
-	PICSChangeID    int    `gorm:"not null;column:change_id"`              //
-	PICSBillingType int8   `gorm:"not null;column:billing_type"`           //
-	PICSLicenseType int8   `gorm:"not null;column:license_type"`           //
-	PICSStatus      int8   `gorm:"not null;column:status"`                 //
-	PICSExtended    string `gorm:"not null;column:extended;default:'{}'"`  // JSON (TEXT)
-	PICSAppIDs      string `gorm:"not null;column:app_ids;default:'[]'"`   // JSON
-	PICSAppItems    string `gorm:"not null;column:app_items;default:'{}'"` // JSON (TEXT)
-	PICSDepotIDs    string `gorm:"not null;column:depot_ids;default:'[]'"` // JSON
-	PICSRaw         string `gorm:"not null;column:raw_pics;default:'{}'"`  // JSON (TEXT)
+	PICSName        string `gorm:"not null"`              //
+	PICSChangeID    int    `gorm:"not null"`              //
+	PICSBillingType int8   `gorm:"not null"`              //
+	PICSLicenseType int8   `gorm:"not null"`              //
+	PICSStatus      int8   `gorm:"not null"`              //
+	PICSExtended    string `gorm:"not null;default:'{}'"` // JSON (TEXT)
+	PICSAppIDs      string `gorm:"not null;default:'[]'"` // JSON
+	PICSAppItems    string `gorm:"not null;default:'{}'"` // JSON (TEXT)
+	PICSDepotIDs    string `gorm:"not null;default:'[]'"` // JSON
+	PICSRaw         string `gorm:"not null;default:'{}'"` // JSON (TEXT)
 
-	ImagePage       string `gorm:"not null;column:image_page"`              //
-	ImageHeader     string `gorm:"not null;column:image_header"`            //
-	ImageLogo       string `gorm:"not null;column:image_logo"`              //
-	PurchaseText    string `gorm:"not null;column:purchase_text"`           //
-	PriceInitial    int    `gorm:"not null;column:price_initial"`           //
-	PriceFinal      int    `gorm:"not null;column:price_final"`             //
-	PriceDiscount   int    `gorm:"not null;column:price_discount"`          //
-	PriceIndividual int    `gorm:"not null;column:price_individual"`        //
-	Controller      string `gorm:"not null;column:controller;default:'{}'"` // JSON (TEXT)
-	ComingSoon      bool   `gorm:"not null;column:coming_soon"`             //
-	ReleaseDate     string `gorm:"not null;column:release_date"`            //
-	Platforms       string `gorm:"not null;column:platforms;default:'[]'"`  // JSON
+	ImagePage       string `gorm:"not null"`              //
+	ImageHeader     string `gorm:"not null"`              //
+	ImageLogo       string `gorm:"not null"`              //
+	PurchaseText    string `gorm:"not null"`              //
+	PriceInitial    int    `gorm:"not null"`              //
+	PriceFinal      int    `gorm:"not null"`              //
+	PriceDiscount   int    `gorm:"not null"`              //
+	PriceIndividual int    `gorm:"not null"`              //
+	Controller      string `gorm:"not null;default:'{}'"` // JSON (TEXT)
+	ComingSoon      bool   `gorm:"not null"`              //
+	ReleaseDate     string `gorm:"not null"`              //
+	Platforms       string `gorm:"not null;default:'[]'"` // JSON
 }
 
 func GetDefaultPackageJSON() Package {
 	return Package{
-		PICSAppIDs:   "[]",
-		PICSExtended: "{}",
-		Controller:   "{}",
-		Platforms:    "[]",
+		//PICSAppIDs:   "[]",
+		//PICSExtended: "{}",
+		//Controller:   "{}",
+		//Platforms:    "[]",
 	}
 }
 
@@ -182,6 +182,10 @@ func (pack Package) GetComingSoon() string {
 
 func (pack Package) GetAppIDs() (apps []int, err error) {
 
+	if pack.PICSAppIDs == "" {
+		return
+	}
+
 	bytes := []byte(pack.PICSAppIDs)
 	if err := json.Unmarshal(bytes, &apps); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
@@ -240,6 +244,10 @@ func (pack *Package) SetExtended(extended Extended) (err error) {
 }
 
 func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
+
+	if pack.PICSExtended == "" {
+		return
+	}
 
 	extended = make(map[string]interface{})
 
@@ -319,6 +327,10 @@ func (pack Package) GetControllerNice() (ret map[string]interface{}, err error) 
 
 func (pack Package) GetPlatforms() (platforms []string, err error) {
 
+	if pack.Platforms == "" {
+		return
+	}
+
 	bytes := []byte(pack.Platforms)
 	if err := json.Unmarshal(bytes, &platforms); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
@@ -372,7 +384,7 @@ func GetPackage(id int) (pack Package, err error) {
 func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 
 	if len(ids) < 1 {
-		return packages, nil
+		return
 	}
 
 	db, err := GetDB()
@@ -520,19 +532,19 @@ func (pack *Package) Update() (errs []error) {
 }
 
 var PackageExtendedKeys = map[string]string{
-	"allowcrossregiontradingandgifting":     "Allow Cross Region Trading & Gifting",
-	"allowpurchasefromretrictedcountries":   "Allow Purchase From Restricted Countries",
-	"allowpurchasefromrestrictedcountries":  "Allow Purchase From Restricted Countries",
-	"allowpurchaseinrestrictedcountries":    "Allow Purchase In Restricted Countries",
-	"allowpurchaserestrictedcountries":      "Allow Purchase Restricted Countries",
-	"allowrunincountries":                   "Allow Run Inc Cuntries",
-	"alwayscountasowned":                    "Always Count As Owned",
-	"alwayscountsasowned":                   "Always Counts As Owned",
-	"alwayscountsasunowned":                 "Always Counts As Unowned",
-	"appid":                                 "App ID",
-	"appidownedrequired":                    "App ID Owned Required",
-	"billingagreementtype":                  "Billing Agreement Type",
-	"blah":                                  "Blah",
+	"allowcrossregiontradingandgifting":    "Allow Cross Region Trading & Gifting",
+	"allowpurchasefromretrictedcountries":  "Allow Purchase From Restricted Countries",
+	"allowpurchasefromrestrictedcountries": "Allow Purchase From Restricted Countries",
+	"allowpurchaseinrestrictedcountries":   "Allow Purchase In Restricted Countries",
+	"allowpurchaserestrictedcountries":     "Allow Purchase Restricted Countries",
+	"allowrunincountries":                  "Allow Run Inc Cuntries",
+	"alwayscountasowned":                   "Always Count As Owned",
+	"alwayscountsasowned":                  "Always Counts As Owned",
+	"alwayscountsasunowned":                "Always Counts As Unowned",
+	"appid":                                "App ID",
+	"appidownedrequired":                   "App ID Owned Required",
+	"billingagreementtype":                 "Billing Agreement Type",
+	"blah":                                 "Blah",
 	"canbegrantedfromexternal":              "Can Be Granted From External",
 	"cantownapptopurchase":                  "Cant Own App To Purchase",
 	"complimentarypackagegrant":             "Complimentary Package Grant",
