@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"os"
+	"sort"
+	"strings"
 
 	"github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
@@ -40,6 +42,7 @@ func GetDB() (conn *gorm.DB, err error) {
 	return gormConnection, nil
 }
 
+//
 type UpdateError struct {
 	err  string
 	hard bool
@@ -62,6 +65,7 @@ func (e UpdateError) Log() bool {
 	return e.log
 }
 
+//
 func Select(builder squirrel.SelectBuilder) (rows *sql.Rows, err error) {
 
 	rawSQL, args, err := builder.ToSql()
@@ -154,6 +158,12 @@ func RawQuery(query string, args []interface{}) (result sql.Result, err error) {
 	return result, nil
 }
 
+func UpdateInsert(table string, data UpdateInsertData) (result sql.Result, err error) {
+
+	query := "INSERT INTO " + table + " (" + data.formattedColumns() + ") VALUES (" + data.getMarks() + ") ON DUPLICATE KEY UPDATE " + data.getDupes() + ";"
+	return RawQuery(query, data.getValues())
+}
+
 var mysqlPrepareStatements map[string]*sql.Stmt
 
 func getPrepareStatement(query string) (statement *sql.Stmt, err error) {
@@ -199,4 +209,53 @@ func getMysqlConnection() (db *sql.DB, err error) {
 	}
 
 	return mysqlConnection, nil
+}
+
+//
+type UpdateInsertData map[string]interface{}
+
+func (ui UpdateInsertData) sortedColumns() (columns []string) {
+
+	var slice []string
+	for k := range ui {
+		slice = append(slice, k)
+	}
+	sort.Strings(slice)
+	return slice
+}
+
+func (ui UpdateInsertData) formattedColumns() (columns string) {
+
+	var slice []string
+	for _, v := range ui.sortedColumns() {
+		slice = append(slice, "`"+v+"`")
+	}
+	return strings.Join(ui.sortedColumns(), ", ")
+}
+
+func (ui UpdateInsertData) getDupes() (columns string) {
+
+	var slice []string
+	for _, v := range ui.sortedColumns() {
+		slice = append(slice, v+"=VALUES("+v+")")
+	}
+	return strings.Join(slice, ", ")
+}
+
+func (ui UpdateInsertData) getValues() (columns []interface{}) {
+
+	var slice []interface{}
+	for _, v := range ui.sortedColumns() {
+		slice = append(slice, ui[v])
+	}
+	return slice
+}
+
+func (ui UpdateInsertData) getMarks() (marks string) {
+
+	var slice []string
+	for range ui {
+		slice = append(slice, "?")
+	}
+	return strings.Join(slice, ", ")
 }
