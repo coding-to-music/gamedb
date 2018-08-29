@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"time"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/steam-authority/steam-authority/datastore"
@@ -111,6 +112,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	if err != nil {
+		time.Sleep(time.Second) // Stop brute forces
 		logger.Error(err)
 		session.SetGoodFlash(w, r, err.Error())
 		http.Redirect(w, r, "/login", 302)
