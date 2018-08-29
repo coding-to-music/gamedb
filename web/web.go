@@ -397,7 +397,8 @@ func (t Pagination) GetPage() (int) {
 }
 
 func (t Pagination) GetLast() (int) {
-	return int(math.Ceil(float64(t.total) / float64(t.limit)))
+	last := math.Ceil(float64(t.total) / float64(t.limit))
+	return int(math.Max(1, last))
 }
 
 func (t Pagination) GetPath() string {
