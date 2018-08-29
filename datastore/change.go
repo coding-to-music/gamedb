@@ -72,7 +72,18 @@ func GetChange(id string) (change Change, err error) {
 	change = Change{}
 	err = client.Get(context, key, &change)
 	if err != nil {
-		return change, err
+		if err, ok := err.(*datastore.ErrFieldMismatch); ok {
+
+			old := []string{
+				"updated_at",
+			}
+
+			if !helpers.SliceHasString(old, err.FieldName) {
+				return change, err
+			}
+		} else {
+			return change, err
+		}
 	}
 
 	return change, nil
