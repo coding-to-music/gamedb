@@ -159,19 +159,20 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Save hidden
 	if r.PostForm.Get("hide") == "1" {
-		user.HideProfile = true
+		user.HideProfile = 1
 	} else {
-		user.HideProfile = false
+		user.HideProfile = 0
 	}
 
 	// Save alerts
 	if r.PostForm.Get("alerts") == "1" {
-		user.ShowAlerts = true
+		user.ShowAlerts = 1
 	} else {
-		user.ShowAlerts = false
+		user.ShowAlerts = 0
 	}
 
-	err = user.SaveOrUpdateUser()
+	// Save user
+	_, err = user.UpdateInsert()
 	if err != nil {
 		logger.Error(err)
 		session.SetBadFlash(w, r, "Something went wrong saving settings")

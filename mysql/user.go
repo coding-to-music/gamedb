@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -10,8 +11,8 @@ type User struct {
 	UpdatedAt   *time.Time `gorm:"not null"`
 	Email       string     `gorm:"not null;index:email"`
 	Password    string     `gorm:"not null"`
-	HideProfile bool       `gorm:"not null"`
-	ShowAlerts  bool       `gorm:"not null"`
+	HideProfile int8       `gorm:"not null"`
+	ShowAlerts  int8       `gorm:"not null"`
 }
 
 func GetUsersByEmail(email string) (users []User, err error) {
@@ -44,9 +45,13 @@ func GetUser(playerID int64) (user User, err error) {
 	return user, nil
 }
 
-func (u User) SaveOrUpdateUser() (err error) {
+func (u User) UpdateInsert() (result sql.Result, err error) {
 
-	result, err := RawQuery("INSERT INTO users (player_id, email, password, hide_profile, show_alerts) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE machine_name=VALUES(machine_name);")
-
-	return nil
+	return UpdateInsert("users", UpdateInsertData{
+		"player_id":    u.PlayerID,
+		"email":        u.Email,
+		"password":     u.Password,
+		"hide_profile": u.HideProfile,
+		"show_alerts":  u.ShowAlerts,
+	})
 }
