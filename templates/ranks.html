@@ -39,6 +39,7 @@
                     <th scope="col" width="1%" data-disabled></th>
                     <th scope="col">Player</th>
                     <th scope="col" width="1%" data-disabled>Country</th>
+                    <th scope="col" width="1%" data-disabled></th>
                     <th scope="col"><a href="/players/level">Level</a></th>
                     <th scope="col"><a href="/players/games">Games</a></th>
                     <th scope="col"><a href="/players/badges">Badges</a></th>
@@ -55,11 +56,14 @@
                         <td class="img">
                             <img data-toggle="tooltip" data-placement="left" title="{{ .CountryCode }}" src="{{ .GetFlag }}" class="rounded">
                         </td>
+                        <td class="img" width="1%">
+                            <div class="{{ .GetAvatar2 }}"></div>
+                        </td>
                         <td>{{ comma .Level }}</td>
-                        <td>{{ comma .GamesCount }}</td>
-                        <td>{{ comma .BadgesCount }}</td>
+                        <td>{{ comma .Games }}</td>
+                        <td>{{ comma .Badges }}</td>
                         <td nowrap="nowrap" data-toggle="tooltip" data-placement="top" title="{{.GetTimeLong}}">{{ .GetTimeShort }}</td>
-                        <td>{{ comma .FriendsCount }}</td>
+                        <td>{{ comma .Friends }}</td>
                     </tr>
                 {{ end }}
                 </table>
