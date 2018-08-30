@@ -27,6 +27,13 @@ table.table {
         i:last-child, svg:last-child {
             margin-right: 0;
         }
+        span.space {
+            display: none;
+        }
+    }
+    td.platforms.platforms-align span.space {
+        display: inline-block;
+        width: .875em;
     }
     td.img {
         padding: 0;

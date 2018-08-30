@@ -20,6 +20,12 @@ import (
 	"github.com/steam-authority/steam-authority/steami"
 )
 
+const (
+	platformWindows = "windows"
+	platformMac     = "macos"
+	platformLinux   = "linux"
+)
+
 var (
 	ErrInvalidID = UpdateError{"invalid app id", true, false}
 )
@@ -273,14 +279,22 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 		return ret, err
 	}
 
-	for _, v := range platforms {
-		if v == "macos" {
-			ret = ret + `<i class="fab fa-apple"></i>`
-		} else if v == "windows" {
-			ret = ret + `<i class="fab fa-windows"></i>`
-		} else if v == "linux" {
-			ret = ret + `<i class="fab fa-linux"></i>`
-		}
+	if helpers.SliceHasString(platforms, platformWindows) {
+		ret = ret + `<i class="fab fa-windows" data-toggle="tooltip" data-placement="top" title="Windows"></i>`
+	} else {
+		ret = ret + `<span class="space"></span>`
+	}
+
+	if helpers.SliceHasString(platforms, platformMac) {
+		ret = ret + `<i class="fab fa-apple" data-toggle="tooltip" data-placement="top" title="Mac"></i>`
+	} else {
+		ret = ret + `<span class="space"></span>`
+	}
+
+	if helpers.SliceHasString(platforms, platformLinux) {
+		ret = ret + `<i class="fab fa-linux" data-toggle="tooltip" data-placement="top" title="Linux"></i>`
+	} else {
+		ret = ret + `<span class="space"></span>`
 	}
 
 	return ret, nil
