@@ -660,28 +660,28 @@ func adminRanks() {
 
 	rank = 0
 	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].GamesCount > ranks[j].GamesCount
+		return ranks[i].Games > ranks[j].Games
 	})
 	for _, v := range ranks {
-		if v.GamesCount != prev {
+		if v.Games != prev {
 			rank++
 		}
 		v.UpdatedAt = time.Now()
 		v.GamesRank = rank
-		prev = v.GamesCount
+		prev = v.Games
 	}
 
 	rank = 0
 	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].BadgesCount > ranks[j].BadgesCount
+		return ranks[i].Badges > ranks[j].Badges
 	})
 	for _, v := range ranks {
-		if v.BadgesCount != prev {
+		if v.Badges != prev {
 			rank++
 		}
 		v.UpdatedAt = time.Now()
 		v.BadgesRank = rank
-		prev = v.BadgesCount
+		prev = v.Badges
 	}
 
 	rank = 0
@@ -699,15 +699,15 @@ func adminRanks() {
 
 	rank = 0
 	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].FriendsCount > ranks[j].FriendsCount
+		return ranks[i].Friends > ranks[j].Friends
 	})
 	for _, v := range ranks {
-		if v.FriendsCount != prev {
+		if v.Friends != prev {
 			rank++
 		}
 		v.UpdatedAt = time.Now()
 		v.FriendsRank = rank
-		prev = v.FriendsCount
+		prev = v.Friends
 	}
 
 	// Update ranks

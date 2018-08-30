@@ -26,13 +26,13 @@ type Rank struct {
 	// Ranks
 	Level        int `datastore:"level"`
 	LevelRank    int `datastore:"level_rank"`
-	GamesCount   int `datastore:"games"`
+	Games        int `datastore:"games"`
 	GamesRank    int `datastore:"games_rank"`
-	BadgesCount  int `datastore:"badges"`
+	Badges       int `datastore:"badges"`
 	BadgesRank   int `datastore:"badges_rank"`
 	PlayTime     int `datastore:"play_time"`
 	PlayTimeRank int `datastore:"play_time_rank"`
-	FriendsCount int `datastore:"friends"`
+	Friends      int `datastore:"friends"`
 	FriendsRank  int `datastore:"friends_rank"`
 
 	Rank string `datastore:"-"`
@@ -168,10 +168,10 @@ func NewRankFromPlayer(player Player) (rank *Rank) {
 
 	// Rankable
 	rank.Level = player.Level
-	rank.GamesCount = player.GamesCount
-	rank.BadgesCount = player.BadgesCount
+	rank.Games = player.GamesCount
+	rank.Badges = player.BadgesCount
 	rank.PlayTime = player.PlayTime
-	rank.FriendsCount = player.FriendsCount
+	rank.Friends = player.FriendsCount
 
 	return rank
 }
