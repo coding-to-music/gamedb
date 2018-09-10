@@ -12,7 +12,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
@@ -227,7 +226,7 @@ func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err e
 // Used in template
 func (app App) GetCoopTags(tagMap map[int]string) string {
 
-	tags, err := app.GetTags()
+	tags, err := app.GetTagIDs()
 	if err != nil {
 		logger.Error(err)
 	}
@@ -370,13 +369,28 @@ func (app App) GetCategories() (categories []string, err error) {
 	return categories, nil
 }
 
-func (app App) GetTags() (tags []int, err error) {
+func (app App) GetTagIDs() (tags []int, err error) {
 
 	bytes := []byte(app.StoreTags)
 	if err := json.Unmarshal(bytes, &tags); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			logger.Info(err.Error() + " - " + string(bytes))
 		}
+		return tags, err
+	}
+
+	return tags, nil
+}
+
+func (app App) GetTags() (tags []Tag, err error) {
+
+	ids, err := app.GetTagIDs()
+	if err != nil {
+		return tags, err
+	}
+
+	tags, err = GetTagsByID(ids)
+	if err != nil {
 		return tags, err
 	}
 

@@ -73,9 +73,18 @@
                     <p>Price: {{ .App.GetPriceFinalNice }}</p>
                     <p>App Type: {{ .App.GetType }}</p>
                     <p>Release State: {{ .App.GetReleaseState }}</p>
+
+                {{ if gt (len .App.GetPlatforms) 0 }}
                     <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>
+                {{ end }}
+
+                {{ if gt (len .App.GetGenres) 0 }}
                     <p>Genres: {{ genres .App.GetGenres }}</p>
+                {{ end }}
+
+                {{ if gt (len .Tags) 0 }}
                     <p>Tags: {{ tags .Tags }}</p>
+                {{ end }}
 
                 </div>
 

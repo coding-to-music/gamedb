@@ -514,7 +514,7 @@ func adminTags() {
 	counts := make(map[int]*adminTag)
 	for _, app := range apps {
 
-		tags, err := app.GetTags()
+		tags, err := app.GetTagIDs()
 		if err != nil {
 			logger.Error(err)
 			continue

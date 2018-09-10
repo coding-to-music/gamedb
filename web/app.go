@@ -107,13 +107,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get tags
-		tagIDs, err := app.GetTags()
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-
-		tags, err = mysql.GetTagsByID(tagIDs)
+		tags, err = app.GetTags()
 		if err != nil {
 			logger.Error(err)
 			return
