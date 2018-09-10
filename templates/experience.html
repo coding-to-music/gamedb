@@ -37,7 +37,8 @@
                 <table class="table table-hover table-striped mb-0">
                     <thead class="thead-light">
                     <tr>
-                        <th scope="col" width="20%" data-sort="asc">Level</th>
+                        <th scope="col" width="1%"></th>
+                        <th scope="col" width="19%" data-sort="asc">Level</th>
                         <th scope="col" width="20%">Start XP</th>
                         <th scope="col" width="20%">End XP</th>
                         <th scope="col" width="20%">For Next Level</th>
@@ -46,11 +47,14 @@
                     </thead>
                 {{ range $keyx, $valuex := $value }}
                     <tr data-level="{{ .Level }}">
-                        <td width="20%">{{ comma .Level }}</td>
-                        <td width="20%">{{ comma .Start }}</td>
-                        <td width="20%">{{ comma .End }}</td>
-                        <td width="20%">{{ comma .Diff }}</td>
-                        <td width="20%">{{ comma .GetFriends }}</td>
+                        <td width="1%" class="img">
+                            <div class="{{ .GetAvatar2 }}"></div>
+                        </td>
+                        <td>{{ comma .Level }}</td>
+                        <td>{{ comma .Start }}</td>
+                        <td>{{ comma .End }}</td>
+                        <td>{{ comma .Diff }}</td>
+                        <td>{{ comma .GetFriends }}</td>
                     </tr>
                 {{ end }}
                 </table>

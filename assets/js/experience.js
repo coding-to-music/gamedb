@@ -63,7 +63,7 @@ if ($('#xp-page').length > 0) {
             to = 1;
         }
 
-        answer.val(levelToXP(to) - levelToXP(from));
+        answer.val((levelToXP(to) - levelToXP(from)).toLocaleString());
     }
 
     $('#from, #to').change(update);

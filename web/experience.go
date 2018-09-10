@@ -6,29 +6,30 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/steam-authority/steam-authority/helpers"
 )
 
 const (
-	totalRows = 3000
+	totalRows = 5000
 	chunkRows = 100
 )
 
 func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 
-	var rows []experienceRow
+	var rows []level
 	xp := 0
 
 	for i := 0; i <= totalRows+1; i++ {
 
-		rows = append(rows, experienceRow{
+		rows = append(rows, level{
 			Level: i,
-			Start: int(xp),
+			Start: xp,
 		})
 
 		xp = xp + int((math.Ceil((float64(i) + 1) / 10))*100)
 	}
 
-	rows[0] = experienceRow{
+	rows[0] = level{
 		Level: 0,
 		End:   99,
 		Diff:  100,
@@ -72,7 +73,7 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 	returnTemplate(w, r, "experience", t)
 }
 
-func chunk(rows []experienceRow, chunkSize int) (chunked [][]experienceRow) {
+func chunk(rows []level, chunkSize int) (chunked [][]level) {
 
 	for i := 0; i < len(rows); i += chunkSize {
 		end := i + chunkSize
@@ -89,12 +90,12 @@ func chunk(rows []experienceRow, chunkSize int) (chunked [][]experienceRow) {
 
 type experienceTemplate struct {
 	GlobalTemplate
-	Chunks      [][]experienceRow
-	Level       int
-	UserLevelTo int
+	Chunks      [][]level
+	Level       int // Low value in form
+	UserLevelTo int // High value in form
 }
 
-type experienceRow struct {
+type level struct {
 	Level int
 	Start int
 	End   int
@@ -102,21 +103,25 @@ type experienceRow struct {
 	Count int
 }
 
-func (e experienceRow) GetFriends() (ret int) {
+func (l level) GetFriends() (ret int) {
 
 	ret = 750
 
-	if e.Level > 100 {
+	if l.Level > 100 {
 		ret = 1250
 	}
 
-	if e.Level > 200 {
+	if l.Level > 200 {
 		ret = 1750
 	}
 
-	if e.Level > 300 {
+	if l.Level > 300 {
 		ret = 2000
 	}
 
 	return ret
+}
+
+func (l level) GetAvatar2() string {
+	return helpers.GetAvatar2(l.Level)
 }
