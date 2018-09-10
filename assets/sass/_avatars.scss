@@ -1,9 +1,9 @@
 
 .avatar2 {
-    background-position: 0 0;
-    background-repeat: no-repeat;
+    background: no-repeat 0 0;
     width: 32px;
     height: 32px;
+    display: inline-block;
 }
 
 .avatar2.lvl_100 {
@@ -143,7 +143,7 @@
 }
 
 .avatar2.lvl_3500 {
-    background-image: url(https://steamcommunity-a.akamaihd.net/public/shared/images/community/levelspatterns_1-2.png)
+    background-image: url(https://steamcommunity-a.akamaihd.net/public/shared/images/community/levels_patterns_1-2.png)
 }
 
 .avatar2.lvl_3600 {

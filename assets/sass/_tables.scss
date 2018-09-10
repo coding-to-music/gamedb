@@ -20,7 +20,7 @@ table.table {
     td.platforms {
         font-size: 22px;
         line-height: 48px;
-        padding: 0 .75rem 0 .75rem;
+        padding: 0 .75rem 0 .75rem; // Pad Sides
         i, svg {
             margin-right: 3px;
         }
@@ -36,7 +36,7 @@ table.table {
         width: .875em;
     }
     td.img {
-        padding: 0;
+        padding: 0 .75rem 0 .75rem; // Pad Sides
         img {
             height: 48px;
             max-height: 48px;
@@ -46,7 +46,7 @@ table.table {
             margin: .3rem;
         }
         div.avatar2 {
-            margin-top: 8px;
+            margin-top: 9px;
         }
     }
 }
