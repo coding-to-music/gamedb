@@ -479,7 +479,7 @@ func GetApps(ids []int, columns []string) (apps []App, err error) {
 	return apps, nil
 }
 
-func SearchApps(query url.Values, limit int, sort string, columns []string) (apps []App, err error) {
+func SearchApps(query url.Values, limit int, page int, sort string, columns []string) (apps []App, err error) {
 
 	db, err := GetDB()
 	if err != nil {
@@ -489,6 +489,9 @@ func SearchApps(query url.Values, limit int, sort string, columns []string) (app
 	if limit > 0 {
 		db = db.Limit(limit)
 	}
+
+	offset := (page - 1) * limit
+	db = db.Offset(offset)
 
 	if sort != "" {
 		db = db.Order(sort)

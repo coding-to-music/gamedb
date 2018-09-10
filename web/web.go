@@ -404,3 +404,8 @@ func (t Pagination) GetLast() (int) {
 func (t Pagination) GetPath() string {
 	return t.path
 }
+
+func (t Pagination) GetLinks() string {
+	// todo, return link html here instead of making in template, that way we can add a variable to the path and replace with the page number
+	return ""
+}

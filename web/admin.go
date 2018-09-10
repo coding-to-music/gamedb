@@ -176,7 +176,7 @@ func adminGenres() {
 	filter := url.Values{}
 	filter.Set("genres_depth", "3")
 
-	apps, err := mysql.SearchApps(filter, 0, "", []string{})
+	apps, err := mysql.SearchApps(filter, 0, 0, "", []string{})
 	logger.Error(err)
 
 	counts := make(map[int]*adminGenreCount)
@@ -293,7 +293,7 @@ func adminPublishers() {
 	}
 
 	// Get apps from mysql
-	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "publishers"})
+	apps, err := mysql.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "publishers"})
 	logger.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
@@ -388,7 +388,7 @@ func adminDevelopers() {
 	}
 
 	// Get apps from mysql
-	apps, err := mysql.SearchApps(url.Values{}, 0, "", []string{"name", "price_final", "price_discount", "developers"})
+	apps, err := mysql.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "developers"})
 	logger.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
@@ -508,7 +508,7 @@ func adminTags() {
 	filter := url.Values{}
 	filter.Set("tags_depth", "2")
 
-	apps, err := mysql.SearchApps(filter, 0, "", []string{"name", "price_final", "price_discount", "tags"})
+	apps, err := mysql.SearchApps(filter, 0, 1, "", []string{"name", "price_final", "price_discount", "tags"})
 	logger.Error(err)
 
 	counts := make(map[int]*adminTag)

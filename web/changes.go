@@ -116,6 +116,8 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t := changesTemplate{}
 	t.Fill(w, r, "Changes")
 	t.Changes = changes
+
+	// todo, stop using limit offset for datastore
 	t.Pagination = Pagination{
 		path:  "/changes?p=",
 		page:  page,
