@@ -88,7 +88,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error(err)
 
 		for _, v := range messagesResponse {
-			if !v.Author.Bot {
+			if !v.Author.Bot && v.Type == discordgo.MessageTypeDefault {
 				messages = append(messages, v)
 			}
 		}
