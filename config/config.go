@@ -19,4 +19,5 @@ func Init() {
 	viper.SetDefault("MEMCACHE_DSN", "memcache:11211")
 	viper.SetDefault("PATH", "/root")
 	viper.SetDefault("MYSQL_DSN", "root@tcp(localhost:3306)/steam?parseTime=true")
+	viper.SetDefault("DOMAIN", "https://steamauthority.net")
 }

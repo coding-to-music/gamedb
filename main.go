@@ -31,14 +31,7 @@ func main() {
 
 	// Google
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
-	}
-
-	// Env vars
-	if os.Getenv("STEAM_ENV") == "local" {
-		os.Setenv("STEAM_DOMAIN", os.Getenv("STEAM_DOMAIN_LOCAL"))
-	} else {
-		os.Setenv("STEAM_DOMAIN", "https://steamauthority.net")
+		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", viper.GetString("GOOGLE_APPLICATION_CREDENTIALS"))
 	}
 
 	// Flags
