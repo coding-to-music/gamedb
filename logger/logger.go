@@ -1,24 +1,33 @@
 package logger
 
 import (
-	"fmt"
+	"log"
 	"os"
-	"time"
 
 	"github.com/rollbar/rollbar-go"
+	"github.com/spf13/viper"
 )
 
 const (
-	prod = "production"
+	prod  = "production"
+	local = "local"
 )
+
+var (
+	logger = log.New(os.Stderr, "gamedb: ", log.Ltime)
+)
+
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 func Error(err error) {
 
 	if err != nil {
 
-		fmt.Println(time.Now().Format(time.Stamp) + ": " + err.Error())
+		logger.Println(err.Error())
 
-		if os.Getenv("STEAM_ENV") == prod {
+		if viper.GetString("ENV") == prod {
 			rollbar.Error(rollbar.ERR, err)
 		}
 	}
@@ -26,9 +35,12 @@ func Error(err error) {
 
 func Info(message string) {
 
-	fmt.Println(time.Now().Format(time.Stamp) + ": " + message)
+	if message != "" {
 
-	if os.Getenv("STEAM_ENV") == prod {
-		rollbar.Message(rollbar.INFO, message)
+		logger.Println(message)
+
+		if viper.GetString("ENV") == prod {
+			rollbar.Message(rollbar.INFO, message)
+		}
 	}
 }
