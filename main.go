@@ -14,6 +14,7 @@ import (
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/session"
+	"github.com/steam-authority/steam-authority/storage"
 	"github.com/steam-authority/steam-authority/web"
 )
 
@@ -21,6 +22,7 @@ func init() {
 	config.Init() // Must go first
 	logger.Init()
 	session.Init()
+	storage.Init()
 	web.InitChat()
 	web.InitCommits()
 }
