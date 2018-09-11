@@ -21,7 +21,8 @@ var (
 	discordSession *discordgo.Session
 )
 
-func init() {
+// Called from main
+func InitChat() {
 
 	var err error
 

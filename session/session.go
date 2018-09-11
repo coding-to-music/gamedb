@@ -13,10 +13,15 @@ const (
 	PlayerLevel = "level"
 )
 
-var store = sessions.NewCookieStore(
-	[]byte(viper.GetString("SESSION_AUTHENTICATION")),
-	[]byte(viper.GetString("SESSION_ENCRYPTION")),
-)
+var store *sessions.CookieStore
+
+// Called from main
+func Init() {
+	store = sessions.NewCookieStore(
+		[]byte(viper.GetString("SESSION_AUTHENTICATION")),
+		[]byte(viper.GetString("SESSION_ENCRYPTION")),
+	)
+}
 
 func getSession(r *http.Request) (*sessions.Session, error) {
 

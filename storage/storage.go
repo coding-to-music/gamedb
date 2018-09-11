@@ -17,9 +17,14 @@ import (
 )
 
 var (
-	bucket = viper.GetString("GOOGLE_BUCKET")
+	bucket string
 	client *storage.Client
 )
+
+// Called from main
+func Init() {
+	bucket = viper.GetString("GOOGLE_BUCKET")
+}
 
 var (
 	PathGames       = func(playerID int64) (string) { return "/player-games/" + strconv.FormatInt(playerID, 10) + ".json" }

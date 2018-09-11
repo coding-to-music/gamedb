@@ -18,7 +18,8 @@ var (
 	client *logging.Client
 )
 
-func init() {
+// Called from main
+func Init() {
 	var err error
 	client, err = logging.NewClient(ctx, viper.GetString("GOOGLE_PROJECT"))
 	if err != nil {

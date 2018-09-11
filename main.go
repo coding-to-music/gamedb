@@ -13,11 +13,16 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
+	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/web"
 )
 
 func init() {
-	config.Init()
+	config.Init() // Must go first
+	logger.Init()
+	session.Init()
+	web.InitChat()
+	web.InitCommits()
 }
 
 func main() {

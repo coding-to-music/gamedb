@@ -15,7 +15,8 @@ var (
 	githubClient  *github.Client
 )
 
-func init() {
+// Called from main
+func InitCommits() {
 
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{
