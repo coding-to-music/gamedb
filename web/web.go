@@ -31,6 +31,11 @@ func Serve() error {
 	r := chi.NewRouter()
 	r.Use(middleware.Compress(5))
 	r.Use(middleware.DefaultCompress)
+
+	if viper.GetString("ENV") == logger.Local {
+		r.Use(middleware.Logger)
+	}
+
 	r.Use(middleware.GetHead)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
