@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"errors"
-	"os"
 	"sort"
 	"strings"
 
 	"github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -30,7 +30,7 @@ func GetDB() (conn *gorm.DB, err error) {
 
 	if gormConnection == nil {
 
-		db, err := gorm.Open("mysql", os.Getenv("STEAM_MYSQL_DSN"))
+		db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN"))
 		db.LogMode(debug)
 		if err != nil {
 			return db, nil
@@ -202,7 +202,7 @@ func getMysqlConnection() (db *sql.DB, err error) {
 	if mysqlConnection == nil {
 
 		var err error
-		mysqlConnection, err = sql.Open("mysql", os.Getenv("STEAM_MYSQL_DSN"))
+		mysqlConnection, err = sql.Open("mysql", viper.GetString("MYSQL_DSN"))
 		if err != nil {
 			return db, err
 		}

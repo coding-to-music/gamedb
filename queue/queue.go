@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"os"
 	"time"
 
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/streadway/amqp"
 )
@@ -77,10 +77,10 @@ func (s rabbitMessageBase) getConnection() (conn *amqp.Connection, ch *amqp.Chan
 
 	closeChannel = make(chan *amqp.Error)
 
-	username := os.Getenv("STEAM_RABBIT_USER")
-	password := os.Getenv("STEAM_RABBIT_PASS")
-	host := os.Getenv("STEAM_RABBIT_HOST")
-	port := os.Getenv("STEAM_RABBIT_PORT")
+	username := viper.GetString("RABBIT_USER")
+	password := viper.GetString("RABBIT_PASS")
+	host := viper.GetString("RABBIT_HOST")
+	port := viper.GetString("RABBIT_PORT")
 
 	conn, err = amqp.Dial("amqp://" + username + ":" + password + "@" + host + ":" + port)
 	conn.NotifyClose(closeChannel)

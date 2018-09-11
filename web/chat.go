@@ -2,12 +2,12 @@ package web
 
 import (
 	"net/http"
-	"os"
 	"strings"
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-chi/chi"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/websockets"
 )
@@ -26,7 +26,7 @@ func init() {
 	var err error
 
 	// Get client
-	discordSession, err = discordgo.New("Bot " + os.Getenv("STEAM_DISCORD_BOT_TOKEN"))
+	discordSession, err = discordgo.New("Bot " + viper.GetString("DISCORD_BOT_TOKEN"))
 	logger.Error(err)
 
 	// Add websocket listener

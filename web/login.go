@@ -3,12 +3,12 @@ package web
 import (
 	"errors"
 	"net/http"
-	"os"
 	"path"
 	"strconv"
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
@@ -21,7 +21,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := loginTemplate{}
 	t.Fill(w, r, "Login")
-	t.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
+	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
 
 	returnTemplate(w, r, "login", t)
 	return
@@ -137,7 +137,7 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var url string
-	url, err = openid.RedirectURL("http://steamcommunity.com/openid", os.Getenv("STEAM_DOMAIN")+"/login/callback", os.Getenv("STEAM_DOMAIN")+"/")
+	url, err = openid.RedirectURL("http://steamcommunity.com/openid", viper.GetString("DOMAIN")+"/login/callback", viper.GetString("DOMAIN")+"/")
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
@@ -160,7 +160,7 @@ var discoveryCache = openid.NewSimpleDiscoveryCache()
 func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get ID from OpenID
-	openID, err := openid.Verify(os.Getenv("STEAM_DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
+	openID, err := openid.Verify(viper.GetString("DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())

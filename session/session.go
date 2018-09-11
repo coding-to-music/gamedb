@@ -1,10 +1,11 @@
 package session
 
 import (
+	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/sessions"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -14,8 +15,8 @@ const (
 )
 
 var store = sessions.NewCookieStore(
-	[]byte(os.Getenv("STEAM_SESSION_AUTHENTICATION")),
-	[]byte(os.Getenv("STEAM_SESSION_ENCRYPTION")),
+	[]byte(viper.GetString("SESSION_AUTHENTICATION")),
+	[]byte(viper.GetString("SESSION_ENCRYPTION")),
 )
 
 func getSession(r *http.Request) (*sessions.Session, error) {

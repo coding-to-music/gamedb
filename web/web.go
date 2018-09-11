@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"math"
 	"net/http"
-	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -102,7 +101,7 @@ func Serve() error {
 func adminRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Use(basicauth.New("Steam", map[string][]string{
-		os.Getenv("STEAM_ADMIN_USER"): {os.Getenv("STEAM_ADMIN_PASS")},
+		viper.GetString("ADMIN_USER"): {viper.GetString("ADMIN_PASS")},
 	}))
 	r.Get("/", AdminHandler)
 	r.Get("/{option}", AdminHandler)
@@ -120,7 +119,7 @@ func fileServer(r chi.Router) {
 		logger.Info("FileServer does not permit URL parameters.")
 	}
 
-	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(os.Getenv("STEAM_PATH"), "assets"))))
+	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(viper.GetString("PATH"), "assets"))))
 
 	if path != "/" && path[len(path)-1] != '/' {
 		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
@@ -138,7 +137,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	w.Header().Set("Content-Type", "text/html")
 
 	// Load templates needed
-	folder := os.Getenv("STEAM_PATH")
+	folder := viper.GetString("PATH")
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/templates/_header.html",
 		folder+"/templates/_header_esi.html",
@@ -268,7 +267,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	t.request = r
 	t.Title = title
-	t.Env = os.Getenv("STEAM_ENV")
+	t.Env = viper.GetString("ENV")
 	t.Path = r.URL.Path
 
 	// User ID

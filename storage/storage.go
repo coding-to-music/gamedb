@@ -8,16 +8,16 @@ import (
 	"context"
 	"io"
 	"io/ioutil"
-	"os"
 	"strconv"
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/snappy"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/logger"
 )
 
 var (
-	bucket = os.Getenv("STEAM_GOOGLE_BUCKET")
+	bucket = viper.GetString("GOOGLE_BUCKET")
 	client *storage.Client
 )
 

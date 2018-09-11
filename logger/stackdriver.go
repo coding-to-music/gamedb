@@ -3,9 +3,9 @@ package logger
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"cloud.google.com/go/logging"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -20,7 +20,7 @@ var (
 
 func init() {
 	var err error
-	client, err = logging.NewClient(ctx, os.Getenv("STEAM_GOOGLE_PROJECT"))
+	client, err = logging.NewClient(ctx, viper.GetString("GOOGLE_PROJECT"))
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -28,7 +28,7 @@ func init() {
 
 func getLog(name ...string) (*logging.Logger) {
 
-	env := os.Getenv("STEAM_ENV")
+	env := viper.GetString("ENV")
 
 	if len(name) > 0 {
 		return client.Logger(env + "_" + name[0])

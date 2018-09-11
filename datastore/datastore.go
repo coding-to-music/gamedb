@@ -5,9 +5,9 @@ package datastore
 import (
 	"context"
 	"errors"
-	"os"
 
 	"cloud.google.com/go/datastore"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -35,7 +35,7 @@ func getClient() (ret *datastore.Client, ctx context.Context, err error) {
 	ctx = context.Background()
 
 	if client == nil {
-		client, err = datastore.NewClient(ctx, os.Getenv("STEAM_GOOGLE_PROJECT"))
+		client, err = datastore.NewClient(ctx, viper.GetString("GOOGLE_PROJECT"))
 		if err != nil {
 			return client, ctx, err
 		}

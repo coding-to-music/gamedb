@@ -3,9 +3,9 @@ package web
 import (
 	"context"
 	"net/http"
-	"os"
 
 	"github.com/google/go-github/github"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/logger"
 	"golang.org/x/oauth2"
 )
@@ -19,7 +19,7 @@ func init() {
 
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{
-			AccessToken: os.Getenv("STEAM_GITHUB_TOKEN")},
+			AccessToken: viper.GetString("GITHUB_TOKEN")},
 	)
 
 	tc := oauth2.NewClient(githubContext, ts)

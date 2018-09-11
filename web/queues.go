@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/dustin/go-humanize"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/logger"
 )
 
@@ -20,6 +20,10 @@ func QueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 	returnTemplate(w, r, "queues", t)
 	return
+}
+
+type queuesTemplate struct {
+	GlobalTemplate
 }
 
 func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,10 +67,6 @@ func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(bytes)
 }
 
-type queuesTemplate struct {
-	GlobalTemplate
-}
-
 type queuesQueue struct {
 	Name     string
 	Messages string
@@ -75,7 +75,7 @@ type queuesQueue struct {
 
 func GetQeueus() (resp []Queue, err error) {
 
-	managementURL := "http://localhost:" + os.Getenv("STEAM_RABBIT_MANAGEMENT_PORT")
+	managementURL := "http://localhost:" + viper.GetString("RABBIT_MANAGEMENT_PORT")
 
 	req, err := http.NewRequest("GET", managementURL+"/api/queues", nil)
 	req.SetBasicAuth("guest", "guest")

@@ -3,11 +3,11 @@ package web
 import (
 	"errors"
 	"net/http"
-	"os"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/session"
 )
@@ -16,7 +16,7 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
 	t.Fill(w, r, "Contact")
-	t.RecaptchaPublic = os.Getenv("STEAM_RECAPTCHA_PUBLIC")
+	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
 
 	returnTemplate(w, r, "contact", t)
 }
@@ -73,11 +73,11 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		message := mail.NewSingleEmail(
 			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
 			"Game DB Contact Form",
-			mail.NewEmail(os.Getenv("STEAM_ADMIN_NAME"), os.Getenv("STEAM_ADMIN_EMAIL")),
+			mail.NewEmail(viper.GetString("ADMIN_NAME"), viper.GetString("ADMIN_EMAIL")),
 			r.PostForm.Get("message"),
 			r.PostForm.Get("message"),
 		)
-		client := sendgrid.NewSendClient(os.Getenv("STEAM_SENDGRID"))
+		client := sendgrid.NewSendClient(viper.GetString("SENDGRID"))
 
 		_, err = client.Send(message)
 		if err != nil {

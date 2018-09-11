@@ -17,17 +17,16 @@ import (
 
 func main() {
 
-	// Viper config
 	config.Init()
 
 	// Rollbar
-	rollbar.SetToken(os.Getenv("STEAM_ROLLBAR_PRIVATE"))
-	rollbar.SetEnvironment(os.Getenv("STEAM_ENV"))                      // defaults to "development"
+	rollbar.SetToken(viper.GetString("ROLLBAR_PRIVATE"))
+	rollbar.SetEnvironment(viper.GetString("ENV"))                      // defaults to "development"
 	rollbar.SetCodeVersion("master")                                    // optional Git hash/branch/tag (required for GitHub integration)
 	rollbar.SetServerRoot("github.com/steam-authority/steam-authority") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 
 	// Recaptcha
-	recaptcha.SetSecret(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
+	recaptcha.SetSecret(viper.GetString("RECAPTCHA_PRIVATE"))
 
 	// Google
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {

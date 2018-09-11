@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	"os"
 
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/logger"
 )
 
@@ -50,7 +50,7 @@ func Error404Handler(w http.ResponseWriter, r *http.Request) {
 
 func RootFileHandler(w http.ResponseWriter, r *http.Request) {
 
-	data, err := ioutil.ReadFile(os.Getenv("STEAM_PATH") + r.URL.Path)
+	data, err := ioutil.ReadFile(viper.GetString("PATH") + r.URL.Path)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 404, "Unable to read file.")
