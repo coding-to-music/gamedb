@@ -50,7 +50,6 @@
             <div class="table-responsive">
                 <table class="table table-hover table-striped table-datatable mb-0">
                     <thead class="thead-light">
-                    <th scope="col" width="1%" data-disabled></th>
                     <th scope="col">Game</th>
                     <th scope="col">Release</th>
                     <th scope="col">Price</th>
@@ -61,10 +60,10 @@
                     </thead>
                 {{ range $key, $value := .Changes }}
                     <tr data-link="{{ .GetPath }}" data-app-id="{{ .AppID }}" data-package-id="{{ .PackageID }}" class="{{if gt .Change 0}}table-danger{{end}}{{if lt .Change 0}}table-success{{end}}">
-                        <td class="img" width="1%">
-                            <img src="{{.GetIcon}}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
+                        <td class="img" data-app-id="{{ .AppID }}">
+                            <img src="{{.GetIcon}}" class="rounded square" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
+                            <span>{{ .Name }}</span>
                         </td>
-                        <td data-app-id="{{ .AppID }}">{{ .Name }}</td>
                         <td data-order="{{ .ReleaseDateUnix }}" nowrap="nowrap">{{ .ReleaseDateNice }}</td>
                         <td>${{ .GetPriceFinal }}</td>
                         <td>{{ .Discount }}%</td>

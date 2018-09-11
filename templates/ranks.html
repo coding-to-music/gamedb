@@ -36,10 +36,8 @@
                 <table class="table table-hover table-striped mb-0" id="ranks">
                     <thead class="thead-light">
                     <th scope="col">Rank</th>
-                    <th scope="col" width="1%" data-disabled></th>
                     <th scope="col">Player</th>
                     <th scope="col" width="1%" data-disabled>Flag</th>
-                    <th scope="col" width="1%" data-disabled></th>
                     <th scope="col"><a href="/players/level">Level</a></th>
                     <th scope="col"><a href="/players/games">Games</a></th>
                     <th scope="col"><a href="/players/badges">Badges</a></th>
@@ -49,17 +47,17 @@
                 {{ range $key, $value := .Ranks }}
                     <tr data-link="/players/{{ .PlayerID }}/{{ .PersonaName }}">
                         <td class="font-weight-bold">{{ .Rank }}</td>
-                        <td class="img" width="1%">
-                            <img src="{{ .GetAvatar }}" class="rounded" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                        <td class="img">
+                            <img src="{{ .GetAvatar }}" class="rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                            <span>{{ .PersonaName }}</span>
                         </td>
-                        <td>{{ .PersonaName }}</td>
                         <td class="img">
                             <img data-toggle="tooltip" data-placement="left" title="{{ .CountryCode }}" src="{{ .GetFlag }}" class="rounded">
                         </td>
-                        <td class="img" width="1%">
-                            <div class="{{ .GetAvatar2 }}"></div>
+                        <td class="img">
+                            <div class="{{ .GetAvatar2 }} square"></div>
+                            <span>{{ comma .Level }}</span>
                         </td>
-                        <td>{{ comma .Level }}</td>
                         <td>{{ comma .Games }}</td>
                         <td>{{ comma .Badges }}</td>
                         <td nowrap="nowrap" data-toggle="tooltip" data-placement="top" title="{{.GetTimeLong}}">{{ .GetTimeShort }}</td>

@@ -110,7 +110,6 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
-                            <th scope="col" width="1%" data-disabled></th>
                             <th scope="col" data-sort="asc">Name</th>
                             <th scope="col">Type</th>
                             <th scope="col">Platforms</th>
@@ -118,10 +117,10 @@
                             </thead>
                         {{ range $key, $value := .Apps }}
                             <tr data-link="{{.GetPath}}">
-                                <td class="img">
-                                    <img class="rounded" src="{{ .GetIcon }}">
+                                <td data-app-id="{{ .ID }}" class="img">
+                                    <img class="rounded square" src="{{ .GetIcon }}">
+                                    <span>{{.GetName}}</span>
                                 </td>
-                                <td data-app-id="{{ .ID }}">{{.GetName}}</td>
                                 <td>{{ .GetType }}</td>
                                 <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
                                 <td>{{ comma (len .GetDLC) }}</td>
