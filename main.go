@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/rollbar/rollbar-go"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/config"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/mysql"
@@ -15,9 +16,11 @@ import (
 	"github.com/steam-authority/steam-authority/web"
 )
 
-func main() {
-
+func init() {
 	config.Init()
+}
+
+func main() {
 
 	// Rollbar
 	rollbar.SetToken(viper.GetString("ROLLBAR_PRIVATE"))
@@ -34,23 +37,18 @@ func main() {
 	}
 
 	// Flags
-	flagDebug := flag.Bool("debug", false, "Debug")
-	flagPics := flag.Bool("pics", false, "Pics")
-	flagConsumers := flag.Bool("consumers", false, "Consumers")
 	flagPprof := flag.Bool("pprof", false, "PProf")
+	flagDebug := flag.Bool("debug", false, "Debug")
+	flagConsumers := flag.Bool("consumers", true, "Consumers")
 
 	flag.Parse()
 
 	if *flagPprof {
-		go http.ListenAndServe(":8081", nil)
+		go http.ListenAndServe(":"+viper.GetString("PORT"), nil)
 	}
 
 	if *flagDebug {
 		mysql.SetDebug(true)
-	}
-
-	if *flagPics {
-		//go pics.Run()
 	}
 
 	if *flagConsumers {

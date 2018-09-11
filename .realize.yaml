@@ -23,9 +23,6 @@ server:
 schema:
 - name: Steam
   path: .
-  args:
-  - --pics
-  - --consumers
   commands:
     install:
       status: true
@@ -41,5 +38,4 @@ schema:
     - yaml
     ignored_paths:
     - .git
-    - vendor
     - node_modules
