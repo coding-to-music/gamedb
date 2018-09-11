@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"html/template"
+	"math"
 	"net/url"
 	"strconv"
 	"strings"
@@ -170,6 +171,13 @@ func (app App) GetPriceFinalNice() string {
 	} else {
 		return "$" + strconv.FormatFloat(app.GetPriceFinal(), 'f', 2, 64)
 	}
+}
+
+func (app App) GetReviewScoreFancy() float64 {
+	total := float64(app.ReviewsPositive + app.ReviewsNegative)
+	average := float64(app.ReviewsPositive) / total
+	score := average - (average-0.5)*math.Pow(2, -math.Log10(total + 1))
+	return score * 100
 }
 
 func (app App) GetReviewScore() float64 {
