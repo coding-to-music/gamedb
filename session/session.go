@@ -1,7 +1,6 @@
 package session
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"

@@ -1,5 +1,3 @@
-cmd/protos/
-generated/
 node_modules/
 vendor/
 tmp/
