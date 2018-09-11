@@ -107,7 +107,7 @@
                         {{ range $key, $value := .DLC }}
                             <tr data-link="{{.GetPath}}">
                                 <td class="img">
-                                    <img class="rounded" src="{{ .GetIcon }}">
+                                    <img class="rounded square" src="{{ .GetIcon }}">
                                     <span>{{.GetName}}</span>
                                 </td>
                                 <td data-sort="{{ .GetReleaseDateUnix }}" nowrap="nowrap">{{.GetReleaseDateNice}}</td>
@@ -133,7 +133,7 @@
                         {{ range $key, $value := .Achievements }}
                             <tr>
                                 <td class="img">
-                                    <img src="{{ .Icon }}" class="rounded">
+                                    <img src="{{ .Icon }}" class="rounded square">
                                     <span>{{ .Name }}</span>
                                 </td>
                                 <td>{{ .Description }}</td>
@@ -193,7 +193,7 @@
                                 <td>{{ .GetBillingType }}</td>
                                 <td>{{ .GetLicenseType }}</td>
                                 <td>{{ .GetStatus }}</td>
-                                <td>{{ comma (len .Apps) }}</td>
+                                <td>{{ comma (len .GetAppIDs) }}</td>
                             </tr>
                         {{ end }}
                         </table>

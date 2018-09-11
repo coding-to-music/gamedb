@@ -184,7 +184,7 @@
                         {{ if ne .PersonaName "" }}
                             <tr data-link="{{ .GetPath }}">
                                 <td class="img">
-                                    <img src="{{ .GetAvatar }}" class="avatar rounded" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                                    <img src="{{ .GetAvatar }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
                                     <span>{{ .PersonaName }}</span>
                                 </td>
                                 <td>{{ comma .Level }}</td>
@@ -194,7 +194,7 @@
                         {{else}}
                             <tr data-link="{{ .GetPath }}">
                                 <td class="img">
-                                    <img src="{{.GetDefaultAvatar}}" class="avatar rounded">
+                                    <img src="{{.GetDefaultAvatar}}" class="avatar rounded square">
                                     <span>Not scanned yet, might be in the <a href="/queues">queue</a>.</span>
                                 </td>
                                 <td></td>
@@ -329,7 +329,7 @@
                         {{ range $key, $value := .RecentGames }}
                             <tr data-link="/games/{{ .AppID }}">
                                 <td class="img">
-                                    <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgIconURL }}.jpg" class="rounded">
+                                    <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgIconURL }}.jpg" class="rounded square">
                                     <span>{{ .Name }}</span>
                                 </td>
                                 <td data-order="{{ .Playtime2Weeks }}">{{ .GetTwoWeeksNice }}</td>
@@ -353,7 +353,7 @@
                         {{ range $key, $value := .Games }}
                             <tr {{if ne .ID 0}}data-link="/games/{{ .ID }}"{{end}}>
                                 <td class="img" data-app-id="{{ .ID }}">
-                                    <img src="{{ .Icon }}" class="avatar rounded">
+                                    <img src="{{ .Icon }}" class="avatar rounded square">
                                     <span>{{ .Name }}</span>
                                 </td>
                                 <td data-sort="{{ .Price }}">${{ .Price }}</td>
