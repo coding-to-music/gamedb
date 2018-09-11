@@ -73,30 +73,34 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		// Get achievements
 		achievementsResp, _, err := steami.Steam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
+
 			logger.Error(err)
-			return
-		}
 
-		achievementsMap := make(map[string]float64)
-		for _, v := range achievementsResp.GlobalAchievementPercentage {
-			achievementsMap[v.Name] = v.Percent
-		}
+		} else {
 
-		// Get schema
-		schema, _, err := steami.Steam().GetSchemaForGame(app.ID)
-		if err != nil {
-			logger.Error(err)
-			return
-		}
+			achievementsMap := make(map[string]float64)
+			for _, v := range achievementsResp.GlobalAchievementPercentage {
+				achievementsMap[v.Name] = v.Percent
+			}
 
-		// Make template struct
-		for _, v := range schema.AvailableGameStats.Achievements {
-			achievements = append(achievements, appAchievementTemplate{
-				v.Icon,
-				v.DisplayName,
-				v.Description,
-				achievementsMap[v.Name],
-			})
+			// Get schema
+			schema, _, err := steami.Steam().GetSchemaForGame(app.ID)
+			if err != nil {
+
+				logger.Error(err)
+
+			} else {
+
+				// Make template struct
+				for _, v := range schema.AvailableGameStats.Achievements {
+					achievements = append(achievements, appAchievementTemplate{
+						v.Icon,
+						v.DisplayName,
+						v.Description,
+						achievementsMap[v.Name],
+					})
+				}
+			}
 		}
 
 		wg.Done()
@@ -110,7 +114,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		tags, err = app.GetTags()
 		if err != nil {
 			logger.Error(err)
-			return
 		}
 
 		wg.Done()
@@ -124,30 +127,35 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		// Get prices
 		pricesResp, err := datastore.GetAppPrices(app.ID, 0)
 		if err != nil {
+
 			logger.Error(err)
-			return
+
+		} else {
+
+			pricesCount = len(pricesResp)
+
+			var prices [][]float64
+
+			for _, v := range pricesResp {
+
+				prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceFinal) / 100})
+			}
+
+			// Add current price
+			prices = append(prices, []float64{float64(time.Now().Unix()), float64(app.PriceFinal) / 100})
+
+			// Make into a JSON string
+			pricesBytes, err := json.Marshal(prices)
+			if err != nil {
+
+				logger.Error(err)
+
+			} else {
+
+				pricesString = string(pricesBytes)
+
+			}
 		}
-
-		pricesCount = len(pricesResp)
-
-		var prices [][]float64
-
-		for _, v := range pricesResp {
-
-			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceFinal) / 100})
-		}
-
-		// Add current price
-		prices = append(prices, []float64{float64(time.Now().Unix()), float64(app.PriceFinal) / 100})
-
-		// Make into a JSON string
-		pricesBytes, err := json.Marshal(prices)
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-
-		pricesString = string(pricesBytes)
 
 		wg.Done()
 	}()
@@ -159,30 +167,33 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		// Get news
 		newsResp, err := datastore.GetArticles(idx, 1000)
 		if err != nil {
+
 			logger.Error(err)
-			return
-		}
 
-		// todo, use a different bbcode library that works for app 418460 & 218620
-		// todo, add http to links here instead of JS
-		//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
-		//var conv bbConvert.HTMLConverter
-		//conv.ImplementDefaults()
+		} else {
 
-		for _, v := range newsResp {
+			// todo, use a different bbcode library that works for app 418460 & 218620
+			// todo, add http to links here instead of JS
+			//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
+			//var conv bbConvert.HTMLConverter
+			//conv.ImplementDefaults()
 
-			// Fix broken links
-			//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
+			for _, v := range newsResp {
 
-			// Convert BBCdoe to HTML
-			//v.Contents = conv.Convert(v.Contents)
+				// Fix broken links
+				//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
 
-			news = append(news, appArticleTemplate{
-				ID:       v.ArticleID,
-				Title:    v.Title,
-				Contents: template.HTML(v.Contents),
-				Author:   v.Author,
-			})
+				// Convert BBCdoe to HTML
+				//v.Contents = conv.Convert(v.Contents)
+
+				news = append(news, appArticleTemplate{
+					ID:       v.ArticleID,
+					Title:    v.Title,
+					Contents: template.HTML(v.Contents),
+					Author:   v.Author,
+				})
+			}
+
 		}
 
 		wg.Done()
@@ -196,7 +207,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		packages, err = mysql.GetPackagesAppIsIn(app.ID)
 		if err != nil {
 			logger.Error(err)
-			return
 		}
 
 		wg.Done()
@@ -210,7 +220,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		dlc, err = mysql.GetDLC(app, []string{"id", "name"})
 		if err != nil {
 			logger.Error(err)
-			return
 		}
 
 		wg.Done()
@@ -224,52 +233,56 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 		reviewsResponse, err := app.GetReviews()
 		if err != nil {
+
 			logger.Error(err)
-			return
-		}
 
-		reviewsCount = reviewsResponse.QuerySummary
+		} else {
 
-		// Make slice of playerIDs
-		var playerIDs []int64
-		for _, v := range reviewsResponse.Reviews {
-			playerIDs = append(playerIDs, v.Author.SteamID)
-		}
+			reviewsCount = reviewsResponse.QuerySummary
 
-		players, err := datastore.GetPlayersByIDs(playerIDs)
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-
-		// Make map of players
-		var playersMap = map[int64]datastore.Player{}
-		for _, v := range players {
-			playersMap[v.PlayerID] = v
-		}
-
-		// Make template slice
-		for _, v := range reviewsResponse.Reviews {
-
-			var player datastore.Player
-			if val, ok := playersMap[v.Author.SteamID]; ok {
-				player = val
-			} else {
-				player = datastore.Player{}
-				player.PlayerID = v.Author.SteamID
-				player.PersonaName = "Unknown"
+			// Make slice of playerIDs
+			var playerIDs []int64
+			for _, v := range reviewsResponse.Reviews {
+				playerIDs = append(playerIDs, v.Author.SteamID)
 			}
 
-			// Remove extra new lines
-			regex := regexp.MustCompile("[\n]{3,}") // After comma
-			v.Review = regex.ReplaceAllString(v.Review, "\n\n")
+			players, err := datastore.GetPlayersByIDs(playerIDs)
+			if err != nil {
 
-			reviews = append(reviews, appReviewTemplate{
-				Review: v.Review,
-				Player: player,
-				Date:   time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
-				Votes:  v.VotesUp,
-			})
+				logger.Error(err)
+
+			} else {
+
+				// Make map of players
+				var playersMap = map[int64]datastore.Player{}
+				for _, v := range players {
+					playersMap[v.PlayerID] = v
+				}
+
+				// Make template slice
+				for _, v := range reviewsResponse.Reviews {
+
+					var player datastore.Player
+					if val, ok := playersMap[v.Author.SteamID]; ok {
+						player = val
+					} else {
+						player = datastore.Player{}
+						player.PlayerID = v.Author.SteamID
+						player.PersonaName = "Unknown"
+					}
+
+					// Remove extra new lines
+					regex := regexp.MustCompile("[\n]{3,}") // After comma
+					v.Review = regex.ReplaceAllString(v.Review, "\n\n")
+
+					reviews = append(reviews, appReviewTemplate{
+						Review: v.Review,
+						Player: player,
+						Date:   time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
+						Votes:  v.VotesUp,
+					})
+				}
+			}
 		}
 
 		wg.Done()
