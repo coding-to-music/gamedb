@@ -335,8 +335,8 @@
                                     <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgIconURL }}.jpg" class="rounded square">
                                     <span>{{ .Name }}</span>
                                 </td>
-                                <td data-order="{{ .Playtime2Weeks }}">{{ .GetTwoWeeksNice }}</td>
-                                <td data-order="{{ .PlaytimeForever }}">{{ .GetAllTimeNice }}</td>
+                                <td data-order="{{ .PlayTime2Weeks }}">{{ .PlayTime2Weeks }}</td>
+                                <td data-order="{{ .PlayTimeForever }}">{{ .PlayTimeForever }}</td>
                             </tr>
                         {{ end }}
                         </table>
