@@ -33,7 +33,7 @@ func Serve() error {
 	r.Use(middleware.DefaultCompress)
 
 	if viper.GetString("ENV") == logger.Local {
-		r.Use(middleware.Logger)
+		//r.Use(middleware.Logger)
 	}
 
 	r.Use(middleware.GetHead)
@@ -76,8 +76,8 @@ func Serve() error {
 	r.Get("/packages", PackagesHandler)
 	r.Get("/packages/{id}", PackageHandler)
 	r.Get("/packages/{id}/{slug}", PackageHandler)
-	r.Post("/players", PlayerIDHandler)
 	r.Get("/players", RanksHandler)
+	r.Post("/players", PlayerIDHandler)
 	r.Get("/players/{id:[a-z]+}", RanksHandler)
 	r.Get("/players/{id:[0-9]+}", PlayerHandler)
 	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
