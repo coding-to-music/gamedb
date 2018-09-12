@@ -282,10 +282,7 @@
 [[projects]]
   digest = "1:d269638dbd514822446c3c818b6389c880058af79ec54d97731818b34fe66921"
   name = "github.com/jinzhu/gorm"
-  packages = [
-    ".",
-    "dialects/mysql",
-  ]
+  packages = ["."]
   pruneopts = ""
   revision = "6ed508ec6a4ecb3531899a69cbc746ccf65a4166"
   version = "v1.9.1"
@@ -388,6 +385,14 @@
   pruneopts = ""
   revision = "13ee93c5f75c240128feb4271e025f2f381ca0f5"
   version = "v2.0.2"
+
+[[projects]]
+  digest = "1:2e5e286a00a31322e7efca6fb9be73e9f32e6d5d664c885a7e666ee32c5e0213"
+  name = "github.com/pariz/gountries"
+  packages = ["."]
+  pruneopts = ""
+  revision = "adb00f6513a307f9f7a4ee57eca79a703b8a7272"
+  version = "0.1.3"
 
 [[projects]]
   digest = "1:894aef961c056b6d85d12bac890bf60c44e99b46292888bfa66caf529f804457"
@@ -780,8 +785,8 @@
     "github.com/gosimple/slug",
     "github.com/ikeikeikeike/go-sitemap-generator/stm",
     "github.com/jinzhu/gorm",
-    "github.com/jinzhu/gorm/dialects/mysql",
     "github.com/oxequa/realize",
+    "github.com/pariz/gountries",
     "github.com/rollbar/rollbar-go",
     "github.com/sendgrid/sendgrid-go",
     "github.com/sendgrid/sendgrid-go/helpers/mail",

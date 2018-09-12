@@ -122,6 +122,10 @@ func (p Player) GetFlag() string {
 	return "/assets/img/flags/" + strings.ToLower(p.CountryCode) + ".png"
 }
 
+func (p Player) GetCountry() string {
+	return helpers.CountryCodeToName(p.CountryCode)
+}
+
 func (p Player) GetGames() (games []steam.OwnedGame, err error) {
 
 	if len(p.Games) > 0 {

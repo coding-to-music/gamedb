@@ -64,6 +64,10 @@ func (rank Rank) GetFlag() string {
 	return "/assets/img/flags/" + strings.ToLower(rank.CountryCode) + ".png"
 }
 
+func (rank Rank) GetCountry() string {
+	return helpers.CountryCodeToName(rank.CountryCode)
+}
+
 func (rank Rank) GetTimeShort() (ret string) {
 	return helpers.GetTimeShort(rank.PlayTime, 2)
 }
