@@ -304,7 +304,7 @@ func GetPlayer(id int64) (ret Player, err error) {
 
 	err = client.Get(ctx, key, &player)
 	if err != nil {
-		if err, ok := err.(*datastore.ErrFieldMismatch); ok {
+		if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
 
 			old := []string{
 				"settings_email",
@@ -313,8 +313,8 @@ func GetPlayer(id int64) (ret Player, err error) {
 				"settings_hidden",
 			}
 
-			if !helpers.SliceHasString(old, err.FieldName) {
-				return player, err
+			if !helpers.SliceHasString(old, err2.FieldName) {
+				return player, err2
 			}
 		} else {
 			return player, err
