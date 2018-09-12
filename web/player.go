@@ -242,6 +242,8 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
+	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 15)
+
 	// Template
 	t := playerTemplate{}
 	t.Fill(w, r, player.PersonaName)
