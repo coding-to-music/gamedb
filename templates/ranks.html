@@ -52,7 +52,9 @@
                             <span>{{ .PersonaName }}</span>
                         </td>
                         <td class="img">
+                        {{ if ne .CountryCode "" }}
                             <img data-toggle="tooltip" data-placement="left" title="{{ .GetCountry }}" src="{{ .GetFlag }}" class="rounded">
+                        {{ end }}
                         </td>
                         <td class="img">
                             <div class="{{ .GetAvatar2 }} square"></div>

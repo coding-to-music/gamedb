@@ -66,13 +66,15 @@
                                             <th scope="row" nowrap="nowrap">Profile</th>
                                             <td><a href="{{ .Player.GetSteamCommunityLink }}"><i class="fab fa-steam-square"></i> {{ .Player.VanintyURL }}</a></td>
                                         </tr>
+                                    {{ if ne .Player.CountryCode "" }}
                                         <tr>
                                             <th scope="row" nowrap="nowrap">Country</th>
                                             <td class="img">
                                                 <img class="rounded" data-toggle="tooltip" data-placement="top" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}">
-                                                <span>{{.Player.CountryCode}}</span>
+                                                <span>{{ .Player.CountryCode }}</span>
                                             </td>
                                         </tr>
+                                    {{ end }}
                                         <tr>
                                             <th scope="row" nowrap="nowrap">State</th>
                                             <td>{{ .Player.StateCode }}</td>
