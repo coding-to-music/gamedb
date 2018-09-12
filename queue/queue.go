@@ -28,6 +28,8 @@ var (
 
 	errInvalidQueue = errors.New("invalid queue")
 	errEmptyMessage = errors.New("empty message")
+
+	dsn string
 )
 
 type queueInterface interface {
@@ -48,6 +50,17 @@ func init() {
 	for _, v := range qs {
 		queues[v.Message.getQueueName()] = v
 	}
+}
+
+func Init() {
+
+	username := viper.GetString("RABBIT_USER")
+	password := viper.GetString("RABBIT_PASS")
+	host := viper.GetString("RABBIT_HOST")
+	port := viper.GetString("RABBIT_PORT")
+
+	dsn = "amqp://" + username + ":" + password + "@" + host + ":" + port
+
 }
 
 func RunConsumers() {
@@ -77,12 +90,7 @@ func (s rabbitMessageBase) getConnection() (conn *amqp.Connection, ch *amqp.Chan
 
 	closeChannel = make(chan *amqp.Error)
 
-	username := viper.GetString("RABBIT_USER")
-	password := viper.GetString("RABBIT_PASS")
-	host := viper.GetString("RABBIT_HOST")
-	port := viper.GetString("RABBIT_PORT")
-
-	conn, err = amqp.Dial("amqp://" + username + ":" + password + "@" + host + ":" + port)
+	conn, err = amqp.Dial(dsn)
 	conn.NotifyClose(closeChannel)
 	if err != nil {
 		logger.Error(err)

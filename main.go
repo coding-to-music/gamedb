@@ -20,6 +20,7 @@ import (
 
 func init() {
 	config.Init() // Must go first
+	queue.Init()
 	logger.Init()
 	session.Init()
 	storage.Init()
