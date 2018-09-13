@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/dustin/go-humanize"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/mysql"
@@ -41,8 +42,33 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 			db = db.Order("reviews_score DESC, name ASC")
 			db = db.Limit(freeGamesLimit)
 			db = db.Offset((page - 1) * freeGamesLimit)
-
 			db = db.Find(&apps)
+
+			logger.Error(db.Error)
+		}
+
+		wg.Done()
+	}()
+
+	// Get type
+	var types []freeGameType
+	wg.Add(1)
+	go func() {
+
+		db, err := mysql.GetDB()
+		if err != nil {
+
+			logger.Error(err)
+
+		} else {
+
+			db = db.Select([]string{"type", "count(type) as count"})
+			db = db.Where("is_free = ?", "1")
+			db = db.Table("apps")
+			db = db.Group("type")
+			db = db.Order("count DESC")
+			db = db.Find(&types)
+
 			logger.Error(db.Error)
 		}
 
@@ -61,7 +87,10 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 				return err
 			}
 
-			db = db.Model(&mysql.App{}).Where("is_free = ?", "1").Count(total)
+			db = db.Model(&mysql.App{})
+			db = db.Where("is_free = ?", "1")
+			db = db.Count(total)
+
 			if db.Error != nil {
 				return db.Error
 			}
@@ -82,6 +111,7 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Free Games")
 	t.Apps = apps
 	t.Total = total
+	t.Types = types
 	t.Pagination = Pagination{
 		path:  "/free-games?p=",
 		page:  page,
@@ -96,6 +126,32 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 type freeGamesTemplate struct {
 	GlobalTemplate
 	Apps       []mysql.App
+	Types      []freeGameType
 	Pagination Pagination
 	Total      int
+}
+
+type freeGameType struct {
+	Type  string `column:type"`
+	Count int    `column:count"`
+}
+
+func (f freeGameType) GetType() string {
+
+	if f.Type == "" {
+		return "unknown"
+	}
+	return f.Type
+}
+
+func (f freeGameType) GetTypeNice() string {
+
+	app := mysql.App{}
+	app.Type = f.Type
+	return app.GetType()
+}
+
+func (f freeGameType) GetCount() string {
+
+	return humanize.Comma(int64(f.Count))
 }
