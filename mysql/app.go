@@ -28,6 +28,7 @@ const (
 
 var (
 	ErrInvalidID = UpdateError{"invalid app id", true, false}
+	ErrNoSuchApp = errors.New("no such app")
 )
 
 type App struct {
@@ -173,15 +174,17 @@ func (app App) GetPriceFinalNice() string {
 	}
 }
 
-func (app App) GetReviewScoreFancy() float64 {
+func (app App) GetReviewScore() float64 {
+
+	if app.ReviewsPositive == 0 && app.ReviewsNegative == 0 {
+		return 0
+	}
+
 	total := float64(app.ReviewsPositive + app.ReviewsNegative)
 	average := float64(app.ReviewsPositive) / total
 	score := average - (average-0.5)*math.Pow(2, -math.Log10(total + 1))
-	return score * 100
-}
 
-func (app App) GetReviewScore() float64 {
-	return helpers.DollarsFloat(app.ReviewsScore)
+	return helpers.DollarsFloat(score * 100)
 }
 
 func (app App) GetCommunityLink() string {
@@ -458,7 +461,7 @@ func GetApp(id int) (app App, err error) {
 	}
 
 	if app.ID == 0 {
-		return app, errors.New("no id")
+		return app, ErrNoSuchApp
 	}
 
 	return app, nil
@@ -626,12 +629,15 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		articles, err = datastore.GetNewArticles(app.ID)
 		if err != nil {
-			errs = append(errs, err)
-		}
 
-		err = datastore.BulkAddArticles(articles)
-		if err != nil {
 			errs = append(errs, err)
+
+		} else {
+
+			err = datastore.BulkAddArticles(articles)
+			if err != nil {
+				errs = append(errs, err)
+			}
 		}
 
 		wg.Done()
@@ -645,18 +651,22 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		reviewsResp, _, err = steami.Steam().GetReviews(app.ID)
 		if err != nil {
-			errs = append(errs, err)
-		}
 
-		reviewsBytes, err := json.Marshal(reviewsResp)
-		if err != nil {
 			errs = append(errs, err)
-		}
 
-		app.Reviews = string(reviewsBytes)
-		app.ReviewsScore = reviewsResp.QuerySummary.GetPositivePerent()
-		app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
-		app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
+		} else {
+
+			reviewsBytes, err := json.Marshal(reviewsResp)
+			if err != nil {
+				errs = append(errs, err)
+			}
+
+			app.Reviews = string(reviewsBytes)
+			app.ReviewsScore = app.GetReviewScore()
+			app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
+			app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
+
+		}
 
 		wg.Done()
 	}(app)
@@ -813,15 +823,22 @@ func (app *App) UpdateFromAPI() (errs []error) {
 
 		percentages, _, err := steami.Steam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
-			logger.Error(err)
-		}
 
-		percentagesString, err := json.Marshal(percentages)
-		if err != nil {
 			logger.Error(err)
-		}
 
-		app.AchievementPercentages = string(percentagesString)
+		} else {
+
+			percentagesString, err := json.Marshal(percentages)
+			if err != nil {
+
+				logger.Error(err)
+
+			} else {
+
+				app.AchievementPercentages = string(percentagesString)
+
+			}
+		}
 
 		wg.Done()
 	}(app)
@@ -832,15 +849,22 @@ func (app *App) UpdateFromAPI() (errs []error) {
 
 		schema, _, err := steami.Steam().GetSchemaForGame(app.ID)
 		if err != nil {
-			logger.Error(err)
-		}
 
-		schemaString, err := json.Marshal(schema)
-		if err != nil {
 			logger.Error(err)
-		}
 
-		app.Schema = string(schemaString)
+		} else {
+
+			schemaString, err := json.Marshal(schema)
+			if err != nil {
+
+				logger.Error(err)
+
+			} else {
+
+				app.Schema = string(schemaString)
+
+			}
+		}
 
 		wg.Done()
 	}(app)

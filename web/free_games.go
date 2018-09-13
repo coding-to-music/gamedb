@@ -31,20 +31,19 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 
 		db, err := mysql.GetDB()
 		if err != nil {
+
 			logger.Error(err)
-			return
-		}
 
-		db = db.Limit(freeGamesLimit)
-		db = db.Offset((page - 1) * freeGamesLimit)
-		db = db.Order("reviews_score DESC, name ASC")
-		db = db.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
-		db = db.Where("is_free = ?", "1")
+		} else {
 
-		db = db.Find(&apps)
-		if db.Error != nil {
+			db = db.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
+			db = db.Where("is_free = ?", "1")
+			db = db.Order("reviews_score DESC, name ASC")
+			db = db.Limit(freeGamesLimit)
+			db = db.Offset((page - 1) * freeGamesLimit)
+
+			db = db.Find(&apps)
 			logger.Error(db.Error)
-			return
 		}
 
 		wg.Done()
@@ -70,9 +69,7 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 			return nil
 		})
 
-		if err != nil {
-			logger.Error(err)
-		}
+		logger.Error(err)
 
 		wg.Done()
 	}()
