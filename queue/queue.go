@@ -87,32 +87,6 @@ func Produce(queue string, data []byte) (err error) {
 	return errInvalidQueue
 }
 
-func getConsumerConnection() (conn *amqp.Connection, err error) {
-	if consumerConnection == nil {
-		conn, err := amqp.Dial(dsn)
-		conn.NotifyClose(consumerCloseChannel)
-		if err != nil {
-			return conn, err
-		}
-		consumerConnection = conn
-	}
-
-	return consumerConnection, err
-}
-
-func getProducerConnection() (conn *amqp.Connection, err error) {
-	if producerConnection == nil {
-		conn, err := amqp.Dial(dsn)
-		conn.NotifyClose(producerCloseChannel)
-		if err != nil {
-			return conn, err
-		}
-		producerConnection = conn
-	}
-
-	return producerConnection, err
-}
-
 type rabbitMessageBase struct {
 	Message   queueInterface
 	Attempt   int
@@ -139,7 +113,18 @@ func (s rabbitMessageBase) produce(data []byte) (err error) {
 
 	logger.Info("Producing to: " + s.Message.getQueueName())
 
-	ch, qu, err := s.getQueue()
+	// Connect
+	if producerConnection == nil {
+
+		producerConnection, err = amqp.Dial(dsn)
+		producerConnection.NotifyClose(producerCloseChannel)
+		if err != nil {
+			return err
+		}
+	}
+
+	//
+	ch, qu, err := s.getQueue(producerConnection)
 	defer ch.Close()
 	if err != nil {
 		return err
@@ -162,15 +147,23 @@ func (s rabbitMessageBase) consume() {
 	logger.Info("Consuming from: " + s.Message.getQueueName())
 
 	var breakFor = false
+	var err error
 
 	for {
-		conn, err := getConsumerConnection()
-		if err != nil {
-			logger.Error(err)
-			return
+
+		// Connect
+		if consumerConnection == nil {
+
+			consumerConnection, err = amqp.Dial(dsn)
+			consumerConnection.NotifyClose(consumerCloseChannel)
+			if err != nil {
+				logger.Error(err)
+				return
+			}
 		}
 
-		ch, qu, err := s.getQueue()
+		//
+		ch, qu, err := s.getQueue(consumerConnection)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -215,7 +208,7 @@ func (s rabbitMessageBase) consume() {
 			}
 		}
 
-		conn.Close()
+		//conn.Close()
 		ch.Close()
 	}
 }
