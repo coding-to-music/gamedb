@@ -3,7 +3,6 @@ package queue
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math"
 	"time"
 
@@ -30,6 +29,12 @@ var (
 	errEmptyMessage = errors.New("empty message")
 
 	dsn string
+
+	consumerConnection   *amqp.Connection
+	consumerCloseChannel chan *amqp.Error
+
+	producerConnection   *amqp.Connection
+	producerCloseChannel chan *amqp.Error
 )
 
 type queueInterface interface {
@@ -39,6 +44,10 @@ type queueInterface interface {
 }
 
 func init() {
+
+	consumerCloseChannel = make(chan *amqp.Error)
+	producerCloseChannel = make(chan *amqp.Error)
+
 	qs := []rabbitMessageBase{
 		//{Message: RabbitMessageApp{}},
 		{Message: RabbitMessageChanges{}},
@@ -60,7 +69,6 @@ func Init() {
 	port := viper.GetString("RABBIT_PORT")
 
 	dsn = "amqp://" + username + ":" + password + "@" + host + ":" + port
-
 }
 
 func RunConsumers() {
@@ -79,46 +87,65 @@ func Produce(queue string, data []byte) (err error) {
 	return errInvalidQueue
 }
 
+func getConsumerConnection() (conn *amqp.Connection, err error) {
+	if consumerConnection == nil {
+		conn, err := amqp.Dial(dsn)
+		conn.NotifyClose(consumerCloseChannel)
+		if err != nil {
+			return conn, err
+		}
+		consumerConnection = conn
+	}
+
+	return consumerConnection, err
+}
+
+func getProducerConnection() (conn *amqp.Connection, err error) {
+	if producerConnection == nil {
+		conn, err := amqp.Dial(dsn)
+		conn.NotifyClose(producerCloseChannel)
+		if err != nil {
+			return conn, err
+		}
+		producerConnection = conn
+	}
+
+	return producerConnection, err
+}
+
 type rabbitMessageBase struct {
+	Message   queueInterface
 	Attempt   int
 	StartTime time.Time // Time first placed in delay queue
 	EndTime   time.Time // Time to retry from delay queue
-	Message   queueInterface
 }
 
-func (s rabbitMessageBase) getConnection() (conn *amqp.Connection, ch *amqp.Channel, q amqp.Queue, closeChannel chan *amqp.Error, err error) {
-
-	closeChannel = make(chan *amqp.Error)
-
-	conn, err = amqp.Dial(dsn)
-	conn.NotifyClose(closeChannel)
-	if err != nil {
-		logger.Error(err)
-	}
+func (s rabbitMessageBase) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
 	if err != nil {
 		logger.Error(err)
 	}
 
-	q, err = ch.QueueDeclare(s.Message.getQueueName(), true, false, false, false, nil)
+	qu, err = ch.QueueDeclare(s.Message.getQueueName(), true, false, false, false, nil)
 	if err != nil {
 		logger.Error(err)
 	}
 
-	return conn, ch, q, closeChannel, err
+	return ch, qu, err
 }
 
 func (s rabbitMessageBase) produce(data []byte) (err error) {
 
-	conn, ch, q, _, err := s.getConnection()
-	defer conn.Close()
+	logger.Info("Producing to: " + s.Message.getQueueName())
+
+	ch, qu, err := s.getQueue()
 	defer ch.Close()
 	if err != nil {
 		return err
 	}
 
-	err = ch.Publish("", q.Name, false, false, amqp.Publishing{
+	err = ch.Publish("", qu.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
 		Body:         data,
@@ -132,18 +159,24 @@ func (s rabbitMessageBase) produce(data []byte) (err error) {
 
 func (s rabbitMessageBase) consume() {
 
-	fmt.Println(s.Message.getQueueName())
+	logger.Info("Consuming from: " + s.Message.getQueueName())
 
 	var breakFor = false
 
 	for {
-		conn, ch, q, closeChan, err := s.getConnection()
+		conn, err := getConsumerConnection()
 		if err != nil {
 			logger.Error(err)
 			return
 		}
 
-		msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
+		ch, qu, err := s.getQueue()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+
+		msgs, err := ch.Consume(qu.Name, "", false, false, false, false, nil)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -151,7 +184,7 @@ func (s rabbitMessageBase) consume() {
 
 		for {
 			select {
-			case err = <-closeChan:
+			case err = <-consumerCloseChannel:
 				breakFor = true
 				break
 
@@ -213,6 +246,7 @@ func (s rabbitMessageBase) requeueMessage(msg amqp.Delivery) error {
 
 func (s *rabbitMessageBase) IncrementAttempts() {
 
+	// Increment attemp
 	s.Attempt++
 
 	// Update end time
