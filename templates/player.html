@@ -17,13 +17,13 @@
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#games" role="tab">Games ({{ .Player.GamesCount }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#games" role="tab">Games ({{ comma .Player.GamesCount }})</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#friends" role="tab">Friends ({{ .Player.FriendsCount }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }})</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#badges" role="tab">XP / Badges ({{ .Player.BadgesCount }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#badges" role="tab">XP / Badges ({{ comma .Player.BadgesCount }})</a>
                 </li>
             {{ if ne .Player.PlayerID .UserID }}
                 <li class="nav-item ml-auto">
