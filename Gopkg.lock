@@ -88,6 +88,14 @@
   version = "v0.18.0"
 
 [[projects]]
+  digest = "1:edfb1e0276869665f9b91a70843712c1094a395ef5de7e5964adda96b986ee7d"
+  name = "github.com/derekstavis/go-qs"
+  packages = ["."]
+  pruneopts = ""
+  revision = "9eef69e6c4e70cf2da34be55a5c0e1ae0b6ca0c5"
+  version = "0.3.0"
+
+[[projects]]
   digest = "1:6098222470fe0172157ce9bbef5d2200df4edde17ee649c5d6e48330e4afa4c6"
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
@@ -211,6 +219,14 @@
   pruneopts = ""
   revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
   version = "v1.1.1"
+
+[[projects]]
+  digest = "1:529dd39ce1a3837709c5f1dbf0a803ecb22e4fef79c722cdd9805e2a63ca686e"
+  name = "github.com/gorilla/schema"
+  packages = ["."]
+  pruneopts = ""
+  revision = "d0e4c24cff97ae983e9847e0ed5a02dc10013d41"
+  version = "v1.0.2"
 
 [[projects]]
   digest = "1:51a1d17ba9fe6648d9fdd5b822baa616d6ec7f28c8669c2091126d206796b5ae"
@@ -775,12 +791,14 @@
     "github.com/Masterminds/squirrel",
     "github.com/bradfitz/gomemcache/memcache",
     "github.com/bwmarrin/discordgo",
+    "github.com/derekstavis/go-qs",
     "github.com/dustin/go-humanize",
     "github.com/go-chi/chi",
     "github.com/go-chi/chi/middleware",
     "github.com/go-sql-driver/mysql",
     "github.com/golang/snappy",
     "github.com/google/go-github/github",
+    "github.com/gorilla/schema",
     "github.com/gorilla/sessions",
     "github.com/gorilla/websocket",
     "github.com/gosimple/slug",

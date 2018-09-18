@@ -3,9 +3,11 @@ package web
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"math"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -17,6 +19,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/gorilla/schema"
 	"github.com/gosimple/slug"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
@@ -61,6 +64,7 @@ func Serve() error {
 	r.Get("/experience", ExperienceHandler)
 	r.Get("/experience/{id}", ExperienceHandler)
 	r.Get("/free-games", FreeGamesHandler)
+	r.Get("/free-games/ajax", FreeGamesAjaxHandler)
 	r.Get("/games", AppsHandler)
 	r.Get("/games/{id}", AppHandler)
 	r.Get("/games/{id}/{slug}", AppHandler)
@@ -421,13 +425,36 @@ type SimplePagination struct {
 	limit int
 }
 
-type DataTable struct {
-	Draw            string     `json:"draw"`
+type DataTablesAjaxResponse struct {
+	Draw            string     `json:"-"`
 	RecordsTotal    string     `json:"recordsTotal"`
 	RecordsFiltered string     `json:"recordsFiltered"`
 	Data            [][]string `json:"data"`
 }
 
-func (t DataTable) AddRow(row []string) {
+func (t DataTablesAjaxResponse) AddRow(row []string) {
 	t.Data = append(t.Data, row)
+}
+
+type DataTablesQuery struct {
+	Draw   string                         `json:"draw"`
+	Order  []map[string]map[string]string `json:"order"`
+	Start  string                         `json:"start"`
+	Length string                         `json:"length"`
+	Search map[string]string              `json:"search"`
+}
+
+func (q *DataTablesQuery) FillFromURL(url *url.URL) (err error) {
+
+	var decoder = schema.NewDecoder()
+
+	err = decoder.Decode(q, url.Query())
+	if err != nil {
+		logger.Info(err.Error())
+		return err
+	}
+
+	fmt.Println(q)
+
+	return nil
 }
