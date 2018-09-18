@@ -1,7 +1,6 @@
 package web
 
 import (
-	"bytes"
 	"io/ioutil"
 	"net/http"
 
@@ -10,13 +9,7 @@ import (
 )
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
-
-	t := http.Response{
-		Body: ioutil.NopCloser(bytes.NewBufferString("OK")),
-	}
-
-	buff := bytes.NewBuffer(nil)
-	t.Write(buff)
+	w.Write([]byte("OK"))
 }
 
 func HeaderHandler(w http.ResponseWriter, r *http.Request) {
