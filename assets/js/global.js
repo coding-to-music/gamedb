@@ -1,9 +1,20 @@
-// Table row links
-$("[data-link]").click(function () {
+// Links
+$(document).on('mouseup', '[data-link]', function (evnt) {
+
     var link = $(this).attr('data-link');
-    if (link) {
-        window.location.href = $(this).attr('data-link');
+
+    if (evnt.which === 3) {
+        return true;
     }
+
+    if (evnt.ctrlKey || evnt.shiftKey || evnt.metaKey || evnt.which === 2) {
+        window.open(link, '_blank');
+        return true;
+    }
+
+    window.location.href = link;
+    return true;
+
 });
 
 // Clear search on escape
