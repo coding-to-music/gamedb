@@ -413,3 +413,21 @@ func (t Pagination) GetLinks() string {
 	// todo, return link html here instead of making in template, that way we can add a variable to the path and replace with the page number
 	return ""
 }
+
+type SimplePagination struct {
+	path  string
+	next  string
+	prev  string
+	limit int
+}
+
+type DataTable struct {
+	Draw            string     `json:"draw"`
+	RecordsTotal    string     `json:"recordsTotal"`
+	RecordsFiltered string     `json:"recordsFiltered"`
+	Data            [][]string `json:"data"`
+}
+
+func (t DataTable) AddRow(row []string) {
+	t.Data = append(t.Data, row)
+}

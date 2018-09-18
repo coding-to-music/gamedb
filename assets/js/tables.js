@@ -22,8 +22,17 @@ $("table.table-datatable").each(function (i) {
 
     // Init
     $(this).DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/free-games/ajax",
+            "data": function (d) {
+                delete d.columns;
+            }
+        },
+
         "order": order,
-        "paging": false,
+        "paging": true,
         "ordering": true,
         "info": false,
         "searching": true,
@@ -33,7 +42,7 @@ $("table.table-datatable").each(function (i) {
         "autoWidth": false,
         "lengthChange": false,
         "stateSave": false,
-        "dom": 't',
+        //"dom": 't',
         "columnDefs": [
             {
                 "targets": disabled,
