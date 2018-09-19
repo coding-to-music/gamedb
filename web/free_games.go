@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	freeGamesLimit = 500
+	freeGamesLimit = 100
 )
 
 func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
@@ -158,112 +158,82 @@ func (f freeGameType) GetCount() string {
 
 func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	//query, err := qs.Unmarshal("draw=3&order[0][column]=1&order[0][dir]=desc&start=0&length=10&search[value]=&search[regex]=false&_=1537303582010")
-	//
-	//if err != nil {
-	//	fmt.Printf("%#+v\n", query)
-	//}
-	//
-	//bytes, err := json.Marshal(query)
-	//
-	//logger.Info(string(bytes))
-
 	query := DataTablesQuery{}
-	query.FillFromURL(r.URL)
+	query.FillFromURL(r.URL.Query())
 
-	//xx, _ := json.Marshal(r.URL.Query())
+	//
+	var wg sync.WaitGroup
 
-	//fmt.Println(string(xx))
+	// Get apps
+	var apps []mysql.App
+	wg.Add(1)
+	go func() {
 
-	x := `{
-  "draw": 1,
-  "recordsTotal": 57,
-  "recordsFiltered": 57,
-  "data": [
-    [
-      "Airi",
-      "Satou",
-      "Accountant",
-      "Tokyo",
-      "28th Nov 08",
-      "$162,700"
-    ],
-    [
-      "Angelica",
-      "Ramos",
-      "Chief Executive Officer (CEO)",
-      "London",
-      "9th Oct 09",
-      "$1,200,000"
-    ],
-    [
-      "Ashton",
-      "Cox",
-      "Junior Technical Author",
-      "San Francisco",
-      "12th Jan 09",
-      "$86,000"
-    ],
-    [
-      "Bradley",
-      "Greer",
-      "Software Engineer",
-      "London",
-      "13th Oct 12",
-      "$132,000"
-    ],
-    [
-      "Brenden",
-      "Wagner",
-      "Software Engineer",
-      "San Francisco",
-      "7th Jun 11",
-      "$206,850"
-    ],
-    [
-      "Brielle",
-      "Williamson",
-      "Integration Specialist",
-      "New York",
-      "2nd Dec 12",
-      "$372,000"
-    ],
-    [
-      "Bruno",
-      "Nash",
-      "Software Engineer",
-      "London",
-      "3rd May 11",
-      "$163,500"
-    ],
-    [
-      "Caesar",
-      "Vance",
-      "Pre-Sales Support",
-      "New York",
-      "12th Dec 11",
-      "$106,450"
-    ],
-    [
-      "Cara",
-      "Stevens",
-      "Sales Assistant",
-      "New York",
-      "6th Dec 11",
-      "$145,600"
-    ],
-    [
-      "Cedric",
-      "Kelly",
-      "Senior Javascript Developer",
-      "Edinburgh",
-      "29th Mar 12",
-      "$433,060"
-    ]
-  ]
-}`
+		db, err := mysql.GetDB()
+		if err != nil {
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(x))
+			logger.Error(err)
 
+		} else {
+
+			db = db.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
+			db = db.Where("is_free = ?", "1")
+			db = db.Order("reviews_score DESC, name ASC")
+			db = db.Limit(freeGamesLimit)
+			db = db.Offset(query.Start)
+			db = db.Find(&apps)
+
+			logger.Error(db.Error)
+		}
+
+		wg.Done()
+	}()
+
+	// Get total
+	var total int
+	wg.Add(1)
+	go func() {
+
+		err := memcache.GetSet(memcache.FreeAppsCount, &total, func(total interface{}) (err error) {
+
+			db, err := mysql.GetDB()
+			if err != nil {
+				return err
+			}
+
+			db = db.Model(&mysql.App{})
+			db = db.Where("is_free = ?", "1")
+			db = db.Count(total)
+
+			if db.Error != nil {
+				return db.Error
+			}
+
+			return nil
+		})
+
+		logger.Error(err)
+
+		wg.Done()
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.Itoa(total)
+	response.RecordsFiltered = strconv.Itoa(total)
+	response.Draw = query.Draw
+
+	for _, v := range apps {
+		response.AddRow([]string{
+			strconv.Itoa(v.ID),
+			"y",
+			"z",
+			"1",
+			"2",
+		})
+	}
+
+	response.Output(w)
 }

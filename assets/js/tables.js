@@ -26,11 +26,18 @@ $("table.table-datatable").each(function (i) {
         "serverSide": true,
         "ajax": {
             "url": "/free-games/ajax",
+            "cache": true,
             "data": function (d) {
                 delete d.columns;
             }
         },
-
+        // "columns": [
+        //     {"data": "id"},
+        //     {"data": "name"},
+        //     {"data": "description"},
+        //     {"data": "createdAt"},
+        //     {"data": "updatedAt"}
+        // ],
         "order": order,
         "paging": true,
         "ordering": true,

@@ -3,7 +3,6 @@ package web
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"math"
 	"net/http"
@@ -16,11 +15,12 @@ import (
 
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/gorilla/schema"
 	"github.com/gosimple/slug"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
@@ -426,35 +426,48 @@ type SimplePagination struct {
 }
 
 type DataTablesAjaxResponse struct {
-	Draw            string     `json:"-"`
+	Draw            string     `json:"draw"`
 	RecordsTotal    string     `json:"recordsTotal"`
 	RecordsFiltered string     `json:"recordsFiltered"`
 	Data            [][]string `json:"data"`
 }
 
-func (t DataTablesAjaxResponse) AddRow(row []string) {
+func (t *DataTablesAjaxResponse) AddRow(row []string) {
 	t.Data = append(t.Data, row)
 }
 
-type DataTablesQuery struct {
-	Draw   string                         `json:"draw"`
-	Order  []map[string]map[string]string `json:"order"`
-	Start  string                         `json:"start"`
-	Length string                         `json:"length"`
-	Search map[string]string              `json:"search"`
+func (t DataTablesAjaxResponse) Output(w http.ResponseWriter) {
+	bytesx, err := json.Marshal(t)
+	if err != nil {
+		logger.Error(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytesx)
 }
 
-func (q *DataTablesQuery) FillFromURL(url *url.URL) (err error) {
+type DataTablesQuery struct {
+	Draw   string
+	Order  map[string]map[string]interface{}
+	Start  string
+	Length string
+	Search map[string]interface{}
+	Time   string `mapstructure:"_"`
+}
 
-	var decoder = schema.NewDecoder()
+func (q *DataTablesQuery) FillFromURL(url url.Values) (err error) {
 
-	err = decoder.Decode(q, url.Query())
+	// Convert string into map
+	queryMap, err := qs.Unmarshal(url.Encode())
 	if err != nil {
-		logger.Info(err.Error())
 		return err
 	}
 
-	fmt.Println(q)
+	// Convert map into struct
+	err = mapstructure.Decode(queryMap, q)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
