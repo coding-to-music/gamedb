@@ -34,29 +34,18 @@
             </form>
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable mb-0">
+                <table class="table table-hover table-striped table-datatable2 mb-0">
                     <thead class="thead-light">
                     <tr>
                         <th scope="col">Game</th>
-                        <th scope="col" nowrap="nowrap" data-sort="desc">Review Score</th>
+                        <th scope="col">Review Score</th>
                         <th scope="col">Type</th>
-                        <th scope="col" data-disabled>Platforms</th>
-                        <th scope="col" data-disabled>Install</th>
+                        <th scope="col">Platforms</th>
+                        <th scope="col">Install</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {{ range $key, $value := .Apps }}
-                    <tr data-link="{{ .GetPath }}">
-                        <td class="img" data-app-id="{{ .ID }}">
-                            <img src="{{ .GetIcon }}" class="rounded square">
-                            <span>{{ .GetName }}</span>
-                        </td>
-                        <td>{{ .ReviewsScore }}%</td>
-                        <td>{{ .GetType }}</td>
-                        <td class="platforms platforms-align">{{ .GetPlatformImages }}</td>
-                        <td><a href="{{ .GetInstallLink }}">Install</a></td>
-                    </tr>
-                    {{ end }}
+
                     </tbody>
                 </table>
             </div>

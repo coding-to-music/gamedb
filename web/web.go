@@ -426,13 +426,13 @@ type SimplePagination struct {
 }
 
 type DataTablesAjaxResponse struct {
-	Draw            string     `json:"draw"`
-	RecordsTotal    string     `json:"recordsTotal"`
-	RecordsFiltered string     `json:"recordsFiltered"`
-	Data            [][]string `json:"data"`
+	Draw            string          `json:"draw"`
+	RecordsTotal    string          `json:"recordsTotal"`
+	RecordsFiltered string          `json:"recordsFiltered"`
+	Data            [][]interface{} `json:"data"`
 }
 
-func (t *DataTablesAjaxResponse) AddRow(row []string) {
+func (t *DataTablesAjaxResponse) AddRow(row []interface{}) {
 	t.Data = append(t.Data, row)
 }
 
@@ -470,4 +470,15 @@ func (q *DataTablesQuery) FillFromURL(url url.Values) (err error) {
 	}
 
 	return nil
+}
+
+func (q DataTablesQuery) GetSearch() (search string) {
+
+	if val, ok := q.Search["value"]; ok {
+		if ok && val != "" {
+			return val.(string)
+		}
+	}
+
+	return ""
 }

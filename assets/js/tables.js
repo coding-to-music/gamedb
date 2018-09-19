@@ -22,24 +22,8 @@ $("table.table-datatable").each(function (i) {
 
     // Init
     $(this).DataTable({
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "/free-games/ajax",
-            "cache": true,
-            "data": function (d) {
-                delete d.columns;
-            }
-        },
-        // "columns": [
-        //     {"data": "id"},
-        //     {"data": "name"},
-        //     {"data": "description"},
-        //     {"data": "createdAt"},
-        //     {"data": "updatedAt"}
-        // ],
         "order": order,
-        "paging": true,
+        "paging": false,
         "ordering": true,
         "info": false,
         "searching": true,
@@ -49,7 +33,7 @@ $("table.table-datatable").each(function (i) {
         "autoWidth": false,
         "lengthChange": false,
         "stateSave": false,
-        //"dom": 't',
+        "dom": 't',
         "columnDefs": [
             {
                 "targets": disabled,
@@ -61,9 +45,87 @@ $("table.table-datatable").each(function (i) {
 
 });
 
+var options = {
+    "processing": false,
+    "serverSide": true,
+    "ajax": {
+        "cache": true,
+        "data": function (d) {
+            delete d.columns;
+        }
+    },
+    "paging": true,
+    "ordering": true,
+    "info": false,
+    "searching": true,
+    "search": {
+        "smart": true
+    },
+    "autoWidth": false,
+    "lengthChange": false,
+    "stateSave": false,
+    //"dom": 't',
+    'createdRow': function (row, data, dataIndex) {
+        $(row).attr('data-link', data[7]);
+    }
+};
 
-$('.dataTables_wrapper').removeClass('container-fluid');
+// Init
+$('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, options, {
+    "ajax": {
+        "url": "/free-games/ajax",
+    },
+    "order": [[1, 'desc']],
+    'createdRow': function (row, data, dataIndex) {
+        $(row).attr('data-link', data[7]);
+    },
+    "columnDefs": [
+        {
+            "targets": 0,
+            "render": function (data, type, row) {
+                return '<img src="' + row[2] + '" class="rounded square"><span>' + row[1] + '</span>';
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).addClass('img')
+            }
+        },
+        {
+            "targets": 1,
+            "render": function (data, type, row) {
+                return row[3] + '%';
+            }
+        },
+        {
+            "targets": 2,
+            "render": function (data, type, row) {
+                return row[4];
+            }
+        },
+        {
+            "targets": 3,
+            "render": function (data, type, row) {
+                return row[5];
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).addClass('platforms platforms-align')
+            },
+            "orderable": false,
+            "searchable": false
+        },
+        {
+            "targets": 4,
+            "render": function (data, type, row) {
+                return '<a href="' + row[6] + '">Install</a>';
+            },
+            "orderable": false,
+            "searchable": false
+        }
+    ]
+})).on('page.dt', function (e, settings) {
+    $('html, body').animate({scrollTop: 0}, 'slow');
+});
 
+// Search
 var table = $('#DataTables_Table_0');
 if (table.length) {
     table = table.DataTable();
@@ -72,3 +134,6 @@ if (table.length) {
         table.search($(this).val()).draw();
     });
 }
+
+// Layout
+$('.dataTables_wrapper').removeClass('container-fluid');
