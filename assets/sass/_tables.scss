@@ -54,7 +54,7 @@ table.table {
 }
 
 // Remove arrows in empty column headers
-table.table-datatable {
+table.table-datatable, table.table-datatable2 {
     th:empty::before {
         content: '';
     }

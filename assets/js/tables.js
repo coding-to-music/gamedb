@@ -46,7 +46,7 @@ $("table.table-datatable").each(function (i) {
 });
 
 var options = {
-    "processing": false,
+    "processing": true,
     "serverSide": true,
     "ajax": {
         "cache": true,
@@ -65,18 +65,20 @@ var options = {
     "lengthChange": false,
     "stateSave": false,
     //"dom": 't',
-    'createdRow': function (row, data, dataIndex) {
-        $(row).attr('data-link', data[7]);
+    "drawCallback": function (settings, json) {
+        $(".paginate_button > a").on("focus", function () {
+            $(this).blur();
+        });
     }
 };
 
 // Init
 $('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, options, {
     "ajax": {
-        "url": "/free-games/ajax",
+        "url": "/free-games/ajax"
     },
     "order": [[1, 'desc']],
-    'createdRow': function (row, data, dataIndex) {
+    "createdRow": function (row, data, dataIndex) {
         $(row).attr('data-link', data[7]);
     },
     "columnDefs": [
@@ -121,9 +123,7 @@ $('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, option
             "searchable": false
         }
     ]
-})).on('page.dt', function (e, settings) {
-    $('html, body').animate({scrollTop: 0}, 'slow');
-});
+}));
 
 // Search
 var table = $('#DataTables_Table_0');
@@ -137,3 +137,8 @@ if (table.length) {
 
 // Layout
 $('.dataTables_wrapper').removeClass('container-fluid');
+
+// Stop scrolling to bottom bug
+$("table.table-datatable, table.table-datatable2").on('page.dt', function (e, settings) {
+    $('html, body').animate({scrollTop: 0}, 'fast');
+});
