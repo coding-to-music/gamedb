@@ -131,8 +131,10 @@ var table = $('#DataTables_Table_0');
 if (table.length) {
     table = table.DataTable();
 
-    $('input#search').keyup(function () {
-        table.search($(this).val()).draw();
+    $('input#search').keypress(function (e) {
+        if (e.which == 13) {
+            table.search($(this).val()).draw();
+        }
     });
 }
 
