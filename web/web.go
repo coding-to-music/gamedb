@@ -20,6 +20,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gosimple/slug"
+	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
@@ -481,4 +482,38 @@ func (q DataTablesQuery) GetSearch() (search string) {
 	}
 
 	return ""
+}
+
+func (q DataTablesQuery) GetOrder(columns map[string]string) (order string) {
+
+	//map[string]map[string]interface {}{
+	//    "0": {
+	//        "column": "1",
+	//        "dir":    "desc",
+	//    },
+
+	var ret []string
+
+	for _, v := range q.Order {
+
+		if val, ok := columns[v["column"].(string)]; ok {
+			if ok {
+				ret = append(ret, val+" "+v["dir"].(string))
+			} else {
+				logger.Info("search column missing")
+			}
+		}
+
+	}
+
+	return strings.Join(ret, ", ")
+}
+
+func (q DataTablesQuery) Query(db *gorm.DB, limit int, columns map[string]string) *gorm.DB {
+
+	db = db.Order(q.GetOrder(columns))
+	db = db.Limit(limit)
+	db = db.Offset(q.Start)
+
+	return db
 }

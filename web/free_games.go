@@ -108,9 +108,13 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			db = db.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
 			db = db.Where("is_free = ?", "1")
-			db = db.Order("reviews_score DESC, name ASC")
-			db = db.Limit(freeGamesLimit)
-			db = db.Offset(query.Start)
+
+			db = query.Query(db, freeGamesLimit, map[string]string{
+				"0": "name",
+				"1": "reviews_score",
+				"2": "type",
+			})
+
 			db = db.Find(&apps)
 
 			logger.Error(db.Error)
