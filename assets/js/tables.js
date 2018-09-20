@@ -54,6 +54,7 @@ var options = {
             delete d.columns;
         }
     },
+    "fixedHeader": true,
     "paging": true,
     "ordering": true,
     "info": false,
