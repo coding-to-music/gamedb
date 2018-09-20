@@ -138,9 +138,6 @@ if (table.length) {
     });
 }
 
-// Layout
-$('.dataTables_wrapper').removeClass('container-fluid');
-
 // Stop scrolling to bottom bug
 $("table.table-datatable, table.table-datatable2").on('page.dt', function (e, settings) {
     $('html, body').animate({scrollTop: 0}, 'fast');
