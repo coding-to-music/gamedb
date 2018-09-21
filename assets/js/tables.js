@@ -68,7 +68,7 @@ var options = {
     },
     "autoWidth": false,
     "lengthChange": false,
-    "stateSave": false,
+    "stateSave": true,
     "dom": 'r<"dt-pagination"p>t',
     "drawCallback": function (settings, json) {
         $(".paginate_button > a").on("focus", function () {
