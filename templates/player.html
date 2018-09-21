@@ -352,7 +352,7 @@
                             <thead class="thead-light">
                             <th scope="col">Game</th>
                             <th scope="col">Price</th>
-                            <th scope="col" data-sort="desc">Time (Minutes)</th>
+                            <th scope="col" data-sort="desc">Time</th>
                             <th scope="col">Price/Hour</th>
                             </thead>
                         {{ range $key, $value := .Games }}
@@ -362,7 +362,7 @@
                                     <span>{{ .Name }}</span>
                                 </td>
                                 <td data-sort="{{ .Price }}">${{ .Price }}</td>
-                                <td data-sort="{{ .Time }}">{{ .GetTimeNice }}</td>
+                                <td data-sort="{{ .Time }}" nowrap="nowrap">{{ .GetTimeNice }}</td>
                                 <td data-sort="{{ .GetPriceHourSort }}">${{ .GetPriceHourNice }}</td>
                             </tr>
                         {{ end }}

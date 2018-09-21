@@ -120,7 +120,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get games
-	var games = map[int]*playerAppTemplate{}
+	var gamesMap = map[int]*playerAppTemplate{}
 	var gameStats = playerAppStatsTemplate{}
 	wg.Add(1)
 	go func(player datastore.Player) {
@@ -137,7 +137,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		var gamesSlice []int
 		for _, v := range resp {
 			gamesSlice = append(gamesSlice, v.AppID)
-			games[v.AppID] = &playerAppTemplate{
+			gamesMap[v.AppID] = &playerAppTemplate{
 				Time:  v.PlaytimeForever,
 				Price: 0,
 				ID:    v.AppID,
@@ -152,15 +152,15 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, v := range gamesSql {
 
-			games[v.ID].ID = v.ID
-			games[v.ID].Name = v.GetName()
-			games[v.ID].Price = v.GetPriceFinal()
-			games[v.ID].Icon = v.GetIcon()
+			gamesMap[v.ID].ID = v.ID
+			gamesMap[v.ID].Name = v.GetName()
+			gamesMap[v.ID].Price = v.GetPriceFinal()
+			gamesMap[v.ID].Icon = v.GetIcon()
 
 			// Game stats
-			gameStats.All.Fill(games[v.ID])
-			if games[v.ID].Time > 0 {
-				gameStats.Played.Fill(games[v.ID])
+			gameStats.All.Fill(gamesMap[v.ID])
+			if gamesMap[v.ID].Time > 0 {
+				gameStats.Played.Fill(gamesMap[v.ID])
 			}
 		}
 
@@ -249,7 +249,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, player.PersonaName)
 	t.Player = player
 	t.Friends = friends
-	t.Games = games
+	t.Games = gamesMap
 	t.Ranks = playerRanksTemplate{*ranks, players}
 	t.GameStats = gameStats
 	t.Badges = badges
