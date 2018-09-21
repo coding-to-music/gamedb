@@ -95,7 +95,9 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
+	var filtered int
 	var apps []mysql.App
+
 	wg.Add(1)
 	go func() {
 
@@ -106,14 +108,20 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
+			db = db.Model(&mysql.App{})
 			db = db.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
 			db = db.Where("is_free = ?", "1")
+			db = db.Where("name LIKE ?", "%"+query.GetSearch()+"%")
 
-			db = query.Query(db, freeGamesLimit, map[string]string{
+			db = query.Query(db, map[string]string{
 				"0": "name",
 				"1": "reviews_score",
 				"2": "type",
 			})
+
+			db = db.Count(&filtered)
+
+			db = db.Limit(freeGamesLimit)
 
 			db = db.Find(&apps)
 
@@ -156,7 +164,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = strconv.Itoa(total)
-	response.RecordsFiltered = strconv.Itoa(total)
+	response.RecordsFiltered = strconv.Itoa(filtered)
 	response.Draw = query.Draw
 
 	for _, v := range apps {

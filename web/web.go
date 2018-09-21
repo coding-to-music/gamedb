@@ -509,10 +509,9 @@ func (q DataTablesQuery) GetOrder(columns map[string]string) (order string) {
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) Query(db *gorm.DB, limit int, columns map[string]string) *gorm.DB {
+func (q DataTablesQuery) Query(db *gorm.DB, columns map[string]string) *gorm.DB {
 
 	db = db.Order(q.GetOrder(columns))
-	db = db.Limit(limit)
 	db = db.Offset(q.Start)
 
 	return db
