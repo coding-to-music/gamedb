@@ -89,46 +89,46 @@ func GetChange(id string) (change Change, err error) {
 	return change, nil
 }
 
-func BulkAddAChanges(changes []*Change) (err error) {
-
-	if len(changes) == 0 {
-		return nil
-	}
-
-	client, ctx, err := getClient()
-	if err != nil {
-		return err
-	}
-
-	chunks := chunkChanges(changes, 500)
-
-	for _, chunk := range chunks {
-
-		keys := make([]*datastore.Key, 0, len(chunk))
-		for _, v := range chunk {
-			keys = append(keys, v.GetKey())
-		}
-
-		_, err = client.PutMulti(ctx, keys, chunk)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
-
-	for i := 0; i < len(changes); i += chunkSize {
-		end := i + chunkSize
-
-		if end > len(changes) {
-			end = len(changes)
-		}
-
-		divided = append(divided, changes[i:end])
-	}
-
-	return divided
-}
+//func BulkAddAChanges(changes []*Change) (err error) {
+//
+//	if len(changes) == 0 {
+//		return nil
+//	}
+//
+//	client, ctx, err := getClient()
+//	if err != nil {
+//		return err
+//	}
+//
+//	chunks := chunkChanges(changes, 500)
+//
+//	for _, chunk := range chunks {
+//
+//		keys := make([]*datastore.Key, 0, len(chunk))
+//		for _, v := range chunk {
+//			keys = append(keys, v.GetKey())
+//		}
+//
+//		_, err = client.PutMulti(ctx, keys, chunk)
+//		if err != nil {
+//			return err
+//		}
+//	}
+//
+//	return nil
+//}
+//
+//func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
+//
+//	for i := 0; i < len(changes); i += chunkSize {
+//		end := i + chunkSize
+//
+//		if end > len(changes) {
+//			end = len(changes)
+//		}
+//
+//		divided = append(divided, changes[i:end])
+//	}
+//
+//	return divided
+//}

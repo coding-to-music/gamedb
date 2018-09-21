@@ -107,28 +107,28 @@ func GetNewArticles(appID int) (articles []*Article, err error) {
 	return articles, nil
 }
 
-func BulkAddArticles(articles []*Article) (err error) {
-
-	articlesLen := len(articles)
-	if articlesLen == 0 {
-		return nil
-	}
-
-	client, context, err := getClient()
-	if err != nil {
-		return err
-	}
-
-	keys := make([]*datastore.Key, 0, articlesLen)
-
-	for _, v := range articles {
-		keys = append(keys, v.GetKey())
-	}
-
-	_, err = client.PutMulti(context, keys, articles)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
+//func BulkAddArticles(articles []*Article) (err error) {
+//
+//	articlesLen := len(articles)
+//	if articlesLen == 0 {
+//		return nil
+//	}
+//
+//	client, context, err := getClient()
+//	if err != nil {
+//		return err
+//	}
+//
+//	keys := make([]*datastore.Key, 0, articlesLen)
+//
+//	for _, v := range articles {
+//		keys = append(keys, v.GetKey())
+//	}
+//
+//	_, err = client.PutMulti(context, keys, articles)
+//	if err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}
