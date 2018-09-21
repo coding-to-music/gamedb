@@ -77,7 +77,7 @@ var options = {
     }
 };
 
-// Init
+// Free Games Page
 $('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, options, {
     "ajax": {
         "url": "/free-games/ajax"
@@ -130,14 +130,29 @@ $('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, option
     ]
 }));
 
-// Search
+// Filter table on search box enter key
 var table = $('#DataTables_Table_0');
 if (table.length) {
     table = table.DataTable();
 
     $('input#search').keypress(function (e) {
-        if (e.which == 13) {
+        if (e.which === 13) {
             table.search($(this).val()).draw();
         }
     });
 }
+
+// Clear search box on escape and reset filter
+$('input#search').on('keyup', function (e) {
+    if ($(this).val()) {
+        // var code = e.charCode || e.keyCode;
+        if (e.key === "Escape") {
+            $(this).val('');
+
+            var table = $('#DataTables_Table_0');
+            if (table.length) {
+                table.DataTable().search($(this).val()).draw();
+            }
+        }
+    }
+});

@@ -17,14 +17,6 @@ $(document).on('mouseup', '[data-link]', function (evnt) {
 
 });
 
-// Clear search on escape
-$('input#search').on('keyup', function (evt) {
-    var code = evt.charCode || evt.keyCode;
-    if (code === 27) {
-        $(this).val('');
-    }
-});
-
 // Auto dropdowns
 $('.navbar .dropdown').hover(
     function () {
