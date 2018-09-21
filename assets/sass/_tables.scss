@@ -62,3 +62,25 @@ table.table-datatable, table.table-datatable2 {
         content: '';
     }
 }
+
+.dt-pagination {
+    @extend .justify-content-center;
+    @extend .text-center;
+    @extend .mb-3;
+
+    > div {
+        display: inline-block;
+    }
+}
+
+div.dataTables_wrapper div.dataTables_processing {
+    position: absolute;
+    top: 2px;
+    right: 0px;
+    left: auto;
+    margin: 0;
+    width: auto;
+    padding: 0;
+    background: none;
+    border: none;
+}

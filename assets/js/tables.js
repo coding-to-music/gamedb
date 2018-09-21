@@ -54,6 +54,10 @@ var options = {
             delete d.columns;
         }
     },
+    "language": {
+        "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
+    },
+    "pageLength": 100,
     "fixedHeader": true,
     "paging": true,
     "ordering": true,
@@ -65,7 +69,7 @@ var options = {
     "autoWidth": false,
     "lengthChange": false,
     "stateSave": false,
-    //"dom": 't',
+    "dom": 'r<"dt-pagination"p>t',
     "drawCallback": function (settings, json) {
         $(".paginate_button > a").on("focus", function () {
             $(this).blur();
@@ -137,8 +141,3 @@ if (table.length) {
         }
     });
 }
-
-// Stop scrolling to bottom bug
-$("table.table-datatable, table.table-datatable2").on('page.dt', function (e, settings) {
-    $('html, body').animate({scrollTop: 0}, 'fast');
-});
