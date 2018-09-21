@@ -556,15 +556,17 @@ func (p *Player) updateGames() (error) {
 		return err
 	}
 
-	p.GamesCount = len(resp.Games)
-
 	// Get playtime
 	var playtime = 0
 	for _, v := range resp.Games {
 		playtime = playtime + v.PlaytimeForever
 	}
 
+	// Save data to player
+	p.GamesCount = len(resp.Games)
 	p.PlayTime = playtime
+
+	// todo, grab data from mysql, store in datastore
 
 	// Encode to JSON bytes
 	bytes, err := json.Marshal(resp.Games)
