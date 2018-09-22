@@ -45,15 +45,31 @@ $("table.table-datatable").each(function (i) {
 
 });
 
+function getData(data, callback, settings, url) {
+
+    delete data.columns;
+
+    var trs = $('.table-datatable2 tbody tr');
+    data.first = trs.first().attr('data-id');
+    data.last = trs.last().attr('data-id');
+    data.direction = paginationButtonClicked;
+
+    console.log(paginationButtonClicked);
+
+    $.ajax({
+        url: url,
+        data: data,
+        success: function (rdata) {
+            callback(rdata);
+        },
+        dataType: 'json',
+        cache: true
+    });
+}
+
 var options = {
     "processing": true,
     "serverSide": true,
-    "ajax": {
-        "cache": true,
-        "data": function (d) {
-            delete d.columns;
-        }
-    },
     "language": {
         "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
     },
@@ -61,6 +77,7 @@ var options = {
     "fixedHeader": true,
     "paging": true,
     "ordering": true,
+    "pagingType": "full",
     "info": false,
     "searching": true,
     "search": {
@@ -79,11 +96,12 @@ var options = {
 
 // Free Games Page
 $('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, options, {
-    "ajax": {
-        "url": "/free-games/ajax"
+    "ajax": function (data, callback, settings) {
+        getData(data, callback, settings, "/free-games/ajax");
     },
     "order": [[1, 'desc']],
     "createdRow": function (row, data, dataIndex) {
+        $(row).attr('data-id', data[0]);
         $(row).attr('data-link', data[7]);
     },
     "columnDefs": [
@@ -155,4 +173,10 @@ $('input#search').on('keyup', function (e) {
             }
         }
     }
+});
+
+var paginationButtonClicked;
+
+$(document).on('mousedown', '.dt-pagination ul.pagination li a', function (e) {
+    paginationButtonClicked = $(this).html().toLowerCase();
 });
