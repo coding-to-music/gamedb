@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"strconv"
@@ -32,7 +32,7 @@ func (d Developer) GetMeanDiscount() float64 {
 
 func GetAllDevelopers() (developers []Developer, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return developers, err
 	}
@@ -47,7 +47,7 @@ func GetAllDevelopers() (developers []Developer, err error) {
 
 func SaveOrUpdateDeveloper(name string, vals Developer) (err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func SaveOrUpdateDeveloper(name string, vals Developer) (err error) {
 
 func DeleteDeveloper(id int) (err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return err
 	}

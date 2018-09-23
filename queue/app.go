@@ -32,15 +32,15 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 
 	return false, true
 
-	//app := new(mysql.App)
+	//app := new(db.App)
 	//
 	//// Update app
-	//db, err := mysql.GetDB()
+	//db, err := db.GetDB()
 	//if err != nil {
 	//	logger.Error(err)
 	//}
 	//
-	//db.Attrs(mysql.GetDefaultAppJSON()).FirstOrCreate(app, mysql.App{ID: message.AppID})
+	//db.Attrs(db.GetDefaultAppJSON()).FirstOrCreate(app, db.App{ID: message.AppID})
 	//if db.Error != nil {
 	//	logger.Error(db.Error)
 	//}
@@ -55,7 +55,7 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 	//if len(errs) > 0 {
 	//	// Nack on hard fails
 	//	for _, err = range errs {
-	//		if err, ok := err.(mysql.UpdateError); ok {
+	//		if err, ok := err.(db.UpdateError); ok {
 	//			if err.IsHard() {
 	//				return false, false
 	//			}
@@ -79,7 +79,7 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 	//}
 	//
 	//// Save price change
-	//price := new(datastore.Price)
+	//price := new(db.Price)
 	//price.CreatedAt = time.Now()
 	//price.AppID = app.ID
 	//price.PICSName = app.GetName()
@@ -94,7 +94,7 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 	//
 	//if price.Change != 0 {
 	//
-	//	prices, err := datastore.GetAppPrices(app.ID, 1)
+	//	prices, err := db.GetAppPrices(app.ID, 1)
 	//	if err != nil {
 	//		logger.Error(err)
 	//	}
@@ -103,7 +103,7 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 	//		price.First = true
 	//	}
 	//
-	//	_, err = datastore.SaveKind(price.GetKey(), price)
+	//	_, err = db.SaveKind(price.GetKey(), price)
 	//	if err != nil {
 	//		logger.Error(err)
 	//	}

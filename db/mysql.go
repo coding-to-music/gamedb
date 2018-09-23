@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"crypto/md5"
@@ -26,7 +26,7 @@ func SetDebug(val bool) {
 	return
 }
 
-func GetDB() (conn *gorm.DB, err error) {
+func GetMySQLClient() (conn *gorm.DB, err error) {
 
 	if gormConnection == nil {
 

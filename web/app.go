@@ -11,10 +11,9 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/steami"
 )
 
@@ -32,13 +31,13 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !mysql.IsValidAppID(idx) {
+	if !db.IsValidAppID(idx) {
 		returnErrorTemplate(w, r, 400, "Invalid App ID: "+id)
 		return
 	}
 
 	// Get app
-	app, err := mysql.GetApp(idx)
+	app, err := db.GetApp(idx)
 	if err != nil {
 
 		if err.Error() == "no id" {
@@ -106,7 +105,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
-	var tags []mysql.Tag
+	var tags []db.Tag
 	wg.Add(1)
 	go func() {
 
@@ -125,7 +124,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get prices
-		pricesResp, err := datastore.GetAppPrices(app.ID, 0)
+		pricesResp, err := db.GetAppPrices(app.ID, 0)
 		if err != nil {
 
 			logger.Error(err)
@@ -165,7 +164,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get news
-		newsResp, err := datastore.GetArticles(idx, 1000)
+		newsResp, err := db.GetArticles(idx, 1000)
 		if err != nil {
 
 			logger.Error(err)
@@ -199,12 +198,12 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
-	var packages []mysql.Package
+	var packages []db.Package
 	wg.Add(1)
 	go func() {
 
 		// Get packages
-		packages, err = mysql.GetPackagesAppIsIn(app.ID)
+		packages, err = db.GetPackagesAppIsIn(app.ID)
 		if err != nil {
 			logger.Error(err)
 		}
@@ -212,12 +211,12 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
-	var dlc []mysql.App
+	var dlc []db.App
 	wg.Add(1)
 	go func() {
 
 		// Get DLC
-		dlc, err = mysql.GetDLC(app, []string{"id", "name"})
+		dlc, err = db.GetDLC(app, []string{"id", "name"})
 		if err != nil {
 			logger.Error(err)
 		}
@@ -246,7 +245,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 				playerIDs = append(playerIDs, v.Author.SteamID)
 			}
 
-			players, err := datastore.GetPlayersByIDs(playerIDs)
+			players, err := db.GetPlayersByIDs(playerIDs)
 			if err != nil {
 
 				logger.Error(err)
@@ -254,7 +253,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 
 				// Make map of players
-				var playersMap = map[int64]datastore.Player{}
+				var playersMap = map[int64]db.Player{}
 				for _, v := range players {
 					playersMap[v.PlayerID] = v
 				}
@@ -262,11 +261,11 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 				// Make template slice
 				for _, v := range reviewsResponse.Reviews {
 
-					var player datastore.Player
+					var player db.Player
 					if val, ok := playersMap[v.Author.SteamID]; ok {
 						player = val
 					} else {
-						player = datastore.Player{}
+						player = db.Player{}
 						player.PlayerID = v.Author.SteamID
 						player.PersonaName = "Unknown"
 					}
@@ -310,15 +309,15 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 type appTemplate struct {
 	GlobalTemplate
-	App          mysql.App
-	Packages     []mysql.Package
-	DLC          []mysql.App
+	App          db.App
+	Packages     []db.Package
+	DLC          []db.App
 	Articles     []appArticleTemplate
 	Prices       string
 	PricesCount  int
 	Achievements []appAchievementTemplate
 	Schema       steam.SchemaForGame
-	Tags         []mysql.Tag
+	Tags         []db.Tag
 	Reviews      []appReviewTemplate
 	ReviewsCount steam.ReviewsSummaryResponse
 }
@@ -339,7 +338,7 @@ type appArticleTemplate struct {
 
 type appReviewTemplate struct {
 	Review string
-	Player datastore.Player
+	Player db.Player
 	Date   string
 	Votes  int
 }

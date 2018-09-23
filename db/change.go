@@ -1,4 +1,4 @@
-package datastore
+package db
 
 import (
 	"strconv"
@@ -46,7 +46,7 @@ func (change *Change) AddPackage(pack int) {
 
 func GetLatestChanges(limit int, page int) (changes []Change, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return changes, err
 	}
@@ -55,14 +55,17 @@ func GetLatestChanges(limit int, page int) (changes []Change, err error) {
 
 	q := datastore.NewQuery(KindChange).Order("-change_id").Limit(limit).Offset(offset)
 
-	client.GetAll(ctx, q, &changes)
+	_, err = client.GetAll(ctx, q, &changes)
+	if err != nil {
+		return
+	}
 
 	return changes, err
 }
 
 func GetChange(id string) (change Change, err error) {
 
-	client, context, err := getClient()
+	client, context, err := GetDSClient()
 	if err != nil {
 		return change, err
 	}
@@ -89,46 +92,46 @@ func GetChange(id string) (change Change, err error) {
 	return change, nil
 }
 
-//func BulkAddAChanges(changes []*Change) (err error) {
-//
-//	if len(changes) == 0 {
-//		return nil
-//	}
-//
-//	client, ctx, err := getClient()
-//	if err != nil {
-//		return err
-//	}
-//
-//	chunks := chunkChanges(changes, 500)
-//
-//	for _, chunk := range chunks {
-//
-//		keys := make([]*datastore.Key, 0, len(chunk))
-//		for _, v := range chunk {
-//			keys = append(keys, v.GetKey())
-//		}
-//
-//		_, err = client.PutMulti(ctx, keys, chunk)
-//		if err != nil {
-//			return err
-//		}
-//	}
-//
-//	return nil
-//}
-//
-//func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
-//
-//	for i := 0; i < len(changes); i += chunkSize {
-//		end := i + chunkSize
-//
-//		if end > len(changes) {
-//			end = len(changes)
-//		}
-//
-//		divided = append(divided, changes[i:end])
-//	}
-//
-//	return divided
-//}
+func BulkAddAChanges(changes []*Change) (err error) {
+
+	if len(changes) == 0 {
+		return nil
+	}
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return err
+	}
+
+	chunks := chunkChanges(changes, 500)
+
+	for _, chunk := range chunks {
+
+		keys := make([]*datastore.Key, 0, len(chunk))
+		for _, v := range chunk {
+			keys = append(keys, v.GetKey())
+		}
+
+		_, err = client.PutMulti(ctx, keys, chunk)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
+
+	for i := 0; i < len(changes); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(changes) {
+			end = len(changes)
+		}
+
+		divided = append(divided, changes[i:end])
+	}
+
+	return divided
+}

@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"time"
@@ -31,7 +31,7 @@ func (g Genre) GetMeanDiscount() float64 {
 
 func GetAllGenres() (genres []Genre, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return genres, err
 	}
@@ -46,7 +46,7 @@ func GetAllGenres() (genres []Genre, err error) {
 
 func SaveOrUpdateGenre(id int, name string, apps int) (err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func SaveOrUpdateGenre(id int, name string, apps int) (err error) {
 
 func DeleteGenre(id int) (err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return err
 	}

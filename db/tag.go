@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"strconv"
@@ -55,7 +55,7 @@ func GetCoopTags() []int {
 
 func GetAllTags() (tags []Tag, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return tags, err
 	}
@@ -70,7 +70,7 @@ func GetAllTags() (tags []Tag, err error) {
 
 func GetTagsByID(ids []int) (tags []Tag, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return tags, err
 	}
@@ -85,7 +85,7 @@ func GetTagsByID(ids []int) (tags []Tag, err error) {
 
 func SaveOrUpdateTag(id int, vals Tag) (err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func SaveOrUpdateTag(id int, vals Tag) (err error) {
 
 func DeleteTag(id int) (err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return err
 	}

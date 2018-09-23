@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +17,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		ranksCount, err = datastore.CountRanks()
+		ranksCount, err = db.CountRanks()
 		logger.Error(err)
 
 		wg.Done()
@@ -29,7 +28,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		appsCount, err = mysql.CountApps()
+		appsCount, err = db.CountApps()
 		logger.Error(err)
 
 		wg.Done()
@@ -40,7 +39,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		packagesCount, err = mysql.CountPackages()
+		packagesCount, err = db.CountPackages()
 		logger.Error(err)
 
 		wg.Done()

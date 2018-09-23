@@ -45,29 +45,22 @@ $("table.table-datatable").each(function (i) {
 
 });
 
-function getData(data, callback, settings, url) {
+var defaultOptions = {
+    "ajax": function (data, callback, settings) {
 
-    delete data.columns;
+        delete data.columns;
 
-    var trs = $('.table-datatable2 tbody tr');
-    data.first = trs.first().attr('data-id');
-    data.last = trs.last().attr('data-id');
-    data.direction = paginationButtonClicked;
+        $.ajax({
+            url: $(this).attr('data-path'),
+            data: data,
+            success: function (rdata) {
+                callback(rdata);
+            },
+            dataType: 'json',
+            cache: false
+        });
 
-    console.log(paginationButtonClicked);
-
-    $.ajax({
-        url: url,
-        data: data,
-        success: function (rdata) {
-            callback(rdata);
-        },
-        dataType: 'json',
-        cache: true
-    });
-}
-
-var options = {
+    },
     "processing": true,
     "serverSide": true,
     "language": {
@@ -77,7 +70,7 @@ var options = {
     "fixedHeader": true,
     "paging": true,
     "ordering": true,
-    "pagingType": "full",
+    "pagingType": "simple",
     "info": false,
     "searching": true,
     "search": {
@@ -95,10 +88,7 @@ var options = {
 };
 
 // Free Games Page
-$('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, options, {
-    "ajax": function (data, callback, settings) {
-        getData(data, callback, settings, "/free-games/ajax");
-    },
+$('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, defaultOptions, {
     "order": [[1, 'desc']],
     "createdRow": function (row, data, dataIndex) {
         $(row).attr('data-id', data[0]);
@@ -148,6 +138,50 @@ $('#free-games-page table.table-datatable2').DataTable($.extend(true, {}, option
     ]
 }));
 
+// Player Apps Tab
+$('#player-page #games table.table-datatable2').DataTable($.extend(true, {}, defaultOptions, {
+    "order": [[2, 'desc']],
+    "createdRow": function (row, data, dataIndex) {
+        $(row).attr('data-id', data[0]);
+        $(row).attr('data-link', '/games/' + data[0]);
+    },
+    "columnDefs": [
+        {
+            "targets": 0,
+            "render": function (data, type, row) {
+                return '<img src="' + row[2] + '" class="avatar rounded square"><span>' + row[1] + '</span>';
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).addClass('img')
+            }
+        },
+        {
+            "targets": 1,
+            "render": function (data, type, row) {
+                return '$' + row[5];
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('data-sort', row[5])
+            }
+        },
+        {
+            "targets": 2,
+            "render": function (data, type, row) {
+                return row[4];
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('nowrap', 'nowrap').attr('data-sort', row[3])
+            }
+        },
+        {
+            "targets": 3,
+            "render": function (data, type, row) {
+                return '$' + row[6];
+            }
+        }
+    ]
+}));
+
 // Filter table on search box enter key
 var table = $('#DataTables_Table_0');
 if (table.length) {
@@ -173,10 +207,4 @@ $('input#search').on('keyup', function (e) {
             }
         }
     }
-});
-
-var paginationButtonClicked;
-
-$(document).on('mousedown', '.dt-pagination ul.pagination li a', function (e) {
-    paginationButtonClicked = $(this).html().toLowerCase();
 });

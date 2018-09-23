@@ -1,4 +1,4 @@
-package datastore
+package db
 
 import (
 	"strconv"
@@ -86,7 +86,7 @@ func (p Price) GetChangePercent() float64 {
 
 func GetAppPrices(appID int, limit int) (prices []Price, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return prices, err
 	}
@@ -100,13 +100,16 @@ func GetAppPrices(appID int, limit int) (prices []Price, err error) {
 	q = q.Filter("currency =", "usd")
 
 	_, err = client.GetAll(ctx, q, &prices)
+	if err != nil {
+		return
+	}
 
 	return prices, err
 }
 
 func GetPackagePrices(packageID int, limit int) (prices []Price, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return prices, err
 	}
@@ -120,13 +123,16 @@ func GetPackagePrices(packageID int, limit int) (prices []Price, err error) {
 	q = q.Filter("currency =", "usd")
 
 	_, err = client.GetAll(ctx, q, &prices)
+	if err != nil {
+		return
+	}
 
 	return prices, err
 }
 
 func GetLatestPrices(limit int, page int) (prices []Price, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return prices, err
 	}
@@ -138,6 +144,9 @@ func GetLatestPrices(limit int, page int) (prices []Price, err error) {
 	q = q.Filter("first =", false)
 
 	_, err = client.GetAll(ctx, q, &prices)
+	if err != nil {
+		return
+	}
 
 	return prices, err
 }

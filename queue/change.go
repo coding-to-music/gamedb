@@ -6,10 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/websockets"
 	"github.com/streadway/amqp"
 )
@@ -62,13 +61,13 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Group products by change id
-	changes := map[int]*datastore.Change{}
+	changes := map[int]*db.Change{}
 
 	for _, v := range message.AppChanges {
 		if _, ok := changes[v.ChangeNumber]; ok {
 			changes[v.ChangeNumber].AddApp(v.ID)
 		} else {
-			changes[v.ChangeNumber] = &datastore.Change{
+			changes[v.ChangeNumber] = &db.Change{
 				CreatedAt: time.Now(),
 				ChangeID:  v.ChangeNumber,
 				Apps:      []int{v.ID},
@@ -80,7 +79,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 		if _, ok := changes[v.ChangeNumber]; ok {
 			changes[v.ChangeNumber].AddPackage(v.ID)
 		} else {
-			changes[v.ChangeNumber] = &datastore.Change{
+			changes[v.ChangeNumber] = &db.Change{
 				CreatedAt: time.Now(),
 				ChangeID:  v.ChangeNumber,
 				Packages:  []int{v.ID},
@@ -89,13 +88,13 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Make into slice
-	var changesSlice []*datastore.Change
+	var changesSlice []*db.Change
 	for _, v := range changes {
 		changesSlice = append(changesSlice, v)
 	}
 
 	// Save change to DS
-	err = datastore.BulkAddAChanges(changesSlice)
+	err = db.BulkAddAChanges(changesSlice)
 	if err != nil {
 		return false, true, err
 	}
@@ -115,25 +114,25 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 		}
 
 		// Get apps for websocket
-		appsResp, err := mysql.GetApps(appsSlice, []string{"id", "name"})
+		appsResp, err := db.GetApps(appsSlice, []string{"id", "name"})
 		if err != nil {
 			logger.Error(err)
 		}
 
 		// Make map
-		appsRespMap := map[int]mysql.App{}
+		appsRespMap := map[int]db.App{}
 		for _, v := range appsResp {
 			appsRespMap[v.ID] = v
 		}
 
 		// Get packages for websocket
-		packagesResp, err := mysql.GetPackages(packagesSlice, []string{"id", "name"})
+		packagesResp, err := db.GetPackages(packagesSlice, []string{"id", "name"})
 		if err != nil {
 			logger.Error(err)
 		}
 
 		// Make map
-		packagesRespMap := map[int]mysql.Package{}
+		packagesRespMap := map[int]db.Package{}
 		for _, v := range packagesResp {
 			packagesRespMap[v.ID] = v
 		}

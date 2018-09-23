@@ -1,4 +1,4 @@
-package datastore
+package db
 
 import (
 	"time"
@@ -29,7 +29,7 @@ func (d Donation) GetCreatedUnix() int64 {
 
 func GetDonations(playerID int64, limit int) (donations []Donation, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return donations, err
 	}
@@ -44,7 +44,10 @@ func GetDonations(playerID int64, limit int) (donations []Donation, err error) {
 		q = q.Filter("player_id =", playerID)
 	}
 
-	client.GetAll(ctx, q, &donations)
+	_, err = client.GetAll(ctx, q, &donations)
+	if err != nil {
+		return
+	}
 
 	return donations, err
 }

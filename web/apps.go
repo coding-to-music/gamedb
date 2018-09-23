@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 const (
@@ -25,11 +25,11 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var apps []mysql.App
+	var apps []db.App
 	wg.Add(1)
 	go func() {
 
-		apps, err = mysql.SearchApps(r.URL.Query(), appsSearchLimit, page, "id DESC", []string{})
+		apps, err = db.SearchApps(r.URL.Query(), appsSearchLimit, page, "id DESC", []string{})
 		logger.Error(err)
 
 		wg.Done()
@@ -41,7 +41,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		count, err = mysql.CountApps()
+		count, err = db.CountApps()
 		logger.Error(err)
 
 		wg.Done()
@@ -75,7 +75,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 type appsTemplate struct {
 	GlobalTemplate
-	Apps       []mysql.App
+	Apps       []db.App
 	Count      int
 	Pagination Pagination
 }

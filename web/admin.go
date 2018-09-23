@@ -14,10 +14,9 @@ import (
 	ds "cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/steami"
 )
@@ -61,15 +60,15 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get configs for times
-	configs, err := mysql.GetConfigs([]string{
-		mysql.ConfTagsUpdated,
-		mysql.ConfGenresUpdated,
-		mysql.ConfGenresUpdated,
-		mysql.ConfDonationsUpdated,
-		mysql.ConfRanksUpdated,
-		mysql.ConfAddedAllApps,
-		mysql.ConfDevelopersUpdated,
-		mysql.ConfPublishersUpdated,
+	configs, err := db.GetConfigs([]string{
+		db.ConfTagsUpdated,
+		db.ConfGenresUpdated,
+		db.ConfGenresUpdated,
+		db.ConfDonationsUpdated,
+		db.ConfRanksUpdated,
+		db.ConfAddedAllApps,
+		db.ConfDevelopersUpdated,
+		db.ConfPublishersUpdated,
 	})
 	logger.Error(err)
 
@@ -85,7 +84,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 type adminTemplate struct {
 	GlobalTemplate
 	Errors  []string
-	Configs map[string]mysql.Config
+	Configs map[string]db.Config
 }
 
 func adminDisableConsumers() {
@@ -107,7 +106,7 @@ func adminApps() {
 	}
 
 	//
-	err = mysql.SetConfig(mysql.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
@@ -116,13 +115,13 @@ func adminApps() {
 func adminDeploy() {
 
 	//
-	err := mysql.SetConfig(mysql.ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
+	err := db.SetConfig(db.ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 }
 
 func adminDonations() {
 
-	donations, err := datastore.GetDonations(0, 0)
+	donations, err := db.GetDonations(0, 0)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -141,18 +140,18 @@ func adminDonations() {
 	}
 
 	for k, v := range counts {
-		player, err := datastore.GetPlayer(k)
+		player, err := db.GetPlayer(k)
 		if err != nil {
 			logger.Error(err)
 			continue
 		}
 
 		player.Donated = v
-		_, err = datastore.SaveKind(player.GetKey(), player)
+		_, err = db.SaveKind(player.GetKey(), player)
 	}
 
 	//
-	err = mysql.SetConfig(mysql.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
@@ -161,7 +160,7 @@ func adminDonations() {
 func adminGenres() {
 
 	// Get current genres, to delete old ones
-	genres, err := mysql.GetAllGenres()
+	genres, err := db.GetAllGenres()
 	if err != nil {
 		logger.Error(err)
 		return
@@ -176,7 +175,7 @@ func adminGenres() {
 	filter := url.Values{}
 	filter.Set("genres_depth", "3")
 
-	apps, err := mysql.SearchApps(filter, 0, 0, "", []string{})
+	apps, err := db.SearchApps(filter, 0, 0, "", []string{})
 	logger.Error(err)
 
 	counts := make(map[int]*adminGenreCount)
@@ -212,7 +211,7 @@ func adminGenres() {
 		wg.Add(1)
 		go func() {
 
-			err := mysql.DeleteGenre(v)
+			err := db.DeleteGenre(v)
 			logger.Error(err)
 
 			wg.Done()
@@ -225,7 +224,7 @@ func adminGenres() {
 		wg.Add(1)
 		go func(v *adminGenreCount) {
 
-			err := mysql.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
+			err := db.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
 			logger.Error(err)
 
 			wg.Done()
@@ -235,7 +234,7 @@ func adminGenres() {
 	wg.Wait()
 
 	//
-	err = mysql.SetConfig(mysql.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Genres updated")
@@ -281,7 +280,7 @@ func adminQueues(r *http.Request) {
 func adminPublishers() {
 
 	// Get current publishers, to delete old ones
-	publishers, err := mysql.GetAllPublishers()
+	publishers, err := db.GetAllPublishers()
 	if err != nil {
 		logger.Error(err)
 		return
@@ -293,7 +292,7 @@ func adminPublishers() {
 	}
 
 	// Get apps from mysql
-	apps, err := mysql.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "publishers"})
+	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "publishers"})
 	logger.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
@@ -339,7 +338,7 @@ func adminPublishers() {
 		wg.Add(1)
 		go func() {
 
-			err := mysql.DeletePublisher(v)
+			err := db.DeletePublisher(v)
 			logger.Error(err)
 
 			wg.Done()
@@ -352,7 +351,7 @@ func adminPublishers() {
 		wg.Add(1)
 		go func(k string, v *adminDeveloper) {
 
-			err := mysql.SaveOrUpdatePublisher(k, mysql.Publisher{
+			err := db.SaveOrUpdatePublisher(k, db.Publisher{
 				Apps:         v.count,
 				MeanPrice:    v.GetMeanPrice(),
 				MeanDiscount: v.GetMeanDiscount(),
@@ -367,7 +366,7 @@ func adminPublishers() {
 
 	wg.Wait()
 
-	err = mysql.SetConfig(mysql.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Publishers updated")
@@ -376,7 +375,7 @@ func adminPublishers() {
 func adminDevelopers() {
 
 	// Get current publishers, to delete old ones
-	developers, err := mysql.GetAllPublishers()
+	developers, err := db.GetAllPublishers()
 	if err != nil {
 		logger.Error(err)
 		return
@@ -388,7 +387,7 @@ func adminDevelopers() {
 	}
 
 	// Get apps from mysql
-	apps, err := mysql.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "developers"})
+	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "developers"})
 	logger.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
@@ -434,7 +433,7 @@ func adminDevelopers() {
 		wg.Add(1)
 		go func() {
 
-			mysql.DeleteDeveloper(v)
+			db.DeleteDeveloper(v)
 
 			wg.Done()
 		}()
@@ -446,7 +445,7 @@ func adminDevelopers() {
 		wg.Add(1)
 		go func(k string, v *adminDeveloper) {
 
-			err := mysql.SaveOrUpdateDeveloper(k, mysql.Developer{
+			err := db.SaveOrUpdateDeveloper(k, db.Developer{
 				Apps:         v.count,
 				MeanPrice:    v.GetMeanPrice(),
 				MeanDiscount: v.GetMeanDiscount(),
@@ -460,7 +459,7 @@ func adminDevelopers() {
 	}
 	wg.Wait()
 
-	err = mysql.SetConfig(mysql.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Developers updated")
@@ -484,7 +483,7 @@ func (t adminDeveloper) GetMeanDiscount() float64 {
 func adminTags() {
 
 	// Get current tags, to delete old ones
-	tags, err := mysql.GetAllTags()
+	tags, err := db.GetAllTags()
 	if err != nil {
 		logger.Error(err)
 		return
@@ -508,7 +507,7 @@ func adminTags() {
 	filter := url.Values{}
 	filter.Set("tags_depth", "2")
 
-	apps, err := mysql.SearchApps(filter, 0, 1, "", []string{"name", "price_final", "price_discount", "tags"})
+	apps, err := db.SearchApps(filter, 0, 1, "", []string{"name", "price_final", "price_discount", "tags"})
 	logger.Error(err)
 
 	counts := make(map[int]*adminTag)
@@ -548,7 +547,7 @@ func adminTags() {
 		wg.Add(1)
 		go func() {
 
-			err := mysql.DeleteTag(v)
+			err := db.DeleteTag(v)
 			logger.Error(err)
 
 			wg.Done()
@@ -561,7 +560,7 @@ func adminTags() {
 		wg.Add(1)
 		go func(k int, v *adminTag) {
 
-			err := mysql.SaveOrUpdateTag(k, mysql.Tag{
+			err := db.SaveOrUpdateTag(k, db.Tag{
 				Apps:         v.count,
 				MeanPrice:    v.GetMeanPrice(),
 				MeanDiscount: v.GetMeanDiscount(),
@@ -574,7 +573,7 @@ func adminTags() {
 	}
 	wg.Wait()
 
-	err = mysql.SetConfig(mysql.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Tags updated")
@@ -602,14 +601,14 @@ func adminRanks() {
 	playersToRank := 1000
 	timeStart := time.Now().Unix()
 
-	oldKeys, err := datastore.GetRankKeys()
+	oldKeys, err := db.GetRankKeys()
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
-	newRanks := make(map[int64]*datastore.Rank)
-	var players []datastore.Player
+	newRanks := make(map[int64]*db.Rank)
+	var players []db.Player
 
 	var wg sync.WaitGroup
 
@@ -618,14 +617,14 @@ func adminRanks() {
 		wg.Add(1)
 		go func(column string) {
 
-			players, err = datastore.GetPlayers(column, playersToRank)
+			players, err = db.GetPlayers(column, playersToRank)
 			if err != nil {
 				logger.Error(err)
 				return
 			}
 
 			for _, v := range players {
-				newRanks[v.PlayerID] = datastore.NewRankFromPlayer(v)
+				newRanks[v.PlayerID] = db.NewRankFromPlayer(v)
 				delete(oldKeys, v.PlayerID)
 			}
 
@@ -636,7 +635,7 @@ func adminRanks() {
 	wg.Wait()
 
 	// Convert new ranks to slice
-	var ranks []*datastore.Rank
+	var ranks []*db.Rank
 	for _, v := range newRanks {
 		ranks = append(ranks, v)
 	}
@@ -711,21 +710,21 @@ func adminRanks() {
 	}
 
 	// Update ranks
-	err = datastore.BulkSaveRanks(ranks)
+	err = db.BulkSaveRanks(ranks)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
 	// Remove old ranks
-	err = datastore.BulkDeleteRanks(oldKeys)
+	err = db.BulkDeleteRanks(oldKeys)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
 	//
-	err = mysql.SetConfig(mysql.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
 	logger.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
@@ -745,7 +744,7 @@ func adminDev() {
 
 	logger.Info("Dev")
 
-	players, err := datastore.GetPlayers("__key__", 0)
+	players, err := db.GetPlayers("__key__", 0)
 
 	logger.Info("Got players")
 
@@ -761,7 +760,7 @@ func adminDev() {
 	}
 
 	for _, v := range players {
-		v.Games = ""
+		//v.Games = ""
 		err := v.Save()
 		logger.Error(err)
 		fmt.Print(".")

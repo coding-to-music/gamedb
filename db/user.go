@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"database/sql"
@@ -17,7 +17,7 @@ type User struct {
 
 func GetUsersByEmail(email string) (users []User, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return users, err
 	}
@@ -32,7 +32,7 @@ func GetUsersByEmail(email string) (users []User, err error) {
 
 func GetUser(playerID int64) (user User, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return user, err
 	}

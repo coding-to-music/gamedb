@@ -5,10 +5,9 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 const (
@@ -36,15 +35,15 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get players, one at a time so we can get the missing ones
-	var players []datastore.Player
+	var players []db.Player
 	var wg sync.WaitGroup
 	for _, v := range playerInts {
 		wg.Add(1)
 		go func(id int64) {
 
-			player, err := datastore.GetPlayer(id)
+			player, err := db.GetPlayer(id)
 			if err != nil {
-				if err != datastore.ErrNoSuchEntity {
+				if err != db.ErrNoSuchEntity {
 					logger.Error(err)
 					return
 				}
@@ -67,10 +66,10 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		player := players[i]
 
 		wg.Add(1)
-		go func(player datastore.Player) {
+		go func(player db.Player) {
 
 			var x []int
-			resp, err := player.GetGames()
+			resp, err := player.LoadApps("app_name", 0)
 			if err != nil {
 				logger.Error(err)
 				return
@@ -114,14 +113,14 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		gamesSlice = append(gamesSlice, v)
 	}
 
-	games, err := mysql.GetApps(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
+	games, err := db.GetApps(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
 		logger.Error(err)
 	}
 
 	// Make visible tags
 	// todo, just keep in memory?
-	coopTags, err := mysql.GetTagsByID(mysql.GetCoopTags())
+	coopTags, err := db.GetTagsByID(db.GetCoopTags())
 	if err != nil {
 		logger.Error(err)
 	}
@@ -150,11 +149,11 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 
 type coopTemplate struct {
 	GlobalTemplate
-	Players []datastore.Player
+	Players []db.Player
 	Games   []coopGameTemplate
 }
 
 type coopGameTemplate struct {
-	Game mysql.App
+	Game db.App
 	Tags string
 }

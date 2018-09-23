@@ -10,8 +10,8 @@ import (
 	"github.com/rollbar/rollbar-go"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/config"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/storage"
@@ -56,7 +56,7 @@ func main() {
 	}
 
 	if *flagDebug {
-		mysql.SetDebug(true)
+		db.SetDebug(true)
 	}
 
 	if *flagConsumers {

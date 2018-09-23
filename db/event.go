@@ -1,4 +1,4 @@
-package datastore
+package db
 
 import (
 	"net/http"
@@ -52,7 +52,7 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 
 func GetEvents(playerID int64, limit int, eventType string) (logins []Event, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return logins, err
 	}
@@ -64,7 +64,10 @@ func GetEvents(playerID int64, limit int, eventType string) (logins []Event, err
 		q = q.Filter("type =", eventType)
 	}
 
-	client.GetAll(ctx, q, &logins)
+	_, err = client.GetAll(ctx, q, &logins)
+	if err != nil {
+		return
+	}
 
 	return logins, err
 }

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/streadway/amqp"
 )
@@ -34,9 +34,9 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 	}
 
 	// Update player
-	player, err := datastore.GetPlayer(int64(message.PlayerID))
+	player, err := db.GetPlayer(int64(message.PlayerID))
 	if err != nil {
-		if err != datastore.ErrNoSuchEntity {
+		if err != db.ErrNoSuchEntity {
 			logger.Error(err)
 			return false, true
 		}

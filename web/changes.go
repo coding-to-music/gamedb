@@ -5,9 +5,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/structs"
 )
 
@@ -25,7 +24,7 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get changes
 	var changes []structs.ChangesChangeTemplate
-	resp, err := datastore.GetLatestChanges(changesLimit, page)
+	resp, err := db.GetLatestChanges(changesLimit, page)
 	logger.Error(err)
 
 	for _, v := range resp {
@@ -48,8 +47,8 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get apps for all changes
-		appsMap := make(map[int]mysql.App)
-		apps, err := mysql.GetApps(appIDs, []string{"id", "name", "icon"})
+		appsMap := make(map[int]db.App)
+		apps, err := db.GetApps(appIDs, []string{"id", "name", "icon"})
 		logger.Error(err)
 
 		// Make app map
@@ -84,8 +83,8 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get packages for all changes
-		packagesMap := make(map[int]mysql.Package)
-		packages, err := mysql.GetPackages(packageIDs, []string{"id", "name"})
+		packagesMap := make(map[int]db.Package)
+		packages, err := db.GetPackages(packageIDs, []string{"id", "name"})
 		logger.Error(err)
 
 		// Make package map

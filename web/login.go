@@ -9,9 +9,8 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
@@ -66,7 +65,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get users that match the email
-		users, err := mysql.GetUsersByEmail(email)
+		users, err := db.GetUsersByEmail(email)
 		if err != nil {
 			return err
 		}
@@ -76,7 +75,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check password matches
-		var user mysql.User
+		var user db.User
 		var success bool
 		for _, v := range users {
 
@@ -93,7 +92,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get player from user
-		player, err := datastore.GetPlayer(user.PlayerID)
+		player, err := db.GetPlayer(user.PlayerID)
 		if err != nil {
 			return errors.New("no corresponding player")
 		}
@@ -176,7 +175,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if we have the player
-	player, err := datastore.GetPlayer(idInt)
+	player, err := db.GetPlayer(idInt)
 
 	// Get player if they're new
 	if player.PersonaName == "" {
@@ -198,7 +197,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func login(w http.ResponseWriter, r *http.Request, player datastore.Player) (err error) {
+func login(w http.ResponseWriter, r *http.Request, player db.Player) (err error) {
 
 	// Save session
 	err = session.WriteMany(w, r, map[string]string{
@@ -211,7 +210,7 @@ func login(w http.ResponseWriter, r *http.Request, player datastore.Player) (err
 	}
 
 	// Create login record
-	err = datastore.CreateEvent(r, player.PlayerID, datastore.EVENT_LOGIN)
+	err = db.CreateEvent(r, player.PlayerID, db.EVENT_LOGIN)
 	if err != nil {
 		return err
 	}

@@ -3,18 +3,18 @@ package web
 import (
 	"net/http"
 
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 func StatsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := mysql.GetConfig(mysql.ConfPublishersUpdated)
+	config, err := db.GetConfig(db.ConfPublishersUpdated)
 	logger.Error(err)
 
 	// Get publishers
-	publishers, err := mysql.GetAllPublishers()
+	publishers, err := db.GetAllPublishers()
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting publishers")
@@ -33,6 +33,6 @@ func StatsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsPublishersTemplate struct {
 	GlobalTemplate
-	Publishers []mysql.Publisher
+	Publishers []db.Publisher
 	Date       string
 }

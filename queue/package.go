@@ -6,9 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/streadway/amqp"
 )
 
@@ -39,7 +38,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Create mysql row data
-	pack := new(mysql.Package)
+	pack := new(db.Package)
 
 	pack.ID = message.ID
 	pack.PICSChangeID = message.ChangeNumber
@@ -101,7 +100,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 			case "extended":
 
-				var extended = mysql.Extended{}
+				var extended = db.Extended{}
 				for _, vv := range v.Children {
 					extended[vv.Name] = vv.Value.(string)
 				}
@@ -119,14 +118,14 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Update package
-	db, err := mysql.GetDB()
+	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		return false, true, err
 	}
 
-	db.Attrs(mysql.GetDefaultPackageJSON()).FirstOrCreate(pack, mysql.Package{ID: pack.ID})
-	if db.Error != nil {
-		logger.Error(db.Error)
+	gorm.Attrs(db.GetDefaultPackageJSON()).FirstOrCreate(pack, db.Package{ID: pack.ID})
+	if gorm.Error != nil {
+		logger.Error(gorm.Error)
 	}
 
 	return false, true, err
@@ -141,7 +140,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	if len(errs) > 0 {
 		// Nack on hard fails
 		for _, err = range errs {
-			if err, ok := err.(mysql.UpdateError); ok {
+			if err, ok := err.(db.UpdateError); ok {
 				if err.IsHard() {
 					return false, false, err
 				}
@@ -157,13 +156,13 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	//	return false, true
 	//}
 
-	db.Save(pack)
-	if db.Error != nil {
-		logger.Error(db.Error)
+	gorm.Save(pack)
+	if gorm.Error != nil {
+		logger.Error(gorm.Error)
 	}
 
 	// Save price change
-	price := new(datastore.Price)
+	price := new(db.Price)
 	price.CreatedAt = time.Now()
 	price.PackageID = pack.ID
 	price.Name = pack.GetName()
@@ -178,7 +177,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	if price.Change != 0 {
 
-		prices, err := datastore.GetPackagePrices(pack.ID, 1)
+		prices, err := db.GetPackagePrices(pack.ID, 1)
 		if err != nil {
 			logger.Error(err)
 		}
@@ -187,7 +186,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 			price.First = true
 		}
 
-		_, err = datastore.SaveKind(price.GetKey(), price)
+		_, err = db.SaveKind(price.GetKey(), price)
 		if err != nil {
 			logger.Error(err)
 		}

@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
@@ -23,9 +24,9 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/websockets"
 )
@@ -85,6 +86,7 @@ func Serve() error {
 	r.Post("/players", PlayerIDHandler)
 	r.Get("/players/{id:[a-z]+}", RanksHandler)
 	r.Get("/players/{id:[0-9]+}", PlayerHandler)
+	r.Get("/players/{id:[0-9]+}/ajax/games", PlayerGamesHandler)
 	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
 	r.Get("/price-changes", PriceChangesHandler)
 	r.Get("/publishers", StatsPublishersHandler)
@@ -205,21 +207,21 @@ func getTemplateFuncMap() map[string]interface{} {
 		"comma64": func(a int64) string { return humanize.Comma(a) },
 		"commaf":  func(a float64) string { return humanize.Commaf(a) },
 		"slug":    func(a string) string { return slug.Make(a) },
-		"apps": func(a []int, appsMap map[int]mysql.App) template.HTML {
+		"apps": func(a []int, appsMap map[int]db.App) template.HTML {
 			var apps []string
 			for _, v := range a {
 				apps = append(apps, "<a href=\"/games/"+strconv.Itoa(v)+"\">"+appsMap[v].GetName()+"</a>")
 			}
 			return template.HTML("Apps: " + strings.Join(apps, ", "))
 		},
-		"packages": func(a []int, packagesMap map[int]mysql.Package) template.HTML {
+		"packages": func(a []int, packagesMap map[int]db.Package) template.HTML {
 			var packages []string
 			for _, v := range a {
 				packages = append(packages, "<a href=\"/packages/"+strconv.Itoa(v)+"\">"+packagesMap[v].GetName()+"</a>")
 			}
 			return template.HTML("Packages: " + strings.Join(packages, ", "))
 		},
-		"tags": func(a []mysql.Tag) template.HTML {
+		"tags": func(a []db.Tag) template.HTML {
 
 			sort.Slice(a, func(i, j int) bool {
 				return a[i].Name < a[j].Name
@@ -484,7 +486,7 @@ func (q DataTablesQuery) GetSearch() (search string) {
 	return ""
 }
 
-func (q DataTablesQuery) GetOrder(columns map[string]string) (order string) {
+func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
 
 	//map[string]map[string]interface {}{
 	//    "0": {
@@ -496,23 +498,82 @@ func (q DataTablesQuery) GetOrder(columns map[string]string) (order string) {
 
 	for _, v := range q.Order {
 
-		if val, ok := columns[v["column"].(string)]; ok {
+		if col, ok := v["column"].(string); ok {
 			if ok {
-				ret = append(ret, val+" "+v["dir"].(string))
-			} else {
-				logger.Info("search column missing")
+
+				if dir, ok := v["dir"].(string); ok {
+					if ok {
+
+						if col, ok := columns[col]; ok {
+							if ok {
+
+								if dir == "asc" || dir == "desc" {
+									ret = append(ret, col+" "+dir)
+								}
+							}
+						}
+					}
+				}
 			}
 		}
-
 	}
 
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) Query(db *gorm.DB, columns map[string]string) *gorm.DB {
+func (q DataTablesQuery) GetOrderDS(columns map[string]string) (order string) {
 
-	db = db.Order(q.GetOrder(columns))
-	db = db.Offset(q.Start)
+	//map[string]map[string]interface {}{
+	//    "0": {
+	//        "column": "1",
+	//        "dir":    "desc",
+	//    },
+
+	var ret []string
+
+	for _, v := range q.Order {
+
+		if col, ok := v["column"].(string); ok {
+			if ok {
+
+				if dir, ok := v["dir"].(string); ok {
+					if ok {
+
+						if col, ok := columns[col]; ok {
+							if ok {
+
+								if dir == "desc" {
+									col = "-" + col
+								}
+								ret = append(ret, col)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return strings.Join(ret, ", ")
+}
+
+func (q DataTablesQuery) QueryGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
+
+	db.Order(q.GetOrderSQL(columns))
+	db.Offset(q.Start)
 
 	return db
+}
+
+func (q DataTablesQuery) QueryDS(qu *datastore.Query, columns map[string]string) (*datastore.Query, error) {
+
+	i, err := strconv.Atoi(q.Start)
+	if err != nil {
+		return qu, err
+	}
+
+	qu.Order(q.GetOrderDS(columns))
+	qu.Offset(i)
+
+	return qu, nil
 }

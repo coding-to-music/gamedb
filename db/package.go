@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"encoding/json"
@@ -364,7 +364,7 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 
 func GetPackage(id int) (pack Package, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return pack, err
 	}
@@ -387,7 +387,7 @@ func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 		return
 	}
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return packages, err
 	}
@@ -406,7 +406,7 @@ func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 
 func GetLatestPackages(limit int, page int) (packages []Package, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return packages, err
 	}
@@ -423,7 +423,7 @@ func GetLatestPackages(limit int, page int) (packages []Package, err error) {
 
 func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return packages, err
 	}
@@ -439,7 +439,7 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 func CountPackages() (count int, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return count, err
 	}

@@ -9,9 +9,8 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/steami"
 )
 
@@ -28,39 +27,39 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get config
-	config, err := mysql.GetConfig(mysql.ConfRanksUpdated)
+	config, err := db.GetConfig(db.ConfRanksUpdated)
 	logger.Error(err)
 
 	//
-	var ranks []datastore.Rank
+	var ranks []db.Rank
 
 	switch chi.URLParam(r, "id") {
 	case "badges":
-		ranks, err = datastore.GetRanksBy("badges_rank", ranksLimit, page)
+		ranks, err = db.GetRanksBy("badges_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].BadgesRank)
 		}
 	case "friends":
-		ranks, err = datastore.GetRanksBy("friends_rank", ranksLimit, page)
+		ranks, err = db.GetRanksBy("friends_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].FriendsRank)
 		}
 	case "games":
-		ranks, err = datastore.GetRanksBy("games_rank", ranksLimit, page)
+		ranks, err = db.GetRanksBy("games_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].GamesRank)
 		}
 	case "level", "":
-		ranks, err = datastore.GetRanksBy("level_rank", ranksLimit, page)
+		ranks, err = db.GetRanksBy("level_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].LevelRank)
 		}
 	case "time":
-		ranks, err = datastore.GetRanksBy("play_time_rank", ranksLimit, page)
+		ranks, err = db.GetRanksBy("play_time_rank", ranksLimit, page)
 
 		for k := range ranks {
 			ranks[k].Rank = humanize.Ordinal(ranks[k].PlayTimeRank)
@@ -76,11 +75,11 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Count players
-	playersCount, err := datastore.CountPlayers()
+	playersCount, err := db.CountPlayers()
 	logger.Error(err)
 
 	// Count ranks
-	ranksCount, err := datastore.CountRanks()
+	ranksCount, err := db.CountRanks()
 	logger.Error(err)
 
 	t := playersTemplate{}
@@ -102,7 +101,7 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 
 type playersTemplate struct {
 	GlobalTemplate
-	Ranks        []datastore.Rank
+	Ranks        []db.Rank
 	PlayersCount int
 	RanksCount   int
 	Pagination   Pagination
@@ -115,10 +114,10 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 	post = path.Base(post)
 
 	// Check datastore
-	dbPlayer, err := datastore.GetPlayerByName(post)
+	dbPlayer, err := db.GetPlayerByName(post)
 	if err != nil {
 
-		if err != datastore.ErrNoSuchEntity {
+		if err != db.ErrNoSuchEntity {
 			logger.Error(err)
 		}
 

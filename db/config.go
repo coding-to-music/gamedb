@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"time"
@@ -26,7 +26,7 @@ type Config struct {
 func SetConfig(id string, value string) (err error) {
 
 	// Update app
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		logger.Error(err)
 	}
@@ -46,7 +46,7 @@ func SetConfig(id string, value string) (err error) {
 
 func GetConfig(id string) (config Config, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return config, err
 	}
@@ -67,7 +67,7 @@ func GetConfigs(ids []string) (configsMap map[string]Config, err error) {
 		return configsMap, nil
 	}
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return configsMap, err
 	}

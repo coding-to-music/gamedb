@@ -8,9 +8,8 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 func PackageHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,10 +23,10 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get package
-	pack, err := mysql.GetPackage(idx)
+	pack, err := db.GetPackage(idx)
 	if err != nil {
 
-		if err == mysql.ErrNotFound {
+		if err == db.ErrNotFound {
 			returnErrorTemplate(w, r, 404, "We can't find this package in our database, there may not be one with this ID.")
 			return
 		}
@@ -46,7 +45,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	var apps []mysql.App
+	var apps []db.App
 	wg.Add(1)
 	go func() {
 
@@ -54,7 +53,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 		appIDs, err := pack.GetAppIDs()
 		logger.Error(err)
 
-		apps, err = mysql.GetApps(appIDs, []string{"id", "icon", "type", "platforms", "dlc"})
+		apps, err = db.GetApps(appIDs, []string{"id", "icon", "type", "platforms", "dlc"})
 		logger.Error(err)
 
 		wg.Done()
@@ -66,7 +65,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get prices
-		pricesResp, err := datastore.GetPackagePrices(pack.ID, 0)
+		pricesResp, err := db.GetPackagePrices(pack.ID, 0)
 		logger.Error(err)
 
 		pricesCount = len(pricesResp)
@@ -118,8 +117,8 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 type packageTemplate struct {
 	GlobalTemplate
-	Package     mysql.Package
-	Apps        []mysql.App
+	Package     db.Package
+	Apps        []db.App
 	Banners     map[string][]string
 	Prices      string
 	PricesCount int

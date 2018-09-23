@@ -7,13 +7,13 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/queue"
 )
 
@@ -27,14 +27,14 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !datastore.IsValidPlayerID(idx) {
+	if !db.IsValidPlayerID(idx) {
 		returnErrorTemplate(w, r, 404, "Invalid Player ID: "+id)
 		return
 	}
 
-	player, err := datastore.GetPlayer(idx)
+	player, err := db.GetPlayer(idx)
 	if err != nil {
-		if err != datastore.ErrNoSuchEntity {
+		if err != db.ErrNoSuchEntity {
 			logger.Error(err)
 			returnErrorTemplate(w, r, 500, err.Error())
 			return
@@ -70,9 +70,9 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get friends
-	var friends = map[int64]datastore.Player{}
+	var friends = map[int64]db.Player{}
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
 		resp, err := player.GetFriends()
 		if err != nil {
@@ -101,11 +101,11 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		var friendsSlice []int64
 		for _, v := range resp.Friends {
 			friendsSlice = append(friendsSlice, v.SteamID)
-			friends[v.SteamID] = datastore.Player{PlayerID: v.SteamID}
+			friends[v.SteamID] = db.Player{PlayerID: v.SteamID}
 		}
 
 		// Get friends from DS
-		friendsResp, err := datastore.GetPlayersByIDs(friendsSlice)
+		friendsResp, err := db.GetPlayersByIDs(friendsSlice)
 		logger.Error(err)
 
 		// Fill in the map
@@ -120,62 +120,39 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get games
-	var gamesMap = map[int]*playerAppTemplate{}
-	var gameStats = playerAppStatsTemplate{}
-	wg.Add(1)
-	go func(player datastore.Player) {
-
-		// todo, we should store everything the frontend needs on games field, then no need to query it from mysql below
-
-		resp, err := player.GetGames()
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-
-		// Get game info from player
-		var gamesSlice []int
-		for _, v := range resp {
-			gamesSlice = append(gamesSlice, v.AppID)
-			gamesMap[v.AppID] = &playerAppTemplate{
-				Time:  v.PlaytimeForever,
-				Price: 0,
-				ID:    v.AppID,
-				Name:  v.Name,
-				Icon:  "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg",
-			}
-		}
-
-		// Get game info from app
-		gamesSql, err := mysql.GetApps(gamesSlice, []string{"id", "name", "price_final", "icon"})
-		logger.Error(err)
-
-		for _, v := range gamesSql {
-
-			gamesMap[v.ID].ID = v.ID
-			gamesMap[v.ID].Name = v.GetName()
-			gamesMap[v.ID].Price = v.GetPriceFinal()
-			gamesMap[v.ID].Icon = v.GetIcon()
-
-			// Game stats
-			gameStats.All.Fill(gamesMap[v.ID])
-			if gamesMap[v.ID].Time > 0 {
-				gameStats.Played.Fill(gamesMap[v.ID])
-			}
-		}
-
-		wg.Done()
-
-	}(player)
+	//var apps []db.PlayerApp
+	//var gameStats = playerAppStatsTemplate{}
+	//wg.Add(1)
+	//go func(player db.Player) {
+	//
+	//	apps, err = player.LoadApps()
+	//	if err != nil {
+	//		logger.Error(err)
+	//		return
+	//	}
+	//
+	//	// Make game stats
+	//	// todo, do these stats where we save the apps
+	//	for _, v := range apps {
+	//
+	//		gameStats.All.AddApp(v)
+	//		if v.AppTime > 0 {
+	//			gameStats.Played.AddApp(v)
+	//		}
+	//	}
+	//
+	//	wg.Done()
+	//
+	//}(player)
 
 	// Get ranks
-	var ranks *datastore.Rank
+	var ranks *db.Rank
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
-		ranks, err = datastore.GetRank(player.PlayerID)
+		ranks, err = db.GetRank(player.PlayerID)
 		if err != nil {
-			if err != datastore.ErrNoSuchEntity {
+			if err != db.ErrNoSuchEntity {
 				logger.Error(err)
 			}
 		}
@@ -187,9 +164,9 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Number of players
 	var players int
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
-		players, err = datastore.CountPlayers()
+		players, err = db.CountPlayers()
 		logger.Error(err)
 
 		wg.Done()
@@ -198,7 +175,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Get badges
 	var badges steam.BadgesInfo
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
 		resp, err := player.GetBadges()
 		if err != nil {
@@ -214,7 +191,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Get recent games
 	var recentGames []steam.RecentlyPlayedGame
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
 		recentGames, err = player.GetRecentGames()
 		if err != nil {
@@ -228,7 +205,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Get bans
 	var bans steam.GetPlayerBanResponse
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
 		bans, err = player.GetBans()
 		if err != nil {
@@ -249,9 +226,9 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, player.PersonaName)
 	t.Player = player
 	t.Friends = friends
-	t.Games = gamesMap
+	t.Apps = []db.PlayerApp{}
 	t.Ranks = playerRanksTemplate{*ranks, players}
-	t.GameStats = gameStats
+	t.GameStats = playerAppStatsTemplate{}
 	t.Badges = badges
 	t.RecentGames = recentGames
 	t.Bans = bans
@@ -261,9 +238,9 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 type playerTemplate struct {
 	GlobalTemplate
-	Player      datastore.Player
-	Friends     map[int64]datastore.Player
-	Games       map[int]*playerAppTemplate
+	Player      db.Player
+	Friends     map[int64]db.Player
+	Apps        []db.PlayerApp
 	GameStats   playerAppStatsTemplate
 	Ranks       playerRanksTemplate
 	Badges      steam.BadgesInfo
@@ -271,55 +248,9 @@ type playerTemplate struct {
 	Bans        steam.GetPlayerBanResponse
 }
 
-type playerAppTemplate struct {
-	ID    int
-	Name  string
-	Price float64
-	Icon  string
-	Time  int
-}
-
-func (g playerAppTemplate) GetTimeNice() string {
-
-	return helpers.GetTimeShort(g.Time, 2)
-}
-
-func (g playerAppTemplate) GetPriceHour() float64 {
-
-	if g.Price == 0 {
-		return 0
-	}
-
-	if g.Time == 0 {
-		return -1
-	}
-
-	return g.Price / (float64(g.Time) / 60)
-}
-
-func (g playerAppTemplate) GetPriceHourNice() string {
-
-	x := g.GetPriceHour()
-	if x == -1 {
-		return "∞"
-	}
-
-	return strconv.FormatFloat(helpers.DollarsFloat(x), 'f', 2, 64)
-}
-
-func (g playerAppTemplate) GetPriceHourSort() string {
-
-	x := g.GetPriceHour()
-	if x == -1 {
-		return "1000000"
-	}
-
-	return strconv.FormatFloat(helpers.DollarsFloat(x), 'f', 2, 64)
-}
-
 // playerRanksTemplate
 type playerRanksTemplate struct {
-	Ranks   datastore.Rank
+	Ranks   db.Rank
 	Players int
 }
 
@@ -392,6 +323,7 @@ func (p playerRanksTemplate) GetFriendsPercent() string {
 	return p.formatPercent(p.Ranks.FriendsRank)
 }
 
+// playerAppStatsTemplate
 type playerAppStatsTemplate struct {
 	Played playerAppStatsInnerTemplate
 	All    playerAppStatsInnerTemplate
@@ -399,25 +331,25 @@ type playerAppStatsTemplate struct {
 
 type playerAppStatsInnerTemplate struct {
 	count     int
-	price     float64
+	price     int
 	priceHour float64
 	time      int
 }
 
-func (p *playerAppStatsInnerTemplate) Fill(app *playerAppTemplate) {
+func (p *playerAppStatsInnerTemplate) AddApp(app db.PlayerApp) {
 
 	p.count++
-	p.price = p.price + app.Price
-	p.priceHour = p.priceHour + app.GetPriceHour()
-	p.time = p.time + app.Time
+	p.price = p.price + app.AppPrice
+	p.priceHour = p.priceHour + app.AppPriceHour
+	p.time = p.time + app.AppTime
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePrice() float64 {
-	return helpers.DollarsFloat(p.price / float64(p.count))
+	return helpers.DollarsFloat(float64(p.price) / float64(p.count))
 }
 
 func (p playerAppStatsInnerTemplate) GetTotalPrice() float64 {
-	return helpers.DollarsFloat(p.price)
+	return helpers.DollarsFloat(float64(p.price))
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePriceHour() float64 {
@@ -429,4 +361,101 @@ func (p playerAppStatsInnerTemplate) GetAverageTime() string {
 
 func (p playerAppStatsInnerTemplate) GetTotalTime() string {
 	return helpers.GetTimeShort(p.time, 2)
+}
+
+func PlayerGamesHandler(w http.ResponseWriter, r *http.Request) {
+
+	playerID := chi.URLParam(r, "id")
+
+	playerIDInt, err := strconv.Atoi(playerID)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	query := DataTablesQuery{}
+	query.FillFromURL(r.URL.Query())
+
+	//
+	var wg sync.WaitGroup
+
+	// Get apps
+	var apps []db.PlayerApp
+
+	wg.Add(1)
+	go func() {
+
+		client, ctx, err := db.GetDSClient()
+		if err != nil {
+
+			logger.Error(err)
+
+		} else {
+
+			columns := map[string]string{
+				"0": "app_name",
+				"1": "app_price",
+				"2": "app_time",
+				"3": "app_price_hour",
+			}
+
+			q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt).Order("app_name").Limit(100)
+			q, err = query.QueryDS(q, columns)
+			if err != nil {
+
+				_, err := client.GetAll(ctx, q, &apps)
+				logger.Error(err)
+
+			}
+
+		}
+
+		wg.Done()
+	}()
+
+	// Get total
+	var total int
+	wg.Add(1)
+	go func() {
+
+		client, ctx, err := db.GetDSClient()
+		if err != nil {
+
+			logger.Error(err)
+
+		} else {
+
+			q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt)
+			total, err = client.Count(ctx, q)
+			if err != nil {
+				logger.Error(err)
+			}
+		}
+
+		wg.Done()
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.Itoa(total)
+	response.RecordsFiltered = strconv.Itoa(total)
+	response.Draw = query.Draw
+
+	for _, v := range apps {
+
+		response.AddRow([]interface{}{
+			v.AppID,
+			v.AppName,
+			v.GetIcon(),
+			v.AppTime,
+			v.GetTimeNice(),
+			v.AppPrice,
+			v.GetPriceHourFormatted(),
+		})
+	}
+
+	response.Output(w)
+
 }

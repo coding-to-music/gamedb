@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 const (
@@ -22,7 +21,7 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get changes
-	changes, err := datastore.GetLatestPrices(priceChangeLimit, page)
+	changes, err := db.GetLatestPrices(priceChangeLimit, page)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
@@ -46,7 +45,7 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 type priceChangesTemplate struct {
 	GlobalTemplate
-	Apps       []mysql.App
-	Changes    []datastore.Price
+	Apps       []db.App
+	Changes    []db.Price
 	Pagination Pagination
 }

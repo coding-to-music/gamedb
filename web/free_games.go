@@ -6,9 +6,9 @@ import (
 	"sync"
 
 	"github.com/dustin/go-humanize"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 const (
@@ -24,21 +24,21 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		db, err := mysql.GetDB()
+		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
 			logger.Error(err)
 
 		} else {
 
-			db = db.Select([]string{"type", "count(type) as count"})
-			db = db.Where("is_free = ?", "1")
-			db = db.Table("apps")
-			db = db.Group("type")
-			db = db.Order("count DESC")
-			db = db.Find(&types)
+			gorm = gorm.Select([]string{"type", "count(type) as count"})
+			gorm = gorm.Where("is_free = ?", "1")
+			gorm = gorm.Table("apps")
+			gorm = gorm.Group("type")
+			gorm = gorm.Order("count DESC")
+			gorm = gorm.Find(&types)
 
-			logger.Error(db.Error)
+			logger.Error(gorm.Error)
 		}
 
 		wg.Done()
@@ -76,7 +76,7 @@ func (f freeGameType) GetType() string {
 
 func (f freeGameType) GetTypeNice() string {
 
-	app := mysql.App{}
+	app := db.App{}
 	app.Type = f.Type
 	return app.GetType()
 }
@@ -96,36 +96,36 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get apps
 	var filtered int
-	var apps []mysql.App
+	var apps []db.App
 
 	wg.Add(1)
 	go func() {
 
-		db, err := mysql.GetDB()
+		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
 			logger.Error(err)
 
 		} else {
 
-			db = db.Model(&mysql.App{})
-			db = db.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
-			db = db.Where("is_free = ?", "1")
-			db = db.Where("name LIKE ?", "%"+query.GetSearch()+"%")
+			gorm = gorm.Model(&db.App{})
+			gorm = gorm.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
+			gorm = gorm.Where("is_free = ?", "1")
+			gorm = gorm.Where("name LIKE ?", "%"+query.GetSearch()+"%")
 
-			db = query.Query(db, map[string]string{
+			gorm = query.QueryGorm(gorm, map[string]string{
 				"0": "name",
 				"1": "reviews_score",
 				"2": "type",
 			})
 
-			db = db.Count(&filtered)
+			gorm = gorm.Count(&filtered)
 
-			db = db.Limit(freeGamesLimit)
+			gorm = gorm.Limit(freeGamesLimit)
 
-			db = db.Find(&apps)
+			gorm = gorm.Find(&apps)
 
-			logger.Error(db.Error)
+			logger.Error(gorm.Error)
 		}
 
 		wg.Done()
@@ -138,17 +138,17 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		err := memcache.GetSet(memcache.FreeAppsCount, &total, func(total interface{}) (err error) {
 
-			db, err := mysql.GetDB()
+			gorm, err := db.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
-			db = db.Model(&mysql.App{})
-			db = db.Where("is_free = ?", "1")
-			db = db.Count(total)
+			gorm = gorm.Model(&db.App{})
+			gorm = gorm.Where("is_free = ?", "1")
+			gorm = gorm.Count(total)
 
-			if db.Error != nil {
-				return db.Error
+			if gorm.Error != nil {
+				return gorm.Error
 			}
 
 			return nil

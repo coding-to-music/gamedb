@@ -1,4 +1,4 @@
-package datastore
+package db
 
 import (
 	"encoding/json"
@@ -41,7 +41,6 @@ type Player struct {
 	CountryCode      string    `datastore:"country_code"`             //
 	StateCode        string    `datastore:"status_code"`              //
 	Level            int       `datastore:"level"`                    //
-	Games            string    `datastore:"games,noindex"`            // JSON
 	GamesRecent      string    `datastore:"games_recent,noindex"`     // JSON
 	GamesCount       int       `datastore:"games_count"`              //
 	Badges           string    `datastore:"badges,noindex"`           // JSON
@@ -126,33 +125,18 @@ func (p Player) GetCountry() string {
 	return helpers.CountryCodeToName(p.CountryCode)
 }
 
-func (p Player) GetGames() (games []steam.OwnedGame, err error) {
+func (p Player) LoadApps(sort string, limit int) (apps []PlayerApp, err error) {
 
-	if len(p.Games) > 0 {
-
-		var bytes []byte
-
-		if strings.HasPrefix(p.Games, "/") {
-			bytes, err = storage.Download(storage.PathGames(p.PlayerID))
-			if err != nil {
-				return games, err
-			}
-		} else {
-			bytes = []byte(p.Games)
-		}
-
-		err = json.Unmarshal(bytes, &games)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + string(bytes))
-			} else {
-				logger.Error(err)
-			}
-			return games, err
-		}
+	if p.GamesCount == 0 {
+		return apps, err
 	}
 
-	return games, nil
+	apps, err = GetPlayerApps(p.PlayerID, sort, limit)
+	if err != nil {
+		return apps, err
+	}
+
+	return apps, nil
 }
 
 func (p Player) GetBadges() (badges steam.BadgesResponse, err error) {
@@ -292,7 +276,7 @@ func GetPlayer(id int64) (ret Player, err error) {
 		return ret, ErrInvalidID
 	}
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return ret, err
 	}
@@ -311,6 +295,7 @@ func GetPlayer(id int64) (ret Player, err error) {
 				"settings_password",
 				"settings_alerts",
 				"settings_hidden",
+				"games",
 			}
 
 			if !helpers.SliceHasString(old, err2.FieldName) {
@@ -330,7 +315,7 @@ func GetPlayerByName(name string) (ret Player, err error) {
 		return ret, ErrInvalidName
 	}
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return ret, err
 	}
@@ -341,7 +326,7 @@ func GetPlayerByName(name string) (ret Player, err error) {
 
 	_, err = client.GetAll(ctx, q, &players)
 	if err != nil {
-		return ret, err
+		return
 	}
 
 	if len(players) > 0 {
@@ -353,7 +338,7 @@ func GetPlayerByName(name string) (ret Player, err error) {
 
 func GetPlayersByEmail(email string) (ret []Player, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return ret, err
 	}
@@ -364,7 +349,7 @@ func GetPlayersByEmail(email string) (ret []Player, err error) {
 
 	_, err = client.GetAll(ctx, q, &players)
 	if err != nil {
-		return ret, err
+		return
 	}
 
 	if len(players) == 0 {
@@ -376,7 +361,7 @@ func GetPlayersByEmail(email string) (ret []Player, err error) {
 
 func GetPlayers(order string, limit int) (players []Player, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return players, err
 	}
@@ -388,6 +373,9 @@ func GetPlayers(order string, limit int) (players []Player, err error) {
 	}
 
 	_, err = client.GetAll(ctx, q, &players)
+	if err != nil {
+		return
+	}
 
 	return players, err
 }
@@ -398,7 +386,7 @@ func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
 		return friends, ErrorTooMany
 	}
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return friends, err
 	}
@@ -422,7 +410,7 @@ func CountPlayers() (count int, err error) {
 
 	if cachePlayersCount == 0 {
 
-		client, ctx, err := getClient()
+		client, ctx, err := GetDSClient()
 		if err != nil {
 			return count, err
 		}
@@ -448,7 +436,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	}
 
 	if p.UpdatedAt.Unix() > (time.Now().Unix() - int64(60*60*24)) { // 1 Day
-		return []error{}
+		//return []error{}
 	}
 
 	var err error
@@ -556,35 +544,47 @@ func (p *Player) updateGames() (error) {
 		return err
 	}
 
-	// Get playtime
+	// Loop apps
+	var apps = map[int]*PlayerApp{}
+	var appIDs []int
 	var playtime = 0
 	for _, v := range resp.Games {
 		playtime = playtime + v.PlaytimeForever
+		appIDs = append(appIDs, v.AppID)
+		apps[v.AppID] = &PlayerApp{
+			PlayerID:     p.PlayerID,
+			AppID:        v.AppID,
+			AppName:      v.Name,
+			AppIcon:      v.ImgIconURL,
+			AppTime:      v.PlaytimeForever,
+			AppPrice:     0,
+			AppPriceHour: 0,
+		}
 	}
 
 	// Save data to player
 	p.GamesCount = len(resp.Games)
 	p.PlayTime = playtime
 
-	// todo, grab data from mysql, store in datastore
+	// Go get price info from MySQL
+	gamesSQL, err := GetApps(appIDs, []string{"id", "price_final"})
+	logger.Error(err)
 
-	// Encode to JSON bytes
-	bytes, err := json.Marshal(resp.Games)
-	if err != nil {
-		return err
-	}
-
-	// Upload
-	if len(bytes) > maxBytesToStore {
-		storagePath := storage.PathGames(p.PlayerID)
-		err = storage.Upload(storagePath, bytes, false)
-		if err != nil {
-			return err
+	for _, v := range gamesSQL {
+		if v.PriceFinal > 0 {
+			apps[v.ID].AppPrice = v.PriceFinal
+			apps[v.ID].SetPriceHour()
 		}
-		p.Games = storagePath
-	} else {
-		p.Games = string(bytes)
 	}
+
+	// Convert to slice
+	var appsSlice []*PlayerApp
+	for _, v := range apps {
+		appsSlice = append(appsSlice, v)
+	}
+
+	err = BulkSavePlayerApps(appsSlice)
+	logger.Error(err)
 
 	return nil
 }

@@ -3,14 +3,13 @@ package web
 import (
 	"net/http"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 func NewsHandler(w http.ResponseWriter, r *http.Request) {
 
-	articles, err := datastore.GetArticles(0, 100)
+	articles, err := db.GetArticles(0, 100)
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting articles")
@@ -33,7 +32,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get apps
-	apps, err := mysql.GetApps(appIDs, []string{"id", "name", "icon"})
+	apps, err := db.GetApps(appIDs, []string{"id", "name", "icon"})
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting apps")
@@ -41,7 +40,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make map of apps
-	var appsMap = map[int]mysql.App{}
+	var appsMap = map[int]db.App{}
 	for _, v := range apps {
 		appsMap[v.ID] = v
 	}
@@ -69,6 +68,6 @@ type newsTemplate struct {
 }
 
 type newsArticleTemplate struct {
-	Article datastore.Article
-	App     mysql.App
+	Article db.Article
+	App     db.App
 }

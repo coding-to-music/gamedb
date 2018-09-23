@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"encoding/json"
@@ -13,7 +13,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
-	"github.com/steam-authority/steam-authority/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
@@ -27,7 +26,7 @@ const (
 )
 
 var (
-	ErrInvalidID = UpdateError{"invalid app id", true, false}
+	ErrInvalidAppID = UpdateError{"invalid app id", true, false}
 	ErrNoSuchApp = errors.New("no such app")
 )
 
@@ -450,7 +449,7 @@ func (app App) shouldUpdate(userAgent string) bool {
 
 func GetApp(id int) (app App, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return app, err
 	}
@@ -473,7 +472,7 @@ func GetApps(ids []int, columns []string) (apps []App, err error) {
 		return apps, nil
 	}
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err
 	}
@@ -492,7 +491,7 @@ func GetApps(ids []int, columns []string) (apps []App, err error) {
 
 func SearchApps(query url.Values, limit int, page int, sort string, columns []string) (apps []App, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err
 	}
@@ -557,7 +556,7 @@ func SearchApps(query url.Values, limit int, page int, sort string, columns []st
 
 func GetDLC(app App, columns []string) (apps []App, err error) {
 
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err
 	}
@@ -584,7 +583,7 @@ func CountApps() (count int, err error) {
 
 	err = memcache.GetSet(memcache.AppsCount, &count, func(count interface{}) (err error) {
 
-		db, err := GetDB()
+		db, err := GetMySQLClient()
 		if err != nil {
 			return err
 		}
@@ -607,7 +606,7 @@ func CountApps() (count int, err error) {
 func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 	if !IsValidAppID(app.ID) {
-		return []error{ErrInvalidID}
+		return []error{ErrInvalidAppID}
 	}
 
 	if helpers.IsBot(userAgent) {
@@ -625,20 +624,21 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *App) {
 
-		var articles []*datastore.Article
-
-		articles, err = datastore.GetNewArticles(app.ID)
-		if err != nil {
-
-			errs = append(errs, err)
-
-		} else {
-
-			err = datastore.BulkAddArticles(articles)
-			if err != nil {
-				errs = append(errs, err)
-			}
-		}
+		// todo, can't call datastore package
+		//var articles []*db.Article
+		//
+		//articles, err = db.GetNewArticles(app.ID)
+		//if err != nil {
+		//
+		//	errs = append(errs, err)
+		//
+		//} else {
+		//
+		//	err = db.BulkAddArticles(articles)
+		//	if err != nil {
+		//		errs = append(errs, err)
+		//	}
+		//}
 
 		wg.Done()
 	}(app)
@@ -679,7 +679,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	app.ScannedAt = &t
 
 	// Save
-	db, err := GetDB()
+	db, err := GetMySQLClient()
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -695,7 +695,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 func (app *App) UpdateFromAPI() (errs []error) {
 
 	if !IsValidAppID(app.ID) {
-		return []error{ErrInvalidID}
+		return []error{ErrInvalidAppID}
 	}
 
 	var wg sync.WaitGroup

@@ -3,18 +3,18 @@ package web
 import (
 	"net/http"
 
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 func StatsGenresHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := mysql.GetConfig(mysql.ConfGenresUpdated)
+	config, err := db.GetConfig(db.ConfGenresUpdated)
 	logger.Error(err)
 
 	// Get genres
-	genres, err := mysql.GetAllGenres()
+	genres, err := db.GetAllGenres()
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting genres")
@@ -33,6 +33,6 @@ func StatsGenresHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsGenresTemplate struct {
 	GlobalTemplate
-	Genres []mysql.Genre
+	Genres []db.Genre
 	Date   string
 }

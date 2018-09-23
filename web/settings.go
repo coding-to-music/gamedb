@@ -7,9 +7,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/steam-authority/steam-authority/datastore"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 	"github.com/steam-authority/steam-authority/session"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -37,11 +36,11 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get logins
-	var events []datastore.Event
+	var events []db.Event
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
-		events, err = datastore.GetEvents(player.PlayerID, 20, datastore.EVENT_LOGIN)
+		events, err = db.GetEvents(player.PlayerID, 20, db.EVENT_LOGIN)
 		logger.Error(err)
 
 		wg.Done()
@@ -49,12 +48,12 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get donations
-	var donations []datastore.Donation
+	var donations []db.Donation
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
 		if player.Donated > 0 {
-			donations, err = datastore.GetDonations(player.PlayerID, 10)
+			donations, err = db.GetDonations(player.PlayerID, 10)
 			logger.Error(err)
 		}
 
@@ -65,9 +64,9 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get games
 	var games string
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
-		resp, err := player.GetGames()
+		resp, err := player.LoadApps("app_name", 0)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -87,9 +86,9 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get User
-	var user mysql.User
+	var user db.User
 	wg.Add(1)
-	go func(player datastore.Player) {
+	go func(player db.Player) {
 
 		user, err = getUser(r, 0)
 		if err != nil {
@@ -187,10 +186,10 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 type settingsTemplate struct {
 	GlobalTemplate
-	Player    datastore.Player
-	User      mysql.User
-	Events    []datastore.Event
-	Donations []datastore.Donation
+	Player    db.Player
+	User      db.User
+	Events    []db.Event
+	Donations []db.Donation
 	Games     string
 	Messages  []interface{}
 }
@@ -222,7 +221,7 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	return idx, nil
 }
 
-func getPlayer(r *http.Request, playerID int64) (player datastore.Player, err error) {
+func getPlayer(r *http.Request, playerID int64) (player db.Player, err error) {
 
 	if playerID == 0 {
 		playerID, err = getPlayerIDFromSession(r)
@@ -231,7 +230,7 @@ func getPlayer(r *http.Request, playerID int64) (player datastore.Player, err er
 		}
 	}
 
-	player, err = datastore.GetPlayer(playerID)
+	player, err = db.GetPlayer(playerID)
 	if err != nil {
 		return player, err
 	}
@@ -239,7 +238,7 @@ func getPlayer(r *http.Request, playerID int64) (player datastore.Player, err er
 	return player, nil
 }
 
-func getUser(r *http.Request, playerID int64) (user mysql.User, err error) {
+func getUser(r *http.Request, playerID int64) (user db.User, err error) {
 
 	if playerID == 0 {
 		playerID, err = getPlayerIDFromSession(r)
@@ -248,7 +247,7 @@ func getUser(r *http.Request, playerID int64) (user mysql.User, err error) {
 		}
 	}
 
-	user, err = mysql.GetUser(playerID)
+	user, err = db.GetUser(playerID)
 	if err != nil {
 		return user, err
 	}

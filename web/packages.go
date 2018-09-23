@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/mysql"
 )
 
 const (
@@ -28,7 +28,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		total, err = mysql.CountPackages()
+		total, err = db.CountPackages()
 		logger.Error(err)
 
 		wg.Done()
@@ -36,11 +36,11 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get changes
-	var packages []mysql.Package
+	var packages []db.Package
 	wg.Add(1)
 	go func() {
 
-		packages, err = mysql.GetLatestPackages(packagesLimit, page)
+		packages, err = db.GetLatestPackages(packagesLimit, page)
 		logger.Error(err)
 
 		wg.Done()
@@ -67,7 +67,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 
 type packagesTemplate struct {
 	GlobalTemplate
-	Packages   []mysql.Package
+	Packages   []db.Package
 	Pagination Pagination
 	Total      int
 }

@@ -1,4 +1,4 @@
-package datastore
+package db
 
 import (
 	"strconv"
@@ -7,6 +7,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 var (
@@ -87,7 +88,7 @@ func (rank *Rank) Tidy() *Rank {
 
 func GetRank(playerID int64) (rank *Rank, err error) {
 
-	client, context, err := getClient()
+	client, context, err := GetDSClient()
 	if err != nil {
 		return rank, err
 	}
@@ -104,7 +105,7 @@ func GetRank(playerID int64) (rank *Rank, err error) {
 
 func GetRanksBy(order string, limit int, page int) (ranks []Rank, err error) {
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return ranks, err
 	}
@@ -113,7 +114,10 @@ func GetRanksBy(order string, limit int, page int) (ranks []Rank, err error) {
 
 	q := datastore.NewQuery(KindRank).Order(order).Limit(limit).Offset(offset)
 
-	client.GetAll(ctx, q, &ranks)
+	_, err = client.GetAll(ctx, q, &ranks)
+	if err != nil {
+		return
+	}
 
 	return ranks, err
 }
@@ -122,7 +126,7 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 	keysMap = make(map[int64]*datastore.Key)
 
-	client, ctx, err := getClient()
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return keysMap, err
 	}
@@ -130,7 +134,7 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 	q := datastore.NewQuery(KindRank).KeysOnly()
 	keys, err := client.GetAll(ctx, q, nil)
 	if err != nil {
-		return keysMap, err
+		return
 	}
 
 	for _, v := range keys {
@@ -145,7 +149,7 @@ func CountRanks() (count int, err error) {
 
 	if cacheRanksCount == 0 {
 
-		client, ctx, err := getClient()
+		client, ctx, err := GetDSClient()
 		if err != nil {
 			return count, err
 		}
@@ -183,91 +187,91 @@ func NewRankFromPlayer(player Player) (rank *Rank) {
 	return rank
 }
 
-//func BulkSaveRanks(ranks []*Rank) (err error) {
-//
-//	if len(ranks) == 0 {
-//		return nil
-//	}
-//
-//	client, context, err := getClient()
-//	if err != nil {
-//		return err
-//	}
-//
-//	chunks := chunkRanks(ranks, 500)
-//
-//	for _, v := range chunks {
-//
-//		keys := make([]*datastore.Key, 0, len(v))
-//		for _, vv := range v {
-//			keys = append(keys, vv.GetKey())
-//		}
-//
-//		_, err = client.PutMulti(context, keys, v)
-//		if err != nil {
-//			logger.Error(err)
-//		}
-//	}
-//
-//	return nil
-//}
-//
-//func BulkDeleteRanks(keys map[int64]*datastore.Key) (err error) {
-//
-//	if len(keys) == 0 {
-//		return nil
-//	}
-//
-//	// Make map a slice
-//	var keysToDelete []*datastore.Key
-//	for _, v := range keys {
-//		keysToDelete = append(keysToDelete, v)
-//	}
-//
-//	client, ctx, err := getClient()
-//	if err != nil {
-//		return err
-//	}
-//
-//	chunks := chunkRankKeys(keysToDelete, 500)
-//
-//	for _, v := range chunks {
-//
-//		err = client.DeleteMulti(ctx, v)
-//		if err != nil {
-//			return err
-//		}
-//	}
-//
-//	return nil
-//}
-//
-//func chunkRanks(ranks []*Rank, chunkSize int) (divided [][]*Rank) {
-//
-//	for i := 0; i < len(ranks); i += chunkSize {
-//		end := i + chunkSize
-//
-//		if end > len(ranks) {
-//			end = len(ranks)
-//		}
-//
-//		divided = append(divided, ranks[i:end])
-//	}
-//
-//	return divided
-//}
-//
-//func chunkRankKeys(logs []*datastore.Key, chunkSize int) (divided [][]*datastore.Key) {
-//
-//	for i := 0; i < len(logs); i += chunkSize {
-//		end := i + chunkSize
-//
-//		if end > len(logs) {
-//			end = len(logs)
-//		}
-//
-//		divided = append(divided, logs[i:end])
-//	}
-//
-//	return divided
-//}
+func BulkSaveRanks(ranks []*Rank) (err error) {
+
+	if len(ranks) == 0 {
+		return nil
+	}
+
+	client, context, err := GetDSClient()
+	if err != nil {
+		return err
+	}
+
+	chunks := chunkRanks(ranks, 500)
+
+	for _, v := range chunks {
+
+		keys := make([]*datastore.Key, 0, len(v))
+		for _, vv := range v {
+			keys = append(keys, vv.GetKey())
+		}
+
+		_, err = client.PutMulti(context, keys, v)
+		if err != nil {
+			logger.Error(err)
+		}
+	}
+
+	return nil
+}
+
+func BulkDeleteRanks(keys map[int64]*datastore.Key) (err error) {
+
+	if len(keys) == 0 {
+		return nil
+	}
+
+	// Make map a slice
+	var keysToDelete []*datastore.Key
+	for _, v := range keys {
+		keysToDelete = append(keysToDelete, v)
+	}
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return err
+	}
+
+	chunks := chunkRankKeys(keysToDelete, 500)
+
+	for _, v := range chunks {
+
+		err = client.DeleteMulti(ctx, v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func chunkRanks(ranks []*Rank, chunkSize int) (divided [][]*Rank) {
+
+	for i := 0; i < len(ranks); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(ranks) {
+			end = len(ranks)
+		}
+
+		divided = append(divided, ranks[i:end])
+	}
+
+	return divided
+}
+
+func chunkRankKeys(logs []*datastore.Key, chunkSize int) (divided [][]*datastore.Key) {
+
+	for i := 0; i < len(logs); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(logs) {
+			end = len(logs)
+		}
+
+		divided = append(divided, logs[i:end])
+	}
+
+	return divided
+}

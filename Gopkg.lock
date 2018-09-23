@@ -304,22 +304,6 @@
   revision = "04140366298a54a039076d798123ffa108fff46c"
 
 [[projects]]
-  digest = "1:3108ec0946181c60040ff51b811908f89d03e521e2b4ade5ef5c65b3c0e911ae"
-  name = "github.com/kr/pretty"
-  packages = ["."]
-  pruneopts = ""
-  revision = "73f6ac0b30a98e433b289500d779f50c1a6f0712"
-  version = "v0.1.0"
-
-[[projects]]
-  digest = "1:11b056b4421396ab14e384ab8ab8c2079b03f1e51aa5eb4d9b81f9e0d1aa8fbf"
-  name = "github.com/kr/text"
-  packages = ["."]
-  pruneopts = ""
-  revision = "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f"
-  version = "v0.1.0"
-
-[[projects]]
   digest = "1:286c62eb3b97cbecec9efca9931544873996098f2931339b5fa0691c618c1c67"
   name = "github.com/labstack/echo"
   packages = [
@@ -811,7 +795,6 @@
     "github.com/gosimple/slug",
     "github.com/ikeikeikeike/go-sitemap-generator/stm",
     "github.com/jinzhu/gorm",
-    "github.com/kr/pretty",
     "github.com/mitchellh/mapstructure",
     "github.com/oxequa/realize",
     "github.com/pariz/gountries",
