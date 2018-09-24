@@ -528,8 +528,6 @@ func (q DataTablesQuery) GetOrderDS(columns map[string]string) (order string) {
 	//        "dir":    "desc",
 	//    },
 
-	var ret []string
-
 	for _, v := range q.Order {
 
 		if col, ok := v["column"].(string); ok {
@@ -544,7 +542,7 @@ func (q DataTablesQuery) GetOrderDS(columns map[string]string) (order string) {
 								if dir == "desc" {
 									col = "-" + col
 								}
-								ret = append(ret, col)
+								return col
 							}
 						}
 					}
@@ -553,7 +551,7 @@ func (q DataTablesQuery) GetOrderDS(columns map[string]string) (order string) {
 		}
 	}
 
-	return strings.Join(ret, ", ")
+	return ""
 }
 
 func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
