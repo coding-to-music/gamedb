@@ -35,7 +35,7 @@
                     <tbody class="tags-list">
                     {{ range $key, $value := .Genres }}
                     <tr data-link="{{.GetPath}}">
-                        <td>{{ .Name }}</td>
+                        <td><i class="fas fa-film"></i> {{ .Name }}</td>
                         <td>{{ comma .Apps }}</td>
                     </tr>
                     {{ end }}

@@ -32,10 +32,6 @@ var (
 	datastoreClient *datastore.Client
 )
 
-type kind interface {
-	GetKey() *datastore.Key
-}
-
 func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {
 
 	ctx = context.Background()

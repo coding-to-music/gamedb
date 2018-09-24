@@ -37,7 +37,7 @@
                     <tbody class="tags-list">
                     {{ range $key, $value := .Tags }}
                     <tr data-link="{{.GetPath}}">
-                        <td>{{ .GetName }}</td>
+                        <td><i class="fas fa-tag"></i> {{ .GetName }}</td>
                         <td>{{ comma .Apps }}</td>
                         <td>${{ .GetMeanPrice }}</td>
                         <td>{{ .GetMeanDiscount }}%</td>
