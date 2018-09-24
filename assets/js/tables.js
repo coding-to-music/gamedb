@@ -49,6 +49,7 @@ var defaultOptions = {
     "ajax": function (data, callback, settings) {
 
         delete data.columns;
+        delete data.length;
 
         $.ajax({
             url: $(this).attr('data-path'),
@@ -57,32 +58,28 @@ var defaultOptions = {
                 callback(rdata);
             },
             dataType: 'json',
-            cache: false
+            cache: true
         });
 
     },
     "processing": true,
     "serverSide": true,
-    "language": {
-        "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
-    },
     "pageLength": 100,
     "fixedHeader": true,
     "paging": true,
     "ordering": true,
-    "pagingType": "simple",
     "info": false,
     "searching": true,
-    "search": {
-        "smart": true
-    },
     "autoWidth": false,
     "lengthChange": false,
     "stateSave": true,
     "dom": 'r<"dt-pagination"p>t',
+    "language": {
+        "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
+    },
     "drawCallback": function (settings, json) {
         $(".paginate_button > a").on("focus", function () {
-            $(this).blur();
+            $(this).blur(); // Fixes scrolling to pagination on every click
         });
     }
 };
