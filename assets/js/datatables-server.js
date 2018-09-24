@@ -1,10 +1,10 @@
-$('table.table-datatable2').on('page.dt', function () {
-    $(this).fadeTo(100, 0.3);
-});
-
-$('table.table-datatable2').on('draw.dt', function () {
-    $(this).fadeTo(100, 1);
-});
+$('table.table-datatable2')
+    .on('page.dt', function () {
+        $(this).fadeTo(100, 0.3);
+    })
+    .on('draw.dt', function () {
+        $(this).fadeTo(100, 1);
+    });
 
 var defaultOptions = {
     "ajax": function (data, callback, settings) {
@@ -108,7 +108,7 @@ $('#player-page #games table.table-datatable2').DataTable($.extend(true, {}, def
         {
             "targets": 0,
             "render": function (data, type, row) {
-                return '<img src="' + row[2] + '" class="avatar rounded square"><span>' + row[1] + '</span>';
+                return '<img src="' + row[2] + '" class="rounded square"><span>' + row[1] + '</span>';
             },
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).addClass('img')
@@ -138,5 +138,95 @@ $('#player-page #games table.table-datatable2').DataTable($.extend(true, {}, def
                 return '$' + row[6];
             }
         }
+    ]
+}));
+
+// Players table
+$('#player-page #games table.table-datatable2').DataTable($.extend(true, {}, defaultOptions, {
+    "order": [[2, 'desc']],
+    "createdRow": function (row, data, dataIndex) {
+        $(row).attr('data-id', data[0]);
+        $(row).attr('data-link', '/games/' + data[0]);
+    },
+    "columnDefs": [
+        {
+            "targets": 0,
+            "render": function (data, type, row) {
+                return row[4];
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).addClass('font-weight-bold')
+            }
+        },
+        {
+            "targets": 1,
+            "render": function (data, type, row) {
+                return '<img src="' + row[2] + '" class="rounded square"><span>' + row[1] + '</span>';
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).addClass('img')
+            }
+        },
+        {
+            "targets": 2,
+            "render": function (data, type, row) {
+                if (row[2]) {
+                    return '<img data-toggle="tooltip" data-placement="left" title="' + row[1] + '" src="' + row[1] + '" class="rounded">';
+                }
+                return '';
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).addClass('img')
+            }
+        },
+        {
+            "targets": 3,
+            "render": function (data, type, row) {
+                return '<img src="' + row[2] + '" class="rounded square"><span>' + row[1] + '</span>';
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).addClass('img')
+            }
+        },
+        {
+            "targets": 4,
+            "render": function (data, type, row) {
+                return '$' + row[5];
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('data-sort', row[5])
+            }
+        },
+        {
+            "targets": x,
+            "render": function (data, type, row) {
+                return '$' + row[6];
+            }
+        },
+        {
+            "targets": x,
+            "render": function (data, type, row) {
+                return '$' + row[6];
+            }
+        },
+        {
+            "targets": x,
+            "render": function (data, type, row) {
+                return '$' + row[6];
+            }
+        },
+        {
+            "targets": x,
+            "render": function (data, type, row) {
+                return '$' + row[6];
+            }
+        },
+        {
+            "targets": x,
+            "render": function (data, type, row) {
+                return '$' + row[6];
+            }
+        }
+
     ]
 }));

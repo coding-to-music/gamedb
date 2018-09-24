@@ -363,7 +363,7 @@ func (p playerAppStatsInnerTemplate) GetTotalTime() string {
 	return helpers.GetTimeShort(p.time, 2)
 }
 
-func PlayerGamesHandler(w http.ResponseWriter, r *http.Request) {
+func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerID := chi.URLParam(r, "id")
 

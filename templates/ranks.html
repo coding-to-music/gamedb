@@ -33,7 +33,7 @@
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0" id="ranks">
+                <table class="table table-hover table-striped table-datatable2 mb-0" id="ranks" data-path="/players/ajax">
                     <thead class="thead-light">
                     <th scope="col">Rank</th>
                     <th scope="col">Player</th>
@@ -68,8 +68,6 @@
                 {{ end }}
                 </table>
             </div>
-
-        {{ template "_pagination" .Pagination }}
 
         </div>
     </div>

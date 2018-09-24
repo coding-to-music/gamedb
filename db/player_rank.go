@@ -34,8 +34,6 @@ type Rank struct {
 	PlayTimeRank int `datastore:"play_time_rank"`
 	Friends      int `datastore:"friends"`
 	FriendsRank  int `datastore:"friends_rank"`
-
-	Rank string `datastore:"-"`
 }
 
 func (rank Rank) GetKey() (key *datastore.Key) {
@@ -101,25 +99,6 @@ func GetRank(playerID int64) (rank *Rank, err error) {
 	err = client.Get(context, key, rank)
 
 	return rank, err
-}
-
-func GetRanksBy(order string, limit int, page int) (ranks []Rank, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return ranks, err
-	}
-
-	offset := (page - 1) * limit
-
-	q := datastore.NewQuery(KindRank).Order(order).Limit(limit).Offset(offset)
-
-	_, err = client.GetAll(ctx, q, &ranks)
-	if err != nil {
-		return
-	}
-
-	return ranks, err
 }
 
 func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {

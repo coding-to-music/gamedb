@@ -1,11 +1,12 @@
 package web
 
 import (
-	"errors"
 	"net/http"
 	"path"
 	"strconv"
+	"sync"
 
+	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
@@ -18,56 +19,15 @@ const (
 	ranksLimit = 100
 )
 
-func RanksHandler(w http.ResponseWriter, r *http.Request) {
+type RankExtra struct {
+	RankRow db.Rank
+	Rank    string
+}
 
-	// Get page number
-	page, err := strconv.Atoi(r.URL.Query().Get("p"))
-	if err != nil {
-		page = 1
-	}
+func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfRanksUpdated)
-	logger.Error(err)
-
-	//
-	var ranks []db.Rank
-
-	switch chi.URLParam(r, "id") {
-	case "badges":
-		ranks, err = db.GetRanksBy("badges_rank", ranksLimit, page)
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].BadgesRank)
-		}
-	case "friends":
-		ranks, err = db.GetRanksBy("friends_rank", ranksLimit, page)
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].FriendsRank)
-		}
-	case "games":
-		ranks, err = db.GetRanksBy("games_rank", ranksLimit, page)
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].GamesRank)
-		}
-	case "level", "":
-		ranks, err = db.GetRanksBy("level_rank", ranksLimit, page)
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].LevelRank)
-		}
-	case "time":
-		ranks, err = db.GetRanksBy("play_time_rank", ranksLimit, page)
-
-		for k := range ranks {
-			ranks[k].Rank = humanize.Ordinal(ranks[k].PlayTimeRank)
-		}
-	default:
-		err = errors.New("incorrect sort")
-	}
-
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 404, err.Error())
@@ -76,24 +36,25 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Count players
 	playersCount, err := db.CountPlayers()
-	logger.Error(err)
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 404, err.Error())
+		return
+	}
 
 	// Count ranks
 	ranksCount, err := db.CountRanks()
-	logger.Error(err)
+	if err != nil {
+		logger.Error(err)
+		returnErrorTemplate(w, r, 404, err.Error())
+		return
+	}
 
 	t := playersTemplate{}
-	t.Fill(w, r, "Ranks")
-	t.Ranks = ranks
+	t.Fill(w, r, "Players")
 	t.PlayersCount = playersCount
 	t.RanksCount = ranksCount
 	t.Date = config.Value
-	t.Pagination = Pagination{
-		path:  "/players?p=",
-		page:  page,
-		limit: ranksLimit,
-		total: ranksCount,
-	}
 
 	returnTemplate(w, r, "ranks", t)
 	return
@@ -101,10 +62,8 @@ func RanksHandler(w http.ResponseWriter, r *http.Request) {
 
 type playersTemplate struct {
 	GlobalTemplate
-	Ranks        []db.Rank
 	PlayersCount int
 	RanksCount   int
-	Pagination   Pagination
 	Date         string
 }
 
@@ -139,4 +98,135 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/players/"+strconv.FormatInt(dbPlayer.PlayerID, 10), 302)
 	return
+}
+
+func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := DataTablesQuery{}
+	query.FillFromURL(r.URL.Query())
+
+	//
+	var wg sync.WaitGroup
+
+	// Get ranks
+	var ranksExtra []RankExtra
+
+	wg.Add(1)
+	go func() {
+
+		client, ctx, err := db.GetDSClient()
+		if err != nil {
+
+			logger.Error(err)
+
+		} else {
+
+			columns := map[string]string{
+				"3": "level_rank",
+				"4": "games_rank",
+				"5": "badges_rank",
+				"6": "play_time_rank",
+				"7": "friends_rank",
+			}
+
+			q := datastore.NewQuery(db.KindRank).Limit(ranksLimit)
+
+			sort := query.GetOrderDS(columns)
+			if sort != "" {
+				query.SetOrderOffsetDS(q, columns)
+			}
+
+			q = q.Filter("player_id >", 0)
+
+			q, err = query.SetOrderOffsetDS(q, columns)
+			if err != nil {
+
+				logger.Error(err)
+
+			} else {
+				var ranks []db.Rank
+				_, err := client.GetAll(ctx, q, &ranks)
+				logger.Error(err)
+			}
+		}
+
+		switch chi.URLParam(r, "id") {
+		case "badges":
+			ranks, err := db.GetRanksBy("badges_rank", ranksLimit, page)
+			logger.Error(err)
+			for k, v := range ranks {
+
+				ranksExtra = append(ranksExtra, RankExtra{
+					RankRow: v,
+					Rank:    humanize.Ordinal(ranks[k].BadgesRank),
+				})
+			}
+		case "friends":
+			ranks, err := db.GetRanksBy("friends_rank", ranksLimit, page)
+
+			for k := range ranks {
+				ranks[k].Rank = humanize.Ordinal(ranks[k].FriendsRank)
+			}
+		case "games":
+			ranks, err := db.GetRanksBy("games_rank", ranksLimit, page)
+
+			for k := range ranks {
+				ranks[k].Rank = humanize.Ordinal(ranks[k].GamesRank)
+			}
+		case "level", "":
+			ranks, err := db.GetRanksBy("level_rank", ranksLimit, page)
+
+			for k := range ranks {
+				ranks[k].Rank = humanize.Ordinal(ranks[k].LevelRank)
+			}
+		case "time":
+			ranks, err := db.GetRanksBy("play_time_rank", ranksLimit, page)
+
+			for k := range ranks {
+				ranks[k].Rank = humanize.Ordinal(ranks[k].PlayTimeRank)
+			}
+		default:
+			err = errors.New("incorrect sort")
+		}
+
+		wg.Done()
+	}()
+
+	// Get total
+	var total int
+	var err error
+	wg.Add(1)
+	go func() {
+
+		total, err = db.CountRanks()
+		logger.Error(err)
+
+		wg.Done()
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.Itoa(total)
+	response.RecordsFiltered = strconv.Itoa(total)
+	response.Draw = query.Draw
+
+	for _, v := range ranksExtra {
+
+		response.AddRow([]interface{}{
+			v.RankRow.PlayerID,
+			v.Rank,
+			v.RankRow.GetAvatar(),
+			v.RankRow.PersonaName,
+			v.RankRow.GetAvatar2(),
+			v.RankRow.Level,
+			v.RankRow.Games,
+			v.RankRow.Badges,
+			v.RankRow.PlayTime,
+			v.RankRow.Friends,
+		})
+	}
+
+	response.Output(w)
 }
