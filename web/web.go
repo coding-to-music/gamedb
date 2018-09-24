@@ -558,8 +558,8 @@ func (q DataTablesQuery) GetOrderDS(columns map[string]string) (order string) {
 
 func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
 
-	db.Order(q.GetOrderSQL(columns))
-	db.Offset(q.Start)
+	db = db.Order(q.GetOrderSQL(columns))
+	db = db.Offset(q.Start)
 
 	return db
 }
