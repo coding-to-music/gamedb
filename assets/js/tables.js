@@ -72,7 +72,7 @@ var defaultOptions = {
     "searching": true,
     "autoWidth": false,
     "lengthChange": false,
-    "stateSave": true,
+    "stateSave": false,
     "dom": 'r<"dt-pagination"p>t',
     "language": {
         "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
