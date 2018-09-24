@@ -367,7 +367,7 @@ func PlayerGamesHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerID := chi.URLParam(r, "id")
 
-	playerIDInt, err := strconv.Atoi(playerID)
+	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -399,15 +399,17 @@ func PlayerGamesHandler(w http.ResponseWriter, r *http.Request) {
 				"3": "app_price_hour",
 			}
 
-			q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt).Order("app_name").Limit(100)
-			q, err = query.QueryDS(q, columns)
+			q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt).Limit(100)
+			q, err = query.SetOrderOffsetDS(q, columns)
 			if err != nil {
+
+				logger.Error(err)
+
+			} else {
 
 				_, err := client.GetAll(ctx, q, &apps)
 				logger.Error(err)
-
 			}
-
 		}
 
 		wg.Done()
@@ -418,19 +420,15 @@ func PlayerGamesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		client, ctx, err := db.GetDSClient()
+		player, err := db.GetPlayer(playerIDInt)
 		if err != nil {
-
 			logger.Error(err)
-
-		} else {
-
-			q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt)
-			total, err = client.Count(ctx, q)
-			if err != nil {
-				logger.Error(err)
-			}
 		}
+
+		total = player.GamesCount
+
+		//q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt)
+		//total, err = client.Count(ctx, q)
 
 		wg.Done()
 	}()

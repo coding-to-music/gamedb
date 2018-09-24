@@ -453,7 +453,6 @@ type DataTablesQuery struct {
 	Draw   string
 	Order  map[string]map[string]interface{}
 	Start  string
-	Length string
 	Search map[string]interface{}
 	Time   string `mapstructure:"_"`
 }
@@ -557,7 +556,7 @@ func (q DataTablesQuery) GetOrderDS(columns map[string]string) (order string) {
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) QueryGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
+func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
 
 	db.Order(q.GetOrderSQL(columns))
 	db.Offset(q.Start)
@@ -565,15 +564,15 @@ func (q DataTablesQuery) QueryGorm(db *gorm.DB, columns map[string]string) *gorm
 	return db
 }
 
-func (q DataTablesQuery) QueryDS(qu *datastore.Query, columns map[string]string) (*datastore.Query, error) {
+func (q DataTablesQuery) SetOrderOffsetDS(qu *datastore.Query, columns map[string]string) (*datastore.Query, error) {
 
 	i, err := strconv.Atoi(q.Start)
 	if err != nil {
 		return qu, err
 	}
 
-	qu.Order(q.GetOrderDS(columns))
-	qu.Offset(i)
+	qu = qu.Order(q.GetOrderDS(columns))
+	qu = qu.Offset(i)
 
 	return qu, nil
 }
