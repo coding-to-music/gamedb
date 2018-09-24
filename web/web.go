@@ -569,7 +569,10 @@ func (q DataTablesQuery) SetOrderOffsetDS(qu *datastore.Query, columns map[strin
 		return qu, err
 	}
 
-	qu = qu.Order(q.GetOrderDS(columns))
+	order := q.GetOrderDS(columns)
+	if order != "" {
+		qu = qu.Order(order)
+	}
 	qu = qu.Offset(i)
 
 	return qu, nil
