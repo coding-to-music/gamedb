@@ -436,7 +436,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	}
 
 	if p.UpdatedAt.Unix() > (time.Now().Unix() - int64(60*60*24)) { // 1 Day
-		//return []error{}
+		return []error{}
 	}
 
 	var err error
