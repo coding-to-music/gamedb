@@ -17,6 +17,7 @@ const (
 	KindEvent          = "Event"
 	KindPlayer         = "Player"
 	KindPlayerApp      = "PlayerApp"
+	KindPlayerRankTime = "PlayerRankTime"
 	KindPrice          = "Price"
 	KindRank           = "Rank"
 	KindAppReviewScore = "AppReviewScore"
