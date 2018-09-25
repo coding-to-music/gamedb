@@ -1,7 +1,7 @@
 $('table.table-datatable2').on('processing.dt', function (e, settings, processing) {
     if (processing) {
 
-        $(this).fadeTo(100, 0.3);
+        $(this).fadeTo(500, 0.3);
 
         var top = $(this).closest('.card').offset().top + 5;
         $('html, body').animate({scrollTop: top}, 500);
