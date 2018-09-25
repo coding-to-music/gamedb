@@ -59,6 +59,11 @@ func (rank Rank) GetDefaultAvatar() string {
 }
 
 func (rank Rank) GetFlag() string {
+
+	if rank.CountryCode == "" {
+		return ""
+	}
+
 	return "/assets/img/flags/" + strings.ToLower(rank.CountryCode) + ".png"
 }
 

@@ -17,6 +17,10 @@ type Language struct {
 
 func CountryCodeToName(code string) string {
 
+	if code == "" {
+		return code
+	}
+
 	query := gountries.New()
 	country, err := query.FindCountryByAlpha(code)
 	if err != nil {

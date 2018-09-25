@@ -6,17 +6,7 @@ if ($('#xp-page').length > 0) {
         if (typeof scrollTo === 'string') {
 
             var top = $(scrollTo).offset().top - 100;
-
-            // window.scroll({
-            //     top: $(scrollTo).offset().top - 100,
-            //     left: 0,
-            //     behavior: 'smooth'
-            // });
-
-            $('html, body').animate({
-                scrollTop: top,
-                easing: "swing"
-            }, 500);
+            $('html, body').animate({scrollTop: top}, 500);
 
             $('tr').removeClass('table-success');
             $(scrollTo).addClass('table-success');

@@ -521,7 +521,7 @@ func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) GetOrderDS(columns map[string]string) (order string) {
+func (q DataTablesQuery) GetOrderDS(columns map[string]string, signed bool) (order string) {
 
 	//map[string]map[string]interface {}{
 	//    "0": {
@@ -540,7 +540,7 @@ func (q DataTablesQuery) GetOrderDS(columns map[string]string) (order string) {
 						if col, ok := columns[col]; ok {
 							if ok {
 
-								if dir == "desc" {
+								if dir == "desc" && signed {
 									col = "-" + col
 								}
 								return col
@@ -570,7 +570,7 @@ func (q DataTablesQuery) SetOrderOffsetDS(qu *datastore.Query, columns map[strin
 		return qu, err
 	}
 
-	order := q.GetOrderDS(columns)
+	order := q.GetOrderDS(columns, true)
 	if order != "" {
 		qu = qu.Order(order)
 	}

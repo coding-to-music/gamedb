@@ -71,6 +71,7 @@ table.dataTable thead .sorting_desc_disabled:before {
     right: 1.3em;
     content: "\2191";
 }
+
 table.dataTable thead .sorting:after,
 table.dataTable thead .sorting_asc:after,
 table.dataTable thead .sorting_desc:after,
@@ -83,21 +84,21 @@ table.dataTable thead .sorting_desc_disabled:after {
 .dt-pagination {
     @extend .justify-content-center;
     @extend .text-center;
-    @extend .mb-3;
+    @extend .mt-3;
 
     > div {
         display: inline-block;
     }
 }
 
-div.dataTables_wrapper div.dataTables_processing {
-    position: absolute;
-    top: 2px;
-    right: 0px;
-    left: auto;
-    margin: 0;
-    width: auto;
-    padding: 0;
-    background: none;
-    border: none;
-}
+//div.dataTables_wrapper div.dataTables_processing {
+//    position: absolute;
+//    top: 2px;
+//    right: 0px;
+//    left: auto;
+//    margin: 0;
+//    width: auto;
+//    padding: 0;
+//    background: none;
+//    border: none;
+//}

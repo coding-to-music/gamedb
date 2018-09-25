@@ -33,39 +33,20 @@
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable2 mb-0" id="ranks" data-path="/players/ajax">
+                <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/players/ajax">
                     <thead class="thead-light">
                     <th scope="col">Rank</th>
                     <th scope="col">Player</th>
-                    <th scope="col" width="1%" data-disabled>Flag</th>
-                    <th scope="col"><a href="/players/level">Level</a></th>
-                    <th scope="col"><a href="/players/games">Games</a></th>
-                    <th scope="col"><a href="/players/badges">Badges</a></th>
-                    <th scope="col"><a href="/players/time">Time</a></th>
-                    <th scope="col"><a href="/players/friends">Friends</a></th>
+                    <th scope="col" width="1%">Flag</th>
+                    <th scope="col">Level</th>
+                    <th scope="col">Games</th>
+                    <th scope="col">Badges</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Friends</th>
                     </thead>
-                {{ range $key, $value := .Ranks }}
-                    <tr data-link="/players/{{ .PlayerID }}/{{ .PersonaName }}">
-                        <td class="font-weight-bold">{{ .Rank }}</td>
-                        <td class="img">
-                            <img src="{{ .GetAvatar }}" class="rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
-                            <span>{{ .PersonaName }}</span>
-                        </td>
-                        <td class="img">
-                        {{ if ne .CountryCode "" }}
-                            <img data-toggle="tooltip" data-placement="left" title="{{ .GetCountry }}" src="{{ .GetFlag }}" class="rounded">
-                        {{ end }}
-                        </td>
-                        <td class="img">
-                            <div class="{{ .GetAvatar2 }} square"></div>
-                            <span>{{ comma .Level }}</span>
-                        </td>
-                        <td>{{ comma .Games }}</td>
-                        <td>{{ comma .Badges }}</td>
-                        <td nowrap="nowrap" data-toggle="tooltip" data-placement="top" title="{{.GetTimeLong}}">{{ .GetTimeShort }}</td>
-                        <td>{{ comma .Friends }}</td>
-                    </tr>
-                {{ end }}
+                    <tbody>
+
+                    </tbody>
                 </table>
             </div>
 
