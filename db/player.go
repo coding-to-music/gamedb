@@ -21,12 +21,18 @@ import (
 const maxBytesToStore = 1024 * 10
 
 var (
-	ErrInvalidID   = errors.New("invalid id")
-	ErrInvalidName = errors.New("invalid name")
-)
+	ErrInvalidPlayerID   = errors.New("invalid id")
+	ErrInvalidPlayerName = errors.New("invalid name")
 
-var (
 	cachePlayersCount int
+
+	removedColumns = []string{
+		"settings_email",
+		"settings_password",
+		"settings_alerts",
+		"settings_hidden",
+		"games",
+	}
 )
 
 type Player struct {
@@ -244,20 +250,6 @@ func (p Player) GetBans() (bans steam.GetPlayerBanResponse, err error) {
 	return bans, nil
 }
 
-// todo, check this is acurate
-func IsValidPlayerID(id int64) bool {
-
-	if id < 10000000000000000 {
-		return false
-	}
-
-	if len(strconv.FormatInt(id, 10)) != 17 {
-		return false
-	}
-
-	return true
-}
-
 func (p Player) ShouldUpdateFriends() bool {
 	return p.FriendsAddedAt.Unix() < (time.Now().Unix() - int64(60*60*24*30))
 }
@@ -270,165 +262,10 @@ func (p Player) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(p.PlayTime, 5)
 }
 
-func GetPlayer(id int64) (ret Player, err error) {
-
-	if !IsValidPlayerID(id) {
-		return ret, ErrInvalidID
-	}
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return ret, err
-	}
-
-	key := datastore.NameKey(KindPlayer, strconv.FormatInt(id, 10), nil)
-
-	player := Player{}
-	player.PlayerID = id
-
-	err = client.Get(ctx, key, &player)
-	if err != nil {
-		if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
-
-			old := []string{
-				"settings_email",
-				"settings_password",
-				"settings_alerts",
-				"settings_hidden",
-				"games",
-			}
-
-			if !helpers.SliceHasString(old, err2.FieldName) {
-				return player, err2
-			}
-		} else {
-			return player, err
-		}
-	}
-
-	return player, nil
-}
-
-func GetPlayerByName(name string) (ret Player, err error) {
-
-	if len(name) == 0 {
-		return ret, ErrInvalidName
-	}
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return ret, err
-	}
-
-	q := datastore.NewQuery(KindPlayer).Filter("vanity_url =", name).Limit(1)
-
-	var players []Player
-
-	_, err = client.GetAll(ctx, q, &players)
-	if err != nil {
-		return
-	}
-
-	if len(players) > 0 {
-		return players[0], nil // Success
-	}
-
-	return ret, datastore.ErrNoSuchEntity
-}
-
-func GetPlayersByEmail(email string) (ret []Player, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return ret, err
-	}
-
-	q := datastore.NewQuery(KindPlayer).Filter("settings_email =", email).Limit(1)
-
-	var players []Player
-
-	_, err = client.GetAll(ctx, q, &players)
-	if err != nil {
-		return
-	}
-
-	if len(players) == 0 {
-		return ret, datastore.ErrNoSuchEntity
-	}
-
-	return players, nil
-}
-
-func GetPlayers(order string, limit int) (players []Player, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return players, err
-	}
-
-	q := datastore.NewQuery(KindPlayer).Order(order)
-
-	if limit > 0 {
-		q = q.Limit(limit)
-	}
-
-	_, err = client.GetAll(ctx, q, &players)
-	if err != nil {
-		return
-	}
-
-	return players, err
-}
-
-func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
-
-	if len(ids) > 1000 {
-		return friends, ErrorTooMany
-	}
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return friends, err
-	}
-
-	var keys []*datastore.Key
-	for _, v := range ids {
-		key := datastore.NameKey(KindPlayer, strconv.FormatInt(v, 10), nil)
-		keys = append(keys, key)
-	}
-
-	friends = make([]Player, len(keys))
-	err = client.GetMulti(ctx, keys, friends)
-	if err != nil && !strings.Contains(err.Error(), "no such entity") {
-		return friends, err
-	}
-
-	return friends, nil
-}
-
-func CountPlayers() (count int, err error) {
-
-	if cachePlayersCount == 0 {
-
-		client, ctx, err := GetDSClient()
-		if err != nil {
-			return count, err
-		}
-
-		q := datastore.NewQuery(KindPlayer)
-		cachePlayersCount, err = client.Count(ctx, q)
-		if err != nil {
-			return count, err
-		}
-	}
-
-	return cachePlayersCount, nil
-}
-
 func (p *Player) Update(userAgent string) (errs []error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
-		return []error{ErrInvalidID}
+		return []error{ErrInvalidPlayerID}
 	}
 
 	if helpers.IsBot(userAgent) {
@@ -725,7 +562,7 @@ func (p *Player) updateGroups() (error) {
 func (p *Player) Save() (err error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
-		return ErrInvalidID
+		return ErrInvalidPlayerID
 	}
 
 	// Fix dates
@@ -737,6 +574,194 @@ func (p *Player) Save() (err error) {
 	_, err = SaveKind(p.GetKey(), p)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+// todo, check this is acurate
+func IsValidPlayerID(id int64) bool {
+
+	if id < 10000000000000000 {
+		return false
+	}
+
+	if len(strconv.FormatInt(id, 10)) != 17 {
+		return false
+	}
+
+	return true
+}
+
+func GetPlayer(id int64) (ret Player, err error) {
+
+	if !IsValidPlayerID(id) {
+		return ret, ErrInvalidPlayerID
+	}
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return ret, err
+	}
+
+	key := datastore.NameKey(KindPlayer, strconv.FormatInt(id, 10), nil)
+
+	player := Player{}
+	player.PlayerID = id
+
+	err = client.Get(ctx, key, &player)
+	if err != nil {
+
+		if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+
+			if !helpers.SliceHasString(removedColumns, err2.FieldName) {
+				return player, err2
+			}
+		} else {
+			return player, err
+		}
+	}
+
+	return player, nil
+}
+
+func GetPlayerByName(name string) (player Player, err error) {
+
+	if len(name) == 0 {
+		return player, ErrInvalidPlayerName
+	}
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return player, err
+	}
+
+	q := datastore.NewQuery(KindPlayer).Filter("vanity_url =", name).Limit(1)
+
+	var players []Player
+
+	_, err = client.GetAll(ctx, q, &players)
+
+	err = checkPlayerError(err)
+	if err != nil {
+		return player, err
+	}
+
+	// Return the first one
+	if len(players) > 0 {
+		return players[0], nil
+	}
+
+	return player, datastore.ErrNoSuchEntity
+}
+
+func GetPlayersByEmail(email string) (ret []Player, err error) {
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return ret, err
+	}
+
+	q := datastore.NewQuery(KindPlayer).Filter("settings_email =", email).Limit(1)
+
+	var players []Player
+
+	_, err = client.GetAll(ctx, q, &players)
+
+	err = checkPlayerError(err)
+	if err != nil {
+		return
+	}
+
+	if len(players) == 0 {
+		return ret, datastore.ErrNoSuchEntity
+	}
+
+	return players, nil
+}
+
+func GetAllPlayers(order string, limit int) (players []Player, err error) {
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return players, err
+	}
+
+	q := datastore.NewQuery(KindPlayer).Order(order)
+
+	if limit > 0 {
+		q = q.Limit(limit)
+	}
+
+	_, err = client.GetAll(ctx, q, &players)
+
+	err = checkPlayerError(err)
+	if err != nil {
+		return
+	}
+
+	return players, err
+}
+
+func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
+
+	if len(ids) > 1000 {
+		return friends, ErrorTooMany
+	}
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return friends, err
+	}
+
+	var keys []*datastore.Key
+	for _, v := range ids {
+		key := datastore.NameKey(KindPlayer, strconv.FormatInt(v, 10), nil)
+		keys = append(keys, key)
+	}
+
+	friends = make([]Player, len(keys))
+	err = client.GetMulti(ctx, keys, friends)
+
+	err = checkPlayerError(err)
+	if err != nil && err != ErrNoSuchEntity {
+		return friends, err
+	}
+
+	return friends, nil
+}
+
+func CountPlayers() (count int, err error) {
+
+	if cachePlayersCount == 0 {
+
+		client, ctx, err := GetDSClient()
+		if err != nil {
+			return count, err
+		}
+
+		q := datastore.NewQuery(KindPlayer)
+		cachePlayersCount, err = client.Count(ctx, q)
+		if err != nil {
+			return count, err
+		}
+	}
+
+	return cachePlayersCount, nil
+}
+
+func checkPlayerError(err error) error {
+
+	if err != nil {
+
+		if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+
+			if !helpers.SliceHasString(removedColumns, err2.FieldName) {
+				return err
+			}
+		} else {
+			return err
+		}
 	}
 
 	return nil

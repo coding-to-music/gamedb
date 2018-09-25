@@ -617,7 +617,7 @@ func adminRanks() {
 		wg.Add(1)
 		go func(column string) {
 
-			players, err = db.GetPlayers(column, playersToRank)
+			players, err = db.GetAllPlayers(column, playersToRank)
 			if err != nil {
 				logger.Error(err)
 				return
@@ -744,7 +744,7 @@ func adminDev() {
 
 	logger.Info("Dev")
 
-	players, err := db.GetPlayers("__key__", 0)
+	players, err := db.GetAllPlayers("__key__", 0)
 
 	logger.Info("Got players")
 
