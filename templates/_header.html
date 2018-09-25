@@ -45,7 +45,10 @@
 
         gtag('js', new Date());
         gtag('config', 'UA-125104-31');
-        gtag('set', {'user_id': '{{ .UserID }}'});
+
+        if (userID > 0) {
+            gtag('set', {'user_id': userID});
+        }
     </script>
 </head>
 <body>
