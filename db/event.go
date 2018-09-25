@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	EVENT_LOGIN = "login"
+	EventLogin   = "login"
+	EventRefresh = "refresh"
 )
 
 type Event struct {
@@ -57,11 +58,16 @@ func GetEvents(playerID int64, limit int, eventType string) (logins []Event, err
 		return logins, err
 	}
 
-	q := datastore.NewQuery(KindEvent).Order("-created_at").Limit(limit)
+	q := datastore.NewQuery(KindEvent)
 	q = q.Filter("player_id =", playerID)
+	q = q.Order("-created_at")
 
 	if eventType != "" {
 		q = q.Filter("type =", eventType)
+	}
+
+	if limit > 0 {
+		q = q.Limit(limit)
 	}
 
 	_, err = client.GetAll(ctx, q, &logins)

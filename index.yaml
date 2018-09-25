@@ -6,7 +6,7 @@ indexes:
   - name: "date"
     direction: "desc"
 
-- kind: "Login"
+- kind: "Event"
   properties:
   - name: "player_id"
   - name: "created_at"

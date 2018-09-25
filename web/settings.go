@@ -35,12 +35,12 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	// Get logins
+	// Get events
 	var events []db.Event
 	wg.Add(1)
 	go func(player db.Player) {
 
-		events, err = db.GetEvents(player.PlayerID, 20, db.EVENT_LOGIN)
+		events, err = db.GetEvents(player.PlayerID, 100, "")
 		logger.Error(err)
 
 		wg.Done()

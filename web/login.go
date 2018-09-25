@@ -210,7 +210,7 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player) (err error)
 	}
 
 	// Create login record
-	err = db.CreateEvent(r, player.PlayerID, db.EVENT_LOGIN)
+	err = db.CreateEvent(r, player.PlayerID, db.EventLogin)
 	if err != nil {
 		return err
 	}
