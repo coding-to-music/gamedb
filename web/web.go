@@ -422,13 +422,6 @@ func (t Pagination) GetLinks() string {
 	return ""
 }
 
-type SimplePagination struct {
-	path  string
-	next  string
-	prev  string
-	limit int
-}
-
 type DataTablesAjaxResponse struct {
 	Draw            string          `json:"draw"`
 	RecordsTotal    string          `json:"recordsTotal"`
