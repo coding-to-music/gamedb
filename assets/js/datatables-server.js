@@ -1,11 +1,15 @@
-$('table.table-datatable2')
-    .on('page.dt', function () {
+$('table.table-datatable2').on('processing.dt', function (e, settings, processing) {
+    if (processing) {
+
         $(this).fadeTo(100, 0.3);
-        $('html, body').animate({scrollTop: 0}, 500);
-    })
-    .on('draw.dt', function () {
+
+        var top = $(this).closest('.card').offset().top + 5;
+        $('html, body').animate({scrollTop: top}, 500);
+
+    } else {
         $(this).fadeTo(100, 1);
-    });
+    }
+});
 
 var defaultOptions = {
     "ajax": function (data, callback, settings) {
@@ -36,7 +40,7 @@ var defaultOptions = {
     "lengthChange": false,
     "stateSave": false,
     "orderMulti": false,
-    "dom": 't<"dt-pagination"p>',
+    "dom": '<"dt-pagination"p>t<"dt-pagination"p>',
     "language": {
         "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
     },
