@@ -18,6 +18,7 @@ import (
 	"github.com/steam-authority/steam-authority/web"
 )
 
+// These are called so everything as access to configs (viper)
 func init() {
 	config.Init() // Must go first
 	queue.Init()
