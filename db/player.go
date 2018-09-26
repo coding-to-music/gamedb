@@ -702,12 +702,16 @@ func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
 
 	var keys []*datastore.Key
 	for _, v := range ids {
-		key := datastore.NameKey(KindPlayer, strconv.FormatInt(v, 10), nil)
-		keys = append(keys, key)
+		keys = append(keys, datastore.NameKey(KindPlayer, strconv.FormatInt(v, 10), nil))
 	}
 
 	friends = make([]Player, len(keys))
 	err = client.GetMulti(ctx, keys, friends)
+
+	// Return what we have, even if some are missing
+	if err == datastore.ErrNoSuchEntity {
+		return friends, nil
+	}
 
 	err = checkPlayerError(err)
 	if err != nil && err != ErrNoSuchEntity {
