@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -75,10 +76,10 @@ type queuesQueue struct {
 
 func GetQeueus() (resp []Queue, err error) {
 
-	managementURL := "http://localhost:" + viper.GetString("RABBIT_MANAGEMENT_PORT")
+	managementURL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT")
 
 	req, err := http.NewRequest("GET", managementURL+"/api/queues", nil)
-	req.SetBasicAuth("guest", "guest")
+	req.SetBasicAuth(os.Getenv("STEAM_RABBIT_USER"), os.Getenv("STEAM_RABBIT_PASS"))
 
 	client := &http.Client{}
 	response, err := client.Do(req)
