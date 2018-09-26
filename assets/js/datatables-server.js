@@ -187,7 +187,7 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
             "targets": 2,
             "render": function (data, type, row) {
                 if (row[11]) {
-                    return '<img data-toggle="tooltip" data-placement="top" title="' + row[12] + '" src="' + row[11] + '" class="rounded">';
+                    return '<img data-toggle="tooltip" data-placement="left" title="' + row[12] + '" src="' + row[11] + '" class="rounded">';
                 }
                 return '';
             },
@@ -227,7 +227,7 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
                 return row[8];
             },
             "createdCell": function (td, cellData, rowData, row, col) {
-                $(td).attr('nowrap', 'nowrap').attr('data-toggle', 'tooltip').attr('data-placement', 'top').attr('title', rowData[9]);
+                $(td).attr('nowrap', 'nowrap').attr('data-toggle', 'tooltip').attr('data-placement', 'left').attr('title', rowData[9]);
             }
         },
         // Friends
