@@ -449,7 +449,7 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.GetIcon(),
 			v.AppTime,
 			v.GetTimeNice(),
-			v.AppPrice,
+			helpers.CentsInt(v.AppPrice),
 			v.GetPriceHourFormatted(),
 		})
 	}

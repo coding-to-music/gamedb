@@ -65,7 +65,7 @@ func (p *PlayerApp) SetPriceHour() {
 		return
 	}
 
-	p.AppPriceHour = float64(p.AppPrice) / (float64(p.AppTime) / 60)
+	p.AppPriceHour = (float64(p.AppPrice) / 100) / (float64(p.AppTime) / 60)
 }
 
 func GetPlayerApps(playerID int64, sort string, limit int) (apps []PlayerApp, err error) {
