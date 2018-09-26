@@ -45,7 +45,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
