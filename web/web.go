@@ -434,6 +434,11 @@ func (t *DataTablesAjaxResponse) AddRow(row []interface{}) {
 }
 
 func (t DataTablesAjaxResponse) Output(w http.ResponseWriter) {
+
+	if len(t.Data) == 0 {
+		t.Data = make([][]interface{}, 0)
+	}
+
 	bytesx, err := json.Marshal(t)
 	if err != nil {
 		logger.Error(err)
