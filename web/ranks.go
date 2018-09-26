@@ -150,7 +150,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 				} else {
 
-					q = q.Filter(column+" >", 0)
+					//q = q.Filter(column+" >", 0)
 
 					var ranks []db.Rank
 					_, err := client.GetAll(ctx, q, &ranks)
@@ -172,7 +172,6 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		// todo, this could be stored in a config row
 		total, err = db.CountRanks()
 		logger.Error(err)
 
