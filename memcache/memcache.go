@@ -2,6 +2,7 @@ package memcache
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/spf13/viper"
@@ -80,6 +81,8 @@ func GetSet(item memcache.Item, value interface{}, f func(j interface{}) (err er
 		if err != nil {
 			return err
 		}
+
+		fmt.Println(value.(*int))
 
 		err = Set(item.Key, value, item.Expiration)
 		if err != nil {
