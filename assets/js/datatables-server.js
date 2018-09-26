@@ -122,7 +122,7 @@ $('#player-page #games table.table-datatable2').DataTable($.extend(true, {}, def
                 return '<img src="' + row[2] + '" class="rounded square"><span>' + row[1] + '</span>';
             },
             "createdCell": function (td, cellData, rowData, row, col) {
-                $(td).addClass('img')
+                $(td).addClass('img').attr('data-app-id', rowData[0]);
             }
         },
         // Price
