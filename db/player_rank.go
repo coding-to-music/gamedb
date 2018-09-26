@@ -8,10 +8,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-)
-
-var (
-	cacheRanksCount int
+	"github.com/steam-authority/steam-authority/memcache"
 )
 
 type Rank struct {
@@ -131,21 +128,27 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 func CountRanks() (count int, err error) {
 
-	if cacheRanksCount == 0 {
+	err = memcache.GetSet(memcache.AppsCount, &count, func(count interface{}) (err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
-			return count, err
+			return err
 		}
 
 		q := datastore.NewQuery(KindRank)
-		cacheRanksCount, err = client.Count(ctx, q)
+		count, err = client.Count(ctx, q)
 		if err != nil {
-			return count, err
+			return err
 		}
+
+		return nil
+	})
+
+	if err != nil {
+		return count, err
 	}
 
-	return cacheRanksCount, nil
+	return count, nil
 }
 
 func NewRankFromPlayer(player Player) (rank *Rank) {
