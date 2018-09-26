@@ -25,14 +25,6 @@ var (
 	ErrInvalidPlayerName = errors.New("invalid name")
 
 	cachePlayersCount int
-
-	removedColumns = []string{
-		"settings_email",
-		"settings_password",
-		"settings_alerts",
-		"settings_hidden",
-		"games",
-	}
 )
 
 type Player struct {
@@ -273,7 +265,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	}
 
 	if p.UpdatedAt.Unix() > (time.Now().Unix() - int64(60*60*24)) { // 1 Day
-		return []error{}
+		//return []error{}
 	}
 
 	var err error
@@ -338,7 +330,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	// Get groups
 	wg.Add(1)
 	go func(p *Player) {
-		p.updateGroups()
+		err = p.updateGroups()
 		logger.Error(err)
 		wg.Done()
 	}(p)
@@ -610,16 +602,10 @@ func GetPlayer(id int64) (ret Player, err error) {
 	player.PlayerID = id
 
 	err = client.Get(ctx, key, &player)
+
+	err = checkPlayerError(err)
 	if err != nil {
-
-		if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
-
-			if !helpers.SliceHasString(removedColumns, err2.FieldName) {
-				return player, err2
-			}
-		} else {
-			return player, err
-		}
+		return player, err
 	}
 
 	return player, nil
@@ -752,17 +738,24 @@ func CountPlayers() (count int, err error) {
 
 func checkPlayerError(err error) error {
 
-	if err != nil {
+	if err == nil {
+		return nil
+	}
 
-		if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+	if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
 
-			if !helpers.SliceHasString(removedColumns, err2.FieldName) {
-				return err
-			}
-		} else {
-			return err
+		removedColumns := []string{
+			"settings_email",
+			"settings_password",
+			"settings_alerts",
+			"settings_hidden",
+			"games",
+		}
+
+		if helpers.SliceHasString(removedColumns, err2.FieldName) {
+			return nil
 		}
 	}
 
-	return nil
+	return err
 }
