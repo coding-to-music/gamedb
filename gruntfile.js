@@ -17,6 +17,7 @@ module.exports = function (grunt) {
             js: {
                 src: [
                     'assets/js/third-party/moment.js', // Put above livestamp
+                    'assets/js/third-party/datatables.min.js', // Put above keep conditions
                     'assets/js/third-party/*.js',
                     'assets/js/*.js'
                 ],

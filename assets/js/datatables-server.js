@@ -28,6 +28,7 @@ var defaultOptions = {
         });
 
     },
+    //"keepConditions": true,
     "processing": false,
     "serverSide": true,
     "pageLength": 100,
