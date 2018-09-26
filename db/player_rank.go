@@ -103,6 +103,7 @@ func GetRank(playerID int64) (rank *Rank, err error) {
 	return rank, err
 }
 
+// Returns as much data as it can if there is an error
 func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 	keysMap = make(map[int64]*datastore.Key)
@@ -118,9 +119,18 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 		return
 	}
 
+	var errors []error
 	for _, v := range keys {
-		playerId, _ := strconv.ParseInt(v.Name, 10, 64)
-		keysMap[playerId] = v
+		playerId, err := strconv.ParseInt(v.Name, 10, 64)
+		if err != nil {
+			errors = append(errors, err)
+		} else {
+			keysMap[playerId] = v
+		}
+	}
+
+	if len(errors) > 0 {
+		return keysMap, errors[0]
 	}
 
 	return keysMap, nil
