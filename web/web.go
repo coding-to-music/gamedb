@@ -433,7 +433,7 @@ func (t *DataTablesAjaxResponse) AddRow(row []interface{}) {
 	t.Data = append(t.Data, row)
 }
 
-func (t DataTablesAjaxResponse) Output(w http.ResponseWriter) {
+func (t DataTablesAjaxResponse) output(w http.ResponseWriter) {
 
 	if len(t.Data) == 0 {
 		t.Data = make([][]interface{}, 0)

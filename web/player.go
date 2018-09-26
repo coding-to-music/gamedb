@@ -454,6 +454,6 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.Output(w)
+	response.output(w)
 
 }

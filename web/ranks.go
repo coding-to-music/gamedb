@@ -172,6 +172,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		// todo, this could be stored in a config row
 		total, err = db.CountRanks()
 		logger.Error(err)
 
@@ -188,24 +189,10 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range ranksExtra {
 
-		response.AddRow([]interface{}{
-			v.Rank,
-			v.RankRow.PlayerID,
-			v.RankRow.PersonaName,
-			v.RankRow.GetAvatar(),
-			v.RankRow.GetAvatar2(),
-			v.RankRow.Level,
-			v.RankRow.Games,
-			v.RankRow.Badges,
-			v.RankRow.GetTimeShort(),
-			v.RankRow.GetTimeLong(),
-			v.RankRow.Friends,
-			v.RankRow.GetFlag(),
-			v.RankRow.GetCountry(),
-		})
+		response.AddRow(v.output())
 	}
 
-	response.Output(w)
+	response.output(w)
 }
 
 type RankExtra struct {
@@ -228,4 +215,24 @@ func (r RankExtra) SetRank(sort string) RankExtra {
 	}
 
 	return r
+}
+
+// Data array for datatables
+func (r RankExtra) output() (output []interface{}) {
+
+	return []interface{}{
+		r.Rank,
+		strconv.FormatInt(r.RankRow.PlayerID, 10),
+		r.RankRow.PersonaName,
+		r.RankRow.GetAvatar(),
+		r.RankRow.GetAvatar2(),
+		r.RankRow.Level,
+		r.RankRow.Games,
+		r.RankRow.Badges,
+		r.RankRow.GetTimeShort(),
+		r.RankRow.GetTimeLong(),
+		r.RankRow.Friends,
+		r.RankRow.GetFlag(),
+		r.RankRow.GetCountry(),
+	}
 }
