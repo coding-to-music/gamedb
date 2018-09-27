@@ -28,7 +28,7 @@ var (
 	errInvalidQueue = errors.New("invalid queue")
 	errEmptyMessage = errors.New("empty message")
 
-	dsn string
+	rabbitDSN string
 
 	consumerConnection   *amqp.Connection
 	consumerCloseChannel chan *amqp.Error
@@ -63,12 +63,12 @@ func init() {
 
 func Init() {
 
-	username := viper.GetString("RABBIT_USER")
-	password := viper.GetString("RABBIT_PASS")
+	user := viper.GetString("RABBIT_USER")
+	pass := viper.GetString("RABBIT_PASS")
 	host := viper.GetString("RABBIT_HOST")
 	port := viper.GetString("RABBIT_PORT")
 
-	dsn = "amqp://" + username + ":" + password + "@" + host + ":" + port
+	rabbitDSN = "amqp://" + user + ":" + pass + "@" + host + ":" + port
 }
 
 func RunConsumers() {
@@ -116,7 +116,7 @@ func (s rabbitMessageBase) produce(data []byte) (err error) {
 	// Connect
 	if producerConnection == nil {
 
-		producerConnection, err = amqp.Dial(dsn)
+		producerConnection, err = amqp.Dial(rabbitDSN)
 		producerConnection.NotifyClose(producerCloseChannel)
 		if err != nil {
 			return err
@@ -144,7 +144,7 @@ func (s rabbitMessageBase) produce(data []byte) (err error) {
 
 func (s rabbitMessageBase) consume() {
 
-	logger.Info("Consuming from: " + s.Message.getQueueName())
+	logger.LocalInfo("Consuming from: " + s.Message.getQueueName())
 
 	var breakFor = false
 	var err error
@@ -154,7 +154,7 @@ func (s rabbitMessageBase) consume() {
 		// Connect
 		if consumerConnection == nil {
 
-			consumerConnection, err = amqp.Dial(dsn)
+			consumerConnection, err = amqp.Dial(rabbitDSN)
 			consumerConnection.NotifyClose(consumerCloseChannel)
 			if err != nil {
 				logger.Error(err)

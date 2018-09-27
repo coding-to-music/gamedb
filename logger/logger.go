@@ -44,3 +44,10 @@ func Info(message string) {
 		}
 	}
 }
+
+func LocalInfo(message string) {
+
+	if viper.GetString("ENV") == Local {
+		Info(message)
+	}
+}
