@@ -38,7 +38,8 @@ func Serve() error {
 	r.Use(middleware.DefaultCompress)
 
 	if viper.GetString("ENV") == logger.Local {
-		//r.Use(middleware.Logger)
+		r.Use(middleware.Logger)
+		r.Use(middleware.Timeout(30 * time.Second))
 	}
 
 	r.Use(middleware.GetHead)
@@ -46,7 +47,6 @@ func Serve() error {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.RequestID)
-	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Get("/", HomeHandler)
 	r.Mount("/admin", adminRouter())
