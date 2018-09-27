@@ -138,7 +138,7 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 func CountRanks() (count int, err error) {
 
-	err = memcache.GetSet(memcache.AppsCount, &count, func(count interface{}) (err error) {
+	err = memcache.GetSet(memcache.RanksCount, &count, func(count interface{}) (err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
