@@ -38,7 +38,6 @@ func Serve() error {
 	r.Use(middleware.DefaultCompress)
 
 	if viper.GetString("ENV") == logger.Local {
-		r.Use(middleware.Logger)
 		r.Use(middleware.Timeout(30 * time.Second))
 	}
 
