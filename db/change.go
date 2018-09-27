@@ -56,11 +56,13 @@ func GetLatestChanges(limit int, page int) (changes []Change, err error) {
 	q := datastore.NewQuery(KindChange).Order("-change_id").Limit(limit).Offset(offset)
 
 	_, err = client.GetAll(ctx, q, &changes)
+
+	err = checkForMissingChangeFields(err)
 	if err != nil {
-		return
+		return changes, err
 	}
 
-	return changes, err
+	return changes, nil
 }
 
 func GetChange(id string) (change Change, err error) {
@@ -134,4 +136,24 @@ func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
 	}
 
 	return divided
+}
+
+func checkForMissingChangeFields(err error) error {
+
+	if err == nil {
+		return nil
+	}
+
+	if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+
+		removedColumns := []string{
+			"updated_at",
+		}
+
+		if helpers.SliceHasString(removedColumns, err2.FieldName) {
+			return nil
+		}
+	}
+
+	return err
 }

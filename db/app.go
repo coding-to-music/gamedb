@@ -13,6 +13,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
+	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
@@ -27,7 +28,7 @@ const (
 
 var (
 	ErrInvalidAppID = UpdateError{"invalid app id", true, false}
-	ErrNoSuchApp = errors.New("no such app")
+	ErrNoSuchApp    = errors.New("no such app")
 )
 
 type App struct {

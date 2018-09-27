@@ -603,7 +603,7 @@ func GetPlayer(id int64) (ret Player, err error) {
 
 	err = client.Get(ctx, key, &player)
 
-	err = checkPlayerError(err)
+	err = checkForMissingPlayerFields(err)
 	if err != nil {
 		return player, err
 	}
@@ -628,7 +628,7 @@ func GetPlayerByName(name string) (player Player, err error) {
 
 	_, err = client.GetAll(ctx, q, &players)
 
-	err = checkPlayerError(err)
+	err = checkForMissingPlayerFields(err)
 	if err != nil {
 		return player, err
 	}
@@ -654,9 +654,9 @@ func GetPlayersByEmail(email string) (ret []Player, err error) {
 
 	_, err = client.GetAll(ctx, q, &players)
 
-	err = checkPlayerError(err)
+	err = checkForMissingPlayerFields(err)
 	if err != nil {
-		return
+		return ret, err
 	}
 
 	if len(players) == 0 {
@@ -681,12 +681,12 @@ func GetAllPlayers(order string, limit int) (players []Player, err error) {
 
 	_, err = client.GetAll(ctx, q, &players)
 
-	err = checkPlayerError(err)
+	err = checkForMissingPlayerFields(err)
 	if err != nil {
-		return
+		return players, err
 	}
 
-	return players, err
+	return players, nil
 }
 
 func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
@@ -709,12 +709,13 @@ func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
 	err = client.GetMulti(ctx, keys, friends)
 
 	// Return what we have, even if some are missing
-	if err == datastore.ErrNoSuchEntity {
+	if err != nil && (err.Error() == ErrNoSuchEntity.Error()) {
 		return friends, nil
 	}
 
-	err = checkPlayerError(err)
-	if err != nil && err != ErrNoSuchEntity {
+	// Allow missing field errors
+	err = checkForMissingPlayerFields(err)
+	if err != nil {
 		return friends, err
 	}
 
@@ -740,7 +741,7 @@ func CountPlayers() (count int, err error) {
 	return cachePlayersCount, nil
 }
 
-func checkPlayerError(err error) error {
+func checkForMissingPlayerFields(err error) error {
 
 	if err == nil {
 		return nil
