@@ -20,6 +20,7 @@ var defaultOptions = {
 
         delete data.columns;
         delete data.length;
+        delete data.search.regex;
 
         $.ajax({
             url: $(this).attr('data-path'),
