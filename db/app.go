@@ -187,11 +187,13 @@ func (app App) GetReviewScore() float64 {
 }
 
 func (app App) GetCommunityLink() string {
-	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
+	name := viper.GetString("SHORT_NAME")
+	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
 }
 
 func (app App) GetStoreLink() string {
-	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=SteamAuthority&utm_medium=link&utm_campaign=SteamAuthority"
+	name := viper.GetString("SHORT_NAME")
+	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
 }
 
 func (app App) GetPCGamingWikiLink() string {

@@ -34,7 +34,7 @@ var pages = []string{
 func SiteMapHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := stm.NewSitemap()
-	sm.SetDefaultHost("https://steamauthority.net/")
+	sm.SetDefaultHost("https://gamedb.online/")
 	sm.SetCompress(true)
 	sm.Create()
 
