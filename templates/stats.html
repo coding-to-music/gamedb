@@ -10,6 +10,10 @@
     {{ template "_stats_header" . }}
         <div class="card-body">
 
+            <h5>Game review scores</h5>
+            <script>var scores = JSON.parse('{{ .Scores }}');</script>
+            <div id="scores"></div>
+
         </div>
     </div>
 

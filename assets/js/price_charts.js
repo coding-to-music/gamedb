@@ -1,12 +1,15 @@
 if ($('#app-page, #package-page').length > 0) {
 
-    // Price change chart
     Highcharts.chart('chart', {
         chart: {
             zoomType: 'x'
         },
-        title: {text: ''},
-        subtitle: {text: ''},
+        title: {
+            text: ''
+        },
+        subtitle: {
+            text: ''
+        },
         xAxis: {
             title: {
                 text: 'Date'
