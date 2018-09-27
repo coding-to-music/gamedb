@@ -708,18 +708,45 @@ func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
 	friends = make([]Player, len(keys))
 	err = client.GetMulti(ctx, keys, friends)
 
-	// Return what we have, even if some are missing
-	if err != nil && (err.Error() == ErrNoSuchEntity.Error()) {
-		return friends, nil
-	}
-
-	// Allow missing field errors
-	err = checkForMissingPlayerFields(err)
-	if err != nil {
+	if checkGetMultiErrors(err) != nil {
 		return friends, err
 	}
 
 	return friends, nil
+}
+
+func checkGetMultiErrors(err error) error {
+
+	if err != nil {
+
+		if multiErr, ok := err.(datastore.MultiError); ok {
+
+			for _, v := range multiErr {
+				err2 := checkGetMultiErrors(v)
+				if err2 != nil {
+					return err2
+				}
+			}
+
+		} else if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+
+			err3 := checkForMissingPlayerFields(err2)
+			if err3 != nil {
+				return err3
+			}
+
+		} else if err.Error() == ErrNoSuchEntity.Error() {
+
+			return nil
+
+		} else {
+
+			return err
+
+		}
+	}
+
+	return nil
 }
 
 func CountPlayers() (count int, err error) {
