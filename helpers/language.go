@@ -19,6 +19,8 @@ func CountryCodeToName(code string) string {
 
 	if code == "" {
 		return code
+	} else if code == "BQ" {
+		return "Bonaire, Sint Eustatius and Saba"
 	}
 
 	query := gountries.New()
