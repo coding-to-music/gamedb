@@ -19,46 +19,31 @@
     <div class="card">
         <div class="card-header bg-light text-white">
 
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
-                </li>
-            {{if gt .PricesCount 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
-                </li>
-            {{end}}
-            {{if gt (len .DLC) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC ({{len .DLC}})</a>
-                </li>
-            {{end}}
-            {{if gt (len .Packages) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ len .Packages }})</a>
-                </li>
-            {{end}}
-            {{if gt (len .Achievements) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ len .Achievements }})</a>
-                </li>
-            {{end}}
-            {{if gt (len .Articles) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .Articles }})</a>
-                </li>
-            {{end}}
-            {{if gt .ReviewsCount.TotalReviews 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .ReviewsCount.TotalReviews }})</a>
-                </li>
-            {{end}}
-            {{if gt (len .App.GetScreenshots) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
-                </li>
-            {{end}}
-            </ul>
+            <div class="nav nav-tabs card-header-tabs" role="tablist">
+                <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
+            {{/*{{if gt .PricesCount 0}}*/}}
+                <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
+            {{/*{{end}}*/}}
+            {{/*{{if gt (len .DLC) 0}}*/}}
+                <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC ({{len .DLC}})</a>
+            {{/*{{end}}*/}}
+            {{/*{{if gt (len .Packages) 0}}*/}}
+                <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ len .Packages }})</a>
+            {{/*{{end}}*/}}
+            {{/*{{if gt (len .Achievements) 0}}*/}}
+                <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ len .Achievements }})</a>
+            {{/*{{end}}*/}}
+            {{/*{{if gt (len .Articles) 0}}*/}}
+                <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .Articles }})</a>
+            {{/*{{end}}*/}}
+            {{/*{{if gt .ReviewsCount.TotalReviews 0}}*/}}
+                <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .ReviewsCount.TotalReviews }})</a>
+            {{/*{{end}}*/}}
+            {{/*{{if gt (len .App.GetScreenshots) 0}}*/}}
+                <a class="nav-link disabled" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
+            {{/*{{end}}*/}}
+            </div>
+
         </div>
         <div class="card-body">
             <div class="tab-content" id="myTabContent">
