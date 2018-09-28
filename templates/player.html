@@ -176,6 +176,8 @@
                 </div>
                 <div class="tab-pane" id="friends" role="tabpanel">
 
+                {{ if gt .Player.FriendsCount 0 }}
+
                 {{/* Friends */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
@@ -210,6 +212,12 @@
                         {{ end }}
                         </table>
                     </div>
+
+                {{ else }}
+
+                    This player either has no friends or has them hidden to the public. Go <a target="_blank" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.
+
+                {{ end }}
 
                 </div>
                 <div class="tab-pane" id="badges" role="tabpanel">
@@ -267,15 +275,19 @@
                 </div>
                 <div class="tab-pane" id="games" role="tabpanel">
 
+                {{ if gt .Player.GamesCount 0 }}
+
                 {{/* Game Stats */}}
                     <div class="row">
                         <div class="col-12 col-md-6">
 
                             <table class="table">
                                 <thead>
-                                <td width="40%" data-disabled></td>
-                                <td width="30%" class="font-weight-bold">All</td>
-                                <td width="30%" class="font-weight-bold">Played</td>
+                                <tr>
+                                    <td width="40%" data-disabled></td>
+                                    <td width="30%" class="font-weight-bold">All</td>
+                                    <td width="30%" class="font-weight-bold">Played</td>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
@@ -301,9 +313,11 @@
 
                             <table class="table">
                                 <thead>
-                                <td width="40%" data-disabled></td>
-                                <td width="30%" class="font-weight-bold">All</td>
-                                <td width="30%" class="font-weight-bold">Played</td>
+                                <tr>
+                                    <td width="40%" data-disabled></td>
+                                    <td width="30%" class="font-weight-bold">All</td>
+                                    <td width="30%" class="font-weight-bold">Played</td>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
@@ -360,6 +374,12 @@
                             </tbody>
                         </table>
                     </div>
+
+                {{ else }}
+
+                    This player either has no games or has them hidden to the public. Go <a target="_blank" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.
+
+                {{ end }}
 
                 </div>
             </div>
