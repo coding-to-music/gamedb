@@ -136,7 +136,7 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var url string
-	url, err = openid.RedirectURL("http://steamcommunity.com/openid", viper.GetString("DOMAIN")+"/login/callback", viper.GetString("DOMAIN")+"/")
+	url, err = openid.RedirectURL("https://steamcommunity.com/openid", viper.GetString("DOMAIN")+"/login/callback", viper.GetString("DOMAIN")+"/")
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())

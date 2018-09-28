@@ -98,7 +98,7 @@ func (p Player) GetUpdatedNice() (string) {
 }
 
 func (p Player) GetSteamCommunityLink() string {
-	return "http://steamcommunity.com/profiles/" + strconv.FormatInt(p.PlayerID, 10)
+	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(p.PlayerID, 10)
 }
 
 func (p Player) GetAvatar() string {
