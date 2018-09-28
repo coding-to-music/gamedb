@@ -132,29 +132,33 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get total
-	var total int
+	var count int
 	wg.Add(1)
 	go func() {
 
-		err := memcache.GetSet(memcache.FreeAppsCount, &total, func(total interface{}) (err error) {
+		var err error
+
+		count, err = memcache.GetSetInt(memcache.FreeAppsCount, &count, func() (count int, err error) {
 
 			gorm, err := db.GetMySQLClient()
 			if err != nil {
-				return err
+				return count, err
 			}
 
 			gorm = gorm.Model(&db.App{})
 			gorm = gorm.Where("is_free = ?", "1")
-			gorm = gorm.Count(total)
+			gorm = gorm.Count(&count)
 
 			if gorm.Error != nil {
-				return gorm.Error
+				return count, gorm.Error
 			}
 
-			return nil
+			return count, nil
 		})
 
-		logger.Error(err)
+		if err != nil {
+			logger.Error(err)
+		}
 
 		wg.Done()
 	}()
@@ -163,7 +167,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(total)
+	response.RecordsTotal = strconv.Itoa(count)
 	response.RecordsFiltered = strconv.Itoa(filtered)
 	response.Draw = query.Draw
 

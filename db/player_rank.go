@@ -138,20 +138,20 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 func CountRanks() (count int, err error) {
 
-	err = memcache.GetSet(memcache.RanksCount, &count, func(count interface{}) (err error) {
+	count, err = memcache.GetSetInt(memcache.RanksCount, &count, func() (count int, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
-			return err
+			return count, err
 		}
 
 		q := datastore.NewQuery(KindRank)
 		count, err = client.Count(ctx, q)
 		if err != nil {
-			return err
+			return count, err
 		}
 
-		return nil
+		return count, nil
 	})
 
 	if err != nil {

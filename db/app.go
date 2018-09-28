@@ -584,19 +584,19 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	err = memcache.GetSet(memcache.AppsCount, &count, func(count interface{}) (err error) {
+	count, err = memcache.GetSetInt(memcache.AppsCount, &count, func() (count int, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
-			return err
+			return count, err
 		}
 
-		db.Model(&App{}).Count(count)
+		db.Model(&App{}).Count(&count)
 		if db.Error != nil {
-			return db.Error
+			return count, db.Error
 		}
 
-		return nil
+		return count, nil
 	})
 
 	if err != nil {

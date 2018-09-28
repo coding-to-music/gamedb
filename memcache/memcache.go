@@ -5,6 +5,7 @@ import (
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/spf13/viper"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 var client *memcache.Client
@@ -15,8 +16,8 @@ var (
 	AppsCount     = memcache.Item{Key: "apps-count", Expiration: 60 * 60 * 24}
 	FreeAppsCount = memcache.Item{Key: "free-apps-count", Expiration: 60 * 60 * 24}
 	PackagesCount = memcache.Item{Key: "packages-count", Expiration: 60 * 60 * 24}
-	PlayersCount  = memcache.Item{Key: "players-count", Expiration: 60 * 60 * 24}
 	RanksCount    = memcache.Item{Key: "ranks-count", Expiration: 60 * 60 * 24}
+	PlayersCount  = memcache.Item{Key: "players-count", Expiration: 60 * 60 * 24}
 
 	// Full Tables
 	//Developers = memcache.Item{Key: "developers", Expiration: 60 * 60 * 24}
@@ -70,26 +71,28 @@ func Set(key string, i interface{}, expiration int32) error {
 	return client.Set(item)
 }
 
-func GetSet(item memcache.Item, value interface{}, f func(j interface{}) (err error)) error {
+func GetSetInt(item memcache.Item, value *int, f func() (j int, err error)) (count int, err error) {
 
-	err := Get(item.Key, value)
+	err = Get(item.Key, value)
 
 	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
 
-		err := f(value)
+		logger.Info("Loading " + item.Key + " from memcache.")
+
+		count, err := f()
 		if err != nil {
-			return err
+			return count, err
 		}
 
-		err = Set(item.Key, value, item.Expiration)
+		err = Set(item.Key, count, item.Expiration)
 		if err != nil {
-			return err
+			return count, err
 		}
 
-		return nil
+		return count, nil
 	}
 
-	return err
+	return *value, err
 }
 
 func Inc(key string) (err error) {

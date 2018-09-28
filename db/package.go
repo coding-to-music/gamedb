@@ -12,6 +12,7 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/steami"
 )
 
@@ -439,14 +440,23 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 func CountPackages() (count int, err error) {
 
-	db, err := GetMySQLClient()
+	count, err = memcache.GetSetInt(memcache.PackagesCount, &count, func() (count int, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		db.Model(&Package{}).Count(&count)
+		if db.Error != nil {
+			return count, db.Error
+		}
+
+		return count, nil
+	})
+
 	if err != nil {
 		return count, err
-	}
-
-	db.Model(&Package{}).Count(&count)
-	if db.Error != nil {
-		return count, db.Error
 	}
 
 	return count, nil
@@ -532,19 +542,19 @@ func (pack *Package) Update() (errs []error) {
 }
 
 var PackageExtendedKeys = map[string]string{
-	"allowcrossregiontradingandgifting":    "Allow Cross Region Trading & Gifting",
-	"allowpurchasefromretrictedcountries":  "Allow Purchase From Restricted Countries",
-	"allowpurchasefromrestrictedcountries": "Allow Purchase From Restricted Countries",
-	"allowpurchaseinrestrictedcountries":   "Allow Purchase In Restricted Countries",
-	"allowpurchaserestrictedcountries":     "Allow Purchase Restricted Countries",
-	"allowrunincountries":                  "Allow Run Inc Cuntries",
-	"alwayscountasowned":                   "Always Count As Owned",
-	"alwayscountsasowned":                  "Always Counts As Owned",
-	"alwayscountsasunowned":                "Always Counts As Unowned",
-	"appid":                                "App ID",
-	"appidownedrequired":                   "App ID Owned Required",
-	"billingagreementtype":                 "Billing Agreement Type",
-	"blah":                                 "Blah",
+	"allowcrossregiontradingandgifting":     "Allow Cross Region Trading & Gifting",
+	"allowpurchasefromretrictedcountries":   "Allow Purchase From Restricted Countries",
+	"allowpurchasefromrestrictedcountries":  "Allow Purchase From Restricted Countries",
+	"allowpurchaseinrestrictedcountries":    "Allow Purchase In Restricted Countries",
+	"allowpurchaserestrictedcountries":      "Allow Purchase Restricted Countries",
+	"allowrunincountries":                   "Allow Run Inc Cuntries",
+	"alwayscountasowned":                    "Always Count As Owned",
+	"alwayscountsasowned":                   "Always Counts As Owned",
+	"alwayscountsasunowned":                 "Always Counts As Unowned",
+	"appid":                                 "App ID",
+	"appidownedrequired":                    "App ID Owned Required",
+	"billingagreementtype":                  "Billing Agreement Type",
+	"blah":                                  "Blah",
 	"canbegrantedfromexternal":              "Can Be Granted From External",
 	"cantownapptopurchase":                  "Cant Own App To Purchase",
 	"complimentarypackagegrant":             "Complimentary Package Grant",
