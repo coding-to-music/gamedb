@@ -521,7 +521,9 @@ func (p *Player) updateLevel() (error) {
 func (p *Player) updateBans() (error) {
 
 	bans, _, err := steami.Steam().GetPlayerBans(p.PlayerID)
-	if err != nil {
+	if err == steam.ErrNoUserFound {
+		return nil
+	} else if err != nil {
 		return err
 	}
 
