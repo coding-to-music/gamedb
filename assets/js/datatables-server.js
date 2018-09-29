@@ -245,6 +245,62 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
     ]
 }));
 
+// Free Games Page
+$('#packages-page table.table-datatable2').DataTable($.extend(true, {}, defaultOptions, {
+    "order": [[5, 'desc']],
+    "createdRow": function (row, data, dataIndex) {
+        $(row).attr('data-id', data[0]);
+        $(row).attr('data-link', data[7]);
+    },
+    "columnDefs": [
+        // Name
+        {
+            "targets": 0,
+            "render": function (data, type, row) {
+                return row[1];
+            }
+        },
+        // Billing Type
+        {
+            "targets": 1,
+            "render": function (data, type, row) {
+                return row[2];
+            }
+        },
+        // License Type
+        {
+            "targets": 2,
+            "render": function (data, type, row) {
+                return row[3];
+            }
+        },
+        // Status
+        {
+            "targets": 3,
+            "render": function (data, type, row) {
+                return row[4];
+            }
+        },
+        // Apps
+        {
+            "targets": 4,
+            "render": function (data, type, row) {
+                return row[5].toLocaleString();
+            }
+        },
+        // Updated Time
+        {
+            "targets": 5,
+            "render": function (data, type, row) {
+                return row[6];
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('nowrap', 'nowrap');
+            }
+        }
+    ]
+}));
+
 // function addRow() {
 //     var row = ["1st", 76561198023414910, "St4ck", "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/60/601a3dd1a71cfc4706a0c61456b99b68ee45d550_full.jpg", "avatar2 lvl_2700 lvl_plus_80", 2784, 0, 5397, "0m", "0 minutes", 399, "", ""];
 //     var $row = $('<tr />');

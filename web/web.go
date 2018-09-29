@@ -80,6 +80,7 @@ func Serve() error {
 	r.Get("/logout", LogoutHandler)
 	r.Get("/news", NewsHandler)
 	r.Get("/packages", PackagesHandler)
+	r.Get("/packages/ajax", PackagesAjaxHandler)
 	r.Get("/packages/{id}", PackageHandler)
 	r.Get("/packages/{id}/{slug}", PackageHandler)
 	r.Get("/players", PlayersHandler)

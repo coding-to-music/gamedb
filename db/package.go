@@ -16,21 +16,22 @@ import (
 	"github.com/steam-authority/steam-authority/steami"
 )
 
+// todo, make column meta match table names
 type Package struct {
 	ID        int        `gorm:"not null;primary_key"` //
 	CreatedAt *time.Time `gorm:"not null"`             //
 	UpdatedAt *time.Time `gorm:"not null"`             //
 
-	PICSName        string `gorm:"not null"`              //
-	PICSChangeID    int    `gorm:"not null"`              //
-	PICSBillingType int8   `gorm:"not null"`              //
-	PICSLicenseType int8   `gorm:"not null"`              //
-	PICSStatus      int8   `gorm:"not null"`              //
-	PICSExtended    string `gorm:"not null;default:'{}'"` // JSON (TEXT)
-	PICSAppIDs      string `gorm:"not null;default:'[]'"` // JSON
-	PICSAppItems    string `gorm:"not null;default:'{}'"` // JSON (TEXT)
-	PICSDepotIDs    string `gorm:"not null;default:'[]'"` // JSON
-	PICSRaw         string `gorm:"not null;default:'{}'"` // JSON (TEXT)
+	PICSName        string `gorm:"not null"`                          //
+	PICSChangeID    int    `gorm:"not null"`                          //
+	PICSBillingType int8   `gorm:"not null;column:billing_type"`      //
+	PICSLicenseType int8   `gorm:"not null;column:license_type"`      //
+	PICSStatus      int8   `gorm:"not null;column:status"`            //
+	PICSExtended    string `gorm:"not null;default:'{}'"`             // JSON (TEXT)
+	PICSAppIDs      string `gorm:"not null;default:'[]';column:apps"` // JSON
+	PICSAppItems    string `gorm:"not null;default:'{}'"`             // JSON (TEXT)
+	PICSDepotIDs    string `gorm:"not null;default:'[]'"`             // JSON
+	PICSRaw         string `gorm:"not null;default:'{}'"`             // JSON (TEXT)
 
 	ImagePage       string `gorm:"not null"`              //
 	ImageHeader     string `gorm:"not null"`              //
@@ -85,6 +86,14 @@ func (pack Package) GetCreatedNice() string {
 
 func (pack Package) GetCreatedUnix() int64 {
 	return pack.CreatedAt.Unix()
+}
+
+func (pack Package) GetUpdatedNice() string {
+	return pack.UpdatedAt.Format(helpers.DateYearTime)
+}
+
+func (pack Package) GetUpdatedUnix() int64 {
+	return pack.UpdatedAt.Unix()
 }
 
 func (pack Package) GetReleaseDateNice() string {
@@ -398,23 +407,6 @@ func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 	}
 
 	db.Where("id IN (?)", ids).Find(&packages)
-	if db.Error != nil {
-		return packages, db.Error
-	}
-
-	return packages, nil
-}
-
-func GetLatestPackages(limit int, page int) (packages []Package, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return packages, err
-	}
-
-	offset := (page - 1) * limit
-
-	db.Limit(limit).Offset(offset).Order("created_at DESC").Find(&packages)
 	if db.Error != nil {
 		return packages, db.Error
 	}
