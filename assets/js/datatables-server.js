@@ -1,18 +1,14 @@
-$('table.table-datatable2').on('processing.dt', function (e, settings, processing) {
+$('table.table-datatable2').on('page.dt', function (e, settings, processing) {
 
-    if ($(this).is(':visible')) {
+    $(this).fadeTo(500, 0.3);
 
-        if (processing) {
+    var top = $(this).closest('.card').offset().top + 5;
+    $('html, body').animate({scrollTop: top}, 500);
 
-            $(this).fadeTo(500, 0.3);
+}).on('draw.dt', function (e, settings, processing) {
 
-            var top = $(this).closest('.card').offset().top + 5;
-            $('html, body').animate({scrollTop: top}, 500);
+    $(this).fadeTo(100, 1);
 
-        } else {
-            $(this).fadeTo(100, 1);
-        }
-    }
 });
 
 var defaultOptions = {
