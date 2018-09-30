@@ -23,41 +23,39 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
-            {{/*{{if gt .PricesCount 0}}*/}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
                 </li>
-            {{/*{{end}}*/}}
-            {{/*{{if gt (len .DLC) 0}}*/}}
+            {{if gt (len .DLC) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC ({{len .DLC}})</a>
                 </li>
-            {{/*{{end}}*/}}
-            {{/*{{if gt (len .Packages) 0}}*/}}
+            {{end}}
+            {{if gt (len .Packages) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ len .Packages }})</a>
                 </li>
-            {{/*{{end}}*/}}
-            {{/*{{if gt (len .Achievements) 0}}*/}}
+            {{end}}
+            {{if gt (len .Achievements) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ len .Achievements }})</a>
                 </li>
-            {{/*{{end}}*/}}
-            {{/*{{if gt (len .Articles) 0}}*/}}
+            {{end}}
+            {{if gt (len .Articles) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .Articles }})</a>
                 </li>
-            {{/*{{end}}*/}}
-            {{/*{{if gt .ReviewsCount.TotalReviews 0}}*/}}
+            {{end}}
+            {{if gt .ReviewsCount.TotalReviews 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .ReviewsCount.TotalReviews }})</a>
                 </li>
-            {{/*{{end}}*/}}
-            {{/*{{if gt (len .App.GetScreenshots) 0}}*/}}
+            {{end}}
+            {{if gt (len .App.GetScreenshots) 0}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
                 </li>
-            {{/*{{end}}*/}}
+            {{end}}
             </ul>
 
         </div>
@@ -99,6 +97,8 @@
             {{/* DLC */}}
                 <div class="tab-pane" id="dlc" role="tabpanel">
 
+                {{if gt (len .DLC) 0}}
+
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
@@ -117,10 +117,18 @@
                         </table>
                     </div>
 
+                {{ else }}
+
+                    <p>This app has no DLC.</p>
+
+                {{ end }}
+
                 </div>
 
             {{/* App Achievements */}}
                 <div class="tab-pane" id="achievements" role="tabpanel">
+
+                {{if gt (len .Achievements) 0}}
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
@@ -145,10 +153,18 @@
 
                     </div>
 
+                {{ else }}
+
+                    <p>This app has no achievements.</p>
+
+                {{ end }}
+
                 </div>
 
             {{/* News */}}
                 <div class="tab-pane" id="news" role="tabpanel">
+
+                {{if gt (len .Articles) 0}}
 
                     <div id="accordion">
 
@@ -172,10 +188,18 @@
 
                     </div>
 
+                {{ else }}
+
+                    <p>This app has no news.</p>
+
+                {{ end }}
+
                 </div>
 
             {{/* Packages */}}
                 <div class="tab-pane" id="packages" role="tabpanel">
+
+                {{if gt (len .Packages) 0}}
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
@@ -198,10 +222,18 @@
                         </table>
                     </div>
 
+                {{ else }}
+
+                    <p>This app is not in a package.</p>
+
+                {{ end }}
+
                 </div>
 
             {{/* Reviews */}}
                 <div class="tab-pane" id="reviews" role="tabpanel">
+
+                {{if gt .ReviewsCount.TotalReviews 0}}
 
                     <table class="table">
                         <tbody>
@@ -243,10 +275,18 @@
 
                 {{ end }}
 
+                {{ else }}
+
+                    <p>This app has no reviews.</p>
+
+                {{ end }}
+
                 </div>
 
             {{/* Media */}}
                 <div class="tab-pane" id="media" role="tabpanel">
+
+                {{if gt (len .App.GetScreenshots) 0}}
 
                     <div id="mediaCarousel" class="carousel slide" data-ride="carousel">
                         <ol class="carousel-indicators">
@@ -270,6 +310,12 @@
                             <span class="sr-only">Next</span>
                         </a>
                     </div>
+
+                {{ else }}
+
+                    <p>This app has no screenshots.</p>
+
+                {{ end }}
 
                 </div>
             </div>
