@@ -66,6 +66,7 @@ indexes:
 # App Page - Prices tab
 - kind: "Price"
   properties:
+  - name: "app_id"
   - name: "currency"
   - name: "created_at"
     direction: "desc"
