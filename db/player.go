@@ -268,22 +268,20 @@ func (p *Player) Update(userAgent string) (errs []error) {
 		return []error{}
 	}
 
-	var err error
-	var wg sync.WaitGroup
-
 	// Get summary
-	wg.Add(1)
-	go func(p *Player) {
-		err = p.updateSummary()
-		logger.Error(err)
-		wg.Done()
-	}(p)
+	err := p.updateSummary()
+	if err != nil {
+		return []error{err}
+	}
+
+	// Async the rest
+	var wg sync.WaitGroup
 
 	// Get games
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateGames()
-		logger.Error(err)
+		errs = append(errs, err)
 		wg.Done()
 	}(p)
 
@@ -291,7 +289,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateRecentGames()
-		logger.Error(err)
+		errs = append(errs, err)
 		wg.Done()
 	}(p)
 
@@ -299,7 +297,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateBades()
-		logger.Error(err)
+		errs = append(errs, err)
 		wg.Done()
 	}(p)
 
@@ -307,7 +305,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateFriends()
-		logger.Error(err)
+		errs = append(errs, err)
 		wg.Done()
 	}(p)
 
@@ -315,7 +313,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateLevel()
-		logger.Error(err)
+		errs = append(errs, err)
 		wg.Done()
 	}(p)
 
@@ -323,7 +321,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateBans()
-		logger.Error(err)
+		errs = append(errs, err)
 		wg.Done()
 	}(p)
 
@@ -331,7 +329,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateGroups()
-		logger.Error(err)
+		errs = append(errs, err)
 		wg.Done()
 	}(p)
 
