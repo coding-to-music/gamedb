@@ -28,10 +28,18 @@
             min-width: 6%;
             max-width: 94%;
         }
+
+        // todo, get these from BS variables
+        div[data-vote=true] {
+            background-color: #c3e6cb;
+        }
+        div[data-vote=false] {
+            background-color: #f5c6cb;
+        }
     }
 
-    #prices{
-        iframe{
+    #prices {
+        iframe {
             margin-bottom: -20px;
             height: 190px;
             width: 100%;

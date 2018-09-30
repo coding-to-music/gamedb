@@ -274,10 +274,12 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 					v.Review = regex.ReplaceAllString(v.Review, "\n\n")
 
 					reviews = append(reviews, appReviewTemplate{
-						Review: v.Review,
-						Player: player,
-						Date:   time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
-						Votes:  v.VotesUp,
+						Review:     v.Review,
+						Player:     player,
+						Date:       time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
+						VotesGood:  v.VotesUp,
+						VotesFunny: v.VotesFunny,
+						Vote:       v.VotedUp,
 					})
 				}
 			}
@@ -336,10 +338,12 @@ type appArticleTemplate struct {
 }
 
 type appReviewTemplate struct {
-	Review string
-	Player db.Player
-	Date   string
-	Votes  int
+	Review     string
+	Player     db.Player
+	Date       string
+	VotesGood  int
+	VotesFunny int
+	Vote       bool
 }
 
 func (a appAchievementTemplate) GetCompleted() float64 {
