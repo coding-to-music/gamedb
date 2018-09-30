@@ -627,21 +627,20 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *App) {
 
-		// todo, can't call datastore package
-		//var articles []*db.Article
-		//
-		//articles, err = db.GetNewArticles(app.ID)
-		//if err != nil {
-		//
-		//	errs = append(errs, err)
-		//
-		//} else {
-		//
-		//	err = db.BulkAddArticles(articles)
-		//	if err != nil {
-		//		errs = append(errs, err)
-		//	}
-		//}
+		var articles []*Article
+
+		articles, err = GetNewArticles(app.ID)
+		if err != nil {
+
+			errs = append(errs, err)
+
+		} else {
+
+			err = BulkAddArticles(articles)
+			if err != nil {
+				errs = append(errs, err)
+			}
+		}
 
 		wg.Done()
 	}(app)
