@@ -10,7 +10,7 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 )
 
-type Price struct {
+type PriceChange struct {
 	CreatedAt       time.Time `datastore:"created_at"`
 	AppID           int       `datastore:"app_id"`
 	PackageID       int       `datastore:"package_id"`
@@ -26,11 +26,11 @@ type Price struct {
 	First           bool      `datastore:"first"`
 }
 
-func (p Price) GetKey() (key *datastore.Key) {
+func (p PriceChange) GetKey() (key *datastore.Key) {
 	return datastore.IncompleteKey(KindPrice, nil)
 }
 
-func (p Price) GetPath() string {
+func (p PriceChange) GetPath() string {
 	if p.AppID != 0 {
 		return "/games/" + strconv.Itoa(p.AppID) + "/" + slug.Make(p.Name)
 	} else if p.PackageID != 0 {
@@ -40,7 +40,7 @@ func (p Price) GetPath() string {
 	}
 }
 
-func (p Price) GetIcon() (ret string) {
+func (p PriceChange) GetIcon() (ret string) {
 
 	if p.Icon == "" {
 		return "/assets/img/no-app-image-square.jpg"
@@ -51,40 +51,56 @@ func (p Price) GetIcon() (ret string) {
 	}
 }
 
-func (p Price) GetCreatedNice() (ret string) {
+func (p PriceChange) GetCreatedNice() (ret string) {
 	return p.CreatedAt.Format(helpers.DateTime)
 }
 
-func (p Price) GetCreatedUnix() (ret string) {
+func (p PriceChange) GetCreatedUnix() (ret string) {
 	return p.CreatedAt.Format(helpers.DateTime)
 }
 
-func (p Price) GetPriceInitial() float64 {
+func (p PriceChange) GetPriceInitial() float64 {
 	return helpers.CentsInt(p.PriceInitial)
 }
 
-func (p Price) GetChange() float64 {
+func (p PriceChange) GetChange() float64 {
 	return helpers.CentsInt(p.Change)
 }
 
-func (p Price) GetPriceFinal() float64 {
+func (p PriceChange) GetPriceFinal() float64 {
 	return helpers.CentsInt(p.PriceFinal)
 }
 
-func (p Price) GetChangePercent() float64 {
+//func (p PriceChange) GetChangePercent() float64 {
+//
+//	if p.Change < 0 {
+//		// Green
+//		old := p.PriceFinal + p.Change
+//		return helpers.CentsInt(old / p.Change)
+//	} else {
+//		// Red
+//		old := p.PriceFinal + p.Change
+//		return helpers.CentsInt(old / p.Change)
+//	}
+//}
 
-	if p.Change < 0 {
-		// Green
-		old := p.PriceFinal + p.Change
-		return helpers.CentsInt(old / p.Change)
-	} else {
-		// Red
-		old := p.PriceFinal + p.Change
-		return helpers.CentsInt(old / p.Change)
+// Data array for datatables
+func (p PriceChange) OutputForJSON() (output []interface{}) {
+
+	return []interface{}{
+		p.AppID,
+		p.Name,
+		p.ReleaseDateNice,
+		p.GetPriceFinal(),
+		p.Discount,
+		p.GetChange(),
+		p.GetCreatedNice(),
+		p.GetPath(),
+		p.GetIcon(),
 	}
 }
 
-func GetAppPrices(appID int, limit int) (prices []Price, err error) {
+func GetAppPrices(appID int, limit int) (prices []PriceChange, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -107,7 +123,7 @@ func GetAppPrices(appID int, limit int) (prices []Price, err error) {
 	return prices, err
 }
 
-func GetPackagePrices(packageID int, limit int) (prices []Price, err error) {
+func GetPackagePrices(packageID int, limit int) (prices []PriceChange, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -121,27 +137,6 @@ func GetPackagePrices(packageID int, limit int) (prices []Price, err error) {
 	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(limit)
 	q = q.Filter("package_id =", packageID)
 	q = q.Filter("currency =", "usd")
-
-	_, err = client.GetAll(ctx, q, &prices)
-	if err != nil {
-		return
-	}
-
-	return prices, err
-}
-
-func GetLatestPrices(limit int, page int) (prices []Price, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return prices, err
-	}
-
-	offset := (page - 1) * limit
-
-	q := datastore.NewQuery(KindPrice).Order("-created_at").Limit(limit).Offset(offset)
-	q = q.Filter("currency =", "usd")
-	q = q.Filter("first =", false)
 
 	_, err = client.GetAll(ctx, q, &prices)
 	if err != nil {

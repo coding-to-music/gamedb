@@ -297,6 +297,75 @@ $('#packages-page table.table-datatable2').DataTable($.extend(true, {}, defaultO
     ]
 }));
 
+// Changes
+$('#price-changes-page table.table-datatable2').DataTable($.extend(true, {}, defaultOptions, {
+    "order": [[5, 'desc']],
+    "createdRow": function (row, data, dataIndex) {
+        $(row).attr('data-id', data[0]).attr('data-link', data[7]);
+
+        if (data[7] > 0) {
+            $(row).addClass('table-danger');
+        } else if (data[7] < 0) {
+            $(row).addClass('table-success');
+        }
+    },
+    "columnDefs": [
+        // App/Package Name
+        {
+            "targets": 0,
+            "render": function (data, type, row) {
+                return '<img src="' + row[8] + '" class="rounded square"><span>' + row[1] + '</span>';
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).addClass('img').attr('data-app-id', 0)
+            },
+            "orderable": false,
+            "searchable": false
+        },
+        // Release Date
+        {
+            "targets": 1,
+            "render": function (data, type, row) {
+                return row[2];
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('nowrap', 'nowrap');
+            }
+        },
+        // Price
+        {
+            "targets": 2,
+            "render": function (data, type, row) {
+                return '$' + row[3];
+            }
+        },
+        // Discount %
+        {
+            "targets": 3,
+            "render": function (data, type, row) {
+                return row[4] + '%';
+            }
+        },
+        // Price Change
+        {
+            "targets": 4,
+            "render": function (data, type, row) {
+                return '$' + row[5];
+            }
+        },
+        // Time
+        {
+            "targets": 5,
+            "render": function (data, type, row) {
+                return row[6];
+            },
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('nowrap', 'nowrap');
+            }
+        }
+    ]
+}));
+
 // function addRow() {
 //     var row = ["1st", 76561198023414910, "St4ck", "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/60/601a3dd1a71cfc4706a0c61456b99b68ee45d550_full.jpg", "avatar2 lvl_2700 lvl_plus_80", 2784, 0, 5397, "0m", "0 minutes", 399, "", ""];
 //     var $row = $('<tr />');

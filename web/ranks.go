@@ -188,7 +188,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range ranksExtra {
 
-		response.AddRow(v.output())
+		response.AddRow(v.outputForJSON())
 	}
 
 	response.output(w)
@@ -217,7 +217,7 @@ func (r RankExtra) SetRank(sort string) RankExtra {
 }
 
 // Data array for datatables
-func (r RankExtra) output() (output []interface{}) {
+func (r RankExtra) outputForJSON() (output []interface{}) {
 
 	return []interface{}{
 		r.Rank,

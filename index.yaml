@@ -1,17 +1,20 @@
 indexes:
 
+# App Page - News Tab
 - kind: "Article"
   properties:
   - name: "app_id"
   - name: "date"
     direction: "desc"
 
+# Settings Page - Events tab
 - kind: "Event"
   properties:
   - name: "player_id"
   - name: "created_at"
     direction: "desc"
 
+# Players Page - Apps tab
 - kind: "PlayerApp"
   properties:
   - name: "player_id"
@@ -60,23 +63,82 @@ indexes:
   - name: "app_price_hour"
     direction: "desc"
 
+# App Page - Prices tab
 - kind: "Price"
   properties:
+  - name: "currency"
+  - name: "created_at"
+    direction: "desc"
+
+# Price Changes Page
+- kind: "Price"
+  properties:
+  - name: "currency"
   - name: "first"
+  - name: "release_date_unix"
+    direction: "asc"
+
+- kind: "Price"
+  properties:
   - name: "currency"
-  - name: "created_at"
+  - name: "first"
+  - name: "release_date_unix"
     direction: "desc"
 
 - kind: "Price"
   properties:
-  - name: "app_id"
   - name: "currency"
+  - name: "first"
+  - name: "price_final"
+    direction: "asc"
+
+- kind: "Price"
+  properties:
+  - name: "currency"
+  - name: "first"
+  - name: "price_final"
+    direction: "desc"
+
+- kind: "Price"
+  properties:
+  - name: "currency"
+  - name: "first"
+  - name: "discount"
+    direction: "asc"
+
+- kind: "Price"
+  properties:
+  - name: "currency"
+  - name: "first"
+  - name: "discount"
+    direction: "desc"
+
+- kind: "Price"
+  properties:
+  - name: "currency"
+  - name: "first"
+  - name: "change"
+    direction: "asc"
+
+- kind: "Price"
+  properties:
+  - name: "currency"
+  - name: "first"
+  - name: "change"
+    direction: "desc"
+
+- kind: "Price"
+  properties:
+  - name: "currency"
+  - name: "first"
   - name: "created_at"
     direction: "asc"
 
 - kind: "Price"
   properties:
-  - name: "package_id"
   - name: "currency"
+  - name: "first"
   - name: "created_at"
-    direction: "asc"
+    direction: "desc"
+
+#

@@ -162,20 +162,21 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Save price change
-	price := new(db.Price)
-	price.CreatedAt = time.Now()
-	price.PackageID = pack.ID
-	price.Name = pack.GetName()
-	price.PriceInitial = pack.PriceInitial
-	price.PriceFinal = pack.PriceFinal
-	price.Discount = pack.PriceDiscount
-	price.Currency = "usd"
+	price := new(db.PriceChange)
 	price.Change = pack.PriceFinal - priceBeforeFill
-	price.Icon = pack.GetDefaultAvatar()
-	price.ReleaseDateNice = pack.GetReleaseDateNice()
-	price.ReleaseDateUnix = pack.GetReleaseDateUnix()
 
 	if price.Change != 0 {
+
+		price.CreatedAt = time.Now()
+		price.PackageID = pack.ID
+		price.Name = pack.GetName()
+		price.PriceInitial = pack.PriceInitial
+		price.PriceFinal = pack.PriceFinal
+		price.Discount = pack.PriceDiscount
+		price.Currency = "usd"
+		price.Icon = pack.GetDefaultAvatar()
+		price.ReleaseDateNice = pack.GetReleaseDateNice()
+		price.ReleaseDateUnix = pack.GetReleaseDateUnix()
 
 		prices, err := db.GetPackagePrices(pack.ID, 1)
 		if err != nil {
