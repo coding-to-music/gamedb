@@ -365,31 +365,3 @@ $('#price-changes-page table.table-datatable2').DataTable($.extend(true, {}, def
         }
     ]
 }));
-
-// function addRow() {
-//     var row = ["1st", 76561198023414910, "St4ck", "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/60/601a3dd1a71cfc4706a0c61456b99b68ee45d550_full.jpg", "avatar2 lvl_2700 lvl_plus_80", 2784, 0, 5397, "0m", "0 minutes", 399, "", ""];
-//     var $row = $('<tr />');
-//
-//     var defs = ranksOptions.columnDefs;
-//
-//     for (var i in defs) {
-//         if (defs.hasOwnProperty(i)) {
-//
-//             var value = row[i];
-//
-//             if ('createdCell' in defs[i]) {
-//                 value = defs[i].render(null, null, row);
-//             }
-//
-//             var $td = $('<td />').html(value);
-//
-//             if ('createdCell' in defs[i]) {
-//                 defs[i].createdCell($td[0], null, row, null, null); // this [0] may not be needed
-//             }
-//
-//             $row.append($td);
-//         }
-//     }
-//
-//     $('#ranks-page table.table-datatable2').prepend($row);
-// }
