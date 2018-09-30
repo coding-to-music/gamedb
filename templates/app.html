@@ -62,7 +62,7 @@
 
         </div>
         <div class="card-body">
-            <div class="tab-content" id="myTabContent">
+            <div class="tab-content" id="tab-content">
 
             {{/* Info */}}
                 <div class="tab-pane show active" id="details" role="tabpanel">
@@ -93,7 +93,7 @@
                 <div class="tab-pane" id="prices" role="tabpanel">
                     <script>var prices = JSON.parse('{{ .Prices }}');</script>
                     <div id="chart"></div>
-                    <iframe src="https://store.steampowered.com/widget/{{ .App.ID }}/" frameborder="0" width="100%" height="190" style="margin-bottom: -20px;"></iframe>
+                    <iframe src="https://store.steampowered.com/widget/{{ .App.ID }}/" frameborder="0"></iframe>
                 </div>
 
             {{/* DLC */}}
@@ -188,9 +188,7 @@
                             </thead>
                         {{ range $key, $value := .Packages }}
                             <tr>
-                                <td>
-                                    <a href="/packages/{{ .ID }}">{{.GetName}}</a>
-                                </td>
+                                <td><a href="/packages/{{ .ID }}">{{.GetName}}</a></td>
                                 <td>{{ .GetBillingType }}</td>
                                 <td>{{ .GetLicenseType }}</td>
                                 <td>{{ .GetStatus }}</td>
