@@ -71,6 +71,14 @@ indexes:
   - name: "created_at"
     direction: "asc"
 
+# Package Page - Prices tab
+- kind: "Price"
+  properties:
+  - name: "package_id"
+  - name: "currency"
+  - name: "created_at"
+    direction: "asc"
+
 # Price Changes Page
 - kind: "Price"
   properties:
