@@ -69,7 +69,7 @@ indexes:
   - name: "app_id"
   - name: "currency"
   - name: "created_at"
-    direction: "desc"
+    direction: "asc"
 
 # Price Changes Page
 - kind: "Price"
