@@ -350,7 +350,11 @@
                         {{ range $key, $value := .RecentGames }}
                             <tr data-link="/games/{{ .AppID }}">
                                 <td class="img">
+                                {{ if eq .ImgIconURL "" }}
+                                    <img src="/assets/img/no-app-image-square.jpg" class="rounded square">
+                                {{ else }}
                                     <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .ImgIconURL }}.jpg" class="rounded square">
+                                {{ end }}
                                     <span>{{ .Name }}</span>
                                 </td>
                                 <td data-order="{{ .PlayTime2Weeks }}">{{ .PlayTime2Weeks }}</td>
