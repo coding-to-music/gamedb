@@ -75,10 +75,12 @@
                                             </td>
                                         </tr>
                                     {{ end }}
+                                    {{ if eq .Player.CountryCode "US" }}
                                         <tr>
                                             <th scope="row" nowrap="nowrap">State</th>
                                             <td>{{ .Player.StateCode }}</td>
                                         </tr>
+                                    {{ end }}
                                     </table>
 
                                 </div>
