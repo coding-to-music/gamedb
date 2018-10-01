@@ -77,24 +77,24 @@ type App struct {
 	ReviewsNegative        int        `gorm:"not null;column:reviews_negative"`
 }
 
-func GetDefaultAppJSON() App {
-	return App{
-		AchievementPercentages: "[]",
-		Achievements:           "{}",
-		Categories:             "[]",
-		Developers:             "[]",
-		DLC:                    "[]",
-		Extended:               "{}",
-		Genres:                 "[]",
-		Movies:                 "[]",
-		Packages:               "[]",
-		Platforms:              "[]",
-		Publishers:             "[]",
-		Schema:                 "{}",
-		Screenshots:            "[]",
-		StoreTags:              "[]",
-	}
-}
+//func GetDefaultAppJSON() App {
+//	return App{
+//		AchievementPercentages: "[]",
+//		Achievements:           "{}",
+//		Categories:             "[]",
+//		Developers:             "[]",
+//		DLC:                    "[]",
+//		Extended:               "{}",
+//		Genres:                 "[]",
+//		Movies:                 "[]",
+//		Packages:               "[]",
+//		Platforms:              "[]",
+//		Publishers:             "[]",
+//		Schema:                 "{}",
+//		Screenshots:            "[]",
+//		StoreTags:              "[]",
+//	}
+//}
 
 func (app App) GetPath() string {
 
@@ -213,16 +213,7 @@ func (app App) GetMetacriticLink() template.URL {
 	return template.URL("http://www.metacritic.com/game/" + app.MetacriticURL)
 }
 
-func IsValidAppID(id int) bool {
-
-	if id == 0 {
-		return false
-	}
-
-	return true
-}
-
-// Used in frontend
+// Used in template
 func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err error) {
 
 	bytes := []byte(app.Screenshots)
@@ -450,162 +441,6 @@ func (app App) shouldUpdate(userAgent string) bool {
 	return false
 }
 
-func GetApp(id int) (app App, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return app, err
-	}
-
-	db.First(&app, id)
-	if db.Error != nil {
-		return app, db.Error
-	}
-
-	if app.ID == 0 {
-		return app, ErrNoSuchApp
-	}
-
-	return app, nil
-}
-
-func GetApps(ids []int, columns []string) (apps []App, err error) {
-
-	if len(ids) < 1 {
-		return apps, nil
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-	}
-
-	db.Where("id IN (?)", ids).Find(&apps)
-	if db.Error != nil {
-		return apps, db.Error
-	}
-
-	return apps, nil
-}
-
-func SearchApps(query url.Values, limit int, page int, sort string, columns []string) (apps []App, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	if limit > 0 {
-		db = db.Limit(limit)
-	}
-
-	offset := (page - 1) * limit
-	db = db.Offset(offset)
-
-	if sort != "" {
-		db = db.Order(sort)
-	}
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-	}
-
-	// Type
-	if _, ok := query["type"]; ok {
-		db = db.Where("type = ?", query.Get("type"))
-	}
-
-	// Tags depth
-	if _, ok := query["tags_depth"]; ok {
-		db = db.Where("JSON_DEPTH(tags) = ?", query.Get("tags_depth"))
-	}
-
-	// Genres depth
-	if _, ok := query["genres_depth"]; ok {
-		db = db.Where("JSON_DEPTH(genres) = ?", query.Get("genres_depth"))
-	}
-
-	// Free
-	if _, ok := query["is_free"]; ok {
-		db = db.Where("is_free = ?", query.Get("is_free"))
-	}
-
-	// Platforms
-	if _, ok := query["platforms"]; ok {
-		db = db.Where("JSON_CONTAINS(platforms, [\"?\"])", query.Get("platforms"))
-
-	}
-
-	// Tag
-	if _, ok := query["tags"]; ok {
-		db = db.Where("JSON_CONTAINS(tags, ?)", "[\""+query.Get("tags")+"\"]")
-	}
-
-	// Genres
-	// select * from apps WHERE JSON_SEARCH(genres, 'one', 'Action') IS NOT NULL;
-
-	// Query
-	db = db.Find(&apps)
-	if db.Error != nil {
-		return apps, db.Error
-	}
-
-	return apps, err
-}
-
-func GetDLC(app App, columns []string) (apps []App, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	dlc, err := app.GetDLC()
-	if err != nil {
-		return apps, err
-	}
-
-	db = db.Where("id in (?)", dlc).Find(&apps)
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-	}
-
-	if db.Error != nil {
-		return apps, db.Error
-	}
-
-	return apps, nil
-}
-
-func CountApps() (count int, err error) {
-
-	count, err = memcache.GetSetInt(memcache.AppsCount, &count, func() (count int, err error) {
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		db.Model(&App{}).Count(&count)
-		if db.Error != nil {
-			return count, db.Error
-		}
-
-		return count, nil
-	})
-
-	if err != nil {
-		return count, err
-	}
-
-	return count, nil
-}
-
 func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 	if !IsValidAppID(app.ID) {
@@ -668,6 +503,11 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 			app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
 			app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
 
+			// Log this app score
+			err = SaveAppReviewScore(app.ID, app.ReviewsScore, app.ReviewsPositive, app.ReviewsNegative)
+			if err != nil {
+				errs = append(errs, err)
+			}
 		}
 
 		wg.Done()
@@ -936,4 +776,169 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	}
 
 	return errs
+}
+
+func GetApp(id int) (app App, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return app, err
+	}
+
+	db.First(&app, id)
+	if db.Error != nil {
+		return app, db.Error
+	}
+
+	if app.ID == 0 {
+		return app, ErrCantFindApp
+	}
+
+	return app, nil
+}
+
+func GetApps(ids []int, columns []string) (apps []App, err error) {
+
+	if len(ids) < 1 {
+		return apps, nil
+	}
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return apps, err
+	}
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	db.Where("id IN (?)", ids).Find(&apps)
+	if db.Error != nil {
+		return apps, db.Error
+	}
+
+	return apps, nil
+}
+
+func SearchApps(query url.Values, limit int, page int, sort string, columns []string) (apps []App, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return apps, err
+	}
+
+	if limit > 0 {
+		db = db.Limit(limit)
+	}
+
+	offset := (page - 1) * limit
+	db = db.Offset(offset)
+
+	if sort != "" {
+		db = db.Order(sort)
+	}
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	// Type
+	if _, ok := query["type"]; ok {
+		db = db.Where("type = ?", query.Get("type"))
+	}
+
+	// Tags depth
+	if _, ok := query["tags_depth"]; ok {
+		db = db.Where("JSON_DEPTH(tags) = ?", query.Get("tags_depth"))
+	}
+
+	// Genres depth
+	if _, ok := query["genres_depth"]; ok {
+		db = db.Where("JSON_DEPTH(genres) = ?", query.Get("genres_depth"))
+	}
+
+	// Free
+	if _, ok := query["is_free"]; ok {
+		db = db.Where("is_free = ?", query.Get("is_free"))
+	}
+
+	// Platforms
+	if _, ok := query["platforms"]; ok {
+		db = db.Where("JSON_CONTAINS(platforms, [\"?\"])", query.Get("platforms"))
+
+	}
+
+	// Tag
+	if _, ok := query["tags"]; ok {
+		db = db.Where("JSON_CONTAINS(tags, ?)", "[\""+query.Get("tags")+"\"]")
+	}
+
+	// Genres
+	// select * from apps WHERE JSON_SEARCH(genres, 'one', 'Action') IS NOT NULL;
+
+	// Query
+	db = db.Find(&apps)
+	if db.Error != nil {
+		return apps, db.Error
+	}
+
+	return apps, err
+}
+
+func GetDLC(app App, columns []string) (apps []App, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return apps, err
+	}
+
+	dlc, err := app.GetDLC()
+	if err != nil {
+		return apps, err
+	}
+
+	db = db.Where("id in (?)", dlc).Find(&apps)
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	if db.Error != nil {
+		return apps, db.Error
+	}
+
+	return apps, nil
+}
+
+func CountApps() (count int, err error) {
+
+	count, err = memcache.GetSetInt(memcache.AppsCount, &count, func() (count int, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		db.Model(&App{}).Count(&count)
+		if db.Error != nil {
+			return count, db.Error
+		}
+
+		return count, nil
+	})
+
+	if err != nil {
+		return count, err
+	}
+
+	return count, nil
+}
+
+func IsValidAppID(id int) bool {
+
+	if id == 0 {
+		return false
+	}
+
+	return true
 }
