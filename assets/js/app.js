@@ -3,8 +3,7 @@ if ($('#app-page').length > 0) {
     // Background
     var background = $('.container[data-bg]').attr('data-bg');
     if (background !== '') {
-        $('body').css("background-image", 'url(' + background + ')').css("background-color", '#1b2738');
-        $('nav.navbar').removeClass('bg-dark');
+        $('body').css("background-image", 'url(' + background + ')');
     }
 
     // News
