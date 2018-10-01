@@ -11,6 +11,8 @@ $('table.table-datatable2').on('page.dt', function (e, settings, processing) {
 
 });
 
+var lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
+
 var defaultOptions = {
     "ajax": function (data, callback, settings) {
 
@@ -211,7 +213,11 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
         {
             "targets": 4,
             "render": function (data, type, row) {
-                return row[6].toLocaleString();
+
+                if (row[6]) {
+                    return row[6].toLocaleString();
+                }
+                return lockIcon;
             }
         },
         // Badges
@@ -225,10 +231,20 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
         {
             "targets": 6,
             "render": function (data, type, row) {
+
+                if (row[8] === '0m') {
+                    return lockIcon;
+                }
+
                 return row[8];
             },
             "createdCell": function (td, cellData, rowData, row, col) {
-                $(td).attr('nowrap', 'nowrap').attr('data-toggle', 'tooltip').attr('data-placement', 'left').attr('title', rowData[9]);
+
+                $(td).attr('nowrap', 'nowrap');
+
+                if (rowData[8] !== '0m') {
+                    $(td).attr('data-toggle', 'tooltip').attr('data-placement', 'left').attr('title', rowData[9]);
+                }
             }
         },
         // Friends
