@@ -49,14 +49,14 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			gorm = gorm.Model(&db.Package{})
-			gorm = gorm.Select([]string{"id", "name", "billing_type", "license_type", "status", "apps", "updated_at"})
+			gorm = gorm.Select([]string{"id", "name", "billing_type", "license_type", "status", "apps_count", "updated_at"})
 
 			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
 				"0": "name",
 				"1": "billing_type",
 				"2": "license_type",
 				"3": "status",
-				"4": "apps",
+				"4": "apps_count",
 				"5": "updated_at",
 			})
 
@@ -91,16 +91,13 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range packages {
 
-		apps, err := v.GetAppIDs()
-		logger.Error(err)
-
 		response.AddRow([]interface{}{
 			v.ID,
 			v.GetName(),
 			v.GetBillingType(),
 			v.GetLicenseType(),
 			v.GetStatus(),
-			len(apps),
+			v.AppsCount,
 			v.GetUpdatedNice(),
 			v.GetPath(),
 		})

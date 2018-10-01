@@ -33,6 +33,7 @@ type Package struct {
 	PICSDepotIDs    string `gorm:"not null;default:'[]'"`             // JSON
 	PICSRaw         string `gorm:"not null;default:'{}'"`             // JSON (TEXT)
 
+	AppsCount       int    `gorm:"not null"`              //
 	ImagePage       string `gorm:"not null"`              //
 	ImageHeader     string `gorm:"not null"`              //
 	ImageLogo       string `gorm:"not null"`              //
@@ -210,7 +211,10 @@ func (pack Package) GetAppIDs() (apps []int, err error) {
 func (pack *Package) SetAppIDs(apps []int) (err error) {
 
 	bytes, err := json.Marshal(apps)
+
 	pack.PICSAppIDs = string(bytes)
+	pack.AppsCount = len(apps)
+
 	return err
 }
 
