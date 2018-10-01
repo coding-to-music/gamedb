@@ -40,8 +40,8 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	app, err := db.GetApp(idx)
 	if err != nil {
 
-		if err.Error() == "no id" {
-			returnErrorTemplate(w, r, 404, "We can't find this app in our database, there may not be one with this ID.")
+		if err == db.ErrCantFindApp {
+			returnErrorTemplate(w, r, 404, "Sorry but we can not find this app.")
 			return
 		}
 
