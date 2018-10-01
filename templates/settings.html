@@ -18,10 +18,10 @@
                     <a class="nav-link active" data-toggle="tab" href="#settings" role="tab">Settings</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#donations" role="tab">Donations ({{ len .Donations }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#events" role="tab">Events ({{ len .Events }})</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#events" role="tab">Events ({{ len .Events }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#donations" role="tab">Donations ({{ len .Donations }})</a>
                 </li>
             </ul>
 
@@ -119,8 +119,8 @@
                         {{ range $key, $value := .Events }}
                             <tr>
                                 <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
-                                <td>{{ .Type }}</td>
-                                <td>{{ .IP }}</td>
+                                <td>{{ .GetType }}</td>
+                                <td>{{ .GetIP }}</td>
                                 <td nowrap="nowrap">
                                     <span data-toggle="tooltip" data-placement="top" title="{{ .UserAgent }}">{{ printf "%.50s" .UserAgent }}&hellip;</span>
                                 </td>

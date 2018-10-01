@@ -2,6 +2,7 @@ package db
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -21,16 +22,37 @@ type Event struct {
 	IP        string    `datastore:"ip,noindex"`
 }
 
-func (login Event) GetKey() (key *datastore.Key) {
+func (event Event) GetKey() (key *datastore.Key) {
 	return datastore.IncompleteKey(KindEvent, nil)
 }
 
-func (login Event) GetCreatedNice() (t string) {
-	return login.CreatedAt.Format(helpers.DateTime)
+func (event Event) GetCreatedNice() (t string) {
+	return event.CreatedAt.Format(helpers.DateTime)
 }
 
-func (login Event) GetCreatedUnix() int64 {
-	return login.CreatedAt.Unix()
+func (event Event) GetIP() string {
+
+	var ips = strings.Split(event.IP, ", ")
+	if len(ips) > 0 && ips[0] != "" {
+		return ips[0]
+	}
+	return "-"
+}
+
+func (event Event) GetCreatedUnix() int64 {
+	return event.CreatedAt.Unix()
+}
+
+func (event Event) GetType() string {
+
+	switch event.Type {
+	case EventLogin:
+		return "User Login"
+	case EventRefresh:
+		return "Profile Update"
+	default:
+		return strings.Title(event.Type)
+	}
 }
 
 func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) {
@@ -41,10 +63,6 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 	login.Type = eventType
 	login.UserAgent = r.Header.Get("User-Agent")
 	login.IP = r.Header.Get("X-Forwarded-For")
-
-	if login.IP == "" {
-		login.IP = "127.0.0.1"
-	}
 
 	_, err = SaveKind(login.GetKey(), login)
 
