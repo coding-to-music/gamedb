@@ -28,7 +28,7 @@ const (
 
 var (
 	ErrInvalidAppID = UpdateError{"invalid app id", true, false}
-	ErrNoSuchApp    = errors.New("no such app")
+	ErrCantFindApp  = errors.New("no such app")
 )
 
 type App struct {

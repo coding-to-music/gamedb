@@ -281,7 +281,9 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateGames()
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 		wg.Done()
 	}(p)
 
@@ -289,7 +291,9 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateRecentGames()
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 		wg.Done()
 	}(p)
 
@@ -297,7 +301,9 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateBades()
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 		wg.Done()
 	}(p)
 
@@ -305,7 +311,9 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateFriends()
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 		wg.Done()
 	}(p)
 
@@ -313,7 +321,9 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateLevel()
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 		wg.Done()
 	}(p)
 
@@ -321,7 +331,9 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateBans()
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 		wg.Done()
 	}(p)
 
@@ -329,7 +341,9 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *Player) {
 		err = p.updateGroups()
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 		wg.Done()
 	}(p)
 
