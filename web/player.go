@@ -32,6 +32,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Find the player row
 	player, err := db.GetPlayer(idx)
 	if err != nil {
 		if err != db.ErrNoSuchEntity {
@@ -41,6 +42,13 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Redirect to correct slug
+	if r.URL.Path != player.GetPath() {
+		http.Redirect(w, r, player.GetPath(), 302)
+		return
+	}
+
+	// Update player if needed
 	errs := player.Update(r.UserAgent())
 	if len(errs) > 0 {
 		for _, v := range errs {
@@ -59,12 +67,6 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			returnErrorTemplate(w, r, 500, v.Error())
 			return
 		}
-	}
-
-	// Redirect to correct slug
-	if r.URL.Path != player.GetPath() {
-		http.Redirect(w, r, player.GetPath(), 302)
-		return
 	}
 
 	var wg sync.WaitGroup

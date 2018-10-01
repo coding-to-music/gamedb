@@ -28,7 +28,6 @@
     <title>{{.Title}} - Game DB</title>
 
 {{if .IsVarnished }}
-    <!--suppress XmlUnboundNsPrefix -->
     <esi:include src="/esi/header"/>
 {{else}}
     {{ template "_header_esi" . }}
@@ -53,7 +52,7 @@
 <body>
 
 <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <img src="/assets/img/sa-500x500.png">
