@@ -357,6 +357,10 @@ func (t GlobalTemplate) GetUserJSON() (string) {
 
 func (t GlobalTemplate) ShowAd() (bool) {
 
+	if t.IsLocal() {
+		return false
+	}
+
 	noAds := []string{
 		"/admin",
 		"/donate",
