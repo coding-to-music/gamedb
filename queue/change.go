@@ -14,10 +14,14 @@ import (
 )
 
 type RabbitMessageChanges struct {
+	PICSChanges RabbitMessageChangesPICS `json:"PICSChanges"`
+}
+
+type RabbitMessageChangesPICS struct {
 	LastChangeNumber    int  `json:"LastChangeNumber"`
 	CurrentChangeNumber int  `json:"CurrentChangeNumber"`
 	RequiresFullUpdate  bool `json:"RequiresFullUpdate"`
-	PackageChanges map[string]struct {
+	PackageChanges      map[string]struct {
 		ID           int  `json:"ID"`
 		ChangeNumber int  `json:"ChangeNumber"`
 		NeedsToken   bool `json:"NeedsToken"`
@@ -63,7 +67,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	// Group products by change id
 	changes := map[int]*db.Change{}
 
-	for _, v := range message.AppChanges {
+	for _, v := range message.PICSChanges.AppChanges {
 		if _, ok := changes[v.ChangeNumber]; ok {
 			changes[v.ChangeNumber].AddApp(v.ID)
 		} else {
@@ -75,7 +79,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 		}
 	}
 
-	for _, v := range message.PackageChanges {
+	for _, v := range message.PICSChanges.PackageChanges {
 		if _, ok := changes[v.ChangeNumber]; ok {
 			changes[v.ChangeNumber].AddPackage(v.ID)
 		} else {
@@ -94,7 +98,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Save change to DS
-	err = db.BulkAddAChanges(changesSlice)
+	_, err = db.BulkAddAChanges(changesSlice)
 	if err != nil {
 		return false, true, err
 	}
@@ -104,12 +108,12 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 
 		// Get apps slice
 		var appsSlice []int
-		for _, v := range message.AppChanges {
+		for _, v := range message.PICSChanges.AppChanges {
 			appsSlice = append(appsSlice, v.ID)
 		}
 
 		var packagesSlice []int
-		for _, v := range message.PackageChanges {
+		for _, v := range message.PICSChanges.PackageChanges {
 			packagesSlice = append(packagesSlice, v.ID)
 		}
 

@@ -94,33 +94,33 @@ func GetChange(id string) (change Change, err error) {
 	return change, nil
 }
 
-func BulkAddAChanges(changes []*Change) (err error) {
+func BulkAddAChanges(changes []*Change) (keys []*datastore.Key, err error) {
 
 	if len(changes) == 0 {
-		return nil
+		return
 	}
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
-		return err
+		return
 	}
 
 	chunks := chunkChanges(changes, 500)
 
 	for _, chunk := range chunks {
 
-		keys := make([]*datastore.Key, 0, len(chunk))
+		multiKeys := make([]*datastore.Key, 0, len(chunk))
 		for _, v := range chunk {
-			keys = append(keys, v.GetKey())
+			multiKeys = append(multiKeys, v.GetKey())
 		}
 
-		_, err = client.PutMulti(ctx, keys, chunk)
+		keys, err = client.PutMulti(ctx, multiKeys, chunk)
 		if err != nil {
-			return err
+			return
 		}
 	}
 
-	return nil
+	return
 }
 
 func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
