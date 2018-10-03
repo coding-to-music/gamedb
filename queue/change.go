@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -49,8 +50,6 @@ func (d RabbitMessageChanges) getRetryData() RabbitMessageDelay {
 
 func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
-	fmt.Println("Processing change message")
-
 	// Get change
 	message := new(RabbitMessageChanges)
 
@@ -62,6 +61,8 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 
 		return false, false, err
 	}
+
+	fmt.Println("Processing change: " + strconv.Itoa(message.PICSChanges.CurrentChangeNumber))
 
 	// Group products by change id
 	changes := map[int]*db.Change{}

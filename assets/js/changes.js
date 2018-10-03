@@ -71,16 +71,15 @@ if ($('#changes-page').length > 0) {
         }
     ];
 
-    var table = $('table.table-datatable2');
+    var $table = $('table.table-datatable2');
 
-    table.DataTable($.extend(true, {}, defaultOptions, {
+    var dt = $table.DataTable($.extend(true, {}, defaultOptions, {
         "order": [[0, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]).attr('data-link', '/changes/' + data[0]);
         },
         "columnDefs": columnDefs
     }));
-
 
     if (window.WebSocket === undefined) {
 
@@ -105,7 +104,7 @@ if ($('#changes-page').length > 0) {
 
         socket.onmessage = function (e) {
 
-            var info = table.DataTable().page.info();
+            var info = dt.page.info();
             if (info.page === 0) { // Page 1
 
                 var data = $.parseJSON(e.data);
@@ -116,7 +115,7 @@ if ($('#changes-page').length > 0) {
 
                         if (data.Data.hasOwnProperty(i)) {
 
-                            addDataTablesRow(columnDefs, data.Data[i], info.length, table);
+                            addDataTablesRow(columnDefs, data.Data[i], info.length, $table);
                         }
                     }
                 }
