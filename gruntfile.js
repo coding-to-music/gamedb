@@ -19,10 +19,10 @@ module.exports = function (grunt) {
                     'assets/js/third-party/moment.js', // Put above livestamp
                     'assets/js/third-party/highcharts.min.js', // Put above heatmap
                     'assets/js/third-party/*.js',
-                    'assets/js/datatables-server.js',
+                    'assets/js/tables.js',
                     'assets/js/*.js'
                 ],
-                dest: 'assets/concatenate.js'
+                dest: 'assets/compiled.min.js'
             },
             css: {
                 src: [
@@ -44,18 +44,6 @@ module.exports = function (grunt) {
                 }
             }
         },
-        uglify: {
-            options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */',
-                compress: true,
-                sourceMap: false,
-                mangleProperties: true
-            },
-            build: {
-                src: 'assets/concatenate.js',
-                dest: 'assets/compiled.min.js'
-            }
-        },
         watch: {
             sass: {
                 files: ['assets/sass/**/*.scss'],
@@ -63,13 +51,12 @@ module.exports = function (grunt) {
             },
             js: {
                 files: ['assets/js/*.js'],
-                tasks: ['concat:js', 'uglify', 'clean', 'notify:done']
+                tasks: ['concat:js', 'clean', 'notify:done']
             }
         },
         clean: [
             'assets/css/sass/',
-            'assets/concatenate.js',
-            'assets/concatenate.css',
+            'assets/concatenate.css'
         ],
         notify: {
             done: {
@@ -82,7 +69,6 @@ module.exports = function (grunt) {
 
     // Load the plugin that provides the tasks
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
@@ -102,7 +88,6 @@ module.exports = function (grunt) {
 
         // JS
         'concat:js',
-        'uglify',
 
         //
         'clean',
