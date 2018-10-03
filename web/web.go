@@ -52,6 +52,7 @@ func Serve() error {
 	r.Mount("/admin", adminRouter())
 	r.Get("/browserconfig.xml", RootFileHandler)
 	r.Get("/changes", ChangesHandler)
+	r.Get("/changes/ajax", ChangesAjaxHandler)
 	r.Get("/changes/{id}", ChangeHandler)
 	r.Get("/chat", ChatHandler)
 	r.Get("/chat/{id}", ChatHandler)

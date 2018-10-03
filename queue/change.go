@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/websockets"
 	"github.com/streadway/amqp"
@@ -69,29 +68,78 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	for _, v := range message.PICSChanges.AppChanges {
 		if _, ok := changes[v.ChangeNumber]; ok {
-			changes[v.ChangeNumber].AddApp(v.ID)
+			changes[v.ChangeNumber].Apps = append(changes[v.ChangeNumber].Apps, db.ChangeItem{ID: v.ID})
+
 		} else {
 			changes[v.ChangeNumber] = &db.Change{
 				CreatedAt: time.Now(),
 				ChangeID:  v.ChangeNumber,
-				Apps:      []int{v.ID},
+				Apps:      []db.ChangeItem{{v.ID, ""}},
 			}
 		}
 	}
 
 	for _, v := range message.PICSChanges.PackageChanges {
 		if _, ok := changes[v.ChangeNumber]; ok {
-			changes[v.ChangeNumber].AddPackage(v.ID)
+			changes[v.ChangeNumber].Packages = append(changes[v.ChangeNumber].Packages, db.ChangeItem{ID: v.ID})
 		} else {
 			changes[v.ChangeNumber] = &db.Change{
 				CreatedAt: time.Now(),
 				ChangeID:  v.ChangeNumber,
-				Packages:  []int{v.ID},
+				Packages:  []db.ChangeItem{{v.ID, ""}},
 			}
 		}
 	}
 
-	// Make into slice
+	// Get apps slice
+	var appsSlice []int
+	for _, v := range message.PICSChanges.AppChanges {
+		appsSlice = append(appsSlice, v.ID)
+	}
+
+	var packagesSlice []int
+	for _, v := range message.PICSChanges.PackageChanges {
+		packagesSlice = append(packagesSlice, v.ID)
+	}
+
+	// Get mysql rows
+	appRows, err := db.GetApps(appsSlice, []string{"id", "name"})
+	if err != nil {
+		logger.Error(err)
+	}
+
+	packageRows, err := db.GetPackages(packagesSlice, []string{"id", "name"})
+	if err != nil {
+		logger.Error(err)
+	}
+
+	// Make map
+	appRowsMap := map[int]db.App{}
+	for _, v := range appRows {
+		appRowsMap[v.ID] = v
+	}
+
+	packageRowsMap := map[int]db.Package{}
+	for _, v := range packageRows {
+		packageRowsMap[v.ID] = v
+	}
+
+	// Fill in the change item names
+	for changeID, change := range changes {
+
+		for k, changeItem := range change.Apps {
+			if val, ok := appRowsMap[changeItem.ID]; ok {
+				changes[changeID].Apps[k].Name = val.GetName()
+			}
+		}
+		for k, changeItem := range change.Packages {
+			if val, ok := packageRowsMap[changeItem.ID]; ok {
+				changes[changeID].Packages[k].Name = val.GetName()
+			}
+		}
+	}
+
+	// Make changes into slice for bulk add
 	var changesSlice []*db.Change
 	for _, v := range changes {
 		changesSlice = append(changesSlice, v)
@@ -106,65 +154,11 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	// Send websocket
 	if websockets.HasConnections() {
 
-		// Get apps slice
-		var appsSlice []int
-		for _, v := range message.PICSChanges.AppChanges {
-			appsSlice = append(appsSlice, v.ID)
-		}
-
-		var packagesSlice []int
-		for _, v := range message.PICSChanges.PackageChanges {
-			packagesSlice = append(packagesSlice, v.ID)
-		}
-
-		// Get apps for websocket
-		appsResp, err := db.GetApps(appsSlice, []string{"id", "name"})
-		if err != nil {
-			logger.Error(err)
-		}
-
-		// Make map
-		appsRespMap := map[int]db.App{}
-		for _, v := range appsResp {
-			appsRespMap[v.ID] = v
-		}
-
-		// Get packages for websocket
-		packagesResp, err := db.GetPackages(packagesSlice, []string{"id", "name"})
-		if err != nil {
-			logger.Error(err)
-		}
-
-		// Make map
-		packagesRespMap := map[int]db.Package{}
-		for _, v := range packagesResp {
-			packagesRespMap[v.ID] = v
-		}
-
 		// Make websocket
-		ws := websockets.Changes{}
+		var ws [][]interface{}
 		for _, v := range changes {
 
-			change := websockets.Change{}
-			change.ID = v.ChangeID
-			change.CreatedAtUnix = v.CreatedAt.Unix()
-			change.CreatedAtNice = v.CreatedAt.Format(helpers.DateYearTime)
-
-			for _, appID := range v.Apps {
-				if _, ok := appsRespMap[appID]; ok {
-					change.AddApp(websockets.ChangeItem{ID: appID, Name: appsRespMap[appID].GetName()})
-				} else {
-					change.AddApp(websockets.ChangeItem{ID: appID, Name: ""})
-				}
-			}
-			for _, packageID := range v.Packages {
-				if _, ok := packagesRespMap[packageID]; ok {
-					change.AddApp(websockets.ChangeItem{ID: packageID, Name: packagesRespMap[packageID].GetName()})
-				} else {
-					change.AddApp(websockets.ChangeItem{ID: packageID, Name: ""})
-				}
-			}
-			ws.AddChange(change)
+			ws = append(ws, v.OutputForJSON())
 		}
 
 		websockets.Send(websockets.CHANGES, ws)

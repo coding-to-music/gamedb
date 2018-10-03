@@ -17,36 +17,22 @@
         </div>
         <div class="card-body">
 
-            <ul class="list-unstyled">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/changes/ajax">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col" nowrap="nowrap">Change</th>
+                        <th scope="col" nowrap="nowrap">Date</th>
+                        <th scope="col">Apps</th>
+                        <th scope="col">Packages</th>
+                    </tr>
+                    </thead>
+                    <tbody>
 
-            {{ range $key, $value := .Changes }}
-                <li class="media">
-                    <div class="media-body">
-                        <h5 class="mt-0 mb-1">Change {{ .Change.ChangeID }}</h5>
-                        <p class="text-muted mb0">
-                            <span data-toggle="tooltip" data-placement="top" title="{{ .Change.GetNiceDate }}" data-livestamp="{{ .Change.GetTimestamp }}">{{ .Change.GetNiceDate }}</span>
-                            <a href="{{ .Change.GetPath }}"><i class="fas fa-paperclip" aria-hidden="true"></i></a>
-                        </p>
-                        <p class="text-muted mb-0">
+                    </tbody>
+                </table>
 
-                        {{ range $key, $value := .Apps }}
-                            <a href="{{.GetPath}}">{{.GetName}}</a>
-                        {{ end }}
-
-                        </p>
-                        <p class="text-muted">
-
-                        {{ range $key, $value := .Packages }}
-                            <a href="{{.GetPath}}">{{.GetName}}</a>
-                        {{ end }}
-
-                        </p>
-                    </div>
-                </li>
-            {{ end }}
-            </ul>
-
-        {{ template "_pagination" .Pagination }}
+            </div>
 
         </div>
     </div>

@@ -30,7 +30,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		apps, err = db.GetApps(change.Apps, []string{"id", "icon", "type", "name"})
+		apps, err = db.GetApps(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
 		if err != nil {
 			logger.Error(err)
 		}
@@ -44,7 +44,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		packages, err = db.GetPackages(change.Packages, []string{})
+		packages, err = db.GetPackages(change.GetPackageIDs(), []string{})
 		if err != nil {
 			logger.Error(err)
 		}

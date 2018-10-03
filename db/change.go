@@ -9,10 +9,15 @@ import (
 )
 
 type Change struct {
-	CreatedAt time.Time `datastore:"created_at"`
-	ChangeID  int       `datastore:"change_id"`
-	Apps      []int     `datastore:"apps,noindex"`
-	Packages  []int     `datastore:"packages,noindex"`
+	CreatedAt time.Time    `datastore:"created_at,noindex"`
+	ChangeID  int          `datastore:"change_id"`
+	Apps      []ChangeItem `datastore:"apps,noindex"`
+	Packages  []ChangeItem `datastore:"packages,noindex"`
+}
+
+type ChangeItem struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 func (change Change) GetKey() (key *datastore.Key) {
@@ -36,12 +41,29 @@ func (change Change) GetPath() string {
 	return "/changes/" + strconv.Itoa(change.ChangeID)
 }
 
-func (change *Change) AddApp(app int) {
-	change.Apps = append(change.Apps, app)
+func (change Change) GetAppIDs() (ids []int) {
+	for _, v := range change.Apps {
+		ids = append(ids, v.ID)
+	}
+	return ids
 }
 
-func (change *Change) AddPackage(pack int) {
-	change.Packages = append(change.Packages, pack)
+func (change Change) GetPackageIDs() (ids []int) {
+	for _, v := range change.Packages {
+		ids = append(ids, v.ID)
+	}
+	return ids
+}
+
+func (change *Change) OutputForJSON() (output []interface{}) {
+
+	return []interface{}{
+		change.ChangeID,
+		change.CreatedAt.Unix(),
+		change.CreatedAt.Format(helpers.DateYearTime),
+		change.Apps,
+		change.Packages,
+	}
 }
 
 func GetLatestChanges(limit int, page int) (changes []Change, err error) {
@@ -148,6 +170,8 @@ func checkForMissingChangeFields(err error) error {
 
 		removedColumns := []string{
 			"updated_at",
+			"apps",
+			"packages",
 		}
 
 		if helpers.SliceHasString(removedColumns, err2.FieldName) {

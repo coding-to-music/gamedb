@@ -1,4 +1,4 @@
-function addDataTablesRow(columnDefs, data, $table) {
+function addDataTablesRow(columnDefs, data, limit, $table) {
 
     var $row = $('<tr />');
 
@@ -7,7 +7,7 @@ function addDataTablesRow(columnDefs, data, $table) {
 
             var value = data[i];
 
-            if ('createdCell' in columnDefs[i]) {
+            if ('render' in columnDefs[i]) {
                 value = columnDefs[i].render(null, null, data);
             }
 
@@ -22,4 +22,6 @@ function addDataTablesRow(columnDefs, data, $table) {
     }
 
     $table.prepend($row);
+
+    $table.find('tbody tr').slice(limit).remove();
 }

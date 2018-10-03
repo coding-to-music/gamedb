@@ -23,9 +23,7 @@ var defaultOptions = {
         $.ajax({
             url: $(this).attr('data-path'),
             data: data,
-            success: function (rdata) {
-                callback(rdata);
-            },
+            success: callback,
             dataType: 'json',
             cache: true
         });
@@ -313,7 +311,7 @@ $('#packages-page table.table-datatable2').DataTable($.extend(true, {}, defaultO
     ]
 }));
 
-// Changes
+// Price Changes
 $('#price-changes-page table.table-datatable2').DataTable($.extend(true, {}, defaultOptions, {
     "order": [[5, 'desc']],
     "createdRow": function (row, data, dataIndex) {
