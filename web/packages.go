@@ -53,9 +53,6 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
 				"0": "name",
-				"1": "billing_type",
-				"2": "license_type",
-				"3": "status",
 				"4": "apps_count",
 				"5": "updated_at",
 			})
@@ -98,6 +95,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.GetLicenseType(),
 			v.GetStatus(),
 			v.AppsCount,
+			v.GetUpdatedUnix(),
 			v.GetUpdatedNice(),
 			v.GetPath(),
 		})

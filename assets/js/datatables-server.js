@@ -170,7 +170,8 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).addClass('font-weight-bold')
             },
-            "orderable": false
+            "orderable": false,
+            "searchable": false
         },
         // Player
         {
@@ -181,7 +182,8 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).addClass('img')
             },
-            "orderable": false
+            "orderable": false,
+            "searchable": false
         },
         // Flag
         {
@@ -195,7 +197,8 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).addClass('img');
             },
-            "orderable": false
+            "orderable": false,
+            "searchable": false
         },
         // Avatar 2 / Level
         {
@@ -250,62 +253,6 @@ $('#ranks-page table.table-datatable2').DataTable($.extend(true, {}, defaultOpti
             "targets": 7,
             "render": function (data, type, row) {
                 return row[10].toLocaleString();
-            }
-        }
-    ]
-}));
-
-// Free Games Page
-$('#packages-page table.table-datatable2').DataTable($.extend(true, {}, defaultOptions, {
-    "order": [[5, 'desc']],
-    "createdRow": function (row, data, dataIndex) {
-        $(row).attr('data-id', data[0]);
-        $(row).attr('data-link', data[7]);
-    },
-    "columnDefs": [
-        // Name
-        {
-            "targets": 0,
-            "render": function (data, type, row) {
-                return row[1];
-            }
-        },
-        // Billing Type
-        {
-            "targets": 1,
-            "render": function (data, type, row) {
-                return row[2];
-            }
-        },
-        // License Type
-        {
-            "targets": 2,
-            "render": function (data, type, row) {
-                return row[3];
-            }
-        },
-        // Status
-        {
-            "targets": 3,
-            "render": function (data, type, row) {
-                return row[4];
-            }
-        },
-        // Apps
-        {
-            "targets": 4,
-            "render": function (data, type, row) {
-                return row[5].toLocaleString();
-            }
-        },
-        // Updated Time
-        {
-            "targets": 5,
-            "render": function (data, type, row) {
-                return row[6];
-            },
-            "createdCell": function (td, cellData, rowData, row, col) {
-                $(td).attr('nowrap', 'nowrap');
             }
         }
     ]
