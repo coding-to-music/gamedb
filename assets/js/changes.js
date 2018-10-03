@@ -73,7 +73,7 @@ if ($('#changes-page').length > 0) {
 
     var $table = $('table.table-datatable2');
 
-    var dt = $table.DataTable($.extend(true, {}, defaultOptions, {
+    var dt = $table.DataTable($.extend(true, {}, dtDefaultOptions, {
         "order": [[0, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]).attr('data-link', '/changes/' + data[0]);
