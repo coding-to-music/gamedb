@@ -32,6 +32,10 @@ var (
 	datastoreClient *datastore.Client
 )
 
+type Kind interface {
+	GetKey() (*datastore.Key)
+}
+
 func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {
 
 	ctx = context.Background()
@@ -59,4 +63,102 @@ func SaveKind(key *datastore.Key, data interface{}) (newKey *datastore.Key, err 
 	}
 
 	return newKey, nil
+}
+
+func BulkSaveKinds(kinds []Kind) (err error) {
+
+	count := len(kinds)
+	if count == 0 {
+		return nil
+	}
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return err
+	}
+
+	keys := make([]*datastore.Key, 0, count)
+
+	for _, v := range kinds {
+		keys = append(keys, v.GetKey())
+	}
+
+	_, err = client.PutMulti(ctx, keys, kinds)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func BulkDeleteKinds(keys map[int64]*datastore.Key, chunkSize int) (errs []error) {
+
+	if len(keys) == 0 {
+		return nil
+	}
+
+	if chunkSize == 0 {
+		chunkSize = 500
+	}
+
+	// Make map a slice
+	var keysToDelete []*datastore.Key
+	for _, v := range keys {
+		keysToDelete = append(keysToDelete, v)
+	}
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return []error{err}
+	}
+
+	chunks := chunkKeys(keysToDelete, chunkSize)
+
+	for _, v := range chunks {
+
+		err = client.DeleteMulti(ctx, v)
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	return errs
+}
+
+func chunkKinds(kinds []*Kind, chunkSize int) (chunked [][]*Kind) {
+
+	if chunkSize == 0 {
+		chunkSize = 500
+	}
+
+	for i := 0; i < len(kinds); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(kinds) {
+			end = len(kinds)
+		}
+
+		chunked = append(chunked, kinds[i:end])
+	}
+
+	return chunked
+}
+
+func chunkKeys(keys []*datastore.Key, chunkSize int) (chunked [][]*datastore.Key) {
+
+	if chunkSize == 0 {
+		chunkSize = 500
+	}
+
+	for i := 0; i < len(keys); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(keys) {
+			end = len(keys)
+		}
+
+		chunked = append(chunked, keys[i:end])
+	}
+
+	return chunked
 }

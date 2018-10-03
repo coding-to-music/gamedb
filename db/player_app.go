@@ -21,6 +21,10 @@ func (p PlayerApp) GetKey() (key *datastore.Key) {
 	return datastore.NameKey(KindPlayerApp, strconv.FormatInt(p.PlayerID, 10)+"-"+strconv.Itoa(p.AppID), nil)
 }
 
+func (p PlayerApp) ToKind() (Kind) {
+	return Kind(p)
+}
+
 func (p PlayerApp) GetIcon() string {
 
 	if p.AppIcon == "" {
@@ -89,46 +93,46 @@ func GetPlayerApps(playerID int64, sort string, limit int) (apps []PlayerApp, er
 	return apps, err
 }
 
-func BulkSavePlayerApps(apps []*PlayerApp) (err error) {
+//func BulkSavePlayerApps(apps []*PlayerApp) (err error) {
+//
+//	if len(apps) == 0 {
+//		return nil
+//	}
+//
+//	client, ctx, err := GetDSClient()
+//	if err != nil {
+//		return err
+//	}
+//
+//	chunks := chunkPlayerApps(apps, 500)
+//
+//	for _, chunk := range chunks {
+//
+//		keys := make([]*datastore.Key, 0, len(chunk))
+//		for _, v := range chunk {
+//			keys = append(keys, v.GetKey())
+//		}
+//
+//		_, err = client.PutMulti(ctx, keys, chunk)
+//		if err != nil {
+//			return err
+//		}
+//	}
+//
+//	return nil
+//}
 
-	if len(apps) == 0 {
-		return nil
-	}
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return err
-	}
-
-	chunks := chunkPlayerApps(apps, 500)
-
-	for _, chunk := range chunks {
-
-		keys := make([]*datastore.Key, 0, len(chunk))
-		for _, v := range chunk {
-			keys = append(keys, v.GetKey())
-		}
-
-		_, err = client.PutMulti(ctx, keys, chunk)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func chunkPlayerApps(changes []*PlayerApp, chunkSize int) (divided [][]*PlayerApp) {
-
-	for i := 0; i < len(changes); i += chunkSize {
-		end := i + chunkSize
-
-		if end > len(changes) {
-			end = len(changes)
-		}
-
-		divided = append(divided, changes[i:end])
-	}
-
-	return divided
-}
+//func chunkPlayerApps(changes []*PlayerApp, chunkSize int) (divided [][]*PlayerApp) {
+//
+//	for i := 0; i < len(changes); i += chunkSize {
+//		end := i + chunkSize
+//
+//		if end > len(changes) {
+//			end = len(changes)
+//		}
+//
+//		divided = append(divided, changes[i:end])
+//	}
+//
+//	return divided
+//}

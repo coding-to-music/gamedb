@@ -471,7 +471,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		} else {
 
-			err = BulkAddArticles(articles)
+			err = BulkSaveKinds(articles)
 			if err != nil {
 				errs = append(errs, err)
 			}

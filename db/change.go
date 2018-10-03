@@ -116,49 +116,49 @@ func GetChange(id string) (change Change, err error) {
 	return change, nil
 }
 
-func BulkAddAChanges(changes []*Change) (keys []*datastore.Key, err error) {
+//func BulkAddAChanges(changes []*Change) (keys []*datastore.Key, err error) {
+//
+//	if len(changes) == 0 {
+//		return
+//	}
+//
+//	client, ctx, err := GetDSClient()
+//	if err != nil {
+//		return
+//	}
+//
+//	chunks := chunkChanges(changes, 500)
+//
+//	for _, chunk := range chunks {
+//
+//		multiKeys := make([]*datastore.Key, 0, len(chunk))
+//		for _, v := range chunk {
+//			multiKeys = append(multiKeys, v.GetKey())
+//		}
+//
+//		keys, err = client.PutMulti(ctx, multiKeys, chunk)
+//		if err != nil {
+//			return
+//		}
+//	}
+//
+//	return
+//}
 
-	if len(changes) == 0 {
-		return
-	}
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return
-	}
-
-	chunks := chunkChanges(changes, 500)
-
-	for _, chunk := range chunks {
-
-		multiKeys := make([]*datastore.Key, 0, len(chunk))
-		for _, v := range chunk {
-			multiKeys = append(multiKeys, v.GetKey())
-		}
-
-		keys, err = client.PutMulti(ctx, multiKeys, chunk)
-		if err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
-
-	for i := 0; i < len(changes); i += chunkSize {
-		end := i + chunkSize
-
-		if end > len(changes) {
-			end = len(changes)
-		}
-
-		divided = append(divided, changes[i:end])
-	}
-
-	return divided
-}
+//func chunkChanges(changes []*Change, chunkSize int) (divided [][]*Change) {
+//
+//	for i := 0; i < len(changes); i += chunkSize {
+//		end := i + chunkSize
+//
+//		if end > len(changes) {
+//			end = len(changes)
+//		}
+//
+//		divided = append(divided, changes[i:end])
+//	}
+//
+//	return divided
+//}
 
 func checkForMissingChangeFields(err error) error {
 
