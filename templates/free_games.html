@@ -22,7 +22,7 @@
 
     <div class="card">
     {{ template "_deals_header" . }}
-        <div class="card-body" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="Windows">
+        <div class="card-body">
 
             <form class="mb-4" action="/free-games" method="get">
             {{ range $key, $value := .Types }}
