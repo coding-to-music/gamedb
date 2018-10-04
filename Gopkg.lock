@@ -253,6 +253,14 @@
   version = "v1.2.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:96b2228ec52e3129a311293afd1310cc4a4d8dd88c7370006c6f3e21d3ec03bb"
+  name = "github.com/grokify/html-strip-tags-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "e9e44961e26f513866063f54bf85070db95600f7"
+
+[[projects]]
   digest = "1:d14365c51dd1d34d5c79833ec91413bfbb166be978724f15701e17080dc06dec"
   name = "github.com/hashicorp/hcl"
   packages = [
@@ -793,6 +801,7 @@
     "github.com/gorilla/sessions",
     "github.com/gorilla/websocket",
     "github.com/gosimple/slug",
+    "github.com/grokify/html-strip-tags-go",
     "github.com/ikeikeikeike/go-sitemap-generator/stm",
     "github.com/jinzhu/gorm",
     "github.com/mitchellh/mapstructure",

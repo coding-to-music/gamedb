@@ -11,6 +11,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
+	"github.com/grokify/html-strip-tags-go"
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
@@ -187,7 +188,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 				news = append(news, appArticleTemplate{
 					ID:       v.ArticleID,
 					Title:    v.Title,
-					Contents: template.HTML(v.Contents),
+					Contents: template.HTML(strip.HTMLEscapeString(v.Contents)),
 					Author:   v.Author,
 				})
 			}
