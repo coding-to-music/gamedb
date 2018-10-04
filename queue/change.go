@@ -141,13 +141,13 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Make changes into slice for bulk add
-	var changesSlice []*db.Change
+	var changesSlice []db.Kind
 	for _, v := range changes {
 		changesSlice = append(changesSlice, v)
 	}
 
 	// Save change to DS
-	_, err = db.BulkAddAChanges(changesSlice)
+	err = db.BulkSaveKinds(changesSlice)
 	if err != nil {
 		return false, true, err
 	}

@@ -21,10 +21,6 @@ func (p PlayerApp) GetKey() (key *datastore.Key) {
 	return datastore.NameKey(KindPlayerApp, strconv.FormatInt(p.PlayerID, 10)+"-"+strconv.Itoa(p.AppID), nil)
 }
 
-func (p PlayerApp) ToKind() (Kind) {
-	return Kind(p)
-}
-
 func (p PlayerApp) GetIcon() string {
 
 	if p.AppIcon == "" {

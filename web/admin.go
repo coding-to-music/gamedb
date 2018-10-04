@@ -709,15 +709,21 @@ func adminRanks() {
 		prev = v.Friends
 	}
 
+	// Make kinds
+	var kinds []db.Kind
+	for _, v := range ranks {
+		kinds = append(kinds, v)
+	}
+
 	// Update ranks
-	err = db.BulkSaveRanks(ranks)
+	err = db.BulkSaveKinds(kinds)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
 	// Remove old ranks
-	err = db.BulkDeleteRanks(oldKeys)
+	err = db.BulkDeleteKinds(oldKeys, 0)
 	if err != nil {
 		logger.Error(err)
 		return

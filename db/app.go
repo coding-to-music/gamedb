@@ -471,7 +471,12 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		} else {
 
-			err = BulkSaveKinds(articles)
+			var kinds []Kind
+			for _, v := range articles {
+				kinds = append(kinds, *v)
+			}
+
+			err = BulkSaveKinds(kinds)
 			if err != nil {
 				errs = append(errs, err)
 			}

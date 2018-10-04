@@ -419,12 +419,12 @@ func (p *Player) updateGames() (error) {
 	}
 
 	// Convert to slice
-	var appsSlice []*PlayerApp
+	var appsSlice []Kind
 	for _, v := range apps {
-		appsSlice = append(appsSlice, v)
+		appsSlice = append(appsSlice, *v)
 	}
 
-	err = BulkSavePlayerApps(appsSlice)
+	err = BulkSaveKinds(appsSlice)
 	logger.Error(err)
 
 	return nil

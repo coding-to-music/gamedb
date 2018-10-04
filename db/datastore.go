@@ -77,21 +77,48 @@ func BulkSaveKinds(kinds []Kind) (err error) {
 		return err
 	}
 
-	keys := make([]*datastore.Key, 0, count)
+	var errs []error
+	chunks := chunkKinds(kinds, 0)
+	for _, v := range chunks {
 
-	for _, v := range kinds {
-		keys = append(keys, v.GetKey())
+		keys := make([]*datastore.Key, 0, len(v))
+		for _, vv := range v {
+			keys = append(keys, vv.GetKey())
+		}
+
+		_, err = client.PutMulti(ctx, keys, v)
+		if err != nil {
+			errs = append(errs, err)
+		}
 	}
 
-	_, err = client.PutMulti(ctx, keys, kinds)
-	if err != nil {
-		return err
+	if len(errs) > 0 {
+		return errs[0]
 	}
 
 	return nil
 }
 
-func BulkDeleteKinds(keys map[int64]*datastore.Key, chunkSize int) (errs []error) {
+func chunkKinds(kinds []Kind, chunkSize int) (chunked [][]Kind) {
+
+	if chunkSize == 0 {
+		chunkSize = 500
+	}
+
+	for i := 0; i < len(kinds); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(kinds) {
+			end = len(kinds)
+		}
+
+		chunked = append(chunked, kinds[i:end])
+	}
+
+	return chunked
+}
+
+func BulkDeleteKinds(keys map[int64]*datastore.Key, chunkSize int) (err error) {
 
 	if len(keys) == 0 {
 		return nil
@@ -109,11 +136,11 @@ func BulkDeleteKinds(keys map[int64]*datastore.Key, chunkSize int) (errs []error
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
-		return []error{err}
+		return err
 	}
 
+	var errs []error
 	chunks := chunkKeys(keysToDelete, chunkSize)
-
 	for _, v := range chunks {
 
 		err = client.DeleteMulti(ctx, v)
@@ -122,26 +149,11 @@ func BulkDeleteKinds(keys map[int64]*datastore.Key, chunkSize int) (errs []error
 		}
 	}
 
-	return errs
-}
-
-func chunkKinds(kinds []*Kind, chunkSize int) (chunked [][]*Kind) {
-
-	if chunkSize == 0 {
-		chunkSize = 500
+	if len(errs) > 0 {
+		return errs[0]
 	}
 
-	for i := 0; i < len(kinds); i += chunkSize {
-		end := i + chunkSize
-
-		if end > len(kinds) {
-			end = len(kinds)
-		}
-
-		chunked = append(chunked, kinds[i:end])
-	}
-
-	return chunked
+	return nil
 }
 
 func chunkKeys(keys []*datastore.Key, chunkSize int) (chunked [][]*datastore.Key) {
