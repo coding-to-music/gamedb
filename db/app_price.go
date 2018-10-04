@@ -10,7 +10,7 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 )
 
-type PriceChange struct {
+type AppPrice struct {
 	CreatedAt       time.Time `datastore:"created_at"`
 	AppID           int       `datastore:"app_id"`
 	PackageID       int       `datastore:"package_id"`
@@ -26,11 +26,11 @@ type PriceChange struct {
 	First           bool      `datastore:"first"`
 }
 
-func (p PriceChange) GetKey() (key *datastore.Key) {
+func (p AppPrice) GetKey() (key *datastore.Key) {
 	return datastore.IncompleteKey(KindPrice, nil)
 }
 
-func (p PriceChange) GetPath() string {
+func (p AppPrice) GetPath() string {
 	if p.AppID != 0 {
 		return "/games/" + strconv.Itoa(p.AppID) + "/" + slug.Make(p.Name)
 	} else if p.PackageID != 0 {
@@ -40,7 +40,7 @@ func (p PriceChange) GetPath() string {
 	}
 }
 
-func (p PriceChange) GetIcon() (ret string) {
+func (p AppPrice) GetIcon() (ret string) {
 
 	if p.Icon == "" {
 		return "/assets/img/no-app-image-square.jpg"
@@ -51,27 +51,27 @@ func (p PriceChange) GetIcon() (ret string) {
 	}
 }
 
-func (p PriceChange) GetCreatedNice() (ret string) {
+func (p AppPrice) GetCreatedNice() (ret string) {
 	return p.CreatedAt.Format(helpers.DateTime)
 }
 
-func (p PriceChange) GetCreatedUnix() (ret string) {
+func (p AppPrice) GetCreatedUnix() (ret string) {
 	return p.CreatedAt.Format(helpers.DateTime)
 }
 
-func (p PriceChange) GetPriceInitial() float64 {
+func (p AppPrice) GetPriceInitial() float64 {
 	return helpers.CentsInt(p.PriceInitial)
 }
 
-func (p PriceChange) GetChange() float64 {
+func (p AppPrice) GetChange() float64 {
 	return helpers.CentsInt(p.Change)
 }
 
-func (p PriceChange) GetPriceFinal() float64 {
+func (p AppPrice) GetPriceFinal() float64 {
 	return helpers.CentsInt(p.PriceFinal)
 }
 
-//func (p PriceChange) GetChangePercent() float64 {
+//func (p AppPrice) GetChangePercent() float64 {
 //
 //	if p.Change < 0 {
 //		// Green
@@ -85,7 +85,7 @@ func (p PriceChange) GetPriceFinal() float64 {
 //}
 
 // Data array for datatables
-func (p PriceChange) OutputForJSON() (output []interface{}) {
+func (p AppPrice) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{
 		p.AppID,
@@ -100,7 +100,7 @@ func (p PriceChange) OutputForJSON() (output []interface{}) {
 	}
 }
 
-func GetAppPrices(appID int, limit int) (prices []PriceChange, err error) {
+func GetAppPrices(appID int, limit int) (prices []AppPrice, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -123,7 +123,7 @@ func GetAppPrices(appID int, limit int) (prices []PriceChange, err error) {
 	return prices, err
 }
 
-func GetPackagePrices(packageID int, limit int) (prices []PriceChange, err error) {
+func GetPackagePrices(packageID int, limit int) (prices []AppPrice, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {

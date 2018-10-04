@@ -162,7 +162,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Save price change
-	price := new(db.PriceChange)
+	price := new(db.AppPrice)
 	price.Change = pack.PriceFinal - priceBeforeFill
 
 	if price.Change != 0 {

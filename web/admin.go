@@ -607,7 +607,7 @@ func adminRanks() {
 		return
 	}
 
-	newRanks := make(map[int64]*db.Rank)
+	newRanks := make(map[int64]*db.PlayerRank)
 	var players []db.Player
 
 	var wg sync.WaitGroup
@@ -635,7 +635,7 @@ func adminRanks() {
 	wg.Wait()
 
 	// Convert new ranks to slice
-	var ranks []*db.Rank
+	var ranks []*db.PlayerRank
 	for _, v := range newRanks {
 		ranks = append(ranks, v)
 	}

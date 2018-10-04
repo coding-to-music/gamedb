@@ -10,7 +10,7 @@ import (
 	"github.com/steam-authority/steam-authority/memcache"
 )
 
-type Rank struct {
+type PlayerRank struct {
 	CreatedAt   time.Time `datastore:"created_at,noindex"`
 	UpdatedAt   time.Time `datastore:"updated_at,noindex"`
 	PlayerID    int64     `datastore:"player_id,noindex"`
@@ -32,11 +32,11 @@ type Rank struct {
 	FriendsRank  int `datastore:"friends_rank"`
 }
 
-func (rank Rank) GetKey() (key *datastore.Key) {
+func (rank PlayerRank) GetKey() (key *datastore.Key) {
 	return datastore.NameKey(KindRank, strconv.FormatInt(rank.PlayerID, 10), nil)
 }
 
-func (rank Rank) GetAvatar() string {
+func (rank PlayerRank) GetAvatar() string {
 	if strings.HasPrefix(rank.Avatar, "http") {
 		return rank.Avatar
 	} else if rank.Avatar != "" {
@@ -46,15 +46,15 @@ func (rank Rank) GetAvatar() string {
 	}
 }
 
-func (rank Rank) GetAvatar2() string {
+func (rank PlayerRank) GetAvatar2() string {
 	return helpers.GetAvatar2(rank.Level)
 }
 
-func (rank Rank) GetDefaultAvatar() string {
+func (rank PlayerRank) GetDefaultAvatar() string {
 	return "/assets/img/no-player-image.jpg"
 }
 
-func (rank Rank) GetFlag() string {
+func (rank PlayerRank) GetFlag() string {
 
 	if rank.CountryCode == "" {
 		return ""
@@ -63,19 +63,19 @@ func (rank Rank) GetFlag() string {
 	return "/assets/img/flags/" + strings.ToLower(rank.CountryCode) + ".png"
 }
 
-func (rank Rank) GetCountry() string {
+func (rank PlayerRank) GetCountry() string {
 	return helpers.CountryCodeToName(rank.CountryCode)
 }
 
-func (rank Rank) GetTimeShort() (ret string) {
+func (rank PlayerRank) GetTimeShort() (ret string) {
 	return helpers.GetTimeShort(rank.PlayTime, 2)
 }
 
-func (rank Rank) GetTimeLong() (ret string) {
+func (rank PlayerRank) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(rank.PlayTime, 5)
 }
 
-func (rank *Rank) Tidy() *Rank {
+func (rank *PlayerRank) Tidy() *PlayerRank {
 
 	rank.UpdatedAt = time.Now()
 	if rank.CreatedAt.IsZero() {
@@ -85,7 +85,7 @@ func (rank *Rank) Tidy() *Rank {
 	return rank
 }
 
-func GetRank(playerID int64) (rank *Rank, err error) {
+func GetRank(playerID int64) (rank *PlayerRank, err error) {
 
 	client, context, err := GetDSClient()
 	if err != nil {
@@ -94,7 +94,7 @@ func GetRank(playerID int64) (rank *Rank, err error) {
 
 	key := datastore.NameKey(KindRank, strconv.FormatInt(playerID, 10), nil)
 
-	rank = new(Rank)
+	rank = new(PlayerRank)
 	rank.PlayerID = playerID
 
 	err = client.Get(context, key, rank)
@@ -160,9 +160,9 @@ func CountRanks() (count int, err error) {
 	return count, nil
 }
 
-func NewRankFromPlayer(player Player) (rank *Rank) {
+func NewRankFromPlayer(player Player) (rank *PlayerRank) {
 
-	rank = new(Rank)
+	rank = new(PlayerRank)
 
 	// Profile
 	rank.CreatedAt = time.Now()
@@ -183,7 +183,7 @@ func NewRankFromPlayer(player Player) (rank *Rank) {
 	return rank
 }
 
-//func BulkSaveRanks(ranks []*Rank) (err error) {
+//func BulkSaveRanks(ranks []*PlayerRank) (err error) {
 //
 //	if len(ranks) == 0 {
 //		return nil
@@ -242,7 +242,7 @@ func NewRankFromPlayer(player Player) (rank *Rank) {
 //	return nil
 //}
 
-//func chunkRanks(ranks []*Rank, chunkSize int) (divided [][]*Rank) {
+//func chunkRanks(ranks []*PlayerRank, chunkSize int) (divided [][]*PlayerRank) {
 //
 //	for i := 0; i < len(ranks); i += chunkSize {
 //		end := i + chunkSize

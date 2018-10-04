@@ -148,7 +148,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	//}(player)
 
 	// Get ranks
-	var ranks *db.Rank
+	var ranks *db.PlayerRank
 	wg.Add(1)
 	go func(player db.Player) {
 
@@ -252,7 +252,7 @@ type playerTemplate struct {
 
 // playerRanksTemplate
 type playerRanksTemplate struct {
-	Ranks   db.Rank
+	Ranks   db.PlayerRank
 	Players int
 }
 

@@ -10,7 +10,7 @@ import (
 	"github.com/steam-authority/steam-authority/steami"
 )
 
-type Article struct {
+type News struct {
 	CreatedAt  time.Time `datastore:"created_at,noindex"`
 	UpdatedAt  time.Time `datastore:"updated_at,noindex"`
 	ArticleID  int64     `datastore:"article_id,noindex"`
@@ -26,19 +26,19 @@ type Article struct {
 	FeedType   int8      `datastore:"feed_type,noindex"`
 }
 
-func (article Article) GetKey() (key *datastore.Key) {
+func (article News) GetKey() (key *datastore.Key) {
 	return datastore.NameKey(KindArticle, strconv.FormatInt(article.ArticleID, 10), nil)
 }
 
-func (article Article) GetTimestamp() (int64) {
+func (article News) GetTimestamp() (int64) {
 	return article.Date.Unix()
 }
 
-func (article Article) GetNiceDate() (string) {
+func (article News) GetNiceDate() (string) {
 	return article.Date.Format(helpers.DateYear)
 }
 
-func (article *Article) Tidy() *Article {
+func (article *News) Tidy() *News {
 
 	article.UpdatedAt = time.Now()
 	if article.CreatedAt.IsZero() {
@@ -48,7 +48,7 @@ func (article *Article) Tidy() *Article {
 	return article
 }
 
-func GetArticles(appID int, limit int) (articles []Article, err error) {
+func GetArticles(appID int, limit int) (articles []News, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -69,7 +69,7 @@ func GetArticles(appID int, limit int) (articles []Article, err error) {
 	return articles, err
 }
 
-func GetNewArticles(appID int) (articles []*Article, err error) {
+func GetNewArticles(appID int) (articles []*News, err error) {
 
 	// Get latest article from database
 	var latestTime int64
@@ -90,7 +90,7 @@ func GetNewArticles(appID int) (articles []*Article, err error) {
 
 		if v.Date > latestTime {
 
-			article := new(Article)
+			article := new(News)
 			article.ArticleID = v.GID
 			article.Title = v.Title
 			article.URL = v.URL
@@ -110,7 +110,7 @@ func GetNewArticles(appID int) (articles []*Article, err error) {
 	return articles, nil
 }
 
-//func BulkAddArticles(articles []*Article) (err error) {
+//func BulkAddArticles(articles []*News) (err error) {
 //
 //	articlesLen := len(articles)
 //	if articlesLen == 0 {

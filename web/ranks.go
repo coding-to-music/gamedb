@@ -152,7 +152,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 					//q = q.Filter(column+" >", 0)
 
-					var ranks []db.Rank
+					var ranks []db.PlayerRank
 					_, err := client.GetAll(ctx, q, &ranks)
 					logger.Error(err)
 
@@ -195,7 +195,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type RankExtra struct {
-	RankRow db.Rank
+	RankRow db.PlayerRank
 	Rank    string
 }
 

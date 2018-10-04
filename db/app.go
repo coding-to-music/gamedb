@@ -462,7 +462,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *App) {
 
-		var articles []*Article
+		var articles []*News
 
 		articles, err = GetNewArticles(app.ID)
 		if err != nil {

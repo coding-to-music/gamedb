@@ -68,6 +68,6 @@ type newsTemplate struct {
 }
 
 type newsArticleTemplate struct {
-	Article db.Article
+	Article db.News
 	App     db.App
 }
