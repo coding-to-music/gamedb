@@ -111,12 +111,15 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Model(&db.App{})
 			gorm = gorm.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
 			gorm = gorm.Where("is_free = ?", "1")
-			gorm = gorm.Where("name LIKE ?", "%"+query.GetSearch()+"%")
+
+			search := query.GetSearch()
+			if search != "" {
+				gorm = gorm.Where("name LIKE ?", "%"+search+"%")
+			}
 
 			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
 				"0": "name",
 				"1": "reviews_score",
-				"2": "type",
 			})
 
 			gorm = gorm.Count(&filtered)

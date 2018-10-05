@@ -29,7 +29,9 @@ if ($('#free-games-page').length > 0) {
                 "targets": 2,
                 "render": function (data, type, row) {
                     return row[4];
-                }
+                },
+                "orderable": false,
+                "searchable": false
             },
             // Platform
             {
