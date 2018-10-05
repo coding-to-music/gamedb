@@ -716,7 +716,7 @@ func adminRanks() {
 	}
 
 	// Update ranks
-	err = db.BulkSaveKinds(kinds)
+	err = db.BulkSaveKinds(kinds, db.KindRank)
 	if err != nil {
 		logger.Error(err)
 		return

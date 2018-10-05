@@ -147,7 +147,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Save change to DS
-	err = db.BulkSaveKinds(changesSlice)
+	err = db.BulkSaveKinds(changesSlice, db.KindChange)
 	if err != nil {
 		return false, true, err
 	}

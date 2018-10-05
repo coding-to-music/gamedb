@@ -65,7 +65,7 @@ func SaveKind(key *datastore.Key, data interface{}) (newKey *datastore.Key, err 
 	return newKey, nil
 }
 
-func BulkSaveKinds(kinds []Kind) (err error) {
+func BulkSaveKinds(kinds []Kind, kind string) (err error) {
 
 	count := len(kinds)
 	if count == 0 {
@@ -79,14 +79,24 @@ func BulkSaveKinds(kinds []Kind) (err error) {
 
 	var errs []error
 	chunks := chunkKinds(kinds, 0)
-	for _, v := range chunks {
+	for _, chunk := range chunks {
 
-		keys := make([]*datastore.Key, 0, len(v))
-		for _, vv := range v {
+		keys := make([]*datastore.Key, 0, len(chunk))
+		for _, vv := range chunk {
 			keys = append(keys, vv.GetKey())
 		}
 
-		_, err = client.PutMulti(ctx, keys, v)
+		switch kind {
+		case KindArticle:
+			_, err = client.PutMulti(ctx, keys, kindsToNews(chunk))
+		case KindPlayerApp:
+			_, err = client.PutMulti(ctx, keys, kindsToPlayerApps(chunk))
+		case KindChange:
+			_, err = client.PutMulti(ctx, keys, kindsToChanges(chunk))
+		case KindRank:
+			_, err = client.PutMulti(ctx, keys, kindsToPlayerRanks(chunk))
+		}
+
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -173,4 +183,56 @@ func chunkKeys(keys []*datastore.Key, chunkSize int) (chunked [][]*datastore.Key
 	}
 
 	return chunked
+}
+
+func kindsToNews(a []Kind) (b []News) {
+
+	for _, v := range a {
+
+		original, ok := v.(News)
+		if ok {
+			b = append(b, original)
+		}
+	}
+
+	return b
+}
+
+func kindsToPlayerApps(a []Kind) (b []PlayerApp) {
+
+	for _, v := range a {
+
+		original, ok := v.(PlayerApp)
+		if ok {
+			b = append(b, original)
+		}
+	}
+
+	return b
+}
+
+func kindsToChanges(a []Kind) (b []Change) {
+
+	for _, v := range a {
+
+		original, ok := v.(Change)
+		if ok {
+			b = append(b, original)
+		}
+	}
+
+	return b
+}
+
+func kindsToPlayerRanks(a []Kind) (b []PlayerRank) {
+
+	for _, v := range a {
+
+		original, ok := v.(PlayerRank)
+		if ok {
+			b = append(b, original)
+		}
+	}
+
+	return b
 }
