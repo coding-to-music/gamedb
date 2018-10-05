@@ -1,6 +1,7 @@
 node_modules/
 vendor/
 tmp/
+logs/
 
 steam-authority
 debug
