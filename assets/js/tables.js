@@ -73,8 +73,11 @@ $('table.table-datatable2').on('page.dt search.dt', function (e, settings, proce
 
     $(this).fadeTo(500, 0.3);
 
-    var top = $(this).closest('.card').offset().top + 5;
-    $('html, body').animate({scrollTop: top}, 500);
+    if (e.type === 'page') {
+
+        var top = $(this).prev().offset().top - 15;
+        $('html, body').animate({scrollTop: top}, 500);
+    }
 
 }).on('draw.dt', function (e, settings, processing) {
 
