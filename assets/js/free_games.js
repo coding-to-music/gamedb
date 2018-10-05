@@ -1,6 +1,32 @@
 if ($('#free-games-page').length > 0) {
 
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    var table = $('table.table-datatable2');
+
+    $('#types input:checkbox').change(function () {
+
+        table.DataTable().draw();
+
+    });
+
+    table.DataTable($.extend(true, {}, dtDefaultOptions, {
+        "ajax": function (data, callback, settings) {
+
+            delete data.columns;
+            delete data.length;
+            delete data.search.regex;
+
+            data.search.types = $('#types input:checkbox:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $.ajax({
+                url: $(this).attr('data-path'),
+                data: data,
+                success: callback,
+                dataType: 'json',
+                cache: true
+            });
+        },
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);

@@ -491,6 +491,19 @@ func (q DataTablesQuery) GetSearch() (search string) {
 	return ""
 }
 
+func (q DataTablesQuery) GetTypes() (search []string) {
+
+	if val, ok := q.Search["types"]; ok {
+		if ok && val != "" {
+			for _, v := range val.([]interface{}) {
+				search = append(search, v.(string))
+			}
+		}
+	}
+
+	return search
+}
+
 func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
 
 	//map[string]map[string]interface {}{

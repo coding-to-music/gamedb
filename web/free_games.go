@@ -117,6 +117,11 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where("name LIKE ?", "%"+search+"%")
 			}
 
+			types := query.GetTypes()
+			if len(types) > 0 {
+				gorm = gorm.Where("type IN (?)", types)
+			}
+
 			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
 				"0": "name",
 				"1": "reviews_score",

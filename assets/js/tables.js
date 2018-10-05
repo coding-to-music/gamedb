@@ -1,4 +1,3 @@
-
 // Local datatable
 $("table.table-datatable").each(function (i) {
 
@@ -46,35 +45,31 @@ $("table.table-datatable").each(function (i) {
 });
 
 // Filter table on search box enter key
-var table = $('#DataTables_Table_0');
-if (table.length) {
-    table = table.DataTable();
-
-    $('input#search').keypress(function (e) {
-        if (e.which === 13) {
-            table.search($(this).val()).draw();
+$('input#search').keypress(function (e) {
+    if (e.which === 13) {
+        var table = $('#DataTables_Table_0');
+        if (table.length === 1) {
+            table.DataTable().search($(this).val()).draw();
         }
-    });
-}
+    }
+});
 
 // Clear search box on escape and reset filter
 $('input#search').on('keyup', function (e) {
-    if ($(this).val()) {
-        // var code = e.charCode || e.keyCode;
-        if (e.key === "Escape") {
-            $(this).val('');
+    if ($(this).val() && e.key === "Escape") {
 
-            var table = $('#DataTables_Table_0');
-            if (table.length) {
-                table.DataTable().search($(this).val()).draw();
-            }
+        $(this).val('');
+
+        var table = $('#DataTables_Table_0');
+        if (table.length) {
+            table.DataTable().search($(this).val()).draw();
         }
     }
 });
 
 
 // Server side datatable events
-$('table.table-datatable2').on('page.dt', function (e, settings, processing) {
+$('table.table-datatable2').on('page.dt search.dt', function (e, settings, processing) {
 
     $(this).fadeTo(500, 0.3);
 
@@ -104,7 +99,6 @@ var dtDefaultOptions = {
             dataType: 'json',
             cache: true
         });
-
     },
     "processing": false,
     "serverSide": true,

@@ -441,6 +441,7 @@ func (app App) shouldUpdate(userAgent string) bool {
 	return false
 }
 
+// Things that need to happen closer to dailer than when there is an app change
 func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 	if !IsValidAppID(app.ID) {
@@ -539,6 +540,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	return errs
 }
 
+// Things that only need to update when there is an app change
 func (app *App) UpdateFromAPI() (errs []error) {
 
 	if !IsValidAppID(app.ID) {
