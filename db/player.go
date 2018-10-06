@@ -320,7 +320,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	// Get badges
 	wg.Add(1)
 	go func(p *Player) {
-		err = p.updateBades()
+		err = p.updateBadges()
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -491,7 +491,7 @@ func (p *Player) updateRecentGames() (error) {
 	return nil
 }
 
-func (p *Player) updateBades() (error) {
+func (p *Player) updateBadges() (error) {
 
 	badgesResponse, _, err := steami.Steam().GetBadges(p.PlayerID)
 	if err != nil {
