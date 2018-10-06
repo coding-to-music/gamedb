@@ -142,7 +142,7 @@ func (p Player) GetBadges() (badges steam.BadgesResponse, err error) {
 
 	var bytes []byte
 
-	if strings.HasPrefix(p.Badges, "/") {
+	if storage.IsStorageLocaion(p.Badges) {
 		bytes, err = storage.Download(storage.PathBadges(p.PlayerID))
 		if err != nil {
 			return badges, err
@@ -170,7 +170,7 @@ func (p Player) GetFriends() (friends steam.FriendsList, err error) {
 
 	var bytes []byte
 
-	if strings.HasPrefix(p.Friends, "/") {
+	if storage.IsStorageLocaion(p.Friends) {
 		bytes, err = storage.Download(storage.PathFriends(p.PlayerID))
 		if err != nil {
 			return friends, err
@@ -202,7 +202,7 @@ func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
 
 	var bytes []byte
 
-	if strings.HasPrefix(p.GamesRecent, "/") {
+	if storage.IsStorageLocaion(p.GamesRecent) {
 		bytes, err = storage.Download(storage.PathRecentGames(p.PlayerID))
 		if err != nil {
 			return games, err

@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"strconv"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/snappy"
@@ -45,6 +46,12 @@ func getClient() (c *storage.Client, ctx context.Context, err error) {
 	}
 
 	return client, ctx, nil
+}
+
+func IsStorageLocaion(x string) bool {
+
+	return strings.HasSuffix(x, ".json")
+
 }
 
 func Upload(path string, data []byte, public bool) (err error) {
