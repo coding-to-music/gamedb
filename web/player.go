@@ -121,32 +121,6 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
-	// Get games
-	//var apps []db.PlayerApp
-	//var gameStats = playerAppStatsTemplate{}
-	//wg.Add(1)
-	//go func(player db.Player) {
-	//
-	//	apps, err = player.LoadApps()
-	//	if err != nil {
-	//		logger.Error(err)
-	//		return
-	//	}
-	//
-	//	// Make game stats
-	//	// todo, do these stats where we save the apps
-	//	for _, v := range apps {
-	//
-	//		gameStats.All.AddApp(v)
-	//		if v.AppTime > 0 {
-	//			gameStats.Played.AddApp(v)
-	//		}
-	//	}
-	//
-	//	wg.Done()
-	//
-	//}(player)
-
 	// Get ranks
 	var ranks *db.PlayerRank
 	wg.Add(1)
@@ -249,7 +223,6 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Friends = friends
 	t.Apps = []db.PlayerApp{}
 	t.Ranks = playerRanksTemplate{*ranks, players}
-	t.GameStats = playerAppStatsTemplate{}
 	t.Badges = badges
 	t.RecentGames = recentGames
 	t.Bans = bans
@@ -262,7 +235,6 @@ type playerTemplate struct {
 	Player      db.Player
 	Friends     map[int64]db.Player
 	Apps        []db.PlayerApp
-	GameStats   playerAppStatsTemplate
 	Ranks       playerRanksTemplate
 	Badges      steam.BadgesInfo
 	RecentGames []RecentlyPlayedGame
@@ -353,46 +325,6 @@ func (p playerRanksTemplate) GetTimePercent() string {
 
 func (p playerRanksTemplate) GetFriendsPercent() string {
 	return p.formatPercent(p.Ranks.FriendsRank)
-}
-
-// playerAppStatsTemplate
-type playerAppStatsTemplate struct {
-	Played playerAppStatsInnerTemplate
-	All    playerAppStatsInnerTemplate
-}
-
-type playerAppStatsInnerTemplate struct {
-	count     int
-	price     int
-	priceHour float64
-	time      int
-}
-
-func (p *playerAppStatsInnerTemplate) AddApp(app db.PlayerApp) {
-
-	p.count++
-	p.price = p.price + app.AppPrice
-	p.priceHour = p.priceHour + app.AppPriceHour
-	p.time = p.time + app.AppTime
-}
-
-func (p playerAppStatsInnerTemplate) GetAveragePrice() float64 {
-	return helpers.DollarsFloat(float64(p.price) / float64(p.count))
-}
-
-func (p playerAppStatsInnerTemplate) GetTotalPrice() float64 {
-	return helpers.DollarsFloat(float64(p.price))
-}
-
-func (p playerAppStatsInnerTemplate) GetAveragePriceHour() float64 {
-	return helpers.DollarsFloat(p.priceHour / float64(p.count))
-}
-func (p playerAppStatsInnerTemplate) GetAverageTime() string {
-	return helpers.GetTimeShort(int(float64(p.time)/float64(p.count)), 2)
-}
-
-func (p playerAppStatsInnerTemplate) GetTotalTime() string {
-	return helpers.GetTimeShort(p.time, 2)
 }
 
 func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {

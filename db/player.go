@@ -41,6 +41,7 @@ type Player struct {
 	Level            int       `datastore:"level"`                    //
 	GamesRecent      string    `datastore:"games_recent,noindex"`     // JSON
 	GamesCount       int       `datastore:"games_count"`              //
+	GameStats        string    `datastore:"game_stats"`               //
 	Badges           string    `datastore:"badges,noindex"`           // JSON
 	BadgesCount      int       `datastore:"badges_count"`             //
 	PlayTime         int       `datastore:"play_time"`                //
@@ -242,6 +243,25 @@ func (p Player) GetBans() (bans steam.GetPlayerBanResponse, err error) {
 	return bans, nil
 }
 
+func (p Player) GetGameStats() (stats PlayerAppStatsTemplate, err error) {
+
+	bytes := []byte(p.GameStats)
+
+	if len(bytes) > 0 {
+		err = json.Unmarshal(bytes, &stats)
+		if err != nil {
+			if strings.Contains(err.Error(), "cannot unmarshal") {
+				logger.Info(err.Error() + " - " + string(bytes))
+			} else {
+				logger.Error(err)
+			}
+			return stats, err
+		}
+	}
+
+	return stats, nil
+}
+
 func (p Player) ShouldUpdateFriends() bool {
 	return p.FriendsAddedAt.Unix() < (time.Now().Unix() - int64(60*60*24*30))
 }
@@ -386,13 +406,13 @@ func (p *Player) updateGames() (error) {
 	}
 
 	// Loop apps
-	var apps = map[int]*PlayerApp{}
+	var appsMap = map[int]*PlayerApp{}
 	var appIDs []int
 	var playtime = 0
 	for _, v := range resp.Games {
 		playtime = playtime + v.PlaytimeForever
 		appIDs = append(appIDs, v.AppID)
-		apps[v.AppID] = &PlayerApp{
+		appsMap[v.AppID] = &PlayerApp{
 			PlayerID:     p.PlayerID,
 			AppID:        v.AppID,
 			AppName:      v.Name,
@@ -413,19 +433,32 @@ func (p *Player) updateGames() (error) {
 
 	for _, v := range gamesSQL {
 		if v.PriceFinal > 0 {
-			apps[v.ID].AppPrice = v.PriceFinal
-			apps[v.ID].SetPriceHour()
+			appsMap[v.ID].AppPrice = v.PriceFinal
+			appsMap[v.ID].SetPriceHour()
 		}
 	}
 
 	// Convert to slice
 	var appsSlice []Kind
-	for _, v := range apps {
+	for _, v := range appsMap {
 		appsSlice = append(appsSlice, *v)
 	}
 
 	err = BulkSaveKinds(appsSlice, KindPlayerApp)
 	logger.Error(err)
+
+	// Make stats
+	var gameStats = PlayerAppStatsTemplate{}
+	for _, v := range appsMap {
+
+		gameStats.All.AddApp(*v)
+		if v.AppTime > 0 {
+			gameStats.Played.AddApp(*v)
+		}
+	}
+
+	bytes, err := json.Marshal(gameStats)
+	p.GameStats = string(bytes)
 
 	return nil
 }
@@ -804,4 +837,43 @@ func checkForMissingPlayerFields(err error) error {
 	}
 
 	return err
+}
+
+// PlayerAppStatsTemplate
+type PlayerAppStatsTemplate struct {
+	Played playerAppStatsInnerTemplate
+	All    playerAppStatsInnerTemplate
+}
+
+type playerAppStatsInnerTemplate struct {
+	Count     int
+	Price     int
+	PriceHour float64
+	Time      int
+}
+
+func (p *playerAppStatsInnerTemplate) AddApp(app PlayerApp) {
+	p.Count++
+	p.Price = p.Price + app.AppPrice
+	p.PriceHour = p.PriceHour + app.AppPriceHour
+	p.Time = p.Time + app.AppTime
+}
+
+func (p playerAppStatsInnerTemplate) GetAveragePrice() float64 {
+	return helpers.DollarsFloat(float64(p.Price) / float64(p.Count))
+}
+
+func (p playerAppStatsInnerTemplate) GetTotalPrice() float64 {
+	return helpers.DollarsFloat(float64(p.Price))
+}
+
+func (p playerAppStatsInnerTemplate) GetAveragePriceHour() float64 {
+	return helpers.DollarsFloat(p.PriceHour / float64(p.Count))
+}
+func (p playerAppStatsInnerTemplate) GetAverageTime() string {
+	return helpers.GetTimeShort(int(float64(p.Time)/float64(p.Count)), 2)
+}
+
+func (p playerAppStatsInnerTemplate) GetTotalTime() string {
+	return helpers.GetTimeShort(p.Time, 2)
 }
