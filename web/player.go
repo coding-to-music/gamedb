@@ -72,51 +72,32 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get friends
-	var friends = map[int64]db.Player{}
+	var friends []db.ProfileFriend
 	wg.Add(1)
 	go func(player db.Player) {
 
-		resp, err := player.GetFriends()
-		if err != nil {
+		friends, err = player.GetFriends()
+		logger.Error(err)
 
-			logger.Error(err)
+		// Queue friends to be scanned
+		if player.ShouldUpdateFriends() {
 
-		} else {
-
-			// Queue friends to be scanned
-			if player.ShouldUpdateFriends() {
-
-				for _, v := range resp.Friends {
-					p, _ := json.Marshal(queue.RabbitMessageProfile{
-						PlayerID: v.SteamID,
-						Time:     time.Now(),
-					})
+			for _, v := range friends {
+				p, err := json.Marshal(queue.RabbitMessageProfile{
+					PlayerID: v.SteamID,
+					Time:     time.Now(),
+				})
+				if err != nil {
+					logger.Error(err)
+				} else {
 					queue.Produce(queue.QueueProfiles, p)
 				}
-
-				player.FriendsAddedAt = time.Now()
-
-				err = player.Save()
-				logger.Error(err)
 			}
 
-			// Make friend ID slice & map
-			var friendsSlice []int64
-			for _, v := range resp.Friends {
-				friendsSlice = append(friendsSlice, v.SteamID)
-				friends[v.SteamID] = db.Player{PlayerID: v.SteamID}
-			}
+			player.FriendsAddedAt = time.Now()
 
-			// Get friends from DS
-			friendsResp, err := db.GetPlayersByIDs(friendsSlice)
+			err = player.Save() // todo, switch to update query so not to overwrite other player changes
 			logger.Error(err)
-
-			// Fill in the map
-			for _, v := range friendsResp {
-				if v.PlayerID != 0 {
-					friends[v.PlayerID] = v
-				}
-			}
 		}
 
 		wg.Done()
@@ -236,7 +217,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 type playerTemplate struct {
 	GlobalTemplate
 	Player      db.Player
-	Friends     map[int64]db.Player
+	Friends     []db.ProfileFriend
 	Apps        []db.PlayerApp
 	Ranks       playerRanksTemplate
 	Badges      steam.BadgesInfo

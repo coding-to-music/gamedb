@@ -19,6 +19,7 @@ import (
 )
 
 const maxBytesToStore = 1024 * 10
+const defaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
@@ -63,11 +64,7 @@ func (p Player) GetKey() (key *datastore.Key) {
 
 func (p Player) GetPath() string {
 
-	x := "/players/" + strconv.FormatInt(p.PlayerID, 10)
-	if p.PersonaName != "" {
-		x = x + "/" + slug.Make(p.PersonaName)
-	}
-	return x
+	return getPlayerPath(p.PlayerID, p.GetName())
 }
 
 func (p Player) GetName() string {
@@ -113,7 +110,7 @@ func (p Player) GetAvatar() string {
 }
 
 func (p Player) GetDefaultAvatar() string {
-	return "/assets/img/no-player-image.jpg"
+	return defaultPlayerAvatar
 }
 
 func (p Player) GetFlag() string {
@@ -166,7 +163,7 @@ func (p Player) GetBadges() (badges steam.BadgesResponse, err error) {
 	return badges, nil
 }
 
-func (p Player) GetFriends() (friends steam.FriendsList, err error) {
+func (p Player) GetFriends() (friends []ProfileFriend, err error) {
 
 	var bytes []byte
 
@@ -530,8 +527,48 @@ func (p *Player) updateFriends() (error) {
 
 	p.FriendsCount = len(resp.Friends)
 
+	// Make friend ID slice & map
+	var friendsMap = map[int64]*ProfileFriend{}
+	var friendsSlice []int64
+	for _, v := range resp.Friends {
+
+		friendsSlice = append(friendsSlice, v.SteamID)
+
+		friendsMap[v.SteamID] = &ProfileFriend{
+			SteamID:      v.SteamID,
+			Relationship: v.Relationship,
+			FriendSince:  v.FriendSince,
+		}
+	}
+
+	// Get friends from DS
+	friendRows, err := GetPlayersByIDs(friendsSlice)
+	if err != nil {
+		return err
+	}
+
+	// Fill in the map
+	for _, v := range friendRows {
+		if v.PlayerID != 0 {
+
+			friendsMap[v.PlayerID].Avatar = v.GetAvatar()
+			friendsMap[v.PlayerID].Games = v.GamesCount
+			friendsMap[v.PlayerID].Name = v.GetName()
+			friendsMap[v.PlayerID].Level = v.Level
+			friendsMap[v.PlayerID].LoggedOff = v.GetLogoffUnix()
+
+		}
+	}
+
+	// Make into map again, so it can be unmarshalled
+
+	var friends []ProfileFriend
+	for _, v := range friendsMap {
+		friends = append(friends, *v)
+	}
+
 	// Encode to JSON bytes
-	bytes, err := json.Marshal(resp)
+	bytes, err := json.Marshal(friends)
 	if err != nil {
 		return err
 	}
@@ -616,6 +653,15 @@ func (p *Player) Save() (err error) {
 	}
 
 	return nil
+}
+
+func getPlayerPath(id int64, name string) string {
+
+	p := "/players/" + strconv.FormatInt(id, 10)
+	if name != "" {
+		p = p + "/" + slug.Make(name)
+	}
+	return p
 }
 
 // todo, check this is acurate
@@ -736,15 +782,15 @@ func GetAllPlayers(order string, limit int) (players []Player, err error) {
 	return players, nil
 }
 
-func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
+func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 
-	if len(ids) > 1000 {
-		return friends, ErrorTooMany
+	if len(ids) > 2000 { // Max friends limit
+		return players, ErrorTooMany
 	}
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
-		return friends, err
+		return players, err
 	}
 
 	var keys []*datastore.Key
@@ -752,24 +798,31 @@ func GetPlayersByIDs(ids []int64) (friends []Player, err error) {
 		keys = append(keys, datastore.NameKey(KindPlayer, strconv.FormatInt(v, 10), nil))
 	}
 
-	friends = make([]Player, len(keys))
-	err = client.GetMulti(ctx, keys, friends)
+	chunks := chunkKeys(keys, 0)
+	for _, chunk := range chunks {
 
-	if checkGetMultiErrors(err) != nil {
-		return friends, err
+		playersChunk := make([]Player, len(chunk))
+
+		err = client.GetMulti(ctx, chunk, playersChunk)
+
+		players = append(players, playersChunk...)
+
+		if checkGetMultiPlayerErrors(err) != nil {
+			return players, err
+		}
 	}
 
-	return friends, nil
+	return players, nil
 }
 
-func checkGetMultiErrors(err error) error {
+func checkGetMultiPlayerErrors(err error) error {
 
 	if err != nil {
 
 		if multiErr, ok := err.(datastore.MultiError); ok {
 
 			for _, v := range multiErr {
-				err2 := checkGetMultiErrors(v)
+				err2 := checkGetMultiPlayerErrors(v)
 				if err2 != nil {
 					return err2
 				}
@@ -876,4 +929,28 @@ func (p playerAppStatsInnerTemplate) GetAverageTime() string {
 
 func (p playerAppStatsInnerTemplate) GetTotalTime() string {
 	return helpers.GetTimeShort(p.Time, 2)
+}
+
+// ProfileFriend
+type ProfileFriend struct {
+	SteamID      int64  `json:"id"`
+	Relationship string `json:"rs"`
+	FriendSince  int64  `json:"fs"`
+	Avatar       string `json:"ic"`
+	Name         string `json:"nm"`
+	Games        int    `json:"gm"`
+	Level        int    `json:"lv"`
+	LoggedOff    int64  `json:"lo"`
+}
+
+func (p ProfileFriend) GetPath() string {
+	return getPlayerPath(p.SteamID, p.Name)
+}
+
+func (p ProfileFriend) GetDefaultAvatar() string {
+	return defaultPlayerAvatar
+}
+
+func (p ProfileFriend) LoggedOffNice() (string) {
+	return time.Unix(p.LoggedOff, 0).Format(helpers.DateYearTime)
 }

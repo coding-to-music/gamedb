@@ -190,19 +190,19 @@
                             <th scope="col">Logged Off</th>
                             </thead>
                         {{ range $key, $value := .Friends }}
-                        {{ if ne .PersonaName "" }}
+                        {{ if ne .Name "" }}
                             <tr data-link="{{ .GetPath }}">
                                 <td class="img">
-                                    <img src="{{ .GetAvatar }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
-                                    <span>{{ .PersonaName }}</span>
+                                    <img src="{{ .Avatar }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                                    <span>{{ .Name }}</span>
                                 </td>
                                 <td>{{ comma .Level }}</td>
-                            {{ if eq .GamesCount 0 }}
+                            {{ if eq .Games 0 }}
                                 <td><i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i></td>
                             {{ else }}
-                                <td>{{ comma .GamesCount }}</td>
+                                <td>{{ comma .Games }}</td>
                             {{ end }}
-                                <td data-sort="{{ .GetLogoffUnix }}" nowrap="nowrap">{{ .GetLogoffNice }}</td>
+                                <td data-sort="{{ .LoggedOff }}" nowrap="nowrap">{{ .LoggedOffNice }}</td>
                             </tr>
                         {{else}}
                             <tr data-link="{{ .GetPath }}">
