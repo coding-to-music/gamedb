@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gosimple/slug"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
@@ -430,7 +431,7 @@ func (app App) GetPublishers() (publishers []string, err error) {
 func (app App) GetName() (name string) {
 
 	if app.Name == "" {
-		return "App " + strconv.Itoa(app.ID)
+		return "App " + humanize.Comma(int64(app.ID))
 	}
 
 	return app.Name
