@@ -197,7 +197,11 @@
                                     <span>{{ .PersonaName }}</span>
                                 </td>
                                 <td>{{ comma .Level }}</td>
+                            {{ if eq .GamesCount 0 }}
+                                <td><i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i></td>
+                            {{ else }}
                                 <td>{{ comma .GamesCount }}</td>
+                            {{ end }}
                                 <td data-sort="{{ .GetLogoffUnix }}" nowrap="nowrap">{{ .GetLogoffNice }}</td>
                             </tr>
                         {{else}}
