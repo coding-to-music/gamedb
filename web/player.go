@@ -78,42 +78,44 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := player.GetFriends()
 		if err != nil {
+
 			logger.Error(err)
-			return
-		}
 
-		// Queue friends to be scanned
-		if player.ShouldUpdateFriends() {
+		} else {
 
-			for _, v := range resp.Friends {
-				p, _ := json.Marshal(queue.RabbitMessageProfile{
-					PlayerID: v.SteamID,
-					Time:     time.Now(),
-				})
-				queue.Produce(queue.QueueProfiles, p)
+			// Queue friends to be scanned
+			if player.ShouldUpdateFriends() {
+
+				for _, v := range resp.Friends {
+					p, _ := json.Marshal(queue.RabbitMessageProfile{
+						PlayerID: v.SteamID,
+						Time:     time.Now(),
+					})
+					queue.Produce(queue.QueueProfiles, p)
+				}
+
+				player.FriendsAddedAt = time.Now()
+
+				err = player.Save()
+				logger.Error(err)
 			}
 
-			player.FriendsAddedAt = time.Now()
+			// Make friend ID slice & map
+			var friendsSlice []int64
+			for _, v := range resp.Friends {
+				friendsSlice = append(friendsSlice, v.SteamID)
+				friends[v.SteamID] = db.Player{PlayerID: v.SteamID}
+			}
 
-			err = player.Save()
+			// Get friends from DS
+			friendsResp, err := db.GetPlayersByIDs(friendsSlice)
 			logger.Error(err)
-		}
 
-		// Make friend ID slice & map
-		var friendsSlice []int64
-		for _, v := range resp.Friends {
-			friendsSlice = append(friendsSlice, v.SteamID)
-			friends[v.SteamID] = db.Player{PlayerID: v.SteamID}
-		}
-
-		// Get friends from DS
-		friendsResp, err := db.GetPlayersByIDs(friendsSlice)
-		logger.Error(err)
-
-		// Fill in the map
-		for _, v := range friendsResp {
-			if v.PlayerID != 0 {
-				friends[v.PlayerID] = v
+			// Fill in the map
+			for _, v := range friendsResp {
+				if v.PlayerID != 0 {
+					friends[v.PlayerID] = v
+				}
 			}
 		}
 
@@ -155,11 +157,13 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := player.GetBadges()
 		if err != nil {
-			logger.Error(err)
-			return
-		}
 
-		badges = resp.Response
+			logger.Error(err)
+
+		} else {
+
+			badges = resp.Response
+		}
 
 		wg.Done()
 	}(player)
@@ -171,27 +175,29 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 		response, err := player.GetRecentGames()
 		if err != nil {
+
 			logger.Error(err)
-			return
-		}
 
-		for _, v := range response {
+		} else {
 
-			game := RecentlyPlayedGame{}
-			game.AppID = v.AppID
-			game.Name = v.Name
-			game.Weeks = v.PlayTime2Weeks
-			game.WeeksNice = helpers.GetTimeShort(v.PlayTime2Weeks, 2)
-			game.AllTime = v.PlayTimeForever
-			game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
+			for _, v := range response {
 
-			if v.ImgIconURL == "" {
-				game.Icon = "/assets/img/no-app-image-square.jpg"
-			} else {
-				game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
+				game := RecentlyPlayedGame{}
+				game.AppID = v.AppID
+				game.Name = v.Name
+				game.Weeks = v.PlayTime2Weeks
+				game.WeeksNice = helpers.GetTimeShort(v.PlayTime2Weeks, 2)
+				game.AllTime = v.PlayTimeForever
+				game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
+
+				if v.ImgIconURL == "" {
+					game.Icon = "/assets/img/no-app-image-square.jpg"
+				} else {
+					game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
+				}
+
+				recentGames = append(recentGames, game)
 			}
-
-			recentGames = append(recentGames, game)
 		}
 
 		wg.Done()
@@ -203,10 +209,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player db.Player) {
 
 		bans, err = player.GetBans()
-		if err != nil {
-			logger.Error(err)
-			return
-		}
+		logger.Error(err)
 
 		wg.Done()
 	}(player)
