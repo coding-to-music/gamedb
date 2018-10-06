@@ -191,14 +191,33 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get recent games
-	var recentGames []steam.RecentlyPlayedGame
+	var recentGames []RecentlyPlayedGame
 	wg.Add(1)
 	go func(player db.Player) {
 
-		recentGames, err = player.GetRecentGames()
+		response, err := player.GetRecentGames()
 		if err != nil {
 			logger.Error(err)
 			return
+		}
+
+		for _, v := range response {
+
+			game := RecentlyPlayedGame{}
+			game.AppID = v.AppID
+			game.Name = v.Name
+			game.Weeks = v.PlayTime2Weeks
+			game.WeeksNice = helpers.GetTimeShort(v.PlayTime2Weeks, 2)
+			game.AllTime = v.PlayTimeForever
+			game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
+
+			if v.ImgIconURL == "" {
+				game.Icon = "/assets/img/no-app-image-square.jpg"
+			} else {
+				game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
+			}
+
+			recentGames = append(recentGames, game)
 		}
 
 		wg.Done()
@@ -246,8 +265,19 @@ type playerTemplate struct {
 	GameStats   playerAppStatsTemplate
 	Ranks       playerRanksTemplate
 	Badges      steam.BadgesInfo
-	RecentGames []steam.RecentlyPlayedGame
+	RecentGames []RecentlyPlayedGame
 	Bans        steam.GetPlayerBanResponse
+}
+
+// RecentlyPlayedGame
+type RecentlyPlayedGame struct {
+	AppID       int
+	Icon        string
+	Name        string
+	Weeks       int
+	WeeksNice   string
+	AllTime     int
+	AllTimeNice string
 }
 
 // playerRanksTemplate
