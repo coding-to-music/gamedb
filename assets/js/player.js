@@ -55,7 +55,6 @@ if ($('#player-page').length > 0) {
             text: ''
         },
         xAxis: {
-            type: 'logarithmic',
             categories: [''],
             title: {
                 text: ''
