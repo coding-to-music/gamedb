@@ -118,7 +118,7 @@
                         {{ range $key, $value := .Apps }}
                             <tr data-link="{{.GetPath}}">
                                 <td data-app-id="{{ .ID }}" class="img">
-                                    <img class="rounded square" src="{{ .GetIcon }}">
+                                    <img class="rounded square" src="{{ .GetIcon }}" alt="{{.GetName}}">
                                     <span>{{.GetName}}</span>
                                 </td>
                                 <td>{{ .GetType }}</td>

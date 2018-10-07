@@ -3,7 +3,7 @@
 <div class="container" id="player-page">
 
     <div class="jumbotron">
-        <img src="{{ .Player.GetAvatar }}" onError="this.onerror=null;this.src='{{.Player.GetDefaultAvatar}}';">
+        <img src="{{ .Player.GetAvatar }}" alt="{{ .Player.PersonaName }}" onError="this.onerror=null;this.src='{{.Player.GetDefaultAvatar}}';">
         <h1 class="display-4">
             <i class="fas fa-user"></i> {{ .Player.PersonaName }}
         </h1>
@@ -70,7 +70,7 @@
                                         <tr>
                                             <th scope="row" nowrap="nowrap">Country</th>
                                             <td class="img">
-                                                <img class="rounded" data-toggle="tooltip" data-placement="top" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}">
+                                                <img class="rounded" data-toggle="tooltip" data-placement="top" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}">
                                                 <span>{{ .Player.CountryCode }}</span>
                                             </td>
                                         </tr>
@@ -193,7 +193,7 @@
                         {{ if ne .Name "" }}
                             <tr data-link="{{ .GetPath }}">
                                 <td class="img">
-                                    <img src="{{ .Avatar }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                                    <img src="{{ .Avatar }}" alt="{{ .Name }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
                                     <span>{{ .Name }}</span>
                                 </td>
                                 <td>{{ comma .Level }}</td>
@@ -207,7 +207,7 @@
                         {{else}}
                             <tr data-link="{{ .GetPath }}">
                                 <td class="img">
-                                    <img src="{{.GetDefaultAvatar}}" class="avatar rounded square">
+                                    <img src="{{.GetDefaultAvatar}}" alt="{{ .Name }}" class="avatar rounded square">
                                     <span>Not scanned yet, might be in the <a href="/queues">queue</a>.</span>
                                 </td>
                                 <td></td>
@@ -354,7 +354,7 @@
                         {{ range $key, $value := .RecentGames }}
                             <tr data-link="/games/{{ .AppID }}">
                                 <td class="img">
-                                    <img src="{{ .Icon }}" class="rounded square">
+                                    <img src="{{ .Icon }}" alt="{{ .Name }}" class="rounded square">
                                     <span>{{ .Name }}</span>
                                 </td>
                                 <td data-order="{{ .Weeks }}">{{ .WeeksNice }}</td>

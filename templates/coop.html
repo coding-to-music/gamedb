@@ -40,10 +40,10 @@
             <div class="players clearfix mb-4">
             {{ range $key, $value := .Players }}
             {{ if eq .PlayerID 0 }}
-                <img data-toggle="tooltip" data-placement="top" title="Unknown Player" src="{{.GetDefaultAvatar}}" class="rounded avatar">
+                <img data-toggle="tooltip" data-placement="top" title="Unknown Player" alt="Unknown Player" src="{{.GetDefaultAvatar}}" class="rounded avatar">
             {{ else }}
                 <a href="{{.GetPath}}">
-                    <img data-toggle="tooltip" data-placement="top" title="{{ .PersonaName }}" src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                    <img data-toggle="tooltip" data-placement="top" title="{{ .PersonaName }}" alt="{{ .PersonaName }}" src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
                 </a>
             {{ end }}
             {{ end }}
@@ -65,7 +65,7 @@
                 {{ range $key, $value := .Games }}
                     <tr data-link="/games/{{ .Game.ID }}">
                         <td class="img" data-app-id="{{ .Game.ID }}">
-                            <img src="{{.Game.GetIcon}}" class="rounded square">
+                            <img src="{{.Game.GetIcon}}" class="rounded square" alt="{{ .Game.GetName }}">
                             <span>{{ .Game.GetName }}</span>
                         </td>
                         <td class="platforms">{{ .Game.GetPlatformImages }}</td>
