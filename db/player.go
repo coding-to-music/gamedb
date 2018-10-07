@@ -38,11 +38,11 @@ type Player struct {
 	PersonaName      string    `datastore:"persona_name,noindex"`     //
 	RealName         string    `datastore:"real_name,noindex"`        //
 	CountryCode      string    `datastore:"country_code"`             //
-	StateCode        string    `datastore:"status_code"`              //
+	StateCode        string    `datastore:"status_code,noindex"`      //
 	Level            int       `datastore:"level"`                    //
 	GamesRecent      string    `datastore:"games_recent,noindex"`     // JSON
 	GamesCount       int       `datastore:"games_count"`              //
-	GameStats        string    `datastore:"game_stats"`               //
+	GameStats        string    `datastore:"game_stats,noindex"`       // JSON
 	Badges           string    `datastore:"badges,noindex"`           // JSON
 	BadgesCount      int       `datastore:"badges_count"`             //
 	PlayTime         int       `datastore:"play_time"`                //
@@ -52,7 +52,7 @@ type Player struct {
 	Friends          string    `datastore:"friends,noindex"`          // JSON
 	FriendsCount     int       `datastore:"friends_count"`            //
 	Donated          int       `datastore:"donated"`                  //
-	Bans             string    `datastore:"bans"`                     // JSON
+	Bans             string    `datastore:"bans,noindex"`             // JSON
 	NumberOfVACBans  int       `datastore:"bans_cav"`                 //
 	NumberOfGameBans int       `datastore:"bans_game"`                //
 	Groups           []int     `datastore:"groups,noindex"`           //
