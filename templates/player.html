@@ -237,17 +237,17 @@
                         </tr>
                         <tr>
                             <th scope="row">Experience</th>
-                            <td>{{ comma .Badges.PlayerXP }}</td>
+                            <td>{{ comma .BadgeStats.PlayerXP }}</td>
                         </tr>
                         <tr>
                             <th scope="row">Next Level In</th>
-                            <td>{{ comma .Badges.PlayerXPNeededToLevelUp }}</td>
+                            <td>{{ comma .BadgeStats.PlayerXPNeededToLevelUp }}</td>
                         </tr>
                         <tr>
                             <th scope="row">This Level</th>
                             <td>
                                 <div class="progress">
-                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{ max 5 .Badges.GetPercentOfLevel }}%">{{ .Badges.GetPercentOfLevel }}%</div>
+                                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: {{ max 5 .BadgeStats.PercentOfLevel }}%">{{ .BadgeStats.PercentOfLevel }}%</div>
                                 </div>
                             </td>
                         </tr>
@@ -258,21 +258,26 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
+                            <th scope="col">Game</th>
                             <th scope="col">ID</th>
-                            <th scope="col">Level</th>
-                            <th scope="col" data-sort="desc">Acquired</th>
+                            <th scope="col" data-sort="desc">Level</th>
+                            <th scope="col">Acquired</th>
                             <th scope="col">XP</th>
                             <th scope="col">Owners</th>
-                            <th scope="col">App</th>
                             </thead>
-                        {{ range $key, $value := .Badges.Badges }}
-                            <tr>
+                        {{ range $key, $value := .Badges }}
+                            <tr{{if gt .AppID 0}} data-link="{{ .GetAppPath }}"{{end}}>
+                                <td class="img" data-order="{{ .AppName }}">
+                                {{if gt .AppID 0}}
+                                    <img src="{{ .AppIcon }}" alt="{{ .AppName }}" class="rounded square">
+                                    <span>{{ .AppName }}</span>
+                                {{end}}
+                                </td>
                                 <td>{{ comma .BadgeID }}</td>
                                 <td>{{ comma .Level }}</td>
-                                <td data-order="{{.GetTimeUnix}}" nowrap="nowrap">{{ .GetTimeNice }}</td>
+                                <td data-order="{{.CompletionTime}}" nowrap="nowrap">{{ .GetTimeFormatted }}</td>
                                 <td>{{ comma .XP }}</td>
                                 <td>{{ comma .Scarcity }}</td>
-                                <td>{{if ne .AppID 0}}<a href="/games/{{ .AppID }}">{{ comma .AppID }}</a>{{end}}</td>
                             </tr>
                         {{ end }}
                         </table>

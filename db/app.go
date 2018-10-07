@@ -98,14 +98,7 @@ type App struct {
 //}
 
 func (app App) GetPath() string {
-
-	s := "/games/" + strconv.Itoa(app.ID)
-
-	if app.Name != "" {
-		s = s + "/" + slug.Make(app.GetName())
-	}
-
-	return s
+	return getAppPath(app.ID, app.GetName())
 }
 
 func (app App) GetType() (ret string) {
@@ -949,4 +942,15 @@ func IsValidAppID(id int) bool {
 	}
 
 	return true
+}
+
+func getAppPath(id int, name string) string {
+
+	p := "/games/" + strconv.Itoa(id)
+
+	if name != "" {
+		p = p + "/" + slug.Make(name)
+	}
+
+	return p
 }

@@ -132,19 +132,12 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get badges
-	var badges steam.BadgesInfo
+	var badges []db.ProfileBadge
 	wg.Add(1)
 	go func(player db.Player) {
 
-		resp, err := player.GetBadges()
-		if err != nil {
-
-			logger.Error(err)
-
-		} else {
-
-			badges = resp.Response
-		}
+		badges, err = player.GetBadges()
+		logger.Error(err)
 
 		wg.Done()
 	}(player)
@@ -195,6 +188,17 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}(player)
 
+	// Get badge stats
+	var badgeStats db.ProfileBadgeStats
+	wg.Add(1)
+	go func(player db.Player) {
+
+		badgeStats, err = player.GetBadgeStats()
+		logger.Error(err)
+
+		wg.Done()
+	}(player)
+
 	// Wait
 	wg.Wait()
 
@@ -208,6 +212,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps = []db.PlayerApp{}
 	t.Ranks = playerRanksTemplate{*ranks, players}
 	t.Badges = badges
+	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames
 	t.Bans = bans
 
@@ -220,7 +225,8 @@ type playerTemplate struct {
 	Friends     []db.ProfileFriend
 	Apps        []db.PlayerApp
 	Ranks       playerRanksTemplate
-	Badges      steam.BadgesInfo
+	Badges      []db.ProfileBadge
+	BadgeStats  db.ProfileBadgeStats
 	RecentGames []RecentlyPlayedGame
 	Bans        steam.GetPlayerBanResponse
 }

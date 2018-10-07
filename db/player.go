@@ -47,6 +47,7 @@ type Player struct {
 	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // JSON
 	Badges           string    `datastore:"badges,noindex"`           // JSON
 	BadgesCount      int       `datastore:"badges_count"`             //
+	BadgeStats       string    `datastore:"badge_stats,noindex"`      // JSON
 	PlayTime         int       `datastore:"play_time"`                //
 	TimeCreated      time.Time `datastore:"time_created"`             //
 	LastLogOff       time.Time `datastore:"time_logged_off,noindex"`  //
@@ -137,7 +138,7 @@ func (p Player) LoadApps(sort string, limit int) (apps []PlayerApp, err error) {
 	return apps, nil
 }
 
-func (p Player) GetBadges() (badges steam.BadgesResponse, err error) {
+func (p Player) GetBadges() (badges []ProfileBadge, err error) {
 
 	var bytes []byte
 
@@ -163,6 +164,25 @@ func (p Player) GetBadges() (badges steam.BadgesResponse, err error) {
 	}
 
 	return badges, nil
+}
+
+func (p Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
+
+	var bytes = []byte(p.BadgeStats)
+
+	if len(bytes) > 0 {
+		err = json.Unmarshal(bytes, &stats)
+		if err != nil {
+			if strings.Contains(err.Error(), "cannot unmarshal") {
+				logger.Info(err.Error() + " - " + string(bytes))
+			} else {
+				logger.Error(err)
+			}
+			return stats, err
+		}
+	}
+
+	return stats, nil
 }
 
 func (p Player) GetFriends() (friends []ProfileFriend, err error) {
@@ -525,15 +545,63 @@ func (p *Player) updateRecentGames() (error) {
 
 func (p *Player) updateBadges() (error) {
 
-	badgesResponse, _, err := steami.Steam().GetBadges(p.PlayerID)
+	response, _, err := steami.Steam().GetBadges(p.PlayerID)
 	if err != nil {
 		return err
 	}
 
-	p.BadgesCount = len(badgesResponse.Badges)
+	// Save count
+	p.BadgesCount = len(response.Badges)
+
+	// Save stats
+	stats := ProfileBadgeStats{
+		PlayerXP:                   response.PlayerXP,
+		PlayerLevel:                response.PlayerLevel,
+		PlayerXPNeededToLevelUp:    response.PlayerXPNeededToLevelUp,
+		PlayerXPNeededCurrentLevel: response.PlayerXPNeededCurrentLevel,
+		PercentOfLevel:             response.GetPercentOfLevel(),
+	}
+
+	bytes, err := json.Marshal(stats)
+	if err != nil {
+		return err
+	}
+
+	p.BadgeStats = string(bytes)
+
+	// Start badges slice
+	var badgeSlice []ProfileBadge
+	var appIDSlice []int
+	for _, v := range response.Badges {
+		appIDSlice = append(appIDSlice, v.AppID)
+		badgeSlice = append(badgeSlice, ProfileBadge{
+			BadgeID:        v.BadgeID,
+			AppID:          v.AppID,
+			Level:          v.Level,
+			CompletionTime: v.CompletionTime,
+			XP:             v.XP,
+			Scarcity:       v.Scarcity,
+		})
+	}
+	appIDSlice = helpers.Unique(appIDSlice)
+
+	// Make map of app rows
+	var appRowsMap = map[int]App{}
+	appRows, err := GetApps(appIDSlice, []string{"id", "name", "icon"})
+	for _, v := range appRows {
+		appRowsMap[v.ID] = v
+	}
+
+	// Finish badges slice
+	for k, v := range badgeSlice {
+		if app, ok := appRowsMap[v.AppID]; ok {
+			badgeSlice[k].AppName = app.GetName()
+			badgeSlice[k].AppIcon = app.GetIcon()
+		}
+	}
 
 	// Encode to JSON bytes
-	bytes, err := json.Marshal(badgesResponse)
+	bytes, err = json.Marshal(badgeSlice)
 	if err != nil {
 		return err
 	}
@@ -988,4 +1056,33 @@ func (p ProfileFriend) GetDefaultAvatar() string {
 
 func (p ProfileFriend) LoggedOffNice() (string) {
 	return time.Unix(p.LoggedOff, 0).Format(helpers.DateYearTime)
+}
+
+// ProfileBadge
+type ProfileBadge struct {
+	BadgeID        int    `json:"bi"`
+	AppID          int    `json:"ai"`
+	AppName        string `json:"an"`
+	AppIcon        string `json:"ac"`
+	Level          int    `json:"lv"`
+	CompletionTime int64  `json:"ct"`
+	XP             int    `json:"xp"`
+	Scarcity       int    `json:"sc"`
+}
+
+func (p ProfileBadge) GetTimeFormatted() (string) {
+	return time.Unix(p.CompletionTime, 0).Format(helpers.DateYearTime)
+}
+
+func (p ProfileBadge) GetAppPath() (string) {
+	return getAppPath(p.AppID, p.AppName)
+}
+
+// ProfileBadge
+type ProfileBadgeStats struct {
+	PlayerXP                   int
+	PlayerLevel                int
+	PlayerXPNeededToLevelUp    int
+	PlayerXPNeededCurrentLevel int
+	PercentOfLevel             int
 }
