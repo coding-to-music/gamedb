@@ -39,7 +39,7 @@ func Serve() error {
 
 	if viper.GetString("ENV") == logger.Local {
 		r.Use(middleware.Timeout(30 * time.Second))
-		//r.Use(middleware.Logger) // todo, make middwear that logs to google
+		//r.Use(middleware.Logger) // todo, make middleware that logs to google
 	}
 
 	r.Use(middleware.GetHead)
