@@ -99,6 +99,7 @@ func Serve() error {
 	r.Get("/robots.txt", RootFileHandler)
 	r.Get("/settings", SettingsHandler)
 	r.Post("/settings", SettingsPostHandler)
+	r.Get("/settings/ajax/events", SettingsEventsAjaxHandler)
 	r.Get("/sitemap.xml", SiteMapHandler)
 	r.Get("/site.webmanifest", RootFileHandler)
 	r.Get("/stats", StatsHandler)

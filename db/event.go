@@ -55,6 +55,18 @@ func (event Event) GetType() string {
 	}
 }
 
+// Data array for datatables
+func (event Event) OutputForJSON() (output []interface{}) {
+
+	return []interface{}{
+		event.CreatedAt.Unix(),
+		event.CreatedAt.Format(helpers.DateTime),
+		event.Type,
+		event.PlayerID,
+		event.UserAgent,
+	}
+}
+
 func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) {
 
 	login := new(Event)

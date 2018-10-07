@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"sync"
 
+	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/session"
@@ -115,6 +116,16 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	returnTemplate(w, r, "settings", t)
 }
 
+type settingsTemplate struct {
+	GlobalTemplate
+	Player    db.Player
+	User      db.User
+	Events    []db.Event
+	Donations []db.Donation
+	Games     string
+	Messages  []interface{}
+}
+
 func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get user
@@ -184,14 +195,52 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type settingsTemplate struct {
-	GlobalTemplate
-	Player    db.Player
-	User      db.User
-	Events    []db.Event
-	Donations []db.Donation
-	Games     string
-	Messages  []interface{}
+func SettingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := DataTablesQuery{}
+	query.FillFromURL(r.URL.Query())
+
+	var events []db.Event
+
+	playerID, err := getPlayerIDFromSession(r)
+	if err != nil {
+
+		logger.Error(err)
+
+	} else {
+
+		client, ctx, err := db.GetDSClient()
+		if err != nil {
+
+			logger.Error(err)
+
+		} else {
+
+			q := datastore.NewQuery(db.KindEvent).Filter("player_id =", strconv.FormatInt(playerID, 10)).Limit(100)
+			q, err = query.SetOrderOffsetDS(q, map[string]string{})
+			if err != nil {
+
+				logger.Error(err)
+
+			} else {
+
+				_, err := client.GetAll(ctx, q, &events)
+				logger.Error(err)
+			}
+		}
+	}
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.Itoa(10000)
+	response.RecordsFiltered = strconv.Itoa(10000)
+	response.Draw = query.Draw
+
+	for _, v := range events {
+		response.AddRow(v.OutputForJSON())
+	}
+
+	response.output(w)
+
 }
 
 func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
