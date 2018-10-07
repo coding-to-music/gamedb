@@ -98,6 +98,9 @@ func Download(path string) (bytes []byte, err error) {
 	// Download
 	rc, err := client.Bucket(bucket).Object(path).NewReader(ctx)
 	if err != nil {
+		if err == storage.ErrObjectNotExist {
+			return bytes, nil
+		}
 		return bytes, err
 	}
 	defer rc.Close()
