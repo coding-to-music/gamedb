@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"html/template"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -194,27 +193,18 @@ func (pack Package) GetComingSoon() string {
 
 func (pack Package) GetAppIDs() (apps []int, err error) {
 
-	if pack.PICSAppIDs == "" {
-		return
-	}
-
-	bytes := []byte(pack.PICSAppIDs)
-	if err := json.Unmarshal(bytes, &apps); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return apps, err
-	}
-
-	return apps, nil
+	err = helpers.Unmarshal([]byte(pack.PICSAppIDs), &apps)
+	return apps, err
 }
 
 func (pack *Package) SetAppIDs(apps []int) (err error) {
 
 	bytes, err := json.Marshal(apps)
+	if err != nil {
 
-	pack.PICSAppIDs = string(bytes)
-	pack.AppsCount = len(apps)
+		pack.PICSAppIDs = string(bytes)
+		pack.AppsCount = len(apps)
+	}
 
 	return err
 }
@@ -260,21 +250,10 @@ func (pack *Package) SetExtended(extended Extended) (err error) {
 
 func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
 
-	if pack.PICSExtended == "" {
-		return
-	}
-
 	extended = make(map[string]interface{})
 
-	bytes := []byte(pack.PICSExtended)
-	if err := json.Unmarshal(bytes, &extended); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return extended, err
-	}
-
-	return extended, nil
+	err = helpers.Unmarshal([]byte(pack.PICSExtended), &extended)
+	return extended, err
 }
 
 // Used in temmplate
@@ -305,15 +284,8 @@ func (pack Package) GetController() (controller map[string]interface{}, err erro
 
 	controller = make(map[string]interface{})
 
-	bytes := []byte(pack.Controller)
-	if err := json.Unmarshal(bytes, &controller); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return controller, err
-	}
-
-	return controller, nil
+	err = helpers.Unmarshal([]byte(pack.Controller), &controller)
+	return controller, err
 }
 
 // Used in temmplate
@@ -342,19 +314,8 @@ func (pack Package) GetControllerNice() (ret map[string]interface{}, err error) 
 
 func (pack Package) GetPlatforms() (platforms []string, err error) {
 
-	if pack.Platforms == "" {
-		return
-	}
-
-	bytes := []byte(pack.Platforms)
-	if err := json.Unmarshal(bytes, &platforms); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return platforms, err
-	}
-
-	return platforms, nil
+	err = helpers.Unmarshal([]byte(pack.Platforms), &platforms)
+	return platforms, err
 }
 
 func (pack Package) GetPlatformImages() (ret template.HTML, err error) {

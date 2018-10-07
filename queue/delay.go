@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/streadway/amqp"
 )
 
@@ -33,7 +34,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 
 	delayMessage := RabbitMessageDelay{}
 
-	err = json.Unmarshal(msg.Body, &delayMessage)
+	err = helpers.Unmarshal(msg.Body, &delayMessage)
 	if err != nil {
 		return false, false, err
 	}

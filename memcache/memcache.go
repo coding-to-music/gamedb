@@ -5,6 +5,7 @@ import (
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/spf13/viper"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 )
 
@@ -45,14 +46,7 @@ func Get(key string, i interface{}) error {
 		return err
 	}
 
-	if len(item.Value) > 0 {
-		err = json.Unmarshal(item.Value, i)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return helpers.Unmarshal(item.Value, i)
 }
 
 func Set(key string, i interface{}, expiration int32) error {

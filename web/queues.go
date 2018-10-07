@@ -11,6 +11,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/spf13/viper"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 )
 
@@ -100,10 +101,8 @@ func GetQeueus() (resp []Queue, err error) {
 	bytes = []byte(s)
 
 	// Unmarshal JSON
-	if err := json.Unmarshal(bytes, &resp); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
+	err = helpers.Unmarshal(bytes, &resp)
+	if err != nil {
 		return resp, err
 	}
 

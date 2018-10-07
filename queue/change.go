@@ -1,13 +1,12 @@
 package queue
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/steam-authority/steam-authority/db"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/websockets"
 	"github.com/streadway/amqp"
@@ -53,12 +52,8 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	// Get change
 	message := new(RabbitMessageChanges)
 
-	err = json.Unmarshal(msg.Body, message)
+	err = helpers.Unmarshal(msg.Body, message)
 	if err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(msg.Body))
-		}
-
 		return false, false, err
 	}
 

@@ -14,7 +14,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/steami"
 	"github.com/steam-authority/steam-authority/storage"
 )
@@ -151,38 +150,14 @@ func (p Player) GetBadges() (badges []ProfileBadge, err error) {
 		bytes = []byte(p.Badges)
 	}
 
-	if len(bytes) > 0 {
-		err = json.Unmarshal(bytes, &badges)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + string(bytes))
-			} else {
-				logger.Error(err)
-			}
-			return badges, err
-		}
-	}
-
-	return badges, nil
+	err = helpers.Unmarshal(bytes, &badges)
+	return badges, err
 }
 
 func (p Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
 
-	var bytes = []byte(p.BadgeStats)
-
-	if len(bytes) > 0 {
-		err = json.Unmarshal(bytes, &stats)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + string(bytes))
-			} else {
-				logger.Error(err)
-			}
-			return stats, err
-		}
-	}
-
-	return stats, nil
+	err = helpers.Unmarshal([]byte(p.BadgeStats), &stats)
+	return stats, err
 }
 
 func (p Player) GetFriends() (friends []ProfileFriend, err error) {
@@ -198,19 +173,8 @@ func (p Player) GetFriends() (friends []ProfileFriend, err error) {
 		bytes = []byte(p.Friends)
 	}
 
-	if len(bytes) > 0 {
-		err = json.Unmarshal(bytes, &friends)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + string(bytes))
-			} else {
-				logger.Error(err)
-			}
-			return friends, err
-		}
-	}
-
-	return friends, nil
+	err = helpers.Unmarshal(bytes, &friends)
+	return friends, err
 }
 
 func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
@@ -230,55 +194,20 @@ func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
 		bytes = []byte(p.GamesRecent)
 	}
 
-	err = json.Unmarshal(bytes, &games)
-	if err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		} else {
-			logger.Error(err)
-		}
-		return games, err
-	}
-
-	return games, nil
+	err = helpers.Unmarshal(bytes, &games)
+	return games, err
 }
 
 func (p Player) GetBans() (bans steam.GetPlayerBanResponse, err error) {
 
-	bytes := []byte(p.Bans)
-
-	if len(bytes) > 0 {
-		err = json.Unmarshal(bytes, &bans)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + string(bytes))
-			} else {
-				logger.Error(err)
-			}
-			return bans, err
-		}
-	}
-
-	return bans, nil
+	err = helpers.Unmarshal([]byte(p.Bans), &bans)
+	return bans, err
 }
 
 func (p Player) GetGameStats() (stats PlayerAppStatsTemplate, err error) {
 
-	bytes := []byte(p.GameStats)
-
-	if len(bytes) > 0 {
-		err = json.Unmarshal(bytes, &stats)
-		if err != nil {
-			if strings.Contains(err.Error(), "cannot unmarshal") {
-				logger.Info(err.Error() + " - " + string(bytes))
-			} else {
-				logger.Error(err)
-			}
-			return stats, err
-		}
-	}
-
-	return stats, nil
+	err = helpers.Unmarshal([]byte(p.GameStats), &stats)
+	return stats, err
 }
 
 func (p Player) ShouldUpdateFriends() bool {

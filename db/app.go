@@ -211,10 +211,8 @@ func (app App) GetMetacriticLink() template.URL {
 func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err error) {
 
 	bytes := []byte(app.Screenshots)
-	if err := json.Unmarshal(bytes, &screenshots); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
+	err = helpers.Unmarshal(bytes, &screenshots)
+	if err != nil {
 		return screenshots, err
 	}
 
@@ -242,14 +240,12 @@ func (app App) GetCoopTags(tagMap map[int]string) string {
 func (app App) GetAchievements() (achievements steam.AppDetailsAchievements, err error) {
 
 	bytes := []byte(app.Achievements)
-	if err := json.Unmarshal(bytes, &achievements); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
+	err = helpers.Unmarshal(bytes, &achievements)
+	if err != nil {
 		return achievements, err
 	}
 
-	return achievements, nil
+	return achievements, err
 }
 
 func (app App) GetPlatforms() (platforms []string, err error) {
@@ -259,10 +255,8 @@ func (app App) GetPlatforms() (platforms []string, err error) {
 		return platforms, nil
 	}
 
-	if err := json.Unmarshal(bytes, &platforms); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
+	err = helpers.Unmarshal(bytes, &platforms)
+	if err != nil {
 		return platforms, err
 	}
 
@@ -299,85 +293,38 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 
 func (app App) GetDLC() (dlcs []int, err error) {
 
-	bytes := []byte(app.DLC)
-	if err := json.Unmarshal(bytes, &dlcs); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return dlcs, err
-	}
-
-	return dlcs, nil
+	err = helpers.Unmarshal([]byte(app.DLC), &dlcs)
+	return dlcs, err
 }
 
 func (app App) GetPackages() (packages []int, err error) {
 
-	bytes := []byte(app.Packages)
-	if err := json.Unmarshal(bytes, &packages); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return packages, err
-	}
-
-	return packages, nil
+	err = helpers.Unmarshal([]byte(app.Packages), &packages)
+	return packages, err
 }
 
 func (app App) GetReviews() (reviews steam.ReviewsResponse, err error) {
 
-	bytes := []byte(app.Reviews)
-
-	if len(bytes) == 0 {
-		return reviews, nil
-	}
-
-	if err := json.Unmarshal(bytes, &reviews); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return reviews, err
-	}
-
-	return reviews, nil
+	err = helpers.Unmarshal([]byte(app.Reviews), &reviews)
+	return reviews, err
 }
 
 func (app App) GetGenres() (genres []steam.AppDetailsGenre, err error) {
 
-	bytes := []byte(app.Genres)
-	if err := json.Unmarshal(bytes, &genres); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return genres, err
-	}
-
-	return genres, nil
+	err = helpers.Unmarshal([]byte(app.Genres), &genres)
+	return genres, err
 }
 
 func (app App) GetCategories() (categories []string, err error) {
 
-	bytes := []byte(app.Categories)
-	if err := json.Unmarshal(bytes, &categories); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return categories, err
-	}
-
-	return categories, nil
+	err = helpers.Unmarshal([]byte(app.Categories), &categories)
+	return categories, err
 }
 
 func (app App) GetTagIDs() (tags []int, err error) {
 
-	bytes := []byte(app.StoreTags)
-	if err := json.Unmarshal(bytes, &tags); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return tags, err
-	}
-
-	return tags, nil
+	err = helpers.Unmarshal([]byte(app.StoreTags), &tags)
+	return tags, err
 }
 
 func (app App) GetTags() (tags []Tag, err error) {
@@ -397,28 +344,14 @@ func (app App) GetTags() (tags []Tag, err error) {
 
 func (app App) GetDevelopers() (developers []string, err error) {
 
-	bytes := []byte(app.Developers)
-	if err := json.Unmarshal(bytes, &developers); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return developers, err
-	}
-
-	return developers, nil
+	err = helpers.Unmarshal([]byte(app.Developers), &developers)
+	return developers, err
 }
 
 func (app App) GetPublishers() (publishers []string, err error) {
 
-	bytes := []byte(app.Publishers)
-	if err := json.Unmarshal(bytes, &publishers); err != nil {
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-			logger.Info(err.Error() + " - " + string(bytes))
-		}
-		return publishers, err
-	}
-
-	return publishers, nil
+	err = helpers.Unmarshal([]byte(app.Publishers), &publishers)
+	return publishers, err
 }
 
 func (app App) GetName() (name string) {
