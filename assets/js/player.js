@@ -44,53 +44,58 @@ if ($('#player-page').length > 0) {
         ]
     }));
 
-    Highcharts.chart('heatmap', {
-        chart: {
-            type: 'heatmap'
-        },
-        title: {
-            text: ''
-        },
-        subtitle: {
-            text: ''
-        },
-        xAxis: {
-            categories: [''],
+    if (heatMapData.length > 0) {
+
+        $('#heatmap').height(120);
+
+        Highcharts.chart('heatmap', {
+            chart: {
+                type: 'heatmap'
+            },
             title: {
                 text: ''
-            }
-        },
-        yAxis: {
-            categories: [''],
-            title: {
+            },
+            subtitle: {
                 text: ''
-            }
-        },
-        credits: {
-            enabled: false
-        },
-        colorAxis: {
-            min: 0,
-            minColor: '#FFFFFF',
-            maxColor: '#28a745'
-        },
-        legend: {
-            enabled: false
-        },
-        tooltip: {
-            formatter: function () {
-                return this.point.value + ' apps cost $' + this.point.x;
-            }
-        },
-        series: [{
-            name: '',
-            borderWidth: 0,
-            color: '#000',
-            data: heatMapData,
-            dataLabels: {
-                enabled: false,
-                color: '#000000'
-            }
-        }]
-    });
+            },
+            xAxis: {
+                categories: [''],
+                title: {
+                    text: ''
+                }
+            },
+            yAxis: {
+                categories: [''],
+                title: {
+                    text: ''
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            colorAxis: {
+                min: 0,
+                minColor: '#FFFFFF',
+                maxColor: '#28a745'
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                formatter: function () {
+                    return this.point.value + ' apps cost $' + this.point.x;
+                }
+            },
+            series: [{
+                name: '',
+                borderWidth: 0,
+                color: '#000',
+                data: heatMapData,
+                dataLabels: {
+                    enabled: false,
+                    color: '#000000'
+                }
+            }]
+        });
+    }
 }

@@ -101,6 +101,14 @@ func (p Player) GetSteamCommunityLink() string {
 	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(p.PlayerID, 10)
 }
 
+func (p Player) GetGameHeatMap() string {
+
+	if p.GameHeatMap == "" {
+		return "[]"
+	}
+	return p.GameHeatMap
+}
+
 func (p Player) GetAvatar() string {
 	if strings.HasPrefix(p.Avatar, "http") {
 		return p.Avatar
