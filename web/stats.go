@@ -13,7 +13,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	// Get type
+	// Get app review scores
 	var scores []appScore
 	wg.Add(1)
 	go func() {
@@ -44,7 +44,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := statsTemplate{}
 	t.Fill(w, r, "Stats")
-	t.Scores = t.makeScoresJSON(scores)
+	t.setScoresJSON(scores)
 
 	returnTemplate(w, r, "stats", t)
 }
@@ -54,7 +54,7 @@ type statsTemplate struct {
 	Scores string
 }
 
-func (s statsTemplate) makeScoresJSON(scores []appScore) (j string) {
+func (s *statsTemplate) setScoresJSON(scores []appScore) {
 
 	ret := make([][]int, 101) // 0-100
 	for i := 0; i <= 100; i++ {
@@ -67,7 +67,7 @@ func (s statsTemplate) makeScoresJSON(scores []appScore) (j string) {
 	bytes, err := json.Marshal(ret)
 	logger.Error(err)
 
-	return string(bytes)
+	s.Scores = string(bytes)
 }
 
 type appScore struct {

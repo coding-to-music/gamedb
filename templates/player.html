@@ -341,6 +341,9 @@
                         </div>
                     </div>
 
+                    <script>var heatMapData = JSON.parse('{{ .Player.GameHeatMap }}');</script>
+                    <div id="heatmap"></div>
+
                 {{/* Recent Games */}}
                 {{ if gt (len .RecentGames) 0}}
                     <h5>Recent Games</h5>

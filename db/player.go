@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	"errors"
+	"math"
 	"path"
 	"strconv"
 	"strings"
@@ -43,6 +44,7 @@ type Player struct {
 	GamesRecent      string    `datastore:"games_recent,noindex"`     // JSON
 	GamesCount       int       `datastore:"games_count"`              //
 	GameStats        string    `datastore:"game_stats,noindex"`       // JSON
+	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // JSON
 	Badges           string    `datastore:"badges,noindex"`           // JSON
 	BadgesCount      int       `datastore:"badges_count"`             //
 	PlayTime         int       `datastore:"play_time"`                //
@@ -426,7 +428,9 @@ func (p *Player) updateGames() (error) {
 
 	// Go get price info from MySQL
 	gamesSQL, err := GetApps(appIDs, []string{"id", "price_final"})
-	logger.Error(err)
+	if err != nil {
+		return err
+	}
 
 	for _, v := range gamesSQL {
 		if v.PriceFinal > 0 {
@@ -442,7 +446,9 @@ func (p *Player) updateGames() (error) {
 	}
 
 	err = BulkSaveKinds(appsSlice, KindPlayerApp)
-	logger.Error(err)
+	if err != nil {
+		return err
+	}
 
 	// Make stats
 	var gameStats = PlayerAppStatsTemplate{}
@@ -455,7 +461,36 @@ func (p *Player) updateGames() (error) {
 	}
 
 	bytes, err := json.Marshal(gameStats)
+	if err != nil {
+		return err
+	}
+
 	p.GameStats = string(bytes)
+
+	// Make heatmap
+	var roundedPrices []int
+	var maxPrice int
+	for _, v := range appsMap {
+		var roundedPrice = int(math.Round(float64(v.AppPrice) / 100))
+		roundedPrices = append(roundedPrices, roundedPrice)
+		maxPrice = int(math.Max(float64(roundedPrice), float64(maxPrice)))
+	}
+
+	ret := make([][]int, maxPrice+1) // 0-maxPrice
+	for i := 0; i <= maxPrice; i++ {
+		ret[i] = []int{0, 0}
+	}
+	for _, v := range roundedPrices {
+		prevCount := ret[v][1]
+		ret[v] = []int{0, prevCount + 1}
+	}
+
+	bytes, err = json.Marshal(ret)
+	if err != nil {
+		return err
+	}
+
+	p.GameHeatMap = string(bytes)
 
 	return nil
 }
