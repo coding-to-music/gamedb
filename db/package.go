@@ -212,15 +212,25 @@ func (pack *Package) SetAppIDs(apps []int) (err error) {
 func (pack *Package) SetDepotIDs(apps []int) (err error) {
 
 	bytes, err := json.Marshal(apps)
+	if err != nil {
+		return err
+	}
+
 	pack.PICSDepotIDs = string(bytes)
-	return err
+
+	return nil
 }
 
 func (pack *Package) SetAppItems(items map[string]string) (err error) {
 
 	bytes, err := json.Marshal(items)
+	if err != nil {
+		return err
+	}
+
 	pack.PICSAppItems = string(bytes)
-	return err
+
+	return nil
 }
 
 func (pack Package) GetPriceInitial() float64 {
@@ -244,8 +254,13 @@ type Extended map[string]string
 func (pack *Package) SetExtended(extended Extended) (err error) {
 
 	bytes, err := json.Marshal(extended)
+	if err != nil {
+		return err
+	}
+
 	pack.PICSExtended = string(bytes)
-	return err
+
+	return nil
 }
 
 func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
@@ -398,7 +413,7 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 func CountPackages() (count int, err error) {
 
-	count, err = memcache.GetSetInt(memcache.PackagesCount, &count, func() (count int, err error) {
+	return memcache.GetSetInt(memcache.PackagesCount, &count, func() (count int, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -412,12 +427,6 @@ func CountPackages() (count int, err error) {
 
 		return count, nil
 	})
-
-	if err != nil {
-		return count, err
-	}
-
-	return count, nil
 }
 
 // GORM callback

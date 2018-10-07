@@ -116,10 +116,6 @@ func GetAppPrices(appID int, limit int) (prices []AppPrice, err error) {
 	q = q.Filter("currency =", "usd")
 
 	_, err = client.GetAll(ctx, q, &prices)
-	if err != nil {
-		return
-	}
-
 	return prices, err
 }
 
@@ -139,9 +135,5 @@ func GetPackagePrices(packageID int, limit int) (prices []AppPrice, err error) {
 	q = q.Filter("currency =", "usd")
 
 	_, err = client.GetAll(ctx, q, &prices)
-	if err != nil {
-		return
-	}
-
 	return prices, err
 }

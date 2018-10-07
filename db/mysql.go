@@ -23,7 +23,6 @@ var (
 
 func SetDebug(val bool) {
 	debug = val
-	return
 }
 
 func GetMySQLClient() (conn *gorm.DB, err error) {
@@ -211,7 +210,7 @@ func getMysqlConnection() (db *sql.DB, err error) {
 	return mysqlConnection, nil
 }
 
-//
+// UpdateInsertData
 type UpdateInsertData map[string]interface{}
 
 func (ui UpdateInsertData) sortedColumns() (columns []string) {

@@ -147,9 +147,8 @@ func (app App) GetIcon() (ret string) {
 
 	if app.Icon == "" {
 		return "/assets/img/no-app-image-square.jpg"
-	} else {
-		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(app.ID) + "/" + app.Icon + ".jpg"
 	}
+	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(app.ID) + "/" + app.Icon + ".jpg"
 }
 
 func (app App) GetPriceInitial() float64 {
@@ -161,11 +160,11 @@ func (app App) GetPriceFinal() float64 {
 }
 
 func (app App) GetPriceFinalNice() string {
+
 	if app.PriceFinal == 0 {
 		return "Free"
-	} else {
-		return "$" + strconv.FormatFloat(app.GetPriceFinal(), 'f', 2, 64)
 	}
+	return "$" + strconv.FormatFloat(app.GetPriceFinal(), 'f', 2, 64)
 }
 
 func (app App) GetReviewScore() float64 {
@@ -210,21 +209,16 @@ func (app App) GetMetacriticLink() template.URL {
 // Used in template
 func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err error) {
 
-	bytes := []byte(app.Screenshots)
-	err = helpers.Unmarshal(bytes, &screenshots)
-	if err != nil {
-		return screenshots, err
-	}
-
-	return screenshots, nil
+	err = helpers.Unmarshal([]byte(app.Screenshots), &screenshots)
+	return screenshots, err
 }
 
-// Used in template
 func (app App) GetCoopTags(tagMap map[int]string) string {
 
 	tags, err := app.GetTagIDs()
 	if err != nil {
 		logger.Error(err)
+		return ""
 	}
 
 	var coopTags []string
@@ -239,28 +233,14 @@ func (app App) GetCoopTags(tagMap map[int]string) string {
 
 func (app App) GetAchievements() (achievements steam.AppDetailsAchievements, err error) {
 
-	bytes := []byte(app.Achievements)
-	err = helpers.Unmarshal(bytes, &achievements)
-	if err != nil {
-		return achievements, err
-	}
-
+	err = helpers.Unmarshal([]byte(app.Achievements), &achievements)
 	return achievements, err
 }
 
 func (app App) GetPlatforms() (platforms []string, err error) {
 
-	bytes := []byte(app.Platforms)
-	if len(bytes) == 0 {
-		return platforms, nil
-	}
-
-	err = helpers.Unmarshal(bytes, &platforms)
-	if err != nil {
-		return platforms, err
-	}
-
-	return platforms, nil
+	err = helpers.Unmarshal([]byte(app.Platforms), &platforms)
+	return platforms, err
 }
 
 func (app App) GetPlatformImages() (ret template.HTML, err error) {
@@ -334,12 +314,7 @@ func (app App) GetTags() (tags []Tag, err error) {
 		return tags, err
 	}
 
-	tags, err = GetTagsByID(ids)
-	if err != nil {
-		return tags, err
-	}
-
-	return tags, nil
+	return GetTagsByID(ids)
 }
 
 func (app App) GetDevelopers() (developers []string, err error) {
@@ -356,16 +331,10 @@ func (app App) GetPublishers() (publishers []string, err error) {
 
 func (app App) GetName() (name string) {
 
-	if app.Name == "" {
-		return "App " + humanize.Comma(int64(app.ID))
+	if app.Name != "" {
+		return app.Name
 	}
-
-	return app.Name
-}
-
-func (app App) shouldUpdate(userAgent string) bool {
-
-	return false
+	return "App " + humanize.Comma(int64(app.ID))
 }
 
 // Things that need to happen closer to dailer than when there is an app change
@@ -731,7 +700,7 @@ func GetApp(id int) (app App, err error) {
 	return app, nil
 }
 
-func GetApps(ids []int, columns []string) (apps []App, err error) {
+func GetApps(ids []int, columns []string) (apps []App, err error) { // todo, chunk id into multple queries
 
 	if len(ids) < 1 {
 		return apps, nil
@@ -846,7 +815,7 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	count, err = memcache.GetSetInt(memcache.AppsCount, &count, func() (count int, err error) {
+	return memcache.GetSetInt(memcache.AppsCount, &count, func() (count int, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -860,12 +829,6 @@ func CountApps() (count int, err error) {
 
 		return count, nil
 	})
-
-	if err != nil {
-		return count, err
-	}
-
-	return count, nil
 }
 
 func IsValidAppID(id int) bool {

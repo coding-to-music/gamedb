@@ -66,7 +66,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
-		resp, err := player.LoadApps("app_name", 0)
+		resp, err := player.GetAllPlayerApps("app_name", 0)
 		if err != nil {
 			logger.Error(err)
 			return

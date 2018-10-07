@@ -38,16 +38,6 @@ func (article News) GetNiceDate() (string) {
 	return article.Date.Format(helpers.DateYear)
 }
 
-func (article *News) Tidy() *News {
-
-	article.UpdatedAt = time.Now()
-	if article.CreatedAt.IsZero() {
-		article.CreatedAt = time.Now()
-	}
-
-	return article
-}
-
 func GetArticles(appID int, limit int) (articles []News, err error) {
 
 	client, ctx, err := GetDSClient()
@@ -109,29 +99,3 @@ func GetNewArticles(appID int) (articles []*News, err error) {
 
 	return articles, nil
 }
-
-//func BulkAddArticles(articles []*News) (err error) {
-//
-//	articlesLen := len(articles)
-//	if articlesLen == 0 {
-//		return nil
-//	}
-//
-//	client, context, err := GetDSClient()
-//	if err != nil {
-//		return err
-//	}
-//
-//	keys := make([]*datastore.Key, 0, articlesLen)
-//
-//	for _, v := range articles {
-//		keys = append(keys, v.GetKey())
-//	}
-//
-//	_, err = client.PutMulti(context, keys, articles)
-//	if err != nil {
-//		return err
-//	}
-//
-//	return nil
-//}

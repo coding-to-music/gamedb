@@ -69,7 +69,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		go func(player db.Player) {
 
 			var x []int
-			resp, err := player.LoadApps("app_name", 0)
+			resp, err := player.GetAllPlayerApps("app_name", 0)
 			if err != nil {
 				logger.Error(err)
 				return

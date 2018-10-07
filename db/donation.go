@@ -45,9 +45,5 @@ func GetDonations(playerID int64, limit int) (donations []Donation, err error) {
 	}
 
 	_, err = client.GetAll(ctx, q, &donations)
-	if err != nil {
-		return
-	}
-
 	return donations, err
 }

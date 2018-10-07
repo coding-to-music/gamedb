@@ -75,16 +75,6 @@ func (rank PlayerRank) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(rank.PlayTime, 5)
 }
 
-func (rank *PlayerRank) Tidy() *PlayerRank {
-
-	rank.UpdatedAt = time.Now()
-	if rank.CreatedAt.IsZero() {
-		rank.CreatedAt = time.Now()
-	}
-
-	return rank
-}
-
 func GetRank(playerID int64) (rank *PlayerRank, err error) {
 
 	client, context, err := GetDSClient()
@@ -98,7 +88,6 @@ func GetRank(playerID int64) (rank *PlayerRank, err error) {
 	rank.PlayerID = playerID
 
 	err = client.Get(context, key, rank)
-
 	return rank, err
 }
 
@@ -137,7 +126,7 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 func CountRanks() (count int, err error) {
 
-	count, err = memcache.GetSetInt(memcache.RanksCount, &count, func() (count int, err error) {
+	return memcache.GetSetInt(memcache.RanksCount, &count, func() (count int, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
@@ -152,12 +141,6 @@ func CountRanks() (count int, err error) {
 
 		return count, nil
 	})
-
-	if err != nil {
-		return count, err
-	}
-
-	return count, nil
 }
 
 func NewRankFromPlayer(player Player) (rank *PlayerRank) {
@@ -182,92 +165,3 @@ func NewRankFromPlayer(player Player) (rank *PlayerRank) {
 
 	return rank
 }
-
-//func BulkSaveRanks(ranks []*PlayerRank) (err error) {
-//
-//	if len(ranks) == 0 {
-//		return nil
-//	}
-//
-//	client, context, err := GetDSClient()
-//	if err != nil {
-//		return err
-//	}
-//
-//	chunks := chunkRanks(ranks, 500)
-//
-//	for _, v := range chunks {
-//
-//		keys := make([]*datastore.Key, 0, len(v))
-//		for _, vv := range v {
-//			keys = append(keys, vv.GetKey())
-//		}
-//
-//		_, err = client.PutMulti(context, keys, v)
-//		if err != nil {
-//			logger.Error(err)
-//		}
-//	}
-//
-//	return nil
-//}
-
-//func BulkDeleteRanks(keys map[int64]*datastore.Key) (err error) {
-//
-//	if len(keys) == 0 {
-//		return nil
-//	}
-//
-//	// Make map a slice
-//	var keysToDelete []*datastore.Key
-//	for _, v := range keys {
-//		keysToDelete = append(keysToDelete, v)
-//	}
-//
-//	client, ctx, err := GetDSClient()
-//	if err != nil {
-//		return err
-//	}
-//
-//	chunks := chunkRankKeys(keysToDelete, 500)
-//
-//	for _, v := range chunks {
-//
-//		err = client.DeleteMulti(ctx, v)
-//		if err != nil {
-//			return err
-//		}
-//	}
-//
-//	return nil
-//}
-
-//func chunkRanks(ranks []*PlayerRank, chunkSize int) (divided [][]*PlayerRank) {
-//
-//	for i := 0; i < len(ranks); i += chunkSize {
-//		end := i + chunkSize
-//
-//		if end > len(ranks) {
-//			end = len(ranks)
-//		}
-//
-//		divided = append(divided, ranks[i:end])
-//	}
-//
-//	return divided
-//}
-
-//func chunkRankKeys(logs []*datastore.Key, chunkSize int) (divided [][]*datastore.Key) {
-//
-//	for i := 0; i < len(logs); i += chunkSize {
-//		end := i + chunkSize
-//
-//		if end > len(logs) {
-//			end = len(logs)
-//		}
-//
-//		divided = append(divided, logs[i:end])
-//	}
-//
-//	return divided
-//}

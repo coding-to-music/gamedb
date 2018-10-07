@@ -65,7 +65,6 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 	login.IP = r.Header.Get("X-Forwarded-For")
 
 	_, err = SaveKind(login.GetKey(), login)
-
 	return err
 }
 
@@ -89,9 +88,5 @@ func GetEvents(playerID int64, limit int, eventType string) (logins []Event, err
 	}
 
 	_, err = client.GetAll(ctx, q, &logins)
-	if err != nil {
-		return
-	}
-
 	return logins, err
 }

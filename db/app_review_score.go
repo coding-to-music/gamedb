@@ -43,9 +43,5 @@ func GetAppReviewScores(appID int64) (scores []AppReviewScore, err error) {
 	q = q.Order("created_at")
 
 	_, err = client.GetAll(ctx, q, &scores)
-	if err != nil {
-		return
-	}
-
 	return
 }

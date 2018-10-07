@@ -123,21 +123,32 @@ func (p Player) GetCountry() string {
 	return helpers.CountryCodeToName(p.CountryCode)
 }
 
-func (p Player) LoadApps(sort string, limit int) (apps []PlayerApp, err error) {
+func (p Player) GetAllPlayerApps(sort string, limit int) (apps []PlayerApp, err error) { // todo, only return keys!! (Use ParsePlayerAppKey func)
 
 	if p.GamesCount == 0 {
 		return apps, err
 	}
 
-	apps, err = GetPlayerApps(p.PlayerID, sort, limit)
+	client, ctx, err := GetDSClient()
 	if err != nil {
 		return apps, err
 	}
 
-	return apps, nil
+	q := datastore.NewQuery(KindPlayerApp).Filter("player_id =", p.PlayerID).Order(sort)
+
+	if limit > 0 {
+		q.Limit(limit)
+	}
+
+	_, err = client.GetAll(ctx, q, &apps)
+	return apps, err
 }
 
 func (p Player) GetBadges() (badges []ProfileBadge, err error) {
+
+	if p.Badges == "" {
+		return
+	}
 
 	var bytes []byte
 
@@ -161,6 +172,10 @@ func (p Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
 }
 
 func (p Player) GetFriends() (friends []ProfileFriend, err error) {
+
+	if p.Friends == "" {
+		return
+	}
 
 	var bytes []byte
 
@@ -807,11 +822,7 @@ func GetAllPlayers(order string, limit int) (players []Player, err error) {
 	_, err = client.GetAll(ctx, q, &players)
 
 	err = checkForMissingPlayerFields(err)
-	if err != nil {
-		return players, err
-	}
-
-	return players, nil
+	return players, err
 }
 
 func GetPlayersByIDs(ids []int64) (players []Player, err error) {
@@ -881,7 +892,7 @@ func checkGetMultiPlayerErrors(err error) error {
 	return nil
 }
 
-func CountPlayers() (count int, err error) {
+func CountPlayers() (count int, err error) { // todo memcache heavily
 
 	if cachePlayersCount == 0 {
 
