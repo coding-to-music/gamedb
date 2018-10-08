@@ -700,7 +700,7 @@ func GetApp(id int) (app App, err error) {
 	return app, nil
 }
 
-func GetApps(ids []int, columns []string) (apps []App, err error) { // todo, chunk id into multple queries
+func GetApps(ids []int, columns []string) (apps []App, err error) { // todo, chunk ids into multple queries async
 
 	if len(ids) < 1 {
 		return apps, nil
