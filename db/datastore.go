@@ -11,16 +11,16 @@ import (
 )
 
 const (
-	KindArticle        = "Article"
+	KindAppOverTime    = "AppOverTime"
+	KindAppPrice       = "AppPrice"
 	KindChange         = "Change"
 	KindDonation       = "Donation"
 	KindEvent          = "Event"
+	KindNews           = "News"
 	KindPlayer         = "Player"
 	KindPlayerApp      = "PlayerApp"
-	KindPlayerRankTime = "PlayerRankTime"
-	KindPrice          = "Price"
-	KindRank           = "Rank"
-	KindAppReviewScore = "AppReviewScore"
+	KindPlayerOverTime = "PlayerOverTime"
+	KindPlayerRank     = "PlayerRank"
 )
 
 var (
@@ -87,13 +87,13 @@ func BulkSaveKinds(kinds []Kind, kind string) (err error) {
 		}
 
 		switch kind {
-		case KindArticle:
+		case KindNews:
 			_, err = client.PutMulti(ctx, keys, kindsToNews(chunk))
 		case KindPlayerApp:
 			_, err = client.PutMulti(ctx, keys, kindsToPlayerApps(chunk))
 		case KindChange:
 			_, err = client.PutMulti(ctx, keys, kindsToChanges(chunk))
-		case KindRank:
+		case KindPlayerRank:
 			_, err = client.PutMulti(ctx, keys, kindsToPlayerRanks(chunk))
 		}
 

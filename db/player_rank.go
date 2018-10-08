@@ -33,7 +33,7 @@ type PlayerRank struct {
 }
 
 func (rank PlayerRank) GetKey() (key *datastore.Key) {
-	return datastore.NameKey(KindRank, strconv.FormatInt(rank.PlayerID, 10), nil)
+	return datastore.NameKey(KindPlayerRank, strconv.FormatInt(rank.PlayerID, 10), nil)
 }
 
 func (rank PlayerRank) GetAvatar() string {
@@ -82,7 +82,7 @@ func GetRank(playerID int64) (rank *PlayerRank, err error) {
 		return rank, err
 	}
 
-	key := datastore.NameKey(KindRank, strconv.FormatInt(playerID, 10), nil)
+	key := datastore.NameKey(KindPlayerRank, strconv.FormatInt(playerID, 10), nil)
 
 	rank = new(PlayerRank)
 	rank.PlayerID = playerID
@@ -101,7 +101,7 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 		return keysMap, err
 	}
 
-	q := datastore.NewQuery(KindRank).KeysOnly()
+	q := datastore.NewQuery(KindPlayerRank).KeysOnly()
 	keys, err := client.GetAll(ctx, q, nil)
 	if err != nil {
 		return
@@ -133,7 +133,7 @@ func CountRanks() (count int, err error) {
 			return count, err
 		}
 
-		q := datastore.NewQuery(KindRank)
+		q := datastore.NewQuery(KindPlayerRank)
 		count, err = client.Count(ctx, q)
 		if err != nil {
 			return count, err

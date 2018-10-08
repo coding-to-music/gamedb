@@ -53,7 +53,7 @@ func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				"5": "created_at",
 			}
 
-			q := datastore.NewQuery(db.KindPrice).Limit(100)
+			q := datastore.NewQuery(db.KindAppPrice).Limit(100)
 			q = q.Filter("currency =", "usd")
 			q = q.Filter("first =", false)
 

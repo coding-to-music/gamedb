@@ -27,7 +27,7 @@ type AppPrice struct {
 }
 
 func (p AppPrice) GetKey() (key *datastore.Key) {
-	return datastore.IncompleteKey(KindPrice, nil)
+	return datastore.IncompleteKey(KindAppPrice, nil)
 }
 
 func (p AppPrice) GetPath() string {
@@ -111,7 +111,7 @@ func GetAppPrices(appID int, limit int) (prices []AppPrice, err error) {
 		limit = 100
 	}
 
-	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(limit)
+	q := datastore.NewQuery(KindAppPrice).Order("created_at").Limit(limit)
 	q = q.Filter("app_id =", appID)
 	q = q.Filter("currency =", "usd")
 
@@ -130,7 +130,7 @@ func GetPackagePrices(packageID int, limit int) (prices []AppPrice, err error) {
 		limit = 100
 	}
 
-	q := datastore.NewQuery(KindPrice).Order("created_at").Limit(limit)
+	q := datastore.NewQuery(KindAppPrice).Order("created_at").Limit(limit)
 	q = q.Filter("package_id =", packageID)
 	q = q.Filter("currency =", "usd")
 

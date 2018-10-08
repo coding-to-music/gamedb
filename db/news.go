@@ -27,7 +27,7 @@ type News struct {
 }
 
 func (article News) GetKey() (key *datastore.Key) {
-	return datastore.NameKey(KindArticle, strconv.FormatInt(article.ArticleID, 10), nil)
+	return datastore.NameKey(KindNews, strconv.FormatInt(article.ArticleID, 10), nil)
 }
 
 func (article News) GetTimestamp() (int64) {
@@ -45,7 +45,7 @@ func GetArticles(appID int, limit int) (articles []News, err error) {
 		return articles, err
 	}
 
-	q := datastore.NewQuery(KindArticle).Order("-date").Limit(limit)
+	q := datastore.NewQuery(KindNews).Order("-date").Limit(limit)
 
 	if appID != 0 {
 		q = q.Filter("app_id =", appID)

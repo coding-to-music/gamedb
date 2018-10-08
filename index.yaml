@@ -1,7 +1,7 @@
 indexes:
 
 # App Page - News Tab
-- kind: "Article"
+- kind: "News"
   properties:
   - name: "app_id"
   - name: "date"
@@ -64,7 +64,7 @@ indexes:
     direction: "desc"
 
 # App Page - Prices tab
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "app_id"
   - name: "currency"
@@ -72,7 +72,7 @@ indexes:
     direction: "asc"
 
 # Package Page - Prices tab
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "package_id"
   - name: "currency"
@@ -80,70 +80,70 @@ indexes:
     direction: "asc"
 
 # Price Changes Page
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "release_date_unix"
     direction: "asc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "release_date_unix"
     direction: "desc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "price_final"
     direction: "asc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "price_final"
     direction: "desc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "discount"
     direction: "asc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "discount"
     direction: "desc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "change"
     direction: "asc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "change"
     direction: "desc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"
   - name: "created_at"
     direction: "asc"
 
-- kind: "Price"
+- kind: "AppPrice"
   properties:
   - name: "currency"
   - name: "first"

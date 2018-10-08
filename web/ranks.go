@@ -139,7 +139,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				"7": "friends_rank",
 			}
 
-			q := datastore.NewQuery(db.KindRank).Limit(ranksLimit)
+			q := datastore.NewQuery(db.KindPlayerRank).Limit(ranksLimit)
 
 			column := query.GetOrderDS(columns, false)
 			if column != "" {

@@ -6,7 +6,7 @@ import (
 	"cloud.google.com/go/datastore"
 )
 
-type AppReviewScore struct {
+type AppOverTime struct {
 	AppID           int       `datastore:"app_id"`
 	CreatedAt       time.Time `datastore:"created_at"`
 	Score           float64   `datastore:"score"`
@@ -14,13 +14,13 @@ type AppReviewScore struct {
 	ReviewsNegative int       `datastore:"reviews_negative"`
 }
 
-func (p AppReviewScore) GetKey() (key *datastore.Key) {
-	return datastore.IncompleteKey(KindAppReviewScore, nil)
+func (p AppOverTime) GetKey() (key *datastore.Key) {
+	return datastore.IncompleteKey(KindAppOverTime, nil)
 }
 
 func SaveAppReviewScore(appID int, score float64, pos int, neg int) (err error) {
 
-	kind := new(AppReviewScore)
+	kind := new(AppOverTime)
 	kind.AppID = appID
 	kind.CreatedAt = time.Now()
 	kind.Score = score
@@ -31,14 +31,14 @@ func SaveAppReviewScore(appID int, score float64, pos int, neg int) (err error) 
 	return err
 }
 
-func GetAppReviewScores(appID int64) (scores []AppReviewScore, err error) {
+func GetAppReviewScores(appID int64) (scores []AppOverTime, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
 		return
 	}
 
-	q := datastore.NewQuery(KindAppReviewScore)
+	q := datastore.NewQuery(KindAppOverTime)
 	q = q.Filter("app_id =", appID)
 	q = q.Order("created_at")
 
