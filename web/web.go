@@ -492,10 +492,10 @@ func (q DataTablesQuery) GetSearch() (search string) {
 	return ""
 }
 
-func (q DataTablesQuery) GetTypes() (search []string) {
+func (q DataTablesQuery) GetSearchSlice(k string) (search []string) {
 
-	if val, ok := q.Search["types"]; ok {
-		if ok && val != "" {
+	if val, ok := q.Search[k]; ok {
+		if val != "" {
 			for _, v := range val.([]interface{}) {
 				search = append(search, v.(string))
 			}

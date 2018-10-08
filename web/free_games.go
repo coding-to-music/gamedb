@@ -117,7 +117,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where("name LIKE ?", "%"+search+"%")
 			}
 
-			types := query.GetTypes()
+			types := query.GetSearchSlice("types")
 			if len(types) > 0 {
 				gorm = gorm.Where("type IN (?)", types)
 			}
