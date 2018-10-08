@@ -25,7 +25,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/websockets"
@@ -161,7 +160,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/templates/_footer.html",
 		folder+"/templates/_stats_header.html",
 		folder+"/templates/_deals_header.html",
-		folder+"/templates/_pagination.html",
+		//folder+"/templates/_pagination.html",
 		folder+"/templates/_flashes.html",
 		folder+"/templates/"+page+".html",
 	)
@@ -206,12 +205,11 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
-		"join":    func(a []string) string { return strings.Join(a, ", ") },
-		"title":   func(a string) string { return strings.Title(a) },
-		"comma":   func(a int) string { return humanize.Comma(int64(a)) },
-		"comma64": func(a int64) string { return humanize.Comma(a) },
-		"commaf":  func(a float64) string { return humanize.Commaf(a) },
-		"slug":    func(a string) string { return slug.Make(a) },
+		"join":   func(a []string) string { return strings.Join(a, ", ") },
+		"title":  func(a string) string { return strings.Title(a) },
+		"comma":  func(a int) string { return humanize.Comma(int64(a)) },
+		"commaf": func(a float64) string { return humanize.Commaf(a) },
+		"slug":   func(a string) string { return slug.Make(a) },
 		"apps": func(a []int, appsMap map[int]db.App) template.HTML {
 			var apps []string
 			for _, v := range a {
@@ -378,58 +376,6 @@ func (t GlobalTemplate) ShowAd() (bool) {
 	return true
 }
 
-type Pagination struct {
-	path  string
-	page  int
-	limit int
-	total int
-}
-
-func (t Pagination) GetPages() (ret []int) {
-
-	ret = append(ret, 1)
-	for i := t.GetPage() - 2; i < t.GetPage()+3; i++ {
-		if i >= 1 && i <= t.GetLast() {
-			ret = append(ret, i)
-		}
-	}
-	ret = append(ret, t.GetLast())
-
-	ret = helpers.Unique(ret)
-
-	sort.Slice(ret, func(i, j int) bool {
-		return ret[i] < ret[j]
-	})
-
-	return ret
-}
-
-func (t Pagination) GetNext() (float64) {
-	return math.Min(float64(t.GetLast()), float64(t.GetPage()+1))
-}
-
-func (t Pagination) GetPrev() (float64) {
-	return math.Max(1, float64(t.GetPage()-1))
-}
-
-func (t Pagination) GetPage() (int) {
-	return int(math.Max(1, float64(t.page)))
-}
-
-func (t Pagination) GetLast() (int) {
-	last := math.Ceil(float64(t.total) / float64(t.limit))
-	return int(math.Max(1, last))
-}
-
-func (t Pagination) GetPath() string {
-	return t.path
-}
-
-func (t Pagination) GetLinks() string {
-	// todo, return link html here instead of making in template, that way we can add a variable to the path and replace with the page number
-	return ""
-}
-
 type DataTablesAjaxResponse struct {
 	Draw            string          `json:"draw"`
 	RecordsTotal    string          `json:"recordsTotal"`
@@ -507,12 +453,6 @@ func (q DataTablesQuery) GetSearchSlice(k string) (search []string) {
 
 func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
 
-	//map[string]map[string]interface {}{
-	//    "0": {
-	//        "column": "1",
-	//        "dir":    "desc",
-	//    },
-
 	var ret []string
 
 	for _, v := range q.Order {
@@ -541,12 +481,6 @@ func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
 }
 
 func (q DataTablesQuery) GetOrderDS(columns map[string]string, signed bool) (order string) {
-
-	//map[string]map[string]interface {}{
-	//    "0": {
-	//        "column": "1",
-	//        "dir":    "desc",
-	//    },
 
 	for _, v := range q.Order {
 

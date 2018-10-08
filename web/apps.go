@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	appsSearchLimit = 96
+	appsSearchLimit = 100
 )
 
 func AppsHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,19 +63,12 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Games")
 	t.Apps = apps
 	t.Count = count
-	t.Pagination = Pagination{
-		path:  path,
-		page:  page,
-		limit: appsSearchLimit,
-		total: count,
-	}
 
 	returnTemplate(w, r, "apps", t)
 }
 
 type appsTemplate struct {
 	GlobalTemplate
-	Apps       []db.App
-	Count      int
-	Pagination Pagination
+	Apps  []db.App
+	Count int
 }
