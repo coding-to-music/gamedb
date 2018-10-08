@@ -48,6 +48,10 @@ if ($('#player-page').length > 0) {
 
         $('#heatmap').height(120);
 
+        function keyToLabel(key) {
+            return '$' + (key * 5) + '-' + ((key * 5) + 5);
+        }
+
         Highcharts.chart('heatmap', {
             chart: {
                 type: 'heatmap'
@@ -62,6 +66,11 @@ if ($('#player-page').length > 0) {
                 categories: [''],
                 title: {
                     text: ''
+                },
+                labels: {
+                    formatter: function () {
+                        return keyToLabel(this.value);
+                    }
                 }
             },
             yAxis: {
@@ -83,11 +92,7 @@ if ($('#player-page').length > 0) {
             },
             tooltip: {
                 formatter: function () {
-
-                    var start = (this.point.x * 5);
-                    var finish = start + 5;
-
-                    return this.point.value + ' apps cost $' + start + '-' + finish;
+                    return this.point.value + ' apps cost ' + keyToLabel(this.point.value);
                 }
             },
             series: [{
