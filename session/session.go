@@ -26,6 +26,10 @@ func Init() {
 func getSession(r *http.Request) (*sessions.Session, error) {
 
 	session, err := store.Get(r, "steam-authority-session")
+	if err != nil {
+		return session, err
+	}
+
 	session.Options = &sessions.Options{
 		MaxAge: 0, // Session
 		Path:   "/",
@@ -87,11 +91,11 @@ func WriteMany(w http.ResponseWriter, r *http.Request, values map[string]string)
 func Clear(w http.ResponseWriter, r *http.Request) (err error) {
 
 	session, err := getSession(r)
-	session.Values = make(map[interface{}]interface{})
-
 	if err != nil {
 		return err
 	}
+
+	session.Values = make(map[interface{}]interface{})
 
 	err = session.Save(r, w)
 	if err != nil {
@@ -109,6 +113,7 @@ func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes [
 	}
 
 	flashes = session.Flashes(group)
+
 	err = session.Save(r, w)
 	if err != nil {
 		return nil, err
@@ -128,6 +133,10 @@ func GetBadFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{
 func setFlash(w http.ResponseWriter, r *http.Request, flash string, group string) (err error) {
 
 	session, err := getSession(r)
+	if err != nil {
+		return err
+	}
+
 	session.AddFlash(flash, group)
 
 	return session.Save(r, w)
