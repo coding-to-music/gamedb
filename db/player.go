@@ -443,18 +443,20 @@ func (p *Player) updateGames() (error) {
 	var roundedPrices []int
 	var maxPrice int
 	for _, v := range appsMap {
-		var roundedPrice = int(math.Round(float64(v.AppPrice) / 100))
+
+		var roundedPrice = int(math.Floor(float64(v.AppPrice)/500) * 5) // Round down to nearest 5
+
 		roundedPrices = append(roundedPrices, roundedPrice)
+
 		maxPrice = int(math.Max(float64(roundedPrice), float64(maxPrice)))
 	}
 
-	ret := make([][]int, maxPrice+1) // 0-maxPrice
-	for i := 0; i <= maxPrice; i++ {
+	ret := make([][]int, (maxPrice/5)+1)
+	for i := 0; i <= maxPrice/5; i++ {
 		ret[i] = []int{0, 0}
 	}
 	for _, v := range roundedPrices {
-		prevCount := ret[v][1]
-		ret[v] = []int{0, prevCount + 1}
+		ret[(v / 5)] = []int{0, ret[(v / 5)][1] + 1}
 	}
 
 	bytes, err = json.Marshal(ret)

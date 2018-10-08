@@ -1,6 +1,6 @@
 if ($('#packages-page').length > 0) {
 
-    $('#packages-page table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "order": [[5, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);

@@ -83,7 +83,11 @@ if ($('#player-page').length > 0) {
             },
             tooltip: {
                 formatter: function () {
-                    return this.point.value + ' apps cost $' + this.point.x;
+
+                    var start = (this.point.x * 5);
+                    var finish = start + 5;
+
+                    return this.point.value + ' apps cost $' + start + '-' + finish;
                 }
             },
             series: [{
