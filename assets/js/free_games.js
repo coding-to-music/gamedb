@@ -82,5 +82,4 @@ if ($('#free-games-page').length > 0) {
             }
         ]
     }));
-
 }

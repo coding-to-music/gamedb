@@ -2,7 +2,7 @@
 
 <div class="container" id="apps-page">
 
-    <form action="/games" method="get" data-persist="garlicx" data-destroy="false">
+    <form action="/games" method="get" data-persist="garlicx" autocomplete="off" data-destroy="false">
 
         <div class="jumbotron">
             <div class="row">
@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <div class="card mb-4">
+        <div class="card">
             <div class="card-body">
 
                 <div class="row">
@@ -140,29 +140,26 @@
                     </div>
                 </div>
 
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/games/ajax">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Game</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Score</th>
+                            <th scope="col">DLC #</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
 
     </form>
-
-    <div class="card">
-        <div class="card-body">
-
-            <div class="row app-results">
-            {{ range $key, $value := .Apps }}
-
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
-                    <a href="{{ .GetPath }}">
-                        <span>{{ .GetName }}</span>
-                        <img src="{{ .GetHeaderImage }}" alt="{{ .GetName }}" class="rounded" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
-                    </a>
-                </div>
-
-            {{ end }}
-            </div>
-
-        </div>
-    </div>
 
 </div>
 {{ template "_footer" }} {{end}}

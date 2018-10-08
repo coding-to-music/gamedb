@@ -399,7 +399,7 @@ func (p *Player) updateGames() (error) {
 	p.PlayTime = playtime
 
 	// Go get price info from MySQL
-	gamesSQL, err := GetApps(appIDs, []string{"id", "price_final"})
+	gamesSQL, err := GetAppsByID(appIDs, []string{"id", "price_final"})
 	if err != nil {
 		return err
 	}
@@ -541,7 +541,7 @@ func (p *Player) updateBadges() (error) {
 
 	// Make map of app rows
 	var appRowsMap = map[int]App{}
-	appRows, err := GetApps(appIDSlice, []string{"id", "name", "icon"})
+	appRows, err := GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
 	for _, v := range appRows {
 		appRowsMap[v.ID] = v
 	}

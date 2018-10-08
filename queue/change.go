@@ -99,7 +99,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Get mysql rows
-	appRows, err := db.GetApps(appsSlice, []string{"id", "name"})
+	appRows, err := db.GetAppsByID(appsSlice, []string{"id", "name"})
 	if err != nil {
 		logger.Error(err)
 	}

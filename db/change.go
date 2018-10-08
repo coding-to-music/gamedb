@@ -55,7 +55,7 @@ func (change Change) GetPackageIDs() (ids []int) {
 	return ids
 }
 
-func (change *Change) OutputForJSON() (output []interface{}) {
+func (change Change) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{
 		change.ChangeID,

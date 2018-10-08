@@ -53,7 +53,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 		appIDs, err := pack.GetAppIDs()
 		logger.Error(err)
 
-		apps, err = db.GetApps(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
+		apps, err = db.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
 		logger.Error(err)
 
 		wg.Done()

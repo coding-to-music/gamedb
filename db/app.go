@@ -46,6 +46,7 @@ type App struct {
 	ComingSoon             bool       `gorm:"not null;column:coming_soon"`
 	Developers             string     `gorm:"not null;column:developers;type:json;default:'[]'"`
 	DLC                    string     `gorm:"not null;column:dlc;type:json;default:'[]'"`
+	DLCCount               int        `gorm:"not null;column:dlc_count"`
 	Extended               string     `gorm:"not null;column:extended;default:'{}'"`
 	GameID                 int        `gorm:"not null;column:game_id"`
 	GameName               string     `gorm:"not null;column:game_name"`
@@ -110,6 +111,19 @@ func (app App) GetType() (ret string) {
 		return "Unknown"
 	default:
 		return strings.Title(app.Type)
+	}
+}
+
+func (app App) OutputForJSON() (output []interface{}) {
+
+	return []interface{}{
+		app.ID,
+		app.GetName(),
+		app.GetIcon(),
+		app.GetPath(),
+		app.GetType(),
+		app.ReviewsScore,
+		app.DLCCount,
 	}
 }
 
@@ -537,6 +551,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 		app.Type = response.Data.Type
 		app.IsFree = response.Data.IsFree
 		app.DLC = string(dlcString)
+		app.DLCCount = len(response.Data.DLC)
 		app.ShortDescription = response.Data.ShortDescription
 		app.HeaderImage = response.Data.HeaderImage
 		app.Developers = string(developersString)
@@ -700,7 +715,7 @@ func GetApp(id int) (app App, err error) {
 	return app, nil
 }
 
-func GetApps(ids []int, columns []string) (apps []App, err error) { // todo, chunk ids into multple queries async
+func GetAppsByID(ids []int, columns []string) (apps []App, err error) { // todo, chunk ids into multple queries async
 
 	if len(ids) < 1 {
 		return apps, nil

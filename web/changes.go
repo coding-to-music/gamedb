@@ -55,7 +55,6 @@ func ChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, v := range changes {
-
 		response.AddRow(v.OutputForJSON())
 	}
 

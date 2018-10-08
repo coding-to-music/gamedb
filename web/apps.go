@@ -72,3 +72,69 @@ type appsTemplate struct {
 	Apps  []db.App
 	Count int
 }
+
+func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := DataTablesQuery{}
+	query.FillFromURL(r.URL.Query())
+
+	//
+	var wg sync.WaitGroup
+
+	// Get apps
+	var apps []db.App
+
+	wg.Add(1)
+	go func() {
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+
+			logger.Error(err)
+
+		} else {
+
+			//gorm = gorm.Model(&db.App{})
+			gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "type", "dlc_count"})
+
+			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
+				"0": "name",
+				"2": "reviews_score",
+				"3": "dlc_count",
+			})
+
+			gorm = gorm.Limit(100)
+			gorm = gorm.Find(&apps)
+
+			logger.Error(gorm.Error)
+		}
+
+		wg.Done()
+	}()
+
+	// Get total
+	var count int
+	wg.Add(1)
+	go func() {
+
+		var err error
+		count, err = db.CountApps()
+		logger.Error(err)
+
+		wg.Done()
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.Itoa(count)
+	response.RecordsFiltered = strconv.Itoa(count)
+	response.Draw = query.Draw
+
+	for _, v := range apps {
+		response.AddRow(v.OutputForJSON())
+	}
+
+	response.output(w)
+}

@@ -32,7 +32,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get apps
-	apps, err := db.GetApps(appIDs, []string{"id", "name", "icon"})
+	apps, err := db.GetAppsByID(appIDs, []string{"id", "name", "icon"})
 	if err != nil {
 		logger.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting apps")

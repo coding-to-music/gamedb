@@ -113,7 +113,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 		gamesSlice = append(gamesSlice, v)
 	}
 
-	games, err := db.GetApps(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
+	games, err := db.GetAppsByID(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
 		logger.Error(err)
 	}

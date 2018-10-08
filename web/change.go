@@ -30,7 +30,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		apps, err = db.GetApps(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
+		apps, err = db.GetAppsByID(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
 		if err != nil {
 			logger.Error(err)
 		}

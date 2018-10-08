@@ -68,6 +68,7 @@ func Serve() error {
 	r.Get("/free-games", FreeGamesHandler)
 	r.Get("/free-games/ajax", FreeGamesAjaxHandler)
 	r.Get("/games", AppsHandler)
+	r.Get("/games/ajax", AppsAjaxHandler)
 	r.Get("/games/{id}", AppHandler)
 	r.Get("/games/{id}/{slug}", AppHandler)
 	r.Get("/health-check", HealthCheckHandler)
