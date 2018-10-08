@@ -5,9 +5,11 @@ package db
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"cloud.google.com/go/datastore"
 	"github.com/spf13/viper"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 const (
@@ -84,6 +86,10 @@ func BulkSaveKinds(kinds []Kind, kind string) (err error) {
 		keys := make([]*datastore.Key, 0, len(chunk))
 		for _, vv := range chunk {
 			keys = append(keys, vv.GetKey())
+		}
+
+		if len(keys) != len(chunk) {
+			logger.Info("PutMulti len mismatch: " + strconv.Itoa(len(keys)) + ":" + strconv.Itoa(len(chunk)))
 		}
 
 		switch kind {
@@ -192,6 +198,8 @@ func kindsToNews(a []Kind) (b []News) {
 		original, ok := v.(News)
 		if ok {
 			b = append(b, original)
+		} else {
+			logger.Info("kind not a struct")
 		}
 	}
 
