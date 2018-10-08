@@ -7,6 +7,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/memcache"
 )
 
 const (
@@ -30,9 +31,22 @@ func (event Event) GetCreatedNice() (t string) {
 	return event.CreatedAt.Format(helpers.DateTime)
 }
 
-func (event Event) GetIP() string {
+func (event Event) GetUserAgentShort() (t string) {
 
-	var ips = strings.Split(event.IP, ", ")
+	if len(event.UserAgent) > 50 {
+		event.UserAgent = event.UserAgent[0:50] + "&hellip;"
+	}
+	return event.UserAgent
+}
+
+// Defaults to IP on struct
+func (event Event) GetIP(ip string) string {
+
+	if ip == "" {
+		ip = event.IP
+	}
+
+	var ips = strings.Split(ip, ", ")
 	if len(ips) > 0 && ips[0] != "" {
 		return ips[0]
 	}
@@ -56,15 +70,32 @@ func (event Event) GetType() string {
 }
 
 // Data array for datatables
-func (event Event) OutputForJSON() (output []interface{}) {
+func (event Event) OutputForJSON(r *http.Request) (output []interface{}) {
 
 	return []interface{}{
 		event.CreatedAt.Unix(),
-		event.CreatedAt.Format(helpers.DateTime),
-		event.Type,
-		event.PlayerID,
+		event.GetCreatedNice(),
+		event.GetType(),
+		event.GetIP(""),
 		event.UserAgent,
+		event.GetUserAgentShort(),
+		event.GetIP(r.Header.Get("X-Forwarded-For")),
 	}
+}
+
+func CountPlayerEvents(playerID int64) (count int, err error) {
+
+	return memcache.GetSetInt(memcache.PlayerEventsCount(playerID), &count, func() (count int, err error) {
+
+		client, ctx, err := GetDSClient()
+		if err != nil {
+			return count, err
+		}
+
+		q := datastore.NewQuery(KindEvent).Filter("player_id = ", playerID).Limit(10000)
+		count, err = client.Count(ctx, q)
+		return count, err
+	})
 }
 
 func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) {
@@ -78,27 +109,4 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 
 	_, err = SaveKind(login.GetKey(), login)
 	return err
-}
-
-func GetEvents(playerID int64, limit int, eventType string) (logins []Event, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return logins, err
-	}
-
-	q := datastore.NewQuery(KindEvent)
-	q = q.Filter("player_id =", playerID)
-	q = q.Order("-created_at")
-
-	if eventType != "" {
-		q = q.Filter("type =", eventType)
-	}
-
-	if limit > 0 {
-		q = q.Limit(limit)
-	}
-
-	_, err = client.GetAll(ctx, q, &logins)
-	return logins, err
 }

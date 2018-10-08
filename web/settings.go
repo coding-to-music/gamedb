@@ -36,18 +36,6 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	// Get events
-	var events []db.Event
-	wg.Add(1)
-	go func(player db.Player) {
-
-		events, err = db.GetEvents(player.PlayerID, 100, "")
-		logger.Error(err)
-
-		wg.Done()
-
-	}(player)
-
 	// Get donations
 	var donations []db.Donation
 	wg.Add(1)
@@ -107,7 +95,6 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := settingsTemplate{}
 	t.Fill(w, r, "Settings")
-	t.Events = events
 	t.Player = player
 	t.User = user
 	t.Donations = donations
@@ -120,7 +107,6 @@ type settingsTemplate struct {
 	GlobalTemplate
 	Player    db.Player
 	User      db.User
-	Events    []db.Event
 	Donations []db.Donation
 	Games     string
 	Messages  []interface{}
@@ -200,43 +186,77 @@ func SettingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := DataTablesQuery{}
 	query.FillFromURL(r.URL.Query())
 
+	//
+	var wg sync.WaitGroup
+
+	// Get events
 	var events []db.Event
 
-	playerID, err := getPlayerIDFromSession(r)
-	if err != nil {
+	wg.Add(1)
+	go func() {
 
-		logger.Error(err)
-
-	} else {
-
-		client, ctx, err := db.GetDSClient()
+		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
 
 			logger.Error(err)
 
 		} else {
 
-			q := datastore.NewQuery(db.KindEvent).Filter("player_id =", strconv.FormatInt(playerID, 10)).Limit(100)
-			q, err = query.SetOrderOffsetDS(q, map[string]string{})
+			client, ctx, err := db.GetDSClient()
 			if err != nil {
 
 				logger.Error(err)
 
 			} else {
 
-				_, err := client.GetAll(ctx, q, &events)
-				logger.Error(err)
+				q := datastore.NewQuery(db.KindEvent).Filter("player_id =", playerID).Limit(100)
+				q, err = query.SetOrderOffsetDS(q, map[string]string{})
+				q = q.Order("-created_at")
+				if err != nil {
+
+					logger.Error(err)
+
+				} else {
+
+					_, err := client.GetAll(ctx, q, &events)
+					logger.Error(err)
+				}
 			}
 		}
-	}
+
+		wg.Done()
+	}()
+
+	// Get total
+	var total int
+	wg.Add(1)
+	go func() {
+
+		playerID, err := getPlayerIDFromSession(r)
+		if err != nil {
+
+			logger.Error(err)
+
+		} else {
+
+			total, err = db.CountPlayerEvents(playerID)
+			logger.Error(err)
+
+		}
+
+		wg.Done()
+	}()
+
+	// Wait
+	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(10000)
-	response.RecordsFiltered = strconv.Itoa(10000)
+	response.RecordsTotal = strconv.Itoa(total)
+	response.RecordsFiltered = strconv.Itoa(total)
 	response.Draw = query.Draw
 
 	for _, v := range events {
-		response.AddRow(v.OutputForJSON())
+		response.AddRow(v.OutputForJSON(r))
 	}
 
 	response.output(w)
