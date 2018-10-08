@@ -66,27 +66,6 @@ func (change *Change) OutputForJSON() (output []interface{}) {
 	}
 }
 
-func GetLatestChanges(limit int, page int) (changes []Change, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return changes, err
-	}
-
-	offset := (page - 1) * 100
-
-	q := datastore.NewQuery(KindChange).Order("-change_id").Limit(limit).Offset(offset)
-
-	_, err = client.GetAll(ctx, q, &changes)
-
-	err = checkForMissingChangeFields(err)
-	if err != nil {
-		return changes, err
-	}
-
-	return changes, nil
-}
-
 func GetChange(id string) (change Change, err error) {
 
 	client, context, err := GetDSClient()

@@ -331,6 +331,10 @@ type appAchievementTemplate struct {
 	Completed   float64
 }
 
+func (a appAchievementTemplate) GetCompleted() float64 {
+	return helpers.DollarsFloat(a.Completed)
+}
+
 type appArticleTemplate struct {
 	ID       int64
 	Title    string
@@ -345,15 +349,4 @@ type appReviewTemplate struct {
 	VotesGood  int
 	VotesFunny int
 	Vote       bool
-}
-
-func (a appAchievementTemplate) GetCompleted() float64 {
-	return helpers.DollarsFloat(a.Completed)
-}
-
-type hcSeries struct {
-	Type string
-	Name string
-	Data [][]int64
-	Step bool
 }
