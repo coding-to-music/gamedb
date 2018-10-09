@@ -135,11 +135,7 @@ func CountRanks() (count int, err error) {
 
 		q := datastore.NewQuery(KindPlayerRank)
 		count, err = client.Count(ctx, q)
-		if err != nil {
-			return count, err
-		}
-
-		return count, nil
+		return count, err
 	})
 }
 

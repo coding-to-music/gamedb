@@ -19,9 +19,15 @@ var (
 	FreeAppsCount     = memcache.Item{Key: "free-apps-count", Expiration: 60 * 60 * 24}
 	PackagesCount     = memcache.Item{Key: "packages-count", Expiration: 60 * 60 * 24}
 	RanksCount        = memcache.Item{Key: "ranks-count", Expiration: 60 * 60 * 24}
+	CountPlayers      = memcache.Item{Key: "players-count", Expiration: 60 * 60 * 24 * 7}
 	PlayerEventsCount = func(playerID int64) memcache.Item {
 		return memcache.Item{Key: "players-events-count-" + strconv.FormatInt(playerID, 10), Expiration: 60 * 60 * 24}
 	}
+
+	TagKeyNames       = memcache.Item{Key: "tag-key-names", Expiration: 60 * 60 * 24 * 1}
+	GenreKeyNames     = memcache.Item{Key: "genre-key-names", Expiration: 60 * 60 * 24 * 1}
+	PublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: 60 * 60 * 24 * 1}
+	DeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 60 * 60 * 24 * 1}
 )
 
 func getClient() *memcache.Client {

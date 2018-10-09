@@ -838,11 +838,7 @@ func CountApps() (count int, err error) {
 		}
 
 		db.Model(&App{}).Count(&count)
-		if db.Error != nil {
-			return count, db.Error
-		}
-
-		return count, nil
+		return count, db.Error
 	})
 }
 

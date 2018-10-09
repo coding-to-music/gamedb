@@ -14,6 +14,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/steami"
 	"github.com/steam-authority/steam-authority/storage"
 )
@@ -24,8 +25,6 @@ const defaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
-
-	cachePlayersCount int
 )
 
 type Player struct {
@@ -902,9 +901,9 @@ func checkGetMultiPlayerErrors(err error) error {
 	return nil
 }
 
-func CountPlayers() (count int, err error) { // todo memcache heavily
+func CountPlayers() (count int, err error) {
 
-	if cachePlayersCount == 0 {
+	return memcache.GetSetInt(memcache.CountPlayers, &count, func() (count int, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
@@ -912,13 +911,9 @@ func CountPlayers() (count int, err error) { // todo memcache heavily
 		}
 
 		q := datastore.NewQuery(KindPlayer)
-		cachePlayersCount, err = client.Count(ctx, q)
-		if err != nil {
-			return count, err
-		}
-	}
-
-	return cachePlayersCount, nil
+		count, err = client.Count(ctx, q)
+		return count, err
+	})
 }
 
 func checkForMissingPlayerFields(err error) error {

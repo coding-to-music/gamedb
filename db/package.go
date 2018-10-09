@@ -421,11 +421,7 @@ func CountPackages() (count int, err error) {
 		}
 
 		db.Model(&Package{}).Count(&count)
-		if db.Error != nil {
-			return count, db.Error
-		}
-
-		return count, nil
+		return count, db.Error
 	})
 }
 
