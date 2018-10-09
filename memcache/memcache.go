@@ -10,6 +10,8 @@ import (
 	"github.com/steam-authority/steam-authority/logger"
 )
 
+const namespace = "game-db-"
+
 var client *memcache.Client
 var ErrCacheMiss = memcache.ErrCacheMiss
 
@@ -43,7 +45,7 @@ func Get(key string, i interface{}) error {
 
 	client := getClient()
 
-	item, err := client.Get(key)
+	item, err := client.Get(namespace + key)
 	if err != nil {
 		return err
 	}
@@ -60,7 +62,7 @@ func Set(key string, i interface{}, expiration int32) error {
 
 	client := getClient()
 	item := new(memcache.Item)
-	item.Key = key
+	item.Key = namespace + key
 	item.Value = bytes
 	item.Expiration = expiration
 
@@ -94,7 +96,7 @@ func GetSetInt(item memcache.Item, value *int, f func() (j int, err error)) (cou
 func Inc(key string) (err error) {
 
 	client := getClient()
-	_, err = client.Increment(key, 1)
+	_, err = client.Increment(namespace + key, 1)
 
 	return err
 }
@@ -102,7 +104,7 @@ func Inc(key string) (err error) {
 func Dec(key string) (err error) {
 
 	client := getClient()
-	_, err = client.Decrement(key, 1)
+	_, err = client.Decrement(namespace + key, 1)
 
 	return err
 }
