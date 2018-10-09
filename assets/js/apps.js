@@ -1,10 +1,19 @@
 if ($('#apps-page').length > 0) {
 
-    $('select.form-control-chosen').chosen({
+    var $chosens = $('select.form-control-chosen');
+
+    $chosens.chosen({
         disable_search_threshold: 10,
         allow_single_deselect: true,
         rtl: false
     });
+
+    $chosens.on('change', function (e) {
+
+    });
+
+    $chosens.trigger("chosen:updated");
+
 
     var table = $('table.table-datatable2');
 
