@@ -202,7 +202,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 15)
+	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14)
 
 	// Template
 	t := playerTemplate{}
