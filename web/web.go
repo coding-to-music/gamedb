@@ -30,7 +30,7 @@ import (
 	"github.com/steam-authority/steam-authority/websockets"
 )
 
-func logRequestsToGoogle(next http.Handler) http.Handler {
+func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger.InfoG(r.Method + " " + r.URL.Path)
 		next.ServeHTTP(w, r)
@@ -46,7 +46,7 @@ func Serve() error {
 	r.Use(middleware.RedirectSlashes)
 
 	if viper.GetString("ENV") == logger.Prod {
-		r.Use(logRequestsToGoogle)
+		r.Use(middlewareLog)
 	}
 
 	r.Get("/", HomeHandler)

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"net/http"
 	_ "net/http/pprof"
-	"os"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/rollbar/rollbar-go"
@@ -39,11 +38,6 @@ func main() {
 
 	// Recaptcha
 	recaptcha.SetSecret(viper.GetString("RECAPTCHA_PRIVATE"))
-
-	// Google
-	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", viper.GetString("GOOGLE_APPLICATION_CREDENTIALS"))
-	}
 
 	// Flags
 	flagPprof := flag.Bool("pprof", false, "PProf")

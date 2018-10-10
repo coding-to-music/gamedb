@@ -1,11 +1,19 @@
 package config
 
 import (
+	"os"
+
 	"github.com/spf13/viper"
 )
 
 func Init() {
 
+	// Google
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
+	}
+
+	//
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("STEAM")
 
