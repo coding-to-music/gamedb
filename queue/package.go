@@ -135,9 +135,9 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	if len(errs) > 0 {
 		// Nack on hard fails
 		for _, err = range errs {
-			if err, ok := err.(db.UpdateError); ok {
-				if err.IsHard() {
-					return false, false, err
+			if err2, ok := err.(db.UpdateError); ok {
+				if err2.IsHard() {
+					return false, false, err2
 				}
 			}
 		}
