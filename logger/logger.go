@@ -29,6 +29,7 @@ func Error(err error) {
 
 		if viper.GetString("ENV") == Prod {
 			rollbar.Error(rollbar.ERR, err)
+			ErrorG(err)
 		}
 	}
 }
@@ -41,13 +42,14 @@ func Info(message string) {
 
 		if viper.GetString("ENV") == Prod {
 			rollbar.Message(rollbar.INFO, message)
+			InfoG(message)
 		}
 	}
 }
 
 func LocalInfo(message string) {
 
-	if viper.GetString("ENV") == Local {
-		Info(message)
+	if message != "" && viper.GetString("ENV") == Local {
+		logger.Println(message)
 	}
 }
