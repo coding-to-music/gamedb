@@ -24,6 +24,14 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 
 	err = json.Unmarshal(data, v)
 	if err != nil {
+
+		if err2, ok := err.(*json.UnmarshalTypeError); ok {
+			if SliceHasString([]string{"[]db.ProfileFriend", "[]db.ProfileBadge"}, err2.Type.String()) {
+				logger.ErrorG(err2)
+				return nil
+			}
+		}
+
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 
 			if len(data) > 1000 {
@@ -35,9 +43,7 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 		} else {
 			logger.Error(err)
 		}
-
-		return err
 	}
 
-	return nil
+	return err
 }

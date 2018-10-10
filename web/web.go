@@ -30,22 +30,24 @@ import (
 	"github.com/steam-authority/steam-authority/websockets"
 )
 
+func logRequestsToGoogle(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logger.InfoG(r.Method + " " + r.URL.Path)
+		next.ServeHTTP(w, r)
+	})
+}
+
 func Serve() error {
 
 	r := chi.NewRouter()
-	r.Use(middleware.Compress(5))
-	r.Use(middleware.DefaultCompress)
-
-	if viper.GetString("ENV") == logger.Local {
-		r.Use(middleware.Timeout(30 * time.Second))
-		//r.Use(middleware.Logger) // todo, make middleware that logs to google
-	}
-
-	r.Use(middleware.GetHead)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.Recoverer)
+	r.Use(middleware.DefaultCompress)
+	r.Use(middleware.GetHead)
 	r.Use(middleware.RedirectSlashes)
-	r.Use(middleware.RequestID)
+
+	if viper.GetString("ENV") == logger.Prod {
+		r.Use(logRequestsToGoogle)
+	}
 
 	r.Get("/", HomeHandler)
 	r.Mount("/admin", adminRouter())
