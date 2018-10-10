@@ -89,6 +89,8 @@ func Upload(path string, data []byte, public bool) (err error) {
 
 func Download(path string) (bytes []byte, err error) {
 
+	path = strings.TrimLeft(path, "/")
+
 	// Get client
 	client, ctx, err := getClient()
 	if err != nil {
