@@ -712,7 +712,7 @@ func adminRanks() {
 	// Make kinds
 	var kinds []db.Kind
 	for _, v := range ranks {
-		kinds = append(kinds, v)
+		kinds = append(kinds, *v)
 	}
 
 	// Update ranks
