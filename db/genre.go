@@ -1,9 +1,11 @@
 package db
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/memcache"
 )
 
 type Genre struct {
@@ -19,6 +21,10 @@ type Genre struct {
 
 func (g Genre) GetPath() string {
 	return "/games?genre=" + g.Name
+}
+
+func (g Genre) GetName() string {
+	return g.Name
 }
 
 func (g Genre) GetMeanPrice() float64 {
@@ -42,6 +48,33 @@ func GetAllGenres() (genres []Genre, err error) {
 	}
 
 	return genres, nil
+}
+
+func GetGenresForSelect() (genres []Genre, err error) {
+
+	s, err := memcache.GetSetString(memcache.GenreKeyNames, func() (s string, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return s, err
+		}
+
+		var genres []Genre
+		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&genres)
+		if db.Error != nil {
+			return s, db.Error
+		}
+
+		bytes, err := json.Marshal(genres)
+		return string(bytes), err
+	})
+
+	if err != nil {
+		return genres, err
+	}
+
+	err = json.Unmarshal([]byte(s), &genres)
+	return genres, err
 }
 
 func SaveOrUpdateGenre(id int, name string, apps int) (err error) {

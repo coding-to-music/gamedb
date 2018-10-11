@@ -826,7 +826,7 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	return memcache.GetSetInt(memcache.AppsCount, &count, func() (count int, err error) {
+	return memcache.GetSetInt(memcache.AppsCount, func() (count int, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

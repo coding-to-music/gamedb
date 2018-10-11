@@ -146,7 +146,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		count, err = memcache.GetSetInt(memcache.FreeAppsCount, &count, func() (count int, err error) {
+		count, err = memcache.GetSetInt(memcache.FreeAppsCount, func() (count int, err error) {
 
 			gorm, err := db.GetMySQLClient()
 			if err != nil {
@@ -157,11 +157,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Where("is_free = ?", "1")
 			gorm = gorm.Count(&count)
 
-			if gorm.Error != nil {
-				return count, gorm.Error
-			}
-
-			return count, nil
+			return count, gorm.Error
 		})
 
 		if err != nil {

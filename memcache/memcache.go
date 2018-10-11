@@ -69,9 +69,9 @@ func Set(key string, i interface{}, expiration int32) error {
 	return client.Set(item)
 }
 
-func GetSetInt(item memcache.Item, value *int, f func() (j int, err error)) (count int, err error) {
+func GetSetInt(item memcache.Item, f func() (j int, err error)) (count int, err error) {
 
-	err = Get(item.Key, value)
+	err = Get(item.Key, &count)
 
 	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
 
@@ -83,20 +83,36 @@ func GetSetInt(item memcache.Item, value *int, f func() (j int, err error)) (cou
 		}
 
 		err = Set(item.Key, count, item.Expiration)
-		if err != nil {
-			return count, err
-		}
-
-		return count, nil
+		return count, err
 	}
 
-	return *value, err
+	return count, err
+}
+
+func GetSetString(item memcache.Item, f func() (j string, err error)) (s string, err error) {
+
+	err = Get(item.Key, &s)
+
+	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
+
+		logger.Info("Loading " + item.Key + " from memcache.")
+
+		s, err := f()
+		if err != nil {
+			return s, err
+		}
+
+		err = Set(item.Key, s, item.Expiration)
+		return s, err
+	}
+
+	return s, err
 }
 
 func Inc(key string) (err error) {
 
 	client := getClient()
-	_, err = client.Increment(namespace + key, 1)
+	_, err = client.Increment(namespace+key, 1)
 
 	return err
 }
@@ -104,7 +120,7 @@ func Inc(key string) (err error) {
 func Dec(key string) (err error) {
 
 	client := getClient()
-	_, err = client.Decrement(namespace + key, 1)
+	_, err = client.Decrement(namespace+key, 1)
 
 	return err
 }

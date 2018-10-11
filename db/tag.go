@@ -1,10 +1,12 @@
 package db
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/memcache"
 )
 
 type Tag struct {
@@ -66,6 +68,33 @@ func GetAllTags() (tags []Tag, err error) {
 	}
 
 	return tags, nil
+}
+
+func GetTagsForSelect() (tags []Tag, err error) {
+
+	s, err := memcache.GetSetString(memcache.TagKeyNames, func() (s string, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return s, err
+		}
+
+		var tags []Tag
+		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&tags)
+		if db.Error != nil {
+			return s, db.Error
+		}
+
+		bytes, err := json.Marshal(tags)
+		return string(bytes), err
+	})
+
+	if err != nil {
+		return tags, err
+	}
+
+	err = json.Unmarshal([]byte(s), &tags)
+	return tags, err
 }
 
 func GetTagsByID(ids []int) (tags []Tag, err error) {

@@ -17,6 +17,10 @@ $(document).on('mouseup', '[data-link]', function (evnt) {
 
 });
 
+$('.stop-prop').on('click', function (e) {
+    e.stopPropagation();
+});
+
 // Auto dropdowns
 $('.navbar .dropdown').hover(
     function () {

@@ -413,7 +413,7 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 func CountPackages() (count int, err error) {
 
-	return memcache.GetSetInt(memcache.PackagesCount, &count, func() (count int, err error) {
+	return memcache.GetSetInt(memcache.PackagesCount, func() (count int, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

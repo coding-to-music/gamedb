@@ -48,6 +48,30 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
+	// Get tags
+	var tags []db.Tag
+	wg.Add(1)
+	go func() {
+
+		tags, err = db.GetTagsForSelect()
+		logger.Error(err)
+
+		wg.Done()
+
+	}()
+
+	// Get genres
+	var genres []db.Genre
+	wg.Add(1)
+	go func() {
+
+		genres, err = db.GetGenresForSelect()
+		logger.Error(err)
+
+		wg.Done()
+
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -61,16 +85,20 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := appsTemplate{}
 	t.Fill(w, r, "Games")
-	t.Apps = apps
 	t.Count = count
+	t.Apps = apps
+	t.Tags = tags
+	t.Genres = genres
 
 	returnTemplate(w, r, "apps", t)
 }
 
 type appsTemplate struct {
 	GlobalTemplate
-	Apps  []db.App
-	Count int
+	Count  int
+	Apps   []db.App
+	Tags   []db.Tag
+	Genres []db.Genre
 }
 
 func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {

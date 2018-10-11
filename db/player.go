@@ -914,7 +914,7 @@ func checkGetMultiPlayerErrors(err error) error {
 
 func CountPlayers() (count int, err error) {
 
-	return memcache.GetSetInt(memcache.CountPlayers, &count, func() (count int, err error) {
+	return memcache.GetSetInt(memcache.CountPlayers, func() (count int, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
