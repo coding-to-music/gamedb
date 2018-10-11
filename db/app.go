@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/dustin/go-humanize"
 	"github.com/gosimple/slug"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
@@ -863,7 +862,7 @@ func getAppName(id int, name string) string {
 	if name != "" {
 		return name
 	} else if id > 0 {
-		return "App " + humanize.Comma(int64(id))
+		return "App " + strconv.Itoa(id)
 	}
 	return "Unknown App"
 }

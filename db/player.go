@@ -725,7 +725,7 @@ func getPlayerName(id int64, name string) string {
 	if name != "" {
 		return name
 	} else if id > 0 {
-		return "Player " + humanize.Comma(id)
+		return "Player " + strconv.FormatInt(id, 10)
 	} else {
 		return "Unknown Player"
 	}
@@ -1002,6 +1002,10 @@ type ProfileFriend struct {
 	LoggedOff    int64  `json:"lo"`
 }
 
+func (p ProfileFriend) Scanned() bool {
+	return p.LoggedOff > 0
+}
+
 func (p ProfileFriend) GetPath() string {
 	return getPlayerPath(p.SteamID, p.Name)
 }
@@ -1010,8 +1014,29 @@ func (p ProfileFriend) GetDefaultAvatar() string {
 	return defaultPlayerAvatar
 }
 
-func (p ProfileFriend) LoggedOffNice() (string) {
-	return time.Unix(p.LoggedOff, 0).Format(helpers.DateYearTime)
+func (p ProfileFriend) GetLoggedOff() string {
+	if p.Scanned() {
+		return time.Unix(p.LoggedOff, 0).Format(helpers.DateYearTime)
+	}
+	return "-"
+}
+
+func (p ProfileFriend) GetFriendSince() string {
+	if p.Scanned() {
+		return time.Unix(p.FriendSince, 0).Format(helpers.DateYearTime)
+	}
+	return "-"
+}
+
+func (p ProfileFriend) GetName() string {
+	return getPlayerName(p.SteamID, p.Name)
+}
+
+func (p ProfileFriend) GetLevel() string {
+	if p.Scanned() {
+		return humanize.Comma(int64(p.Level))
+	}
+	return "-"
 }
 
 // ProfileBadge

@@ -182,39 +182,33 @@
 
                 {{/* Friends */}}
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-limit="100">
                             <thead class="thead-light">
                             <th scope="col">Player</th>
                             <th scope="col" data-sort="desc">Level</th>
                             <th scope="col">Games</th>
                             <th scope="col">Logged Off</th>
+                            <th scope="col" nowrap="nowrap">Friend Since</th>
                             </thead>
                         {{ range $key, $value := .Friends }}
-                        {{ if ne .Name "" }}
                             <tr data-link="{{ .GetPath }}">
                                 <td class="img">
-                                    <img src="{{ .Avatar }}" alt="{{ .Name }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
-                                    <span>{{ .Name }}</span>
+                                    <img src="{{ .Avatar }}" alt="{{ .GetName }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                                    <span>{{ .GetName }}</span>
                                 </td>
-                                <td>{{ comma .Level }}</td>
-                            {{ if eq .Games 0 }}
-                                <td><i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i></td>
-                            {{ else }}
-                                <td>{{ comma .Games }}</td>
-                            {{ end }}
-                                <td data-sort="{{ .LoggedOff }}" nowrap="nowrap">{{ .LoggedOffNice }}</td>
-                            </tr>
-                        {{else}}
-                            <tr data-link="{{ .GetPath }}">
-                                <td class="img">
-                                    <img src="{{.GetDefaultAvatar}}" alt="{{ .Name }}" class="avatar rounded square">
-                                    <span>Not scanned yet, might be in the <a href="/queues">queue</a>.</span>
+                                <td>{{ .GetLevel }}</td>
+                                <td>
+                                {{ if not .Scanned }}
+                                    -
+                                {{ else if eq .Games 0 }}
+                                    <i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>
+                                {{ else }}
+                                    {{ comma .Games }}
+                                {{ end }}
                                 </td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td data-sort="{{ .LoggedOff }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .LoggedOff }}"{{ end }}>{{ .GetLoggedOff }}</td>
+                                <td data-sort="{{ .FriendSince }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .FriendSince }}"{{ end }}>{{ .GetFriendSince }}</td>
                             </tr>
-                        {{ end }}
                         {{ end }}
                         </table>
                     </div>
