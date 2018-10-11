@@ -344,11 +344,7 @@ func (app App) GetPublishers() (publishers []string, err error) {
 }
 
 func (app App) GetName() (name string) {
-
-	if app.Name != "" {
-		return app.Name
-	}
-	return "App " + humanize.Comma(int64(app.ID))
+	return getAppName(app.ID, app.Name)
 }
 
 // Things that need to happen closer to dailer than when there is an app change
@@ -860,4 +856,14 @@ func getAppPath(id int, name string) string {
 	}
 
 	return p
+}
+
+func getAppName(id int, name string) string {
+
+	if name != "" {
+		return name
+	} else if id > 0 {
+		return "App " + humanize.Comma(int64(id))
+	}
+	return "Unknown App"
 }

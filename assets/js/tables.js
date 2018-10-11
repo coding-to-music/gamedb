@@ -2,6 +2,17 @@
 $("table.table-datatable").each(function (i) {
 
     var order = [[0, 'asc']];
+    var pageLength = 0;
+    var paging = false;
+    var dom = 't';
+
+    // Limit
+    var limit = $(this).attr('data-limit');
+    if (limit > 0) {
+        paging = true;
+        pageLength = Number(limit);
+        dom = '<"dt-pagination"p>t<"dt-pagination"p>';
+    }
 
     // Find default column to sort by
     var $column = $(this).find('thead tr th[data-sort]');
@@ -21,8 +32,9 @@ $("table.table-datatable").each(function (i) {
 
     // Init
     $(this).DataTable({
+        "pageLength": pageLength,
         "order": order,
-        "paging": false,
+        "paging": paging,
         "ordering": true,
         "info": false,
         "searching": true,
@@ -32,7 +44,7 @@ $("table.table-datatable").each(function (i) {
         "autoWidth": false,
         "lengthChange": false,
         "stateSave": false,
-        "dom": 't',
+        "dom": dom,
         "columnDefs": [
             {
                 "targets": disabled,
@@ -82,6 +94,13 @@ $('table.table-datatable2').on('page.dt search.dt', function (e, settings, proce
 }).on('draw.dt', function (e, settings, processing) {
 
     $(this).fadeTo(100, 1);
+
+});
+
+$('table.table-datatable').on('page.dt', function (e, settings, processing) {
+
+    var top = $(this).prev().offset().top - 15;
+    $('html, body').animate({scrollTop: top}, 200);
 
 });
 

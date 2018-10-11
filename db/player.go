@@ -12,6 +12,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/memcache"
@@ -69,7 +70,7 @@ func (p Player) GetPath() string {
 }
 
 func (p Player) GetName() string {
-	return p.PersonaName
+	return getPlayerName(p.PlayerID, p.PersonaName)
 }
 
 func (p Player) GetSteamTimeUnix() (int64) {
@@ -720,6 +721,16 @@ func getPlayerPath(id int64, name string) string {
 	return p
 }
 
+func getPlayerName(id int64, name string) string {
+	if name != "" {
+		return name
+	} else if id > 0 {
+		return "Player " + humanize.Comma(id)
+	} else {
+		return "Unknown Player"
+	}
+}
+
 // todo, check this is acurate
 func IsValidPlayerID(id int64) bool {
 
@@ -1021,6 +1032,20 @@ func (p ProfileBadge) GetTimeFormatted() (string) {
 
 func (p ProfileBadge) GetAppPath() (string) {
 	return getAppPath(p.AppID, p.AppName)
+}
+
+func (p ProfileBadge) GetAppName() (string) {
+	if p.AppID == 0 {
+		return "No App"
+	}
+	return getAppName(p.AppID, p.AppName)
+}
+
+func (p ProfileBadge) GetIcon() (string) {
+	if p.AppIcon == "" {
+		return "/assets/img/no-app-image-square.jpg"
+	}
+	return p.AppIcon
 }
 
 // ProfileBadge
