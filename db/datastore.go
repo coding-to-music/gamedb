@@ -135,16 +135,10 @@ func chunkKinds(kinds []Kind, chunkSize int) (chunked [][]Kind) {
 	return chunked
 }
 
-func BulkDeleteKinds(keys map[int64]*datastore.Key, wait bool) (err error) {
+func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 
 	if len(keys) == 0 {
 		return nil
-	}
-
-	// Make map a slice
-	var keysToDelete []*datastore.Key
-	for _, v := range keys {
-		keysToDelete = append(keysToDelete, v)
 	}
 
 	client, ctx, err := GetDSClient()
@@ -155,7 +149,7 @@ func BulkDeleteKinds(keys map[int64]*datastore.Key, wait bool) (err error) {
 	var errs []error
 	var wg sync.WaitGroup
 
-	chunks := chunkKeys(keysToDelete, 500)
+	chunks := chunkKeys(keys, 500)
 	for _, v := range chunks {
 
 		wg.Add(1)
@@ -163,7 +157,11 @@ func BulkDeleteKinds(keys map[int64]*datastore.Key, wait bool) (err error) {
 
 			err = client.DeleteMulti(ctx, v)
 			if err != nil {
-				errs = append(errs, err)
+				if wait {
+					errs = append(errs, err)
+				} else {
+					logger.Error(err)
+				}
 			}
 
 			wg.Done()

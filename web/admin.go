@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/datastore"
 	ds "cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
@@ -723,13 +724,18 @@ func adminRanks() {
 	}
 
 	// Remove old ranks
-	err = db.BulkDeleteKinds(oldKeys, false)
+	var keysToDelete []*datastore.Key
+	for _, v := range oldKeys {
+		keysToDelete = append(keysToDelete, v)
+	}
+
+	err = db.BulkDeleteKinds(keysToDelete, false)
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
-	//
+	// Update config
 	err = db.SetConfig(db.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logger.Error(err)
 
