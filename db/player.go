@@ -1022,10 +1022,7 @@ func (p ProfileFriend) GetLoggedOff() string {
 }
 
 func (p ProfileFriend) GetFriendSince() string {
-	if p.Scanned() {
-		return time.Unix(p.FriendSince, 0).Format(helpers.DateYearTime)
-	}
-	return "-"
+	return time.Unix(p.FriendSince, 0).Format(helpers.DateYearTime)
 }
 
 func (p ProfileFriend) GetName() string {
