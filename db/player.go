@@ -417,7 +417,7 @@ func (p *Player) updateGames() (error) {
 		appsSlice = append(appsSlice, *v)
 	}
 
-	err = BulkSaveKinds(appsSlice, KindPlayerApp)
+	err = BulkSaveKinds(appsSlice, KindPlayerApp, true)
 	if err != nil {
 		return err
 	}

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/logger"
 )
 
 type Publisher struct {
@@ -16,6 +17,7 @@ type Publisher struct {
 	Apps         int        `gorm:"not null"`
 	MeanPrice    float64    `gorm:"not null"`
 	MeanDiscount float64    `gorm:"not null"`
+	MeanScore    float64    `gorm:"not null"`
 }
 
 func (p Publisher) GetPath() string {
@@ -63,20 +65,21 @@ func SaveOrUpdatePublisher(name string, vals Publisher) (err error) {
 	return nil
 }
 
-func DeletePublisher(id int) (err error) {
+func DeletePublishers(ids []int) (err error) {
+
+	logger.Info("Deleteing " + strconv.Itoa(len(ids)) + " publishers")
+
+	if len(ids) == 0 {
+		return nil
+	}
 
 	db, err := GetMySQLClient()
+	db.LogMode(true)
 	if err != nil {
 		return err
 	}
 
-	publisher := new(Publisher)
-	publisher.ID = id
-
-	db.Delete(publisher)
-	if db.Error != nil {
-		return db.Error
-	}
-
-	return nil
+	db.Where("id IN (?)", ids).Delete(Publisher{})
+	db.LogMode(false)
+	return db.Error
 }

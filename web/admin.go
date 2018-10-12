@@ -15,6 +15,7 @@ import (
 	ds "cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
+	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
@@ -280,52 +281,57 @@ func adminQueues(r *http.Request) {
 
 func adminPublishers() {
 
+	fmt.Println("Publishers Updating")
+
 	// Get current publishers, to delete old ones
-	publishers, err := db.GetAllPublishers()
+	currentPublishers, err := db.GetAllPublishers()
 	if err != nil {
 		logger.Error(err)
 		return
 	}
 
 	pubsToDelete := map[string]int{}
-	for _, v := range publishers {
-		pubsToDelete[v.Name] = v.ID
+	for _, publisherRow := range currentPublishers {
+		pubsToDelete[slug.Make(publisherRow.Name)] = publisherRow.ID
 	}
 
 	// Get apps from mysql
-	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "publishers"})
-	logger.Error(err)
+	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "publishers", "reviews_score"})
+	if err != nil {
+		logger.Error(err)
+		return
+	}
 
-	counts := make(map[string]*adminDeveloper)
+	publishersToAdd := make(map[string]*adminPublisher)
 
 	for _, app := range apps {
 
-		publishers, err := app.GetPublishers()
+		appPublishers, err := app.GetPublishers()
 		if err != nil {
 			logger.Error(err)
 			continue
 		}
 
-		if len(publishers) == 0 {
-			publishers = []string{"No Publisher"}
+		if len(appPublishers) == 0 {
+			appPublishers = []string{""}
 		}
 
-		for _, key := range publishers {
+		for _, publisher := range appPublishers {
 
-			key = strings.ToLower(key)
+			key := slug.Make(publisher)
 
 			delete(pubsToDelete, key)
 
-			if _, ok := counts[key]; ok {
-				counts[key].count++
-				counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
-				counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
+			if _, ok := publishersToAdd[key]; ok {
+				publishersToAdd[key].count++
+				publishersToAdd[key].totalPrice = publishersToAdd[key].totalPrice + app.PriceFinal
+				publishersToAdd[key].totalDiscount = publishersToAdd[key].totalDiscount + app.PriceDiscount
 			} else {
-				counts[key] = &adminDeveloper{
+				publishersToAdd[key] = &adminPublisher{
 					count:         1,
 					totalPrice:    app.PriceFinal,
 					totalDiscount: app.PriceDiscount,
-					name:          app.GetName(),
+					name:          publisher,
 				}
 			}
 		}
@@ -334,23 +340,32 @@ func adminPublishers() {
 	var wg sync.WaitGroup
 
 	// Delete old publishers
-	for _, v := range pubsToDelete {
+	wg.Add(1)
+	go func() {
 
-		wg.Add(1)
-		go func() {
+		var pubsToDeleteSlice []int
+		for _, v := range pubsToDelete {
+			pubsToDeleteSlice = append(pubsToDeleteSlice, v)
+		}
 
-			err := db.DeletePublisher(v)
-			logger.Error(err)
+		err := db.DeletePublishers(pubsToDeleteSlice)
+		logger.Error(err)
 
-			wg.Done()
-		}()
-	}
+		wg.Done()
+	}()
 
 	// Update current publishers
-	for k, v := range counts {
+	var x int
 
+	for k, v := range publishersToAdd {
+
+		if x >= 5 {
+			wg.Wait()
+		}
+
+		x++
 		wg.Add(1)
-		go func(k string, v *adminDeveloper) {
+		go func(k string, v *adminPublisher) {
 
 			err := db.SaveOrUpdatePublisher(k, db.Publisher{
 				Apps:         v.count,
@@ -360,6 +375,7 @@ func adminPublishers() {
 			})
 			logger.Error(err)
 
+			x--
 			wg.Done()
 
 		}(k, v)
@@ -371,6 +387,21 @@ func adminPublishers() {
 	logger.Error(err)
 
 	logger.Info("Publishers updated")
+}
+
+type adminPublisher struct {
+	name          string
+	count         int
+	totalPrice    int
+	totalDiscount int
+}
+
+func (p adminPublisher) GetMeanPrice() float64 {
+	return float64(p.totalPrice) / float64(p.count)
+}
+
+func (p adminPublisher) GetMeanDiscount() float64 {
+	return float64(p.totalDiscount) / float64(p.count)
 }
 
 func adminDevelopers() {
@@ -717,7 +748,7 @@ func adminRanks() {
 	}
 
 	// Update ranks
-	err = db.BulkSaveKinds(kinds, db.KindPlayerRank)
+	err = db.BulkSaveKinds(kinds, db.KindPlayerRank, false)
 	if err != nil {
 		logger.Error(err)
 		return

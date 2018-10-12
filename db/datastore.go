@@ -5,7 +5,6 @@ package db
 import (
 	"context"
 	"errors"
-	"strconv"
 	"sync"
 
 	"cloud.google.com/go/datastore"
@@ -68,7 +67,7 @@ func SaveKind(key *datastore.Key, data interface{}) (newKey *datastore.Key, err 
 	return newKey, nil
 }
 
-func BulkSaveKinds(kinds []Kind, kind string) (err error) {
+func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 
 	count := len(kinds)
 	if count == 0 {
@@ -81,36 +80,48 @@ func BulkSaveKinds(kinds []Kind, kind string) (err error) {
 	}
 
 	var errs []error
+	var wg sync.WaitGroup
+
 	chunks := chunkKinds(kinds, 0)
 	for _, chunk := range chunks {
 
-		keys := make([]*datastore.Key, 0, len(chunk))
-		for _, vv := range chunk {
-			keys = append(keys, vv.GetKey())
-		}
+		wg.Add(1)
+		go func() {
 
-		if len(keys) != len(chunk) {
-			logger.Info("PutMulti len mismatch: " + strconv.Itoa(len(keys)) + ":" + strconv.Itoa(len(chunk)))
-		}
+			keys := make([]*datastore.Key, 0, len(chunk))
+			for _, vv := range chunk {
+				keys = append(keys, vv.GetKey())
+			}
 
-		switch kind {
-		case KindNews:
-			_, err = client.PutMulti(ctx, keys, kindsToNews(chunk))
-		case KindPlayerApp:
-			_, err = client.PutMulti(ctx, keys, kindsToPlayerApps(chunk))
-		case KindChange:
-			_, err = client.PutMulti(ctx, keys, kindsToChanges(chunk))
-		case KindPlayerRank:
-			_, err = client.PutMulti(ctx, keys, kindsToPlayerRanks(chunk))
-		}
+			switch kind {
+			case KindNews:
+				_, err = client.PutMulti(ctx, keys, kindsToNews(chunk))
+			case KindPlayerApp:
+				_, err = client.PutMulti(ctx, keys, kindsToPlayerApps(chunk))
+			case KindChange:
+				_, err = client.PutMulti(ctx, keys, kindsToChanges(chunk))
+			case KindPlayerRank:
+				_, err = client.PutMulti(ctx, keys, kindsToPlayerRanks(chunk))
+			}
 
-		if err != nil {
-			errs = append(errs, err)
-		}
+			if err != nil {
+				if wait {
+					errs = append(errs, err)
+				} else {
+					logger.Error(err)
+				}
+			}
+
+			wg.Done()
+		}()
 	}
 
-	if len(errs) > 0 {
-		return errs[0]
+	if wait {
+		wg.Wait()
+
+		if len(errs) > 0 {
+			return errs[0]
+		}
 	}
 
 	return nil
@@ -170,10 +181,10 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 
 	if wait {
 		wg.Wait()
-	}
 
-	if len(errs) > 0 {
-		return errs[0]
+		if len(errs) > 0 {
+			return errs[0]
+		}
 	}
 
 	return nil
