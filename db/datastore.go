@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"strconv"
+	"sync"
 
 	"cloud.google.com/go/datastore"
 	"github.com/spf13/viper"
@@ -134,14 +135,10 @@ func chunkKinds(kinds []Kind, chunkSize int) (chunked [][]Kind) {
 	return chunked
 }
 
-func BulkDeleteKinds(keys map[int64]*datastore.Key, chunkSize int) (err error) {
+func BulkDeleteKinds(keys map[int64]*datastore.Key, wait bool) (err error) {
 
 	if len(keys) == 0 {
 		return nil
-	}
-
-	if chunkSize == 0 {
-		chunkSize = 500
 	}
 
 	// Make map a slice
@@ -156,13 +153,25 @@ func BulkDeleteKinds(keys map[int64]*datastore.Key, chunkSize int) (err error) {
 	}
 
 	var errs []error
-	chunks := chunkKeys(keysToDelete, chunkSize)
+	var wg sync.WaitGroup
+
+	chunks := chunkKeys(keysToDelete, 500)
 	for _, v := range chunks {
 
-		err = client.DeleteMulti(ctx, v)
-		if err != nil {
-			errs = append(errs, err)
-		}
+		wg.Add(1)
+		go func() {
+
+			err = client.DeleteMulti(ctx, v)
+			if err != nil {
+				errs = append(errs, err)
+			}
+
+			wg.Done()
+		}()
+	}
+
+	if wait {
+		wg.Wait()
 	}
 
 	if len(errs) > 0 {

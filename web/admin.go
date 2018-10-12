@@ -723,7 +723,7 @@ func adminRanks() {
 	}
 
 	// Remove old ranks
-	err = db.BulkDeleteKinds(oldKeys, 0)
+	err = db.BulkDeleteKinds(oldKeys, false)
 	if err != nil {
 		logger.Error(err)
 		return
