@@ -65,10 +65,9 @@
                                 <small>(<a href="/developers" class="stop-prop">Developers</a>)</small>
                             </label>
                             <select multiple data-placeholder="Choose Developers" class="form-control form-control-chosen" id="developers" name="developers">
-                                <option value=""></option>
-                                <option value="windows">Windows</option>
-                                <option value="macos">MacOS</option>
-                                <option value="linux">Linux</option>
+                            {{ range $key, $value := .Developers }}
+                                <option value="{{ .ID }}">{{ .GetName }}</option>
+                            {{ end }}
                             </select>
                         </div>
                     </div>
@@ -78,10 +77,9 @@
                                 <small>(<a href="/publishers" class="stop-prop">Publishers</a>)</small>
                             </label>
                             <select multiple data-placeholder="Choose Publishers" class="form-control form-control-chosen" id="publishers" name="publishers">
-                                <option value=""></option>
-                                <option value="windows">Windows</option>
-                                <option value="macos">MacOS</option>
-                                <option value="linux">Linux</option>
+                            {{ range $key, $value := .Publishers }}
+                                <option value="{{ .ID }}">{{ .GetName }}</option>
+                            {{ end }}
                             </select>
                         </div>
                     </div>
@@ -102,10 +100,9 @@
                         <div class="form-group">
                             <label for="types">Type</label>
                             <select multiple data-placeholder="Choose Types" class="form-control form-control-chosen" id="types" name="types">
-                                <option value=""></option>
-                                <option value="windows">Windows</option>
-                                <option value="macos">MacOS</option>
-                                <option value="linux">Linux</option>
+                            {{ range $key, $value := .Types }}
+                                <option value="{{ $key }}">{{ $value }}</option>
+                            {{ end }}
                             </select>
                         </div>
                     </div>

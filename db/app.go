@@ -113,6 +113,34 @@ func (app App) GetType() (ret string) {
 	}
 }
 
+func GetTypesForSelect() (ret map[string]string) {
+
+	types := []string{
+		"",
+		"advertising",
+		"application",
+		"config",
+		"demo",
+		"dlc",
+		"episode",
+		"game",
+		"guide",
+		"hardware",
+		"media",
+		"mod",
+		"movie",
+		"series",
+		"tool",
+		"video",
+	}
+
+	m := map[string]string{}
+	for _, v := range types {
+		m[v] = App{Type: v}.GetType()
+	}
+	return m
+}
+
 func (app App) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{

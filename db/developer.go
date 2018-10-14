@@ -1,10 +1,12 @@
 package db
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/memcache"
 )
 
 type Developer struct {
@@ -20,6 +22,10 @@ type Developer struct {
 
 func (d Developer) GetPath() string {
 	return "/games?developer=" + strconv.Itoa(d.ID)
+}
+
+func (d Developer) GetName() (name string) {
+	return d.Name
 }
 
 func (d Developer) GetMeanPrice() float64 {
@@ -43,6 +49,33 @@ func GetAllDevelopers() (developers []Developer, err error) {
 	}
 
 	return developers, nil
+}
+
+func GetDevelopersForSelect() (devs []Developer, err error) {
+
+	s, err := memcache.GetSetString(memcache.DeveloperKeyNames, func() (s string, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return s, err
+		}
+
+		var devs []Developer
+		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&devs)
+		if db.Error != nil {
+			return s, db.Error
+		}
+
+		bytes, err := json.Marshal(devs)
+		return string(bytes), err
+	})
+
+	if err != nil {
+		return devs, err
+	}
+
+	err = json.Unmarshal([]byte(s), &devs)
+	return devs, err
 }
 
 func SaveOrUpdateDeveloper(name string, vals Developer) (err error) {

@@ -3,7 +3,6 @@ package web
 import (
 	"net/http"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/steam-authority/steam-authority/db"
@@ -72,15 +71,36 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
+	// Get genres
+	var publishers []db.Publisher
+	wg.Add(1)
+	go func() {
+
+		publishers, err = db.GetPublishersForSelect()
+		logger.Error(err)
+
+		wg.Done()
+
+	}()
+
+	// Get genres
+	var developers []db.Developer
+	wg.Add(1)
+	go func() {
+
+		developers, err = db.GetDevelopersForSelect()
+		logger.Error(err)
+
+		wg.Done()
+
+	}()
+
 	// Wait
 	wg.Wait()
 
 	// Make pagination path
 	values := r.URL.Query()
 	values.Del("p")
-
-	path := "/games?" + values.Encode() + "&p="
-	path = strings.Replace(path, "?&", "?", 1)
 
 	// Template
 	t := appsTemplate{}
@@ -89,16 +109,22 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps = apps
 	t.Tags = tags
 	t.Genres = genres
+	t.Publishers = publishers
+	t.Developers = developers
+	t.Types = db.GetTypesForSelect()
 
 	returnTemplate(w, r, "apps", t)
 }
 
 type appsTemplate struct {
 	GlobalTemplate
-	Count  int
-	Apps   []db.App
-	Tags   []db.Tag
-	Genres []db.Genre
+	Count      int
+	Types      map[string]string
+	Apps       []db.App
+	Tags       []db.Tag
+	Genres     []db.Genre
+	Publishers []db.Publisher
+	Developers []db.Developer
 }
 
 func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {

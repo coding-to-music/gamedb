@@ -26,10 +26,12 @@ var (
 		return memcache.Item{Key: "players-events-count-" + strconv.FormatInt(playerID, 10), Expiration: 60 * 60 * 24}
 	}
 
+	// Dropdowns
 	TagKeyNames       = memcache.Item{Key: "tag-key-names", Expiration: 60 * 60 * 24 * 1}
 	GenreKeyNames     = memcache.Item{Key: "genre-key-names", Expiration: 60 * 60 * 24 * 1}
 	PublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: 60 * 60 * 24 * 1}
 	DeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 60 * 60 * 24 * 1}
+	AppTypes          = memcache.Item{Key: "app-types", Expiration: 60 * 60 * 24 * 1}
 )
 
 func getClient() *memcache.Client {
