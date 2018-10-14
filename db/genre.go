@@ -42,7 +42,7 @@ func GetAllGenres() (genres []Genre, err error) {
 		return genres, err
 	}
 
-	db.Limit(1000).Find(&genres)
+	db.Find(&genres)
 	if db.Error != nil {
 		return genres, db.Error
 	}

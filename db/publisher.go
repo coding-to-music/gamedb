@@ -45,7 +45,7 @@ func GetAllPublishers() (publishers []Publisher, err error) {
 		return publishers, err
 	}
 
-	db = db.Limit(1000).Find(&publishers)
+	db = db.Find(&publishers)
 	if db.Error != nil {
 		return publishers, db.Error
 	}
