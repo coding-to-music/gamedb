@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/dustin/go-humanize"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
@@ -71,7 +70,7 @@ func (pack Package) GetPath() string {
 func (pack Package) GetName() (name string) {
 
 	if pack.PICSName == "" {
-		pack.PICSName = "Package " + humanize.Comma(int64(pack.ID))
+		pack.PICSName = "Package " + strconv.FormatInt(int64(pack.ID), 10)
 	}
 
 	return pack.PICSName
