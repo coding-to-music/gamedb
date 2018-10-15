@@ -144,11 +144,11 @@
                                     <table class="table mb-0">
                                         <tr>
                                             <th scope="row">Game Bans</th>
-                                            <td>{{ .Bans.NumberOfGameBans }}</td>
+                                            <td>{{ comma .Bans.NumberOfGameBans }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">VAC Bans</th>
-                                            <td>{{ .Bans.NumberOfVACBans }}</td>
+                                            <td>{{ comma .Bans.NumberOfVACBans }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Community Banned</th>
@@ -164,7 +164,7 @@
                                         </tr>
                                         <tr>
                                             <th scope="row">Last Ban</th>
-                                            <td>{{ .Bans.DaysSinceLastBan }} days</td>
+                                            <td>{{ comma .Bans.DaysSinceLastBan }} days</td>
                                         </tr>
                                     </table>
 
