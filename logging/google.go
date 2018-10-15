@@ -41,7 +41,7 @@ func ErrorG(err error, log ...string) {
 }
 
 func InfoG(payload string, log ...string) {
-	getLog(log...).Log(logging.Entry{Severity: logging.Info, Payload: payload + "\n\r" + string(debug.Stack())})
+	getLog(log...).Log(logging.Entry{Severity: logging.Info, Payload: payload})
 }
 
 func CriticalG(err error, log ...string) {
