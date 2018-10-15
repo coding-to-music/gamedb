@@ -25,14 +25,14 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/websockets"
 )
 
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logger.InfoG(r.Method + " " + r.URL.Path)
+		logging.InfoG(r.Method + " " + r.URL.Path)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -45,7 +45,7 @@ func Serve() error {
 	r.Use(middleware.GetHead)
 	r.Use(middleware.RedirectSlashes)
 
-	if viper.GetString("ENV") == logger.EnvProd {
+	if viper.GetString("ENV") == logging.EnvProd {
 		r.Use(middlewareLog)
 	}
 
@@ -135,7 +135,7 @@ func fileServer(r chi.Router) {
 	path := "/assets"
 
 	if strings.ContainsAny(path, "{}*") {
-		logger.Info("FileServer does not permit URL parameters.")
+		logging.Info("FileServer does not permit URL parameters.")
 	}
 
 	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(viper.GetString("PATH"), "assets"))))
@@ -168,7 +168,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/templates/"+page+".html",
 	)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 404, err.Error())
 		return err
 	}
@@ -177,7 +177,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	buf := &bytes.Buffer{}
 	err = t.ExecuteTemplate(buf, page, pageData)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, "Something has gone wrong, the error has been logged!")
 		return err
 	} else {
@@ -290,7 +290,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// User ID
 	id, err := session.Read(r, session.PlayerID)
-	logger.Error(err)
+	logging.Error(err)
 
 	t.UserID, err = strconv.Atoi(id)
 	if err != nil {
@@ -299,11 +299,11 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// User name
 	t.UserName, err = session.Read(r, session.PlayerName)
-	logger.Error(err)
+	logging.Error(err)
 
 	// Level
 	level, err := session.Read(r, session.PlayerLevel)
-	logger.Error(err)
+	logging.Error(err)
 
 	t.UserLevel, err = strconv.Atoi(level)
 	if err != nil {
@@ -312,14 +312,14 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// Flashes
 	t.FlashesGood, err = session.GetGoodFlashes(w, r)
-	logger.Error(err)
+	logging.Error(err)
 
 	t.FlashesBad, err = session.GetBadFlashes(w, r)
-	logger.Error(err)
+	logging.Error(err)
 
 	// All session data
 	t.Session, err = session.ReadAll(r)
-	logger.Error(err)
+	logging.Error(err)
 }
 
 func (t GlobalTemplate) IsLoggedIn() (bool) {
@@ -354,7 +354,7 @@ func (t GlobalTemplate) GetUserJSON() (string) {
 	}
 
 	bytesx, err := json.Marshal(stringMap)
-	logger.Error(err)
+	logging.Error(err)
 	return string(bytesx)
 }
 
@@ -398,7 +398,7 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter) {
 
 	bytesx, err := json.Marshal(t)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")

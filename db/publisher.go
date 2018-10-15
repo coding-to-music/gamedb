@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
 )
 
@@ -100,8 +99,6 @@ func SaveOrUpdatePublisher(name string, vals Publisher) (err error) {
 
 func DeletePublishers(ids []int) (err error) {
 
-	logger.Info("Deleteing " + strconv.Itoa(len(ids)) + " publishers")
-
 	if len(ids) == 0 {
 		return nil
 	}
@@ -113,6 +110,6 @@ func DeletePublishers(ids []int) (err error) {
 	}
 
 	db.Where("id IN (?)", ids).Delete(Publisher{})
-	db.LogMode(false)
+
 	return db.Error
 }

@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func StatsHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +21,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -32,7 +32,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 			//gorm = gorm.Order("reviews_score ASC")
 			gorm = gorm.Find(&scores)
 
-			logger.Error(gorm.Error)
+			logging.Error(gorm.Error)
 		}
 
 		wg.Done()
@@ -65,7 +65,7 @@ func (s *statsTemplate) setScoresJSON(scores []appScore) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	logger.Error(err)
+	logging.Error(err)
 
 	s.Scores = string(bytes)
 }

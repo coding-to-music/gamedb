@@ -14,7 +14,7 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/golang/snappy"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 var (
@@ -80,7 +80,7 @@ func Upload(path string, data []byte, public bool) (err error) {
 	// Make public
 	if public {
 		if err := object.ACL().Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 	}
 
@@ -115,7 +115,7 @@ func Download(path string) (bytes []byte, err error) {
 	// Decode
 	bytes, err = snappy.Decode(nil, data)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		// data is not encoded? Return as is.
 		bytes = data
 	}

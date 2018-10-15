@@ -15,7 +15,6 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
 )
 
@@ -253,12 +252,11 @@ func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err e
 	return screenshots, err
 }
 
-func (app App) GetCoopTags(tagMap map[int]string) string {
+func (app App) GetCoopTags(tagMap map[int]string) (string, error) {
 
 	tags, err := app.GetTagIDs()
 	if err != nil {
-		logger.Error(err)
-		return ""
+		return "", err
 	}
 
 	var coopTags []string
@@ -268,7 +266,7 @@ func (app App) GetCoopTags(tagMap map[int]string) string {
 		}
 	}
 
-	return strings.Join(coopTags, ", ")
+	return strings.Join(coopTags, ", "), nil
 }
 
 func (app App) GetAchievements() (achievements steam.AppDetailsAchievements, err error) {
@@ -606,14 +604,14 @@ func (app *App) UpdateFromAPI() (errs []error) {
 		percentages, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
 
-			logger.Error(err)
+			errs = append(errs, err)
 
 		} else {
 
 			percentagesString, err := json.Marshal(percentages)
 			if err != nil {
 
-				logger.Error(err)
+				errs = append(errs, err)
 
 			} else {
 
@@ -632,14 +630,14 @@ func (app *App) UpdateFromAPI() (errs []error) {
 		schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
 		if err != nil {
 
-			logger.Error(err)
+			errs = append(errs, err)
 
 		} else {
 
 			schemaString, err := json.Marshal(schema)
 			if err != nil {
 
-				logger.Error(err)
+				errs = append(errs, err)
 
 			} else {
 
@@ -739,7 +737,7 @@ func GetApp(id int) (app App, err error) {
 
 func GetAppsByID(ids []int, columns []string) (apps []App, err error) { // todo, chunk ids into multple queries async
 
-	if len(ids) < 1 {
+	if len(ids) == 0 {
 		return apps, nil
 	}
 
@@ -827,12 +825,16 @@ func SearchApps(query url.Values, limit int, page int, sort string, columns []st
 
 func GetDLC(app App, columns []string) (apps []App, err error) {
 
-	db, err := GetMySQLClient()
+	dlc, err := app.GetDLC()
 	if err != nil {
 		return apps, err
 	}
 
-	dlc, err := app.GetDLC()
+	if len(dlc) == 0 {
+		return apps, nil
+	}
+
+	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err
 	}
@@ -843,11 +845,7 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 		db = db.Select(columns)
 	}
 
-	if db.Error != nil {
-		return apps, db.Error
-	}
-
-	return apps, nil
+	return apps, db.Error
 }
 
 func CountApps() (count int, err error) {

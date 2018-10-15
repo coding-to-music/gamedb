@@ -8,7 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/websockets"
 )
 
@@ -28,7 +28,7 @@ func InitChat() {
 
 	// Get client
 	discordSession, err = discordgo.New("Bot " + viper.GetString("DISCORD_BOT_TOKEN"))
-	logger.Error(err)
+	logging.Error(err)
 
 	// Add websocket listener
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -44,7 +44,7 @@ func InitChat() {
 
 	// Open connection
 	err = discordSession.Open()
-	logger.Error(err)
+	logging.Error(err)
 }
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		channelsResponse, err := discordSession.GuildChannels(guildID)
-		logger.Error(err)
+		logging.Error(err)
 
 		for _, v := range channelsResponse {
 			if v.Type == discordgo.ChannelTypeGuildText {
@@ -86,7 +86,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
-		logger.Error(err)
+		logging.Error(err)
 
 		for _, v := range messagesResponse {
 			if !v.Author.Bot && v.Type == discordgo.MessageTypeDefault {

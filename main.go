@@ -11,7 +11,7 @@ import (
 	"github.com/steam-authority/steam-authority/config"
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/steam-authority/steam-authority/storage"
@@ -22,7 +22,7 @@ import (
 func init() {
 	config.Init() // Must go first
 	queue.Init()
-	logger.Init()
+	logging.Init()
 	session.Init()
 	storage.Init()
 	web.InitChat()
@@ -62,7 +62,7 @@ func main() {
 	// Log steam calls
 	go func() {
 		for v := range helpers.GetSteamLogsChan() {
-			logger.InfoG(v)
+			logging.InfoG(v)
 		}
 	}()
 
@@ -70,7 +70,7 @@ func main() {
 	err := web.Serve()
 	if err != nil {
 
-		logger.Error(err)
+		logging.Error(err)
 
 	} else {
 

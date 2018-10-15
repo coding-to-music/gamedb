@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 var ErrUnMarshalNonPointer = errors.New("trying to unmarshal a non-pointer")
@@ -27,7 +27,7 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 
 		if err2, ok := err.(*json.UnmarshalTypeError); ok {
 			if SliceHasString([]string{"[]db.ProfileFriend", "[]db.ProfileBadge"}, err2.Type.String()) {
-				logger.ErrorG(err2)
+				logging.ErrorG(err2)
 				return nil
 			}
 		}
@@ -38,10 +38,10 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 				data = data[0:1000]
 			}
 
-			logger.Info(err.Error() + " - " + string(data) + "...")
+			logging.Info(err.Error() + " - " + string(data) + "...")
 
 		} else {
-			logger.Error(err)
+			logging.Error(err)
 		}
 	}
 

@@ -2,8 +2,6 @@ package db
 
 import (
 	"time"
-
-	"github.com/steam-authority/steam-authority/logger"
 )
 
 const (
@@ -28,20 +26,16 @@ func SetConfig(id string, value string) (err error) {
 	// Update app
 	db, err := GetMySQLClient()
 	if err != nil {
-		logger.Error(err)
+		return err
 	}
 
 	config := new(Config)
 	config.ID = id
 
 	db.Attrs().Assign(Config{Value: value}).FirstOrInit(config)
-
 	db.Save(config)
-	if db.Error != nil {
-		logger.Error(err)
-	}
 
-	return nil
+	return db.Error
 }
 
 func GetConfig(id string) (config Config, err error) {
@@ -52,18 +46,15 @@ func GetConfig(id string) (config Config, err error) {
 	}
 
 	db.Where("id = ?", id).First(&config)
-	if db.Error != nil {
-		return config, db.Error
-	}
 
-	return config, nil
+	return config, db.Error
 }
 
 func GetConfigs(ids []string) (configsMap map[string]Config, err error) {
 
 	configsMap = map[string]Config{}
 
-	if len(ids) < 1 {
+	if len(ids) == 0 {
 		return configsMap, nil
 	}
 

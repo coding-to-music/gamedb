@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/streadway/amqp"
 )
 
@@ -97,21 +97,17 @@ type rabbitMessageBase struct {
 func (s rabbitMessageBase) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
-	if err != nil {
-		logger.Error(err)
-	}
+	logging.Error(err)
 
 	qu, err = ch.QueueDeclare(s.Message.getQueueName(), true, false, false, false, nil)
-	if err != nil {
-		logger.Error(err)
-	}
+	logging.Error(err)
 
 	return ch, qu, err
 }
 
 func (s rabbitMessageBase) produce(data []byte) (err error) {
 
-	logger.Info("Producing to: " + s.Message.getQueueName())
+	logging.Info("Producing to: " + s.Message.getQueueName())
 
 	// Connect
 	if producerConnection == nil {
@@ -135,16 +131,14 @@ func (s rabbitMessageBase) produce(data []byte) (err error) {
 		ContentType:  "application/json",
 		Body:         data,
 	})
-	if err != nil {
-		logger.Error(err)
-	}
+	logging.Error(err)
 
 	return nil
 }
 
 func (s rabbitMessageBase) consume() {
 
-	logger.LocalInfo("Consuming from: " + s.Message.getQueueName())
+	logging.LocalInfo("Consuming from: " + s.Message.getQueueName())
 
 	var breakFor = false
 	var err error
@@ -157,7 +151,7 @@ func (s rabbitMessageBase) consume() {
 			consumerConnection, err = amqp.Dial(rabbitDSN)
 			consumerConnection.NotifyClose(consumerCloseChannel)
 			if err != nil {
-				logger.Error(err)
+				logging.Error(err)
 				return
 			}
 		}
@@ -165,13 +159,13 @@ func (s rabbitMessageBase) consume() {
 		//
 		ch, qu, err := s.getQueue(consumerConnection)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			return
 		}
 
 		msgs, err := ch.Consume(qu.Name, "", false, false, false, false, nil)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			return
 		}
 
@@ -184,9 +178,7 @@ func (s rabbitMessageBase) consume() {
 			case msg := <-msgs:
 
 				ack, requeue, err := s.Message.process(msg)
-				if err != nil {
-					logger.Error(err)
-				}
+				logging.Error(err)
 
 				if ack {
 					msg.Ack(false)
@@ -194,9 +186,7 @@ func (s rabbitMessageBase) consume() {
 
 					if requeue {
 						err = s.requeueMessage(msg)
-						if err != nil {
-							logger.Error(err)
-						}
+						logging.Error(err)
 					}
 
 					msg.Nack(false, false)

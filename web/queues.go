@@ -12,7 +12,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func QueuesHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +32,7 @@ func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	queuesResp, err := GetQeueus()
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -63,7 +63,10 @@ func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Encode
 	bytes, err := json.Marshal(queues)
-	logger.Error(err)
+	if err != nil {
+		logging.Error(err)
+		bytes = []byte("[]")
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(bytes)

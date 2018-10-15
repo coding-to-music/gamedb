@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/go-github/github"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"golang.org/x/oauth2"
 )
 
@@ -39,7 +39,7 @@ func CommitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	commits, _, err := githubClient.Repositories.ListCommits(githubContext, "steam-authority", "steam-authority", &options)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, "Can't connect to GitHub")
 		return
 	}

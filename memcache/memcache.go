@@ -7,7 +7,7 @@ import (
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 const namespace = "game-db-"
@@ -77,7 +77,7 @@ func GetSetInt(item memcache.Item, f func() (j int, err error)) (count int, err 
 
 	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
 
-		logger.Info("Loading " + item.Key + " from memcache.")
+		logging.Info("Loading " + item.Key + " from memcache.")
 
 		count, err := f()
 		if err != nil {
@@ -97,7 +97,7 @@ func GetSetString(item memcache.Item, f func() (j string, err error)) (s string,
 
 	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
 
-		logger.Info("Loading " + item.Key + " from memcache.")
+		logging.Info("Loading " + item.Key + " from memcache.")
 
 		s, err := f()
 		if err != nil {

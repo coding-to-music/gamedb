@@ -6,7 +6,6 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
 )
 
 type News struct {
@@ -58,14 +57,14 @@ func GetArticles(appID int, limit int) (articles []News, err error) {
 	return articles, err
 }
 
-func GetNewArticles(appID int) (articles []*News, err error) {
+func GetNewArticles(appID int) (news []*News, err error) {
 
 	// Get latest article from database
 	var latestTime int64
 
 	latest, err := GetArticles(appID, 1)
 	if err != nil {
-		logger.Error(err)
+		return news, err
 	}
 
 	if len(latest) > 0 {
@@ -74,6 +73,9 @@ func GetNewArticles(appID int) (articles []*News, err error) {
 
 	// Get app articles from Steam
 	resp, _, err := helpers.GetSteam().GetNews(appID)
+	if err != nil {
+		return news, err
+	}
 
 	for _, v := range resp.Items {
 
@@ -92,9 +94,9 @@ func GetNewArticles(appID int) (articles []*News, err error) {
 			article.FeedType = int8(v.FeedType)
 			article.AppID = v.AppID
 
-			articles = append(articles, article)
+			news = append(news, article)
 		}
 	}
 
-	return articles, nil
+	return news, err
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func ChangeHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +17,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 			returnErrorTemplate(w, r, 404, "We can't find this change in our database, there may not be one with this ID.")
 			return
 		} else {
-			logger.Error(err)
+			logging.Error(err)
 			returnErrorTemplate(w, r, 500, err.Error())
 			return
 		}
@@ -32,7 +32,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 		apps, err = db.GetAppsByID(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		wg.Done()
@@ -46,7 +46,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 		packages, err = db.GetPackages(change.GetPackageIDs(), []string{})
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		wg.Done()

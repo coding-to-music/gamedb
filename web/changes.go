@@ -5,7 +5,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func ChangesHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +31,7 @@ func ChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	client, ctx, err := db.GetDSClient()
 	if err != nil {
 
-		logger.Error(err)
+		logging.Error(err)
 
 	} else {
 
@@ -40,12 +40,12 @@ func ChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q, err = query.SetOrderOffsetDS(q, map[string]string{})
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
 			_, err := client.GetAll(ctx, q, &changes)
-			logger.Error(err)
+			logging.Error(err)
 		}
 	}
 

@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func NewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	articles, err := db.GetArticles(0, 100)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting articles")
 		return
 	}
@@ -34,7 +34,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get apps
 	apps, err := db.GetAppsByID(appIDs, []string{"id", "name", "icon"})
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting apps")
 		return
 	}

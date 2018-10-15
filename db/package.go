@@ -10,7 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/memcache"
 )
 
@@ -270,14 +270,14 @@ func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
 }
 
 // Used in temmplate
-func (pack Package) GetExtendedNice() (ret map[string]interface{}, err error) {
+func (pack Package) GetExtendedNice() (ret map[string]interface{}) {
 
 	ret = make(map[string]interface{})
 
 	extended, err := pack.GetExtended()
 	if err != nil {
-		logger.Error(err)
-		return ret, err
+		logging.Error(err)
+		return ret
 	}
 
 	for k, v := range extended {
@@ -285,12 +285,12 @@ func (pack Package) GetExtendedNice() (ret map[string]interface{}, err error) {
 		if val, ok := PackageExtendedKeys[k]; ok {
 			ret[val] = v
 		} else {
-			logger.Info("Need to add " + k + " to extended map")
+			logging.Info("Need to add " + k + " to extended map")
 			ret[k] = v
 		}
 	}
 
-	return ret, err
+	return ret
 }
 
 func (pack Package) GetController() (controller map[string]interface{}, err error) {
@@ -302,14 +302,14 @@ func (pack Package) GetController() (controller map[string]interface{}, err erro
 }
 
 // Used in temmplate
-func (pack Package) GetControllerNice() (ret map[string]interface{}, err error) {
+func (pack Package) GetControllerNice() (ret map[string]interface{}) {
 
 	ret = map[string]interface{}{}
 
 	extended, err := pack.GetController()
 	if err != nil {
-		logger.Error(err)
-		return ret, err
+		logging.Error(err)
+		return ret
 	}
 
 	for k, v := range extended {
@@ -317,12 +317,12 @@ func (pack Package) GetControllerNice() (ret map[string]interface{}, err error) 
 		if val, ok := PackageControllerKeys[k]; ok {
 			ret[val] = v
 		} else {
-			logger.Info("Need to add " + k + " to controller map")
+			logging.Info("Need to add " + k + " to controller map")
 			ret[k] = v
 		}
 	}
 
-	return ret, err
+	return ret
 }
 
 func (pack Package) GetPlatforms() (platforms []string, err error) {
@@ -372,8 +372,8 @@ func GetPackage(id int) (pack Package, err error) {
 
 func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 
-	if len(ids) < 1 {
-		return
+	if len(ids) == 0 {
+		return packages, err
 	}
 
 	db, err := GetMySQLClient()
@@ -386,11 +386,8 @@ func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 	}
 
 	db.Where("id IN (?)", ids).Find(&packages)
-	if db.Error != nil {
-		return packages, db.Error
-	}
 
-	return packages, nil
+	return packages, db.Error
 }
 
 func GetPackagesAppIsIn(appID int) (packages []Package, err error) {

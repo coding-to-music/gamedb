@@ -5,7 +5,7 @@ import (
 
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/streadway/amqp"
 )
 
@@ -32,7 +32,7 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 	player, err := db.GetPlayer(int64(message.PlayerID))
 	if err != nil {
 		if err != db.ErrNoSuchEntity {
-			logger.Error(err)
+			logging.Error(err)
 			return false, true
 		}
 	}
@@ -40,7 +40,7 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 	errs := player.Update("")
 	if len(errs) > 0 {
 		for _, v := range errs {
-			logger.Error(v)
+			logging.Error(v)
 		}
 
 		// API is probably down, todo

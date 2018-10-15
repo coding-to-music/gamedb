@@ -6,13 +6,13 @@ import (
 	"sync"
 
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	total, err := db.CountPackages()
-	logger.Error(err)
+	logging.Error(err)
 
 	// Template
 	t := packagesTemplate{}
@@ -44,7 +44,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -60,7 +60,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Limit(100)
 			gorm = gorm.Find(&packages)
 
-			logger.Error(gorm.Error)
+			logging.Error(gorm.Error)
 		}
 
 		wg.Done()
@@ -73,7 +73,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = db.CountPackages()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}()

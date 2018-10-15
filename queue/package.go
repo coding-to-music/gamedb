@@ -6,7 +6,7 @@ import (
 
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/streadway/amqp"
 )
 
@@ -59,7 +59,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 				i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
 				pack.PICSStatus = int8(i64)
 			default:
-				logger.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeID) + ")")
+				logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeID) + ")")
 			}
 
 		} else {
@@ -102,14 +102,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 				pack.SetExtended(extended)
 
 			default:
-				logger.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeID) + ")")
+				logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeID) + ")")
 			}
 
 		}
 
-		if err != nil {
-			logger.Error(err)
-		}
+		logging.Error(err)
 	}
 
 	// Update package
@@ -119,9 +117,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	gorm.Attrs(db.GetDefaultPackageJSON()).FirstOrCreate(pack, db.Package{ID: pack.ID})
-	if gorm.Error != nil {
-		logger.Error(gorm.Error)
-	}
+	logging.Error(gorm.Error)
 
 	return false, true, err
 
@@ -143,7 +139,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		}
 		// Retry on all other errors
 		for _, err = range errs {
-			logger.Error(err)
+			logging.Error(err)
 			return false, true, err
 		}
 	}
@@ -153,7 +149,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	gorm.Save(pack)
 	if gorm.Error != nil {
-		logger.Error(gorm.Error)
+		logging.Error(gorm.Error)
 	}
 
 	// Save price change
@@ -175,7 +171,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 		prices, err := db.GetPackagePrices(pack.ID, 1)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		if len(prices) == 0 {
@@ -184,7 +180,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 		_, err = db.SaveKind(price.GetKey(), price)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 	}
 

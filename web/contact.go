@@ -8,7 +8,7 @@ import (
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/session"
 )
 
@@ -36,7 +36,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Parse form
 		if err := r.ParseForm(); err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			return err
 		}
 
@@ -64,7 +64,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 			if err == recaptcha.ErrNotChecked {
 				return errors.New("please check the captcha")
 			} else {
-				logger.Error(err)
+				logging.Error(err)
 				return ErrSomething
 			}
 		}
@@ -81,7 +81,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, err = client.Send(message)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			return ErrSomething
 		}
 

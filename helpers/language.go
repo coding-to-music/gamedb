@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"github.com/pariz/gountries"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 // https://partner.steamgames.com/doc/store/localization
@@ -26,7 +26,7 @@ func CountryCodeToName(code string) string {
 	query := gountries.New()
 	country, err := query.FindCountryByAlpha(code)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return code
 	}
 

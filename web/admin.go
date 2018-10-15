@@ -18,7 +18,7 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/queue"
 )
@@ -72,7 +72,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		db.ConfDevelopersUpdated,
 		db.ConfPublishersUpdated,
 	})
-	logger.Error(err)
+	logging.Error(err)
 
 	// Template
 	t := adminTemplate{}
@@ -99,7 +99,7 @@ func adminApps() {
 	// todo, page through results
 	apps, _, err := helpers.GetSteam().GetAppList(steam.GetAppListOptions{})
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -109,23 +109,23 @@ func adminApps() {
 
 	//
 	err = db.SetConfig(db.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
-	logger.Error(err)
+	logging.Error(err)
 
-	logger.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
+	logging.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
 
 func adminDeploy() {
 
 	//
 	err := db.SetConfig(db.ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
-	logger.Error(err)
+	logging.Error(err)
 }
 
 func adminDonations() {
 
 	donations, err := db.GetDonations(0, 0)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -144,7 +144,7 @@ func adminDonations() {
 	for k, v := range counts {
 		player, err := db.GetPlayer(k)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			continue
 		}
 
@@ -154,9 +154,9 @@ func adminDonations() {
 
 	//
 	err = db.SetConfig(db.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logger.Error(err)
+	logging.Error(err)
 
-	logger.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
+	logging.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
 
 func adminGenres() {
@@ -164,7 +164,7 @@ func adminGenres() {
 	// Get current genres, to delete old ones
 	genres, err := db.GetAllGenres()
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -178,7 +178,7 @@ func adminGenres() {
 	filter.Set("genres_depth", "3")
 
 	apps, err := db.SearchApps(filter, 0, 0, "", []string{})
-	logger.Error(err)
+	logging.Error(err)
 
 	counts := make(map[int]*adminGenreCount)
 
@@ -186,7 +186,7 @@ func adminGenres() {
 
 		genres, err := app.GetGenres()
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			continue
 		}
 
@@ -214,7 +214,7 @@ func adminGenres() {
 		go func() {
 
 			err := db.DeleteGenre(v)
-			logger.Error(err)
+			logging.Error(err)
 
 			wg.Done()
 		}()
@@ -227,7 +227,7 @@ func adminGenres() {
 		go func(v *adminGenreCount) {
 
 			err := db.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
-			logger.Error(err)
+			logging.Error(err)
 
 			wg.Done()
 
@@ -237,9 +237,9 @@ func adminGenres() {
 
 	//
 	err = db.SetConfig(db.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logger.Error(err)
+	logging.Error(err)
 
-	logger.Info("Genres updated")
+	logging.Info("Genres updated")
 }
 
 type adminGenreCount struct {
@@ -251,13 +251,13 @@ func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("change-id"); val != "" {
 
-		logger.Info("Change: " + val)
+		logging.Info("Change: " + val)
 		//queue.Produce(queue.ProduceOptions{queue.chang, []byte(val)), 1})
 	}
 
 	if val := r.PostForm.Get("player-id"); val != "" {
 
-		logger.Info("Player: " + val)
+		logging.Info("Player: " + val)
 		playerID, _ := strconv.ParseInt(val, 10, 64)
 		bytes, _ := json.Marshal(queue.RabbitMessageProfile{
 			PlayerID: playerID,
@@ -268,13 +268,13 @@ func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
-		logger.Info("App: " + val)
+		logging.Info("App: " + val)
 		queue.Produce(queue.QueueApps, []byte(val))
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
-		logger.Info("Package: " + val)
+		logging.Info("Package: " + val)
 		queue.Produce(queue.QueuePackages, []byte(val))
 	}
 }
@@ -286,7 +286,7 @@ func adminPublishers() {
 	// Get current publishers, to delete old ones
 	currentPublishers, err := db.GetAllPublishers()
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -298,7 +298,7 @@ func adminPublishers() {
 	// Get apps from mysql
 	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "publishers", "reviews_score"})
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -308,7 +308,7 @@ func adminPublishers() {
 
 		appPublishers, err := app.GetPublishers()
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			continue
 		}
 
@@ -349,7 +349,7 @@ func adminPublishers() {
 		}
 
 		err := db.DeletePublishers(pubsToDeleteSlice)
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}()
@@ -373,7 +373,7 @@ func adminPublishers() {
 				MeanDiscount: v.GetMeanDiscount(),
 				Name:         v.name,
 			})
-			logger.Error(err)
+			logging.Error(err)
 
 			x--
 			wg.Done()
@@ -384,9 +384,9 @@ func adminPublishers() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logger.Error(err)
+	logging.Error(err)
 
-	logger.Info("Publishers updated")
+	logging.Info("Publishers updated")
 }
 
 type adminPublisher struct {
@@ -409,7 +409,7 @@ func adminDevelopers() {
 	// Get current publishers, to delete old ones
 	developers, err := db.GetAllPublishers()
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -420,7 +420,7 @@ func adminDevelopers() {
 
 	// Get apps from mysql
 	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "developers"})
-	logger.Error(err)
+	logging.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
 
@@ -428,7 +428,7 @@ func adminDevelopers() {
 
 		developers, err := app.GetDevelopers()
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			continue
 		}
 
@@ -483,7 +483,7 @@ func adminDevelopers() {
 				MeanDiscount: v.GetMeanDiscount(),
 				Name:         v.name,
 			})
-			logger.Error(err)
+			logging.Error(err)
 
 			wg.Done()
 
@@ -492,9 +492,9 @@ func adminDevelopers() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logger.Error(err)
+	logging.Error(err)
 
-	logger.Info("Developers updated")
+	logging.Info("Developers updated")
 }
 
 type adminDeveloper struct {
@@ -517,7 +517,7 @@ func adminTags() {
 	// Get current tags, to delete old ones
 	tags, err := db.GetAllTags()
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -528,7 +528,7 @@ func adminTags() {
 
 	// Get tag names from Steam
 	tagsResp, _, err := helpers.GetSteam().GetTags()
-	logger.Error(err)
+	logging.Error(err)
 
 	steamTagMap := make(map[int]string)
 	for _, v := range tagsResp.Tags {
@@ -540,14 +540,14 @@ func adminTags() {
 	filter.Set("tags_depth", "2")
 
 	apps, err := db.SearchApps(filter, 0, 1, "", []string{"name", "price_final", "price_discount", "tags"})
-	logger.Error(err)
+	logging.Error(err)
 
 	counts := make(map[int]*adminTag)
 	for _, app := range apps {
 
 		tags, err := app.GetTagIDs()
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 			continue
 		}
 
@@ -580,7 +580,7 @@ func adminTags() {
 		go func() {
 
 			err := db.DeleteTag(v)
-			logger.Error(err)
+			logging.Error(err)
 
 			wg.Done()
 		}()
@@ -598,7 +598,7 @@ func adminTags() {
 				MeanDiscount: v.GetMeanDiscount(),
 				Name:         v.name,
 			})
-			logger.Error(err)
+			logging.Error(err)
 
 			wg.Done()
 		}(k, v)
@@ -606,9 +606,9 @@ func adminTags() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logger.Error(err)
+	logging.Error(err)
 
-	logger.Info("Tags updated")
+	logging.Info("Tags updated")
 }
 
 type adminTag struct {
@@ -628,14 +628,14 @@ func (t adminTag) GetMeanDiscount() float64 {
 
 func adminRanks() {
 
-	logger.Info("Ranks updated started")
+	logging.Info("Ranks updated started")
 
 	playersToRank := 1000
 	timeStart := time.Now().Unix()
 
 	oldKeys, err := db.GetRankKeys()
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -651,7 +651,7 @@ func adminRanks() {
 
 			players, err = db.GetAllPlayers(column, playersToRank)
 			if err != nil {
-				logger.Error(err)
+				logging.Error(err)
 				return
 			}
 
@@ -750,7 +750,7 @@ func adminRanks() {
 	// Update ranks
 	err = db.BulkSaveKinds(kinds, db.KindPlayerRank, false)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -762,38 +762,38 @@ func adminRanks() {
 
 	err = db.BulkDeleteKinds(keysToDelete, false)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
 	// Update config
 	err = db.SetConfig(db.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logger.Error(err)
+	logging.Error(err)
 
-	logger.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
+	logging.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
 }
 
 func adminMemcache() {
 
 	err := memcache.Wipe()
-	logger.Error(err)
+	logging.Error(err)
 
-	logger.Info("Memcache wiped")
+	logging.Info("Memcache wiped")
 }
 
 func adminDev() {
 
 	return
 
-	logger.Info("Dev")
+	logging.Info("Dev")
 
 	players, err := db.GetAllPlayers("__key__", 0)
 
-	logger.Info("Got players")
+	logging.Info("Got players")
 
 	if err != nil {
 
-		logger.Error(err)
+		logging.Error(err)
 
 		if _, ok := err.(*ds.ErrFieldMismatch); ok {
 
@@ -805,9 +805,9 @@ func adminDev() {
 	for _, v := range players {
 		//v.Games = ""
 		err := v.Save()
-		logger.Error(err)
+		logging.Error(err)
 		fmt.Print(".")
 	}
 
-	logger.Info("Done")
+	logging.Info("Done")
 }

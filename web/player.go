@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/queue"
 )
 
@@ -36,7 +36,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	player, err := db.GetPlayer(idx)
 	if err != nil {
 		if err != db.ErrNoSuchEntity {
-			logger.Error(err)
+			logging.Error(err)
 			returnErrorTemplate(w, r, 500, err.Error())
 			return
 		}
@@ -52,7 +52,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	errs := player.Update(r.UserAgent())
 	if len(errs) > 0 {
 		for _, v := range errs {
-			logger.Error(v)
+			logging.Error(v)
 		}
 
 		// API is probably down, todo
@@ -77,7 +77,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player db.Player) {
 
 		friends, err = player.GetFriends()
-		logger.Error(err)
+		logging.Error(err)
 
 		// Queue friends to be scanned
 		if player.ShouldUpdateFriends() {
@@ -88,7 +88,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 					Time:     time.Now(),
 				})
 				if err != nil {
-					logger.Error(err)
+					logging.Error(err)
 				} else {
 					queue.Produce(queue.QueueProfiles, p)
 				}
@@ -97,7 +97,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			player.FriendsAddedAt = time.Now()
 
 			err = player.Save() // todo, switch to update query so not to overwrite other player changes
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		wg.Done()
@@ -112,7 +112,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		ranks, err = db.GetRank(player.PlayerID)
 		if err != nil {
 			if err != db.ErrNoSuchEntity {
-				logger.Error(err)
+				logging.Error(err)
 			}
 		}
 
@@ -126,7 +126,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player db.Player) {
 
 		players, err = db.CountPlayers()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}(player)
@@ -137,7 +137,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player db.Player) {
 
 		badges, err = player.GetBadges()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}(player)
@@ -150,7 +150,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		response, err := player.GetRecentGames()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -183,7 +183,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player db.Player) {
 
 		bans, err = player.GetBans()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}(player)
@@ -194,7 +194,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	go func(player db.Player) {
 
 		badgeStats, err = player.GetBadgeStats()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}(player)
@@ -323,7 +323,7 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		return
 	}
 
@@ -342,7 +342,7 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -357,12 +357,12 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			q, err = query.SetOrderOffsetDS(q, columns)
 			if err != nil {
 
-				logger.Error(err)
+				logging.Error(err)
 
 			} else {
 
 				_, err := client.GetAll(ctx, q, &apps)
-				logger.Error(err)
+				logging.Error(err)
 			}
 		}
 
@@ -376,7 +376,7 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		player, err := db.GetPlayer(playerIDInt)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		total = player.GamesCount

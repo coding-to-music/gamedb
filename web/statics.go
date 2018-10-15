@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +45,7 @@ func RootFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := ioutil.ReadFile(viper.GetString("PATH") + r.URL.Path)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 404, "Unable to read file.")
 		return
 	}

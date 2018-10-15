@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/websocket"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 const (
@@ -43,7 +43,7 @@ func Send(page string, data interface{}) {
 				delete(connections, k)
 
 			} else {
-				logger.Error(err)
+				logging.Error(err)
 			}
 		}
 	}
@@ -55,7 +55,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if !strings.Contains(err.Error(), "websocket: not a websocket handshake") {
-			logger.Error(err)
+			logging.Error(err)
 		}
 		return
 	}

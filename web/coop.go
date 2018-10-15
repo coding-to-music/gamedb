@@ -7,7 +7,7 @@ import (
 
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 const (
@@ -21,7 +21,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range r.URL.Query()["p"] {
 		i, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 		playerInts = append(playerInts, i)
 	}
@@ -44,7 +44,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 			player, err := db.GetPlayer(id)
 			if err != nil {
 				if err != db.ErrNoSuchEntity {
-					logger.Error(err)
+					logging.Error(err)
 					return
 				}
 			}
@@ -71,7 +71,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 			var x []int
 			resp, err := player.GetAllPlayerApps("app_name", 0)
 			if err != nil {
-				logger.Error(err)
+				logging.Error(err)
 				return
 			}
 			for _, vv := range resp {
@@ -115,14 +115,14 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 
 	games, err := db.GetAppsByID(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 	}
 
 	// Make visible tags
-	// todo, just keep in memory?
+	// todo, store in memcache
 	coopTags, err := db.GetTagsByID(db.GetCoopTags())
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 	}
 
 	var coopTagsInts = map[int]string{}
@@ -132,9 +132,13 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 
 	var templateGames []coopGameTemplate
 	for _, v := range games {
+
+		coopTags, err := v.GetCoopTags(coopTagsInts)
+		logging.Error(err)
+
 		templateGames = append(templateGames, coopGameTemplate{
 			Game: v,
-			Tags: v.GetCoopTags(coopTagsInts),
+			Tags: coopTags,
 		})
 	}
 

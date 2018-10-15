@@ -10,7 +10,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/session"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
@@ -112,7 +112,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect
 	if err != nil {
 		time.Sleep(time.Second) // Stop brute forces
-		logger.Error(err)
+		logging.Error(err)
 		session.SetGoodFlash(w, r, err.Error())
 		http.Redirect(w, r, "/login", 302)
 	} else {
@@ -127,7 +127,7 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 	}
 
 	if loggedIn {
@@ -138,7 +138,7 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	var url string
 	url, err = openid.RedirectURL("https://steamcommunity.com/openid", viper.GetString("DOMAIN")+"/login/callback", viper.GetString("DOMAIN")+"/")
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -161,7 +161,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Get ID from OpenID
 	openID, err := openid.Verify(viper.GetString("DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -169,7 +169,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Convert to int
 	idInt, err := strconv.ParseInt(path.Base(openID), 10, 64)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -181,13 +181,13 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if player.PersonaName == "" {
 		errs := player.Update("")
 		for _, v := range errs {
-			logger.Error(v) // todo, Handle these better
+			logging.Error(v) // todo, Handle these better
 		}
 	}
 
 	err = login(w, r, player)
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}

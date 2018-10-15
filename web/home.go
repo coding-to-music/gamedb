@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +18,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		ranksCount, err = db.CountRanks()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 
@@ -29,7 +29,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		appsCount, err = db.CountApps()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 
@@ -40,7 +40,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		packagesCount, err = db.CountPackages()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 

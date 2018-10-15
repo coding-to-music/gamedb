@@ -9,7 +9,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 const (
@@ -108,7 +108,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 				if wait {
 					errs = append(errs, err)
 				} else {
-					logger.Error(err)
+					logging.Error(err)
 				}
 			}
 
@@ -171,7 +171,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 				if wait {
 					errs = append(errs, err)
 				} else {
-					logger.Error(err)
+					logging.Error(err)
 				}
 			}
 
@@ -217,7 +217,7 @@ func kindsToNews(a []Kind) (b []News) {
 		if ok {
 			b = append(b, original)
 		} else {
-			logger.Info("kind not a struct")
+			logging.Info("kind not a struct")
 		}
 	}
 

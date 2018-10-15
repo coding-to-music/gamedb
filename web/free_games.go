@@ -7,7 +7,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/memcache"
 )
 
@@ -27,7 +27,7 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -38,7 +38,7 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Order("count DESC")
 			gorm = gorm.Find(&types)
 
-			logger.Error(gorm.Error)
+			logging.Error(gorm.Error)
 		}
 
 		wg.Done()
@@ -104,7 +104,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -133,7 +133,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			gorm = gorm.Find(&apps)
 
-			logger.Error(gorm.Error)
+			logging.Error(gorm.Error)
 		}
 
 		wg.Done()
@@ -160,9 +160,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return count, gorm.Error
 		})
 
-		if err != nil {
-			logger.Error(err)
-		}
+		logging.Error(err)
 
 		wg.Done()
 	}()
@@ -178,9 +176,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range apps {
 
 		platforms, err := v.GetPlatformImages()
-		if err != nil {
-			logger.Error(err)
-		}
+		logging.Error(err)
 
 		response.AddRow([]interface{}{
 			v.ID,

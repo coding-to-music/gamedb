@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func PackageHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +31,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
 		return
 	}
@@ -51,10 +51,10 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get apps
 		appIDs, err := pack.GetAppIDs()
-		logger.Error(err)
+		logging.Error(err)
 
 		apps, err = db.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}()
@@ -66,7 +66,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get prices
 		pricesResp, err := db.GetPackagePrices(pack.ID, 0)
-		logger.Error(err)
+		logging.Error(err)
 
 		pricesCount = len(pricesResp)
 
@@ -82,7 +82,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Make into a JSON string
 		pricesBytes, err := json.Marshal(prices)
-		logger.Error(err)
+		logging.Error(err)
 
 		pricesString = string(pricesBytes)
 

@@ -4,19 +4,19 @@ import (
 	"net/http"
 
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func StatsGenresHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfGenresUpdated)
-	logger.Error(err)
+	logging.Error(err)
 
 	// Get genres
 	genres, err := db.GetAllGenres()
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting genres")
 		return
 	}

@@ -14,7 +14,7 @@ import (
 	"github.com/grokify/html-strip-tags-go"
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func AppHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +58,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	// Update news, reviews etc
 	errs := app.UpdateFromRequest(r.UserAgent())
 	for _, v := range errs {
-		logger.Error(v)
+		logging.Error(v)
 	}
 
 	//
@@ -72,7 +72,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -85,7 +85,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
 			if err != nil {
 
-				logger.Error(err)
+				logging.Error(err)
 
 			} else {
 
@@ -111,7 +111,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		// Get tags
 		tags, err = app.GetTags()
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		wg.Done()
@@ -126,7 +126,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		pricesResp, err := db.GetAppPrices(app.ID, 0)
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -146,7 +146,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			pricesBytes, err := json.Marshal(prices)
 			if err != nil {
 
-				logger.Error(err)
+				logging.Error(err)
 
 			} else {
 
@@ -166,7 +166,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		newsResp, err := db.GetArticles(idx, 1000)
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -204,7 +204,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		// Get packages
 		packages, err = db.GetPackagesAppIsIn(app.ID)
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		wg.Done()
@@ -217,7 +217,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		// Get DLC
 		dlc, err = db.GetDLC(app, []string{"id", "name"})
 		if err != nil {
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		wg.Done()
@@ -232,7 +232,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		reviewsResponse, err := app.GetReviews()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -247,7 +247,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			players, err := db.GetPlayersByIDs(playerIDs)
 			if err != nil {
 
-				logger.Error(err)
+				logging.Error(err)
 
 			} else {
 

@@ -7,7 +7,7 @@ import (
 
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/websockets"
 	"github.com/streadway/amqp"
 )
@@ -100,14 +100,10 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	// Get mysql rows
 	appRows, err := db.GetAppsByID(appsSlice, []string{"id", "name"})
-	if err != nil {
-		logger.Error(err)
-	}
+	logging.Error(err)
 
 	packageRows, err := db.GetPackages(packagesSlice, []string{"id", "name"})
-	if err != nil {
-		logger.Error(err)
-	}
+	logging.Error(err)
 
 	// Make map
 	appRowsMap := map[int]db.App{}

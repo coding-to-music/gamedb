@@ -4,19 +4,19 @@ import (
 	"net/http"
 
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 func StatsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfPublishersUpdated)
-	logger.Error(err)
+	logging.Error(err)
 
 	// Get publishers
 	publishers, err := db.GetAllPublishers()
 	if err != nil {
-		logger.Error(err)
+		logging.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting publishers")
 		return
 	}

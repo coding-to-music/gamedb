@@ -11,7 +11,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 const (
@@ -29,7 +29,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		config, err = db.GetConfig(db.ConfRanksUpdated)
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}()
@@ -40,7 +40,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		playersCount, err = db.CountPlayers()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}()
@@ -51,7 +51,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		ranksCount, err = db.CountRanks()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}()
@@ -87,7 +87,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err != db.ErrNoSuchEntity {
-			logger.Error(err)
+			logging.Error(err)
 		}
 
 		// Check steam
@@ -95,7 +95,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			if err != steam.ErrNoUserFound {
-				logger.Error(err)
+				logging.Error(err)
 			}
 
 			returnErrorTemplate(w, r, 404, "Can't find user: "+post)
@@ -127,7 +127,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -146,7 +146,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				q, err = query.SetOrderOffsetDS(q, columns)
 				if err != nil {
 
-					logger.Error(err)
+					logging.Error(err)
 
 				} else {
 
@@ -154,7 +154,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 					var ranks []db.PlayerRank
 					_, err := client.GetAll(ctx, q, &ranks)
-					logger.Error(err)
+					logging.Error(err)
 
 					for _, v := range ranks {
 						ranksExtra = append(ranksExtra, RankExtra{RankRow: v}.SetRank(column))
@@ -173,7 +173,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		total, err = db.CountRanks()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}()

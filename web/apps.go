@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logger"
+	"github.com/steam-authority/steam-authority/logging"
 )
 
 const (
@@ -29,7 +29,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		apps, err = db.SearchApps(r.URL.Query(), appsSearchLimit, page, "id DESC", []string{})
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 
@@ -41,7 +41,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		count, err = db.CountApps()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 
@@ -53,7 +53,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		tags, err = db.GetTagsForSelect()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 
@@ -65,7 +65,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		genres, err = db.GetGenresForSelect()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 
@@ -77,7 +77,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		publishers, err = db.GetPublishersForSelect()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 
@@ -89,7 +89,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		developers, err = db.GetDevelopersForSelect()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 
@@ -144,7 +144,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			logger.Error(err)
+			logging.Error(err)
 
 		} else {
 
@@ -160,7 +160,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Limit(100)
 			gorm = gorm.Find(&apps)
 
-			logger.Error(gorm.Error)
+			logging.Error(gorm.Error)
 		}
 
 		wg.Done()
@@ -173,7 +173,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = db.CountApps()
-		logger.Error(err)
+		logging.Error(err)
 
 		wg.Done()
 	}()

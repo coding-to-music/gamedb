@@ -99,17 +99,18 @@ func GetTagsForSelect() (tags []Tag, err error) {
 
 func GetTagsByID(ids []int) (tags []Tag, err error) {
 
+	if len(ids) == 0 {
+		return tags, err
+	}
+
 	db, err := GetMySQLClient()
 	if err != nil {
 		return tags, err
 	}
 
 	db = db.Limit(100).Where("id IN (?)", ids).Order("name ASC").Find(&tags)
-	if db.Error != nil {
-		return tags, db.Error
-	}
 
-	return tags, nil
+	return tags, db.Error
 }
 
 func SaveOrUpdateTag(id int, vals Tag) (err error) {
