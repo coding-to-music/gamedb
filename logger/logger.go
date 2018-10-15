@@ -14,12 +14,8 @@ const (
 )
 
 var (
-	logger = log.New(os.Stderr, "gamedb: ", log.Ltime)
+	logger = log.New(os.Stderr, "gamedb: ", log.LstdFlags|log.Lshortfile)
 )
-
-func init() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-}
 
 func Error(err error) {
 

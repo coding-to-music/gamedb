@@ -30,20 +30,20 @@ func getLog(name ...string) (*logging.Logger) {
 	env := viper.GetString("ENV")
 
 	if len(name) > 0 {
-		return client.Logger(env + "_" + name[0])
+		return client.Logger(name[0] + "-" + env)
 	} else {
-		return client.Logger(env + "_" + LogGameDB)
+		return client.Logger(LogGameDB + "-" + env)
 	}
 }
 
 func ErrorG(err error, log ...string) {
-	getLog(log...).Log(logging.Entry{Payload: err.Error() + "\n\r" + string(debug.Stack()), Severity: logging.Error})
+	getLog(log...).Log(logging.Entry{Severity: logging.Error, Payload: err.Error() + "\n\r" + string(debug.Stack())})
 }
 
 func InfoG(payload string, log ...string) {
-	getLog(log...).Log(logging.Entry{Payload: payload, Severity: logging.Info})
+	getLog(log...).Log(logging.Entry{Severity: logging.Info, Payload: payload + "\n\r" + string(debug.Stack())})
 }
 
 func CriticalG(err error, log ...string) {
-	getLog(log...).LogSync(ctx, logging.Entry{Payload: err.Error(), Severity: logging.Critical})
+	getLog(log...).LogSync(ctx, logging.Entry{Severity: logging.Critical, Payload: err.Error() + "\n\r" + string(debug.Stack())})
 }
