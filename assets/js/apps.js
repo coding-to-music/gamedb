@@ -15,15 +15,15 @@ if ($('#apps-page').length > 0) {
     $chosens.trigger("chosen:updated");
 
 
-    var table = $('table.table-datatable2');
+    var $table = $('table.table-datatable2');
 
     $('#types input:checkbox').change(function () {
 
-        table.DataTable().draw();
+        $table.DataTable().draw();
 
     });
 
-    table.DataTable($.extend(true, {}, dtDefaultOptions, {
+    $table.DataTable($.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
             delete data.columns;
