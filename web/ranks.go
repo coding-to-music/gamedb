@@ -10,8 +10,8 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/steam-authority/steam-authority/db"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/steami"
 )
 
 const (
@@ -91,7 +91,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check steam
-		id, err := steami.Steam().GetID(post)
+		id, err := helpers.GetSteam().GetID(post)
 		if err != nil {
 
 			if err != steam.ErrNoUserFound {

@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/steam-authority/steam-authority/config"
 	"github.com/steam-authority/steam-authority/db"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/queue"
 	"github.com/steam-authority/steam-authority/session"
@@ -57,6 +58,14 @@ func main() {
 	if *flagConsumers {
 		queue.RunConsumers()
 	}
+
+	// Log steam calls
+	go func() {
+		for v := range helpers.GetSteamLogsChan() {
+			logger.Info(v)
+			logger.InfoG(v)
+		}
+	}()
 
 	// Web server
 	err := web.Serve()

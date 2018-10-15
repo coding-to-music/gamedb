@@ -45,7 +45,7 @@ func Serve() error {
 	r.Use(middleware.GetHead)
 	r.Use(middleware.RedirectSlashes)
 
-	if viper.GetString("ENV") == logger.Prod {
+	if viper.GetString("ENV") == logger.EnvProd {
 		r.Use(middlewareLog)
 	}
 

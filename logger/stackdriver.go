@@ -2,7 +2,6 @@ package logger
 
 import (
 	"context"
-	"fmt"
 	"runtime/debug"
 
 	"cloud.google.com/go/logging"
@@ -23,9 +22,7 @@ var (
 func Init() {
 	var err error
 	client, err = logging.NewClient(ctx, viper.GetString("GOOGLE_PROJECT"))
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	Error(err)
 }
 
 func getLog(name ...string) (*logging.Logger) {

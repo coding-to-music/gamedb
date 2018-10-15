@@ -7,7 +7,6 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/steami"
 )
 
 type News struct {
@@ -74,7 +73,7 @@ func GetNewArticles(appID int) (articles []*News, err error) {
 	}
 
 	// Get app articles from Steam
-	resp, _, err := steami.Steam().GetNews(appID)
+	resp, _, err := helpers.GetSteam().GetNews(appID)
 
 	for _, v := range resp.Items {
 

@@ -17,10 +17,10 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/db"
+	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
 	"github.com/steam-authority/steam-authority/queue"
-	"github.com/steam-authority/steam-authority/steami"
 )
 
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
@@ -97,7 +97,7 @@ func adminApps() {
 
 	// Get apps
 	// todo, page through results
-	apps, _, err := steami.Steam().GetAppList(steam.GetAppListOptions{})
+	apps, _, err := helpers.GetSteam().GetAppList(steam.GetAppListOptions{})
 	if err != nil {
 		logger.Error(err)
 		return
@@ -527,7 +527,7 @@ func adminTags() {
 	}
 
 	// Get tag names from Steam
-	tagsResp, _, err := steami.Steam().GetTags()
+	tagsResp, _, err := helpers.GetSteam().GetTags()
 	logger.Error(err)
 
 	steamTagMap := make(map[int]string)

@@ -17,7 +17,6 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
-	"github.com/steam-authority/steam-authority/steami"
 )
 
 const (
@@ -425,7 +424,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		var reviewsResp steam.ReviewsResponse
 
-		reviewsResp, _, err = steami.Steam().GetReviews(app.ID)
+		reviewsResp, _, err = helpers.GetSteam().GetReviews(app.ID)
 		if err != nil {
 
 			errs = append(errs, err)
@@ -486,7 +485,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		response, _, err := steami.Steam().GetAppDetails(app.ID)
+		response, _, err := helpers.GetSteam().GetAppDetails(app.ID)
 		if err != nil {
 
 			if err == steam.ErrNullResponse {
@@ -604,7 +603,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		percentages, _, err := steami.Steam().GetGlobalAchievementPercentagesForApp(app.ID)
+		percentages, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
 
 			logger.Error(err)
@@ -630,7 +629,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		schema, _, err := steami.Steam().GetSchemaForGame(app.ID)
+		schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
 		if err != nil {
 
 			logger.Error(err)

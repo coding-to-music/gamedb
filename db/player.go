@@ -16,7 +16,6 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/memcache"
-	"github.com/steam-authority/steam-authority/steami"
 	"github.com/steam-authority/steam-authority/storage"
 )
 
@@ -351,7 +350,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 
 func (p *Player) updateSummary() (error) {
 
-	summary, _, err := steami.Steam().GetPlayer(p.PlayerID)
+	summary, _, err := helpers.GetSteam().GetPlayer(p.PlayerID)
 	if err != nil {
 		return err
 	}
@@ -371,7 +370,7 @@ func (p *Player) updateSummary() (error) {
 
 func (p *Player) updateGames() (error) {
 
-	resp, _, err := steami.Steam().GetOwnedGames(p.PlayerID)
+	resp, _, err := helpers.GetSteam().GetOwnedGames(p.PlayerID)
 	if err != nil {
 		return err
 	}
@@ -471,7 +470,7 @@ func (p *Player) updateGames() (error) {
 
 func (p *Player) updateRecentGames() (error) {
 
-	recentResponse, _, err := steami.Steam().GetRecentlyPlayedGames(p.PlayerID)
+	recentResponse, _, err := helpers.GetSteam().GetRecentlyPlayedGames(p.PlayerID)
 	if err != nil {
 		return err
 	}
@@ -499,7 +498,7 @@ func (p *Player) updateRecentGames() (error) {
 
 func (p *Player) updateBadges() (error) {
 
-	response, _, err := steami.Steam().GetBadges(p.PlayerID)
+	response, _, err := helpers.GetSteam().GetBadges(p.PlayerID)
 	if err != nil {
 		return err
 	}
@@ -577,7 +576,7 @@ func (p *Player) updateBadges() (error) {
 
 func (p *Player) updateFriends() (error) {
 
-	resp, _, err := steami.Steam().GetFriendList(p.PlayerID)
+	resp, _, err := helpers.GetSteam().GetFriendList(p.PlayerID)
 	if err != nil {
 		return err
 	}
@@ -647,7 +646,7 @@ func (p *Player) updateFriends() (error) {
 
 func (p *Player) updateLevel() (error) {
 
-	level, _, err := steami.Steam().GetSteamLevel(p.PlayerID)
+	level, _, err := helpers.GetSteam().GetSteamLevel(p.PlayerID)
 	if err != nil {
 		return err
 	}
@@ -659,7 +658,7 @@ func (p *Player) updateLevel() (error) {
 
 func (p *Player) updateBans() (error) {
 
-	bans, _, err := steami.Steam().GetPlayerBans(p.PlayerID)
+	bans, _, err := helpers.GetSteam().GetPlayerBans(p.PlayerID)
 	if err == steam.ErrNoUserFound {
 		return nil
 	} else if err != nil {
@@ -682,7 +681,7 @@ func (p *Player) updateBans() (error) {
 
 func (p *Player) updateGroups() (error) {
 
-	resp, _, err := steami.Steam().GetUserGroupList(p.PlayerID)
+	resp, _, err := helpers.GetSteam().GetUserGroupList(p.PlayerID)
 	if err != nil {
 		return err
 	}

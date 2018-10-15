@@ -12,7 +12,6 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
 	"github.com/steam-authority/steam-authority/memcache"
-	"github.com/steam-authority/steam-authority/steami"
 )
 
 // todo, make column meta match table names
@@ -435,7 +434,7 @@ func (pack *Package) Update() (errs []error) {
 
 		// Get app details
 		// Get data
-		response, _, err := steami.Steam().GetPackageDetails(pack.ID)
+		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID)
 		if err != nil {
 
 			if err == steam.ErrNullResponse {

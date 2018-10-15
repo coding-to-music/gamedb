@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	Prod  = "production"
-	Local = "local"
+	EnvProd  = "production"
+	EnvLocal = "local"
 )
 
 var (
@@ -27,7 +27,7 @@ func Error(err error) {
 
 		logger.Println(err.Error())
 
-		if viper.GetString("ENV") == Prod {
+		if viper.GetString("ENV") == EnvProd {
 			rollbar.Error(rollbar.ERR, err)
 			ErrorG(err)
 		}
@@ -40,7 +40,7 @@ func Info(message string) {
 
 		logger.Println(message)
 
-		if viper.GetString("ENV") == Prod {
+		if viper.GetString("ENV") == EnvProd {
 			rollbar.Message(rollbar.INFO, message)
 			InfoG(message)
 		}
@@ -49,7 +49,7 @@ func Info(message string) {
 
 func LocalInfo(message string) {
 
-	if message != "" && viper.GetString("ENV") == Local {
+	if message != "" && viper.GetString("ENV") == EnvLocal {
 		logger.Println(message)
 	}
 }

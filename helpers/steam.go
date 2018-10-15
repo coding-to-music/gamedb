@@ -1,4 +1,4 @@
-package steami
+package helpers
 
 import (
 	"github.com/Jleagle/steam-go/steam"
@@ -6,15 +6,14 @@ import (
 )
 
 var steamClient *steam.Steam
-var steamLogs chan string
 
-func Steam() (*steam.Steam) {
+func GetSteam() (*steam.Steam) {
 
 	if steamClient == nil {
 
 		s := steam.Steam{
 			Key:        viper.GetString("API_KEY"),
-			LogChannel: steamLogs,
+			LogChannel: GetSteamLogsChan(),
 			Throttle:   false, // todo, this doesnt work!
 			Format:     "json",
 		}
@@ -23,4 +22,15 @@ func Steam() (*steam.Steam) {
 	}
 
 	return steamClient
+}
+
+var steamLogs chan string
+
+func GetSteamLogsChan() chan string {
+
+	if steamLogs == nil {
+		steamLogs = make(chan string)
+	}
+
+	return steamLogs
 }

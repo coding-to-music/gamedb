@@ -15,7 +15,6 @@ import (
 	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logger"
-	"github.com/steam-authority/steam-authority/steami"
 )
 
 func AppHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +69,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get achievements
-		achievementsResp, _, err := steami.Steam().GetGlobalAchievementPercentagesForApp(app.ID)
+		achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 		if err != nil {
 
 			logger.Error(err)
@@ -83,7 +82,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Get schema
-			schema, _, err := steami.Steam().GetSchemaForGame(app.ID)
+			schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
 			if err != nil {
 
 				logger.Error(err)
