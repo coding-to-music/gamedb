@@ -79,7 +79,7 @@ func (event Event) OutputForJSON(r *http.Request) (output []interface{}) {
 		event.GetIP(""),
 		event.UserAgent,
 		event.GetUserAgentShort(),
-		event.GetIP(r.Header.Get("X-Forwarded-For")),
+		event.GetIP(r.RemoteAddr),
 	}
 }
 
@@ -105,7 +105,7 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 	login.PlayerID = playerID
 	login.Type = eventType
 	login.UserAgent = r.Header.Get("User-Agent")
-	login.IP = r.Header.Get("X-Forwarded-For")
+	login.IP = r.RemoteAddr
 
 	_, err = SaveKind(login.GetKey(), login)
 	return err
