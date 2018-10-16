@@ -13,20 +13,16 @@ import (
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/queue"
-	"github.com/steam-authority/steam-authority/session"
-	"github.com/steam-authority/steam-authority/storage"
 	"github.com/steam-authority/steam-authority/web"
 )
 
 // These are called so everything as access to configs (viper)
 func init() {
 	config.Init() // Must go first
+	db.Init()
 	queue.Init()
 	logging.Init()
-	session.Init()
-	storage.Init()
-	web.InitChat()
-	web.InitCommits()
+	web.Init()
 }
 
 func main() {

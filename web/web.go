@@ -30,6 +30,15 @@ import (
 	"github.com/steam-authority/steam-authority/websockets"
 )
 
+// Called from main
+func Init() {
+
+	InitChat()
+	InitCommits()
+
+	session.Init()
+}
+
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logging.InfoG(r.Method + " " + r.URL.Path)
