@@ -87,7 +87,7 @@ if ($('#changes-page').length > 0) {
 
     } else {
 
-        var socket = new WebSocket("ws://" + location.host + "/websocket");
+        var socket = new WebSocket("wss://" + location.host + "/websocket");
         var $badge = $('#live-badge');
 
         socket.onopen = function (e) {

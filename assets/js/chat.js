@@ -1,16 +1,10 @@
 if ($('#chat-page').length > 0) {
+
     if (window.WebSocket === undefined) {
         console.log('Your browser does not support WebSockets');
     } else {
 
-        var proto;
-        if (location.protocol === 'https:') {
-            proto = "wss://";
-        } else {
-            proto = "ws://";
-        }
-
-        var socket = new WebSocket(proto + location.host + "/websocket");
+        var socket = new WebSocket('wss://' + location.host + "/websocket");
         var $badge = $('#live-badge');
 
         socket.onopen = function (e) {
