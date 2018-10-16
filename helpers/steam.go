@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"time"
+
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/spf13/viper"
 )
@@ -8,6 +10,8 @@ import (
 var steamClient *steam.Steam
 
 func GetSteam() (*steam.Steam) {
+
+	time.Sleep(time.Second * 2) // Temporary
 
 	if steamClient == nil {
 
