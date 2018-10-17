@@ -101,6 +101,7 @@ func Serve() error {
 	r.Get("/players/{id:[a-z]+}", PlayersHandler)
 	r.Get("/players/{id:[0-9]+}", PlayerHandler)
 	r.Get("/players/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
+	r.Get("/players/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
 	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
 	r.Get("/price-changes", PriceChangesHandler)
 	r.Get("/price-changes/ajax", PriceChangesAjaxHandler)

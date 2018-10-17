@@ -51,22 +51,13 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Update player if needed
 	errs := player.Update(r.UserAgent())
 	if len(errs) > 0 {
-		for _, v := range errs {
-			logging.Error(v)
+
+		for _, err := range errs {
+			logging.Error(err)
 		}
 
-		// API is probably down, todo
-		//for _, v := range errs {
-		//	if v.Error() == steami.Steam().ErrInvalidJson {
-		//		returnErrorTemplate(w, r, 500, "Couldnt fetch player data, steam API may be down?")
-		//		return
-		//	}
-		//}
-
-		for _, v := range errs {
-			returnErrorTemplate(w, r, 500, v.Error())
-			return
-		}
+		returnErrorTemplate(w, r, 500, errs[0].Error())
+		return
 	}
 
 	var wg sync.WaitGroup
@@ -377,12 +368,9 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		player, err := db.GetPlayer(playerIDInt)
 		if err != nil {
 			logging.Error(err)
+		} else {
+			total = player.GamesCount
 		}
-
-		total = player.GamesCount
-
-		//q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt)
-		//total, err = client.Count(ctx, q)
 
 		wg.Done()
 	}()
@@ -410,4 +398,39 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.output(w)
 
+}
+
+func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	response := PlayersUpdateResponse{
+		Message: "Update Queued!",
+	}
+
+	id := chi.URLParam(r, "id")
+
+	idx, err := strconv.ParseInt(id, 10, 64)
+	if err != nil || !db.IsValidPlayerID(idx) {
+
+		response.Message = "Invalid Player ID"
+		logging.Error(err)
+
+	} else {
+
+		payload := queue.RabbitMessageProfile{}
+		payload.SetTime()
+		payload.SetPlayerID(id)
+
+		err = queue.Produce(queue.QueueProfiles, payload.ToBytes())
+		logging.Error(err)
+	}
+
+	bytes, err := json.Marshal(response)
+	logging.Error(err)
+	if err == nil {
+		w.Write(bytes)
+	}
+}
+
+type PlayersUpdateResponse struct {
+	Message string `json:"message"`
 }

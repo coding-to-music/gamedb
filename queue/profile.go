@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/steam-authority/steam-authority/db"
@@ -12,6 +14,24 @@ import (
 type RabbitMessageProfile struct {
 	Time     time.Time
 	PlayerID int64
+}
+
+func (d *RabbitMessageProfile) SetPlayerID(id string) {
+	playerID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		d.PlayerID = playerID
+		logging.Error(err)
+	}
+}
+
+func (d *RabbitMessageProfile) ToBytes() []byte {
+	bytes, err := json.Marshal(d)
+	logging.Error(err)
+	return bytes
+}
+
+func (d *RabbitMessageProfile) SetTime() {
+	d.Time = time.Now()
 }
 
 func (d RabbitMessageProfile) getQueueName() string {

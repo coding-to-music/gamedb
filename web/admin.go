@@ -258,7 +258,8 @@ func adminQueues(r *http.Request) {
 	if val := r.PostForm.Get("player-id"); val != "" {
 
 		logging.Info("Player: " + val)
-		playerID, _ := strconv.ParseInt(val, 10, 64)
+		playerID, err := strconv.ParseInt(val, 10, 64)
+		logging.Error(err)
 		bytes, _ := json.Marshal(queue.RabbitMessageProfile{
 			PlayerID: playerID,
 			Time:     time.Now(),
