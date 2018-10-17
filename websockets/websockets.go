@@ -29,6 +29,7 @@ var upgrader = websocket.Upgrader{
 var ErrInvalidPage = errors.New("invalid page")
 
 func init() {
+	pages = map[string]Page{}
 	for _, v := range []string{PageChanges, PageChat, PageNews, PagePrices} {
 		pages[v] = Page{
 			name:  v,
@@ -76,7 +77,7 @@ type Page struct {
 	conns map[int]*websocket.Conn
 }
 
-func (p Page) HasConnections(page string) bool {
+func (p Page) HasConnections() bool {
 	return len(p.conns) > 0
 }
 
@@ -85,6 +86,10 @@ func (p *Page) SetConnection(conn *websocket.Conn) {
 }
 
 func (p *Page) Send(data interface{}) {
+
+	if !p.HasConnections() {
+		return
+	}
 
 	payload := websocketPayload{}
 	payload.Page = p.name

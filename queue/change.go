@@ -144,7 +144,8 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Send websocket
-	if websockets.HasConnections() {
+	page, err := websockets.GetPage(websockets.PageChanges)
+	if err == nil && page.HasConnections() {
 
 		// Make websocket
 		var ws [][]interface{}
@@ -153,7 +154,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 			ws = append(ws, v.OutputForJSON())
 		}
 
-		websockets.Send(websockets.PageChanges, ws)
+		page.Send(ws)
 	}
 
 	return true, false, nil

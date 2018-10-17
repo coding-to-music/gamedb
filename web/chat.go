@@ -33,18 +33,30 @@ func InitChat() {
 	// Add websocket listener
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if !m.Author.Bot {
-			websockets.Send(websockets.PageChat, chatWebsocketPayload{
-				AuthorID:     m.Author.ID,
-				AuthorUser:   m.Author.Username,
-				AuthorAvatar: m.Author.Avatar,
-				Content:      m.Content,
-			})
+
+			page, err := websockets.GetPage(websockets.PageChat)
+			if err == nil && page.HasConnections() {
+
+				page.Send(chatWebsocketPayload{
+					AuthorID:     m.Author.ID,
+					AuthorUser:   m.Author.Username,
+					AuthorAvatar: m.Author.Avatar,
+					Content:      m.Content,
+				})
+			}
 		}
 	})
 
 	// Open connection
 	err = discordSession.Open()
 	logging.Error(err)
+}
+
+type chatWebsocketPayload struct {
+	AuthorID     string `json:"author_id"`
+	AuthorUser   string `json:"author_user"`
+	AuthorAvatar string `json:"author_avatar"`
+	Content      string `json:"content"`
 }
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
@@ -116,11 +128,4 @@ type chatTemplate struct {
 	Channels  []*discordgo.Channel
 	Messages  []*discordgo.Message
 	ChannelID string // Selected channel
-}
-
-type chatWebsocketPayload struct {
-	AuthorID     string `json:"author_id"`
-	AuthorUser   string `json:"author_user"`
-	AuthorAvatar string `json:"author_avatar"`
-	Content      string `json:"content"`
 }
