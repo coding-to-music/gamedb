@@ -70,3 +70,46 @@ if (games != null) {
         });
     }
 }
+
+// Browser notification
+function browserNotification(message) {
+
+    console.log(message);
+
+    Push.create("Game DB", {
+        body: message,
+        icon: '/assets/img/sa-bg-32x32.png',
+        timeout: 5000,
+        vibrate: [100]
+    });
+}
+
+// Websocket helper
+function websocketListener(page, onMessage) {
+
+    if (window.WebSocket === undefined) {
+
+        browserNotification(message);
+
+    } else {
+
+        var socket = new WebSocket(((location.protocol === 'https:') ? "wss://" : "ws://") + location.host + "/websocket/" + page);
+        var $badge = $('#live-badge');
+
+        socket.onopen = function (e) {
+            $badge.addClass('badge-success').removeClass('badge-secondary badge-danger');
+        };
+
+        socket.onclose = function (e) {
+            $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
+            browserNotification('Live functionality has stopped');
+        };
+
+        socket.onerror = function (e) {
+            $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
+            browserNotification('Live functionality has stopped');
+        };
+
+        socket.onmessage = onMessage;
+    }
+}

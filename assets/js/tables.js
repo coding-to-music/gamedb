@@ -104,9 +104,10 @@ $('table.table-datatable').on('page.dt', function (e, settings, processing) {
 
 });
 
-// Defaults
+// Lock icon
 var $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
 
+// Server side defaults
 var dtDefaultOptions = {
     "ajax": function (data, callback, settings) {
 
@@ -119,7 +120,7 @@ var dtDefaultOptions = {
             data: data,
             success: callback,
             dataType: 'json',
-            cache: true
+            cache: $(this).attr('data-cache') !== "false"
         });
     },
     "processing": false,

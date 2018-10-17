@@ -17,6 +17,7 @@ const (
 	PageChat    = "chat"
 	PageNews    = "news"
 	PagePrices  = "prices"
+	PageProfile = "profile"
 )
 
 var pages map[string]Page
@@ -30,10 +31,10 @@ var ErrInvalidPage = errors.New("invalid page")
 
 func init() {
 	pages = map[string]Page{}
-	for _, v := range []string{PageChanges, PageChat, PageNews, PagePrices} {
+	for _, v := range []string{PageChanges, PageChat, PageNews, PagePrices, PageProfile} {
 		pages[v] = Page{
-			name:  v,
-			conns: map[int]*websocket.Conn{},
+			name:        v,
+			connections: map[int]*websocket.Conn{},
 		}
 	}
 }
@@ -73,16 +74,16 @@ func GetPage(page string) (p Page, err error) {
 }
 
 type Page struct {
-	name  string
-	conns map[int]*websocket.Conn
+	name        string
+	connections map[int]*websocket.Conn
 }
 
 func (p Page) HasConnections() bool {
-	return len(p.conns) > 0
+	return len(p.connections) > 0
 }
 
 func (p *Page) SetConnection(conn *websocket.Conn) {
-	p.conns[rand.Int()] = conn
+	p.connections[rand.Int()] = conn
 }
 
 func (p *Page) Send(data interface{}) {
@@ -95,7 +96,7 @@ func (p *Page) Send(data interface{}) {
 	payload.Page = p.name
 	payload.Data = data
 
-	for k, v := range p.conns {
+	for k, v := range p.connections {
 		err := v.WriteJSON(payload)
 		if err != nil {
 
@@ -103,7 +104,7 @@ func (p *Page) Send(data interface{}) {
 			if strings.Contains(err.Error(), "broken pipe") {
 
 				v.Close()
-				delete(p.conns, k)
+				delete(p.connections, k)
 
 			} else {
 				logging.Error(err)

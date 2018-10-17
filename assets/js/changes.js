@@ -81,45 +81,19 @@ if ($('#changes-page').length > 0) {
         "columnDefs": columnDefs
     }));
 
-    if (window.WebSocket === undefined) {
+    websocketListener('changes', function (e) {
 
-        console.log('Your browser does not support WebSockets');
+        var info = dt.page.info();
+        if (info.page === 0) { // Page 1
 
-    } else {
+            var data = $.parseJSON(e.data);
 
-        var socket = new WebSocket("wss://" + location.host + "/websocket");
-        var $badge = $('#live-badge');
-
-        socket.onopen = function (e) {
-            $badge.addClass('badge-success').removeClass('badge-secondary badge-danger')
-        };
-
-        socket.onclose = function (e) {
-            $badge.addClass('badge-danger').removeClass('badge-secondary badge-success')
-        };
-
-        socket.onerror = function (e) {
-            $badge.addClass('badge-danger').removeClass('badge-secondary badge-success')
-        };
-
-        socket.onmessage = function (e) {
-
-            var info = dt.page.info();
-            if (info.page === 0) { // Page 1
-
-                var data = $.parseJSON(e.data);
-
-                if (data.Page === 'changes') {
-
-                    for (var i in data.Data) {
-
-                        if (data.Data.hasOwnProperty(i)) {
-
-                            addDataTablesRow(columnDefs, data.Data[i], info.length, $table);
-                        }
-                    }
+            // Loop changes in websocket data and add each one
+            for (var i in data.Data) {
+                if (data.Data.hasOwnProperty(i)) {
+                    addDataTablesRow(columnDefs, data.Data[i], info.length, $table);
                 }
             }
-        };
-    }
+        }
+    })
 }
