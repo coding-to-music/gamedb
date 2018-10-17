@@ -117,3 +117,27 @@ div#top.show {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+// New item fade
+@-webkit-keyframes green-fade {
+    0% {
+        background: #28a745;
+    }
+    100% {
+        background: none;
+    }
+}
+
+@keyframes green-fade {
+    0% {
+        background: #28a745;
+    }
+    100% {
+        background: none;
+    }
+}
+
+.green-fade {
+    -webkit-animation: green-fade 2s ease-in 1;
+    animation: green-fade 2s ease-in 1;
+}
