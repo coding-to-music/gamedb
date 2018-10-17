@@ -153,7 +153,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 			ws = append(ws, v.OutputForJSON())
 		}
 
-		websockets.Send(websockets.CHANGES, ws)
+		websockets.Send(websockets.PageChanges, ws)
 	}
 
 	return true, false, nil

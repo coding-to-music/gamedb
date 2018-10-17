@@ -33,7 +33,7 @@ func InitChat() {
 	// Add websocket listener
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if !m.Author.Bot {
-			websockets.Send(websockets.CHAT, chatWebsocketPayload{
+			websockets.Send(websockets.PageChat, chatWebsocketPayload{
 				AuthorID:     m.Author.ID,
 				AuthorUser:   m.Author.Username,
 				AuthorAvatar: m.Author.Avatar,

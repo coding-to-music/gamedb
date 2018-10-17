@@ -115,7 +115,7 @@ func Serve() error {
 	r.Get("/site.webmanifest", RootFileHandler)
 	r.Get("/stats", StatsHandler)
 	r.Get("/tags", StatsTagsHandler)
-	r.Get("/websocket", websockets.Handler)
+	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
 
 	// File server
 	fileServer(r)
