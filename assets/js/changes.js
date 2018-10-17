@@ -5,7 +5,7 @@ if ($('#changes-page').length > 0) {
         {
             "targets": 0,
             "render": function (data, type, row) {
-                return 'Change ' + row[0].toLocaleString();
+                return 'Change ' + row[0];
             },
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('nowrap', 'nowrap');
