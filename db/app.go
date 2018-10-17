@@ -96,7 +96,7 @@ type App struct {
 //}
 
 func (app App) GetPath() string {
-	return getAppPath(app.ID, app.GetName())
+	return getAppPath(app.ID, app.Name)
 }
 
 func (app App) GetType() (ret string) {
