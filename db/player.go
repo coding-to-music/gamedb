@@ -100,6 +100,10 @@ func (p Player) GetSteamCommunityLink() string {
 	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(p.PlayerID, 10)
 }
 
+func (p Player) GetMaxFriends() int {
+	return GetPlayerMaxFriends(p.Level)
+}
+
 func (p Player) GetGameHeatMap() string {
 
 	if p.GameHeatMap == "" {
@@ -709,6 +713,25 @@ func (p *Player) Save() (err error) {
 	}
 
 	return nil
+}
+
+func GetPlayerMaxFriends(level int) (ret int) {
+
+	ret = 750
+
+	if level > 100 {
+		ret = 1250
+	}
+
+	if level > 200 {
+		ret = 1750
+	}
+
+	if level > 300 {
+		ret = 2000
+	}
+
+	return ret
 }
 
 func getPlayerPath(id int64, name string) string {

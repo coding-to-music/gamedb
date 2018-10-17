@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 )
 
@@ -103,23 +104,8 @@ type level struct {
 	Count int
 }
 
-func (l level) GetFriends() (ret int) {
-
-	ret = 750
-
-	if l.Level > 100 {
-		ret = 1250
-	}
-
-	if l.Level > 200 {
-		ret = 1750
-	}
-
-	if l.Level > 300 {
-		ret = 2000
-	}
-
-	return ret
+func (l level) GetFriends() int {
+	return db.GetPlayerMaxFriends(l.Level)
 }
 
 func (l level) GetAvatar2() string {

@@ -20,7 +20,7 @@
                     <a class="nav-link" data-toggle="tab" href="#games" role="tab">Games ({{ comma .Player.GamesCount }})</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }})</a>
+                    <a class="nav-link" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }}/{{ comma .Player.GetMaxFriends }})</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#badges" role="tab">XP / Badges ({{ comma .Player.BadgesCount }})</a>
