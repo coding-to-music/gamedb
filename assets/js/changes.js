@@ -17,7 +17,7 @@ if ($('#changes-page').length > 0) {
         {
             "targets": 1,
             "render": function (data, type, row) {
-                return '<span data-toggle="tooltip" data-placement="left" title="' + row[2] + '" data-livestamp="' + row[1] + '">' + row[2] + '</span>';
+                return '<span data-toggle="tooltip" data-placement="left" title="' + row[2] + '" data-livestamp="' + row[1] + '"></span>';
             },
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('nowrap', 'nowrap');
