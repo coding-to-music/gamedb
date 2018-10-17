@@ -595,9 +595,8 @@ func (p *Player) updateFriends() (error) {
 		friendsSlice = append(friendsSlice, v.SteamID)
 
 		friendsMap[v.SteamID] = &ProfileFriend{
-			SteamID:      v.SteamID,
-			Relationship: v.Relationship,
-			FriendSince:  v.FriendSince,
+			SteamID:     v.SteamID,
+			FriendSince: v.FriendSince,
 		}
 	}
 
@@ -1014,14 +1013,13 @@ func (p playerAppStatsInnerTemplate) GetTotalTime() string {
 
 // ProfileFriend
 type ProfileFriend struct {
-	SteamID      int64  `json:"id"`
-	Relationship string `json:"rs"`
-	FriendSince  int64  `json:"fs"`
-	Avatar       string `json:"ic"`
-	Name         string `json:"nm"`
-	Games        int    `json:"gm"`
-	Level        int    `json:"lv"`
-	LoggedOff    int64  `json:"lo"`
+	SteamID     int64  `json:"id"`
+	FriendSince int64  `json:"fs"`
+	Avatar      string `json:"ic"`
+	Name        string `json:"nm"`
+	Games       int    `json:"gm"`
+	Level       int    `json:"lv"`
+	LoggedOff   int64  `json:"lo"`
 }
 
 func (p ProfileFriend) Scanned() bool {
