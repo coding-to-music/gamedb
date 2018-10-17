@@ -28,7 +28,10 @@ func InitChat() {
 
 	// Get client
 	discordSession, err = discordgo.New("Bot " + viper.GetString("DISCORD_BOT_TOKEN"))
-	logging.Error(err)
+	if err != nil {
+		logging.Error(err)
+		return
+	}
 
 	// Add websocket listener
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
