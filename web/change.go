@@ -26,13 +26,25 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var apps []db.App
+	var apps = map[int]db.App{}
 	wg.Add(1)
 	go func() {
 
-		apps, err = db.GetAppsByID(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
+		for _, v := range change.Apps {
+			apps[v.ID] = db.App{ID: v.ID, Name: v.Name}
+		}
+
+		appsSlice, err := db.GetAppsByID(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
 		if err != nil {
+
 			logging.Error(err)
+
+		} else {
+
+			for _, v := range appsSlice {
+				apps[v.ID] = v
+			}
+
 		}
 
 		wg.Done()
@@ -40,13 +52,25 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get packages
-	var packages []db.Package
+	var packages = map[int]db.Package{}
 	wg.Add(1)
 	go func() {
 
-		packages, err = db.GetPackages(change.GetPackageIDs(), []string{})
+		for _, v := range change.Packages {
+			packages[v.ID] = db.Package{ID: v.ID, PICSName: v.Name}
+		}
+
+		packagesSlice, err := db.GetPackages(change.GetPackageIDs(), []string{})
 		if err != nil {
+
 			logging.Error(err)
+
+		} else {
+
+			for _, v := range packagesSlice {
+				packages[v.ID] = v
+			}
+
 		}
 
 		wg.Done()
@@ -69,6 +93,6 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 type changeTemplate struct {
 	GlobalTemplate
 	Change   db.Change
-	Apps     []db.App
-	Packages []db.Package
+	Apps     map[int]db.App
+	Packages map[int]db.Package
 }

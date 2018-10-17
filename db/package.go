@@ -189,6 +189,14 @@ func (pack Package) GetComingSoon() string {
 	}
 }
 
+func (pack Package) GetAppsCountString() string {
+
+	if pack.AppsCount == 0 {
+		return "Unknown"
+	}
+	return strconv.Itoa(pack.AppsCount)
+}
+
 func (pack Package) GetAppIDs() (apps []int, err error) {
 
 	err = helpers.Unmarshal([]byte(pack.PICSAppIDs), &apps)
