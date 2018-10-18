@@ -409,7 +409,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response PlayersUpdateResponse
 
-	playerID := chi.URLParam(r, "playerID")
+	playerID := chi.URLParam(r, "id")
 
 	idx, err := strconv.ParseInt(playerID, 10, 64)
 	if err != nil || !db.IsValidPlayerID(idx) {
