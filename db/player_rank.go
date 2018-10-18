@@ -10,6 +10,8 @@ import (
 	"github.com/steam-authority/steam-authority/memcache"
 )
 
+const PlayersToRank = 1000
+
 type PlayerRank struct {
 	CreatedAt   time.Time `datastore:"created_at,noindex"`
 	UpdatedAt   time.Time `datastore:"updated_at,noindex"`
@@ -125,6 +127,8 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 }
 
 func CountRanks() (count int, err error) {
+
+	return PlayersToRank, nil
 
 	return memcache.GetSetInt(memcache.RanksCount, func() (count int, err error) {
 

@@ -14,10 +14,6 @@ import (
 	"github.com/steam-authority/steam-authority/logging"
 )
 
-const (
-	ranksLimit = 100
-)
-
 func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
@@ -139,7 +135,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				"7": "friends_rank",
 			}
 
-			q := datastore.NewQuery(db.KindPlayerRank).Limit(ranksLimit)
+			q := datastore.NewQuery(db.KindPlayerRank).Limit(100)
 
 			column := query.GetOrderDS(columns, false)
 			if column != "" {

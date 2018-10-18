@@ -631,7 +631,6 @@ func adminRanks() {
 
 	logging.Info("Ranks updated started")
 
-	playersToRank := 1000
 	timeStart := time.Now().Unix()
 
 	oldKeys, err := db.GetRankKeys()
@@ -650,7 +649,7 @@ func adminRanks() {
 		wg.Add(1)
 		go func(column string) {
 
-			players, err = db.GetAllPlayers(column, playersToRank)
+			players, err = db.GetAllPlayers(column, db.PlayersToRank)
 			if err != nil {
 				logging.Error(err)
 				return
