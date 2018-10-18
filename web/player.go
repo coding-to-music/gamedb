@@ -404,9 +404,9 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response PlayersUpdateResponse
 
-	id := chi.URLParam(r, "id")
+	playerID := chi.URLParam(r, "playerID")
 
-	idx, err := strconv.ParseInt(id, 10, 64)
+	idx, err := strconv.ParseInt(playerID, 10, 64)
 	if err != nil || !db.IsValidPlayerID(idx) {
 
 		response = PlayersUpdateResponse{Message: "Invalid Player ID", Success: false}
@@ -415,25 +415,26 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		player, err := db.GetPlayer(idx)
-		if err != nil && err == db.ErrNoSuchEntity {
-
-			response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true}
-
-		} else if err != nil {
+		if err != nil && err != db.ErrNoSuchEntity {
 
 			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false}
 			logging.Error(err)
 
-		} else if !player.ShouldUpdateManual() {
+		} else if err == nil && !player.ShouldUpdateManual() {
 
 			response = PlayersUpdateResponse{Message: "Player has been updated recently", Success: false}
 
 		} else {
 
-			response = PlayersUpdateResponse{Message: "Player added to queue!", Success: true}
+			// All good
+			if err != nil && err == db.ErrNoSuchEntity {
+				response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true}
+			} else {
+				response = PlayersUpdateResponse{Message: "Player added to queue!", Success: true}
+			}
 
 			payload := queue.RabbitMessageProfile{}
-			payload.Fill(id)
+			payload.Fill(playerID)
 
 			err = queue.Produce(queue.QueueProfiles, payload.ToBytes())
 			if err != nil {
@@ -442,7 +443,6 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				logging.Error(err)
 
 			}
-
 		}
 	}
 
