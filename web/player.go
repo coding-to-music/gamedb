@@ -427,7 +427,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else if err == nil && !player.ShouldUpdateManual() {
 
-			response = PlayersUpdateResponse{Message: "Player has been updated recently", Success: false}
+			response = PlayersUpdateResponse{Message: "Player is up to date", Success: false}
 
 		} else {
 
@@ -435,7 +435,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil && err == db.ErrNoSuchEntity {
 				response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true}
 			} else {
-				response = PlayersUpdateResponse{Message: "Player added to queue!", Success: true}
+				response = PlayersUpdateResponse{Message: "Updating player", Success: true}
 			}
 
 			payload := queue.RabbitMessageProfile{}
