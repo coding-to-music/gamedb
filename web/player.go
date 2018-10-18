@@ -53,7 +53,12 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	if len(errs) > 0 {
 
 		for _, err := range errs {
-			logging.Error(err)
+			switch err.Error() {
+			case db.ErrRefreshBot.Error(), db.ErrRefreshTooSoon.Error():
+				logging.InfoG(err.Error())
+			default:
+				logging.Error(err)
+			}
 		}
 
 		returnErrorTemplate(w, r, 500, errs[0].Error())
