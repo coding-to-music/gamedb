@@ -273,7 +273,7 @@ func (p *Player) Update(userAgent string) (errs []error) {
 		return []error{ErrRefreshBot}
 	}
 
-	if !p.ShouldUpdateAuto() { // 1 Day
+	if !p.ShouldUpdateAuto() {
 		return []error{ErrRefreshTooSoon}
 	}
 
