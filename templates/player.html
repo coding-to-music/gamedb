@@ -200,7 +200,7 @@
                             </thead>
                         {{ range $key, $value := .Friends }}
                             <tr data-link="{{ .GetPath }}">
-                                <td class="img">
+                                <td class="img" data-sort="{{ .GetName }}">
                                     <img src="{{ .Avatar }}" alt="{{ .GetName }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
                                     <span>{{ .GetName }}</span>
                                 </td>
