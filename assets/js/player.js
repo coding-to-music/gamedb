@@ -2,12 +2,21 @@ if ($('#player-page').length > 0) {
 
     $('[data-update-id]').on('click', function (e) {
 
+        var $link = $(this);
+
+        $link.removeClass('fade-red').removeClass('fade-green');
+
         $.ajax({
             url: '/players/' + $(this).attr('data-update-id') + '/ajax/update',
             success: function (data, textStatus, jqXHR) {
 
                 browserNotification(data.message);
 
+                if (data.success) {
+                    $link.addClass('fade-green');
+                } else {
+                    $link.addClass('fade-red');
+                }
             },
             dataType: 'json',
             cache: false

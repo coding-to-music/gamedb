@@ -148,7 +148,7 @@ var dtDefaultOptions = {
 
 function addDataTablesRow(columnDefs, data, limit, $table) {
 
-    var $row = $('<tr class="green-fade" />');
+    var $row = $('<tr class="fade-green" />');
 
     for (var i in columnDefs) {
         if (columnDefs.hasOwnProperty(i)) {

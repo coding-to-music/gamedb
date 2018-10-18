@@ -119,7 +119,7 @@ div#top.show {
 }
 
 // New item fade
-@-webkit-keyframes green-fade {
+@-webkit-keyframes fade-green {
     0% {
         background: #28a745;
     }
@@ -128,7 +128,7 @@ div#top.show {
     }
 }
 
-@keyframes green-fade {
+@keyframes fade-green {
     0% {
         background: #28a745;
     }
@@ -137,7 +137,30 @@ div#top.show {
     }
 }
 
-.green-fade {
-    -webkit-animation: green-fade 2s ease-in 1;
-    animation: green-fade 2s ease-in 1;
+.fade-green {
+    -webkit-animation: fade-green 2s ease-in 1;
+    animation: fade-green 2s ease-in 1;
+}
+
+@-webkit-keyframes fade-red {
+    0% {
+        background: #28a745;
+    }
+    100% {
+        background: none;
+    }
+}
+
+@keyframes fade-red {
+    0% {
+        background: #28a745;
+    }
+    100% {
+        background: none;
+    }
+}
+
+.fade-red {
+    -webkit-animation: fade-red 2s ease-in 1;
+    animation: fade-red 2s ease-in 1;
 }
