@@ -25,8 +25,6 @@ const defaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
-	ErrRefreshTooSoon    = errors.New("refresh too soon")
-	ErrRefreshBot        = errors.New("bots can't refresh profiles")
 )
 
 type Player struct {
@@ -270,11 +268,11 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	}
 
 	if helpers.IsBot(userAgent) {
-		return []error{ErrRefreshBot}
+		return []error{} // Success
 	}
 
 	if !p.ShouldUpdateAuto() {
-		return []error{ErrRefreshTooSoon}
+		return []error{} // Success
 	}
 
 	// Get summary
