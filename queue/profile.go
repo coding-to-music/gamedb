@@ -16,10 +16,13 @@ type RabbitMessageProfile struct {
 	PlayerID int64
 }
 
-func (d *RabbitMessageProfile) SetPlayerID(id string) {
-	playerID, err := strconv.ParseInt(id, 10, 64)
+func (d *RabbitMessageProfile) Fill(playerID string) {
+
+	d.Time = time.Now()
+
+	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
 	if err != nil {
-		d.PlayerID = playerID
+		d.PlayerID = playerIDInt
 		logging.Error(err)
 	}
 }
@@ -28,10 +31,6 @@ func (d *RabbitMessageProfile) ToBytes() []byte {
 	bytes, err := json.Marshal(d)
 	logging.Error(err)
 	return bytes
-}
-
-func (d *RabbitMessageProfile) SetTime() {
-	d.Time = time.Now()
 }
 
 func (d RabbitMessageProfile) getQueueName() string {

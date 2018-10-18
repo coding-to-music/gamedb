@@ -25,6 +25,8 @@ const defaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
+	ErrRefreshTooSoon    = errors.New("refresh too soon")
+	ErrRefreshBot        = errors.New("bots can't refresh profiles")
 )
 
 type Player struct {
@@ -248,6 +250,19 @@ func (p Player) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(p.PlayTime, 5)
 }
 
+func (p Player) ShouldUpdateAuto() bool {
+	return p.UpdatedAt.Add(time.Hour * 168).Unix() < time.Now().Unix() // A week
+}
+
+func (p Player) ShouldUpdateManual() bool {
+
+	if p.Donated > 0 {
+		return p.UpdatedAt.Add(time.Hour * 1).Unix() < time.Now().Unix() // An hour
+	}
+
+	return p.UpdatedAt.Add(time.Hour * 24).Unix() < time.Now().Unix() // A day
+}
+
 func (p *Player) Update(userAgent string) (errs []error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
@@ -255,11 +270,11 @@ func (p *Player) Update(userAgent string) (errs []error) {
 	}
 
 	if helpers.IsBot(userAgent) {
-		return []error{}
+		return []error{ErrRefreshBot}
 	}
 
-	if p.UpdatedAt.Unix() > (time.Now().Unix() - int64(60*60*24)) { // 1 Day
-		return []error{}
+	if !p.ShouldUpdateAuto() { // 1 Day
+		return []error{ErrRefreshTooSoon}
 	}
 
 	// Get summary

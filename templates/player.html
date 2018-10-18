@@ -25,11 +25,19 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#badges" role="tab">XP / Badges ({{ comma .Player.BadgesCount }})</a>
                 </li>
-            {{ if ne .Player.PlayerID .UserID }}
-                <li class="nav-item ml-auto">
-                    <a class="nav-link" href="/coop?p={{ .Player.PlayerID }}{{ if .IsLoggedIn }}&p={{ .UserID }}{{end}}" role="tab">Co-op</a>
+
+                <li class="ml-auto"></li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#" role="tab" data-update-id="{{ .Player.PlayerID }}">
+                        <i class="fas fa-sync-alt"></i> Update
+                    </a>
                 </li>
-            {{end}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/coop?p={{ .Player.PlayerID }}{{ if .IsLoggedIn }}&p={{ .UserID }}{{end}}" role="tab">
+                        <i class="fas fa-user-friends"></i> Co-op
+                    </a>
+                </li>
             </ul>
 
         </div>

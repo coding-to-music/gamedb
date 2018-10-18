@@ -402,26 +402,48 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	response := PlayersUpdateResponse{
-		Message: "Update Queued!",
-	}
+	var response PlayersUpdateResponse
 
 	id := chi.URLParam(r, "id")
 
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil || !db.IsValidPlayerID(idx) {
 
-		response.Message = "Invalid Player ID"
+		response = PlayersUpdateResponse{Message: "Invalid Player ID", Success: false}
 		logging.Error(err)
 
 	} else {
 
-		payload := queue.RabbitMessageProfile{}
-		payload.SetTime()
-		payload.SetPlayerID(id)
+		player, err := db.GetPlayer(idx)
+		if err != nil && err == db.ErrNoSuchEntity {
 
-		err = queue.Produce(queue.QueueProfiles, payload.ToBytes())
-		logging.Error(err)
+			response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true}
+
+		} else if err != nil {
+
+			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false}
+			logging.Error(err)
+
+		} else if !player.ShouldUpdateManual() {
+
+			response = PlayersUpdateResponse{Message: "Player has been updated recently", Success: false}
+
+		} else {
+
+			response = PlayersUpdateResponse{Message: "Player added to queue!", Success: true}
+
+			payload := queue.RabbitMessageProfile{}
+			payload.Fill(id)
+
+			err = queue.Produce(queue.QueueProfiles, payload.ToBytes())
+			if err != nil {
+
+				response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false}
+				logging.Error(err)
+
+			}
+
+		}
 	}
 
 	bytes, err := json.Marshal(response)
@@ -433,4 +455,5 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 type PlayersUpdateResponse struct {
 	Message string `json:"message"`
+	Success bool   `json:"success"`
 }

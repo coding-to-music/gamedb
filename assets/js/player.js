@@ -1,5 +1,19 @@
 if ($('#player-page').length > 0) {
 
+    $('[data-update-id]').on('click', function (e) {
+
+        $.ajax({
+            url: '/players/' + $(this).attr('data-update-id') + '/ajax/update',
+            success: function (data, textStatus, jqXHR) {
+
+                browserNotification(data.message);
+
+            },
+            dataType: 'json',
+            cache: false
+        });
+    });
+
     $('#games table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
