@@ -113,3 +113,19 @@ func DeleteDeveloper(id int) (err error) {
 
 	return nil
 }
+
+func DeleteDevelopers(ids []int) (err error) {
+
+	if len(ids) == 0 {
+		return nil
+	}
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	db.Where("id IN (?)", ids).Delete(Developer{})
+
+	return db.Error
+}

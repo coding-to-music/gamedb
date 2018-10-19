@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"sort"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -328,9 +327,11 @@ func adminPublishers() {
 		}
 	}
 
+	var limit int
 	var wg sync.WaitGroup
 
 	// Delete old publishers
+	limit++
 	wg.Add(1)
 	go func() {
 
@@ -342,11 +343,11 @@ func adminPublishers() {
 		err := db.DeletePublishers(pubsToDeleteSlice)
 		logging.Error(err)
 
+		limit--
 		wg.Done()
 	}()
 
 	// Update current publishers
-	var limit int
 	for k, v := range publishersToAdd {
 
 		if limit >= 5 {
@@ -405,30 +406,31 @@ func adminDevelopers() {
 
 	devsToDelete := map[string]int{}
 	for _, v := range developers {
-		devsToDelete[v.Name] = v.ID
+		key := slug.Make(v.Name)
+		devsToDelete[key] = v.ID
 	}
 
 	// Get apps from mysql
-	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "developers"})
+	apps, err := db.GetAppsWithDevelopers()
 	logging.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
 
 	for _, app := range apps {
 
-		developers, err := app.GetDevelopers()
+		appDevelopers, err := app.GetDevelopers()
 		if err != nil {
 			logging.Error(err)
 			continue
 		}
 
-		if len(developers) == 0 {
-			developers = []string{"No Developer"}
+		if len(appDevelopers) == 0 {
+			appDevelopers = []string{"No Developer"}
 		}
 
-		for _, key := range developers {
+		for _, developer := range appDevelopers {
 
-			key = strings.ToLower(key)
+			key := slug.Make(developer)
 
 			delete(devsToDelete, key)
 
@@ -438,31 +440,35 @@ func adminDevelopers() {
 				counts[key].totalScore += app.ReviewsScore
 			} else {
 				counts[key] = &adminDeveloper{
+					name:       app.GetName(),
 					count:      1,
 					totalPrice: app.PriceFinal,
 					totalScore: app.ReviewsScore,
-					name:       app.GetName(),
 				}
 			}
 		}
 	}
 
+	var limit int
 	var wg sync.WaitGroup
 
 	// Delete old developers
-	for _, v := range devsToDelete {
+	limit++
+	wg.Add(1)
+	go func() {
 
-		wg.Add(1)
-		go func() {
+		var devsToDeleteSlice []int
+		for _, v := range devsToDelete {
+			devsToDeleteSlice = append(devsToDeleteSlice, v)
+		}
 
-			db.DeleteDeveloper(v)
+		db.DeleteDevelopers(devsToDeleteSlice)
 
-			wg.Done()
-		}()
-	}
+		limit--
+		wg.Done()
+	}()
 
 	// Update current developers
-	var limit int
 	for k, v := range counts {
 
 		if limit >= 5 {
@@ -549,7 +555,6 @@ func adminTags() {
 			delete(tagsToDelete, tagID)
 
 			if _, ok := currentTags[tagID]; ok {
-				//currentTags[tagID].name = steamTagMap[tagID]
 				currentTags[tagID].count++
 				currentTags[tagID].totalPrice += app.PriceFinal
 				currentTags[tagID].totalScore += app.ReviewsScore
