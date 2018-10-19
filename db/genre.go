@@ -9,14 +9,14 @@ import (
 )
 
 type Genre struct {
-	ID           int        `gorm:"not null;primary_key;AUTO_INCREMENT"` //
-	CreatedAt    *time.Time `gorm:"not null"`
-	UpdatedAt    *time.Time `gorm:"not null"`
-	DeletedAt    *time.Time `gorm:""`
-	Name         string     `gorm:"not null;index:name"`
-	Apps         int        `gorm:"not null"`
-	MeanPrice    float64    `gorm:"not null"`
-	MeanDiscount float64    `gorm:"not null"`
+	ID        int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
+	CreatedAt *time.Time `gorm:"not null"`
+	UpdatedAt *time.Time `gorm:"not null"`
+	DeletedAt *time.Time `gorm:""`
+	Name      string     `gorm:"not null;index:name"`
+	Apps      int        `gorm:"not null"`
+	MeanPrice float64    `gorm:"not null"`
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (g Genre) GetPath() string {
@@ -31,8 +31,8 @@ func (g Genre) GetMeanPrice() float64 {
 	return helpers.CentsFloat(g.MeanPrice)
 }
 
-func (g Genre) GetMeanDiscount() float64 {
-	return helpers.DollarsFloat(g.MeanDiscount)
+func (g Genre) GetMeanScore() float64 {
+	return helpers.DollarsFloat(g.MeanScore)
 }
 
 func GetAllGenres() (genres []Genre, err error) {

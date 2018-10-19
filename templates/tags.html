@@ -29,9 +29,9 @@
                     <thead class="thead-light">
                     <tr>
                         <th scope="col">Tag</th>
-                        <th scope="col" data-sort="desc">Games</th>
+                        <th scope="col">Games</th>
                         <th scope="col" nowrap="nowrap">Avg Price</th>
-                        <th scope="col" nowrap="nowrap">Avg Discount</th>
+                        <th scope="col" nowrap="nowrap" data-sort="desc">Avg Score</th>
                     </tr>
                     </thead>
                     <tbody class="tags-list">
@@ -40,7 +40,7 @@
                         <td><i class="fas fa-tag"></i> {{ .GetName }}</td>
                         <td>{{ comma .Apps }}</td>
                         <td>${{ .GetMeanPrice }}</td>
-                        <td>{{ .GetMeanDiscount }}%</td>
+                        <td>{{ .GetMeanScore }}%</td>
                     </tr>
                     {{ end }}
                     </tbody>

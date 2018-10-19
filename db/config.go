@@ -8,11 +8,11 @@ const (
 	ConfTagsUpdated       = "tags-updated"
 	ConfPublishersUpdated = "publishers-updated"
 	ConfDevelopersUpdated = "developers-updated"
-	ConfRanksUpdated      = "ranks-updated"
 	ConfGenresUpdated     = "genres-updated"
-	ConfDonationsUpdated  = "donations-updated"
-	ConfDeployed          = "deployed"
-	ConfAddedAllApps      = "added-all-apps"
+
+	ConfRanksUpdated     = "ranks-updated"
+	ConfDonationsUpdated = "donations-updated"
+	ConfAddedAllApps     = "added-all-apps"
 )
 
 type Config struct {

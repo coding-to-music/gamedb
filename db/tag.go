@@ -10,14 +10,14 @@ import (
 )
 
 type Tag struct {
-	ID           int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
-	CreatedAt    *time.Time `gorm:"not null"`
-	UpdatedAt    *time.Time `gorm:"not null"`
-	DeletedAt    *time.Time `gorm:""`
-	Name         string     `gorm:"not null;index:name"`
-	Apps         int        `gorm:"not null"`
-	MeanPrice    float64    `gorm:"not null"`
-	MeanDiscount float64    `gorm:"not null"`
+	ID        int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
+	CreatedAt *time.Time `gorm:"not null"`
+	UpdatedAt *time.Time `gorm:"not null"`
+	DeletedAt *time.Time `gorm:""`
+	Name      string     `gorm:"not null;index:name"`
+	Apps      int        `gorm:"not null"`
+	MeanPrice float64    `gorm:"not null"`
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (tag Tag) GetPath() string {
@@ -37,8 +37,8 @@ func (tag Tag) GetMeanPrice() float64 {
 	return helpers.CentsFloat(tag.MeanPrice)
 }
 
-func (tag Tag) GetMeanDiscount() float64 {
-	return helpers.DollarsFloat(tag.MeanDiscount)
+func (tag Tag) GetMeanScore() float64 {
+	return helpers.DollarsFloat(tag.MeanScore)
 }
 
 func GetCoopTags() []int {

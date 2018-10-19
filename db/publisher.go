@@ -10,15 +10,14 @@ import (
 )
 
 type Publisher struct {
-	ID           int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
-	CreatedAt    *time.Time `gorm:"not null"`
-	UpdatedAt    *time.Time `gorm:"not null"`
-	DeletedAt    *time.Time `gorm:""`
-	Name         string     `gorm:"not null;index:name"`
-	Apps         int        `gorm:"not null"`
-	MeanPrice    float64    `gorm:"not null"`
-	MeanDiscount float64    `gorm:"not null"`
-	MeanScore    float64    `gorm:"not null"`
+	ID        int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
+	CreatedAt *time.Time `gorm:"not null"`
+	UpdatedAt *time.Time `gorm:"not null"`
+	DeletedAt *time.Time `gorm:""`
+	Name      string     `gorm:"not null;index:name"`
+	Apps      int        `gorm:"not null"`
+	MeanPrice float64    `gorm:"not null"`
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (p Publisher) GetPath() string {
@@ -33,8 +32,8 @@ func (p Publisher) GetMeanPrice() float64 {
 	return helpers.CentsFloat(p.MeanPrice)
 }
 
-func (p Publisher) GetMeanDiscount() float64 {
-	return helpers.DollarsFloat(p.MeanDiscount)
+func (p Publisher) GetMeanScore() float64 {
+	return helpers.DollarsFloat(p.MeanScore)
 }
 
 func GetAllPublishers() (publishers []Publisher, err error) {

@@ -10,14 +10,14 @@ import (
 )
 
 type Developer struct {
-	ID           int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
-	CreatedAt    *time.Time `gorm:"not null"`
-	UpdatedAt    *time.Time `gorm:"not null"`
-	DeletedAt    *time.Time `gorm:""`
-	Name         string     `gorm:"not null;index:name"`
-	Apps         int        `gorm:"not null"`
-	MeanPrice    float64    `gorm:"not null"`
-	MeanDiscount float64    `gorm:"not null"`
+	ID        int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
+	CreatedAt *time.Time `gorm:"not null"`
+	UpdatedAt *time.Time `gorm:"not null"`
+	DeletedAt *time.Time `gorm:""`
+	Name      string     `gorm:"not null;index:name"`
+	Apps      int        `gorm:"not null"`
+	MeanPrice float64    `gorm:"not null"`
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (d Developer) GetPath() string {
@@ -32,8 +32,8 @@ func (d Developer) GetMeanPrice() float64 {
 	return helpers.CentsFloat(d.MeanPrice)
 }
 
-func (d Developer) GetMeanDiscount() float64 {
-	return helpers.DollarsFloat(d.MeanDiscount)
+func (d Developer) GetMeanScore() float64 {
+	return helpers.DollarsFloat(d.MeanScore)
 }
 
 func GetAllDevelopers() (developers []Developer, err error) {

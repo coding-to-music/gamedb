@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	ds "cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
@@ -30,8 +29,6 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	switch option {
 	case "re-add-all-apps":
 		go adminApps()
-	case "deploy":
-		go adminDeploy()
 	case "count-donations":
 		go adminDonations()
 	case "count-genres":
@@ -114,13 +111,6 @@ func adminApps() {
 	logging.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
 
-func adminDeploy() {
-
-	//
-	err := db.SetConfig(db.ConfDeployed, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
-}
-
 func adminDonations() {
 
 	donations, err := db.GetDonations(0, 0)
@@ -157,6 +147,39 @@ func adminDonations() {
 	logging.Error(err)
 
 	logging.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
+}
+
+func adminQueues(r *http.Request) {
+
+	if val := r.PostForm.Get("change-id"); val != "" {
+
+		logging.Info("Change: " + val)
+		//queue.Produce(queue.ProduceOptions{queue.chang, []byte(val)), 1})
+	}
+
+	if val := r.PostForm.Get("player-id"); val != "" {
+
+		logging.Info("Player: " + val)
+		playerID, err := strconv.ParseInt(val, 10, 64)
+		logging.Error(err)
+		bytes, _ := json.Marshal(queue.RabbitMessageProfile{
+			PlayerID: playerID,
+			Time:     time.Now(),
+		})
+		queue.Produce(queue.QueueProfiles, bytes)
+	}
+
+	if val := r.PostForm.Get("app-id"); val != "" {
+
+		logging.Info("App: " + val)
+		queue.Produce(queue.QueueApps, []byte(val))
+	}
+
+	if val := r.PostForm.Get("package-id"); val != "" {
+
+		logging.Info("Package: " + val)
+		queue.Produce(queue.QueuePackages, []byte(val))
+	}
 }
 
 func adminGenres() {
@@ -247,39 +270,6 @@ type adminGenreCount struct {
 	Genre steam.AppDetailsGenre
 }
 
-func adminQueues(r *http.Request) {
-
-	if val := r.PostForm.Get("change-id"); val != "" {
-
-		logging.Info("Change: " + val)
-		//queue.Produce(queue.ProduceOptions{queue.chang, []byte(val)), 1})
-	}
-
-	if val := r.PostForm.Get("player-id"); val != "" {
-
-		logging.Info("Player: " + val)
-		playerID, err := strconv.ParseInt(val, 10, 64)
-		logging.Error(err)
-		bytes, _ := json.Marshal(queue.RabbitMessageProfile{
-			PlayerID: playerID,
-			Time:     time.Now(),
-		})
-		queue.Produce(queue.QueueProfiles, bytes)
-	}
-
-	if val := r.PostForm.Get("app-id"); val != "" {
-
-		logging.Info("App: " + val)
-		queue.Produce(queue.QueueApps, []byte(val))
-	}
-
-	if val := r.PostForm.Get("package-id"); val != "" {
-
-		logging.Info("Package: " + val)
-		queue.Produce(queue.QueuePackages, []byte(val))
-	}
-}
-
 func adminPublishers() {
 
 	fmt.Println("Publishers Updating")
@@ -297,7 +287,7 @@ func adminPublishers() {
 	}
 
 	// Get apps from mysql
-	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "publishers", "reviews_score"})
+	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "publishers", "reviews_score"})
 	if err != nil {
 		logging.Error(err)
 		return
@@ -325,14 +315,14 @@ func adminPublishers() {
 
 			if _, ok := publishersToAdd[key]; ok {
 				publishersToAdd[key].count++
-				publishersToAdd[key].totalPrice = publishersToAdd[key].totalPrice + app.PriceFinal
-				publishersToAdd[key].totalDiscount = publishersToAdd[key].totalDiscount + app.PriceDiscount
+				publishersToAdd[key].totalPrice += app.PriceFinal
+				publishersToAdd[key].totalScore += app.ReviewsScore
 			} else {
 				publishersToAdd[key] = &adminPublisher{
-					count:         1,
-					totalPrice:    app.PriceFinal,
-					totalDiscount: app.PriceDiscount,
-					name:          publisher,
+					count:      1,
+					totalPrice: app.PriceFinal,
+					totalScore: app.ReviewsScore,
+					name:       publisher,
 				}
 			}
 		}
@@ -356,27 +346,26 @@ func adminPublishers() {
 	}()
 
 	// Update current publishers
-	var x int
-
+	var limit int
 	for k, v := range publishersToAdd {
 
-		if x >= 5 {
+		if limit >= 5 {
 			wg.Wait()
 		}
 
-		x++
+		limit++
 		wg.Add(1)
 		go func(k string, v *adminPublisher) {
 
 			err := db.SaveOrUpdatePublisher(k, db.Publisher{
-				Apps:         v.count,
-				MeanPrice:    v.GetMeanPrice(),
-				MeanDiscount: v.GetMeanDiscount(),
-				Name:         v.name,
+				Apps:      v.count,
+				MeanPrice: v.GetMeanPrice(),
+				MeanScore: v.GetMeanScore(),
+				Name:      v.name,
 			})
 			logging.Error(err)
 
-			x--
+			limit--
 			wg.Done()
 
 		}(k, v)
@@ -391,18 +380,18 @@ func adminPublishers() {
 }
 
 type adminPublisher struct {
-	name          string
-	count         int
-	totalPrice    int
-	totalDiscount int
+	name       string
+	count      int
+	totalPrice int
+	totalScore float64
 }
 
 func (p adminPublisher) GetMeanPrice() float64 {
 	return float64(p.totalPrice) / float64(p.count)
 }
 
-func (p adminPublisher) GetMeanDiscount() float64 {
-	return float64(p.totalDiscount) / float64(p.count)
+func (p adminPublisher) GetMeanScore() float64 {
+	return float64(p.totalScore) / float64(p.count)
 }
 
 func adminDevelopers() {
@@ -420,7 +409,7 @@ func adminDevelopers() {
 	}
 
 	// Get apps from mysql
-	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "price_discount", "developers"})
+	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "developers"})
 	logging.Error(err)
 
 	counts := make(map[string]*adminDeveloper)
@@ -445,14 +434,14 @@ func adminDevelopers() {
 
 			if _, ok := counts[key]; ok {
 				counts[key].count++
-				counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
-				counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
+				counts[key].totalPrice += app.PriceFinal
+				counts[key].totalScore += app.ReviewsScore
 			} else {
 				counts[key] = &adminDeveloper{
-					count:         1,
-					totalPrice:    app.PriceFinal,
-					totalDiscount: app.PriceDiscount,
-					name:          app.GetName(),
+					count:      1,
+					totalPrice: app.PriceFinal,
+					totalScore: app.ReviewsScore,
+					name:       app.GetName(),
 				}
 			}
 		}
@@ -473,19 +462,26 @@ func adminDevelopers() {
 	}
 
 	// Update current developers
+	var limit int
 	for k, v := range counts {
 
+		if limit >= 5 {
+			wg.Wait()
+		}
+
+		limit++
 		wg.Add(1)
 		go func(k string, v *adminDeveloper) {
 
 			err := db.SaveOrUpdateDeveloper(k, db.Developer{
-				Apps:         v.count,
-				MeanPrice:    v.GetMeanPrice(),
-				MeanDiscount: v.GetMeanDiscount(),
-				Name:         v.name,
+				Apps:      v.count,
+				MeanPrice: v.GetMeanPrice(),
+				MeanScore: v.GetMeanScore(),
+				Name:      v.name,
 			})
 			logging.Error(err)
 
+			limit--
 			wg.Done()
 
 		}(k, v)
@@ -499,18 +495,18 @@ func adminDevelopers() {
 }
 
 type adminDeveloper struct {
-	name          string
-	count         int
-	totalPrice    int
-	totalDiscount int
+	name       string
+	count      int
+	totalPrice int
+	totalScore float64
 }
 
 func (t adminDeveloper) GetMeanPrice() float64 {
 	return float64(t.totalPrice) / float64(t.count)
 }
 
-func (t adminDeveloper) GetMeanDiscount() float64 {
-	return float64(t.totalDiscount) / float64(t.count)
+func (t adminDeveloper) GetMeanScore() float64 {
+	return float64(t.totalScore) / float64(t.count)
 }
 
 func adminTags() {
@@ -540,7 +536,7 @@ func adminTags() {
 	filter := url.Values{}
 	filter.Set("tags_depth", "2")
 
-	apps, err := db.SearchApps(filter, 0, 1, "", []string{"name", "price_final", "price_discount", "tags"})
+	apps, err := db.SearchApps(filter, 0, 1, "", []string{"name", "price_final", "tags"})
 	logging.Error(err)
 
 	counts := make(map[int]*adminTag)
@@ -558,15 +554,15 @@ func adminTags() {
 
 			if _, ok := counts[key]; ok {
 				counts[key].count++
-				counts[key].totalPrice = counts[key].totalPrice + app.PriceFinal
-				counts[key].totalDiscount = counts[key].totalDiscount + app.PriceDiscount
+				counts[key].totalPrice += app.PriceFinal
+				counts[key].totalScore += app.ReviewsScore
 				counts[key].name = steamTagMap[key]
 			} else {
 				counts[key] = &adminTag{
-					name:          steamTagMap[key],
-					count:         1,
-					totalPrice:    app.PriceFinal,
-					totalDiscount: app.PriceDiscount,
+					name:       steamTagMap[key],
+					count:      1,
+					totalPrice: app.PriceFinal,
+					totalScore: app.ReviewsScore,
 				}
 			}
 		}
@@ -588,19 +584,26 @@ func adminTags() {
 	}
 
 	// Update current tags
+	var limit int
 	for k, v := range counts {
 
+		if limit >= 5 {
+			wg.Wait()
+		}
+
+		limit++
 		wg.Add(1)
 		go func(k int, v *adminTag) {
 
 			err := db.SaveOrUpdateTag(k, db.Tag{
-				Apps:         v.count,
-				MeanPrice:    v.GetMeanPrice(),
-				MeanDiscount: v.GetMeanDiscount(),
-				Name:         v.name,
+				Apps:      v.count,
+				MeanPrice: v.GetMeanPrice(),
+				MeanScore: v.GetMeanScore(),
+				Name:      v.name,
 			})
 			logging.Error(err)
 
+			limit--
 			wg.Done()
 		}(k, v)
 	}
@@ -613,18 +616,18 @@ func adminTags() {
 }
 
 type adminTag struct {
-	name          string
-	count         int
-	totalPrice    int
-	totalDiscount int
+	name       string
+	count      int
+	totalPrice int
+	totalScore float64
 }
 
 func (t adminTag) GetMeanPrice() float64 {
 	return float64(t.totalPrice) / float64(t.count)
 }
 
-func (t adminTag) GetMeanDiscount() float64 {
-	return float64(t.totalDiscount) / float64(t.count)
+func (t adminTag) GetMeanScore() float64 {
+	return float64(t.totalScore) / float64(t.count)
 }
 
 func adminRanks() {
@@ -783,31 +786,31 @@ func adminMemcache() {
 
 func adminDev() {
 
-	return
-
-	logging.Info("Dev")
-
-	players, err := db.GetAllPlayers("__key__", 0)
-
-	logging.Info("Got players")
-
-	if err != nil {
-
-		logging.Error(err)
-
-		if _, ok := err.(*ds.ErrFieldMismatch); ok {
-
-		} else {
-			return
-		}
-	}
-
-	for _, v := range players {
-		//v.Games = ""
-		err := v.Save()
-		logging.Error(err)
-		fmt.Print(".")
-	}
-
-	logging.Info("Done")
+	//return
+	//
+	//logging.Info("Dev")
+	//
+	//players, err := db.GetAllPlayers("__key__", 0)
+	//
+	//logging.Info("Got players")
+	//
+	//if err != nil {
+	//
+	//	logging.Error(err)
+	//
+	//	if _, ok := err.(*ds.ErrFieldMismatch); ok {
+	//
+	//	} else {
+	//		return
+	//	}
+	//}
+	//
+	//for _, v := range players {
+	//	//v.Games = ""
+	//	err := v.Save()
+	//	logging.Error(err)
+	//	fmt.Print(".")
+	//}
+	//
+	//logging.Info("Done")
 }

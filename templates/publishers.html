@@ -28,10 +28,10 @@
                 <table class="table table-hover table-striped table-datatable mb-0" data-limit="100">
                     <thead class="thead-light">
                     <tr>
-                        <th scope="col" data-sort="asc">Publisher</th>
+                        <th scope="col">Publisher</th>
                         <th scope="col">Games</th>
                         <th scope="col" nowrap="nowrap">Avg Price</th>
-                        <th scope="col" nowrap="nowrap">Avg Discount</th>
+                        <th scope="col" nowrap="nowrap" data-sort="desc">Avg Score</th>
                     </tr>
                     </thead>
                     <tbody class="publishers-list">
@@ -40,7 +40,7 @@
                         <td><i class="fas fa-star"></i> {{ .Name }}</td>
                         <td>{{ comma .Apps }}</td>
                         <td>${{ .GetMeanPrice }}</td>
-                        <td>{{ .GetMeanDiscount }}%</td>
+                        <td>{{ .GetMeanScore }}%</td>
                     </tr>
                     {{ end }}
                     </tbody>

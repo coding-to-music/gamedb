@@ -29,7 +29,9 @@
                     <thead class="thead-light">
                     <tr>
                         <th scope="col">Genre</th>
-                        <th scope="col" data-sort="desc">Games</th>
+                        <th scope="col">Games</th>
+                        <th scope="col" nowrap="nowrap">Avg Price</th>
+                        <th scope="col" nowrap="nowrap" data-sort="desc">Avg Score</th>
                     </tr>
                     </thead>
                     <tbody class="tags-list">
@@ -37,6 +39,8 @@
                     <tr data-link="{{.GetPath}}">
                         <td><i class="fas fa-film"></i> {{ .Name }}</td>
                         <td>{{ comma .Apps }}</td>
+                        <td>${{ .GetMeanPrice }}</td>
+                        <td>{{ .GetMeanScore }}%</td>
                     </tr>
                     {{ end }}
                     </tbody>
