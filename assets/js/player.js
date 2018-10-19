@@ -17,6 +17,10 @@ if ($('#player-page').length > 0) {
                 } else {
                     $link.addClass('fade-red');
                 }
+
+                if (data.error) {
+                    console.log(data.error);
+                }
             },
             dataType: 'json',
             cache: false

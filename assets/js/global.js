@@ -74,8 +74,6 @@ if (games != null) {
 // Browser notification
 function browserNotification(message) {
 
-    console.log(message);
-
     Push.create("Game DB", {
         body: message,
         icon: '/assets/img/sa-bg-32x32.png',

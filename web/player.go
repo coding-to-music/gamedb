@@ -409,7 +409,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	idx, err := strconv.ParseInt(playerID, 10, 64)
 	if err != nil || !db.IsValidPlayerID(idx) {
 
-		response = PlayersUpdateResponse{Message: "Invalid Player ID", Success: false}
+		response = PlayersUpdateResponse{Message: "Invalid Player ID", Success: false, Error: err.Error()}
 		logging.Error(err)
 
 	} else {
@@ -417,7 +417,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		player, err := db.GetPlayer(idx)
 		if err != nil && err != db.ErrNoSuchEntity {
 
-			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false}
+			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
 			logging.Error(err)
 
 		} else if err == nil && !player.ShouldUpdateManual() {
@@ -428,7 +428,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			// All good
 			if err != nil && err == db.ErrNoSuchEntity {
-				response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true}
+				response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true, Error: err.Error()}
 			} else {
 				response = PlayersUpdateResponse{Message: "Updating player", Success: true}
 			}
@@ -439,7 +439,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			err = queue.Produce(queue.QueueProfiles, payload.ToBytes())
 			if err != nil {
 
-				response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false}
+				response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
 				logging.Error(err)
 
 			}
@@ -454,6 +454,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type PlayersUpdateResponse struct {
-	Message string `json:"message"`
-	Success bool   `json:"success"`
+	Message string `json:"message"` // Browser notification
+	Error   string `json:"error"`   // Console log
+	Success bool   `json:"success"` // Red or green
 }
