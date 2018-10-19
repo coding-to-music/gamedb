@@ -103,7 +103,6 @@ func DeletePublishers(ids []int) (err error) {
 	}
 
 	db, err := GetMySQLClient()
-	db.LogMode(true)
 	if err != nil {
 		return err
 	}

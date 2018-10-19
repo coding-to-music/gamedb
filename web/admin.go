@@ -532,14 +532,10 @@ func adminTags() {
 		steamTagMap[v.TagID] = v.Name
 	}
 
-	// Get apps from mysql
-	filter := url.Values{}
-	filter.Set("tags_depth", "2")
-
-	apps, err := db.SearchApps(filter, 0, 1, "", []string{"name", "price_final", "tags"})
+	apps, err := db.GetAppsWithTags()
 	logging.Error(err)
 
-	counts := make(map[int]*adminTag)
+	currentTags := make(map[int]*adminTag)
 	for _, app := range apps {
 
 		tags, err := app.GetTagIDs()
@@ -548,18 +544,18 @@ func adminTags() {
 			continue
 		}
 
-		for _, key := range tags {
+		for _, tagID := range tags {
 
-			delete(tagsToDelete, key)
+			delete(tagsToDelete, tagID)
 
-			if _, ok := counts[key]; ok {
-				counts[key].count++
-				counts[key].totalPrice += app.PriceFinal
-				counts[key].totalScore += app.ReviewsScore
-				counts[key].name = steamTagMap[key]
+			if _, ok := currentTags[tagID]; ok {
+				//currentTags[tagID].name = steamTagMap[tagID]
+				currentTags[tagID].count++
+				currentTags[tagID].totalPrice += app.PriceFinal
+				currentTags[tagID].totalScore += app.ReviewsScore
 			} else {
-				counts[key] = &adminTag{
-					name:       steamTagMap[key],
+				currentTags[tagID] = &adminTag{
+					name:       steamTagMap[tagID],
 					count:      1,
 					totalPrice: app.PriceFinal,
 					totalScore: app.ReviewsScore,
@@ -568,24 +564,28 @@ func adminTags() {
 		}
 	}
 
+	var limit int
 	var wg sync.WaitGroup
 
 	// Delete old tags
-	for _, v := range tagsToDelete {
+	limit++
+	wg.Add(1)
+	go func() {
 
-		wg.Add(1)
-		go func() {
+		var tagsToDeleteSlice []int
+		for _, v := range tagsToDelete {
+			tagsToDeleteSlice = append(tagsToDeleteSlice, v)
+		}
 
-			err := db.DeleteTag(v)
-			logging.Error(err)
+		err := db.DeleteTags(tagsToDeleteSlice)
+		logging.Error(err)
 
-			wg.Done()
-		}()
-	}
+		limit--
+		wg.Done()
+	}()
 
 	// Update current tags
-	var limit int
-	for k, v := range counts {
+	for k, v := range currentTags {
 
 		if limit >= 5 {
 			wg.Wait()

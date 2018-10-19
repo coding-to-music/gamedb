@@ -758,6 +758,24 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) { // todo,
 	return apps, nil
 }
 
+func GetAppsWithTags() (apps []App, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return apps, err
+	}
+
+	db = db.Where("JSON_DEPTH(tags) = 2")
+	db = db.Select([]string{"name", "tags", "price_final", "reviews_score"})
+
+	db = db.Find(&apps)
+	if db.Error != nil {
+		return apps, db.Error
+	}
+
+	return apps, err
+}
+
 func SearchApps(query url.Values, limit int, page int, sort string, columns []string) (apps []App, err error) {
 
 	db, err := GetMySQLClient()

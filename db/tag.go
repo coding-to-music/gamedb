@@ -146,3 +146,19 @@ func DeleteTag(id int) (err error) {
 
 	return nil
 }
+
+func DeleteTags(ids []int) (err error) {
+
+	if len(ids) == 0 {
+		return nil
+	}
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	db.Where("id IN (?)", ids).Delete(Tag{})
+
+	return db.Error
+}
