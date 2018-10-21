@@ -10,6 +10,7 @@ import (
 
 const (
 	LogConsumers = "gamedb.consumers"
+	LogSteam     = "gamedb.steam"
 	LogGameDB    = "gamedb"
 )
 

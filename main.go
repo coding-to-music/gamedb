@@ -58,7 +58,7 @@ func main() {
 	// Log steam calls
 	go func() {
 		for v := range helpers.GetSteamLogsChan() {
-			logging.InfoG(v)
+			logging.InfoG(v, logging.LogSteam)
 		}
 	}()
 
