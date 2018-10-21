@@ -1,32 +1,35 @@
 package logging
 
 import (
-	"context"
 	"runtime/debug"
 
 	"cloud.google.com/go/logging"
 	"github.com/spf13/viper"
 )
 
-const (
-	LogConsumers = "gamedb.consumers"
-	LogSteam     = "gamedb.steam"
-	LogGameDB    = "gamedb"
-)
+func ErrorG(err error, log ...string) {
 
-var (
-	ctx    = context.Background()
-	client *logging.Client
-)
+	if len(log) > 1 {
+		ErrorL(err)
+	}
 
-// Called from main
-func Init() {
-	var err error
-	client, err = logging.NewClient(ctx, viper.GetString("GOOGLE_PROJECT"))
-	Error(err)
+	if err != nil {
+		getGoogleLog(log...).Log(logging.Entry{Severity: logging.Error, Payload: err.Error() + "\n\r" + string(debug.Stack())})
+	}
 }
 
-func getLog(name ...string) (*logging.Logger) {
+func InfoG(message string, log ...string) {
+
+	if len(log) > 1 {
+		InfoL(message)
+	}
+
+	if message != "" {
+		getGoogleLog(log...).Log(logging.Entry{Severity: logging.Info, Payload: message})
+	}
+}
+
+func getGoogleLog(name ...string) (*logging.Logger) {
 
 	env := viper.GetString("ENV")
 
@@ -35,16 +38,4 @@ func getLog(name ...string) (*logging.Logger) {
 	} else {
 		return client.Logger(LogGameDB + "-" + env)
 	}
-}
-
-func ErrorG(err error, log ...string) {
-	getLog(log...).Log(logging.Entry{Severity: logging.Error, Payload: err.Error() + "\n\r" + string(debug.Stack())})
-}
-
-func InfoG(payload string, log ...string) {
-	getLog(log...).Log(logging.Entry{Severity: logging.Info, Payload: payload})
-}
-
-func CriticalG(err error, log ...string) {
-	getLog(log...).LogSync(ctx, logging.Entry{Severity: logging.Critical, Payload: err.Error() + "\n\r" + string(debug.Stack())})
 }

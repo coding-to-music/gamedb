@@ -138,7 +138,7 @@ func (s rabbitMessageBase) produce(data []byte) (err error) {
 
 func (s rabbitMessageBase) consume() {
 
-	logging.LocalInfo("Consuming from: " + s.Message.getQueueName())
+	logging.InfoL("Consuming from: " + s.Message.getQueueName())
 
 	var breakFor = false
 	var err error
