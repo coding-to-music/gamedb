@@ -13,25 +13,32 @@ import (
 const namespace = "game-db-"
 
 var client *memcache.Client
+
 var ErrCacheMiss = memcache.ErrCacheMiss
 
+var day int32 = 86400
 var (
 	// Counts
-	AppsCount         = memcache.Item{Key: "apps-count", Expiration: 60 * 60 * 24}
-	FreeAppsCount     = memcache.Item{Key: "free-apps-count", Expiration: 60 * 60 * 24}
-	PackagesCount     = memcache.Item{Key: "packages-count", Expiration: 60 * 60 * 24}
-	RanksCount        = memcache.Item{Key: "ranks-count", Expiration: 60 * 60 * 24}
-	CountPlayers      = memcache.Item{Key: "players-count", Expiration: 60 * 60 * 24 * 7}
+	AppsCount         = memcache.Item{Key: "apps-count", Expiration: day}
+	FreeAppsCount     = memcache.Item{Key: "free-apps-count", Expiration: day}
+	PackagesCount     = memcache.Item{Key: "packages-count", Expiration: day}
+	RanksCount        = memcache.Item{Key: "ranks-count", Expiration: day}
+	CountPlayers      = memcache.Item{Key: "players-count", Expiration: day * 7}
 	PlayerEventsCount = func(playerID int64) memcache.Item {
-		return memcache.Item{Key: "players-events-count-" + strconv.FormatInt(playerID, 10), Expiration: 60 * 60 * 24}
+		return memcache.Item{Key: "players-events-count-" + strconv.FormatInt(playerID, 10), Expiration: day}
 	}
 
 	// Dropdowns
-	TagKeyNames       = memcache.Item{Key: "tag-key-names", Expiration: 60 * 60 * 24 * 1}
-	GenreKeyNames     = memcache.Item{Key: "genre-key-names", Expiration: 60 * 60 * 24 * 1}
-	PublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: 60 * 60 * 24 * 1}
-	DeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 60 * 60 * 24 * 1}
-	AppTypes          = memcache.Item{Key: "app-types", Expiration: 60 * 60 * 24 * 1}
+	TagKeyNames       = memcache.Item{Key: "tag-key-names", Expiration: day * 7}
+	GenreKeyNames     = memcache.Item{Key: "genre-key-names", Expiration: day * 7}
+	PublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: day * 7}
+	DeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: day * 7}
+	AppTypes          = memcache.Item{Key: "app-types", Expiration: day * 7}
+
+	// Rows
+	ChangeRow = func(changeID int64) memcache.Item {
+		return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: day * 30}
+	}
 )
 
 func getClient() *memcache.Client {

@@ -1,11 +1,13 @@
 package db
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 
 	"cloud.google.com/go/datastore"
 	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/steam-authority/steam-authority/memcache"
 )
 
 type Change struct {
@@ -68,31 +70,37 @@ func (change Change) OutputForJSON() (output []interface{}) {
 
 func GetChange(id string) (change Change, err error) {
 
+	s, err := memcache.GetSetString(memcache.TagKeyNames, func() (s string, err error) {
+
+		change, err := GetChangeNoCache(id)
+		if err != nil {
+			return s, err
+		}
+
+		bytes, err := json.Marshal(change)
+		return string(bytes), err
+	})
+
+	if err != nil {
+		return change, err
+	}
+
+	err = json.Unmarshal([]byte(s), &change)
+	return change, err
+}
+
+func GetChangeNoCache(id string) (change Change, err error) {
+
 	client, context, err := GetDSClient()
 	if err != nil {
 		return change, err
 	}
 
-	key := datastore.NameKey(KindChange, id, nil)
+	err = client.Get(context, datastore.NameKey(KindChange, id, nil), &change)
 
-	change = Change{}
-	err = client.Get(context, key, &change)
-	if err != nil {
-		if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+	err = checkForMissingChangeFields(err)
 
-			old := []string{
-				"updated_at",
-			}
-
-			if !helpers.SliceHasString(old, err2.FieldName) {
-				return change, err2
-			}
-		} else {
-			return change, err
-		}
-	}
-
-	return change, nil
+	return change, err
 }
 
 func checkForMissingChangeFields(err error) error {
