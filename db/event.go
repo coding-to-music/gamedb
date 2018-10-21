@@ -108,5 +108,9 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 	login.IP = r.RemoteAddr
 
 	_, err = SaveKind(login.GetKey(), login)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return memcache.Delete(memcache.PlayerEventsCount(playerID))
 }

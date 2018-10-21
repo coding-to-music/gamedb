@@ -111,6 +111,12 @@ func GetSetString(item memcache.Item, f func() (j string, err error)) (s string,
 	return s, err
 }
 
+func Delete(item memcache.Item) (err error) {
+
+	client := getClient()
+	return client.Delete(item.Key)
+}
+
 func Inc(key string) (err error) {
 
 	client := getClient()
