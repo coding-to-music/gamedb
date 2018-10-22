@@ -12,6 +12,9 @@ if ($('#packages-page').length > 0) {
                 "targets": 0,
                 "render": function (data, type, row) {
                     return row[1];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 }
             },
             // Billing Type
@@ -19,6 +22,9 @@ if ($('#packages-page').length > 0) {
                 "targets": 1,
                 "render": function (data, type, row) {
                     return row[2];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 "orderable": false,
                 "searchable": false
@@ -29,6 +35,9 @@ if ($('#packages-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[3];
                 },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
                 "orderable": false,
                 "searchable": false
             },
@@ -37,6 +46,9 @@ if ($('#packages-page').length > 0) {
                 "targets": 3,
                 "render": function (data, type, row) {
                     return row[4];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 "orderable": false,
                 "searchable": false

@@ -2,26 +2,30 @@
 $("table.table-datatable").each(function (i) {
 
     var order = [[0, 'asc']];
-    var pageLength = 0;
-    var paging = false;
-    var dom = 't';
+    var pageLength = 100;
 
     // Limit
     var limit = $(this).attr('data-limit');
     if (limit > 0) {
-        paging = true;
         pageLength = Number(limit);
-        dom = '<"dt-pagination"p>t<"dt-pagination"p>';
     }
 
-    // Find default column to sort by
-    var $column = $(this).find('thead tr th[data-sort]');
-    if ($column.length > 0) {
+    // Sort
+    var tableSort = $(this).attr('data-sort');
+    if (tableSort) {
 
-        var index = $column.index();
-        var sort = $column.attr('data-sort');
+        order = eval(tableSort);
 
-        order = [[index, sort]];
+    } else {
+
+        var $column = $(this).find('thead tr th[data-sort]');
+        if ($column.length > 0) {
+
+            var index = $column.index();
+            var sort = $column.attr('data-sort');
+
+            order = [[index, sort]];
+        }
     }
 
     // Find
@@ -34,7 +38,7 @@ $("table.table-datatable").each(function (i) {
     $(this).DataTable({
         "pageLength": pageLength,
         "order": order,
-        "paging": paging,
+        "paging": true,
         "ordering": true,
         "info": false,
         "searching": true,
@@ -44,7 +48,7 @@ $("table.table-datatable").each(function (i) {
         "autoWidth": false,
         "lengthChange": false,
         "stateSave": false,
-        "dom": dom,
+        "dom": '<"dt-pagination"p>t<"dt-pagination"p>',
         "columnDefs": [
             {
                 "targets": disabled,
@@ -164,6 +168,8 @@ function addDataTablesRow(columnDefs, data, limit, $table) {
             if ('createdCell' in columnDefs[i]) {
                 columnDefs[i].createdCell($td[0], null, data, null, null); // todo, this [0] may not be needed
             }
+
+            $td.find('[data-livestamp]').html('a few seconds ago');
 
             $row.append($td);
         }
