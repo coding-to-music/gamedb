@@ -72,7 +72,28 @@ func GetChange(id string) (change Change, err error) {
 
 	s, err := memcache.GetSetString(memcache.TagKeyNames, func() (s string, err error) {
 
-		change, err := GetChangeNoCache(id)
+		client, context, err := GetDSClient()
+		if err != nil {
+			return s, err
+		}
+
+		var change Change
+		err = client.Get(context, datastore.NameKey(KindChange, id, nil), &change)
+		if err != nil {
+			if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+
+				removedColumns := []string{
+					"updated_at",
+					"apps",
+					"packages",
+				}
+
+				if helpers.SliceHasString(removedColumns, err2.FieldName) {
+					err = nil
+				}
+			}
+		}
+
 		if err != nil {
 			return s, err
 		}
@@ -87,40 +108,4 @@ func GetChange(id string) (change Change, err error) {
 
 	err = json.Unmarshal([]byte(s), &change)
 	return change, err
-}
-
-func GetChangeNoCache(id string) (change Change, err error) {
-
-	client, context, err := GetDSClient()
-	if err != nil {
-		return change, err
-	}
-
-	err = client.Get(context, datastore.NameKey(KindChange, id, nil), &change)
-
-	err = checkForMissingChangeFields(err)
-
-	return change, err
-}
-
-func checkForMissingChangeFields(err error) error {
-
-	if err == nil {
-		return nil
-	}
-
-	if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
-
-		removedColumns := []string{
-			"updated_at",
-			"apps",
-			"packages",
-		}
-
-		if helpers.SliceHasString(removedColumns, err2.FieldName) {
-			return nil
-		}
-	}
-
-	return err
 }

@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
@@ -271,7 +270,7 @@ type adminGenreCount struct {
 
 func adminPublishers() {
 
-	fmt.Println("Publishers Updating")
+	logging.InfoL("Publishers Updating")
 
 	// Get current publishers, to delete old ones
 	currentPublishers, err := db.GetAllPublishers()

@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -57,7 +56,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, false, err
 	}
 
-	fmt.Println("Processing change: " + strconv.Itoa(message.PICSChanges.CurrentChangeNumber))
+	logging.InfoL("Processing change: " + strconv.Itoa(message.PICSChanges.CurrentChangeNumber))
 
 	// Group products by change id
 	changes := map[int]*db.Change{}
