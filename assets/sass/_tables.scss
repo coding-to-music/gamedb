@@ -2,6 +2,7 @@ table.table {
     thead {
         th {
             color: $dark;
+            white-space: nowrap;
             a {
                 color: $dark;
                 text-decoration: underline;
@@ -37,6 +38,7 @@ table.table {
         img {
             margin-top: 9px;
             height: 32px;
+            position: absolute;
         }
         img.square {
             width: 32px;
@@ -46,20 +48,10 @@ table.table {
         }
         span {
             display: inline-block;
-            margin: .75rem 0 .75rem .75rem;
+            margin: .75rem 0 .75rem 42px;
             vertical-align: top;
             font-size: 1rem;
         }
-    }
-}
-
-// Remove arrows in empty column headers
-table.table-datatable, table.table-datatable2 {
-    th:empty::before {
-        content: '';
-    }
-    th:empty::after {
-        content: '';
     }
 }
 
@@ -91,11 +83,11 @@ table.dataTable thead .sorting_desc_disabled:after {
 }
 
 .dt-pagination:nth-of-type(1) {
-    @extend .mb-3;
+    @extend .mb-3; // Margin Bottom
 }
 
 .dt-pagination:nth-of-type(2) {
-    @extend .mt-3;
+    @extend .mt-3; // Margin Top
 }
 
 //div.dataTables_wrapper div.dataTables_processing {
