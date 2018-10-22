@@ -82,7 +82,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 	var errs []error
 	var wg sync.WaitGroup
 
-	chunks := chunkKinds(kinds, 0)
+	chunks := chunkKinds(kinds)
 	for _, chunk := range chunks {
 
 		wg.Add(1)
@@ -127,14 +127,10 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 	return nil
 }
 
-func chunkKinds(kinds []Kind, chunkSize int) (chunked [][]Kind) {
+func chunkKinds(kinds []Kind) (chunked [][]Kind) {
 
-	if chunkSize == 0 {
-		chunkSize = 500
-	}
-
-	for i := 0; i < len(kinds); i += chunkSize {
-		end := i + chunkSize
+	for i := 0; i < len(kinds); i += 500 {
+		end := i + 500
 
 		if end > len(kinds) {
 			end = len(kinds)
@@ -160,7 +156,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 	var errs []error
 	var wg sync.WaitGroup
 
-	chunks := chunkKeys(keys, 500)
+	chunks := chunkKeys(keys)
 	for _, v := range chunks {
 
 		wg.Add(1)
@@ -190,14 +186,10 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 	return nil
 }
 
-func chunkKeys(keys []*datastore.Key, chunkSize int) (chunked [][]*datastore.Key) {
+func chunkKeys(keys []*datastore.Key) (chunked [][]*datastore.Key) {
 
-	if chunkSize == 0 {
-		chunkSize = 500
-	}
-
-	for i := 0; i < len(keys); i += chunkSize {
-		end := i + chunkSize
+	for i := 0; i < len(keys); i += 500 {
+		end := i + 500
 
 		if end > len(keys) {
 			end = len(keys)

@@ -895,7 +895,7 @@ func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 		keys = append(keys, datastore.NameKey(KindPlayer, strconv.FormatInt(v, 10), nil))
 	}
 
-	chunks := chunkKeys(keys, 0)
+	chunks := chunkKeys(keys)
 	for _, chunk := range chunks {
 
 		playersChunk := make([]Player, len(chunk))
