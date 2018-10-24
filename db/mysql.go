@@ -15,22 +15,22 @@ import (
 )
 
 var (
-	gormConnection *gorm.DB
-	debug          = false
-
 	ErrNotFound = errors.New("not found")
+
+	gormConnection *gorm.DB
 )
 
-func SetDebug(val bool) {
-	debug = val
-}
+func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 
-func GetMySQLClient() (conn *gorm.DB, err error) {
+	if len(debug) > 0 {
+		db, _ := gorm.Open("mysql", viper.GetString("MYSQL_DSN"))
+		db.LogMode(true)
+		return db, nil
+	}
 
 	if gormConnection == nil {
 
 		db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN"))
-		db.LogMode(debug)
 		if err != nil {
 			return db, nil
 		}
