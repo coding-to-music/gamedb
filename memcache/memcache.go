@@ -121,7 +121,11 @@ func GetSetString(item memcache.Item, f func() (j string, err error)) (s string,
 func Delete(item memcache.Item) (err error) {
 
 	client := getClient()
-	return client.Delete(item.Key)
+	err = client.Delete(item.Key)
+	if err != nil && err != memcache.ErrCacheMiss {
+		return err
+	}
+	return nil
 }
 
 func Inc(key string) (err error) {
