@@ -45,7 +45,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	var apps []db.App
+	var apps = map[int]db.App{}
 	wg.Add(1)
 	go func() {
 
@@ -53,8 +53,16 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 		appIDs, err := pack.GetAppIDs()
 		logging.Error(err)
 
-		apps, err = db.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
+		for _, v := range appIDs {
+			apps[v] = db.App{ID: v}
+		}
+
+		appRows, err := db.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
 		logging.Error(err)
+
+		for _, v := range appRows {
+			apps[v.ID] = v
+		}
 
 		wg.Done()
 	}()
@@ -118,7 +126,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 type packageTemplate struct {
 	GlobalTemplate
 	Package     db.Package
-	Apps        []db.App
+	Apps        map[int]db.App
 	Banners     map[string][]string
 	Prices      string
 	PricesCount int
