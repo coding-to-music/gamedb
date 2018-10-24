@@ -7,13 +7,13 @@ import (
 	"os"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/storage"
+	"github.com/gamedb/website/web"
 	"github.com/rollbar/rollbar-go"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logging"
-	"github.com/steam-authority/steam-authority/queue"
-	"github.com/steam-authority/steam-authority/storage"
-	"github.com/steam-authority/steam-authority/web"
 )
 
 // These are called so everything as access to configs (viper)

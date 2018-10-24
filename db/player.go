@@ -13,10 +13,10 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/memcache"
+	"github.com/gamedb/website/storage"
 	"github.com/gosimple/slug"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/memcache"
-	"github.com/steam-authority/steam-authority/storage"
 )
 
 const maxBytesToStore = 1024 * 10

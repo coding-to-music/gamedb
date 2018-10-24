@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gamedb/website/logging"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
-	"github.com/steam-authority/steam-authority/logging"
 )
 
 const (

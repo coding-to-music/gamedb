@@ -11,13 +11,13 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/memcache"
+	"github.com/gamedb/website/queue"
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logging"
-	"github.com/steam-authority/steam-authority/memcache"
-	"github.com/steam-authority/steam-authority/queue"
 )
 
 func AdminHandler(w http.ResponseWriter, r *http.Request) {

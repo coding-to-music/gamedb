@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/gamedb/website/helpers"
 	"github.com/gosimple/slug"
-	"github.com/steam-authority/steam-authority/helpers"
 )
 
 type AppPrice struct {

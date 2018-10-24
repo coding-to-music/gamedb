@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/logging"
 	"github.com/go-chi/chi"
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logging"
 )
 
 func PackageHandler(w http.ResponseWriter, r *http.Request) {

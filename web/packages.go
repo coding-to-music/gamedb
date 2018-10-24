@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logging"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/logging"
 )
 
 func PackagesHandler(w http.ResponseWriter, r *http.Request) {

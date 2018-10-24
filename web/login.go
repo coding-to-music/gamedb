@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/session"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logging"
-	"github.com/steam-authority/steam-authority/session"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 )

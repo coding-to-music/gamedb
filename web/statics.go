@@ -4,8 +4,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/gamedb/website/logging"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logging"
 )
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {

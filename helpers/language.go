@@ -1,8 +1,8 @@
 package helpers
 
 import (
+	"github.com/gamedb/website/logging"
 	"github.com/pariz/gountries"
-	"github.com/steam-authority/steam-authority/logging"
 )
 
 // https://partner.steamgames.com/doc/store/localization

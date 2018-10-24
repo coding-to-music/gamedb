@@ -12,10 +12,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/memcache"
 	"github.com/gosimple/slug"
+	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/memcache"
 )
 
 const (

@@ -10,11 +10,10 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 	"github.com/go-chi/chi"
-	"github.com/grokify/html-strip-tags-go"
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logging"
 )
 
 func AppHandler(w http.ResponseWriter, r *http.Request) {

@@ -18,16 +18,16 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logging"
-	"github.com/steam-authority/steam-authority/session"
-	"github.com/steam-authority/steam-authority/websockets"
 )
 
 // Called from main

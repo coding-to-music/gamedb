@@ -12,9 +12,9 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
+	"github.com/gamedb/website/logging"
 	"github.com/golang/snappy"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logging"
 )
 
 var (

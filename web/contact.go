@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/session"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logging"
-	"github.com/steam-authority/steam-authority/session"
 )
 
 func ContactHandler(w http.ResponseWriter, r *http.Request) {

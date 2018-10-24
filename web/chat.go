@@ -6,10 +6,10 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logging"
-	"github.com/steam-authority/steam-authority/websockets"
 )
 
 const (

@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/gamedb/website/logging"
 	"github.com/google/go-github/github"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logging"
 	"golang.org/x/oauth2"
 )
 

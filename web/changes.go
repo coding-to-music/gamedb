@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/datastore"
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logging"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/logging"
 )
 
 func ChangesHandler(w http.ResponseWriter, r *http.Request) {

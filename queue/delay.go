@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/gamedb/website/helpers"
 	"github.com/streadway/amqp"
 )
 

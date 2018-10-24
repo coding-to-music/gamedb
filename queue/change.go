@@ -4,10 +4,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logging"
-	"github.com/steam-authority/steam-authority/websockets"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/websockets"
+	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 )
 

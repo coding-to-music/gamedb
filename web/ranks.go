@@ -9,9 +9,9 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logging"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 )
 
 func PlayersHandler(w http.ResponseWriter, r *http.Request) {

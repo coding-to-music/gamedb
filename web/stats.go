@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/logging"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/logging"
 )
 
 func StatsHandler(w http.ResponseWriter, r *http.Request) {

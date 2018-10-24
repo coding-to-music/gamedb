@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logging"
 )
 
 const namespace = "game-db-"

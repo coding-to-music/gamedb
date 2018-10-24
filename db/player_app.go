@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/datastore"
-	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/gamedb/website/helpers"
 )
 
 type PlayerApp struct {

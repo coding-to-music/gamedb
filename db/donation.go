@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/steam-authority/steam-authority/helpers"
+	"github.com/gamedb/website/helpers"
 )
 
 type Donation struct {

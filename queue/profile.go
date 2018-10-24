@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/steam-authority/steam-authority/db"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logging"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 	"github.com/streadway/amqp"
 )
 

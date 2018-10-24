@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/memcache"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/memcache"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/steam-authority/steam-authority/logging"
+	"github.com/gamedb/website/logging"
 )
 
 var ErrUnMarshalNonPointer = errors.New("trying to unmarshal a non-pointer")

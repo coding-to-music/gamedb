@@ -8,10 +8,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/memcache"
 	"github.com/gosimple/slug"
-	"github.com/steam-authority/steam-authority/helpers"
-	"github.com/steam-authority/steam-authority/logging"
-	"github.com/steam-authority/steam-authority/memcache"
+	"github.com/jinzhu/gorm"
 )
 
 // todo, make column meta match table names

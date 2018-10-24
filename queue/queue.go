@@ -6,8 +6,8 @@ import (
 	"math"
 	"time"
 
+	"github.com/gamedb/website/logging"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/logging"
 	"github.com/streadway/amqp"
 )
 
