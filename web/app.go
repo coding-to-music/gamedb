@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/go-chi/chi"
+	"github.com/grokify/html-strip-tags-go"
 )
 
 func AppHandler(w http.ResponseWriter, r *http.Request) {
