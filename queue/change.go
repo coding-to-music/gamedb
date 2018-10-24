@@ -138,9 +138,11 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Save change to DS
-	err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
-	if err != nil {
-		return false, true, err
+	if viper.GetString("ENV") == logging.EnvProd {
+		err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
+		if err != nil {
+			return false, true, err
+		}
 	}
 
 	// Send websocket

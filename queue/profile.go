@@ -37,14 +37,18 @@ func (d RabbitMessageProfile) getQueueName() string {
 	return QueueProfilesData
 }
 
-func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
+func (d RabbitMessageProfile) getRetryData() RabbitMessageDelay {
+	return RabbitMessageDelay{}
+}
+
+func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	// Get message
 	message := new(RabbitMessageProfile)
 
-	err := helpers.Unmarshal(msg.Body, message)
+	err = helpers.Unmarshal(msg.Body, message)
 	if err != nil {
-		return false, false
+		return false, false, err
 	}
 
 	// Update player
@@ -52,7 +56,7 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 	if err != nil {
 		if err != db.ErrNoSuchEntity {
 			logging.Error(err)
-			return false, true
+			return false, true, err
 		}
 	}
 
@@ -61,14 +65,7 @@ func processPlayer(msg amqp.Delivery) (ack bool, requeue bool) {
 		for _, v := range errs {
 			logging.Error(v)
 		}
-
-		// API is probably down, todo
-		//for _, v := range errs {
-		//	if v.Error() == steam.ErrInvalidJson {
-		//		return false, true
-		//	}
-		//}
 	}
 
-	return true, false
+	return true, false, err
 }

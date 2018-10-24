@@ -13,29 +13,33 @@ func (d RabbitMessageApp) getQueueName() string {
 	return QueueAppsData
 }
 
-func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
+func (d RabbitMessageApp) getRetryData() RabbitMessageDelay {
+	return RabbitMessageDelay{}
+}
+
+func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	// Get message payload
 	message := new(RabbitMessageApp)
 
-	err := helpers.Unmarshal(msg.Body, message)
+	err = helpers.Unmarshal(msg.Body, message)
 	if err != nil {
-		return false, false
+		return false, false, err
 	}
 
-	return false, true
+	return false, true, err
 
 	//app := new(db.App)
 	//
 	//// Update app
-	//db, err := db.GetDB()
+	//gorm, err := db.GetMySQLClient()
 	//if err != nil {
-	//	logger.Error(err)
+	//	logging.Error(err)
 	//}
 	//
-	//db.Attrs(db.GetDefaultAppJSON()).FirstOrCreate(app, db.App{ID: message.AppID})
-	//if db.Error != nil {
-	//	logger.Error(db.Error)
+	//gorm.FirstOrCreate(app, db.App{ID: message.AppID})
+	//if gorm.Error != nil {
+	//	logging.Error(gorm.Error)
 	//}
 	//
 	//if message.PICSChangeID != 0 {
@@ -48,7 +52,7 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 	//if len(errs) > 0 {
 	//	// Nack on hard fails
 	//	for _, err = range errs {
-	//		if err2, ok := err.(db.UpdateError); ok {
+	//		if err2, ok := err.(gorm.UpdateError); ok {
 	//			if err2.IsHard() {
 	//				return false, false, err2
 	//			}
@@ -57,25 +61,25 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 	//	// Retry on all other errors
 	//	for _, err = range errs {
 	//		if err != steam.ErrNullResponse {
-	//			logger.Error(err)
+	//			logging.Error(err)
 	//		}
-	//		return false, true
+	//		return false, true, err
 	//	}
 	//}
 	////if v.Error() == steam.ErrInvalidJson || v == steam.ErrBadResponse || strings.HasSuffix(v.Error(), "connect: connection refused") {
 	////	return false, true
 	////}
 	//
-	//db.Save(app)
-	//if db.Error != nil {
-	//	logger.Error(db.Error)
+	//gorm.Save(app)
+	//if gorm.Error != nil {
+	//	logging.Error(gorm.Error)
 	//}
 	//
 	//// Save price change
-	//price := new(db.Price)
+	//price := new(db.AppPrice)
 	//price.CreatedAt = time.Now()
 	//price.AppID = app.ID
-	//price.PICSName = app.GetName()
+	//price.Name = app.GetName()
 	//price.PriceInitial = app.PriceInitial
 	//price.PriceFinal = app.PriceFinal
 	//price.Discount = app.PriceDiscount
@@ -89,7 +93,7 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 	//
 	//	prices, err := db.GetAppPrices(app.ID, 1)
 	//	if err != nil {
-	//		logger.Error(err)
+	//		logging.Error(err)
 	//	}
 	//
 	//	if len(prices) == 0 {
@@ -98,9 +102,9 @@ func (d *RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool) {
 	//
 	//	_, err = db.SaveKind(price.GetKey(), price)
 	//	if err != nil {
-	//		logger.Error(err)
+	//		logging.Error(err)
 	//	}
 	//}
 	//
-	//return true, false
+	//return true, false, err
 }

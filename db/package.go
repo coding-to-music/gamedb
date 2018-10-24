@@ -15,45 +15,60 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// todo, make column meta match table names
 type Package struct {
-	ID        int        `gorm:"not null;primary_key"` //
-	CreatedAt *time.Time `gorm:"not null"`             //
-	UpdatedAt *time.Time `gorm:"not null"`             //
-
-	PICSName        string `gorm:"not null"`                          //
-	PICSChangeID    int    `gorm:"not null"`                          //
-	PICSBillingType int8   `gorm:"not null;column:billing_type"`      //
-	PICSLicenseType int8   `gorm:"not null;column:license_type"`      //
-	PICSStatus      int8   `gorm:"not null;column:status"`            //
-	PICSExtended    string `gorm:"not null;default:'{}'"`             // JSON (TEXT)
-	PICSAppIDs      string `gorm:"not null;default:'[]';column:apps"` // JSON
-	PICSAppItems    string `gorm:"not null;default:'{}'"`             // JSON (TEXT)
-	PICSDepotIDs    string `gorm:"not null;default:'[]'"`             // JSON
-	PICSRaw         string `gorm:"not null;default:'{}'"`             // JSON (TEXT)
-
-	AppsCount       int    `gorm:"not null"`              //
-	ImagePage       string `gorm:"not null"`              //
-	ImageHeader     string `gorm:"not null"`              //
-	ImageLogo       string `gorm:"not null"`              //
-	PurchaseText    string `gorm:"not null"`              //
-	PriceInitial    int    `gorm:"not null"`              //
-	PriceFinal      int    `gorm:"not null"`              //
-	PriceDiscount   int    `gorm:"not null"`              //
-	PriceIndividual int    `gorm:"not null"`              //
-	Controller      string `gorm:"not null;default:'{}'"` // JSON (TEXT)
-	ComingSoon      bool   `gorm:"not null"`              //
-	ReleaseDate     string `gorm:"not null"`              //
-	Platforms       string `gorm:"not null;default:'[]'"` // JSON
+	ID              int        `gorm:"not null;column:id;primary_key"`   //
+	CreatedAt       *time.Time `gorm:"not null;column:created_at"`       //
+	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`       //
+	PICSName        string     `gorm:"not null;column:name"`             //
+	PICSChangeID    int        `gorm:"not null;column:change_id"`        //
+	PICSBillingType int8       `gorm:"not null;column:billing_type"`     //
+	PICSLicenseType int8       `gorm:"not null;column:license_type"`     //
+	PICSStatus      int8       `gorm:"not null;column:status"`           //
+	PICSExtended    string     `gorm:"not null;column:extended"`         // JSON (TEXT)
+	PICSAppIDs      string     `gorm:"not null;column:apps"`             // JSON
+	PICSAppItems    string     `gorm:"not null;column:app_items"`        // JSON (TEXT)
+	PICSDepotIDs    string     `gorm:"not null;column:depot_ids"`        // JSON
+	PICSRaw         string     `gorm:"not null;column:raw_pics"`         // JSON (TEXT)
+	AppsCount       int        `gorm:"not null;column:apps_count"`       //
+	ImagePage       string     `gorm:"not null;column:image_page"`       //
+	ImageHeader     string     `gorm:"not null;column:image_header"`     //
+	ImageLogo       string     `gorm:"not null;column:image_logo"`       //
+	PurchaseText    string     `gorm:"not null;column:purchase_text"`    //
+	PriceInitial    int        `gorm:"not null;column:price_initial"`    //
+	PriceFinal      int        `gorm:"not null;column:price_final"`      //
+	PriceDiscount   int        `gorm:"not null;column:price_discount"`   //
+	PriceIndividual int        `gorm:"not null;column:price_individual"` //
+	Controller      string     `gorm:"not null;column:controller"`       // JSON (TEXT)
+	ComingSoon      bool       `gorm:"not null;column:coming_soon"`      //
+	ReleaseDate     string     `gorm:"not null;column:release_date"`     //
+	Platforms       string     `gorm:"not null;column:platforms"`        // JSON
 }
 
-func GetDefaultPackageJSON() Package {
-	return Package{
-		//PICSAppIDs:   "[]",
-		//PICSExtended: "{}",
-		//Controller:   "{}",
-		//Platforms:    "[]",
+func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
+
+	if pack.PICSAppIDs == "" {
+		pack.PICSAppIDs = "[]"
 	}
+	if pack.PICSExtended == "" {
+		pack.PICSExtended = "{}"
+	}
+	if pack.PICSAppItems == "" {
+		pack.PICSAppItems = "{}"
+	}
+	if pack.Controller == "" {
+		pack.Controller = "{}"
+	}
+	if pack.PICSRaw == "" {
+		pack.PICSRaw = "{}"
+	}
+	if pack.Platforms == "" {
+		pack.Platforms = "[]"
+	}
+	if pack.PICSDepotIDs == "" {
+		pack.PICSDepotIDs = "[]"
+	}
+
+	return nil
 }
 
 func (pack Package) GetPath() string {
@@ -208,7 +223,8 @@ func (pack *Package) SetAppIDs(apps []int) (err error) {
 
 	bytes, err := json.Marshal(apps)
 	if err != nil {
-
+		return err
+	} else {
 		pack.PICSAppIDs = string(bytes)
 		pack.AppsCount = len(apps)
 	}
@@ -225,7 +241,7 @@ func (pack *Package) SetDepotIDs(apps []int) (err error) {
 
 	pack.PICSDepotIDs = string(bytes)
 
-	return nil
+	return err
 }
 
 func (pack *Package) SetAppItems(items map[string]string) (err error) {
@@ -487,23 +503,6 @@ func (pack *Package) Update() (errs []error) {
 
 		wg.Done()
 	}(pack)
-
-	// Default JSON values
-	if pack.PICSAppIDs == "" || pack.PICSAppIDs == "null" {
-		pack.PICSAppIDs = "[]"
-	}
-
-	if pack.PICSExtended == "" || pack.PICSExtended == "null" {
-		pack.PICSExtended = "{}"
-	}
-
-	if pack.Controller == "" || pack.Controller == "null" {
-		pack.Controller = "{}"
-	}
-
-	if pack.Platforms == "" || pack.Platforms == "null" {
-		pack.Platforms = "[]"
-	}
 
 	return errs
 }

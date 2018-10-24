@@ -35,20 +35,20 @@ type App struct {
 	CreatedAt              *time.Time `gorm:"not null;column:created_at"`
 	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`
 	ScannedAt              *time.Time `gorm:"not null;column:scanned_at"`
-	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text;default:'[]'"`
-	Achievements           string     `gorm:"not null;column:achievements;type:text;default:'{}'"`
+	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text"`
+	Achievements           string     `gorm:"not null;column:achievements;type:text"`
 	Background             string     `gorm:"not null;column:background"`
-	Categories             string     `gorm:"not null;column:categories;type:json;default:'[]'"`
+	Categories             string     `gorm:"not null;column:categories;type:json"`
 	ChangeNumber           int        `gorm:"not null;column:change_number"`
 	ClientIcon             string     `gorm:"not null;column:client_icon"`
 	ComingSoon             bool       `gorm:"not null;column:coming_soon"`
-	Developers             string     `gorm:"not null;column:developers;type:json;default:'[]'"`
-	DLC                    string     `gorm:"not null;column:dlc;type:json;default:'[]'"`
+	Developers             string     `gorm:"not null;column:developers;type:json"`
+	DLC                    string     `gorm:"not null;column:dlc;type:json"`
 	DLCCount               int        `gorm:"not null;column:dlc_count"`
-	Extended               string     `gorm:"not null;column:extended;default:'{}'"`
+	Extended               string     `gorm:"not null;column:extended"`
 	GameID                 int        `gorm:"not null;column:game_id"`
 	GameName               string     `gorm:"not null;column:game_name"`
-	Genres                 string     `gorm:"not null;column:genres;type:json;default:'[]'"`
+	Genres                 string     `gorm:"not null;column:genres;type:json"`
 	HeaderImage            string     `gorm:"not null;column:image_header"`
 	Homepage               string     `gorm:"not null;column:homepage"`
 	Icon                   string     `gorm:"not null;column:icon"`
@@ -56,20 +56,20 @@ type App struct {
 	Logo                   string     `gorm:"not null;column:logo"`
 	MetacriticScore        int8       `gorm:"not null;column:metacritic_score"`
 	MetacriticURL          string     `gorm:"not null;column:metacritic_url"`
-	Movies                 string     `gorm:"not null;column:movies;type:text;default:'[]'"`
+	Movies                 string     `gorm:"not null;column:movies;type:text"`
 	Name                   string     `gorm:"not null;column:name"`
-	Packages               string     `gorm:"not null;column:packages;type:json;default:'[]'"`
-	Platforms              string     `gorm:"not null;column:platforms;type:json;default:'[]'"`
+	Packages               string     `gorm:"not null;column:packages;type:json"`
+	Platforms              string     `gorm:"not null;column:platforms;type:json"`
 	PriceDiscount          int        `gorm:"not null;column:price_discount"`
 	PriceFinal             int        `gorm:"not null;column:price_final"`
 	PriceInitial           int        `gorm:"not null;column:price_initial"`
-	Publishers             string     `gorm:"not null;column:publishers;type:json;default:'[]'"`
+	Publishers             string     `gorm:"not null;column:publishers;type:json"`
 	ReleaseDate            string     `gorm:"not null;column:release_date"`
 	ReleaseState           string     `gorm:"not null;column:release_state"`
-	Schema                 string     `gorm:"not null;column:schema;type:text;default:'{}'"`
-	Screenshots            string     `gorm:"not null;column:screenshots;type:text;default:'[]'"`
+	Schema                 string     `gorm:"not null;column:schema;type:text"`
+	Screenshots            string     `gorm:"not null;column:screenshots;type:text"`
 	ShortDescription       string     `gorm:"not null;column:description_short"`
-	StoreTags              string     `gorm:"not null;column:tags;type:json;default:'[]'"`
+	StoreTags              string     `gorm:"not null;column:tags;type:json"`
 	Type                   string     `gorm:"not null;column:type"`
 	Reviews                string     `gorm:"not null;column:reviews"`
 	ReviewsScore           float64    `gorm:"not null;column:reviews_score"`
@@ -77,24 +77,53 @@ type App struct {
 	ReviewsNegative        int        `gorm:"not null;column:reviews_negative"`
 }
 
-//func GetDefaultAppJSON() App {
-//	return App{
-//		AchievementPercentages: "[]",
-//		Achievements:           "{}",
-//		Categories:             "[]",
-//		Developers:             "[]",
-//		DLC:                    "[]",
-//		Extended:               "{}",
-//		Genres:                 "[]",
-//		Movies:                 "[]",
-//		Packages:               "[]",
-//		Platforms:              "[]",
-//		Publishers:             "[]",
-//		Schema:                 "{}",
-//		Screenshots:            "[]",
-//		StoreTags:              "[]",
-//	}
-//}
+func (app App) BeforeCreate(scope *gorm.Scope) error {
+
+	if app.AchievementPercentages == "" {
+		app.AchievementPercentages = "[]"
+	}
+	if app.Achievements == "" {
+		app.Achievements = "{}"
+	}
+	if app.Categories == "" {
+		app.Categories = "[]"
+	}
+	if app.Developers == "" {
+		app.Developers = "[]"
+	}
+	if app.DLC == "" {
+		app.DLC = "[]"
+	}
+	if app.Extended == "" {
+		app.Extended = "{}"
+	}
+	if app.Genres == "" {
+		app.Genres = "[]"
+	}
+	if app.Movies == "" {
+		app.Movies = "[]"
+	}
+	if app.Packages == "" {
+		app.Packages = "[]"
+	}
+	if app.Platforms == "" {
+		app.Platforms = "[]"
+	}
+	if app.Publishers == "" {
+		app.Publishers = "[]"
+	}
+	if app.Schema == "" {
+		app.Schema = "{}"
+	}
+	if app.Screenshots == "" {
+		app.Screenshots = "[]"
+	}
+	if app.StoreTags == "" {
+		app.StoreTags = "[]"
+	}
+
+	return nil
+}
 
 func (app App) GetPath() string {
 	return getAppPath(app.ID, app.Name)
@@ -283,6 +312,10 @@ func (app App) GetPlatforms() (platforms []string, err error) {
 }
 
 func (app App) GetPlatformImages() (ret template.HTML, err error) {
+
+	if app.Platforms == "" {
+		//return template.HTML("Unknown"), nil
+	}
 
 	platforms, err := app.GetPlatforms()
 	if err != nil {
