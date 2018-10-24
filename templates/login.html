@@ -11,12 +11,12 @@
     <div class="card">
         <div class="card-header">
 
-            <ul class="nav nav-tabs card-header-tabs">
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active">Login with Username</a>
+                    <a class="nav-link active" data-toggle="tab" href="#gamedb" role="tab"><i class="fas fa-key"></i> Login with Username</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/login/openid"><i class="fab fa-steam-square"></i> Login with Steam</a>
+                    <a class="nav-link" data-toggle="tab" href="#steam" role="tab"><i class="fab fa-steam-square"></i> Login with Steam</a>
                 </li>
             </ul>
 
@@ -28,24 +28,35 @@
             <div class="row">
                 <div class="col-12 col-sm-12 col-md-8 col-lg-6">
 
-                    <form action="/login" method="post">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Email" name="email" value="{{ index .Session "login-email" }}" autofocus required>
-                        </div>
+                    <div class="tab-content">
+                        <div class="tab-pane show active" id="gamedb" role="tabpanel">
 
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Password" name="password" required>
-                        </div>
+                            <form action="/login" method="post">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Email" name="email" value="{{ index .Session "login-email" }}" autofocus required>
+                                </div>
 
-                        <div class="form-group">
-                            <label for="message">Captcha</label>
-                            <div class="g-recaptcha" data-sitekey="{{.RecaptchaPublic}}" data-callback="recaptchaCallback"></div>
-                        </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Password" name="password" required>
+                                </div>
 
-                        <button type="submit" class="btn btn-success" disabled>Login</button>
-                    </form>
+                                <div class="form-group">
+                                    <label for="message">Captcha</label>
+                                    <div class="g-recaptcha" data-sitekey="{{.RecaptchaPublic}}" data-callback="recaptchaCallback"></div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success" disabled>Login</button>
+                            </form>
+
+                        </div>
+                        <div class="tab-pane" id="steam" role="tabpanel">
+
+                            <a href="/login/openid"><i class="fab fa-steam-square"></i> Login with Steam</a>
+
+                        </div>
+                    </div>
 
                 </div>
             </div>
