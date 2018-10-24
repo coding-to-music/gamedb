@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:5d7e1e707b8da800c440797e744834ad6024ad31ab3bad70fad7183f38d9d843"
+  digest = "1:2f9bad74bf4197615def62c64b29bfc5aeec01a1f3852805070963fc4d69b0b6"
   name = "cloud.google.com/go"
   packages = [
     "compute/metadata",
@@ -20,8 +20,8 @@
     "storage",
   ]
   pruneopts = ""
-  revision = "dfffe386c33fb24c34ee501e5723df5b97b98514"
-  version = "v0.30.0"
+  revision = "debcad1964693daf8ef4bc06292d7e828e075130"
+  version = "v0.31.0"
 
 [[projects]]
   branch = "master"
@@ -245,14 +245,6 @@
   version = "v1.3.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:96b2228ec52e3129a311293afd1310cc4a4d8dd88c7370006c6f3e21d3ec03bb"
-  name = "github.com/grokify/html-strip-tags-go"
-  packages = ["."]
-  pruneopts = ""
-  revision = "e9e44961e26f513866063f54bf85070db95600f7"
-
-[[projects]]
   digest = "1:d14365c51dd1d34d5c79833ec91413bfbb166be978724f15701e17080dc06dec"
   name = "github.com/hashicorp/hcl"
   packages = [
@@ -384,23 +376,12 @@
   version = "v1.1.2"
 
 [[projects]]
-  digest = "1:58b4c5586232c9f9fc5ebc4870e9a24e41be9825b0b500bbeac2ebfcb24aab9e"
-  name = "github.com/oxequa/interact"
+  digest = "1:f8d1c6ca71836ac521a6853427358355aa02c5d2eb2d36b27ca9b39f393f51df"
+  name = "github.com/oxequa/realize"
   packages = ["."]
   pruneopts = ""
-  revision = "f8fb5795b5d713c41dab6771ffe1fdfdfd0c3285"
-  version = "1.1.1"
-
-[[projects]]
-  digest = "1:86fb1afb7ffc9426e6494e9322d0359c9173ea3649f064a74bcc890de0f58cf4"
-  name = "github.com/oxequa/realize"
-  packages = [
-    ".",
-    "realize",
-  ]
-  pruneopts = ""
-  revision = "13ee93c5f75c240128feb4271e025f2f381ca0f5"
-  version = "v2.0.2"
+  revision = "9d7dd6d231b63a5aa133e98445d28c398d2802d3"
+  version = "v2.0.1"
 
 [[projects]]
   digest = "1:2e5e286a00a31322e7efca6fb9be73e9f32e6d5d664c885a7e666ee32c5e0213"
@@ -427,20 +408,20 @@
   revision = "cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c"
 
 [[projects]]
-  digest = "1:2565c7dfb4f0fbf1f82f93ed5058645d2358f04cd047fa9a74673459bf72d2ae"
+  digest = "1:75f4f546e19477e82dc2c07e36011b10ccdf7284df08fc9cb4209ee8a9dfddb8"
   name = "github.com/rollbar/rollbar-go"
   packages = ["."]
   pruneopts = ""
-  revision = "5f41889d7c6a59e4add07998cf776b1d335d287f"
-  version = "v1.0.1"
+  revision = "d450a931d7a085523b60f0f7c98487333a8ce5fa"
+  version = "v1.0.2"
 
 [[projects]]
   branch = "master"
-  digest = "1:d4fec58ef1540ef89350bf22c25e013a9f9f57de12180d9067a1e25a5925d99b"
+  digest = "1:3edb0d06759b2072139042b2f8bd4e2d5b3d9866c316702c28d5a709433dbaa2"
   name = "github.com/satori/go.uuid"
   packages = ["."]
   pruneopts = ""
-  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
+  revision = "8ccf5352a842c034b1a69f28c863aff9b1cdb116"
 
 [[projects]]
   digest = "1:f66a8bd3128df79a2648daea552403c5c66d841c7ae844d5d22b445afbdf0878"
@@ -521,6 +502,22 @@
   revision = "70e15c650864f4fc47f5d3c82ea117285480895d"
 
 [[projects]]
+  digest = "1:58b4c5586232c9f9fc5ebc4870e9a24e41be9825b0b500bbeac2ebfcb24aab9e"
+  name = "github.com/tockins/interact"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f8fb5795b5d713c41dab6771ffe1fdfdfd0c3285"
+  version = "1.1.1"
+
+[[projects]]
+  digest = "1:0405366cf1d69c37913de6d2e51bd9710843fffb1bfa3a436424ef5a34072611"
+  name = "github.com/tockins/realize"
+  packages = ["realize"]
+  pruneopts = ""
+  revision = "f95d0e164962222b6e1562e1bfcfad1a6071fd11"
+  version = "v2.0"
+
+[[projects]]
   digest = "1:857a9ecd5cb13379ecc8f798f6e6b6b574c98b9355657d91e068275f1120aaf7"
   name = "github.com/valyala/bytebufferpool"
   packages = ["."]
@@ -545,10 +542,11 @@
   revision = "cfc72ed89575fe6b1b7b880d537ba0c5e37f7391"
 
 [[projects]]
-  digest = "1:8c8ec859c77fccd10a347b7219b597c4c21c448949e8bdf3fc3e6f4c78f952b4"
+  digest = "1:ad67dfd3799a2c58f6c65871dd141d8b53f61f600aec48ce8d7fa16a4d5476f8"
   name = "go.opencensus.io"
   packages = [
     ".",
+    "exemplar",
     "internal",
     "internal/tagencoding",
     "plugin/ocgrpc",
@@ -564,8 +562,8 @@
     "trace/tracestate",
   ]
   pruneopts = ""
-  revision = "79993219becaa7e29e3b60cb67f5b8e82dee11d6"
-  version = "v0.17.0"
+  revision = "b7bf3cdb64150a8c8c53b769fdeb2ba581bd4d4b"
+  version = "v0.18.0"
 
 [[projects]]
   branch = "master"
@@ -598,7 +596,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:547dcb6aebfb7fb17947660ebb034470c13f4d63d893def190a2f7ba3d09bc38"
+  digest = "1:b001b57f383ecbebb54c3916ca6b8be129a6486d3dbf2dfc722cbb0a0b2a8679"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -614,11 +612,11 @@
     "websocket",
   ]
   pruneopts = ""
-  revision = "49bb7cea24b1df9410e1712aa6433dae904ff66a"
+  revision = "9b4f9f5ad5197c79fd623a3638e70d8b26cef344"
 
 [[projects]]
   branch = "master"
-  digest = "1:235cb00e80dcf85b78a24be4bbe6c827fb28613b84037a9d524084308a849d91"
+  digest = "1:77478892c6d9d841c7997858d6287884c65b760000f29a25d7b1a6b6ada5f308"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
@@ -628,7 +626,7 @@
     "jwt",
   ]
   pruneopts = ""
-  revision = "c57b0facaced709681d9f90397429b9430a74754"
+  revision = "9dcd33a902f40452422c2367fefcb95b54f9f8f8"
 
 [[projects]]
   branch = "master"
@@ -640,14 +638,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2ed0bf267e44950120acd95570227e28184573ffb099bd85b529ee148e004ddb"
+  digest = "1:3bb377065822540748d69a5a9cb0de617cf997a9e4f757eceaac3075d1f07d50"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "fa43e7bc11baaae89f3f902b2b4d832b68234844"
+  revision = "5cd93ef61a7c8f0f858690154eb6de2e69415fa1"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -674,7 +672,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ca2e72555afbcebdead7c961b135650b5111dbbaf37a874de63976fdda57f129"
+  digest = "1:3a3fd8f2124975e65b3f6b1cc93b6f194864c339ebf9561ec49cb4548b5812aa"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -692,7 +690,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "c51f30376ab7ec4f22b65de846a41593c8b70f07"
+  revision = "a2651947f503a1793446d4058bb073a6fdf99e53"
 
 [[projects]]
   digest = "1:8c432632a230496c35a15cfdf441436f04c90e724ad99c8463ef0c82bbe93edb"
@@ -718,7 +716,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1b3b4ec811695907c4a3cb92e4f32834a4a42459bff7e02068b6b2b5344803cd"
+  digest = "1:849525811c9f6ae1f5bd9b866adb4c9436f4a12d767f48e33bf343596d4aafd7"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -736,10 +734,10 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "af9cb2a35e7f169ec875002c1829c9b315cddc04"
+  revision = "94acd270e44e65579b9ee3cdab25034d33fed608"
 
 [[projects]]
-  digest = "1:15656947b87a6a240e61dcfae9e71a55a8d5677f240d12ab48f02cdbabf1e309"
+  digest = "1:1293087271e314cfa2b3decededba2ecba0ff327e7b7809e00f73f616449191c"
   name = "google.golang.org/grpc"
   packages = [
     ".",
@@ -771,8 +769,8 @@
     "tap",
   ]
   pruneopts = ""
-  revision = "8dea3dc473e90c8179e519d91302d0597c0ca1d1"
-  version = "v1.15.0"
+  revision = "2e463a05d100327ca47ac218281906921038fd95"
+  version = "v1.16.0"
 
 [[projects]]
   branch = "v2"
@@ -783,12 +781,12 @@
   revision = "d3ae77c26ac8db90639677e4831a728d33c36111"
 
 [[projects]]
-  branch = "v2"
   digest = "1:f0620375dd1f6251d9973b5f2596228cc8042e887cd7f827e4220bc1ce8c30e2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -813,7 +811,6 @@
     "github.com/gorilla/sessions",
     "github.com/gorilla/websocket",
     "github.com/gosimple/slug",
-    "github.com/grokify/html-strip-tags-go",
     "github.com/ikeikeikeike/go-sitemap-generator/stm",
     "github.com/jinzhu/gorm",
     "github.com/mitchellh/mapstructure",
