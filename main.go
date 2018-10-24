@@ -4,22 +4,22 @@ import (
 	"flag"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/rollbar/rollbar-go"
 	"github.com/spf13/viper"
-	"github.com/steam-authority/steam-authority/config"
-	"github.com/steam-authority/steam-authority/db"
 	"github.com/steam-authority/steam-authority/helpers"
 	"github.com/steam-authority/steam-authority/logging"
 	"github.com/steam-authority/steam-authority/queue"
+	"github.com/steam-authority/steam-authority/storage"
 	"github.com/steam-authority/steam-authority/web"
 )
 
 // These are called so everything as access to configs (viper)
 func init() {
-	config.Init() // Must go first
-	db.Init()
+	configSetup() // Must go first
+	storage.Init()
 	queue.Init()
 	logging.Init()
 	web.Init()
@@ -38,17 +38,12 @@ func main() {
 
 	// Flags
 	flagPprof := flag.Bool("pprof", false, "PProf")
-	flagDebug := flag.Bool("debug", false, "Debug")
 	flagConsumers := flag.Bool("consumers", true, "Consumers")
 
 	flag.Parse()
 
 	if *flagPprof {
 		go http.ListenAndServe(":"+viper.GetString("PORT"), nil)
-	}
-
-	if *flagDebug {
-		db.SetDebug(true)
 	}
 
 	if *flagConsumers {
