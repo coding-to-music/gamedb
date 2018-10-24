@@ -3,11 +3,17 @@ $("table.table-datatable").each(function (i) {
 
     var order = [[0, 'asc']];
     var pageLength = 100;
+    var paging = true;
 
     // Limit
     var limit = $(this).attr('data-limit');
     if (limit > 0) {
         pageLength = Number(limit);
+    }
+
+    // Paging
+    if ($(this).find('tbody tr').length <= pageLength) {
+        paging = false;
     }
 
     // Sort
@@ -38,7 +44,7 @@ $("table.table-datatable").each(function (i) {
     $(this).DataTable({
         "pageLength": pageLength,
         "order": order,
-        "paging": true,
+        "paging": paging,
         "ordering": true,
         "info": false,
         "searching": true,
