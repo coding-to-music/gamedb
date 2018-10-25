@@ -11,7 +11,13 @@ import (
 
 func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 
-	change, err := db.GetChange(chi.URLParam(r, "id"))
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		returnErrorTemplate(w, r, 404, "Invaid Change ID")
+		return
+	}
+
+	change, err := db.GetChange(id)
 	if err != nil {
 		if err.Error() == "datastore: no such entity" {
 			returnErrorTemplate(w, r, 404, "We can't find this change in our database, there may not be one with this ID.")

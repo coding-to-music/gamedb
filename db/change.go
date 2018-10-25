@@ -68,9 +68,9 @@ func (change Change) OutputForJSON() (output []interface{}) {
 	}
 }
 
-func GetChange(id string) (change Change, err error) {
+func GetChange(id int64) (change Change, err error) {
 
-	s, err := memcache.GetSetString(memcache.TagKeyNames, func() (s string, err error) {
+	s, err := memcache.GetSetString(memcache.ChangeRow(id), func() (s string, err error) {
 
 		client, context, err := GetDSClient()
 		if err != nil {
@@ -78,7 +78,7 @@ func GetChange(id string) (change Change, err error) {
 		}
 
 		var change Change
-		err = client.Get(context, datastore.NameKey(KindChange, id, nil), &change)
+		err = client.Get(context, datastore.NameKey(KindChange, strconv.FormatInt(id, 10), nil), &change)
 		if err != nil {
 			if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
 
@@ -106,6 +106,6 @@ func GetChange(id string) (change Change, err error) {
 		return change, err
 	}
 
-	err = json.Unmarshal([]byte(s), &change)
+	err = helpers.Unmarshal([]byte(s), &change)
 	return change, err
 }
