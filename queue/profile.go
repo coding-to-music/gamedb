@@ -60,12 +60,14 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 		}
 	}
 
-	errs := player.Update("")
+	errs := player.Update(db.PlayerUpdateManual, "")
 	if len(errs) > 0 {
 		for _, v := range errs {
 			logging.Error(v)
 		}
+
+		return true, true, errs[0]
 	}
 
-	return true, false, err
+	return true, false, nil
 }

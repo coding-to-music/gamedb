@@ -49,7 +49,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update player if needed
-	errs := player.Update(r.UserAgent())
+	errs := player.Update(db.PlayerUpdateAuto, r.UserAgent())
 	if len(errs) > 0 {
 
 		for _, err := range errs {

@@ -261,7 +261,14 @@ func (p Player) ShouldUpdateManual() bool {
 	return p.UpdatedAt.Add(time.Hour * 24).Unix() < time.Now().Unix() // A day
 }
 
-func (p *Player) Update(userAgent string) (errs []error) {
+type updateType string
+
+const (
+	PlayerUpdateAuto   updateType = "auto"
+	PlayerUpdateManual updateType = "manual"
+)
+
+func (p *Player) Update(updateType updateType, userAgent string) (errs []error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
 		return []error{ErrInvalidPlayerID}
@@ -271,7 +278,10 @@ func (p *Player) Update(userAgent string) (errs []error) {
 		return []error{} // Success
 	}
 
-	if !p.ShouldUpdateAuto() {
+	// Check if updated recently
+	if updateType == PlayerUpdateAuto && !p.ShouldUpdateAuto() {
+		return []error{} // Success
+	} else if updateType == PlayerUpdateManual && !p.ShouldUpdateManual() {
 		return []error{} // Success
 	}
 
@@ -765,8 +775,11 @@ func getPlayerName(id int64, name string) string {
 	}
 }
 
-// todo, check this is acurate
 func IsValidPlayerID(id int64) bool {
+
+	if id == 0 {
+		return false
+	}
 
 	if id < 10000000000000000 {
 		return false
