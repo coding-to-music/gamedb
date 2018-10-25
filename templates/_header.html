@@ -138,24 +138,14 @@
 </header>
 
 <div class="container ad d-none d-lg-block">
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
         if (user.showAds) {
-            (adsbygoogle = window.adsbygoogle || []).push({
-                google_ad_client: "ca-pub-5468884371420326",
-                enable_page_level_ads: true
-            });
-        }
-    </script>
-
-    <script>
-        if (user.showAds && false) {
             (function () {
                 if (window.CHITIKA === undefined) {
                     window.CHITIKA = {'units': []};
                 }
-                var unit = {"calltype": "async[2]", "publisher": "jleagle", "width": 728, "height": 90, "sid": "Chitika Default"};
-                var placement_id = window.CHITIKA.units.length;
+                const unit = {"calltype": "async[2]", "publisher": "jleagle", "width": 728, "height": 90, "sid": "Chitika Default"};
+                const placement_id = window.CHITIKA.units.length;
                 window.CHITIKA.units.push(unit);
                 document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
             }());

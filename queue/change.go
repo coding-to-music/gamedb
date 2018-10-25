@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/gamedb/website/db"
@@ -56,8 +55,6 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	if err != nil {
 		return false, false, err
 	}
-
-	logging.InfoL("Processing change: " + strconv.Itoa(message.PICSChanges.CurrentChangeNumber))
 
 	// Group products by change id
 	changes := map[int]*db.Change{}
