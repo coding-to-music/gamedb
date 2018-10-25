@@ -93,7 +93,7 @@ func GetTagsForSelect() (tags []Tag, err error) {
 		return tags, err
 	}
 
-	err = json.Unmarshal([]byte(s), &tags)
+	err = helpers.Unmarshal([]byte(s), &tags)
 	return tags, err
 }
 

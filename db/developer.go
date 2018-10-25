@@ -74,7 +74,7 @@ func GetDevelopersForSelect() (devs []Developer, err error) {
 		return devs, err
 	}
 
-	err = json.Unmarshal([]byte(s), &devs)
+	err = helpers.Unmarshal([]byte(s), &devs)
 	return devs, err
 }
 

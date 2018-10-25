@@ -74,7 +74,7 @@ func GetPublishersForSelect() (pubs []Publisher, err error) {
 		return pubs, err
 	}
 
-	err = json.Unmarshal([]byte(s), &pubs)
+	err = helpers.Unmarshal([]byte(s), &pubs)
 	return pubs, err
 }
 

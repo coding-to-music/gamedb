@@ -73,7 +73,7 @@ func GetGenresForSelect() (genres []Genre, err error) {
 		return genres, err
 	}
 
-	err = json.Unmarshal([]byte(s), &genres)
+	err = helpers.Unmarshal([]byte(s), &genres)
 	return genres, err
 }
 
