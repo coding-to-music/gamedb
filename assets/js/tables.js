@@ -58,8 +58,7 @@ $("table.table-datatable").each(function (i) {
         "columnDefs": [
             {
                 "targets": disabled,
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             }
         ]
     });

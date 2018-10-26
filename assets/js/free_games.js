@@ -56,8 +56,7 @@ if ($('#free-games-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[4];
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Platform
             {
@@ -68,8 +67,7 @@ if ($('#free-games-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('platforms platforms-align')
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Install link
             {
@@ -77,8 +75,7 @@ if ($('#free-games-page').length > 0) {
                 "render": function (data, type, row) {
                     return '<a href="' + row[6] + '">Install</a>';
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             }
         ]
     }));

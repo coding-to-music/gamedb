@@ -28,8 +28,7 @@ if ($('#settings-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Type
             {
@@ -40,8 +39,7 @@ if ($('#settings-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // IP
             {
@@ -53,8 +51,7 @@ if ($('#settings-page').length > 0) {
                     }
                     return row[3];
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // User Agent
             {
@@ -66,8 +63,7 @@ if ($('#settings-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     //$(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             }
         ]
     }));

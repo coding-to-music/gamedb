@@ -21,8 +21,7 @@ if ($('#price-changes-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img').attr('data-app-id', 0)
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Release Date
             {
@@ -32,28 +31,32 @@ if ($('#price-changes-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
-                }
+                },
+                "orderable": false
             },
             // Price
             {
                 "targets": 2,
                 "render": function (data, type, row) {
                     return '$' + row[3];
-                }
+                },
+                "orderable": false
             },
             // Discount %
             {
                 "targets": 3,
                 "render": function (data, type, row) {
                     return row[4] + '%';
-                }
+                },
+                "orderable": false
             },
             // Price Change
             {
                 "targets": 4,
                 "render": function (data, type, row) {
                     return '$' + row[5];
-                }
+                },
+                "orderable": false
             },
             // Time
             {
@@ -63,7 +66,8 @@ if ($('#price-changes-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
-                }
+                },
+                "orderable": false
             }
         ]
     }));

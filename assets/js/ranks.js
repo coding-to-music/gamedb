@@ -16,8 +16,7 @@ if ($('#ranks-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('font-weight-bold')
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Player
             {
@@ -28,8 +27,7 @@ if ($('#ranks-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Flag
             {
@@ -43,8 +41,7 @@ if ($('#ranks-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Avatar 2 / Level
             {

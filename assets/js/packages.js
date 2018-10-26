@@ -26,8 +26,7 @@ if ($('#packages-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // License Type
             {
@@ -38,8 +37,7 @@ if ($('#packages-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Status
             {
@@ -50,8 +48,7 @@ if ($('#packages-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false,
-                "searchable": false
+                "orderable": false
             },
             // Apps
             {

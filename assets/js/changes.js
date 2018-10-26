@@ -10,8 +10,7 @@ if ($('#changes-page').length > 0) {
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('nowrap', 'nowrap');
             },
-            "orderable": false,
-            "searchable": false
+            "orderable": false
         },
         // Date
         {
@@ -22,8 +21,7 @@ if ($('#changes-page').length > 0) {
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('nowrap', 'nowrap');
             },
-            "orderable": false,
-            "searchable": false
+            "orderable": false
         },
         // Apps
         {
@@ -44,8 +42,7 @@ if ($('#changes-page').length > 0) {
 
                 return apps.join('<br/>');
             },
-            "orderable": false,
-            "searchable": false
+            "orderable": false
         },
         // Packages
         {
@@ -66,8 +63,7 @@ if ($('#changes-page').length > 0) {
 
                 return packages.join('<br/>');
             },
-            "orderable": false,
-            "searchable": false
+            "orderable": false
         }
     ];
 
