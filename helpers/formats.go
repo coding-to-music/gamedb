@@ -15,10 +15,14 @@ func CentsFloat(cents float64) float64 {
 
 func DollarsFloat(dollars float64) float64 {
 
-	x, err := strconv.ParseFloat(fmt.Sprintf("%0.2f", dollars), 64)
+	float, err := strconv.ParseFloat(Round2(dollars), 64)
 	if err != nil {
 		return 0
 	}
 
-	return x
+	return float
+}
+
+func Round2(float float64) string {
+	return fmt.Sprintf("%0.2f", float)
 }
