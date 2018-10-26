@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"html/template"
 	"strconv"
-	"sync"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
@@ -445,66 +443,47 @@ func CountPackages() (count int, err error) {
 	})
 }
 
-// GORM callback
-func (pack *Package) Update() (errs []error) {
-
-	var wg sync.WaitGroup
+func (pack *Package) Update() (err error) {
 
 	// Get package details
-	wg.Add(1)
-	go func(pack *Package) {
+	response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID)
+	if err != nil {
+		return err
+	}
 
-		// Get app details
-		// Get data
-		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID)
-		if err != nil {
+	// Controller
+	controllerString, err := json.Marshal(response.Data.Controller)
+	logging.Error(err)
 
-			if err == steam.ErrNullResponse {
-				errs = append(errs, err)
-			}
-		}
+	// Platforms
+	var platforms []string
+	if response.Data.Platforms.Linux {
+		platforms = append(platforms, "linux")
+	}
+	if response.Data.Platforms.Windows {
+		platforms = append(platforms, "windows")
+	}
+	if response.Data.Platforms.Windows {
+		platforms = append(platforms, "macos")
+	}
 
-		// Controller
-		controllerString, err := json.Marshal(response.Data.Controller)
-		if err != nil {
-			errs = append(errs, err)
-		}
+	platformsString, err := json.Marshal(platforms)
+	logging.Error(err)
 
-		// Platforms
-		var platforms []string
-		if response.Data.Platforms.Linux {
-			platforms = append(platforms, "linux")
-		}
-		if response.Data.Platforms.Windows {
-			platforms = append(platforms, "windows")
-		}
-		if response.Data.Platforms.Windows {
-			platforms = append(platforms, "macos")
-		}
+	//
+	pack.ImageHeader = response.Data.HeaderImage
+	pack.ImageLogo = response.Data.SmallLogo
+	pack.ImageHeader = response.Data.HeaderImage
+	pack.PriceInitial = response.Data.Price.Initial
+	pack.PriceFinal = response.Data.Price.Final
+	pack.PriceDiscount = response.Data.Price.DiscountPercent
+	pack.PriceIndividual = response.Data.Price.Individual
+	pack.Platforms = string(platformsString)
+	pack.Controller = string(controllerString)
+	pack.ReleaseDate = response.Data.ReleaseDate.Date
+	pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
 
-		platformsString, err := json.Marshal(platforms)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		//
-		pack.ImageHeader = response.Data.HeaderImage
-		pack.ImageLogo = response.Data.SmallLogo
-		pack.ImageHeader = response.Data.HeaderImage
-		// pack.PICSAppIDs = string(appsString) // Can get from PICS
-		pack.PriceInitial = response.Data.Price.Initial
-		pack.PriceFinal = response.Data.Price.Final
-		pack.PriceDiscount = response.Data.Price.DiscountPercent
-		pack.PriceIndividual = response.Data.Price.Individual
-		pack.Platforms = string(platformsString)
-		pack.Controller = string(controllerString)
-		pack.ReleaseDate = response.Data.ReleaseDate.Date
-		pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
-
-		wg.Done()
-	}(pack)
-
-	return errs
+	return nil
 }
 
 var PackageExtendedKeys = map[string]string{
