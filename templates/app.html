@@ -73,7 +73,7 @@
                     <p>Price: {{ .App.GetPriceFinalNice }}</p>
                     <p>App Type: {{ .App.GetType }}</p>
                     <p>Release State: {{ .App.GetReleaseState }}</p>
-                    <p>Change Number: <a href="/changes/{{ .App.ChangeNumber }}">{{ comma .App.ChangeNumber }}</a></p>
+                    <p>Change Number: <a href="/changes/{{ .App.ChangeNumber }}">{{ .App.ChangeNumber }}</a></p>
 
                 {{ if gt (len .App.GetPlatforms) 0 }}
                     <p class="platforms">Platforms: {{ .App.GetPlatformImages }}</p>
