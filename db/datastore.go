@@ -14,7 +14,7 @@ import (
 
 const (
 	KindAppOverTime    = "AppOverTime"
-	KindAppPrice       = "AppPrice"
+	KindAppPrice       = "ProductPrice"
 	KindChange         = "Change"
 	KindDonation       = "Donation"
 	KindEvent          = "Event"

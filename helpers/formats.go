@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+// todo, these are all not needed
+
 func CentsInt(cents int) float64 {
 	return DollarsFloat(float64(cents) / 100)
 }

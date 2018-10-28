@@ -32,7 +32,7 @@ func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get ranks
-	var priceChanges []db.AppPrice
+	var priceChanges []db.ProductPrice
 
 	wg.Add(1)
 	go func() {

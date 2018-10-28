@@ -3,6 +3,7 @@ package queue
 import (
 	"strconv"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
@@ -102,7 +103,20 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		logging.Error(err)
 	}
 
-	// Update package
+	// Save price before update
+	//pricesBeforeUpdate := pack.Prices
+
+	// Update from API
+	err = pack.Update()
+	if err != nil {
+		if err == steam.ErrPackageNotFound {
+			return false, false, err
+		} else {
+			return false, true, err
+		}
+	}
+
+	// Save package to MySQL
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		return false, true, err
@@ -113,43 +127,9 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, true, gorm.Error
 	}
 
-	return true, false, err
-
-	// todo! price chage stuff
-	//if message.PICSChangeID != 0 {
-	//	pack.PICSChangeID = message.PICSChangeID
-	//}
-	//
-	//priceBeforeFill := pack.PriceFinal
-	//
-	//errs := pack.Update()
-	//if len(errs) > 0 {
-	//	// Nack on hard fails
-	//	for _, err = range errs {
-	//		if err2, ok := err.(db.UpdateError); ok {
-	//			if err2.IsHard() {
-	//				return false, false, err2
-	//			}
-	//		}
-	//	}
-	//	// Retry on all other errors
-	//	for _, err = range errs {
-	//		logging.Error(err)
-	//		return false, true, err
-	//	}
-	//}
-	////if v.Error() == steam.ErrInvalidJson || v == steam.ErrNullResponse || strings.HasSuffix(v.Error(), "connect: connection refused") {
-	////	return false, true
-	////}
-	//
-	//gorm.Save(pack)
-	//if gorm.Error != nil {
-	//	logging.Error(gorm.Error)
-	//}
-	//
-	//// Save price change
-	//price := new(db.AppPrice)
-	//price.Change = pack.PriceFinal - priceBeforeFill
+	// Save price change
+	//price := new(db.ProductPrice)
+	//price.Change = pack.PriceFinal - pricesBeforeUpdate
 	//
 	//if price.Change != 0 {
 	//
@@ -178,6 +158,6 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	//		logging.Error(err)
 	//	}
 	//}
-	//
-	//return true, false, nil
+
+	return true, false, nil
 }

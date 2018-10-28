@@ -60,9 +60,6 @@ type App struct {
 	Name                   string     `gorm:"not null;column:name"`
 	Packages               string     `gorm:"not null;column:packages;type:json"`
 	Platforms              string     `gorm:"not null;column:platforms;type:json"`
-	PriceDiscount          int        `gorm:"not null;column:price_discount"`
-	PriceFinal             int        `gorm:"not null;column:price_final"`
-	PriceInitial           int        `gorm:"not null;column:price_initial"`
 	Publishers             string     `gorm:"not null;column:publishers;type:json"`
 	ReleaseDate            string     `gorm:"not null;column:release_date"`
 	ReleaseState           string     `gorm:"not null;column:release_state"`
@@ -75,6 +72,7 @@ type App struct {
 	ReviewsScore           float64    `gorm:"not null;column:reviews_score"`
 	ReviewsPositive        int        `gorm:"not null;column:reviews_positive"`
 	ReviewsNegative        int        `gorm:"not null;column:reviews_negative"`
+	Prices                 string     `gorm:"not null;column:prices"` // JSON
 }
 
 func (app App) BeforeCreate(scope *gorm.Scope) error {
@@ -96,6 +94,9 @@ func (app App) BeforeCreate(scope *gorm.Scope) error {
 	}
 	if app.Extended == "" {
 		app.Extended = "{}"
+	}
+	if app.Prices == "" {
+		app.Prices = "{}"
 	}
 	if app.Genres == "" {
 		app.Genres = "[]"
@@ -220,20 +221,32 @@ func (app App) GetIcon() (ret string) {
 	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(app.ID) + "/" + app.Icon + ".jpg"
 }
 
-func (app App) GetPriceInitial() float64 {
-	return helpers.CentsInt(app.PriceInitial)
-}
+func (app *App) SetPrices(prices ProductPrices) (err error) {
 
-func (app App) GetPriceFinal() float64 {
-	return helpers.CentsInt(app.PriceFinal)
-}
-
-func (app App) GetPriceFinalNice() string {
-
-	if app.PriceFinal == 0 {
-		return "Free"
+	bytes, err := json.Marshal(prices)
+	if err != nil {
+		return err
 	}
-	return "$" + strconv.FormatFloat(app.GetPriceFinal(), 'f', 2, 64)
+
+	app.Prices = string(bytes)
+
+	return nil
+}
+
+func (app App) GetPrices() (prices ProductPrices, err error) {
+
+	err = helpers.Unmarshal([]byte(app.Prices), &prices)
+	return prices, err
+}
+
+func (app App) GetPrice(code steam.CountryCode) (price ProductPriceCache, err error) {
+
+	prices, err := app.GetPrices()
+	if err != nil {
+		return price, err
+	}
+
+	return prices.Get(code)
 }
 
 func (app App) GetReviewScore() float64 {
@@ -517,7 +530,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		response, _, err := helpers.GetSteam().GetAppDetails(app.ID)
+		response, _, err := helpers.GetSteam().GetAppDetails(app.ID, steam.CountryUS, steam.LanguageEnglish)
 		if err != nil {
 
 			if err == steam.ErrNullResponse {
@@ -624,9 +637,12 @@ func (app *App) UpdateFromAPI() (errs []error) {
 		app.GameName = response.Data.Fullgame.Name
 		app.ReleaseDate = response.Data.ReleaseDate.Date
 		app.ComingSoon = response.Data.ReleaseDate.ComingSoon
-		app.PriceInitial = response.Data.PriceOverview.Initial
-		app.PriceFinal = response.Data.PriceOverview.Final
-		app.PriceDiscount = response.Data.PriceOverview.DiscountPercent
+
+		// todo, loop through all languages
+		prices := ProductPrices{}
+		prices.AddPriceFromApp(steam.CountryUS, response)
+
+		app.Prices = prices.ToString()
 
 		wg.Done()
 	}(app)

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
@@ -14,32 +15,29 @@ import (
 )
 
 type Package struct {
-	ID              int        `gorm:"not null;column:id;primary_key"`   //
-	CreatedAt       *time.Time `gorm:"not null;column:created_at"`       //
-	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`       //
-	PICSName        string     `gorm:"not null;column:name"`             //
-	PICSChangeID    int        `gorm:"not null;column:change_id"`        //
-	PICSBillingType int8       `gorm:"not null;column:billing_type"`     //
-	PICSLicenseType int8       `gorm:"not null;column:license_type"`     //
-	PICSStatus      int8       `gorm:"not null;column:status"`           //
-	PICSExtended    string     `gorm:"not null;column:extended"`         // JSON (TEXT)
-	PICSAppIDs      string     `gorm:"not null;column:apps"`             // JSON
-	PICSAppItems    string     `gorm:"not null;column:app_items"`        // JSON (TEXT)
-	PICSDepotIDs    string     `gorm:"not null;column:depot_ids"`        // JSON
-	PICSRaw         string     `gorm:"not null;column:raw_pics"`         // JSON (TEXT)
-	AppsCount       int        `gorm:"not null;column:apps_count"`       //
-	ImagePage       string     `gorm:"not null;column:image_page"`       //
-	ImageHeader     string     `gorm:"not null;column:image_header"`     //
-	ImageLogo       string     `gorm:"not null;column:image_logo"`       //
-	PurchaseText    string     `gorm:"not null;column:purchase_text"`    //
-	PriceInitial    int        `gorm:"not null;column:price_initial"`    //
-	PriceFinal      int        `gorm:"not null;column:price_final"`      //
-	PriceDiscount   int        `gorm:"not null;column:price_discount"`   //
-	PriceIndividual int        `gorm:"not null;column:price_individual"` //
-	Controller      string     `gorm:"not null;column:controller"`       // JSON (TEXT)
-	ComingSoon      bool       `gorm:"not null;column:coming_soon"`      //
-	ReleaseDate     string     `gorm:"not null;column:release_date"`     //
-	Platforms       string     `gorm:"not null;column:platforms"`        // JSON
+	ID              int        `gorm:"not null;column:id;primary_key"` //
+	CreatedAt       *time.Time `gorm:"not null;column:created_at"`     //
+	UpdatedAt       *time.Time `gorm:"not null;column:updated_at"`     //
+	PICSName        string     `gorm:"not null;column:name"`           //
+	PICSChangeID    int        `gorm:"not null;column:change_id"`      //
+	PICSBillingType int8       `gorm:"not null;column:billing_type"`   //
+	PICSLicenseType int8       `gorm:"not null;column:license_type"`   //
+	PICSStatus      int8       `gorm:"not null;column:status"`         //
+	PICSExtended    string     `gorm:"not null;column:extended"`       // JSON (TEXT)
+	PICSAppIDs      string     `gorm:"not null;column:apps"`           // JSON
+	PICSAppItems    string     `gorm:"not null;column:app_items"`      // JSON (TEXT)
+	PICSDepotIDs    string     `gorm:"not null;column:depot_ids"`      // JSON
+	PICSRaw         string     `gorm:"not null;column:raw_pics"`       // JSON (TEXT)
+	AppsCount       int        `gorm:"not null;column:apps_count"`     //
+	ImagePage       string     `gorm:"not null;column:image_page"`     //
+	ImageHeader     string     `gorm:"not null;column:image_header"`   //
+	ImageLogo       string     `gorm:"not null;column:image_logo"`     //
+	PurchaseText    string     `gorm:"not null;column:purchase_text"`  //
+	Controller      string     `gorm:"not null;column:controller"`     // JSON (TEXT)
+	ComingSoon      bool       `gorm:"not null;column:coming_soon"`    //
+	ReleaseDate     string     `gorm:"not null;column:release_date"`   //
+	Platforms       string     `gorm:"not null;column:platforms"`      // JSON
+	Prices          string     `gorm:"not null;column:prices"`         // JSON
 }
 
 func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
@@ -65,19 +63,24 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 	if pack.PICSDepotIDs == "" {
 		pack.PICSDepotIDs = "[]"
 	}
+	if pack.Prices == "" {
+		pack.Prices = "{}"
+	}
 
 	return nil
 }
 
 func (pack Package) GetPath() string {
+	return getPackagePath(pack.ID, pack.PICSName)
+}
 
-	s := "/packages/" + strconv.Itoa(pack.ID)
+func getPackagePath(id int, name string) string {
 
-	if pack.PICSName != "" {
-		s = s + "/" + slug.Make(pack.GetName())
+	path := "/packages/" + strconv.Itoa(id)
+	if name == "" {
+		return path
 	}
-
-	return s
+	return path + "/" + slug.Make(name)
 }
 
 func (pack Package) GetName() (name string) {
@@ -254,23 +257,33 @@ func (pack *Package) SetAppItems(items map[string]string) (err error) {
 	return nil
 }
 
-func (pack Package) GetPriceInitial() float64 {
-	return helpers.CentsInt(pack.PriceInitial)
+func (pack *Package) SetPrices(prices ProductPrices) (err error) {
+
+	bytes, err := json.Marshal(prices)
+	if err != nil {
+		return err
+	}
+
+	pack.Prices = string(bytes)
+
+	return nil
 }
 
-func (pack Package) GetPriceFinal() float64 {
-	return helpers.CentsInt(pack.PriceFinal)
+func (pack Package) GetPrices() (prices ProductPrices, err error) {
+
+	err = helpers.Unmarshal([]byte(pack.Prices), &prices)
+	return prices, err
 }
 
-func (pack Package) GetPriceDiscount() float64 {
-	return helpers.CentsInt(pack.PriceDiscount)
-}
+func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceCache, err error) {
 
-func (pack Package) GetPriceIndividual() float64 {
-	return helpers.CentsInt(pack.PriceInitial)
-}
+	prices, err := pack.GetPrices()
+	if err != nil {
+		return price, err
+	}
 
-type Extended map[string]string
+	return prices.Get(code)
+}
 
 func (pack *Package) SetExtended(extended Extended) (err error) {
 
@@ -374,6 +387,60 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 	return ret, nil
 }
 
+// Loop through every language and get prices for each one
+// Saves other setails i nenglish only
+func (pack *Package) Update() (err error) {
+
+	prices := ProductPrices{}
+
+	for code := range steam.Countries {
+
+		// Get package details
+		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
+		if err != nil {
+			logging.Error(err)
+			continue
+		}
+
+		prices.AddPriceFromPackage(code, response)
+
+		if code == steam.CountryUS {
+
+			// Controller
+			controllerString, err := json.Marshal(response.Data.Controller)
+			logging.Error(err)
+
+			// Platforms
+			var platforms []string
+			if response.Data.Platforms.Linux {
+				platforms = append(platforms, "linux")
+			}
+			if response.Data.Platforms.Windows {
+				platforms = append(platforms, "windows")
+			}
+			if response.Data.Platforms.Windows {
+				platforms = append(platforms, "macos")
+			}
+
+			platformsString, err := json.Marshal(platforms)
+			logging.Error(err)
+
+			//
+			pack.ImageHeader = response.Data.HeaderImage
+			pack.ImageLogo = response.Data.SmallLogo
+			pack.ImageHeader = response.Data.HeaderImage
+			pack.Platforms = string(platformsString)
+			pack.Controller = string(controllerString)
+			pack.ReleaseDate = response.Data.ReleaseDate.Date
+			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
+		}
+	}
+
+	pack.Prices = prices.ToString()
+
+	return nil
+}
+
 func GetPackage(id int) (pack Package, err error) {
 
 	db, err := GetMySQLClient()
@@ -443,50 +510,9 @@ func CountPackages() (count int, err error) {
 	})
 }
 
-func (pack *Package) Update() (err error) {
+type Extended map[string]string
 
-	// Get package details
-	response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID)
-	if err != nil {
-		return err
-	}
-
-	// Controller
-	controllerString, err := json.Marshal(response.Data.Controller)
-	logging.Error(err)
-
-	// Platforms
-	var platforms []string
-	if response.Data.Platforms.Linux {
-		platforms = append(platforms, "linux")
-	}
-	if response.Data.Platforms.Windows {
-		platforms = append(platforms, "windows")
-	}
-	if response.Data.Platforms.Windows {
-		platforms = append(platforms, "macos")
-	}
-
-	platformsString, err := json.Marshal(platforms)
-	logging.Error(err)
-
-	//
-	pack.ImageHeader = response.Data.HeaderImage
-	pack.ImageLogo = response.Data.SmallLogo
-	pack.ImageHeader = response.Data.HeaderImage
-	pack.PriceInitial = response.Data.Price.Initial
-	pack.PriceFinal = response.Data.Price.Final
-	pack.PriceDiscount = response.Data.Price.DiscountPercent
-	pack.PriceIndividual = response.Data.Price.Individual
-	pack.Platforms = string(platformsString)
-	pack.Controller = string(controllerString)
-	pack.ReleaseDate = response.Data.ReleaseDate.Date
-	pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
-
-	return nil
-}
-
-var PackageExtendedKeys = map[string]string{
+var PackageExtendedKeys = Extended{
 	"allowcrossregiontradingandgifting":     "Allow Cross Region Trading & Gifting",
 	"allowpurchasefromretrictedcountries":   "Allow Purchase From Restricted Countries",
 	"allowpurchasefromrestrictedcountries":  "Allow Purchase From Restricted Countries",

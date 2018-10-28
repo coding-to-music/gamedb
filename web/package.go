@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/go-chi/chi"
@@ -73,7 +74,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get prices
-		pricesResp, err := db.GetPackagePrices(pack.ID, 0)
+		pricesResp, err := db.GetProductPrices(pack.ID, db.ProductTypePackage)
 		logging.Error(err)
 
 		pricesCount = len(pricesResp)
@@ -81,12 +82,14 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 		var prices [][]float64
 
 		for _, v := range pricesResp {
-
-			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceFinal) / 100})
+			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceAfter) / 100})
 		}
 
 		// Add current price
-		prices = append(prices, []float64{float64(time.Now().Unix()), float64(pack.PriceFinal) / 100})
+		pricesStruct, err := pack.GetPrice(steam.CountryUS)
+		logging.Error(err)
+
+		prices = append(prices, []float64{float64(time.Now().Unix()), float64(pricesStruct.Final) / 100})
 
 		// Make into a JSON string
 		pricesBytes, err := json.Marshal(prices)

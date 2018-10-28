@@ -82,72 +82,12 @@ indexes:
 # Price Changes Page
 - kind: "AppPrice"
   properties:
-  - name: "currency"
-  - name: "first"
-  - name: "release_date_unix"
-    direction: "asc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
-  - name: "release_date_unix"
-    direction: "desc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
-  - name: "price_final"
-    direction: "asc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
-  - name: "price_final"
-    direction: "desc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
-  - name: "discount"
-    direction: "asc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
-  - name: "discount"
-    direction: "desc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
-  - name: "change"
-    direction: "asc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
-  - name: "change"
-    direction: "desc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
-  - name: "created_at"
-    direction: "asc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "currency"
-  - name: "first"
+  - name: "package_id"
   - name: "created_at"
     direction: "desc"
 
-#
+- kind: "AppPrice"
+  properties:
+  - name: "app_id"
+  - name: "created_at"
+    direction: "desc"

@@ -123,7 +123,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get prices
-		pricesResp, err := db.GetAppPrices(app.ID, 0)
+		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp)
 		if err != nil {
 
 			logging.Error(err)
@@ -136,11 +136,14 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 			for _, v := range pricesResp {
 
-				prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceFinal) / 100})
+				prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceAfter) / 100})
 			}
 
 			// Add current price
-			prices = append(prices, []float64{float64(time.Now().Unix()), float64(app.PriceFinal) / 100})
+			pricesStruct, err := app.GetPrice(steam.CountryUS)
+			logging.Error(err)
+
+			prices = append(prices, []float64{float64(time.Now().Unix()), float64(pricesStruct.Final) / 100})
 
 			// Make into a JSON string
 			pricesBytes, err := json.Marshal(prices)

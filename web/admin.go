@@ -311,14 +311,17 @@ func adminPublishers() {
 
 			delete(pubsToDelete, key)
 
+			price, err := app.GetPrice(steam.CountryUS)
+			logging.Error(err)
+
 			if _, ok := publishersToAdd[key]; ok {
 				publishersToAdd[key].count++
-				publishersToAdd[key].totalPrice += app.PriceFinal
+				publishersToAdd[key].totalPrice += price.Final
 				publishersToAdd[key].totalScore += app.ReviewsScore
 			} else {
 				publishersToAdd[key] = &adminPublisher{
 					count:      1,
-					totalPrice: app.PriceFinal,
+					totalPrice: price.Final,
 					totalScore: app.ReviewsScore,
 					name:       publisher,
 				}
@@ -433,15 +436,18 @@ func adminDevelopers() {
 
 			delete(devsToDelete, key)
 
+			price, err := app.GetPrice(steam.CountryUS)
+			logging.Error(err)
+
 			if _, ok := counts[key]; ok {
 				counts[key].count++
-				counts[key].totalPrice += app.PriceFinal
+				counts[key].totalPrice += price.Final
 				counts[key].totalScore += app.ReviewsScore
 			} else {
 				counts[key] = &adminDeveloper{
 					name:       app.GetName(),
 					count:      1,
-					totalPrice: app.PriceFinal,
+					totalPrice: price.Final,
 					totalScore: app.ReviewsScore,
 				}
 			}
@@ -553,15 +559,18 @@ func adminTags() {
 
 			delete(tagsToDelete, tagID)
 
+			price, err := app.GetPrice(steam.CountryUS)
+			logging.Error(err)
+
 			if _, ok := currentTags[tagID]; ok {
 				currentTags[tagID].count++
-				currentTags[tagID].totalPrice += app.PriceFinal
+				currentTags[tagID].totalPrice += price.Final
 				currentTags[tagID].totalScore += app.ReviewsScore
 			} else {
 				currentTags[tagID] = &adminTag{
 					name:       steamTagMap[tagID],
 					count:      1,
-					totalPrice: app.PriceFinal,
+					totalPrice: price.Final,
 					totalScore: app.ReviewsScore,
 				}
 			}

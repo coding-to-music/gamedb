@@ -14,6 +14,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/storage"
 	"github.com/gosimple/slug"
@@ -431,8 +432,15 @@ func (p *Player) updateGames() (error) {
 	}
 
 	for _, v := range gamesSQL {
-		if v.PriceFinal > 0 {
-			appsMap[v.ID].AppPrice = v.PriceFinal
+
+		prices, err := v.GetPrices()
+		logging.Error(err)
+
+		priceUSD, err := prices.Get(steam.CountryUS)
+		logging.Error(err)
+
+		if priceUSD.Final > 0 {
+			appsMap[v.ID].AppPrice = priceUSD.Final
 			appsMap[v.ID].SetPriceHour()
 		}
 	}

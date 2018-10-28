@@ -11,13 +11,12 @@ func GetSteam() (*steam.Steam) {
 
 	if steamClient == nil {
 
-		s := steam.Steam{
+		steamClient = &steam.Steam{
 			Key:        viper.GetString("API_KEY"),
 			LogChannel: GetSteamLogsChan(),
-			RateLimit:  1,
 		}
 
-		steamClient = &s
+		steamClient.SetRateLimit(1)
 	}
 
 	return steamClient
