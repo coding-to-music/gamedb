@@ -41,11 +41,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6e2cf41900215c37aa04070b97f0e35a1b69a2fd2785c6b85767ec6415ccc568"
+  digest = "1:88cfad143c2b1f5ca9af2a9a3e1a980d7dcf7bd9a1fe900db15c50a0e93b5650"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "69f568c7b29b75f53ec0e78a0eb128000f5e1068"
+  revision = "81e4bf7b90da339f9070c94d173c484a60f2b661"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -272,20 +272,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:e96bffe8d0299390ecb54bd56c696a44ee96e4e9ff414b0215ac9cc3a67bbad3"
+  digest = "1:3a948d9153a07d05e56d0fcc019dc224239e0e2578ea0d8be6465603afa3ae75"
   name = "github.com/ikeikeikeike/go-sitemap-generator"
   packages = ["stm"]
   pruneopts = ""
-  revision = "34e2328f3f18422765314ad5aa2c57258ad521f0"
-
-[[projects]]
-  digest = "1:7ab38c15bd21e056e3115c8b526d201eaf74e0308da9370997c6b3c187115d36"
-  name = "github.com/imdario/mergo"
-  packages = ["."]
-  pruneopts = ""
-  revision = "9f23e2d6bd2a77f959b2bf6acdbefd708a83a4a4"
-  version = "v0.3.6"
+  revision = "c68941e30f7a3292afef82ed2f8800bd47fde3d1"
+  version = "v2.0.0"
 
 [[projects]]
   digest = "1:d269638dbd514822446c3c818b6389c880058af79ec54d97731818b34fe66921"
@@ -436,11 +428,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3edb0d06759b2072139042b2f8bd4e2d5b3d9866c316702c28d5a709433dbaa2"
+  digest = "1:47081c00d00c1dfc9a530c2556e78be391a5c24db1043efe6d406af882a169a1"
   name = "github.com/satori/go.uuid"
   packages = ["."]
   pruneopts = ""
-  revision = "8ccf5352a842c034b1a69f28c863aff9b1cdb116"
+  revision = "b2ce2384e17bbe0c6d34077efa39dbab3e09123b"
 
 [[projects]]
   digest = "1:f66a8bd3128df79a2648daea552403c5c66d841c7ae844d5d22b445afbdf0878"
