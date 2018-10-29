@@ -37,7 +37,7 @@ func CommitsHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	commits, _, err := githubClient.Repositories.ListCommits(githubContext, "steam-authority", "steam-authority", &options)
+	commits, _, err := githubClient.Repositories.ListCommits(githubContext, "gamedb", "website", &options)
 	if err != nil {
 		logging.Error(err)
 		returnErrorTemplate(w, r, 500, "Can't connect to GitHub")

@@ -11,7 +11,7 @@ grunt >>${HOME}/logs/grunt.log 2>&1 &
 export GRUNT_PID=$!
 echo "Loaded Grunt"
 
-cd /Websites/steam-authority/steam-updater/ && dotnet run >>${HOME}/logs/updater.log 2>&1 &
+cd /Websites/gamedb/website/ && dotnet run >>${HOME}/logs/updater.log 2>&1 &
 export UPDATER_PID=$!
 echo "Loaded Updater"
 

@@ -1,5 +1,5 @@
 {
-    "name": "steam-authority",
+    "name": "gamedb",
     "version": "0.0.1",
     "devDependencies": {
         "grunt": "^1.0.3",

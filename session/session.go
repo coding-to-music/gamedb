@@ -25,7 +25,7 @@ func Init() {
 
 func getSession(r *http.Request) (*sessions.Session, error) {
 
-	session, err := store.Get(r, "steam-authority-session")
+	session, err := store.Get(r, "gamedb-session")
 	if err != nil {
 		return session, err
 	}
