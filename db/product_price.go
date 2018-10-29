@@ -40,7 +40,7 @@ func (p ProductPrice) GetPath() string {
 func (p ProductPrice) GetIcon() string {
 
 	if p.Icon == "" {
-		return "/assets/img/no-app-image-square.jpg"
+		return DefaultAppIcon
 	} else if strings.HasPrefix(p.Icon, "/") {
 		return p.Icon
 	} else {

@@ -74,15 +74,6 @@ func (pack Package) GetPath() string {
 	return getPackagePath(pack.ID, pack.PICSName)
 }
 
-func getPackagePath(id int, name string) string {
-
-	path := "/packages/" + strconv.Itoa(id)
-	if name == "" {
-		return path
-	}
-	return path + "/" + slug.Make(name)
-}
-
 func (pack Package) GetName() (name string) {
 
 	if pack.PICSName == "" {
@@ -93,7 +84,7 @@ func (pack Package) GetName() (name string) {
 }
 
 func (pack Package) GetDefaultAvatar() string {
-	return "/assets/img/no-app-image-square.jpg"
+	return DefaultAppIcon
 }
 
 func (pack Package) GetCreatedNice() string {
@@ -439,6 +430,15 @@ func (pack *Package) Update() (err error) {
 	pack.Prices = prices.ToString()
 
 	return nil
+}
+
+func getPackagePath(id int, name string) string {
+
+	path := "/packages/" + strconv.Itoa(id)
+	if name == "" {
+		return path
+	}
+	return path + "/" + slug.Make(name)
 }
 
 func GetPackage(id int) (pack Package, err error) {

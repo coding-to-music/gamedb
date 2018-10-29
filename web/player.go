@@ -156,7 +156,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 				game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
 
 				if v.ImgIconURL == "" {
-					game.Icon = "/assets/img/no-app-image-square.jpg"
+					game.Icon = db.DefaultAppIcon
 				} else {
 					game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
 				}

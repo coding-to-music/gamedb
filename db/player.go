@@ -1119,7 +1119,7 @@ func (p ProfileBadge) GetAppName() (string) {
 
 func (p ProfileBadge) GetIcon() (string) {
 	if p.AppIcon == "" {
-		return "/assets/img/no-app-image-square.jpg"
+		return DefaultAppIcon
 	}
 	return p.AppIcon
 }

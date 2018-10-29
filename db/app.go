@@ -23,6 +23,8 @@ const (
 	platformWindows = "windows"
 	platformMac     = "macos"
 	platformLinux   = "linux"
+
+	DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
 )
 
 var (
@@ -183,8 +185,8 @@ func (app App) OutputForJSON() (output []interface{}) {
 	}
 }
 
-func (app App) GetDefaultAvatar() string {
-	return "/assets/img/no-app-image-square.jpg"
+func (app App) GetDefaultIcon() string {
+	return DefaultAppIcon
 }
 
 func (app App) GetReleaseState() (ret string) {
@@ -216,7 +218,7 @@ func (app App) GetReleaseDateUnix() int64 {
 func (app App) GetIcon() (ret string) {
 
 	if app.Icon == "" {
-		return "/assets/img/no-app-image-square.jpg"
+		return app.GetDefaultIcon()
 	}
 	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(app.ID) + "/" + app.Icon + ".jpg"
 }
