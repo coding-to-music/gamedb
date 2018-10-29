@@ -2,6 +2,7 @@ package queue
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
@@ -34,8 +35,21 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	message := rabbitMessage.PICSPackageInfo
 
-	// Create mysql row data
+	// Load current package
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		return false, true, err
+	}
+
 	pack := new(db.Package)
+	gorm.First(&pack, message.ID)
+	if gorm.Error != nil && !gorm.RecordNotFound() {
+		return false, true, gorm.Error
+	}
+
+	var packageBeforeUpdate = pack
+
+	// Update with new details
 	pack.ID = message.ID
 	pack.PICSChangeID = message.ChangeNumber
 	pack.PICSName = message.KeyValues.Name
@@ -103,9 +117,6 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		logging.Error(err)
 	}
 
-	// Save price before update
-	//pricesBeforeUpdate := pack.Prices
-
 	// Update from API
 	err = pack.Update()
 	if err != nil {
@@ -116,48 +127,43 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		}
 	}
 
-	// Save package to MySQL
-	gorm, err := db.GetMySQLClient()
-	if err != nil {
-		return false, true, err
-	}
-
-	gorm.Assign(pack).FirstOrCreate(pack, db.Package{ID: pack.ID})
+	// Save new data
+	gorm.Save(&pack)
 	if gorm.Error != nil {
 		return false, true, gorm.Error
 	}
 
-	// Save price change
-	//price := new(db.ProductPrice)
-	//price.Change = pack.PriceFinal - pricesBeforeUpdate
-	//
-	//if price.Change != 0 {
-	//
-	//	price.CreatedAt = time.Now()
-	//	price.PackageID = pack.ID
-	//	price.Name = pack.GetName()
-	//	price.PriceInitial = pack.PriceInitial
-	//	price.PriceFinal = pack.PriceFinal
-	//	price.Discount = pack.PriceDiscount
-	//	price.Currency = "usd"
-	//	price.Icon = pack.GetDefaultAvatar()
-	//	price.ReleaseDateNice = pack.GetReleaseDateNice()
-	//	price.ReleaseDateUnix = pack.GetReleaseDateUnix()
-	//
-	//	prices, err := db.GetPackagePrices(pack.ID, 1)
-	//	if err != nil {
-	//		logging.Error(err)
-	//	}
-	//
-	//	if len(prices) == 0 {
-	//		price.First = true
-	//	}
-	//
-	//	_, err = db.SaveKind(price.GetKey(), price)
-	//	if err != nil {
-	//		logging.Error(err)
-	//	}
-	//}
+	// Save price changes
+	price := new(db.ProductPrice)
+	price.Change = pack.PriceFinal - pricesBeforeUpdate
+
+	if price.Change != 0 {
+
+		price.CreatedAt = time.Now()
+		price.PackageID = pack.ID
+		price.Name = pack.GetName()
+		price.PriceInitial = pack.PriceInitial
+		price.PriceFinal = pack.PriceFinal
+		price.Discount = pack.PriceDiscount
+		price.Currency = "usd"
+		price.Icon = pack.GetDefaultAvatar()
+		price.ReleaseDateNice = pack.GetReleaseDateNice()
+		price.ReleaseDateUnix = pack.GetReleaseDateUnix()
+
+		prices, err := db.GetPackagePrices(pack.ID, 1)
+		if err != nil {
+			logging.Error(err)
+		}
+
+		if len(prices) == 0 {
+			price.First = true
+		}
+
+		_, err = db.SaveKind(price.GetKey(), price)
+		if err != nil {
+			logging.Error(err)
+		}
+	}
 
 	return true, false, nil
 }
