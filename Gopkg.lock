@@ -139,6 +139,14 @@
   version = "v3.3.3"
 
 [[projects]]
+  digest = "1:968d8903d598e3fae738325d3410f33f07ea6a2b9ee5591e9c262ee37df6845a"
+  name = "github.com/go-errors/errors"
+  packages = ["."]
+  pruneopts = ""
+  revision = "a6af135bd4e28680facf08a3d206b454abc877a4"
+  version = "v1.0.1"
+
+[[projects]]
   digest = "1:ffea3fcee8cae28b474f74a40c328f415790e5677a5c4b3400061ade21df2415"
   name = "github.com/go-siris/siris"
   packages = ["core/errors"]
@@ -800,6 +808,7 @@
     "github.com/dustin/go-humanize",
     "github.com/go-chi/chi",
     "github.com/go-chi/chi/middleware",
+    "github.com/go-errors/errors",
     "github.com/go-sql-driver/mysql",
     "github.com/golang/snappy",
     "github.com/google/go-github/github",

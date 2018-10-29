@@ -74,6 +74,18 @@ func (pack Package) GetPath() string {
 	return getPackagePath(pack.ID, pack.PICSName)
 }
 
+func (pack Package) GetID() int {
+	return pack.ID
+}
+
+func (pack Package) GetIcon() string {
+	return DefaultAppIcon
+}
+
+func (pack Package) GetType() productType {
+	return ProductTypePackage
+}
+
 func (pack Package) GetName() (name string) {
 
 	if pack.PICSName == "" {
@@ -81,10 +93,6 @@ func (pack Package) GetName() (name string) {
 	}
 
 	return pack.PICSName
-}
-
-func (pack Package) GetDefaultAvatar() string {
-	return DefaultAppIcon
 }
 
 func (pack Package) GetCreatedNice() string {
@@ -389,6 +397,12 @@ func (pack *Package) Update() (err error) {
 		// Get package details
 		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
 		if err != nil {
+
+			// Presume that if not found in one language, wont be found in any.
+			if err == steam.ErrPackageNotFound {
+				break
+			}
+
 			logging.Error(err)
 			continue
 		}

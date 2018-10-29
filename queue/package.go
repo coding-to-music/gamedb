@@ -2,7 +2,6 @@ package queue
 
 import (
 	"strconv"
-	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
@@ -34,6 +33,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	message := rabbitMessage.PICSPackageInfo
+
+	logging.Info("Consuming package: " + strconv.Itoa(message.ID))
 
 	// Load current package
 	gorm, err := db.GetMySQLClient()
@@ -119,12 +120,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	// Update from API
 	err = pack.Update()
-	if err != nil {
-		if err == steam.ErrPackageNotFound {
-			return false, false, err
-		} else {
-			return false, true, err
-		}
+	if err != nil && err != steam.ErrPackageNotFound {
+		return false, true, err
 	}
 
 	// Save new data
@@ -134,35 +131,37 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Save price changes
-	price := new(db.ProductPrice)
-	price.Change = pack.PriceFinal - pricesBeforeUpdate
+	var prices db.ProductPrices
+	var price db.ProductPriceCache
+	var kinds []db.Kind
+	for code := range steam.Countries {
 
-	if price.Change != 0 {
+		var oldPrice, newPrice int
 
-		price.CreatedAt = time.Now()
-		price.PackageID = pack.ID
-		price.Name = pack.GetName()
-		price.PriceInitial = pack.PriceInitial
-		price.PriceFinal = pack.PriceFinal
-		price.Discount = pack.PriceDiscount
-		price.Currency = "usd"
-		price.Icon = pack.GetDefaultAvatar()
-		price.ReleaseDateNice = pack.GetReleaseDateNice()
-		price.ReleaseDateUnix = pack.GetReleaseDateUnix()
-
-		prices, err := db.GetPackagePrices(pack.ID, 1)
-		if err != nil {
-			logging.Error(err)
+		prices, err = packageBeforeUpdate.GetPrices()
+		if err == nil {
+			price, err = prices.Get(code)
+			if err == nil {
+				oldPrice = price.Final
+			}
 		}
 
-		if len(prices) == 0 {
-			price.First = true
+		prices, err = pack.GetPrices()
+		if err == nil {
+			price, err = prices.Get(code)
+			if err == nil {
+				newPrice = price.Final
+			}
 		}
 
-		_, err = db.SaveKind(price.GetKey(), price)
-		if err != nil {
-			logging.Error(err)
+		if oldPrice != newPrice {
+			kinds = append(kinds, db.CreateProductPrice(pack, code, oldPrice, newPrice))
 		}
+	}
+
+	err = db.BulkSaveKinds(kinds, db.KindProductPrice, true)
+	if err != nil {
+		return false, true, err
 	}
 
 	return true, false, nil

@@ -24,7 +24,7 @@ type ProductPrice struct {
 }
 
 func (p ProductPrice) GetKey() (key *datastore.Key) {
-	return datastore.IncompleteKey(KindAppPrice, nil)
+	return datastore.IncompleteKey(KindProductPrice, nil)
 }
 
 func (p ProductPrice) GetPath() string {
@@ -141,7 +141,7 @@ func GetProductPrices(ID int, productType productType) (prices []ProductPrice, e
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindAppPrice).Order("created_at").Limit(1000)
+	q := datastore.NewQuery(KindProductPrice).Order("created_at").Limit(1000)
 
 	if productType == ProductTypeApp {
 		q = q.Filter("app_id =", ID)

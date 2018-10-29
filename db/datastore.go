@@ -5,6 +5,7 @@ package db
 import (
 	"context"
 	"errors"
+	"strconv"
 	"sync"
 
 	"cloud.google.com/go/datastore"
@@ -14,7 +15,6 @@ import (
 
 const (
 	KindAppOverTime    = "AppOverTime"
-	KindAppPrice       = "ProductPrice"
 	KindChange         = "Change"
 	KindDonation       = "Donation"
 	KindEvent          = "Event"
@@ -23,6 +23,7 @@ const (
 	KindPlayerApp      = "PlayerApp"
 	KindPlayerOverTime = "PlayerOverTime"
 	KindPlayerRank     = "PlayerRank"
+	KindProductPrice   = "ProductPrice"
 )
 
 var (
@@ -69,8 +70,7 @@ func SaveKind(key *datastore.Key, data interface{}) (newKey *datastore.Key, err 
 
 func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 
-	count := len(kinds)
-	if count == 0 {
+	if len(kinds) == 0 {
 		return nil
 	}
 
@@ -92,6 +92,8 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 			for _, vv := range chunk {
 				keys = append(keys, vv.GetKey())
 			}
+
+			logging.Info("Bulk saving " + strconv.Itoa(len(keys)) + kind + "s")
 
 			switch kind {
 			case KindNews:
