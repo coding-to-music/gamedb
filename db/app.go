@@ -241,14 +241,19 @@ func (app App) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-func (app App) GetPrice(code steam.CountryCode) (price ProductPriceCache, err error) {
+func (app App) GetPrice(code steam.CountryCode) (price ProductPriceCache) {
 
 	prices, err := app.GetPrices()
 	if err != nil {
-		return price, err
+		return price
 	}
 
-	return prices.Get(code)
+	price, err = prices.Get(code)
+	if err != nil {
+		return price
+	}
+
+	return price
 }
 
 func (app App) GetReviewScore() float64 {

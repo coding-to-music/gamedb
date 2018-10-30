@@ -140,10 +140,9 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Add current price
-			pricesStruct, err := app.GetPrice(steam.CountryUS)
-			logging.Error(err)
+			price := app.GetPrice(steam.CountryUS)
 
-			prices = append(prices, []float64{float64(time.Now().Unix()), float64(pricesStruct.Final) / 100})
+			prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
 
 			// Make into a JSON string
 			pricesBytes, err := json.Marshal(prices)
