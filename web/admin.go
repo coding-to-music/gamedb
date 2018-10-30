@@ -3,7 +3,6 @@ package web
 import (
 	"encoding/json"
 	"net/http"
-	"net/url"
 	"sort"
 	"strconv"
 	"sync"
@@ -194,12 +193,23 @@ func adminGenres() {
 		genresToDelete[v.ID] = v.ID
 	}
 
-	// Get apps
-	filter := url.Values{}
-	filter.Set("genres_depth", "3")
+	// Get apps with a genre
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		logging.Error(err)
+		return
+	}
 
-	apps, err := db.SearchApps(filter, 0, 0, "", []string{})
-	logging.Error(err)
+	gorm = gorm.Select([]string{})
+	gorm = gorm.Where("JSON_DEPTH(genres) = ?", 3)
+
+	var apps []db.App
+
+	gorm = gorm.Find(&apps)
+	if gorm.Error != nil {
+		logging.Error(gorm.Error)
+		return
+	}
 
 	counts := make(map[int]*adminGenreCount)
 
@@ -284,10 +294,21 @@ func adminPublishers() {
 		pubsToDelete[slug.Make(publisherRow.Name)] = publisherRow.ID
 	}
 
-	// Get apps from mysql
-	apps, err := db.SearchApps(url.Values{}, 0, 1, "", []string{"name", "price_final", "publishers", "reviews_score"})
+	// Get apps with a publisher
+	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		logging.Error(err)
+		return
+	}
+
+	gorm = gorm.Select([]string{"name", "price_final", "publishers", "reviews_score"})
+	// todo, filter on apps with a publisher
+
+	var apps []db.App
+
+	gorm = gorm.Find(&apps)
+	if gorm.Error != nil {
+		logging.Error(gorm.Error)
 		return
 	}
 
