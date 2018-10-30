@@ -143,6 +143,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 			price, err = prices.Get(code)
 			if err == nil {
 				oldPrice = price.Final
+			} else {
+				continue // Only compare if there is an old price to compare to
 			}
 		}
 

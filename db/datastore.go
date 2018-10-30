@@ -74,6 +74,8 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 		return nil
 	}
 
+	logging.Info("Bulk saving " + strconv.Itoa(len(kinds)) + kind + "s")
+
 	client, ctx, err := GetDSClient()
 	if err != nil {
 		return err
@@ -92,8 +94,6 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 			for _, vv := range chunk {
 				keys = append(keys, vv.GetKey())
 			}
-
-			logging.Info("Bulk saving " + strconv.Itoa(len(keys)) + kind + "s")
 
 			switch kind {
 			case KindNews:
@@ -149,6 +149,8 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 	if len(keys) == 0 {
 		return nil
 	}
+
+	logging.Info("Bulk deleting " + strconv.Itoa(len(keys)) + " keys")
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
