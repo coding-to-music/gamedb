@@ -41,11 +41,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:88cfad143c2b1f5ca9af2a9a3e1a980d7dcf7bd9a1fe900db15c50a0e93b5650"
+  digest = "1:07baaddc8a2cc65e8093ae316f37b8336fb23494dd2b368e5ad1dd7ca9a9c635"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "81e4bf7b90da339f9070c94d173c484a60f2b661"
+  revision = "be02b184f2c340155108d6df96c2e75cbe65f5a6"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -570,18 +570,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:61e7c4fda6be005564928bd05c2c21277428ed207dae5d0b99d3639cb1f9b37c"
-  name = "go.uber.org/ratelimit"
-  packages = [
-    ".",
-    "internal/clock",
-  ]
-  pruneopts = ""
-  revision = "c15da02342779cb6dc027fc95ee2277787698f36"
-
-[[projects]]
-  branch = "master"
-  digest = "1:36b1b85f11b8e2eb8577332a4002be4c6d81211976c7c7d4b0afacd1f5694641"
+  digest = "1:efb97ebbd73c3a7068579327f5d98a17c09f6d8caf1fa3212c506e8bb78126b5"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -595,11 +584,11 @@
     "ssh/terminal",
   ]
   pruneopts = ""
-  revision = "e84da0312774c21d64ee2317962ef669b27ffb41"
+  revision = "4d3f4d9ffa16a13f451c3b2999e9c49e9750bf06"
 
 [[projects]]
   branch = "master"
-  digest = "1:b001b57f383ecbebb54c3916ca6b8be129a6486d3dbf2dfc722cbb0a0b2a8679"
+  digest = "1:41055845ee2a3f0b0fbf94f12b7a6c5322ae66c166d192e38156e0d63a6e2993"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -615,7 +604,7 @@
     "websocket",
   ]
   pruneopts = ""
-  revision = "9b4f9f5ad5197c79fd623a3638e70d8b26cef344"
+  revision = "c44066c5c816ec500d459a2a324a753f78531ae0"
 
 [[projects]]
   branch = "master"
@@ -641,14 +630,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:de99191d5db38e17beb783bdcdab9d8d1a6938948834b2579f500f3bdfbcdac0"
+  digest = "1:2667800887f4161b5b1f49d3065204a82f974d1b857c00d7e450a5167477071f"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "95b1ffbd15a57cc5abb3f04402b9e8ec0016a52c"
+  revision = "d69651ed3497faee15a5363a89578e9991f6d5e2"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -675,7 +664,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bf75c852c6ad28815016847e6b4dba37f7a0fbe89e595213e3d4450682e2f2a9"
+  digest = "1:7cdc43c4c6baac615c2aca39d6b1abe1464d10a81e1b4504368aed4c597500ea"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -693,7 +682,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "511bab8e55decfbe784cd2d1868fa5cda62dc6c1"
+  revision = "1d582fd0359e47ca7d8183d23e4a4166bfe20bc1"
 
 [[projects]]
   digest = "1:8c432632a230496c35a15cfdf441436f04c90e724ad99c8463ef0c82bbe93edb"
@@ -719,7 +708,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9364d3be9cc361435af722c6dd9040c83f23c58a9797e56141878ef2382388c7"
+  digest = "1:5bc459e4630e2f2adcd04005a06d6f9cdf614c6ffa751309497096efcab79150"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -737,7 +726,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "8b5d7a19e2d98fbad9aaf9c599776bf066d7c70f"
+  revision = "b69ba1387ce2108ac9bc8e8e5e5a46e7d5c72313"
 
 [[projects]]
   digest = "1:1293087271e314cfa2b3decededba2ecba0ff327e7b7809e00f73f616449191c"

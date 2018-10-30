@@ -29,8 +29,8 @@ func main() {
 
 	// Rollbar
 	rollbar.SetToken(viper.GetString("ROLLBAR_PRIVATE"))
-	rollbar.SetEnvironment(viper.GetString("ENV"))                      // defaults to "development"
-	rollbar.SetCodeVersion("master")                                    // optional Git hash/branch/tag (required for GitHub integration)
+	rollbar.SetEnvironment(viper.GetString("ENV"))     // defaults to "development"
+	rollbar.SetCodeVersion("master")                   // optional Git hash/branch/tag (required for GitHub integration)
 	rollbar.SetServerRoot("github.com/gamedb/website") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 
 	// Recaptcha

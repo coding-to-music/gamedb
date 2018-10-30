@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"time"
+
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/spf13/viper"
 )
@@ -14,9 +16,13 @@ func GetSteam() (*steam.Steam) {
 		steamClient = &steam.Steam{
 			Key:        viper.GetString("API_KEY"),
 			LogChannel: GetSteamLogsChan(),
+			UserAgent:  "http://gamedb.online",
 		}
 
-		steamClient.SetRateLimit(1)
+		steamClient.SetRateLimit(
+			time.Hour*24/100000,
+			time.Millisecond*1600,
+		)
 	}
 
 	return steamClient
