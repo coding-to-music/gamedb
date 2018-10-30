@@ -5,35 +5,15 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 )
 
-const (
-	appsSearchLimit = 100
-)
-
 func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Get page number
-	page, err := strconv.Atoi(r.URL.Query().Get("p"))
-	if err != nil {
-		page = 1
-	}
-
+	var err error
 	var wg sync.WaitGroup
-
-	// Get apps
-	var apps []db.App
-	wg.Add(1)
-	go func() {
-
-		apps, err = db.SearchApps(r.URL.Query(), appsSearchLimit, page, "id DESC", []string{})
-		logging.Error(err)
-
-		wg.Done()
-
-	}()
 
 	// Get apps count
 	var count int
@@ -71,7 +51,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Get genres
+	// Get publishers
 	var publishers []db.Publisher
 	wg.Add(1)
 	go func() {
@@ -83,7 +63,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Get genres
+	// Get developers
 	var developers []db.Developer
 	wg.Add(1)
 	go func() {
@@ -98,15 +78,10 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	// Make pagination path
-	values := r.URL.Query()
-	values.Del("p")
-
 	// Template
 	t := appsTemplate{}
 	t.Fill(w, r, "Games")
 	t.Count = count
-	t.Apps = apps
 	t.Tags = tags
 	t.Genres = genres
 	t.Publishers = publishers
@@ -120,7 +95,6 @@ type appsTemplate struct {
 	GlobalTemplate
 	Count      int
 	Types      map[string]string
-	Apps       []db.App
 	Tags       []db.Tag
 	Genres     []db.Genre
 	Publishers []db.Publisher
@@ -137,6 +111,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get apps
 	var apps []db.App
+	var recordsFiltered int
 
 	wg.Add(1)
 	go func() {
@@ -150,6 +125,24 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			//gorm = gorm.Model(&db.App{})
 			gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "type", "dlc_count"})
+			gorm = gorm.Limit(100)
+			gorm = gorm.Model(db.App{})
+
+			types := query.GetSearchSlice("types")
+			if len(types) > 0 {
+				gorm = gorm.Where("type IN (?)", types)
+			}
+
+			tags := query.GetSearchSlice("tags")
+			if len(types) > 0 {
+				var or squirrel.Or
+				for _, v := range tags {
+					or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, ?)": "[\"" + v + "\"]"})
+				}
+				sql, data, err := or.ToSql()
+				logging.Error(err)
+				gorm = gorm.Where(sql, data)
+			}
 
 			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
 				"0": "name",
@@ -157,9 +150,12 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				"3": "dlc_count",
 			})
 
-			gorm = gorm.Limit(100)
-			gorm = gorm.Find(&apps)
+			// Get count
+			gorm.Count(&recordsFiltered)
+			logging.Error(gorm.Error)
 
+			// Get rows
+			gorm = gorm.Find(&apps)
 			logging.Error(gorm.Error)
 		}
 
@@ -183,7 +179,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = strconv.Itoa(count)
-	response.RecordsFiltered = strconv.Itoa(count)
+	response.RecordsFiltered = strconv.Itoa(recordsFiltered)
 	response.Draw = query.Draw
 
 	for _, v := range apps {
