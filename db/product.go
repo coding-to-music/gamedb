@@ -52,7 +52,7 @@ func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceCache, err
 	return price, errors.New("invalid code")
 }
 
-func (p ProductPrices) ToString() string {
+func (p ProductPrices) String() string {
 
 	bytes, err := json.Marshal(p)
 	logging.Error(err)

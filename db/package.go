@@ -403,8 +403,7 @@ func (pack *Package) Update() (err error) {
 				break
 			}
 
-			logging.Error(err)
-			continue
+			return err
 		}
 
 		prices.AddPriceFromPackage(code, response)
@@ -441,7 +440,7 @@ func (pack *Package) Update() (err error) {
 		}
 	}
 
-	pack.Prices = prices.ToString()
+	pack.Prices = prices.String()
 
 	return nil
 }

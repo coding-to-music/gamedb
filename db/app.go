@@ -644,7 +644,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 		prices := ProductPrices{}
 		prices.AddPriceFromApp(steam.CountryUS, response)
 
-		app.Prices = prices.ToString()
+		app.Prices = prices.String()
 
 		wg.Done()
 	}(app)
