@@ -41,11 +41,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:07baaddc8a2cc65e8093ae316f37b8336fb23494dd2b368e5ad1dd7ca9a9c635"
+  digest = "1:b221bfb97222282ed5c94a7d17c2a1ff6d466c3602997a8464d834ab17bf07bc"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "be02b184f2c340155108d6df96c2e75cbe65f5a6"
+  revision = "4d236cdfc24deb886fa2ad1cdd81e62fb4bf9096"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -630,14 +630,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2667800887f4161b5b1f49d3065204a82f974d1b857c00d7e450a5167477071f"
+  digest = "1:ff65401e40494de90fddaecf09b2954179d872a45d9c68b9b31da60f35e4ea73"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "d69651ed3497faee15a5363a89578e9991f6d5e2"
+  revision = "7e31e0c00fa05cb5fbf4347b585621d6709e19a4"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"

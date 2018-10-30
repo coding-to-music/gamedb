@@ -28,12 +28,12 @@ func GetSteam() (*steam.Steam) {
 	return steamClient
 }
 
-var steamLogs chan string
+var steamLogs chan steam.Log
 
-func GetSteamLogsChan() chan string {
+func GetSteamLogsChan() chan steam.Log {
 
 	if steamLogs == nil {
-		steamLogs = make(chan string)
+		steamLogs = make(chan steam.Log)
 	}
 
 	return steamLogs
