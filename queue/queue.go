@@ -52,7 +52,7 @@ func init() {
 		//{Message: RabbitMessageApp{}},
 		{Message: RabbitMessageChanges{}},
 		//{Message: RabbitMessageDelay{}},
-		{Message: RabbitMessagePackage{}},
+		//{Message: RabbitMessagePackage{}},
 		//{Message: RabbitMessageProfile{}},
 	}
 

@@ -56,10 +56,10 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update news, reviews etc
-	//errs := app.UpdateFromRequest(r.UserAgent())
-	//for _, v := range errs {
-	//	logging.Error(v)
-	//}
+	errs := app.UpdateFromRequest(r.UserAgent())
+	for _, v := range errs {
+		logging.Error(v)
+	}
 
 	//
 	var wg sync.WaitGroup

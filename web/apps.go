@@ -116,7 +116,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		gorm, err := db.GetMySQLClient(true)
+		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
 			logging.Error(err)
