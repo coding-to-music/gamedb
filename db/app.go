@@ -493,7 +493,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 			app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
 
 			// Log this app score
-			err = SaveAppReviewScore(app.ID, app.ReviewsScore, app.ReviewsPositive, app.ReviewsNegative)
+			err = SaveAppOverTime(*app)
 			if err != nil {
 				errs = append(errs, err)
 			}

@@ -18,20 +18,20 @@ func (p AppOverTime) GetKey() (key *datastore.Key) {
 	return datastore.IncompleteKey(KindAppOverTime, nil)
 }
 
-func SaveAppReviewScore(appID int, score float64, pos int, neg int) (err error) {
+func SaveAppOverTime(app App) (err error) {
 
-	kind := new(AppOverTime)
-	kind.AppID = appID
-	kind.CreatedAt = time.Now()
-	kind.Score = score
-	kind.ReviewsPositive = pos
-	kind.ReviewsNegative = neg
+	aot := new(AppOverTime)
+	aot.AppID = app.ID
+	aot.CreatedAt = time.Now()
+	aot.Score = app.ReviewsScore
+	aot.ReviewsPositive = app.ReviewsPositive
+	aot.ReviewsNegative = app.ReviewsNegative
 
-	_, err = SaveKind(kind.GetKey(), kind)
+	_, err = SaveKind(aot.GetKey(), aot)
 	return err
 }
 
-func GetAppReviewScores(appID int64) (scores []AppOverTime, err error) {
+func GetAppOverTimes(appID int64) (scores []AppOverTime, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
