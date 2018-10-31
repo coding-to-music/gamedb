@@ -517,7 +517,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 	db.Save(app)
 	if db.Error != nil {
-		errs = append(errs, err)
+		errs = append(errs, db.Error)
 	}
 
 	return errs
