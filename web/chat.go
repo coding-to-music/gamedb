@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/website/logging"
@@ -24,13 +25,27 @@ var (
 // Called from main
 func InitChat() {
 
+	// Retry connecting to Discord
+	for i := 1; i <= 3; i++ {
+		err := connectToDiscord()
+		if err != nil && i < 3 {
+			time.Sleep(time.Second)
+		} else if err != nil {
+			logging.Error(err)
+		} else {
+			break
+		}
+	}
+}
+
+func connectToDiscord() error {
+
 	var err error
 
 	// Get client
 	discordSession, err = discordgo.New("Bot " + viper.GetString("DISCORD_BOT_TOKEN"))
 	if err != nil {
-		logging.Error(err)
-		return
+		return err
 	}
 
 	// Add websocket listener
@@ -51,8 +66,7 @@ func InitChat() {
 	})
 
 	// Open connection
-	err = discordSession.Open()
-	logging.Error(err)
+	return discordSession.Open()
 }
 
 type chatWebsocketPayload struct {
