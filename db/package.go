@@ -445,6 +445,15 @@ func (pack *Package) Update() (err error) {
 	return nil
 }
 
+func IsValidPackageID(id int) bool {
+
+	if id == 0 {
+		return false
+	}
+
+	return true
+}
+
 func getPackagePath(id int, name string) string {
 
 	path := "/packages/" + strconv.Itoa(id)

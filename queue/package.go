@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -36,6 +37,10 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	logging.Info("Consuming package: " + strconv.Itoa(message.ID))
 
+	if !db.IsValidPackageID(message.ID) {
+		return false, false, errors.New("invalid package ID")
+	}
+
 	// Load current package
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
@@ -46,6 +51,10 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	gorm.First(&pack, message.ID)
 	if gorm.Error != nil && !gorm.RecordNotFound() {
 		return false, true, gorm.Error
+	}
+
+	if pack.PICSChangeID >= message.ChangeNumber {
+		return true, false, nil
 	}
 
 	var packageBeforeUpdate = pack
