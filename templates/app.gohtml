@@ -69,7 +69,7 @@
                     <p>For Game: <a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></p>
                 {{end}}
 
-                    <p>Review Score: {{ .App.ReviewsScore }}</p>
+                    <p>Review Score: {{ .App.ReviewsScore }}%</p>
                     <p>Price: {{ (.App.GetPrice "us").Final }}</p>
                     <p>App Type: {{ .App.GetType }}</p>
                     <p>Release State: {{ .App.GetReleaseState }}</p>
@@ -241,7 +241,7 @@
                         <tbody>
                         <tr>
                             <th scope="row" width="15%">Score</th>
-                            <td>{{ .App.ReviewsScore }} / 100</td>
+                            <td>{{ .App.ReviewsScore }}%</td>
                         </tr>
                         <tr>
                             <th scope="row" width="20%">Positive / Negative</th>
