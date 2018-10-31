@@ -129,24 +129,6 @@ func SaveOrUpdateTag(id int, vals Tag) (err error) {
 	return nil
 }
 
-func DeleteTag(id int) (err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	tag := new(Tag)
-	tag.ID = id
-
-	db.Delete(tag)
-	if db.Error != nil {
-		return db.Error
-	}
-
-	return nil
-}
-
 func DeleteTags(ids []int) (err error) {
 
 	if len(ids) == 0 {
