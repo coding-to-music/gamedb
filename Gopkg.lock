@@ -41,11 +41,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b221bfb97222282ed5c94a7d17c2a1ff6d466c3602997a8464d834ab17bf07bc"
+  digest = "1:23644d0154c888183c0351a1299c65f70046b9246c48e84f48aafd8e07827b89"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "4d236cdfc24deb886fa2ad1cdd81e62fb4bf9096"
+  revision = "bbf834adc8b9f825081c8afa0c0fb5f91c588aff"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -608,7 +608,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:77478892c6d9d841c7997858d6287884c65b760000f29a25d7b1a6b6ada5f308"
+  digest = "1:c41b4071000548c12aeba99452479bc0fb631dfb6a7fc2b7f686a487bd7a6248"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
@@ -618,7 +618,7 @@
     "jwt",
   ]
   pruneopts = ""
-  revision = "9dcd33a902f40452422c2367fefcb95b54f9f8f8"
+  revision = "8527f56f71077909d6ead7facfe18fbf05ebdf83"
 
 [[projects]]
   branch = "master"
@@ -630,14 +630,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ff65401e40494de90fddaecf09b2954179d872a45d9c68b9b31da60f35e4ea73"
+  digest = "1:a5320611dcdfc9d79e459a43442b272d9e03276107e75655d7a199aa271d456a"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "7e31e0c00fa05cb5fbf4347b585621d6709e19a4"
+  revision = "9b800f95dbbc54abff0acf7ee32d88ba4e328c89"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -664,7 +664,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7cdc43c4c6baac615c2aca39d6b1abe1464d10a81e1b4504368aed4c597500ea"
+  digest = "1:0e2a24d1cc84470b7c72b128352e5801e3a06a57c8aa8b2daf8f1e570cda2d8a"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -682,7 +682,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "1d582fd0359e47ca7d8183d23e4a4166bfe20bc1"
+  revision = "c4edf6535eee1d314d283301186559db8475d25b"
 
 [[projects]]
   digest = "1:8c432632a230496c35a15cfdf441436f04c90e724ad99c8463ef0c82bbe93edb"
