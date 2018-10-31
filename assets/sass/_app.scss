@@ -45,4 +45,12 @@
             width: 100%;
         }
     }
+
+    #media{
+        .carousel-indicators{
+            li{
+                cursor: pointer;
+            }
+        }
+    }
 }
