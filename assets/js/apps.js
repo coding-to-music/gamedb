@@ -1,7 +1,12 @@
 if ($('#apps-page').length > 0) {
 
-    var $chosens = $('select.form-control-chosen');
-    var $table = $('table.table-datatable2');
+    const $chosens = $('select.form-control-chosen');
+    const $table = $('table.table-datatable2');
+
+    // Set form fields from URL
+    if (window.location.hash) {
+        $('form').deserialize(window.location.hash.substr(1));
+    }
 
     // Setup drop downs
     $chosens.chosen({
@@ -12,6 +17,7 @@ if ($('#apps-page').length > 0) {
 
     $chosens.on('change', function (e) {
         $table.DataTable().draw();
+        history.pushState({}, document.title, "/games#" + $('form').serialize());
     });
 
     // Setup datatable
