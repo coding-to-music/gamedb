@@ -116,17 +116,15 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := db.GetMySQLClient(true)
 		if err != nil {
 
 			logging.Error(err)
 
 		} else {
 
-			//gorm = gorm.Model(&db.App{})
-			gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "type", "dlc_count"})
-			gorm = gorm.Limit(100)
 			gorm = gorm.Model(db.App{})
+			gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "type", "dlc_count"})
 
 			types := query.GetSearchSlice("types")
 			if len(types) > 0 {
@@ -135,24 +133,80 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			tags := query.GetSearchSlice("tags")
 			if len(types) > 0 {
+
 				var or squirrel.Or
 				for _, v := range tags {
-					or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, ?)": "[\"" + v + "\"]"})
+					or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, '[\"" + v + "\"]')": 1})
 				}
 				sql, data, err := or.ToSql()
 				logging.Error(err)
+
 				gorm = gorm.Where(sql, data)
 			}
 
+			genres := query.GetSearchSlice("genres")
+			if len(genres) > 0 {
+
+				var or squirrel.Or
+				for _, v := range genres {
+					or = append(or, squirrel.Eq{"JSON_CONTAINS(genres, JSON_OBJECT('id', " + v + "))": 1})
+				}
+				sql, data, err := or.ToSql()
+				logging.Error(err)
+
+				gorm = gorm.Where(sql, data...)
+			}
+
+			developers := query.GetSearchSlice("developers")
+			if len(developers) > 0 {
+
+				var or squirrel.Or
+				for _, v := range developers {
+					or = append(or, squirrel.Eq{"JSON_CONTAINS(developers, '[\"" + v + "\"]')": 1})
+				}
+				sql, data, err := or.ToSql()
+				logging.Error(err)
+
+				gorm = gorm.Where(sql, data...)
+			}
+
+			publishers := query.GetSearchSlice("publishers")
+			if len(publishers) > 0 {
+
+				var or squirrel.Or
+				for _, v := range publishers {
+					or = append(or, squirrel.Eq{"JSON_CONTAINS(publishers, '[\"" + v + "\"]')": 1})
+				}
+				sql, data, err := or.ToSql()
+				logging.Error(err)
+
+				gorm = gorm.Where(sql, data...)
+			}
+
+			platforms := query.GetSearchSlice("platforms")
+			if len(platforms) > 0 {
+
+				var or squirrel.Or
+				for _, v := range platforms {
+					or = append(or, squirrel.Eq{"JSON_CONTAINS(platforms, '[\"" + v + "\"]')": 1})
+				}
+				sql, data, err := or.ToSql()
+				logging.Error(err)
+
+				gorm = gorm.Where(sql, data...)
+			}
+
+			// Get count
+			gorm.Count(&recordsFiltered)
+			logging.Error(gorm.Error)
+
+			//
+			gorm = gorm.Limit(100)
 			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
 				"0": "name",
 				"2": "reviews_score",
 				"3": "dlc_count",
 			})
-
-			// Get count
-			gorm.Count(&recordsFiltered)
-			logging.Error(gorm.Error)
 
 			// Get rows
 			gorm = gorm.Find(&apps)

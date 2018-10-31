@@ -80,14 +80,3 @@ indexes:
     direction: "asc"
 
 # Price Changes Page
-- kind: "AppPrice"
-  properties:
-  - name: "package_id"
-  - name: "created_at"
-    direction: "desc"
-
-- kind: "AppPrice"
-  properties:
-  - name: "app_id"
-  - name: "created_at"
-    direction: "desc"

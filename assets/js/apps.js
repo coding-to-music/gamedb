@@ -32,7 +32,7 @@ if ($('#apps-page').length > 0) {
             data.search.genres = $('#genres').val();
             data.search.developers = $('#developers').val();
             data.search.publishers = $('#publishers').val();
-            data.search.os = $('#os').val();
+            data.search.platforms = $('#platforms').val();
             data.search.types = $('#types').val();
 
             $.ajax({

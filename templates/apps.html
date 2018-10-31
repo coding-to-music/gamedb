@@ -2,7 +2,7 @@
 
 <div class="container" id="apps-page">
 
-    <form action="/games" method="get" data-persist="garlicx" autocomplete="off" data-destroy="false">
+    <form action="/games" method="get" autocomplete="off" data-destroy="false">
 
         <div class="jumbotron">
             <div class="row">
@@ -32,7 +32,7 @@
                     <div class="d-none">
                     {{/* This div is so Chrome auto-fills this one and not the rest! */}}
                         <label for="hidden">Hidden</label>
-                        <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="hidden" name="hidden">
+                        <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
                         </select>
                     </div>
                     <div class="col-sm">
@@ -66,7 +66,7 @@
                             </label>
                             <select multiple data-placeholder="Choose Developers" class="form-control form-control-chosen" id="developers" name="developers">
                             {{ range $key, $value := .Developers }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
+                                <option value="{{ .GetName }}">{{ .GetName }}</option>
                             {{ end }}
                             </select>
                         </div>
@@ -88,7 +88,7 @@
                     <div class="col-sm">
                         <div class="form-group">
                             <label for="os">Operating System</label>
-                            <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="os" name="os">
+                            <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="platforms" name="platforms">
                                 <option value=""></option>
                                 <option value="windows">Windows</option>
                                 <option value="macos">MacOS</option>

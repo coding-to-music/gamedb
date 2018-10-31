@@ -56,53 +56,54 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update news, reviews etc
-	errs := app.UpdateFromRequest(r.UserAgent())
-	for _, v := range errs {
-		logging.Error(v)
-	}
+	//errs := app.UpdateFromRequest(r.UserAgent())
+	//for _, v := range errs {
+	//	logging.Error(v)
+	//}
 
 	//
 	var wg sync.WaitGroup
 
+	// todo, dont call steam here!
 	var achievements []appAchievementTemplate
-	wg.Add(1)
-	go func() {
-
-		// Get achievements
-		achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
-		if err != nil {
-
-			logging.Error(err)
-
-		} else {
-
-			achievementsMap := make(map[string]float64)
-			for _, v := range achievementsResp.GlobalAchievementPercentage {
-				achievementsMap[v.Name] = v.Percent
-			}
-
-			// Get schema
-			schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
-			if err != nil {
-
-				logging.Error(err)
-
-			} else {
-
-				// Make template struct
-				for _, v := range schema.AvailableGameStats.Achievements {
-					achievements = append(achievements, appAchievementTemplate{
-						v.Icon,
-						v.DisplayName,
-						v.Description,
-						achievementsMap[v.Name],
-					})
-				}
-			}
-		}
-
-		wg.Done()
-	}()
+	//wg.Add(1)
+	//go func() {
+	//
+	//	// Get achievements
+	//	achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
+	//	if err != nil {
+	//
+	//		logging.Error(err)
+	//
+	//	} else {
+	//
+	//		achievementsMap := make(map[string]float64)
+	//		for _, v := range achievementsResp.GlobalAchievementPercentage {
+	//			achievementsMap[v.Name] = v.Percent
+	//		}
+	//
+	//		// Get schema
+	//		schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
+	//		if err != nil {
+	//
+	//			logging.Error(err)
+	//
+	//		} else {
+	//
+	//			// Make template struct
+	//			for _, v := range schema.AvailableGameStats.Achievements {
+	//				achievements = append(achievements, appAchievementTemplate{
+	//					v.Icon,
+	//					v.DisplayName,
+	//					v.Description,
+	//					achievementsMap[v.Name],
+	//				})
+	//			}
+	//		}
+	//	}
+	//
+	//	wg.Done()
+	//}()
 
 	var tags []db.Tag
 	wg.Add(1)
