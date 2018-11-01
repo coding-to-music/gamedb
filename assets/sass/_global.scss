@@ -72,13 +72,38 @@ div#top.show {
     }
 }
 
-.ad {
+// Top ads
+#ad-top {
     text-align: center;
-
-    .chitikaAdContainer {
+    .ad-top-small {
         padding: 0;
         margin: 0 0 10px 0;
-        height: 90px;
+        height: 50px;
+    }
+    .ad-top-big {
+        .chitikaAdContainer {
+            padding: 0;
+            margin: 0 0 10px 0;
+            height: 90px;
+            img {
+                width: 690px;
+            }
+        }
+    }
+}
+
+// Side ads
+.container:nth-of-type(2) {
+    position: relative;
+
+    .ad-left {
+        position: absolute;
+        left: -160px;
+    }
+
+    .ad-right {
+        position: absolute;
+        right: -160px;
     }
 }
 

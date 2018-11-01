@@ -137,21 +137,6 @@
     </nav>
 </header>
 
-<div class="container ad d-none d-lg-block">
-    <script>
-        if (user.showAds) {
-            (function () {
-                if (window.CHITIKA === undefined) {
-                    window.CHITIKA = {'units': []};
-                }
-                const unit = {"calltype": "async[2]", "publisher": "jleagle", "width": 728, "height": 90, "sid": "Chitika Default"};
-                const placement_id = window.CHITIKA.units.length;
-                window.CHITIKA.units.push(unit);
-                document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
-            }());
-        }
-    </script>
-    <script src="//cdn.chitika.net/getads.js" async></script>
-</div>
+<div id="ad-top" class="container"></div>
 
 {{end}}
