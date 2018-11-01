@@ -16,7 +16,7 @@
                     <a class="nav-link active" data-toggle="tab" href="#gamedb" role="tab"><i class="fas fa-key"></i> Login with Username</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#steam" role="tab"><i class="fab fa-steam-square"></i> Login with Steam</a>
+                    <a class="nav-link" data-toggle="tab" href="#steam" role="tab"><i class="fab fa-steam-square"></i> Register / Login with Steam</a>
                 </li>
             </ul>
 
@@ -25,11 +25,11 @@
 
         {{ template "_flashes" . }}
 
-            <div class="row">
-                <div class="col-12 col-sm-12 col-md-8 col-lg-6">
+            <div class="tab-content">
+                <div class="tab-pane show active" id="gamedb" role="tabpanel">
 
-                    <div class="tab-content">
-                        <div class="tab-pane show active" id="gamedb" role="tabpanel">
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-8 col-lg-6">
 
                             <form action="/login" method="post">
                                 <div class="form-group">
@@ -51,15 +51,29 @@
                             </form>
 
                         </div>
-                        <div class="tab-pane" id="steam" role="tabpanel">
-
-                            <a href="/login/openid"><i class="fab fa-steam-square"></i> Login with Steam</a>
-
-                        </div>
                     </div>
 
                 </div>
+                <div class="tab-pane" id="steam" role="tabpanel">
+
+                    <p>Logging in with Steam tells Game DB who you are on Steam.</p>
+                    <p>Knowing this lets Game DB retrieve more information about your account.</p>
+                    <p>Game DB can only retrieve public information in accordance to your
+                        <a href="https://steamcommunity.com/my/edit/settings">privacy settings</a>.</p>
+
+                    <form action="https://steamcommunity.com/openid/login" method="post">
+                        <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
+                        <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
+                        <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
+                        <input type="hidden" name="openid.mode" value="checkid_setup">
+                        <input type="hidden" name="openid.realm" value="http://localhost:8081/">
+                        <input type="hidden" name="openid.return_to" value="http://localhost:8081/login/callback">
+                        <button type="submit" class="btn btn-success">Login with Steam</button>
+                    </form>
+
+                </div>
             </div>
+
 
         </div>
     </div>
