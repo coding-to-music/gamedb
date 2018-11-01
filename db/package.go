@@ -88,8 +88,10 @@ func (pack Package) GetType() productType {
 
 func (pack Package) GetName() (name string) {
 
-	if pack.PICSName == "" {
-		pack.PICSName = "Package " + strconv.FormatInt(int64(pack.ID), 10)
+	var IDString = strconv.FormatInt(int64(pack.ID), 10)
+
+	if (pack.PICSName == "") || (pack.PICSName == IDString) {
+		pack.PICSName = "Package " + IDString
 	}
 
 	return pack.PICSName
@@ -281,7 +283,12 @@ func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceCache, e
 		return price, err
 	}
 
-	return prices.Get(code)
+	price, err = prices.Get(code)
+	if err != nil && err != ErrInvalidCountryCode {
+		return price, err
+	}
+
+	return price, nil
 }
 
 func (pack *Package) SetExtended(extended Extended) (err error) {

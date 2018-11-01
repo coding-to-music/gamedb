@@ -240,6 +240,7 @@ func (app App) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
+// No erros version, for errors, use GetPrices()
 func (app App) GetPrice(code steam.CountryCode) (price ProductPriceCache) {
 
 	prices, err := app.GetPrices()
@@ -247,11 +248,7 @@ func (app App) GetPrice(code steam.CountryCode) (price ProductPriceCache) {
 		return price
 	}
 
-	price, err = prices.Get(code)
-	if err != nil {
-		return price
-	}
-
+	price, _ = prices.Get(code)
 	return price
 }
 

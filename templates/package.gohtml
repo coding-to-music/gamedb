@@ -34,10 +34,12 @@
                         {{/* Package Details */}}
                             <div class="table-responsive">
                                 <table class="table">
+                                {{ if ne .Package.ReleaseDate "" }}
                                     <tr>
                                         <td>ReleaseDate</td>
                                         <td>{{ .Package.ReleaseDate }}</td>
                                     </tr>
+                                {{ end }}
                                     <tr>
                                         <td>Coming Soon</td>
                                         <td>{{ .Package.GetComingSoon }}</td>
@@ -56,7 +58,7 @@
                                     </tr>
                                     <tr>
                                         <td>Change ID</td>
-                                        <td><a href="/changes/{{ .Package.PICSChangeID }}">{{ comma .Package.PICSChangeID }}</a></td>
+                                        <td><a href="/changes/{{ .Package.PICSChangeID }}">Change {{ .Package.PICSChangeID }}</a></td>
                                     </tr>
                                     <tr>
                                         <td>Platforms</td>
@@ -83,19 +85,19 @@
                             <table class="table">
                                 <tr>
                                     <td>Initial Price</td>
-                                    <td>${{ .Package.GetPriceInitial }}</td>
+                                    <td>${{ (.Package.GetPrice "us").Initial }}</td>
                                 </tr>
                                 <tr>
                                     <td>Final Price</td>
-                                    <td>${{ .Package.GetPriceFinal }}</td>
+                                    <td>${{ (.Package.GetPrice "us").Final }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Discount Price</td>
-                                    <td>${{ .Package.GetPriceDiscount }}</td>
+                                    <td>Discount Percent</td>
+                                    <td>${{ (.Package.GetPrice "us").DiscountPercent }}</td>
                                 </tr>
                                 <tr>
                                     <td>Individual Price</td>
-                                    <td>${{ .Package.GetPriceIndividual }}</td>
+                                    <td>${{ (.Package.GetPrice "us").Individual }}</td>
                                 </tr>
                             </table>
 

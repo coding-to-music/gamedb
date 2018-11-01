@@ -16,6 +16,8 @@ const (
 	ProductTypePackage             = "package"
 )
 
+var ErrInvalidCountryCode = errors.New("invalid code")
+
 type productInterface interface {
 	GetID() int
 	GetType() productType
@@ -49,7 +51,7 @@ func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceCache, err
 	if val, ok := p[code]; ok {
 		return val, err
 	}
-	return price, errors.New("invalid code")
+	return price, ErrInvalidCountryCode
 }
 
 func (p ProductPrices) String() string {
