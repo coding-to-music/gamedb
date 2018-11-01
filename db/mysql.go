@@ -17,28 +17,43 @@ import (
 var (
 	ErrNotFound = errors.New("not found")
 
-	gormConnection *gorm.DB
+	gormConnection      *gorm.DB
+	gormConnectionDebug *gorm.DB
 )
 
 func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 
+	var options = "?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
+
 	if len(debug) > 0 {
-		db, _ := gorm.Open("mysql", viper.GetString("MYSQL_DSN"))
-		db.LogMode(true)
-		return db, nil
-	}
 
-	if gormConnection == nil {
+		if gormConnectionDebug == nil {
 
-		db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN"))
-		if err != nil {
-			return db, nil
+			db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN")+options)
+			if err != nil {
+				return db, err
+			}
+			db.LogMode(true)
+
+			gormConnectionDebug = db
 		}
 
-		gormConnection = db
-	}
+		return gormConnectionDebug, nil
 
-	return gormConnection, nil
+	} else {
+
+		if gormConnection == nil {
+
+			db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN")+options)
+			if err != nil {
+				return db, err
+			}
+
+			gormConnection = db
+		}
+
+		return gormConnection, nil
+	}
 }
 
 //
