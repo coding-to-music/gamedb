@@ -244,9 +244,9 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var tags []string
 			for _, v := range a {
-				tags = append(tags, "<a href=\"/games?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
+				tags = append(tags, "<a class=\"badge badge-success\" href=\"/games?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
 			}
-			return template.HTML(strings.Join(tags, ", "))
+			return template.HTML(strings.Join(tags, " "))
 		},
 		"genres": func(a []steam.AppDetailsGenre) template.HTML {
 
@@ -256,9 +256,9 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var genres []string
 			for _, v := range a {
-				genres = append(genres, "<a href=\"/games?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
+				genres = append(genres, "<a class=\"badge badge-success\" href=\"/games?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
 			}
-			return template.HTML(strings.Join(genres, ", "))
+			return template.HTML(strings.Join(genres, " "))
 		},
 		"unix":       func(t time.Time) int64 { return t.Unix() },
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
