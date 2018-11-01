@@ -74,7 +74,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get prices
-		pricesResp, err := db.GetProductPrices(pack.ID, db.ProductTypePackage)
+		pricesResp, err := db.GetProductPrices(pack.ID, db.ProductTypePackage, steam.CountryUS)
 		logging.Error(err)
 
 		pricesCount = len(pricesResp)

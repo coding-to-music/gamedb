@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 )
@@ -38,39 +39,18 @@ func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		client, ctx, err := db.GetDSClient()
-		if err != nil {
+		if err == nil {
 
-			logging.Error(err)
+			q := datastore.NewQuery(db.KindProductPrice).Limit(100).Order("-created_at")
+			q = q.Filter("currency =", steam.CountryUS)
 
-		} else {
-
-			columns := map[string]string{
-				//"0": "app_name",
-				"1": "release_date_unix",
-				"2": "price_final",
-				"3": "discount",
-				"4": "change",
-				"5": "created_at",
-			}
-
-			q := datastore.NewQuery(db.KindProductPrice).Limit(100)
-			q = q.Filter("currency =", "usd")
-			q = q.Filter("first =", false)
-
-			column := query.GetOrderDS(columns, false)
-			if column != "" {
-				q, err = query.SetOrderOffsetDS(q, columns)
-				if err != nil {
-
-					logging.Error(err)
-
-				} else {
-
-					_, err := client.GetAll(ctx, q, &priceChanges)
-					logging.Error(err)
-				}
+			q, err = query.SetOffsetDS(q)
+			if err == nil {
+				_, err = client.GetAll(ctx, q, &priceChanges)
 			}
 		}
+
+		logging.Error(err)
 
 		wg.Done()
 	}()

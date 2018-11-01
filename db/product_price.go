@@ -1,6 +1,7 @@
 package db
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -134,14 +135,15 @@ func CreateProductPrice(product productInterface, currency steam.CountryCode, pr
 	return price
 }
 
-func GetProductPrices(ID int, productType productType) (prices []ProductPrice, err error) {
+func GetProductPrices(ID int, productType productType, currency steam.CountryCode) (prices []ProductPrice, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
 		return prices, err
 	}
 
-	q := datastore.NewQuery(KindProductPrice).Order("created_at").Limit(1000)
+	q := datastore.NewQuery(KindProductPrice).Order("-created_at").Limit(1000)
+	q = q.Filter("currency =", currency)
 
 	if productType == ProductTypeApp {
 		q = q.Filter("app_id =", ID)
@@ -152,5 +154,26 @@ func GetProductPrices(ID int, productType productType) (prices []ProductPrice, e
 	}
 
 	_, err = client.GetAll(ctx, q, &prices)
+
+	sort.Slice(prices, func(i, j int) bool {
+		return prices[i].CreatedAt.Unix() > prices[j].CreatedAt.Unix()
+	})
+
+	return prices, err
+}
+
+func GetPrices(currency steam.CountryCode) (prices []ProductPrice, err error) {
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		return prices, err
+	}
+
+	q := datastore.NewQuery(KindProductPrice).Order("-created_at").Limit(1000)
+	q = q.Filter("currency =", currency)
+
+	_, err = client.GetAll(ctx, q, &prices)
+
+
 	return prices, err
 }

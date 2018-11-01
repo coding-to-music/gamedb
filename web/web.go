@@ -530,15 +530,23 @@ func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, columns map[string]stri
 
 func (q DataTablesQuery) SetOrderOffsetDS(qu *datastore.Query, columns map[string]string) (*datastore.Query, error) {
 
-	i, err := strconv.Atoi(q.Start)
-	if err != nil {
-		return qu, err
-	}
+	q.SetOffsetDS(qu)
 
 	order := q.GetOrderDS(columns, true)
 	if order != "" {
 		qu = qu.Order(order)
 	}
+
+	return qu, nil
+}
+
+func (q DataTablesQuery) SetOffsetDS(qu *datastore.Query) (*datastore.Query, error) {
+
+	i, err := strconv.Atoi(q.Start)
+	if err != nil {
+		return qu, err
+	}
+
 	qu = qu.Offset(i)
 
 	return qu, nil

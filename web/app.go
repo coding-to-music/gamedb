@@ -124,7 +124,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get prices
-		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp)
+		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp, steam.CountryUS)
 		if err != nil {
 
 			logging.Error(err)

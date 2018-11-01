@@ -63,20 +63,23 @@ indexes:
   - name: "app_price_hour"
     direction: "desc"
 
-# App Page - Prices tab
-- kind: "AppPrice"
+# Product Changes
+- kind: "ProductPrice"
+  properties:
+  - name: "currency"
+  - name: "created_at"
+    direction: "desc"
+
+- kind: "ProductPrice"
   properties:
   - name: "app_id"
   - name: "currency"
   - name: "created_at"
-    direction: "asc"
+    direction: "desc"
 
-# Package Page - Prices tab
-- kind: "AppPrice"
+- kind: "ProductPrice"
   properties:
   - name: "package_id"
   - name: "currency"
   - name: "created_at"
-    direction: "asc"
-
-# Price Changes Page
+    direction: "desc"
