@@ -255,17 +255,20 @@ func (app App) GetPrice(code steam.CountryCode) (price ProductPriceCache) {
 	return price
 }
 
-func (app App) GetReviewScore() float64 {
+func (app *App) SetReviewScore() {
 
 	if app.ReviewsPositive == 0 && app.ReviewsNegative == 0 {
-		return 0
+
+		app.ReviewsScore = 0
+
+	} else {
+
+		total := float64(app.ReviewsPositive + app.ReviewsNegative)
+		average := float64(app.ReviewsPositive) / total
+		score := average - (average-0.5)*math.Pow(2, -math.Log10(total + 1))
+
+		app.ReviewsScore = helpers.DollarsFloat(score * 100)
 	}
-
-	total := float64(app.ReviewsPositive + app.ReviewsNegative)
-	average := float64(app.ReviewsPositive) / total
-	score := average - (average-0.5)*math.Pow(2, -math.Log10(total + 1))
-
-	return helpers.DollarsFloat(score * 100)
 }
 
 func (app App) GetCommunityLink() string {
@@ -488,9 +491,9 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 			}
 
 			app.Reviews = string(reviewsBytes)
-			app.ReviewsScore = app.GetReviewScore()
 			app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
 			app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
+			app.SetReviewScore()
 
 			// Log this app score
 			err = SaveAppOverTime(*app)
