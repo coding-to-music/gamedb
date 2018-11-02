@@ -46,6 +46,7 @@ $("table.table-datatable").each(function (i) {
         "order": order,
         "paging": paging,
         "ordering": true,
+        "fixedHeader": true,
         "info": false,
         "searching": true,
         "search": {

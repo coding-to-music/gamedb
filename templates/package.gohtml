@@ -21,6 +21,9 @@
                     <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
                 </li>
             {{end}}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
+                </li>
             {{ if gt (len .Package.GetDepotIDs) 0 }}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#depots" role="tab">Depots ({{ (len .Package.GetDepotIDs) }})</a>
@@ -35,6 +38,14 @@
 
                     <div class="row">
                         <div class="col-12 col-md-7">
+
+                        {{ range $k, $v := .Banners }}
+                            <div class="alert alert-{{ $k }}" role="alert">
+                            {{ range $kk, $vv := $v }}
+                                <div>{{ $vv }}</div>
+                            {{ end }}
+                            </div>
+                        {{ end }}
 
                         {{/* Package Details */}}
                             <div class="table-responsive">
@@ -138,9 +149,9 @@
 
                 </div>
 
+            {{/* Apps in Package */}}
                 <div class="tab-pane" id="depots" role="tabpanel">
 
-                {{/* Apps in Package */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
@@ -158,25 +169,39 @@
 
             {{/* Prices */}}
                 <div class="tab-pane" id="prices" role="tabpanel">
+
                     <script>var prices = JSON.parse('{{ .Prices }}');</script>
                     <div id="chart"></div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0">
+                            <thead class="thead-light">
+                            <th scope="col">Country</th>
+                            <th scope="col">Initial</th>
+                            <th scope="col">Final</th>
+                            <th scope="col" nowrap="nowrap">Discount %</th>
+                            <th scope="col">Individual</th>
+                            </thead>
+                        {{ range $key, $value := .Package.GetPrices }}
+                            <tr data-code="{{ $key }}">
+                                <td class="img flag">
+                                    <img src="/assets/img/flags/{{$key}}.png" alt="{{ $key }}" class="rounded">
+                                    <span>{{ (.GetCountryName $key) }} ({{ $key }})</span>
+                                </td>
+                                <td>{{ .GetInitial }}</td>
+                                <td>{{ .GetFinal }}</td>
+                                <td>{{ .GetDiscountPercent }}%</td>
+                                <td>{{ .GetIndividual }}</td>
+                            </tr>
+                        {{ end }}
+                        </table>
+                    </div>
+
                 </div>
 
             </div>
-
-
-        {{ range $k, $v := .Banners }}
-            <div class="alert alert-{{ $k }}" role="alert">
-            {{ range $kk, $vv := $v }}
-                <div>{{ $vv }}</div>
-            {{ end }}
-            </div>
-        {{ end }}
-
-
         </div>
-    </div>
 
-</div>
+    </div>
 
 {{ template "_footer" }} {{end}}

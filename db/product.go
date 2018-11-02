@@ -84,3 +84,7 @@ func (p ProductPriceCache) GetDiscountPercent() float64 {
 func (p ProductPriceCache) GetIndividual() float64 {
 	return helpers.CentsInt(p.Final)
 }
+
+func (p ProductPriceCache) GetCountryName(code steam.CountryCode) string {
+	return helpers.CountryCodeToName(string(code))
+}
