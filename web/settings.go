@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"sort"
 	"strconv"
 	"sync"
 
@@ -93,6 +94,15 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
+	// Countries
+	var countries [][]string
+	for k, v := range steam.Countries {
+		countries = append(countries, []string{string(k), v})
+	}
+	sort.Slice(countries, func(i, j int) bool {
+		return countries[i][1] < countries[j][1]
+	})
+
 	// Template
 	t := settingsTemplate{}
 	t.Fill(w, r, "Settings")
@@ -100,6 +110,7 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.User = user
 	t.Donations = donations
 	t.Games = games
+	t.Countries = countries
 
 	returnTemplate(w, r, "settings", t)
 }
@@ -111,7 +122,7 @@ type settingsTemplate struct {
 	Donations []db.Donation
 	Games     string
 	Messages  []interface{}
-	Countries map[steam.CountryCode]string
+	Countries [][]string
 }
 
 func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {

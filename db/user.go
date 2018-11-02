@@ -54,5 +54,6 @@ func (u User) UpdateInsert() (result sql.Result, err error) {
 		"password":     u.Password,
 		"hide_profile": u.HideProfile,
 		"show_alerts":  u.ShowAlerts,
+		"country_code": u.CountryCode,
 	})
 }
