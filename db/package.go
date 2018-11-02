@@ -71,7 +71,7 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 }
 
 func (pack Package) GetPath() string {
-	return getPackagePath(pack.ID, pack.PICSName)
+	return getPackagePath(pack.ID, pack.GetName())
 }
 
 func (pack Package) GetID() int {
@@ -91,7 +91,7 @@ func (pack Package) GetName() (name string) {
 	var IDString = strconv.FormatInt(int64(pack.ID), 10)
 
 	if (pack.PICSName == "") || (pack.PICSName == IDString) {
-		pack.PICSName = "Package " + IDString
+		return "Package " + IDString
 	}
 
 	return pack.PICSName
