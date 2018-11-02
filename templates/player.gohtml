@@ -77,7 +77,7 @@
                                     {{ if ne .Player.CountryCode "" }}
                                         <tr>
                                             <th scope="row" nowrap="nowrap">Country</th>
-                                            <td class="img">
+                                            <td class="img flag">
                                                 <img class="rounded" data-toggle="tooltip" data-placement="top" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}">
                                                 <span>{{ .Player.CountryCode }}</span>
                                             </td>

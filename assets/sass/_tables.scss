@@ -54,6 +54,11 @@ table.table {
             font-size: 1rem;
         }
     }
+    td.flag {
+        span {
+            margin-left: 52px;
+        }
+    }
 }
 
 table.dataTable thead .sorting:before,
