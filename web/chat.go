@@ -78,6 +78,8 @@ type chatWebsocketPayload struct {
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
+	setNoCacheHeaders(w)
+
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {

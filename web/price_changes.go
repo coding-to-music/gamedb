@@ -26,6 +26,8 @@ type priceChangesTemplate struct {
 
 func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
+	setNoCacheHeaders(w)
+
 	query := DataTablesQuery{}
 	query.FillFromURL(r.URL.Query())
 
