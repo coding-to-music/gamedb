@@ -143,7 +143,7 @@ func GetProductPrices(ID int, productType productType, currency steam.CountryCod
 	}
 
 	q := datastore.NewQuery(KindProductPrice).Order("-created_at").Limit(1000)
-	q = q.Filter("currency =", currency)
+	q = q.Filter("currency =", string(currency))
 
 	if productType == ProductTypeApp {
 		q = q.Filter("app_id =", ID)
@@ -170,10 +170,9 @@ func GetPrices(currency steam.CountryCode) (prices []ProductPrice, err error) {
 	}
 
 	q := datastore.NewQuery(KindProductPrice).Order("-created_at").Limit(1000)
-	q = q.Filter("currency =", currency)
+	q = q.Filter("currency =", string(currency))
 
 	_, err = client.GetAll(ctx, q, &prices)
-
 
 	return prices, err
 }
