@@ -21,6 +21,11 @@
                     <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
                 </li>
             {{end}}
+            {{ if gt (len .Package.GetDepotIDs) 0 }}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#depots" role="tab">Depots ({{ (len .Package.GetDepotIDs) }})</a>
+                </li>
+            {{end}}
             </ul>
         </div>
         <div class="card-body">
@@ -126,6 +131,24 @@
                                 <td>{{ .GetType }}</td>
                                 <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
                                 <td>{{ comma (len .GetDLC) }}</td>
+                            </tr>
+                        {{ end }}
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="tab-pane" id="depots" role="tabpanel">
+
+                {{/* Apps in Package */}}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0">
+                            <thead class="thead-light">
+                            <th scope="col" data-sort="asc">ID</th>
+                            </thead>
+                        {{ range $key, $value := .Package.GetDepotIDs }}
+                            <tr>
+                                <td>{{ $value }}</td>
                             </tr>
                         {{ end }}
                         </table>

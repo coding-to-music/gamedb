@@ -234,9 +234,9 @@ func (pack *Package) SetAppIDs(apps []int) (err error) {
 	return err
 }
 
-func (pack *Package) SetDepotIDs(apps []int) (err error) {
+func (pack *Package) SetDepotIDs(depots []int) (err error) {
 
-	bytes, err := json.Marshal(apps)
+	bytes, err := json.Marshal(depots)
 	if err != nil {
 		return err
 	}
@@ -244,6 +244,12 @@ func (pack *Package) SetDepotIDs(apps []int) (err error) {
 	pack.PICSDepotIDs = string(bytes)
 
 	return err
+}
+
+func (pack Package) GetDepotIDs() (depots []int, err error) {
+
+	err = helpers.Unmarshal([]byte(pack.PICSDepotIDs), &depots)
+	return depots, err
 }
 
 func (pack *Package) SetAppItems(items map[string]string) (err error) {
