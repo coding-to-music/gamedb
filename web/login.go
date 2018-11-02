@@ -21,6 +21,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	t := loginTemplate{}
 	t.Fill(w, r, "Login")
 	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
+	t.Domain = viper.GetString("DOMAIN")
 
 	returnTemplate(w, r, "login", t)
 	return
@@ -29,6 +30,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 type loginTemplate struct {
 	GlobalTemplate
 	RecaptchaPublic string
+	Domain          string
 }
 
 func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
