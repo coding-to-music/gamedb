@@ -5,36 +5,18 @@
         <small class="text-muted text-center small-print">Game DB is not affiliated with Steam. All copyrights reserved to their respective owners. <a href="/info#terms">Terms</a>.</small>
     </div>
 
+{{/* Scroll to top link */}}
     <div id="top" class="rounded">
         <i class="fas fa-level-up-alt"></i>
     </div>
+
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="/assets/compiled.min.js"></script>
-<script>
-    if (user.showAds) {
-
-        window.CHITIKA = {
-            'units': [
-                {"calltype": "async[2]", "publisher": "jleagle", "width": 160, "height": 600, "sid": "gamedb-right"},
-                {"calltype": "async[2]", "publisher": "jleagle", "width": 160, "height": 600, "sid": "gamedb-left"},
-                {"calltype": "async[2]", "publisher": "jleagle", "width": 728, "height": 90, "sid": "gamedb-top-big"},
-                {"calltype": "async[2]", "publisher": "jleagle", "width": 320, "height": 50, "sid": "gamedb-top-small"}
-            ]
-        };
-
-        $('div.container').eq(1)
-                .prepend('<div class="ad-right d-none d-xl-block" id="chitikaAdBlock-0"></div>')
-                .prepend('<div class="ad-left d-none d-xl-block" id="chitikaAdBlock-1"></div>');
-        $('#ad-top')
-                .prepend('<div class="ad-top-big d-none d-lg-block d-xl-none" id="chitikaAdBlock-2"></div>')
-                .prepend('<div class="ad-top-small d-block d-lg-none" id="chitikaAdBlock-3"></div>');
-    }
-</script>
-<script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
+<script src="https://cdn.chitika.net/getads.js" async></script>
 
 </body>
 </html>
