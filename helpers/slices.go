@@ -11,6 +11,15 @@ func SliceHasInt(slice []int, i int) bool {
 	return false
 }
 
+func SliceHasInt64(slice []int64, i int64) bool {
+	for _, v := range slice {
+		if v == i {
+			return true
+		}
+	}
+	return false
+}
+
 func SliceHasString(slice []string, i string) bool {
 	for _, v := range slice {
 		if v == i {

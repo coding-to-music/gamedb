@@ -166,7 +166,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		// Get news
-		newsResp, err := db.GetArticles(idx, 1000)
+		newsResp, err := db.GetAppArticles(idx)
 		if err != nil {
 
 			logging.Error(err)

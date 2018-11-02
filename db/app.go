@@ -12,6 +12,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
@@ -73,7 +74,8 @@ type App struct {
 	ReviewsScore           float64    `gorm:"not null;column:reviews_score"`
 	ReviewsPositive        int        `gorm:"not null;column:reviews_positive"`
 	ReviewsNegative        int        `gorm:"not null;column:reviews_negative"`
-	Prices                 string     `gorm:"not null;column:prices"` // JSON
+	Prices                 string     `gorm:"not null;column:prices"`
+	NewsIDs                string     `gorm:"not null;column:news_ids"`
 }
 
 func (app App) BeforeCreate(scope *gorm.Scope) error {
@@ -250,6 +252,37 @@ func (app App) GetPrice(code steam.CountryCode) (price ProductPriceCache) {
 
 	price, _ = prices.Get(code)
 	return price
+}
+
+func (app App) GetNewsIDs() (ids []int64, err error) {
+
+	if app.NewsIDs == "" {
+		return ids, err
+	}
+
+	err = helpers.Unmarshal([]byte(app.NewsIDs), &ids)
+	return ids, err
+}
+
+// Adds to current news IDs
+func (app *App) SetNewsIDs(news steam.News) (err error) {
+
+	ids, err := app.GetNewsIDs()
+	if err != nil {
+		return err
+	}
+
+	for _, v := range news.Items {
+		ids = append(ids, v.GID)
+	}
+
+	bytes, err := json.Marshal(helpers.Unique64(ids))
+	if err != nil {
+		return err
+	}
+
+	app.NewsIDs = string(bytes)
+	return nil
 }
 
 func (app *App) SetReviewScore() {
@@ -446,24 +479,35 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *App) {
 
-		var articles []*News
-
-		articles, err = GetNewArticles(app.ID)
+		resp, _, err := helpers.GetSteam().GetNews(app.ID)
 		if err != nil {
 
-			errs = append(errs, err)
+			logging.Error(err)
 
 		} else {
 
 			var kinds []Kind
-			for _, v := range articles {
-				kinds = append(kinds, *v)
+			for _, v := range resp.Items {
+
+				ids, err := app.GetNewsIDs()
+				if err != nil {
+					errs = append(errs, err)
+					continue
+				}
+
+				if helpers.SliceHasInt64(ids, v.GID) {
+					continue
+				}
+
+				kinds = append(kinds, CreateArticle(v))
 			}
 
 			err = BulkSaveKinds(kinds, KindNews, true)
 			if err != nil {
 				errs = append(errs, err)
 			}
+
+			app.SetNewsIDs(resp)
 		}
 
 		wg.Done()

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 )
 
@@ -36,67 +37,54 @@ func (article News) GetNiceDate() (string) {
 	return article.Date.Format(helpers.DateYear)
 }
 
-func GetArticles(appID int, limit int) (articles []News, err error) {
+func GetAppArticles(appID int) (articles []News, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
 		return articles, err
 	}
 
-	q := datastore.NewQuery(KindNews).Order("-date").Limit(limit)
-
-	if appID != 0 {
-		q = q.Filter("app_id =", appID)
-	}
+	q := datastore.NewQuery(KindNews).Order("-date").Limit(1000)
+	q = q.Filter("app_id =", appID)
 
 	_, err = client.GetAll(ctx, q, &articles)
 	if err != nil {
-		return
+		return articles, err
 	}
 
 	return articles, err
 }
 
-func GetNewArticles(appID int) (news []*News, err error) {
+func GetArticles() (articles []News, err error) {
 
-	// Get latest article from database
-	var latestTime int64
-
-	latest, err := GetArticles(appID, 1)
+	client, ctx, err := GetDSClient()
 	if err != nil {
-		return news, err
+		return articles, err
 	}
 
-	if len(latest) > 0 {
-		latestTime = latest[0].Date.Unix()
-	}
+	q := datastore.NewQuery(KindNews).Order("-date").Limit(100)
 
-	// Get app articles from Steam
-	resp, _, err := helpers.GetSteam().GetNews(appID)
+	_, err = client.GetAll(ctx, q, &articles)
 	if err != nil {
-		return news, err
+		return articles, err
 	}
 
-	for _, v := range resp.Items {
+	return articles, err
+}
 
-		if v.Date > latestTime {
+func CreateArticle(resp steam.NewsArticle) (news News) {
 
-			article := new(News)
-			article.ArticleID = v.GID
-			article.Title = v.Title
-			article.URL = v.URL
-			article.IsExternal = v.IsExternalURL
-			article.Author = v.Author
-			article.Contents = v.Contents
-			article.FeedLabel = v.Feedlabel
-			article.Date = time.Unix(int64(v.Date), 0)
-			article.FeedName = v.Feedname
-			article.FeedType = int8(v.FeedType)
-			article.AppID = v.AppID
+	news.ArticleID = resp.GID
+	news.Title = resp.Title
+	news.URL = resp.URL
+	news.IsExternal = resp.IsExternalURL
+	news.Author = resp.Author
+	news.Contents = resp.Contents
+	news.FeedLabel = resp.Feedlabel
+	news.Date = time.Unix(int64(resp.Date), 0)
+	news.FeedName = resp.Feedname
+	news.FeedType = int8(resp.FeedType)
+	news.AppID = resp.AppID
 
-			news = append(news, article)
-		}
-	}
-
-	return news, err
+	return news
 }

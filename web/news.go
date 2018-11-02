@@ -9,7 +9,7 @@ import (
 
 func NewsHandler(w http.ResponseWriter, r *http.Request) {
 
-	articles, err := db.GetArticles(0, 100)
+	articles, err := db.GetArticles()
 	if err != nil {
 		logging.Error(err)
 		returnErrorTemplate(w, r, 500, "Error getting articles")
