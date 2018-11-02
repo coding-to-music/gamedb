@@ -13,6 +13,7 @@ type User struct {
 	Password    string     `gorm:"not null"`
 	HideProfile int8       `gorm:"not null"`
 	ShowAlerts  int8       `gorm:"not null"`
+	CountryCode string     `gorm:"not null"`
 }
 
 func GetUsersByEmail(email string) (users []User, err error) {

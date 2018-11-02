@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
@@ -110,6 +111,7 @@ type settingsTemplate struct {
 	Donations []db.Donation
 	Games     string
 	Messages  []interface{}
+	Countries map[steam.CountryCode]string
 }
 
 func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -152,6 +154,7 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Save email
 	user.Email = r.PostForm.Get("email")
+	user.CountryCode = r.PostForm.Get("country_code")
 
 	// Save hidden
 	if r.PostForm.Get("hide") == "1" {
