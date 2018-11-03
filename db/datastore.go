@@ -74,7 +74,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 		return nil
 	}
 
-	logging.Info("Bulk saving " + strconv.Itoa(len(kinds)) + kind + "s")
+	logging.Info("Bulk saving " + strconv.Itoa(len(kinds)) + " " + kind + "s")
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
