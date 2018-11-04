@@ -104,6 +104,7 @@ $('table.table-datatable2').on('page.dt search.dt', function (e, settings, proce
 }).on('draw.dt', function (e, settings, processing) {
 
     $(this).fadeTo(100, 1);
+    highLightOwnedGames();
 
 });
 

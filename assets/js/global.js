@@ -40,36 +40,37 @@ $("body").tooltip({
 // Scroll to top link
 const $top = $("#top");
 
-function showTopLink() {
+$(window).on('scroll', function (e) {
 
     if ($(window).scrollTop() >= 1000) {
         $top.addClass("show");
     } else {
         $top.removeClass("show");
     }
-}
+});
 
-$(window).on('scroll', showTopLink);
-
-showTopLink();
-
-$top.click(function () {
+$top.click(function (e) {
     $('html, body').animate({scrollTop: 0}, 500);
 });
 
 // Highlight owned games
-let games = localStorage.getItem('games');
-if (games != null) {
-    games = JSON.parse(games);
+function highLightOwnedGames() {
+    let games = localStorage.getItem('games');
     if (games != null) {
-        $('[data-app-id]').each(function () {
-            const id = $(this).attr('data-app-id');
-            if (games.indexOf(parseInt(id)) !== -1) {
-                $(this).addClass('font-weight-bold')
-            }
-        });
+        games = JSON.parse(games);
+        if (games != null) {
+            $('[data-app-id]').each(function () {
+                const id = $(this).attr('data-app-id');
+                if (games.indexOf(parseInt(id)) !== -1) {
+                    $(this).addClass('font-weight-bold')
+                }
+            });
+        }
     }
 }
+
+highLightOwnedGames();
+
 
 // Header Country
 $('#header-flag').attr('src', '/assets/img/flags/' + user.country.toLowerCase() + '.png').attr('alt', user.country);
