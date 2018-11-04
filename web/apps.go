@@ -1,10 +1,12 @@
 package web
 
 import (
+	"math"
 	"net/http"
 	"strconv"
 	"sync"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/Masterminds/squirrel"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
@@ -12,15 +14,20 @@ import (
 
 func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Template
+	t := appsTemplate{}
+	t.Fill(w, r, "Games")
+	t.Types = db.GetTypesForSelect()
+
+	//
 	var err error
 	var wg sync.WaitGroup
 
 	// Get apps count
-	var count int
 	wg.Add(1)
 	go func() {
 
-		count, err = db.CountApps()
+		t.Count, err = db.CountApps()
 		logging.Error(err)
 
 		wg.Done()
@@ -28,11 +35,10 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get tags
-	var tags []db.Tag
 	wg.Add(1)
 	go func() {
 
-		tags, err = db.GetTagsForSelect()
+		t.Tags, err = db.GetTagsForSelect()
 		logging.Error(err)
 
 		wg.Done()
@@ -40,11 +46,10 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get genres
-	var genres []db.Genre
 	wg.Add(1)
 	go func() {
 
-		genres, err = db.GetGenresForSelect()
+		t.Genres, err = db.GetGenresForSelect()
 		logging.Error(err)
 
 		wg.Done()
@@ -52,11 +57,10 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get publishers
-	var publishers []db.Publisher
 	wg.Add(1)
 	go func() {
 
-		publishers, err = db.GetPublishersForSelect()
+		t.Publishers, err = db.GetPublishersForSelect()
 		logging.Error(err)
 
 		wg.Done()
@@ -64,12 +68,27 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get developers
-	var developers []db.Developer
 	wg.Add(1)
 	go func() {
 
-		developers, err = db.GetDevelopersForSelect()
+		t.Developers, err = db.GetDevelopersForSelect()
 		logging.Error(err)
+
+		wg.Done()
+
+	}()
+
+	// Get most expensive app
+	wg.Add(1)
+	go func() {
+
+		price, err := db.GetMostExpensiveApp(steam.CountryUS)
+		logging.Error(err)
+
+		// Convert cents to dollars
+		t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
+
+		t.ExpensiveApp = 101 // todo, remove this line when apps have prices¬
 
 		wg.Done()
 
@@ -78,27 +97,18 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	// Template
-	t := appsTemplate{}
-	t.Fill(w, r, "Games")
-	t.Count = count
-	t.Tags = tags
-	t.Genres = genres
-	t.Publishers = publishers
-	t.Developers = developers
-	t.Types = db.GetTypesForSelect()
-
 	returnTemplate(w, r, "apps", t)
 }
 
 type appsTemplate struct {
 	GlobalTemplate
-	Count      int
-	Types      map[string]string
-	Tags       []db.Tag
-	Genres     []db.Genre
-	Publishers []db.Publisher
-	Developers []db.Developer
+	Count        int
+	ExpensiveApp int
+	Types        map[string]string
+	Tags         []db.Tag
+	Genres       []db.Genre
+	Publishers   []db.Publisher
+	Developers   []db.Developer
 }
 
 func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {

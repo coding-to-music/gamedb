@@ -502,7 +502,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 				kinds = append(kinds, CreateArticle(v))
 			}
 
-			err = BulkSaveKinds(kinds, KindNews, true)
+			err = BulkSaveKinds(kinds, KindNews, false)
 			if err != nil {
 				errs = append(errs, err)
 			}
@@ -995,6 +995,28 @@ func CountApps() (count int, err error) {
 
 		db.Model(&App{}).Count(&count)
 		return count, db.Error
+	})
+}
+
+func GetMostExpensiveApp(code steam.CountryCode) (price int, err error) {
+
+	return memcache.GetSetInt(memcache.MostExpensiveApp(code), func() (count int, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		var countSlice []int
+		db.Model(&App{}).Pluck("max(prices->\"$."+string(code)+".final\")", &countSlice)
+		if db.Error != nil {
+			return count, db.Error
+		}
+		if len(countSlice) != 1 {
+			return count, errors.New("query failed")
+		}
+
+		return countSlice[0], nil
 	})
 }
 

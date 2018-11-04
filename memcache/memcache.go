@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
@@ -38,6 +39,11 @@ var (
 	// Rows
 	ChangeRow = func(changeID int64) memcache.Item {
 		return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: day * 30}
+	}
+
+	// Other
+	MostExpensiveApp = func(code steam.CountryCode) memcache.Item {
+		return memcache.Item{Key: "most-expensive-app-" + string(code), Expiration: day * 7}
 	}
 )
 
