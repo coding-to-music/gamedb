@@ -24,10 +24,6 @@
     }
 
     #reviews {
-        div.progress-bar {
-            min-width: 6%;
-            max-width: 94%;
-        }
 
         // todo, get these from BS variables
         div[data-vote=true] {
@@ -46,9 +42,9 @@
         }
     }
 
-    #media{
-        .carousel-indicators{
-            li{
+    #media {
+        .carousel-indicators {
+            li {
                 cursor: pointer;
             }
         }

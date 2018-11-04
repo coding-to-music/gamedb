@@ -306,10 +306,10 @@
                             <th scope="row" width="20%">Positive / Negative</th>
                             <td>
                                 <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ .ReviewsCount.GetPositivePercent }}%">
+                                    <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .ReviewsCount.TotalPositive }} ({{ printf "%.2f" .ReviewsCount.GetPositivePercent }}%)" style="width: {{ .ReviewsCount.GetPositivePercent }}%">
                                     {{ comma .ReviewsCount.TotalPositive }} ({{ printf "%.0f" .ReviewsCount.GetPositivePercent }}%)
                                     </div>
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: {{ .ReviewsCount.GetNegativePercent }}%">
+                                    <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .ReviewsCount.TotalNegative }} ({{ printf "%.2f" .ReviewsCount.GetNegativePercent }}%)" style="width: {{ .ReviewsCount.GetNegativePercent }}%">
                                     {{ comma .ReviewsCount.TotalNegative }} ({{ printf "%.0f" .ReviewsCount.GetNegativePercent }}%)
                                     </div>
                                 </div>
