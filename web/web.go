@@ -275,9 +275,10 @@ type GlobalTemplate struct {
 	Env    string
 
 	// User
-	UserName  string // Username
-	UserID    int
-	UserLevel int
+	UserName    string // Username
+	UserID      int
+	UserLevel   int
+	UserCountry string
 
 	// Session
 	FlashesGood []interface{}
@@ -371,18 +372,6 @@ func (t GlobalTemplate) ShowAd() (bool) {
 
 	if t.IsLocal() {
 		return false
-	}
-
-	noAds := []string{
-		"/admin",
-		"/donate",
-		"/settings",
-	}
-
-	for _, v := range noAds {
-		if strings.HasPrefix(t.request.URL.Path, v) {
-			return false
-		}
 	}
 
 	return true
