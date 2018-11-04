@@ -1,5 +1,17 @@
 if ($('#settings-page').length > 0) {
 
+    // Password
+    $('input:password').pwstrength({
+        ui: {
+            showPopover: true,
+            showErrors: false,
+        },
+        common: {
+            debug: false
+        }
+    });
+
+    // Browser alert permissions
     const $checkbox = $('#browser-alerts');
 
     $checkbox.on('click', function () {
@@ -16,6 +28,7 @@ if ($('#settings-page').length > 0) {
         }
     });
 
+    // Data tables
     $('#events table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "order": [[0, 'desc']],
         "columnDefs": [
