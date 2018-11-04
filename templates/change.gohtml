@@ -31,8 +31,10 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
-                            <th scope="col" data-sort="asc">App</th>
-                            <th scope="col">Type</th>
+                            <tr>
+                                <th scope="col" data-sort="asc">App</th>
+                                <th scope="col">Type</th>
+                            </tr>
                             </thead>
                         {{ range $key, $value := .Apps }}
                             <tr data-link="{{.GetPath}}">
@@ -53,8 +55,10 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
-                            <th scope="col" data-sort="asc">Package</th>
-                            <th scope="col">Apps #</th>
+                            <tr>
+                                <th scope="col" data-sort="asc">Package</th>
+                                <th scope="col">Apps #</th>
+                            </tr>
                             </thead>
                         {{ range $key, $value := .Packages }}
                             <tr data-link="{{.GetPath}}">

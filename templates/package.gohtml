@@ -128,10 +128,12 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
-                            <th scope="col" data-sort="asc">Name</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Platforms</th>
-                            <th scope="col">DLC #</th>
+                            <tr>
+                                <th scope="col" data-sort="asc">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Platforms</th>
+                                <th scope="col">DLC #</th>
+                            </tr>
                             </thead>
                         {{ range $key, $value := .Apps }}
                             <tr data-link="{{.GetPath}}">
@@ -155,7 +157,9 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
-                            <th scope="col" data-sort="asc">ID</th>
+                            <tr>
+                                <th scope="col" data-sort="asc">ID</th>
+                            </tr>
                             </thead>
                         {{ range $key, $value := .Package.GetDepotIDs }}
                             <tr>
@@ -176,11 +180,13 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
-                            <th scope="col">Country</th>
-                            <th scope="col">Initial</th>
-                            <th scope="col">Final</th>
-                            <th scope="col" nowrap="nowrap">Discount %</th>
-                            <th scope="col">Individual</th>
+                            <tr>
+                                <th scope="col">Country</th>
+                                <th scope="col">Initial</th>
+                                <th scope="col">Final</th>
+                                <th scope="col" nowrap="nowrap">Discount %</th>
+                                <th scope="col">Individual</th>
+                            </tr>
                             </thead>
                         {{ range $key, $value := .Package.GetPrices }}
                             <tr data-code="{{ $key }}">

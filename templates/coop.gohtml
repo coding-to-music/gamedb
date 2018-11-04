@@ -57,10 +57,12 @@
             <div class="table-responsive">
                 <table class="table table-hover table-striped table-datatable mb-0">
                     <thead class="thead-light">
-                    <th scope="col" data-sort="asc">Game</th>
-                    <th scope="col" data-disabled>Platforms</th>
-                    <th scope="col">Achievements</th>
-                    <th scope="col" data-disabled>Co-op Tags</th>
+                    <tr>
+                        <th scope="col" data-sort="asc">Game</th>
+                        <th scope="col" data-disabled>Platforms</th>
+                        <th scope="col">Achievements</th>
+                        <th scope="col" data-disabled>Co-op Tags</th>
+                    </tr>
                     </thead>
                 {{ range $key, $value := .Games }}
                     <tr data-link="/games/{{ .Game.ID }}">
