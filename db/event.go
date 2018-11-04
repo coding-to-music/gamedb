@@ -54,10 +54,6 @@ func (event Event) GetIP(ip string) string {
 	return "-"
 }
 
-func (event Event) GetCreatedUnix() int64 {
-	return event.CreatedAt.Unix()
-}
-
 func (event Event) GetType() string {
 
 	switch event.Type {
@@ -72,6 +68,20 @@ func (event Event) GetType() string {
 	}
 }
 
+func (event Event) GetIcon() string {
+
+	switch event.Type {
+	case EventLogin:
+		return "fa-sign-in-alt"
+	case EventLogout:
+		return "fa-sign-out-alt"
+	case EventRefresh:
+		return "fa-sync-alt"
+	default:
+		return "fa-star"
+	}
+}
+
 // Data array for datatables
 func (event Event) OutputForJSON(r *http.Request) (output []interface{}) {
 
@@ -83,6 +93,7 @@ func (event Event) OutputForJSON(r *http.Request) (output []interface{}) {
 		event.UserAgent,
 		event.GetUserAgentShort(),
 		event.GetIP(r.RemoteAddr),
+		event.GetIcon(),
 	}
 }
 
