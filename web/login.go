@@ -239,7 +239,12 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
+	id, err := getPlayerIDFromSession(r)
+
+	err = db.CreateEvent(r, id, db.EventLogout)
+	logging.Error(err)
+
 	session.Clear(w, r)
+
 	http.Redirect(w, r, "/", 303)
-	return
 }

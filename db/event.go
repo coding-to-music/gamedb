@@ -12,6 +12,7 @@ import (
 
 const (
 	EventLogin   = "login"
+	EventLogout  = "logout"
 	EventRefresh = "refresh"
 )
 
@@ -62,6 +63,8 @@ func (event Event) GetType() string {
 	switch event.Type {
 	case EventLogin:
 		return "User Login"
+	case EventLogout:
+		return "User Logout"
 	case EventRefresh:
 		return "Profile Update"
 	default:
