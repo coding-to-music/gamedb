@@ -463,7 +463,7 @@ func (q DataTablesQuery) GetSearchSlice(k string) (search []string) {
 	return search
 }
 
-func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
+func (q DataTablesQuery) GetOrderSQL(columns map[string]string, code steam.CountryCode) (order string) {
 
 	var ret []string
 
@@ -477,6 +477,10 @@ func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
 
 						if col, ok := columns[col]; ok {
 							if ok {
+
+								if col == "price" {
+									col = "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")"
+								}
 
 								if dir == "asc" || dir == "desc" {
 									ret = append(ret, col+" "+dir)
@@ -520,9 +524,9 @@ func (q DataTablesQuery) GetOrderDS(columns map[string]string, signed bool) (ord
 	return ""
 }
 
-func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
+func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {
 
-	db = db.Order(q.GetOrderSQL(columns))
+	db = db.Order(q.GetOrderSQL(columns, code))
 	db = db.Offset(q.Start)
 
 	return db

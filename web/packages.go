@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 )
@@ -51,7 +52,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Model(&db.Package{})
 			gorm = gorm.Select([]string{"id", "name", "billing_type", "license_type", "status", "apps_count", "updated_at"})
 
-			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
+			gorm = query.SetOrderOffsetGorm(gorm, steam.CountryUS, map[string]string{
 				"0": "name",
 				"4": "apps_count",
 				"5": "updated_at",

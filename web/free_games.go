@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
@@ -122,7 +123,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where("type IN (?)", types)
 			}
 
-			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
+			gorm = query.SetOrderOffsetGorm(gorm, steam.CountryUS, map[string]string{
 				"0": "name",
 				"1": "reviews_score",
 			})

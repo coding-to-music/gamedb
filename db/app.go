@@ -183,6 +183,7 @@ func (app App) OutputForJSON() (output []interface{}) {
 		app.GetType(),
 		app.ReviewsScore,
 		app.DLCCount,
+		app.GetPrice(steam.CountryUS).Final,
 	}
 }
 

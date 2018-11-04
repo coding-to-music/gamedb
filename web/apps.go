@@ -229,10 +229,11 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			//
 			gorm = gorm.Limit(100)
-			gorm = query.SetOrderOffsetGorm(gorm, map[string]string{
+			gorm = query.SetOrderOffsetGorm(gorm, steam.CountryUS, map[string]string{
 				"0": "name",
 				"2": "reviews_score",
 				"3": "dlc_count",
+				"4": "price",
 			})
 
 			// Get rows

@@ -128,6 +128,13 @@ if ($('#apps-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[6];
                 }
+            },
+            // Price
+            {
+                "targets": 4,
+                "render": function (data, type, row) {
+                    return '$' + row[7];
+                }
             }
         ]
     }));
