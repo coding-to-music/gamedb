@@ -38,7 +38,7 @@ $("body").tooltip({
 });
 
 // Scroll to top link
-var $top = $("#top");
+const $top = $("#top");
 
 function showTopLink() {
 
@@ -58,18 +58,21 @@ $top.click(function () {
 });
 
 // Highlight owned games
-var games = localStorage.getItem('games');
+let games = localStorage.getItem('games');
 if (games != null) {
     games = JSON.parse(games);
     if (games != null) {
         $('[data-app-id]').each(function () {
-            var id = $(this).attr('data-app-id');
+            const id = $(this).attr('data-app-id');
             if (games.indexOf(parseInt(id)) !== -1) {
                 $(this).addClass('font-weight-bold')
             }
         });
     }
 }
+
+// Header Country
+$('#header-flag').attr('src', '/assets/img/flags/' + user.country.toLowerCase() + '.png').attr('alt', user.country);
 
 // Browser notification
 function browserNotification(message) {
@@ -91,8 +94,8 @@ function websocketListener(page, onMessage) {
 
     } else {
 
-        var socket = new WebSocket(((location.protocol === 'https:') ? "wss://" : "ws://") + location.host + "/websocket/" + page);
-        var $badge = $('#live-badge');
+        const socket = new WebSocket(((location.protocol === 'https:') ? "wss://" : "ws://") + location.host + "/websocket/" + page);
+        const $badge = $('#live-badge');
 
         socket.onopen = function (e) {
             $badge.addClass('badge-success').removeClass('badge-secondary badge-danger');

@@ -190,9 +190,12 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		session.SetGoodFlash(w, r, "Settings saved")
 	}
 
-	http.Redirect(w, r, "/settings", 302)
-	return
+	// Update session
+	err = session.WriteMany(w, r, map[string]string{
+		session.UserCountry: user.CountryCode,
+	})
 
+	http.Redirect(w, r, "/settings", 302)
 }
 
 func SettingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {

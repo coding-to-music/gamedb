@@ -33,12 +33,12 @@ type loginTemplate struct {
 	Domain          string
 }
 
+var ErrInvalidCreds = errors.New("invalid username or password")
+var ErrInvalidCaptcha = errors.New("please check the captcha")
+
 func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := func() (err error) {
-
-		var ErrInvalidCreds = errors.New("invalid username or password")
-		var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 		// Parse form
 		if err := r.ParseForm(); err != nil {
@@ -100,7 +100,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Log user in
-		err = login(w, r, player)
+		err = login(w, r, player, user)
 		if err != nil {
 			return err
 		}
@@ -114,7 +114,11 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect
 	if err != nil {
 		time.Sleep(time.Second) // Stop brute forces
-		logging.Error(err)
+
+		if err != ErrInvalidCreds && err != ErrInvalidCaptcha {
+			logging.Error(err)
+		}
+
 		session.SetGoodFlash(w, r, err.Error())
 		http.Redirect(w, r, "/login", 302)
 	} else {
@@ -187,7 +191,19 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = login(w, r, player)
+	// Get user
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		logging.Error(err)
+	}
+
+	var user db.User
+	gorm = gorm.First(&user, idInt)
+	if gorm.Error != nil {
+		logging.Error(gorm.Error)
+	}
+
+	err = login(w, r, player, user)
 	if err != nil {
 		logging.Error(err)
 		returnErrorTemplate(w, r, 500, err.Error())
@@ -199,13 +215,14 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func login(w http.ResponseWriter, r *http.Request, player db.Player) (err error) {
+func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.User) (err error) {
 
 	// Save session
 	err = session.WriteMany(w, r, map[string]string{
 		session.PlayerID:    strconv.FormatInt(player.PlayerID, 10),
 		session.PlayerName:  player.PersonaName,
 		session.PlayerLevel: strconv.Itoa(player.Level),
+		session.UserCountry: user.CountryCode,
 	})
 	if err != nil {
 		return err

@@ -11,6 +11,7 @@ const (
 	PlayerID    = "id"
 	PlayerName  = "name"
 	PlayerLevel = "level"
+	UserCountry = "country"
 )
 
 var store *sessions.CookieStore

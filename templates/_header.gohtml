@@ -97,11 +97,22 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
+            {{ if .IsLoggedIn }}
+                <li class="nav-item">
+                    <a href="/settings"><img src="#" alt="" id="header-flag"></a>
+                </li>
+            {{else}}
+                <li class="nav-item">
+                    <a href="/login"><img src="#" alt="" id="header-flag"></a>
+                </li>
+            {{end}}
+
             {{ if .IsAdmin }}
                 <li class="nav-item {{if startsWith .Path "/admin" }}active{{end}}">
                     <a class="nav-link" href="/admin">Admin</a>
                 </li>
             {{end}}
+
             {{ if .IsLoggedIn }}
                 <li class="nav-item">
                     <a class="nav-link" href="/players/{{ .UserID }}">{{.UserName}}</a>
@@ -111,6 +122,7 @@
                     <a class="nav-link" href="/login">Login</a>
                 </li>
             {{end}}
+
                 <li class="nav-item {{if startsWith .Path "/contact" }}active{{end}}">
                     <a class="nav-link" href="/contact">Contact</a>
                 </li>

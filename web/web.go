@@ -320,6 +320,10 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 		t.UserLevel = 0
 	}
 
+	// Country
+	t.UserCountry, err = session.Read(r, session.UserCountry)
+	logging.Error(err)
+
 	// Flashes
 	t.FlashesGood, err = session.GetGoodFlashes(w, r)
 	logging.Error(err)
@@ -332,27 +336,34 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	logging.Error(err)
 }
 
-func (t GlobalTemplate) IsLoggedIn() (bool) {
+func (t GlobalTemplate) IsLoggedIn() bool {
 	return t.UserID > 0
 }
 
-func (t GlobalTemplate) IsLocal() (bool) {
+func (t GlobalTemplate) IsLocal() bool {
 	return t.Env == "local"
 }
 
-func (t GlobalTemplate) IsVarnished() (bool) {
+func (t GlobalTemplate) IsVarnished() bool {
 	return t.request.Header.Get("through-varnish") == "true"
 }
 
-func (t GlobalTemplate) IsProduction() (bool) {
+func (t GlobalTemplate) IsProduction() bool {
 	return t.Env == "production"
 }
 
-func (t GlobalTemplate) IsAdmin() (bool) {
+func (t GlobalTemplate) IsAdmin() bool {
 	return t.request.Header.Get("Authorization") != ""
 }
 
-func (t GlobalTemplate) GetUserJSON() (string) {
+func (t GlobalTemplate) GetCountry() string {
+	if t.UserCountry == "" {
+		return string(steam.CountryUS)
+	}
+	return t.UserCountry
+}
+
+func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
 		"userID":     t.UserID,
@@ -361,11 +372,12 @@ func (t GlobalTemplate) GetUserJSON() (string) {
 		"isLoggedIn": t.IsLoggedIn(),
 		"isLocal":    t.IsLocal(),
 		"showAds":    t.ShowAd(),
+		"country":    t.GetCountry(),
 	}
 
-	bytesx, err := json.Marshal(stringMap)
+	b, err := json.Marshal(stringMap)
 	logging.Error(err)
-	return string(bytesx)
+	return string(b)
 }
 
 func (t GlobalTemplate) ShowAd() (bool) {
