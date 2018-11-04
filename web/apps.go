@@ -196,6 +196,23 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where(sql, data...)
 			}
 
+			prices := query.GetSearchSlice("prices")
+			if len(prices) == 2 {
+
+				// No apps have prices yet
+				//gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") > ?", prices[0])
+				//gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") < ?", prices[1])
+
+			}
+
+			scores := query.GetSearchSlice("scores")
+			if len(prices) == 2 {
+
+				gorm = gorm.Where("reviews_score > ?", scores[0])
+				gorm = gorm.Where("reviews_score < ?", scores[1])
+
+			}
+
 			// Get count
 			gorm.Count(&recordsFiltered)
 			logging.Error(gorm.Error)

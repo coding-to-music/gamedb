@@ -14,7 +14,7 @@
                 <div class="col-sm-12 col-lg-6">
 
                     <div class="input-group input-group-lg mt-3">
-                        <input class="form-control" type="text" placeholder="Search for a Game" name="name" autocomplete="off" autofocus>
+                        <input class="form-control" type="text" placeholder="Search for a Game" name="name" autocomplete="off" id="search" autofocus>
                         <div class="input-group-append">
                             <input type="submit" value="Search" class="input-group-text">
                         </div>
@@ -104,6 +104,18 @@
                                 <option value="{{ $key }}">{{ $value }}</option>
                             {{ end }}
                             </select>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="form-group slider">
+                            <label id="price">Price</label>
+                            <div id="price-slider"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="form-group slider">
+                            <label id="score">Score</label>
+                            <div id="score-slider"></div>
                         </div>
                     </div>
                 </div>

@@ -2,10 +2,11 @@ if ($('#apps-page').length > 0) {
 
     const $chosens = $('select.form-control-chosen');
     const $table = $('table.table-datatable2');
+    const $form = $('form');
 
     // Set form fields from URL
     if (window.location.hash) {
-        $('form').deserialize(window.location.hash.substr(1));
+        $form.deserialize(window.location.hash.substr(1));
     }
 
     // Setup drop downs
@@ -15,10 +16,51 @@ if ($('#apps-page').length > 0) {
         rtl: false
     });
 
-    $chosens.on('change', function (e) {
-        $table.DataTable().draw();
-        history.pushState({}, document.title, "/games#" + $('form').serialize());
+    // Sliders
+    const priceSlider = noUiSlider.create(document.getElementById('price-slider'), {
+        start: [0, 100],
+        connect: true,
+        step: 1,
+        range: {
+            'min': 0,
+            'max': 100
+        }
     });
+
+    const scoreSlider = noUiSlider.create(document.getElementById('score-slider'), {
+        start: [0, 100],
+        connect: true,
+        step: 1,
+        range: {
+            'min': 0,
+            'max': 100
+        }
+    });
+
+    // Form changes
+    $chosens.on('change', filter);
+    $form.on('submit', filter);
+    priceSlider.on('set.one', filter);
+    scoreSlider.on('set.one', filter);
+
+    function filter(e) {
+        $table.DataTable().draw();
+        history.pushState({}, document.title, "/games#" + $form.serialize().replace('name=&', ''));
+        updateLabels(e);
+        return false;
+    }
+
+    // Slider labels
+    $(document).ready(updateLabels);
+
+    function updateLabels(e) {
+
+        const prices = priceSlider.get();
+        const scores = scoreSlider.get();
+
+        $('label#price').html('Price ($' + Math.round(prices[0]) + ' - $' + Math.round(prices[1]) + ')');
+        $('label#score').html('Score (' + Math.round(scores[0]) + '% - ' + Math.round(scores[1]) + '%)');
+    }
 
     // Setup datatable
     $table.DataTable($.extend(true, {}, dtDefaultOptions, {
@@ -34,6 +76,9 @@ if ($('#apps-page').length > 0) {
             data.search.publishers = $('#publishers').val();
             data.search.platforms = $('#platforms').val();
             data.search.types = $('#types').val();
+            data.search.search = $('#search').val();
+            data.search.prices = priceSlider.get();
+            data.search.scores = scoreSlider.get();
 
             $.ajax({
                 url: $(this).attr('data-path'),

@@ -1,15 +1,16 @@
-.app-results {
-    a {
-        text-decoration: none;
-        color: $dark;
+.slider {
 
-        span {
-            @include text-truncate;
-            display: block;
-            height: 24px;
-        }
-        img {
-            width: 100%;
+    padding: 0 15px 0 15px;
+    margin-top: 10px;
+
+    label {
+        margin-left: -15px;
+    }
+
+    .noUi-base {
+
+        .noUi-connect {
+            background-color: $link-color;
         }
     }
 }
