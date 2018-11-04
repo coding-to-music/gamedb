@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
+	"net/http"
 	"path"
 	"strconv"
 	"strings"
@@ -14,6 +15,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/storage"
 	"github.com/gosimple/slug"
@@ -268,13 +270,13 @@ const (
 	PlayerUpdateManual updateType = "manual"
 )
 
-func (p *Player) Update(updateType updateType, userAgent string) (errs []error) {
+func (p *Player) Update(r *http.Request, updateType updateType) (errs []error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
 		return []error{ErrInvalidPlayerID}
 	}
 
-	if helpers.IsBot(userAgent) {
+	if helpers.IsBot(r.UserAgent()) {
 		return []error{} // Success
 	}
 
@@ -371,6 +373,9 @@ func (p *Player) Update(updateType updateType, userAgent string) (errs []error) 
 	if err != nil {
 		errs = append(errs, err)
 	}
+
+	err = CreateEvent(r, p.PlayerID, EventRefresh)
+	logging.Error(err)
 
 	return errs
 }

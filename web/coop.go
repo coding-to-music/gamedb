@@ -49,7 +49,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			player.Update(db.PlayerUpdateAuto, r.UserAgent()) // todo, handle errors
+			player.Update(r, db.PlayerUpdateAuto) // todo, handle errors
 
 			players = append(players, player)
 

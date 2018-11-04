@@ -49,7 +49,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update player if needed
-	errs := player.Update(db.PlayerUpdateAuto, r.UserAgent())
+	errs := player.Update(r, db.PlayerUpdateAuto)
 	if len(errs) > 0 {
 
 		for _, err := range errs {
@@ -434,7 +434,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			payload := queue.RabbitMessageProfile{}
-			payload.Fill(playerID)
+			payload.Fill(r, playerID)
 
 			err = queue.Produce(queue.QueueProfiles, payload.ToBytes())
 			if err != nil {

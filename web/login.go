@@ -185,7 +185,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get player if they're new
 	if player.PersonaName == "" {
-		errs := player.Update(db.PlayerUpdateAuto, "")
+		errs := player.Update(r, db.PlayerUpdateAuto)
 		for _, v := range errs {
 			logging.Error(v) // todo, Handle these better
 		}
