@@ -107,14 +107,14 @@
                         </div>
                     </div>
                     <div class="col-sm">
-                        <div class="form-group slider" data-high="{{ .ExpensiveApp }}">
-                            <label id="price">Price</label>
-                            <div id="price-slider"></div>
+                        <div class="form-group slider">
+                            <label id="price-label">Price</label>
+                            <div id="price-slider" data-high="{{ .ExpensiveApp }}"></div>
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="form-group slider">
-                            <label id="score">Score</label>
+                            <label id="score-label">Score</label>
                             <div id="score-slider"></div>
                         </div>
                     </div>
@@ -128,6 +128,7 @@
                             <th scope="col">Type</th>
                             <th scope="col">Score</th>
                             <th scope="col">DLC #</th>
+                            <th scope="col">Price $</th>
                         </tr>
                         </thead>
                         <tbody>

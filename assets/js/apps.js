@@ -17,16 +17,19 @@ if ($('#apps-page').length > 0) {
     });
 
     // Sliders
+    const priceElement = document.getElementById('price-slider');
+    const priceHigh = parseInt($(priceElement).attr('data-high'));
     const priceSlider = noUiSlider.create(document.getElementById('price-slider'), {
-        start: [0, 100],
+        start: [0, priceHigh],
         connect: true,
         step: 1,
         range: {
             'min': 0,
-            'max': 100
+            'max': priceHigh
         }
     });
 
+    const scoreElement = document.getElementById('score-slider');
     const scoreSlider = noUiSlider.create(document.getElementById('score-slider'), {
         start: [0, 100],
         connect: true,
@@ -58,8 +61,8 @@ if ($('#apps-page').length > 0) {
         const prices = priceSlider.get();
         const scores = scoreSlider.get();
 
-        $('label#price').html('Price ($' + Math.round(prices[0]) + ' - $' + Math.round(prices[1]) + ')');
-        $('label#score').html('Score (' + Math.round(scores[0]) + '% - ' + Math.round(scores[1]) + '%)');
+        $('label#price-label').html('Price ($' + Math.round(prices[0]) + ' - $' + Math.round(prices[1]) + ')');
+        $('label#score-label').html('Score (' + Math.round(scores[0]) + '% - ' + Math.round(scores[1]) + '%)');
     }
 
     // Setup datatable
