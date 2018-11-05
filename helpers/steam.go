@@ -16,12 +16,9 @@ func Init() {
 		Key:        viper.GetString("API_KEY"),
 		LogChannel: GetSteamLogsChan(),
 		UserAgent:  "http://gamedb.online",
+		APIRate:    time.Hour * 24 / 100000,
+		StoreRate:  time.Millisecond * 1600,
 	}
-
-	steamClient.SetRateLimit(
-		time.Hour*24/100000,
-		time.Millisecond*1600,
-	)
 }
 
 func GetSteam() (*steam.Steam) {
