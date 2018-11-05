@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:2f9bad74bf4197615def62c64b29bfc5aeec01a1f3852805070963fc4d69b0b6"
+  digest = "1:c1c3d6b976bf8a04d745f8f5003156ddce4f3965851939ff5d84304c85161c46"
   name = "cloud.google.com/go"
   packages = [
     "compute/metadata",
@@ -20,8 +20,8 @@
     "storage",
   ]
   pruneopts = ""
-  revision = "debcad1964693daf8ef4bc06292d7e828e075130"
-  version = "v0.31.0"
+  revision = "1fd54cf41e6e0e178ffe3c52b0e2260281f603e3"
+  version = "v0.32.0"
 
 [[projects]]
   branch = "master"
@@ -41,11 +41,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:23644d0154c888183c0351a1299c65f70046b9246c48e84f48aafd8e07827b89"
+  digest = "1:77021126c0879b41a1725f28c9709cf5c728742f263dfa780555357b03765c2e"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "bbf834adc8b9f825081c8afa0c0fb5f91c588aff"
+  revision = "aa2521f2d956d0038c1fa72d5c1506af2c1c6f49"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -72,12 +72,12 @@
   revision = "bc664df9673713a0ccf26e3b55a673ec7301088b"
 
 [[projects]]
-  digest = "1:b0fd1aac4e6eee019a17b69dc4473f6e6eaa39b80b36473bb6ed958e4f8e471c"
+  digest = "1:ed461bd8d9420b7c3e2ef0b9ca47af1bf4fb12c87d9ce072952fb63056b29a2b"
   name = "github.com/bwmarrin/discordgo"
   packages = ["."]
   pruneopts = ""
-  revision = "4a33b9bc7c56cfdb9bb244e33e83cb3941fe2bdc"
-  version = "v0.18.0"
+  revision = "8325a6bf6dd6c91ed4040a1617b07287b8fb0eba"
+  version = "v0.19.0"
 
 [[projects]]
   digest = "1:edfb1e0276869665f9b91a70843712c1094a395ef5de7e5964adda96b986ee7d"
@@ -137,14 +137,6 @@
   pruneopts = ""
   revision = "b5294d10673813fac8558e7f47242bc9e61b4c25"
   version = "v3.3.3"
-
-[[projects]]
-  digest = "1:968d8903d598e3fae738325d3410f33f07ea6a2b9ee5591e9c262ee37df6845a"
-  name = "github.com/go-errors/errors"
-  packages = ["."]
-  pruneopts = ""
-  revision = "a6af135bd4e28680facf08a3d206b454abc877a4"
-  version = "v1.0.1"
 
 [[projects]]
   digest = "1:ffea3fcee8cae28b474f74a40c328f415790e5677a5c4b3400061ade21df2415"
@@ -312,15 +304,15 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:286c62eb3b97cbecec9efca9931544873996098f2931339b5fa0691c618c1c67"
+  digest = "1:45bcafe0db7496d17f08501040790ef9de7567ccf4301e48e027b59b325f79d1"
   name = "github.com/labstack/echo"
   packages = [
     ".",
     "middleware",
   ]
   pruneopts = ""
-  revision = "1abaa3049251d17932e4313c2d6165073fd07fd8"
-  version = "v3.3.6"
+  revision = "ba1891b3dc1fc5548330e580c51157ea5eb6604f"
+  version = "v3.3.7"
 
 [[projects]]
   digest = "1:f0c583bb1189614701bb928f1a73a7f71a3d31b76f1fbbe6619a83d92cbd2def"
@@ -462,12 +454,12 @@
   version = "v3.4.1"
 
 [[projects]]
-  digest = "1:5f48b818f16848d05cf74f4cbdd0cbe9e0dcddb3c459b4c510c6e2c8e1b4dff1"
+  digest = "1:9d57e200ef5ccc4217fe0a34287308bac652435e7c6513f6263e0493d2245c56"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = ""
-  revision = "ad15b42461921f1fb3529b058c6786c6a45d5162"
-  version = "v1.1.1"
+  revision = "bcd833dfe83d3cebad139e4a29ed79cb2318bf95"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:d0431c2fd72e39ee43ea7742322abbc200c3e704c9102c5c3c2e2e667095b0ca"
@@ -588,7 +580,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:41055845ee2a3f0b0fbf94f12b7a6c5322ae66c166d192e38156e0d63a6e2993"
+  digest = "1:af3033f983c5f38e29c0f3c9927d96e938896f4d2e14c333d81d75f93eadd78f"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -604,11 +596,11 @@
     "websocket",
   ]
   pruneopts = ""
-  revision = "c44066c5c816ec500d459a2a324a753f78531ae0"
+  revision = "c10e9556a7bc0e7c942242b606f0acf024ad5d6a"
 
 [[projects]]
   branch = "master"
-  digest = "1:c41b4071000548c12aeba99452479bc0fb631dfb6a7fc2b7f686a487bd7a6248"
+  digest = "1:d8cee371806b6ee11920b8a496bae67e6ded00367c89f2413fa1668647ba7cf5"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
@@ -618,7 +610,7 @@
     "jwt",
   ]
   pruneopts = ""
-  revision = "8527f56f71077909d6ead7facfe18fbf05ebdf83"
+  revision = "ca4130e427c7982e64cb9b5e717ff67bdb725037"
 
 [[projects]]
   branch = "master"
@@ -645,12 +637,21 @@
   packages = [
     "collate",
     "collate/build",
+    "currency",
+    "feature/plural",
+    "internal",
+    "internal/catmsg",
     "internal/colltab",
+    "internal/format",
     "internal/gen",
+    "internal/number",
+    "internal/stringset",
     "internal/tag",
     "internal/triegen",
     "internal/ucd",
     "language",
+    "message",
+    "message/catalog",
     "secure/bidirule",
     "transform",
     "unicode/bidi",
@@ -664,7 +665,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0e2a24d1cc84470b7c72b128352e5801e3a06a57c8aa8b2daf8f1e570cda2d8a"
+  digest = "1:eb827d6da85caaee0e445a5d2038275ba362bd3a2166d2f919c68b2e62553462"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -682,10 +683,10 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "c4edf6535eee1d314d283301186559db8475d25b"
+  revision = "04bb50b6b83d0e72253821af8cf3252d8e866517"
 
 [[projects]]
-  digest = "1:8c432632a230496c35a15cfdf441436f04c90e724ad99c8463ef0c82bbe93edb"
+  digest = "1:77d3cff3a451d50be4b52db9c7766c0d8570ba47593f0c9dc72173adb208e788"
   name = "google.golang.org/appengine"
   packages = [
     ".",
@@ -703,12 +704,12 @@
     "urlfetch",
   ]
   pruneopts = ""
-  revision = "ae0ab99deb4dc413a2b4bd6c8bdd0eb67f1e4d06"
-  version = "v1.2.0"
+  revision = "4a4468ece617fc8205e99368fa2200e9d1fad421"
+  version = "v1.3.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:5bc459e4630e2f2adcd04005a06d6f9cdf614c6ffa751309497096efcab79150"
+  digest = "1:80aae82eb03dd30038e2002cdbf3dc269bc17bfd170ef5c5a816b224ae29776f"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -726,7 +727,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "b69ba1387ce2108ac9bc8e8e5e5a46e7d5c72313"
+  revision = "c830210a61dfaa790e1920f8d0470fc27bc2efbe"
 
 [[projects]]
   digest = "1:1293087271e314cfa2b3decededba2ecba0ff327e7b7809e00f73f616449191c"
@@ -797,7 +798,6 @@
     "github.com/dustin/go-humanize",
     "github.com/go-chi/chi",
     "github.com/go-chi/chi/middleware",
-    "github.com/go-errors/errors",
     "github.com/go-sql-driver/mysql",
     "github.com/golang/snappy",
     "github.com/google/go-github/github",
@@ -818,6 +818,9 @@
     "github.com/yohcop/openid-go",
     "golang.org/x/crypto/bcrypt",
     "golang.org/x/oauth2",
+    "golang.org/x/text/currency",
+    "golang.org/x/text/language",
+    "golang.org/x/text/message",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
