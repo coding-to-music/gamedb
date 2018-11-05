@@ -58,7 +58,7 @@ func GetCountryCode(r *http.Request) steam.CountryCode {
 
 	val, err := Read(r, UserCountry)
 	if err != nil {
-		val = steam.CountryUS
+		return steam.CountryUS
 	}
 	return steam.CountryCode(val)
 }
