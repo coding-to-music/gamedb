@@ -332,7 +332,7 @@ func adminPublishers() {
 
 			delete(pubsToDelete, key)
 
-			price := app.GetPrice(steam.CountryUS)
+			price := app.GetPrice(steam.CountryUS) // todo, need to do this for all codes?
 
 			if _, ok := publishersToAdd[key]; ok {
 				publishersToAdd[key].count++
@@ -456,7 +456,7 @@ func adminDevelopers() {
 
 			delete(devsToDelete, key)
 
-			price := app.GetPrice(steam.CountryUS)
+			price := app.GetPrice(steam.CountryUS) // todo, need to do this for all codes?
 
 			if _, ok := counts[key]; ok {
 				counts[key].count++
@@ -578,7 +578,7 @@ func adminTags() {
 
 			delete(tagsToDelete, tagID)
 
-			price := app.GetPrice(steam.CountryUS)
+			price := app.GetPrice(steam.CountryUS) // todo, need to do this for all codes?
 
 			if _, ok := currentTags[tagID]; ok {
 				currentTags[tagID].count++

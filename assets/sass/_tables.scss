@@ -95,15 +95,3 @@ table.dataTable thead .sorting_desc_disabled:after {
 .dt-pagination:not(:empty):nth-of-type(2) {
     @extend .mt-3; // Margin Top
 }
-
-//div.dataTables_wrapper div.dataTables_processing {
-//    position: absolute;
-//    top: 2px;
-//    right: 0px;
-//    left: auto;
-//    margin: 0;
-//    width: auto;
-//    padding: 0;
-//    background: none;
-//    border: none;
-//}

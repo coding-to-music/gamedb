@@ -68,12 +68,7 @@ function highLightOwnedGames() {
         }
     }
 }
-
 highLightOwnedGames();
-
-
-// Header Country
-$('#header-flag').attr('src', '/assets/img/flags/' + user.country.toLowerCase() + '.png').attr('alt', user.country);
 
 // Browser notification
 function browserNotification(message) {

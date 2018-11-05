@@ -3,6 +3,7 @@ package session
 import (
 	"net/http"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
 )
@@ -51,6 +52,15 @@ func Read(r *http.Request, key string) (value string, err error) {
 	}
 
 	return session.Values[key].(string), err
+}
+
+func GetCountryCode(r *http.Request) steam.CountryCode {
+
+	val, err := Read(r, UserCountry)
+	if err != nil {
+		val = steam.CountryUS
+	}
+	return steam.CountryCode(val)
 }
 
 func ReadAll(r *http.Request) (value map[interface{}]interface{}, err error) {

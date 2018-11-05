@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/Masterminds/squirrel"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/session"
 )
 
 func AppsHandler(w http.ResponseWriter, r *http.Request) {
@@ -82,7 +82,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
-		price, err := db.GetMostExpensiveApp(steam.CountryUS)
+		price, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
 		logging.Error(err)
 
 		// Convert cents to dollars
@@ -117,6 +117,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query.FillFromURL(r.URL.Query())
 
 	//
+	var code = session.GetCountryCode(r)
 	var wg sync.WaitGroup
 
 	// Get apps
@@ -134,13 +135,15 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			gorm = gorm.Model(db.App{})
-			gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "type", "dlc_count"})
+			gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "type", "dlc_count", "prices", "updated_at"})
 
+			// Types
 			types := query.GetSearchSlice("types")
 			if len(types) > 0 {
 				gorm = gorm.Where("type IN (?)", types)
 			}
 
+			// Tags
 			tags := query.GetSearchSlice("tags")
 			if len(types) > 0 {
 
@@ -154,6 +157,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where(sql, data)
 			}
 
+			// Genres
 			genres := query.GetSearchSlice("genres")
 			if len(genres) > 0 {
 
@@ -167,6 +171,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where(sql, data...)
 			}
 
+			// Developers
 			developers := query.GetSearchSlice("developers")
 			if len(developers) > 0 {
 
@@ -180,6 +185,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where(sql, data...)
 			}
 
+			// Publishers
 			publishers := query.GetSearchSlice("publishers")
 			if len(publishers) > 0 {
 
@@ -193,6 +199,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where(sql, data...)
 			}
 
+			// Platforms
 			platforms := query.GetSearchSlice("platforms")
 			if len(platforms) > 0 {
 
@@ -206,6 +213,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where(sql, data...)
 			}
 
+			// Price range
 			prices := query.GetSearchSlice("prices")
 			if len(prices) == 2 {
 
@@ -215,6 +223,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			}
 
+			// Score range
 			scores := query.GetSearchSlice("scores")
 			if len(prices) == 2 {
 
@@ -223,17 +232,23 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			}
 
-			// Get count, must be above setting limit
+			// Search
+			search := query.GetSearchString("search")
+			if search != "" {
+				gorm = gorm.Where("name LIKE ?", "%"+search+"%")
+			}
+
+			// Count
 			gorm.Count(&recordsFiltered)
 			logging.Error(gorm.Error)
 
-			//
+			// Order, offset, limit
 			gorm = gorm.Limit(100)
-			gorm = query.SetOrderOffsetGorm(gorm, steam.CountryUS, map[string]string{
+			gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
 				"0": "name",
 				"2": "reviews_score",
-				"3": "dlc_count",
-				"4": "price",
+				"3": "price",
+				"4": "updated_at",
 			})
 
 			// Get rows
@@ -265,7 +280,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, v := range apps {
-		response.AddRow(v.OutputForJSON())
+		response.AddRow(v.OutputForJSON(code))
 	}
 
 	response.output(w)

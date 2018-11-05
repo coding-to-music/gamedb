@@ -5,9 +5,12 @@ if ($('#settings-page').length > 0) {
         ui: {
             showPopover: true,
             showErrors: false,
+            bootstrap4: true,
+            showStatus: true,
         },
         common: {
-            debug: false
+            debug: false,
+            usernameField: '#email'
         }
     });
 

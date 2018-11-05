@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 	"github.com/grokify/html-strip-tags-go"
 )
@@ -123,8 +124,10 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		var code = session.GetCountryCode(r)
+
 		// Get prices
-		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp, steam.CountryUS)
+		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp, code)
 		if err != nil {
 
 			logging.Error(err)
@@ -141,7 +144,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Add current price
-			price := app.GetPrice(steam.CountryUS)
+			price := app.GetPrice(code)
 
 			prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
 

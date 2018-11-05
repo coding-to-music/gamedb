@@ -6,9 +6,9 @@ import (
 	"sync"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/session"
 )
 
 func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +44,7 @@ func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 
 			q := datastore.NewQuery(db.KindProductPrice).Limit(100).Order("-created_at")
-			q = q.Filter("currency =", steam.CountryUS)
+			q = q.Filter("currency =", session.GetCountryCode(r))
 
 			q, err = query.SetOffsetDS(q)
 			if err == nil {

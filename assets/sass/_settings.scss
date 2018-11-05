@@ -1,0 +1,19 @@
+#settings-page {
+
+    #password-container {
+        input#password {
+            background: transparent;
+            z-index: 100;
+            position: relative;
+        }
+
+        div.progress {
+            margin-top: -38px;
+            height: 38px;
+            background: #fff;
+        }
+        small {
+            //margin-top: 26px;
+        }
+    }
+}

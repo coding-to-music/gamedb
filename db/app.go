@@ -173,7 +173,7 @@ func GetTypesForSelect() (ret map[string]string) {
 	return m
 }
 
-func (app App) OutputForJSON() (output []interface{}) {
+func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
 	return []interface{}{
 		app.ID,
@@ -182,8 +182,8 @@ func (app App) OutputForJSON() (output []interface{}) {
 		app.GetPath(),
 		app.GetType(),
 		app.ReviewsScore,
-		app.DLCCount,
-		app.GetPrice(steam.CountryUS).Final,
+		helpers.CurrencyFormat(app.GetPrice(code).Currency, app.GetPrice(code).Final),
+		app.UpdatedAt.Unix(),
 	}
 }
 

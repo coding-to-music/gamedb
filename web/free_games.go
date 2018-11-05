@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
+	"github.com/gamedb/website/session"
 )
 
 const (
@@ -113,7 +113,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
 			gorm = gorm.Where("is_free = ?", "1")
 
-			search := query.GetSearch()
+			search := query.GetSearchString("value")
 			if search != "" {
 				gorm = gorm.Where("name LIKE ?", "%"+search+"%")
 			}
@@ -123,7 +123,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				gorm = gorm.Where("type IN (?)", types)
 			}
 
-			gorm = query.SetOrderOffsetGorm(gorm, steam.CountryUS, map[string]string{
+			gorm = query.SetOrderOffsetGorm(gorm, session.GetCountryCode(r), map[string]string{
 				"0": "name",
 				"1": "reviews_score",
 			})

@@ -19,6 +19,7 @@ import (
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/websockets"
@@ -275,10 +276,11 @@ type GlobalTemplate struct {
 	Env    string
 
 	// User
-	UserName    string // Username
-	UserID      int
-	UserLevel   int
-	UserCountry string
+	UserName           string // Username
+	UserID             int
+	UserLevel          int
+	UserCountry        string
+	UserCurrencySymbol string
 
 	// Session
 	FlashesGood []interface{}
@@ -321,7 +323,9 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	// Country
-	t.UserCountry, err = session.Read(r, session.UserCountry)
+	var code = session.GetCountryCode(r);
+	t.UserCountry = string(code)
+	t.UserCurrencySymbol = helpers.CurrencySymbol(code)
 	logging.Error(err)
 
 	// Flashes
@@ -356,13 +360,6 @@ func (t GlobalTemplate) IsAdmin() bool {
 	return t.request.Header.Get("Authorization") != ""
 }
 
-func (t GlobalTemplate) GetCountry() string {
-	if t.UserCountry == "" {
-		return string(steam.CountryUS)
-	}
-	return t.UserCountry
-}
-
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
@@ -372,7 +369,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"isLoggedIn": t.IsLoggedIn(),
 		"isLocal":    t.IsLocal(),
 		"showAds":    t.ShowAd(),
-		"country":    t.GetCountry(),
+		"country":    t.UserCountry,
 	}
 
 	b, err := json.Marshal(stringMap)
@@ -440,9 +437,9 @@ func (q *DataTablesQuery) FillFromURL(url url.Values) (err error) {
 	return nil
 }
 
-func (q DataTablesQuery) GetSearch() (search string) {
+func (q DataTablesQuery) GetSearchString(k string) (search string) {
 
-	if val, ok := q.Search["value"]; ok {
+	if val, ok := q.Search[k]; ok {
 		if ok && val != "" {
 			return val.(string)
 		}

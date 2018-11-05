@@ -18,10 +18,11 @@ import (
 
 // These are called so everything as access to configs (viper)
 func init() {
-	configSetup() // Must go first
+	configSetup()  // First
+	logging.Init() // Second
+	helpers.Init()
 	storage.Init()
 	queue.Init()
-	logging.Init()
 	web.Init()
 }
 
@@ -72,6 +73,11 @@ func main() {
 }
 
 func configSetup() {
+
+	// Checks
+	if os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		panic("can't see environment variables")
+	}
 
 	// Google
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {

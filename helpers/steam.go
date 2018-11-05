@@ -9,22 +9,22 @@ import (
 
 var steamClient *steam.Steam
 
-func GetSteam() (*steam.Steam) {
+// Called from main
+func Init() {
 
-	if steamClient == nil {
-
-		steamClient = &steam.Steam{
-			Key:        viper.GetString("API_KEY"),
-			LogChannel: GetSteamLogsChan(),
-			UserAgent:  "http://gamedb.online",
-		}
-
-		steamClient.SetRateLimit(
-			time.Hour*24/100000,
-			time.Millisecond*1600,
-		)
+	steamClient = &steam.Steam{
+		Key:        viper.GetString("API_KEY"),
+		LogChannel: GetSteamLogsChan(),
+		UserAgent:  "http://gamedb.online",
 	}
 
+	steamClient.SetRateLimit(
+		time.Hour*24/100000,
+		time.Millisecond*1600,
+	)
+}
+
+func GetSteam() (*steam.Steam) {
 	return steamClient
 }
 

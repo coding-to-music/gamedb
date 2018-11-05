@@ -99,11 +99,11 @@
             <ul class="navbar-nav">
             {{ if .IsLoggedIn }}
                 <li class="nav-item">
-                    <a href="/settings"><img src="#" alt="" id="header-flag"></a>
+                    <img src="/assets/img/flags/{{ .UserCountry }}.png" alt="" id="header-flag">
                 </li>
             {{else}}
                 <li class="nav-item">
-                    <a href="/login"><img src="#" alt="" id="header-flag"></a>
+                    <a href="/login"><img src="/assets/img/flags/{{ .UserCountry }}.png" alt="" id="header-flag"></a>
                 </li>
             {{end}}
 
