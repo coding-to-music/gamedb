@@ -97,7 +97,7 @@ func configSetup() {
 	viper.SetDefault("ENV", "local")
 	viper.SetDefault("MEMCACHE_DSN", "memcache:11211")
 	viper.SetDefault("PATH", "/root")
-	viper.SetDefault("MYSQL_DSN", "root@tcp(localhost:3306)/steam?parseTime=true")
+	viper.SetDefault("MYSQL_DSN", "root@tcp(localhost:3306)/steam")
 	viper.SetDefault("DOMAIN", "https://gamedb.online")
 	viper.SetDefault("SHORT_NAME", "GameDB")
 }
