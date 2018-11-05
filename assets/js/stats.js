@@ -2,7 +2,7 @@ if ($('#stats-page').length > 0) {
 
     Highcharts.chart('scores', {
         chart: {
-            type: 'heatmap'
+            type: 'column'
         },
         title: {
             text: ''
@@ -11,13 +11,14 @@ if ($('#stats-page').length > 0) {
             text: ''
         },
         xAxis: {
-            categories: [''],
+            categories: [1, 2, 3], // Only need a few to start the pattern off at 1
+            crosshair: true,
             title: {
                 text: ''
             }
         },
         yAxis: {
-            categories: [''],
+            min: 0,
             title: {
                 text: ''
             }
@@ -25,28 +26,18 @@ if ($('#stats-page').length > 0) {
         credits: {
             enabled: false
         },
-        colorAxis: {
-            min: 0,
-            minColor: '#FFFFFF',
-            maxColor: '#28a745'
-        },
         legend: {
             enabled: false
         },
         tooltip: {
             formatter: function () {
-                return this.point.value + ' apps have ' + this.point.x + '/100';
-            }
+                return this.y + ' apps have ' + this.x + '/100';
+            },
         },
         series: [{
-            name: '',
-            borderWidth: 0,
-            color: '#000',
+            //data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 49.9, 71.5, 106.4, 129.2, 144.0],
             data: scores,
-            dataLabels: {
-                enabled: false,
-                color: '#000000'
-            }
+            color: '#28a745',
         }]
     });
 }
