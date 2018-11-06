@@ -51,26 +51,28 @@ if ($('#apps-page').length > 0) {
     });
 
     // Form changes
-    $chosens.on('change', filter);
-    $form.on('submit', filter);
-    priceSlider.on('set.one', onPriceChange);
-    scoreSlider.on('set.one', onScoreChange);
+    $chosens.on('change', redrawTable);
+    $form.on('submit', redrawTable);
+    priceSlider.on('set', onPriceChange);
+    priceSlider.on('update', updateLabels);
+    scoreSlider.on('set', onScoreChange);
+    scoreSlider.on('update', updateLabels);
 
     function onPriceChange(e) {
         const prices = priceSlider.get();
         $('#price-low').val(prices[0]);
         $('#price-high').val(prices[1]);
-        filter();
+        redrawTable();
     }
 
     function onScoreChange(e) {
         const scores = scoreSlider.get();
         $('#score-low').val(scores[0]);
         $('#score-high').val(scores[1]);
-        filter();
+        redrawTable();
     }
 
-    function filter(e) {
+    function redrawTable(e) {
 
         // Filter out empty form fields
         let formData = $form.serializeArray();
@@ -91,8 +93,17 @@ if ($('#apps-page').length > 0) {
         const prices = priceSlider.get();
         const scores = scoreSlider.get();
 
-        $('label#price-label').html('Price ($' + Math.round(prices[0]) + ' - $' + Math.round(prices[1]) + ')');
-        $('label#score-label').html('Score (' + Math.round(scores[0]) + '% - ' + Math.round(scores[1]) + '%)');
+        if (prices[0] === prices[1]) {
+            $('label#price-label').html('Price ($' + Math.round(prices[0]) + ')');
+        } else {
+            $('label#price-label').html('Price ($' + Math.round(prices[0]) + ' - $' + Math.round(prices[1]) + ')');
+        }
+
+        if (scores[0] === scores[1]) {
+            $('label#score-label').html('Score (' + Math.round(scores[0]) + '%)');
+        } else {
+            $('label#score-label').html('Score (' + Math.round(scores[0]) + '% - ' + Math.round(scores[1]) + '%)');
+        }
     }
 
     // Setup datatable
