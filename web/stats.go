@@ -56,12 +56,12 @@ type statsTemplate struct {
 
 func (s *statsTemplate) setScoresJSON(scores []appScore) {
 
-	ret := make([][]int, 101) // 0-100
+	ret := make([]int, 101) // 0-100
 	for i := 0; i <= 100; i++ {
-		ret[i] = []int{0, 0}
+		ret[i] = 0
 	}
 	for _, v := range scores {
-		ret[v.Score] = []int{0, v.Count}
+		ret[v.Score] = v.Count
 	}
 
 	bytes, err := json.Marshal(ret)
