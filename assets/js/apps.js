@@ -94,9 +94,9 @@ if ($('#apps-page').length > 0) {
         const scores = scoreSlider.get();
 
         if (prices[0] === prices[1]) {
-            $('label#price-label').html('Price ($' + Math.round(prices[0]) + ')');
+            $('label#price-label').html('Price (' + user.currencySymbol + Math.round(prices[0]) + ')');
         } else {
-            $('label#price-label').html('Price ($' + Math.round(prices[0]) + ' - $' + Math.round(prices[1]) + ')');
+            $('label#price-label').html('Price (' + user.currencySymbol + Math.round(prices[0]) + ' - ' + user.currencySymbol + Math.round(prices[1]) + ')');
         }
 
         if (scores[0] === scores[1]) {
