@@ -366,13 +366,14 @@ func (t GlobalTemplate) IsAdmin() bool {
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
-		"userID":     t.UserID,
-		"userLevel":  t.UserLevel,
-		"userName":   t.UserName,
-		"isLoggedIn": t.IsLoggedIn(),
-		"isLocal":    t.IsLocal(),
-		"showAds":    t.ShowAd(),
-		"country":    t.UserCountry,
+		"userID":         t.UserID,
+		"userLevel":      t.UserLevel,
+		"userName":       t.UserName,
+		"isLoggedIn":     t.IsLoggedIn(),
+		"isLocal":        t.IsLocal(),
+		"showAds":        t.ShowAd(),
+		"country":        t.UserCountry,
+		"currencySymbol": t.UserCurrencySymbol,
 	}
 
 	b, err := json.Marshal(stringMap)
