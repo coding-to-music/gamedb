@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
+	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/storage"
 	"github.com/gosimple/slug"
 )
@@ -27,6 +28,8 @@ const defaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
+	ErrUpdatingTooSoon   = errors.New("updating too soon")
+	ErrUpdatingBot       = errors.New("bots can't update")
 )
 
 type Player struct {
@@ -270,6 +273,40 @@ const (
 	PlayerUpdateManual updateType = "manual"
 )
 
+func (p Player) ShouldUpdate(r *http.Request, updateType updateType) error {
+
+	if !IsValidPlayerID(p.PlayerID) {
+		return ErrInvalidPlayerID
+	}
+
+	if helpers.IsBot(r.UserAgent()) {
+		return ErrUpdatingBot
+	}
+
+	if updateType == PlayerUpdateAuto && !p.ShouldUpdateAuto() {
+		return ErrUpdatingTooSoon
+	}
+
+	if updateType == PlayerUpdateManual && !p.ShouldUpdateManual() {
+		return ErrUpdatingTooSoon
+	}
+
+	return nil
+}
+
+func (p Player) TriggerUpdate(r *http.Request, updateType updateType) (err error) {
+
+	bytes, err2 := json.Marshal(queue.RabbitMessageProfile{
+		PlayerID:   p.PlayerID,
+		Time:       time.Now(),
+		UserAgent:  r.Header.Get("User-Agent"),
+		RemoteAddr: r.RemoteAddr,
+	})
+	logging.Error(err2)
+
+	return queue.Produce(queue.QueueProfiles, bytes)
+}
+
 func (p *Player) Update(r *http.Request, updateType updateType) (errs []error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
@@ -374,6 +411,7 @@ func (p *Player) Update(r *http.Request, updateType updateType) (errs []error) {
 		errs = append(errs, err)
 	}
 
+	// todo, do in go routine?
 	err = CreateEvent(r, p.PlayerID, EventRefresh)
 	logging.Error(err)
 
