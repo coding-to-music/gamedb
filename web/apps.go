@@ -218,8 +218,8 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if len(prices) == 2 {
 
 				// No apps have prices yet
-				//gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") >= ?", prices[0]+"00")
-				//gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") <= ?", prices[1]+"00")
+				//gorm = gorm.Where("FLOOR(JSON_EXTRACT(prices, \"$.US.final\")/100)*100 >= ?", prices[0]+"00")
+				//gorm = gorm.Where("FLOOR(JSON_EXTRACT(prices, \"$.US.final\")/100)*100 <= ?", prices[1]+"00")
 
 			}
 
@@ -227,8 +227,8 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			scores := query.GetSearchSlice("scores")
 			if len(prices) == 2 {
 
-				gorm = gorm.Where("reviews_score >= ?", scores[0])
-				gorm = gorm.Where("reviews_score <= ?", scores[1])
+				gorm = gorm.Where("FLOOR(reviews_score) >= ?", scores[0])
+				gorm = gorm.Where("FLOOR(reviews_score) <= ?", scores[1])
 
 			}
 
