@@ -22,7 +22,7 @@ var (
 
 func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
-	player, err := getPlayer(r, 0)
+	player, err := getPlayer(r)
 	if err != nil {
 		if err == errNotLoggedIn {
 			session.SetBadFlash(w, r, "please login")
@@ -299,29 +299,17 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	}
 
 	// Convert ID
-	idx, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return playerID, err
-	}
-
-	return idx, nil
+	return strconv.ParseInt(id, 10, 64)
 }
 
-func getPlayer(r *http.Request, playerID int64) (player db.Player, err error) {
+func getPlayer(r *http.Request) (player db.Player, err error) {
 
-	if playerID == 0 {
-		playerID, err = getPlayerIDFromSession(r)
-		if err != nil {
-			return player, err
-		}
-	}
-
-	player, err = db.GetPlayer(playerID)
+	playerID, err := getPlayerIDFromSession(r)
 	if err != nil {
 		return player, err
 	}
 
-	return player, nil
+	return db.GetPlayer(playerID)
 }
 
 func getUser(r *http.Request, playerID int64) (user db.User, err error) {
