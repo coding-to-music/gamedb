@@ -16,22 +16,32 @@ if ($('#apps-page').length > 0) {
         rtl: false
     });
 
-    // Sliders
-    const priceElement = document.getElementById('price-slider');
-    const priceHigh = parseInt($(priceElement).attr('data-high'));
-    const priceSlider = noUiSlider.create(document.getElementById('price-slider'), {
-        start: [0, priceHigh],
+    // Setup Sliders
+    const priceLow = $('#price-low').val();
+    const priceHigh = $('#price-high').val();
+    const priceElement = $('#price-slider')[0];
+    const priceMax = $(priceElement).attr('data-max');
+    const priceSlider = noUiSlider.create(priceElement, {
+        start: [
+            parseInt(priceLow ? priceLow : 0),
+            parseInt(priceHigh ? priceHigh : priceMax)
+        ],
         connect: true,
         step: 1,
         range: {
             'min': 0,
-            'max': priceHigh
+            'max': parseInt(priceMax)
         }
     });
 
-    const scoreElement = document.getElementById('score-slider');
-    const scoreSlider = noUiSlider.create(document.getElementById('score-slider'), {
-        start: [0, 100],
+    const scoreLow = $('#score-low').val();
+    const scoreHigh = $('#score-high').val();
+    const scoreElement = $('#score-slider')[0];
+    const scoreSlider = noUiSlider.create(scoreElement, {
+        start: [
+            parseInt(scoreLow ? scoreLow : 0),
+            parseInt(scoreHigh ? scoreHigh : 100)
+        ],
         connect: true,
         step: 1,
         range: {
@@ -43,17 +53,37 @@ if ($('#apps-page').length > 0) {
     // Form changes
     $chosens.on('change', filter);
     $form.on('submit', filter);
-    priceSlider.on('set.one', filter);
-    scoreSlider.on('set.one', filter);
+    priceSlider.on('set.one', onPriceChange);
+    scoreSlider.on('set.one', onScoreChange);
+
+    function onPriceChange(e) {
+        const prices = priceSlider.get();
+        $('#price-low').val(prices[0]);
+        $('#price-high').val(prices[1]);
+        filter();
+    }
+
+    function onScoreChange(e) {
+        const scores = scoreSlider.get();
+        $('#score-low').val(scores[0]);
+        $('#score-high').val(scores[1]);
+        filter();
+    }
 
     function filter(e) {
+
+        // Filter out empty form fields
+        let formData = $form.serializeArray();
+        formData = $.grep(formData, function (v) {
+            return v.value !== "";
+        });
+
         $table.DataTable().draw();
-        history.pushState({}, document.title, "/games#" + $form.serialize().replace('name=&', ''));
+        history.pushState({}, document.title, "/games#" + $.param(formData));
         updateLabels(e);
         return false;
     }
 
-    // Slider labels
     $(document).ready(updateLabels);
 
     function updateLabels(e) {
