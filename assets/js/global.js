@@ -130,3 +130,6 @@ if (user.showAds) {
         .prepend('<div class="ad-top-big d-none d-lg-block d-xl-none" id="chitikaAdBlock-2"></div>')
         .prepend('<div class="ad-top-small d-block d-lg-none" id="chitikaAdBlock-3"></div>');
 }
+
+// Toasts
+//toastr.info('Are you the 6 fingered man?');
