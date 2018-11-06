@@ -99,7 +99,6 @@ func Serve() error {
 	r.Get("/players", PlayersHandler)
 	r.Post("/players", PlayerIDHandler)
 	r.Get("/players/ajax", PlayersAjaxHandler)
-	r.Get("/players/{id:[a-z]+}", PlayersHandler)
 	r.Get("/players/{id:[0-9]+}", PlayerHandler)
 	r.Get("/players/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
 	r.Get("/players/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
