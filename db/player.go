@@ -17,7 +17,6 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
-	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/storage"
 	"github.com/gosimple/slug"
 )
@@ -253,11 +252,11 @@ func (p Player) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(p.PlayTime, 5)
 }
 
-func (p Player) ShouldUpdateAuto() bool {
+func (p Player) shouldUpdateAuto() bool {
 	return p.UpdatedAt.Add(time.Hour * 168).Unix() < time.Now().Unix() // A week
 }
 
-func (p Player) ShouldUpdateManual() bool {
+func (p Player) shouldUpdateManual() bool {
 
 	if p.Donated > 0 {
 		return p.UpdatedAt.Add(time.Hour * 1).Unix() < time.Now().Unix() // An hour
@@ -283,49 +282,28 @@ func (p Player) ShouldUpdate(r *http.Request, updateType updateType) error {
 		return ErrUpdatingBot
 	}
 
-	if updateType == PlayerUpdateAuto && !p.ShouldUpdateAuto() {
+	// todo, move code from shouldUpdateAuto & shouldUpdateManual to here
+	if updateType == PlayerUpdateAuto && !p.shouldUpdateAuto() {
 		return ErrUpdatingTooSoon
 	}
 
-	if updateType == PlayerUpdateManual && !p.ShouldUpdateManual() {
+	if updateType == PlayerUpdateManual && !p.shouldUpdateManual() {
 		return ErrUpdatingTooSoon
 	}
 
 	return nil
 }
 
-func (p Player) TriggerUpdate(r *http.Request, updateType updateType) (err error) {
-
-	bytes, err2 := json.Marshal(queue.RabbitMessageProfile{
-		PlayerID:   p.PlayerID,
-		Time:       time.Now(),
-		UserAgent:  r.Header.Get("User-Agent"),
-		RemoteAddr: r.RemoteAddr,
-	})
-	logging.Error(err2)
-
-	return queue.Produce(queue.QueueProfiles, bytes)
-}
-
+// todo, just return one error, log the rest
 func (p *Player) Update(r *http.Request, updateType updateType) (errs []error) {
 
-	if !IsValidPlayerID(p.PlayerID) {
-		return []error{ErrInvalidPlayerID}
-	}
-
-	if helpers.IsBot(r.UserAgent()) {
-		return []error{} // Success
-	}
-
-	// Check if updated recently
-	if updateType == PlayerUpdateAuto && !p.ShouldUpdateAuto() {
-		return []error{} // Success
-	} else if updateType == PlayerUpdateManual && !p.ShouldUpdateManual() {
-		return []error{} // Success
+	err := p.ShouldUpdate(r, updateType)
+	if err != nil {
+		return []error{err}
 	}
 
 	// Get summary
-	err := p.updateSummary()
+	err = p.updateSummary()
 	if err != nil {
 		return []error{err}
 	}

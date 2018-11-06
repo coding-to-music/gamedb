@@ -20,6 +20,7 @@ import (
 func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
+	var toasts []string
 
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -48,17 +49,24 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update player if needed
-	errs := player.Update(r, db.PlayerUpdateAuto)
-	if len(errs) > 0 {
+	// Queue profile for a refresh
+	err = player.ShouldUpdate(r, db.PlayerUpdateAuto)
+	if err == nil {
 
-		for _, err := range errs {
-			logging.Error(err)
+		bytes, err := json.Marshal(queue.RabbitMessageProfile{
+			PlayerID:   player.PlayerID,
+			Time:       time.Now(),
+			UserAgent:  r.Header.Get("User-Agent"),
+			RemoteAddr: r.RemoteAddr,
+		})
+		if err == nil {
+			err = queue.Produce(queue.QueueProfiles, bytes)
+			if err == nil {
+				toasts = append(toasts, "Profile queued for an update!")
+			}
 		}
-
-		returnErrorTemplate(w, r, 500, errs[0].Error())
-		return
 	}
+	logging.Error(err)
 
 	var wg sync.WaitGroup
 
@@ -212,6 +220,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames
 	t.Bans = bans
+	t.Toasts = toasts
 
 	returnTemplate(w, r, "player", t)
 }
@@ -426,7 +435,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
 			logging.Error(err)
 
-		} else if err == nil && !player.ShouldUpdateManual() {
+		} else if err == nil && player.ShouldUpdate(r, db.PlayerUpdateManual) != nil {
 
 			response = PlayersUpdateResponse{Message: "Player is up to date", Success: false}
 

@@ -273,6 +273,7 @@ type GlobalTemplate struct {
 	Avatar string
 	Path   string // URL
 	Env    string
+	Toasts []string
 
 	// User
 	UserName           string // Username
