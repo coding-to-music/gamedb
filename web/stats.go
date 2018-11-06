@@ -25,10 +25,10 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
-			gorm = gorm.Select([]string{"round(reviews_score) AS score", "count(reviews_score) AS count"})
+			gorm = gorm.Select([]string{"FLOOR(reviews_score) AS score", "count(reviews_score) AS count"})
 			gorm = gorm.Table("apps")
 			gorm = gorm.Where("reviews_score > ?", 0)
-			gorm = gorm.Group("round(reviews_score)")
+			gorm = gorm.Group("FLOOR(reviews_score)")
 			//gorm = gorm.Order("reviews_score ASC")
 			gorm = gorm.Find(&scores)
 
