@@ -126,7 +126,6 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		wg.Done()
-
 	}()
 
 	// Wait

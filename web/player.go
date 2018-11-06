@@ -67,6 +67,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		var err error
 		friends, err = player.GetFriends()
 		logging.Error(err)
 
@@ -100,6 +101,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		var err error
 		ranks, err = db.GetRank(player.PlayerID)
 		if err != nil {
 			if err != db.ErrNoSuchEntity {
@@ -116,6 +118,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		var err error
 		players, err = db.CountPlayers()
 		logging.Error(err)
 
@@ -127,6 +130,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		var err error
 		badges, err = player.GetBadges()
 		logging.Error(err)
 
@@ -173,6 +177,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		var err error
 		bans, err = player.GetBans()
 		logging.Error(err)
 
@@ -184,6 +189,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		var err error
 		badgeStats, err = player.GetBadgeStats()
 		logging.Error(err)
 

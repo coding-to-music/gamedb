@@ -62,15 +62,19 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		logging.Error(v)
 	}
 
+	// Template
+	t := appTemplate{}
+	t.Fill(w, r, app.GetName())
+	t.App = app
+
 	//
 	var wg sync.WaitGroup
 
 	// todo, dont call steam here!
-	var achievements []appAchievementTemplate
+	// Get achievements
 	//wg.Add(1)
 	//go func() {
 	//
-	//	// Get achievements
 	//	achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 	//	if err != nil {
 	//
@@ -93,7 +97,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	//			// Make template struct
 	//			for _, v := range schema.AvailableGameStats.Achievements {
-	//				achievements = append(achievements, appAchievementTemplate{
+	//				t.Achievements = append(t.Achievements, appAchievementTemplate{
 	//					v.Icon,
 	//					v.DisplayName,
 	//					v.Description,
@@ -106,27 +110,23 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	//	wg.Done()
 	//}()
 
-	var tags []db.Tag
+	// Tags
 	wg.Add(1)
 	go func() {
 
-		// Get tags
-		tags, err = app.GetTags()
-		if err != nil {
-			logging.Error(err)
-		}
+		var err error
+		t.Tags, err = app.GetTags()
+		logging.Error(err)
 
 		wg.Done()
 	}()
 
-	var pricesString string
-	var pricesCount int
+	// Get prices
 	wg.Add(1)
 	go func() {
 
 		var code = session.GetCountryCode(r)
 
-		// Get prices
 		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp, code)
 		if err != nil {
 
@@ -134,7 +134,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
-			pricesCount = len(pricesResp)
+			t.PricesCount = len(pricesResp)
 
 			var prices [][]float64
 
@@ -156,7 +156,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 			} else {
 
-				pricesString = string(pricesBytes)
+				t.Prices = string(pricesBytes)
 
 			}
 		}
@@ -164,11 +164,10 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
-	var news []appArticleTemplate
+	// Get news
 	wg.Add(1)
 	go func() {
 
-		// Get news
 		newsResp, err := db.GetAppArticles(idx)
 		if err != nil {
 
@@ -190,48 +189,41 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 				// Convert BBCdoe to HTML
 				//v.Contents = conv.Convert(v.Contents)
 
-				news = append(news, appArticleTemplate{
+				t.Articles = append(t.Articles, appArticleTemplate{
 					ID:       v.ArticleID,
 					Title:    v.Title,
 					Contents: template.HTML(strip.HTMLEscapeString(v.Contents)),
 					Author:   v.Author,
 				})
 			}
-
 		}
 
 		wg.Done()
 	}()
 
-	var packages []db.Package
+	// Get packages
 	wg.Add(1)
 	go func() {
 
-		// Get packages
-		packages, err = db.GetPackagesAppIsIn(app.ID)
-		if err != nil {
-			logging.Error(err)
-		}
+		var err error
+		t.Packages, err = db.GetPackagesAppIsIn(app.ID)
+		logging.Error(err)
 
 		wg.Done()
 	}()
 
-	var dlc []db.App
+	// Get DLC
 	wg.Add(1)
 	go func() {
 
-		// Get DLC
-		dlc, err = db.GetDLC(app, []string{"id", "name"})
-		if err != nil {
-			logging.Error(err)
-		}
+		var err error
+		t.DLC, err = db.GetDLC(app, []string{"id", "name"})
+		logging.Error(err)
 
 		wg.Done()
 	}()
 
 	// Get reviews
-	var reviews []appReviewTemplate
-	var reviewsCount steam.ReviewsSummaryResponse
 	wg.Add(1)
 	go func() {
 
@@ -242,7 +234,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
-			reviewsCount = reviewsResponse.QuerySummary
+			t.ReviewsCount = reviewsResponse.QuerySummary
 
 			// Make slice of playerIDs
 			var playerIDs []int64
@@ -279,7 +271,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 					regex := regexp.MustCompile("[\n]{3,}") // After comma
 					v.Review = regex.ReplaceAllString(v.Review, "\n\n")
 
-					reviews = append(reviews, appReviewTemplate{
+					t.Reviews = append(t.Reviews, appReviewTemplate{
 						Review:     v.Review,
 						Player:     player,
 						Date:       time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
@@ -296,20 +288,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Wait
 	wg.Wait()
-
-	// Template
-	t := appTemplate{}
-	t.Fill(w, r, app.GetName())
-	t.App = app
-	t.Packages = packages
-	t.Articles = news
-	t.Prices = pricesString
-	t.PricesCount = pricesCount
-	t.Achievements = achievements
-	t.Tags = tags
-	t.DLC = dlc
-	t.Reviews = reviews
-	t.ReviewsCount = reviewsCount
 
 	returnTemplate(w, r, "app", t)
 }

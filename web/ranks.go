@@ -16,37 +16,42 @@ import (
 
 func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Template
+	t := playersTemplate{}
+	t.Fill(w, r, "Players")
+
+	//
 	var wg sync.WaitGroup
-	var err error
 
 	// Get config
-	var config db.Config
 	wg.Add(1)
 	go func() {
 
-		config, err = db.GetConfig(db.ConfRanksUpdated)
+		config, err := db.GetConfig(db.ConfRanksUpdated)
 		logging.Error(err)
+
+		t.Date = config.Value
 
 		wg.Done()
 	}()
 
 	// Count players
-	var playersCount int
 	wg.Add(1)
 	go func() {
 
-		playersCount, err = db.CountPlayers()
+		var err error
+		t.PlayersCount, err = db.CountPlayers()
 		logging.Error(err)
 
 		wg.Done()
 	}()
 
 	// Count ranks
-	var ranksCount int
 	wg.Add(1)
 	go func() {
 
-		ranksCount, err = db.CountRanks()
+		var err error
+		t.RanksCount, err = db.CountRanks()
 		logging.Error(err)
 
 		wg.Done()
@@ -54,13 +59,6 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Wait
 	wg.Wait()
-
-	//
-	t := playersTemplate{}
-	t.Fill(w, r, "Players")
-	t.PlayersCount = playersCount
-	t.RanksCount = ranksCount
-	t.Date = config.Value
 
 	returnTemplate(w, r, "ranks", t)
 	return

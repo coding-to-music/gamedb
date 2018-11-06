@@ -20,62 +20,61 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Types = db.GetTypesForSelect()
 
 	//
-	var err error
 	var wg sync.WaitGroup
 
 	// Get apps count
 	wg.Add(1)
 	go func() {
 
-		t.Count, err = db.CountApps()
+		var err error
+		//t.Count, err = db.CountApps()
 		logging.Error(err)
 
 		wg.Done()
-
 	}()
 
 	// Get tags
 	wg.Add(1)
 	go func() {
 
-		t.Tags, err = db.GetTagsForSelect()
+		var err error
+		//t.Tags, err = db.GetTagsForSelect()
 		logging.Error(err)
 
 		wg.Done()
-
 	}()
 
 	// Get genres
 	wg.Add(1)
 	go func() {
 
-		t.Genres, err = db.GetGenresForSelect()
+		var err error
+		//t.Genres, err = db.GetGenresForSelect()
 		logging.Error(err)
 
 		wg.Done()
-
 	}()
 
 	// Get publishers
 	wg.Add(1)
 	go func() {
 
-		t.Publishers, err = db.GetPublishersForSelect()
+		var err error
+		//t.Publishers, err = db.GetPublishersForSelect()
 		logging.Error(err)
 
 		wg.Done()
-
 	}()
 
 	// Get developers
 	wg.Add(1)
 	go func() {
 
+		var err error
 		t.Developers, err = db.GetDevelopersForSelect()
 		logging.Error(err)
 
 		wg.Done()
-
 	}()
 
 	// Get most expensive app
@@ -88,10 +87,9 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 		// Convert cents to dollars
 		t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
 
-		t.ExpensiveApp = 101 // todo, remove this line when apps have prices¬
+		t.ExpensiveApp = 101 // todo, remove this line when apps have prices
 
 		wg.Done()
-
 	}(r)
 
 	// Wait

@@ -47,6 +47,11 @@ var (
 	}
 )
 
+// Called from main
+func Init() {
+	getClient()
+}
+
 func getClient() *memcache.Client {
 
 	if client == nil {

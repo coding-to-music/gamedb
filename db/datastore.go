@@ -35,6 +35,11 @@ var (
 	datastoreClient *datastore.Client
 )
 
+// Called from main
+func InitDS() {
+	GetDSClient()
+}
+
 type Kind interface {
 	GetKey() (*datastore.Key)
 }

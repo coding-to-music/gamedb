@@ -11,39 +11,38 @@ import (
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
-	var err error
 
 	var ranksCount int
 	wg.Add(1)
 	go func() {
 
+		var err error
 		ranksCount, err = db.CountRanks()
 		logging.Error(err)
 
 		wg.Done()
-
 	}()
 
 	var appsCount int
 	wg.Add(1)
 	go func() {
 
+		var err error
 		appsCount, err = db.CountApps()
 		logging.Error(err)
 
 		wg.Done()
-
 	}()
 
 	var packagesCount int
 	wg.Add(1)
 	go func() {
 
+		var err error
 		packagesCount, err = db.CountPackages()
 		logging.Error(err)
 
 		wg.Done()
-
 	}()
 
 	wg.Wait()

@@ -2,8 +2,10 @@ package session
 
 import (
 	"net/http"
+	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/logging"
 	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
 )
@@ -16,6 +18,7 @@ const (
 )
 
 var store *sessions.CookieStore
+var writeMutex = new(sync.Mutex)
 
 // Called from main
 func Init() {
@@ -27,15 +30,15 @@ func Init() {
 
 func getSession(r *http.Request) (*sessions.Session, error) {
 
-	session, err := store.Get(r, "gamedb-session")
-	if err != nil {
-		return session, err
-	}
+	writeMutex.Lock()
 
+	session, err := store.Get(r, "gamedb-session")
 	session.Options = &sessions.Options{
 		MaxAge: 0, // Session
 		Path:   "/",
 	}
+
+	writeMutex.Unlock()
 
 	return session, err
 }
@@ -51,15 +54,17 @@ func Read(r *http.Request, key string) (value string, err error) {
 		session.Values[key] = ""
 	}
 
-	return session.Values[key].(string), err
+	return session.Values[key].(string), nil
 }
 
 func GetCountryCode(r *http.Request) steam.CountryCode {
 
 	val, err := Read(r, UserCountry)
-	if err != nil {
+	if err != nil || val == "" {
+		logging.Error(err)
 		return steam.CountryUS
 	}
+
 	return steam.CountryCode(val)
 }
 
@@ -108,12 +113,7 @@ func Clear(w http.ResponseWriter, r *http.Request) (err error) {
 
 	session.Values = make(map[interface{}]interface{})
 
-	err = session.Save(r, w)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return session.Save(r, w)
 }
 
 func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes []interface{}, err error) {
@@ -124,11 +124,6 @@ func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes [
 	}
 
 	flashes = session.Flashes(group)
-
-	err = session.Save(r, w)
-	if err != nil {
-		return nil, err
-	}
 
 	return flashes, nil
 }

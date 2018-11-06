@@ -12,10 +12,6 @@ import (
 	"github.com/gamedb/website/session"
 )
 
-const (
-	freeGamesLimit = 100
-)
-
 func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
@@ -130,7 +126,7 @@ func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			gorm = gorm.Count(&filtered)
 
-			gorm = gorm.Limit(freeGamesLimit)
+			gorm = gorm.Limit(100)
 
 			gorm = gorm.Find(&apps)
 

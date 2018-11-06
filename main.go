@@ -7,8 +7,10 @@ import (
 	"os"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/storage"
 	"github.com/gamedb/website/web"
@@ -21,6 +23,8 @@ func init() {
 	configSetup()  // First
 	logging.Init() // Second
 	helpers.Init()
+	memcache.Init()
+	db.InitDS()
 	storage.Init()
 	queue.Init()
 	web.Init()
