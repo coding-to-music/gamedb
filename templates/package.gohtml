@@ -72,10 +72,12 @@
                                         <td>Status</td>
                                         <td>{{ .Package.GetStatus }}</td>
                                     </tr>
+                                {{ if gt .Package.PICSChangeID 0 }}
                                     <tr>
                                         <td>Change ID</td>
                                         <td><a href="/changes/{{ .Package.PICSChangeID }}">Change {{ .Package.PICSChangeID }}</a></td>
                                     </tr>
+                                {{ end }}
                                     <tr>
                                         <td>Platforms</td>
                                         <td class="platforms">{{ .Package.GetPlatformImages }}</td>
