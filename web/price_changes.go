@@ -44,7 +44,7 @@ func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 
 			q := datastore.NewQuery(db.KindProductPrice).Limit(100).Order("-created_at")
-			q = q.Filter("currency =", session.GetCountryCode(r))
+			q = q.Filter("currency =", string(session.GetCountryCode(r)))
 
 			q, err = query.SetOffsetDS(q)
 			if err == nil {
