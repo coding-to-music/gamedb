@@ -34,10 +34,10 @@ import (
 // Called from main
 func Init() {
 
+	session.Init()
+
 	InitChat()
 	InitCommits()
-
-	session.Init()
 }
 
 func middlewareLog(next http.Handler) http.Handler {
@@ -296,6 +296,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	var err error
 
 	t.request = r
+
 	t.Title = title
 	t.Env = viper.GetString("ENV")
 	t.Path = r.URL.Path
@@ -304,9 +305,11 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	id, err := session.Read(r, session.PlayerID)
 	logging.Error(err)
 
-	t.UserID, err = strconv.Atoi(id)
-	if err != nil {
+	if id == "" {
 		t.UserID = 0
+	} else {
+		t.UserID, err = strconv.Atoi(id)
+		logging.Error(err)
 	}
 
 	// User name
@@ -317,16 +320,17 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	level, err := session.Read(r, session.PlayerLevel)
 	logging.Error(err)
 
-	t.UserLevel, err = strconv.Atoi(level)
-	if err != nil {
+	if level == "" {
 		t.UserLevel = 0
+	} else {
+		t.UserLevel, err = strconv.Atoi(level)
+		logging.Error(err)
 	}
 
 	// Country
-	var code = session.GetCountryCode(r);
+	var code = session.GetCountryCode(r)
 	t.UserCountry = string(code)
 	t.UserCurrencySymbol = helpers.CurrencySymbol(code)
-	logging.Error(err)
 
 	// Flashes
 	t.FlashesGood, err = session.GetGoodFlashes(w, r)
