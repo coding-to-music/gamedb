@@ -10,49 +10,42 @@ import (
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
+	t := homeTemplate{}
+	t.Fill(w, r, "Home")
+
 	var wg sync.WaitGroup
 
-	var ranksCount int
 	wg.Add(1)
 	go func() {
 
 		var err error
-		ranksCount, err = db.CountRanks()
+		t.RanksCount, err = db.CountRanks()
 		logging.Error(err)
 
 		wg.Done()
 	}()
 
-	var appsCount int
 	wg.Add(1)
 	go func() {
 
 		var err error
-		appsCount, err = db.CountApps()
+		t.AppsCount, err = db.CountApps()
 		logging.Error(err)
 
 		wg.Done()
 	}()
 
-	var packagesCount int
 	wg.Add(1)
 	go func() {
 
 		var err error
-		packagesCount, err = db.CountPackages()
+		t.PackagesCount, err = db.CountPackages()
 		logging.Error(err)
 
 		wg.Done()
 	}()
 
 	wg.Wait()
-
-	t := homeTemplate{}
-	t.Fill(w, r, "Home")
-
-	t.RanksCount = ranksCount
-	t.AppsCount = appsCount
-	t.PackagesCount = packagesCount
 
 	returnTemplate(w, r, "home", t)
 }

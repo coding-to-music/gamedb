@@ -30,15 +30,20 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Template
+	t := changeTemplate{}
+	t.Fill(w, r, change.GetName())
+	t.Change = change
+
+	//
 	var wg sync.WaitGroup
 
 	// Get apps
-	var apps = map[int]db.App{}
 	wg.Add(1)
 	go func() {
 
 		for _, v := range change.Apps {
-			apps[v.ID] = db.App{ID: v.ID, Name: v.Name}
+			t.Apps[v.ID] = db.App{ID: v.ID, Name: v.Name}
 		}
 
 		appsSlice, err := db.GetAppsByID(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
@@ -49,22 +54,20 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			for _, v := range appsSlice {
-				apps[v.ID] = v
+				t.Apps[v.ID] = v
 			}
 
 		}
 
 		wg.Done()
-
 	}()
 
 	// Get packages
-	var packages = map[int]db.Package{}
 	wg.Add(1)
 	go func() {
 
 		for _, v := range change.Packages {
-			packages[v.ID] = db.Package{ID: v.ID, PICSName: v.Name}
+			t.Packages[v.ID] = db.Package{ID: v.ID, PICSName: v.Name}
 		}
 
 		packagesSlice, err := db.GetPackages(change.GetPackageIDs(), []string{})
@@ -75,24 +78,16 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			for _, v := range packagesSlice {
-				packages[v.ID] = v
+				t.Packages[v.ID] = v
 			}
 
 		}
 
 		wg.Done()
-
 	}()
 
 	// Wait
 	wg.Wait()
-
-	// Template
-	t := changeTemplate{}
-	t.Fill(w, r, change.GetName())
-	t.Change = change
-	t.Apps = apps
-	t.Packages = packages
 
 	returnTemplate(w, r, "change", t)
 }
