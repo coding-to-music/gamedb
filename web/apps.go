@@ -80,7 +80,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get most expensive app
 	wg.Add(1)
-	go func() {
+	go func(r *http.Request) {
 
 		price, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
 		logging.Error(err)
@@ -92,7 +92,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 		wg.Done()
 
-	}()
+	}(r)
 
 	// Wait
 	wg.Wait()

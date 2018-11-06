@@ -210,7 +210,7 @@ func SettingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var events []db.Event
 
 	wg.Add(1)
-	go func() {
+	go func(r *http.Request) {
 
 		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
@@ -242,12 +242,12 @@ func SettingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		wg.Done()
-	}()
+	}(r)
 
 	// Get total
 	var total int
 	wg.Add(1)
-	go func() {
+	go func(r *http.Request) {
 
 		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
@@ -262,7 +262,7 @@ func SettingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		wg.Done()
-	}()
+	}(r)
 
 	// Wait
 	wg.Wait()

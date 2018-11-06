@@ -38,7 +38,7 @@ func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var priceChanges []db.ProductPrice
 
 	wg.Add(1)
-	go func() {
+	go func(r *http.Request) {
 
 		client, ctx, err := db.GetDSClient()
 		if err == nil {
@@ -55,7 +55,7 @@ func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		logging.Error(err)
 
 		wg.Done()
-	}()
+	}(r)
 
 	// Get total
 	var total int

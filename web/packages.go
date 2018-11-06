@@ -40,7 +40,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var packages []db.Package
 
 	wg.Add(1)
-	go func() {
+	go func(r *http.Request) {
 
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
@@ -65,7 +65,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		wg.Done()
-	}()
+	}(r)
 
 	// Get total
 	var count int
