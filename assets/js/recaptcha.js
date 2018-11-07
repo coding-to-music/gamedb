@@ -3,7 +3,7 @@ function recaptchaCallback() {
     $('form button[type=submit]').prop("disabled", false);
 
 
-    var inputs = $('form input[type=text], form input[type=email], form textarea').filter(function () {
+    const inputs = $('form input[type=text], form input[type=email], form textarea').filter(function () {
         return $(this).val() === "";
     });
 

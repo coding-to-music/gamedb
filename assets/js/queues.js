@@ -1,8 +1,8 @@
 if ($('#queues-page').length > 0) {
 
     // Pause on tab change
-    var paused = false;
-    var $badge = $('#live-badge');
+    let paused = false;
+    const $badge = $('#live-badge');
 
     $(window).blur(function () {
         paused = true;
@@ -13,7 +13,7 @@ if ($('#queues-page').length > 0) {
     });
 
     // 5 second timer.
-    var time = 1;
+    let time = 1;
     setInterval(function () {
 
         time--;
@@ -27,7 +27,7 @@ if ($('#queues-page').length > 0) {
     // Update the table
     function update() {
         if (paused === false) {
-            var $body = $('tbody');
+            const $body = $('tbody');
             $.ajax({
                 async: true,
                 cache: false,
@@ -36,8 +36,8 @@ if ($('#queues-page').length > 0) {
                 url: "/queues/queues.json",
                 success: function (data, status) {
                     $body.empty();
-                    for (var i in data) {
-                        $body.append($('<tr><td>' + data[i].Name + '</td><td>' + data[i].Messages + '</td><td>' + data[i].Rate + '/s</td></tr>'));
+                    for (const v of data) {
+                        $body.append($('<tr><td>' + v.Name + '</td><td>' + v.Messages + '</td><td>' + v.Rate + '/s</td></tr>'));
                     }
                 }
             });

@@ -1,6 +1,6 @@
 if ($('#free-games-page').length > 0) {
 
-    var table = $('table.table-datatable2');
+    const table = $('table.table-datatable2');
 
     $('#types input:checkbox').change(function () {
 

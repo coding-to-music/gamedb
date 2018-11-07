@@ -31,7 +31,7 @@ if ($('#xp-page').length > 0) {
 
     // Calculator
     function levelToXP(level) {
-        for (var current = 0, total = 0; current <= level; current++) {
+        for (let current = 0, total = 0; current <= level; current++) {
             total += Math.ceil(current / 10) * 100;
         }
 

@@ -4,8 +4,8 @@ if ($('#chat-page').length > 0) {
         console.log('Your browser does not support WebSockets');
     } else {
 
-        var socket = new WebSocket('ws://' + location.host + "/websocket/chat");
-        var $badge = $('#live-badge');
+        const socket = new WebSocket('ws://' + location.host + "/websocket/chat");
+        const $badge = $('#live-badge');
 
         socket.onopen = function (e) {
             // console.log('WebSocket opened');
@@ -19,7 +19,7 @@ if ($('#chat-page').length > 0) {
             // console.log('WebSocket recieved');
             // console.log(e.data);
 
-            var data = jQuery.parseJSON(e.data);
+            let data = jQuery.parseJSON(e.data);
 
             if (data.Page === 'chat') {
 

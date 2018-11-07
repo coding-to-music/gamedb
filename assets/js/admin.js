@@ -1,9 +1,9 @@
 if ($('#admin-page').length > 0) {
 
-    var $actions = $('#actions a');
+    const $actions = $('#actions a');
 
     $actions.on('click', function () {
-        var text = $(this).find('p').text();
+        const text = $(this).find('p').text();
         return confirm(text + '?');
     });
 
@@ -16,7 +16,7 @@ if ($('#admin-page').length > 0) {
         }
     );
 
-    var queuesForm = $('form#queues');
+    const queuesForm = $('form#queues');
     queuesForm.on("submit", function (e) {
         e.preventDefault();
         $.ajax({

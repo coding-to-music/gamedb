@@ -4,9 +4,9 @@ if ($('#coop-page').length > 0) {
 
         e.preventDefault();
 
-        var url = '';
+        let url = '';
 
-        var val = $('input#id').val();
+        const val = $('input#id').val();
 
         if (document.location.href.indexOf("?") >= 0) {
             url = document.location.href + "&p=" + val;
@@ -19,7 +19,7 @@ if ($('#coop-page').length > 0) {
 
     $('input#addme').click(function (e) {
 
-        var id = $(this).attr('data-id');
+        const id = $(this).attr('data-id');
 
         $('input#id').val(id);
         $('form#add').submit();

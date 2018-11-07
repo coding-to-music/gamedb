@@ -1,12 +1,16 @@
 // Local datatable
-$("table.table-datatable").each(function (i) {
 
-    var order = [[0, 'asc']];
-    var pageLength = 100;
-    var paging = true;
+const $dataTables = $('table.table-datatable');
+const $searchField = $('input#search');
+
+$dataTables.each(function (i) {
+
+    let order = [[0, 'asc']];
+    let pageLength = 100;
+    let paging = true;
 
     // Limit
-    var limit = $(this).attr('data-limit');
+    const limit = $(this).attr('data-limit');
     if (limit > 0) {
         pageLength = Number(limit);
     }
@@ -17,25 +21,25 @@ $("table.table-datatable").each(function (i) {
     }
 
     // Sort
-    var tableSort = $(this).attr('data-sort');
+    const tableSort = $(this).attr('data-sort');
     if (tableSort) {
 
         order = eval(tableSort);
 
     } else {
 
-        var $column = $(this).find('thead tr th[data-sort]');
+        const $column = $(this).find('thead tr th[data-sort]');
         if ($column.length > 0) {
 
-            var index = $column.index();
-            var sort = $column.attr('data-sort');
+            const index = $column.index();
+            const sort = $column.attr('data-sort');
 
             order = [[index, sort]];
         }
     }
 
     // Find
-    var disabled = [];
+    const disabled = [];
     $(this).find('thead tr th[data-disabled]').each(function (i) {
         disabled.push($(this).index());
     });
@@ -67,9 +71,9 @@ $("table.table-datatable").each(function (i) {
 });
 
 // Filter table on search box enter key
-$('input#search').keypress(function (e) {
+$searchField.keypress(function (e) {
     if (e.which === 13) {
-        var table = $('#DataTables_Table_0');
+        const table = $('#DataTables_Table_0');
         if (table.length === 1) {
             table.DataTable().search($(this).val()).draw();
         }
@@ -77,12 +81,12 @@ $('input#search').keypress(function (e) {
 });
 
 // Clear search box on escape and reset filter
-$('input#search').on('keyup', function (e) {
+$searchField.on('keyup', function (e) {
     if ($(this).val() && e.key === "Escape") {
 
         $(this).val('');
 
-        var table = $('#DataTables_Table_0');
+        const table = $('#DataTables_Table_0');
         if (table.length) {
             table.DataTable().search($(this).val()).draw();
         }
@@ -97,7 +101,7 @@ $('table.table-datatable2').on('page.dt search.dt', function (e, settings, proce
 
     if (e.type === 'page') {
 
-        var top = $(this).prev().offset().top - 15;
+        const top = $(this).prev().offset().top - 15;
         $('html, body').animate({scrollTop: top}, 500);
     }
 
@@ -108,18 +112,18 @@ $('table.table-datatable2').on('page.dt search.dt', function (e, settings, proce
 
 });
 
-$('table.table-datatable').on('page.dt', function (e, settings, processing) {
+$dataTables.on('page.dt', function (e, settings, processing) {
 
-    var top = $(this).prev().offset().top - 15;
+    const top = $(this).prev().offset().top - 15;
     $('html, body').animate({scrollTop: top}, 200);
 
 });
 
 // Lock icon
-var $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
+const $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
 
 // Server side defaults
-var dtDefaultOptions = {
+const dtDefaultOptions = {
     "ajax": function (data, callback, settings) {
 
         delete data.columns;
@@ -159,27 +163,25 @@ var dtDefaultOptions = {
 
 function addDataTablesRow(columnDefs, data, limit, $table) {
 
-    var $row = $('<tr class="fade-green" />');
+    const $row = $('<tr class="fade-green" />');
 
-    for (var i in columnDefs) {
-        if (columnDefs.hasOwnProperty(i)) {
+    for (const v of columnDefs) {
 
-            var value = data[i];
+        let value = data[v];
 
-            if ('render' in columnDefs[i]) {
-                value = columnDefs[i].render(null, null, data);
-            }
-
-            var $td = $('<td />').html(value);
-
-            if ('createdCell' in columnDefs[i]) {
-                columnDefs[i].createdCell($td[0], null, data, null, null); // todo, this [0] may not be needed
-            }
-
-            $td.find('[data-livestamp]').html('a few seconds ago');
-
-            $row.append($td);
+        if ('render' in v) {
+            value = v.render(null, null, data);
         }
+
+        const $td = $('<td />').html(value);
+
+        if ('createdCell' in v) {
+            v.createdCell($td[0], null, data, null, null); // todo, this [0] may not be needed
+        }
+
+        $td.find('[data-livestamp]').html('a few seconds ago');
+
+        $row.append($td);
     }
 
     $table.prepend($row);

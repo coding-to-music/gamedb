@@ -2,7 +2,7 @@ if ($('#player-page').length > 0) {
 
     $('[data-update-id]').on('click', function (e) {
 
-        var $link = $(this);
+        const $link = $(this);
 
         $link.removeClass('fade-red').removeClass('fade-green');
 
@@ -10,7 +10,7 @@ if ($('#player-page').length > 0) {
             url: '/players/' + $(this).attr('data-update-id') + '/ajax/update',
             success: function (data, textStatus, jqXHR) {
 
-                browserNotification(data.message);
+                toast(data.message);
 
                 if (data.success) {
                     $link.addClass('fade-green');
