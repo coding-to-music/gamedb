@@ -27,7 +27,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		var err error
-		//t.Count, err = db.CountApps()
+		t.Count, err = db.CountApps()
 		logging.Error(err)
 
 		wg.Done()
@@ -38,7 +38,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		var err error
-		//t.Tags, err = db.GetTagsForSelect()
+		t.Tags, err = db.GetTagsForSelect()
 		logging.Error(err)
 
 		wg.Done()
@@ -49,7 +49,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		var err error
-		//t.Genres, err = db.GetGenresForSelect()
+		t.Genres, err = db.GetGenresForSelect()
 		logging.Error(err)
 
 		wg.Done()
@@ -60,7 +60,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		var err error
-		//t.Publishers, err = db.GetPublishersForSelect()
+		t.Publishers, err = db.GetPublishersForSelect()
 		logging.Error(err)
 
 		wg.Done()
