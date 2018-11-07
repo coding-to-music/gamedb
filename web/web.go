@@ -264,6 +264,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
 		"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
+		"json":       func(v interface{}) (string, error) { b, err := json.Marshal(v); return string(b), err },
 	}
 }
 
@@ -273,7 +274,8 @@ type GlobalTemplate struct {
 	Avatar string
 	Path   string // URL
 	Env    string
-	Toasts []string
+
+	Toasts []Toast
 
 	// User
 	UserName           string // Username
@@ -389,6 +391,10 @@ func (t GlobalTemplate) ShowAd() (bool) {
 	}
 
 	return true
+}
+
+func (t *GlobalTemplate) AddToast(toast Toast) {
+	t.Toasts = append(t.Toasts, toast)
 }
 
 type DataTablesAjaxResponse struct {
@@ -563,4 +569,13 @@ func setNoCacheHeaders(w http.ResponseWriter) {
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate") // HTTP 1.1.
 	w.Header().Set("Pragma", "no-cache")                                   // HTTP 1.0.
 	w.Header().Set("Expires", "0")                                         // Proxies.
+}
+
+// Toasts
+type Toast struct {
+	Title   string `json:"title"`
+	Message string `json:"message"`
+	Link    string `json:"link"`
+	Theme   string `json:"theme"`
+	Timeout int    `json:"timeout"`
 }

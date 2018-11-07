@@ -1,7 +1,7 @@
 // Links
 $(document).on('mouseup', '[data-link]', function (evnt) {
 
-    var link = $(this).attr('data-link');
+    const link = $(this).attr('data-link');
 
     if (evnt.which === 3) {
         return true;
@@ -68,25 +68,15 @@ function highLightOwnedGames() {
         }
     }
 }
+
 highLightOwnedGames();
-
-// Browser notification
-function browserNotification(message) {
-
-    Push.create("Game DB", {
-        body: message,
-        icon: '/assets/img/sa-bg-32x32.png',
-        timeout: 5000,
-        vibrate: [100]
-    });
-}
 
 // Websocket helper
 function websocketListener(page, onMessage) {
 
     if (window.WebSocket === undefined) {
 
-        browserNotification(message);
+        toast(message);
 
     } else {
 
@@ -99,12 +89,12 @@ function websocketListener(page, onMessage) {
 
         socket.onclose = function (e) {
             $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
-            browserNotification('Live functionality has stopped');
+            toast('Live functionality has stopped');
         };
 
         socket.onerror = function (e) {
             $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
-            browserNotification('Live functionality has stopped');
+            toast('Live functionality has stopped');
         };
 
         socket.onmessage = onMessage;
@@ -132,4 +122,24 @@ if (user.showAds) {
 }
 
 // Toasts
-//toastr.info('Are you the 6 fingered man?');
+if (toasts) {
+    for (const v of toasts) {
+        toast(v.message, v.title, v.timeout, v.link);
+    }
+}
+
+function toast(body, title = '', timeout = '', link = '') {
+
+    const redirect = function () {
+        window.location.replace(link);
+    };
+
+    toastr.success(body, title, {
+        timeOut: timeout ? timeout * 1000 : 5000,
+        onclick: link ? redirect : null,
+
+        newestOnTop: true,
+        preventDuplicates: false,
+        extendedTimeOut: 0, // Keep alive on hover
+    });
+}

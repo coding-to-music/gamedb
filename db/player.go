@@ -282,6 +282,8 @@ func (p Player) ShouldUpdate(r *http.Request, updateType updateType) error {
 		return ErrUpdatingBot
 	}
 
+	// todo, check memcache
+
 	// todo, move code from shouldUpdateAuto & shouldUpdateManual to here
 	if updateType == PlayerUpdateAuto && !p.shouldUpdateAuto() {
 		return ErrUpdatingTooSoon

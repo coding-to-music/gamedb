@@ -20,7 +20,7 @@ import (
 func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
-	var toasts []string
+	var toasts []Toast
 
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -62,7 +62,9 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			err = queue.Produce(queue.QueueProfiles, bytes)
 			if err == nil {
-				toasts = append(toasts, "Profile queued for an update!")
+				toasts = append(toasts, Toast{
+					Message: "Profile queued for an update!",
+				})
 			}
 		}
 	}

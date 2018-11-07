@@ -12,11 +12,15 @@
 
 </footer>
 
+<script>const toasts = JSON.parse('{{ json .Toasts }}');</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="/assets/compiled.min.js"></script>
+{{ if .ShowAd }}
 <script src="https://cdn.chitika.net/getads.js" async></script>
+{{ end }}
 
 </body>
 </html>
