@@ -41,7 +41,7 @@ if ($('#stats-page').length > 0) {
                 point: {
                     events: {
                         click: function () {
-                            window.location.href = '/games#price-low=' + this.x + '&price-high=' + this.x;
+                            window.location.href = '/games#score-low=' + this.x + '&score-high=' + this.x;
                         }
                     }
                 }
