@@ -69,4 +69,7 @@
 {{ if gt .Level -1}}
 <script>
     const scrollTo = 'tr[data-level={{ .Level }}]'
-</script> {{end}} {{ template "_footer" }} {{end}}
+</script>
+{{end}}
+
+{{ template "_footer" . }} {{end}}
