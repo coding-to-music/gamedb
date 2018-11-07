@@ -5,7 +5,7 @@ if ($('#xp-page').length > 0) {
 
         if (typeof scrollTo === 'string') {
 
-            var top = $(scrollTo).offset().top - 100;
+            const top = $(scrollTo).offset().top - 100;
             $('html, body').animate({scrollTop: top}, 500);
 
             $('tr').removeClass('table-success');
@@ -13,9 +13,9 @@ if ($('#xp-page').length > 0) {
         }
     }
 
-    $("#xp-page").on("click", "[data-level]", function () {
+    $("table.table").on("click", "[data-level]", function () {
 
-        var level = $(this).attr('data-level');
+        const level = $(this).attr('data-level');
 
         if (history.pushState) {
             history.pushState('data', '', '/experience/' + level);
@@ -27,11 +27,12 @@ if ($('#xp-page').length > 0) {
         return false;
     });
 
-    scroll();
-
     // Calculator
     function levelToXP(level) {
-        for (let current = 0, total = 0; current <= level; current++) {
+
+        let total = 0;
+
+        for (let current = 0; current <= level; current++) {
             total += Math.ceil(current / 10) * 100;
         }
 
@@ -40,15 +41,15 @@ if ($('#xp-page').length > 0) {
 
     function update() {
 
-        var answer = $('#answer');
+        const answer = $('#answer');
         answer.val('Loading..');
 
-        var from = $('#from').val();
+        let from = $('#from').val();
         if (from < 1) {
             from = 1;
         }
 
-        var to = $('#to').val();
+        let to = $('#to').val();
         if (to < 1) {
             to = 1;
         }
@@ -64,5 +65,6 @@ if ($('#xp-page').length > 0) {
         return false;
     });
 
-    update();
+    $(document).ready(scroll);
+    $(document).ready(update);
 }
