@@ -541,6 +541,12 @@ func (t adminDeveloper) GetMeanScore() float64 {
 
 func adminTags() {
 
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		logging.Error(err)
+		return
+	}
+
 	// Get current tags, to delete old ones
 	tags, err := db.GetAllTags()
 	if err != nil {
@@ -553,20 +559,17 @@ func adminTags() {
 		tagsToDelete[tag.ID] = tag.ID
 	}
 
-	// Get tag names from Steam
+	// Get tags from Steam
 	tagsResp, _, err := helpers.GetSteam().GetTags()
 	logging.Error(err)
 
-	steamTagMap := make(map[int]string)
-	for _, v := range tagsResp.Tags {
-		steamTagMap[v.TagID] = v.Name
-	}
+	steamTagMap := tagsResp.GetMap()
 
-	apps, err := db.GetAppsWithTags()
+	appsWithTags, err := db.GetAppsWithTags()
 	logging.Error(err)
 
-	currentTags := make(map[int]*adminTag)
-	for _, app := range apps {
+	newTags := make(map[int]*adminTag)
+	for _, app := range appsWithTags {
 
 		tags, err := app.GetTagIDs()
 		if err != nil {
@@ -578,18 +581,21 @@ func adminTags() {
 
 			delete(tagsToDelete, tagID)
 
-			price := app.GetPrice(steam.CountryUS) // todo, need to do this for all codes?
+			for code := range steam.Countries {
 
-			if _, ok := currentTags[tagID]; ok {
-				currentTags[tagID].count++
-				currentTags[tagID].totalPrice += price.Final
-				currentTags[tagID].totalScore += app.ReviewsScore
-			} else {
-				currentTags[tagID] = &adminTag{
-					name:       steamTagMap[tagID],
-					count:      1,
-					totalPrice: price.Final,
-					totalScore: app.ReviewsScore,
+				price := app.GetPrice(code)
+
+				if _, ok := newTags[tagID]; ok {
+					newTags[tagID].count++
+					newTags[tagID].totalPrice[code] += price.Final
+					newTags[tagID].totalScore[code] += app.ReviewsScore
+				} else {
+					newTags[tagID] = &adminTag{
+						name:       steamTagMap[tagID],
+						count:      1,
+						totalPrice: map[steam.CountryCode]int{code: price.Final},
+						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
+					}
 				}
 			}
 		}
@@ -616,7 +622,7 @@ func adminTags() {
 	}()
 
 	// Update current tags
-	for k, v := range currentTags {
+	for k, v := range newTags {
 
 		if limit >= 5 {
 			wg.Wait()
@@ -624,15 +630,20 @@ func adminTags() {
 
 		limit++
 		wg.Add(1)
-		go func(k int, v *adminTag) {
+		go func(tagID int, v *adminTag) {
 
-			err := db.SaveOrUpdateTag(k, db.Tag{
+			tag := db.Tag{
+				ID:        tagID,
+				Name:      v.name,
 				Apps:      v.count,
 				MeanPrice: v.GetMeanPrice(),
 				MeanScore: v.GetMeanScore(),
-				Name:      v.name,
-			})
-			logging.Error(err)
+			}
+
+			gorm = gorm.Where(db.Tag{ID: tagID}).Assign(v).FirstOrCreate(&tag)
+			if gorm.Error != nil {
+				logging.Error(gorm.Error)
+			}
 
 			limit--
 			wg.Done()
@@ -649,16 +660,36 @@ func adminTags() {
 type adminTag struct {
 	name       string
 	count      int
-	totalPrice int
-	totalScore float64
+	totalPrice map[steam.CountryCode]int
+	totalScore map[steam.CountryCode]float64
 }
 
-func (t adminTag) GetMeanPrice() float64 {
-	return float64(t.totalPrice) / float64(t.count)
+func (t adminTag) GetMeanPrice() string {
+
+	means := map[steam.CountryCode]float64{}
+
+	for code, total := range t.totalPrice {
+		means[code] = float64(total) / float64(t.count)
+	}
+
+	bytes, err := json.Marshal(means)
+	logging.Error(err)
+
+	return string(bytes)
 }
 
-func (t adminTag) GetMeanScore() float64 {
-	return float64(t.totalScore) / float64(t.count)
+func (t adminTag) GetMeanScore() string {
+
+	means := map[steam.CountryCode]float64{}
+
+	for code, total := range t.totalScore {
+		means[code] = float64(total) / float64(t.count)
+	}
+
+	bytes, err := json.Marshal(means)
+	logging.Error(err)
+
+	return string(bytes)
 }
 
 func adminRanks() {

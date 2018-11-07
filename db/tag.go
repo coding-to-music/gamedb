@@ -5,19 +5,20 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/memcache"
 )
 
 type Tag struct {
-	ID        int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
+	ID        int        `gorm:"not null;primary_key"`
 	CreatedAt *time.Time `gorm:"not null"`
 	UpdatedAt *time.Time `gorm:"not null"`
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice float64    `gorm:"not null"`
-	MeanScore float64    `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"`
+	MeanScore string     `gorm:"not null"`
 }
 
 func (tag Tag) GetPath() string {
@@ -33,11 +34,11 @@ func (tag Tag) GetName() (name string) {
 	return tag.Name
 }
 
-func (tag Tag) GetMeanPrice() float64 {
+func (tag Tag) GetMeanPrice(code steam.CountryCode) float64 {
 	return helpers.CentsFloat(tag.MeanPrice)
 }
 
-func (tag Tag) GetMeanScore() float64 {
+func (tag Tag) GetMeanScore(code steam.CountryCode) float64 {
 	return helpers.DollarsFloat(tag.MeanScore)
 }
 
@@ -111,22 +112,6 @@ func GetTagsByID(ids []int) (tags []Tag, err error) {
 	db = db.Limit(100).Where("id IN (?)", ids).Order("name ASC").Find(&tags)
 
 	return tags, db.Error
-}
-
-func SaveOrUpdateTag(id int, vals Tag) (err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	tag := new(Tag)
-	db.Assign(vals).FirstOrCreate(tag, Tag{ID: id})
-	if db.Error != nil {
-		return db.Error
-	}
-
-	return nil
 }
 
 func DeleteTags(ids []int) (err error) {

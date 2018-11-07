@@ -867,7 +867,8 @@ func GetAppsWithTags() (apps []App, err error) {
 	}
 
 	db = db.Where("JSON_DEPTH(tags) = 2")
-	db = db.Select([]string{"name", "tags", "price_final", "reviews_score"})
+	db = db.Select([]string{"tags", "prices", "reviews_score"})
+	//db = db.Limit(100)
 
 	db = db.Find(&apps)
 	if db.Error != nil {

@@ -41,11 +41,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:77021126c0879b41a1725f28c9709cf5c728742f263dfa780555357b03765c2e"
+  digest = "1:596e8d6da717a402e6156fe0a3e9d526b320ce2d46a328e16dc92fbe6ad483d1"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "aa2521f2d956d0038c1fa72d5c1506af2c1c6f49"
+  revision = "abc989980c0d2d5101e28142c981322b16a7ae73"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -304,14 +304,14 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:45bcafe0db7496d17f08501040790ef9de7567ccf4301e48e027b59b325f79d1"
+  digest = "1:ee8972a7d8929386df488da75ef0a670bbd94890a0da2a1c92fc0c53e99bd62d"
   name = "github.com/labstack/echo"
   packages = [
     ".",
     "middleware",
   ]
   pruneopts = ""
-  revision = "ba1891b3dc1fc5548330e580c51157ea5eb6604f"
+  revision = "2e9f4ea4e010fa328318107ba074b1b72381c571"
   version = "v3.3.7"
 
 [[projects]]
@@ -506,11 +506,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cca262ebe762af6f1cef5f9134b2b8d04fd77b69938851d253faee4aed7322ad"
+  digest = "1:4837ae00a10e327fb6a0c72b6bade6af7581c6bfaf920e5e608e50e9c8eaed9c"
   name = "github.com/streadway/amqp"
   packages = ["."]
   pruneopts = ""
-  revision = "70e15c650864f4fc47f5d3c82ea117285480895d"
+  revision = "27835f1a64e97101d95306211f03c0620ffa295d"
 
 [[projects]]
   digest = "1:857a9ecd5cb13379ecc8f798f6e6b6b574c98b9355657d91e068275f1120aaf7"
@@ -562,7 +562,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:efb97ebbd73c3a7068579327f5d98a17c09f6d8caf1fa3212c506e8bb78126b5"
+  digest = "1:a242f23ceb22423c0a2111d9488a2ab19a2e817111a4f3e2385f5f89a53e619f"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -576,11 +576,11 @@
     "ssh/terminal",
   ]
   pruneopts = ""
-  revision = "4d3f4d9ffa16a13f451c3b2999e9c49e9750bf06"
+  revision = "e4dc69e5b2fd71dcaf8bd5d054eb936deb78d1fa"
 
 [[projects]]
   branch = "master"
-  digest = "1:af3033f983c5f38e29c0f3c9927d96e938896f4d2e14c333d81d75f93eadd78f"
+  digest = "1:33ff56b9cc51b337d3bf1f5b375c9928221f7cfa72e94773d48482d5437f6468"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -596,11 +596,11 @@
     "websocket",
   ]
   pruneopts = ""
-  revision = "c10e9556a7bc0e7c942242b606f0acf024ad5d6a"
+  revision = "a544f70c90f196e50d198126db0c4cb2b562fec0"
 
 [[projects]]
   branch = "master"
-  digest = "1:d8cee371806b6ee11920b8a496bae67e6ded00367c89f2413fa1668647ba7cf5"
+  digest = "1:51d339a1d79f5c617fba14414aefb7dfd184b8ba0ddbb9f95251430b67c8aab8"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
@@ -610,7 +610,7 @@
     "jwt",
   ]
   pruneopts = ""
-  revision = "ca4130e427c7982e64cb9b5e717ff67bdb725037"
+  revision = "f42d05182288abf10faef86d16c0d07b8d40ea2d"
 
 [[projects]]
   branch = "master"
@@ -622,14 +622,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a5320611dcdfc9d79e459a43442b272d9e03276107e75655d7a199aa271d456a"
+  digest = "1:3f5c191d90f1cf365ff1f88e4b08eb766ee6ade1cb2e4efd7c316cf7e015ac17"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "9b800f95dbbc54abff0acf7ee32d88ba4e328c89"
+  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -665,7 +665,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:eb827d6da85caaee0e445a5d2038275ba362bd3a2166d2f919c68b2e62553462"
+  digest = "1:074992158633df677fc4570114ed67cd070877f8b9cee87111f46f9fab0a973a"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -683,7 +683,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "04bb50b6b83d0e72253821af8cf3252d8e866517"
+  revision = "bae21c44055eca9988e06701ad26a6d799ff6156"
 
 [[projects]]
   digest = "1:77d3cff3a451d50be4b52db9c7766c0d8570ba47593f0c9dc72173adb208e788"
