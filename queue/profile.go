@@ -3,7 +3,6 @@ package queue
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gamedb/website/db"
@@ -17,19 +16,16 @@ type RabbitMessageProfile struct {
 	PlayerID   int64
 	UserAgent  string
 	RemoteAddr string
+	UpdateType db.UpdateType
 }
 
-func (d *RabbitMessageProfile) Fill(r *http.Request, playerID string) {
+func (d *RabbitMessageProfile) Fill(r *http.Request, playerID int64, updateType db.UpdateType) {
 
 	d.Time = time.Now()
-	d.RemoteAddr = r.RemoteAddr
+	d.PlayerID = playerID
 	d.UserAgent = r.Header.Get("User-Agent")
-
-	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
-	if err != nil {
-		d.PlayerID = playerIDInt
-		logging.Error(err)
-	}
+	d.RemoteAddr = r.RemoteAddr
+	d.UpdateType = updateType
 }
 
 func (d *RabbitMessageProfile) ToBytes() []byte {
@@ -69,13 +65,10 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 	r.Header.Set("User-Agent", d.UserAgent)
 	r.RemoteAddr = d.RemoteAddr
 
-	errs := player.Update(r, db.PlayerUpdateManual)
-	if len(errs) > 0 {
-		for _, v := range errs {
-			logging.Error(v)
-		}
-
-		return true, true, errs[0]
+	err = player.Update(r, db.PlayerUpdateManual)
+	if err != nil {
+		logging.Error(err)
+		return false, true, err
 	}
 
 	return true, false, nil

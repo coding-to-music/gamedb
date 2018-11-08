@@ -183,10 +183,8 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get player if they're new
 	if player.PersonaName == "" {
-		errs := player.Update(r, db.PlayerUpdateAuto)
-		for _, v := range errs {
-			logging.Error(v) // todo, Handle these better
-		}
+		err = queuePlayer(r, player, player.PlayerID, db.PlayerUpdateAuto)
+		logging.Error(err)
 	}
 
 	// Get user

@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/queue"
 	"github.com/go-chi/chi"
 )
@@ -54,7 +55,8 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue profile for a refresh
-	err = queuePlayer(r, player, toasts, "Profile queued for an update!", db.PlayerUpdateAuto)
+	// "Profile queued for an update!"
+	err = queuePlayer(r, player, player.PlayerID, db.PlayerUpdateAuto)
 	err = helpers.IgnoreErrors(err, db.ErrUpdatingBot, db.ErrUpdatingTooSoon)
 	logging.Error(err)
 
@@ -73,22 +75,12 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Queue friends to be scanned
-		if player.ShouldUpdate(r, db.PlayerUpdateFriends) == nil {
+		_, err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
+		if err == nil {
 
-			for _, v := range friends {
-
-				err = queuePlayer(r, player, toasts, "Profile queued for an update!", db.PlayerUpdateFriends)
+			for _, friend := range friends {
+				err = queuePlayer(r, player, friend.SteamID, db.PlayerUpdateFriends)
 				logging.Error(err)
-
-				p, err := json.Marshal(queue.RabbitMessageProfile{
-					PlayerID: v.SteamID,
-					Time:     time.Now(),
-				})
-				if err != nil {
-					logging.Error(err)
-				} else {
-					queue.Produce(queue.QueueProfiles, p)
-				}
 			}
 
 			player.FriendsAddedAt = time.Now()
@@ -320,35 +312,19 @@ func (p playerRanksTemplate) GetFriendsPercent() string {
 	return p.formatPercent(p.Ranks.FriendsRank)
 }
 
-func queuePlayer(r *http.Request, player db.Player, toasts []Toast, successMessage string, updateType db.UpdateType) (err error) {
+func queuePlayer(r *http.Request, checkPlayer db.Player, queuePlayer int64, updateType db.UpdateType) (err error) {
 
-	err = player.ShouldUpdate(r, db.PlayerUpdateAuto)
+	timeLeft, err := checkPlayer.ShouldUpdate(r, updateType)
 	if err == nil {
 
-		bytes, err := json.Marshal(queue.RabbitMessageProfile{
-			PlayerID:   player.PlayerID,
-			Time:       time.Now(),
-			UserAgent:  r.Header.Get("User-Agent"),
-			RemoteAddr: r.RemoteAddr,
-		})
+		message := queue.RabbitMessageProfile{}
+		message.Fill(r, queuePlayer, updateType)
+
+		err = queue.Produce(queue.QueueProfiles, message.ToBytes())
 		if err == nil {
 
-			err = queue.Produce(queue.QueueProfiles, bytes)
-			if err == nil {
-
-				toasts = append(toasts, Toast{
-					Message: successMessage,
-					Link:    player.GetPath(),
-				})
-
-				//timeLeft := player.GetTimeToUpdate(updateType)
-				//
-				//memcache.Set(
-				//	memcache.PlayerRefreshed(player.PlayerID).Key,
-				//	"x",
-				//	int32(player.GetTimeToUpdate(updateType)),
-				//)
-			}
+			memcacheItem := memcache.PlayerRefreshed(queuePlayer)
+			err = memcache.Set(memcacheItem.Key, memcacheItem.Value, int32(timeLeft))
 		}
 	}
 
@@ -467,28 +443,30 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
 			logging.Error(err)
 
-		} else if err == nil && player.ShouldUpdate(r, db.PlayerUpdateManual) != nil {
-
-			response = PlayersUpdateResponse{Message: "Player is up to date", Success: false}
-
 		} else {
 
-			// All good
-			if err != nil && err == db.ErrNoSuchEntity {
-				response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true, Error: err.Error()}
-			} else {
-				response = PlayersUpdateResponse{Message: "Updating player", Success: true}
-			}
-
-			payload := queue.RabbitMessageProfile{}
-			payload.Fill(r, playerID)
-
-			err = queue.Produce(queue.QueueProfiles, payload.ToBytes())
+			_, err := player.ShouldUpdate(r, db.PlayerUpdateManual)
 			if err != nil {
 
-				response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
+				response = PlayersUpdateResponse{Message: "Player is up to date", Success: false}
 				logging.Error(err)
 
+			} else {
+
+				// All good
+				if err != nil && err == db.ErrNoSuchEntity {
+					response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true, Error: err.Error()}
+				} else {
+					response = PlayersUpdateResponse{Message: "Updating player", Success: true}
+				}
+
+				err = queuePlayer(r, player, player.PlayerID, db.PlayerUpdateManual)
+				if err != nil {
+
+					response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
+					logging.Error(err)
+
+				}
 			}
 		}
 	}

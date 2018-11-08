@@ -29,6 +29,7 @@ var (
 	ErrInvalidPlayerName = errors.New("invalid name")
 	ErrUpdatingTooSoon   = errors.New("updating too soon")
 	ErrUpdatingBot       = errors.New("bots can't update")
+	ErrInQueue           = errors.New("player is already in the queue")
 )
 
 type Player struct {
@@ -268,40 +269,45 @@ const (
 	PlayerUpdateAuto    UpdateType = "auto"
 	PlayerUpdateManual  UpdateType = "manual"
 	PlayerUpdateFriends UpdateType = "friends"
+	PlayerUpdateAdmin   UpdateType = "admin"
 )
 
-func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) error {
+func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (timeLeft int64, err error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
-		return ErrInvalidPlayerID
+		return timeLeft, ErrInvalidPlayerID
 	}
 
 	if helpers.IsBot(r.UserAgent()) {
-		return ErrUpdatingBot
+		return timeLeft, ErrUpdatingBot
 	}
 
-	timeLeft := p.GetTimeToUpdate(updateType)
+	timeLeft = p.GetTimeToUpdate(updateType)
 	if timeLeft > 0 {
-		return ErrUpdatingTooSoon
+		return timeLeft, ErrUpdatingTooSoon
 	}
 
-	// todo, check memcache
+	var memcacheItem = memcache.PlayerRefreshed(p.PlayerID)
+	var inQueue string
+	memcache.Get(memcacheItem.Key, &inQueue)
+	if inQueue == string(memcacheItem.Value) {
+		return timeLeft, ErrInQueue
+	}
 
-	return nil
+	return timeLeft, nil
 }
 
-// todo, just return one error, log the rest
-func (p *Player) Update(r *http.Request, updateType UpdateType) (errs []error) {
+func (p *Player) Update(r *http.Request, updateType UpdateType) (err error) {
 
-	err := p.ShouldUpdate(r, updateType)
+	_, err = p.ShouldUpdate(r, updateType)
 	if err != nil {
-		return []error{err}
+		return err
 	}
 
 	// Get summary
 	err = p.updateSummary()
 	if err != nil {
-		return []error{err}
+		return err
 	}
 
 	// Async the rest
@@ -310,86 +316,79 @@ func (p *Player) Update(r *http.Request, updateType UpdateType) (errs []error) {
 	// Get games
 	wg.Add(1)
 	go func(p *Player) {
+		var err error
 		err = p.updateGames()
-		if err != nil {
-			errs = append(errs, err)
-		}
+		logging.Error(err)
 		wg.Done()
 	}(p)
 
 	// Get recent games
 	wg.Add(1)
 	go func(p *Player) {
+		var err error
 		err = p.updateRecentGames()
-		if err != nil {
-			errs = append(errs, err)
-		}
+		logging.Error(err)
 		wg.Done()
 	}(p)
 
 	// Get badges
 	wg.Add(1)
 	go func(p *Player) {
+		var err error
 		err = p.updateBadges()
-		if err != nil {
-			errs = append(errs, err)
-		}
+		logging.Error(err)
 		wg.Done()
 	}(p)
 
 	// Get friends
 	wg.Add(1)
 	go func(p *Player) {
+		var err error
 		err = p.updateFriends()
-		if err != nil {
-			errs = append(errs, err)
-		}
+		logging.Error(err)
 		wg.Done()
 	}(p)
 
 	// Get level
 	wg.Add(1)
 	go func(p *Player) {
+		var err error
 		err = p.updateLevel()
-		if err != nil {
-			errs = append(errs, err)
-		}
+		logging.Error(err)
 		wg.Done()
 	}(p)
 
 	// Get bans
 	wg.Add(1)
 	go func(p *Player) {
+		var err error
 		err = p.updateBans()
-		if err != nil {
-			errs = append(errs, err)
-		}
+		logging.Error(err)
 		wg.Done()
 	}(p)
 
 	// Get groups
 	wg.Add(1)
 	go func(p *Player) {
+		var err error
 		err = p.updateGroups()
-		if err != nil {
-			errs = append(errs, err)
-		}
+		logging.Error(err)
 		wg.Done()
 	}(p)
+
+	// Save event
+	wg.Add(1)
+	go func(p *Player, r *http.Request) {
+		var err error
+		err = CreateEvent(r, p.PlayerID, EventRefresh)
+		logging.Error(err)
+		wg.Done()
+	}(p, r)
 
 	// Wait
 	wg.Wait()
 
-	err = p.Save()
-	if err != nil {
-		errs = append(errs, err)
-	}
-
-	// todo, do in go routine?
-	err = CreateEvent(r, p.PlayerID, EventRefresh)
-	logging.Error(err)
-
-	return errs
+	return p.Save()
 }
 
 func (p *Player) updateSummary() (error) {
@@ -752,11 +751,7 @@ func (p *Player) Save() (err error) {
 	}
 
 	_, err = SaveKind(p.GetKey(), p)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func GetPlayerMaxFriends(level int) (ret int) {

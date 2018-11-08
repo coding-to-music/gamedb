@@ -49,7 +49,11 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			player.Update(r, db.PlayerUpdateAuto) // todo, handle errors
+			err = queuePlayer(r, player, player.PlayerID, db.PlayerUpdateManual)
+			if err != nil {
+				logging.Error(err)
+				return
+			}
 
 			players = append(players, player)
 
