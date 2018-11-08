@@ -144,21 +144,22 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.PostForm.Get("password")
 
 	if len(password) > 0 {
+
 		if len(password) < 8 {
 			session.SetBadFlash(w, r, "Password must be at least 8 characters long")
 			http.Redirect(w, r, "/settings", 302)
 			return
-		} else {
-			passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-			if err != nil {
-				logging.Error(err)
-				session.SetBadFlash(w, r, "Something went wrong encrypting your password")
-				http.Redirect(w, r, "/settings", 302)
-				return
-			} else {
-				user.Password = string(passwordBytes)
-			}
 		}
+
+		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+		if err != nil {
+			logging.Error(err)
+			session.SetBadFlash(w, r, "Something went wrong encrypting your password")
+			http.Redirect(w, r, "/settings", 302)
+			return
+		}
+
+		user.Password = string(passwordBytes)
 	}
 
 	// Save email
@@ -192,6 +193,7 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.WriteMany(w, r, map[string]string{
 		session.UserCountry: user.CountryCode,
 	})
+	logging.Error(err)
 
 	http.Redirect(w, r, "/settings", 302)
 }

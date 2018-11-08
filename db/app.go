@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
 	"github.com/gosimple/slug"
-	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 )
 
@@ -78,56 +77,56 @@ type App struct {
 	NewsIDs                string     `gorm:"not null;column:news_ids"`
 }
 
-func (app App) BeforeCreate(scope *gorm.Scope) error {
-
-	if app.AchievementPercentages == "" {
-		app.AchievementPercentages = "[]"
-	}
-	if app.Achievements == "" {
-		app.Achievements = "{}"
-	}
-	if app.Categories == "" {
-		app.Categories = "[]"
-	}
-	if app.Developers == "" {
-		app.Developers = "[]"
-	}
-	if app.DLC == "" {
-		app.DLC = "[]"
-	}
-	if app.Extended == "" {
-		app.Extended = "{}"
-	}
-	if app.Prices == "" {
-		app.Prices = "{}"
-	}
-	if app.Genres == "" {
-		app.Genres = "[]"
-	}
-	if app.Movies == "" {
-		app.Movies = "[]"
-	}
-	if app.Packages == "" {
-		app.Packages = "[]"
-	}
-	if app.Platforms == "" {
-		app.Platforms = "[]"
-	}
-	if app.Publishers == "" {
-		app.Publishers = "[]"
-	}
-	if app.Schema == "" {
-		app.Schema = "{}"
-	}
-	if app.Screenshots == "" {
-		app.Screenshots = "[]"
-	}
-	if app.StoreTags == "" {
-		app.StoreTags = "[]"
-	}
-
-	return nil
-}
+//func (app *App) BeforeCreate(scope *gorm.Scope) error {
+//
+//	if app.AchievementPercentages == "" {
+//		app.AchievementPercentages = "[]"
+//	}
+//	if app.Achievements == "" {
+//		app.Achievements = "{}"
+//	}
+//	if app.Categories == "" {
+//		app.Categories = "[]"
+//	}
+//	if app.Developers == "" {
+//		app.Developers = "[]"
+//	}
+//	if app.DLC == "" {
+//		app.DLC = "[]"
+//	}
+//	if app.Extended == "" {
+//		app.Extended = "{}"
+//	}
+//	if app.Prices == "" {
+//		app.Prices = "{}"
+//	}
+//	if app.Genres == "" {
+//		app.Genres = "[]"
+//	}
+//	if app.Movies == "" {
+//		app.Movies = "[]"
+//	}
+//	if app.Packages == "" {
+//		app.Packages = "[]"
+//	}
+//	if app.Platforms == "" {
+//		app.Platforms = "[]"
+//	}
+//	if app.Publishers == "" {
+//		app.Publishers = "[]"
+//	}
+//	if app.Schema == "" {
+//		app.Schema = "{}"
+//	}
+//	if app.Screenshots == "" {
+//		app.Screenshots = "[]"
+//	}
+//	if app.StoreTags == "" {
+//		app.StoreTags = "[]"
+//	}
+//
+//	return nil
+//}
 
 func (app App) GetPath() string {
 	return getAppPath(app.ID, app.Name)
@@ -379,7 +378,7 @@ func (app App) GetPlatforms() (platforms []string, err error) {
 func (app App) GetPlatformImages() (ret template.HTML, err error) {
 
 	if app.Platforms == "" {
-		//return template.HTML("Unknown"), nil
+		return template.HTML(""), nil
 	}
 
 	platforms, err := app.GetPlatforms()
@@ -1035,12 +1034,7 @@ func GetMostExpensiveApp(code steam.CountryCode) (price int, err error) {
 }
 
 func IsValidAppID(id int) bool {
-
-	if id == 0 {
-		return false
-	}
-
-	return true
+	return id != 0
 }
 
 func getAppPath(id int, name string) string {

@@ -21,7 +21,6 @@ func QueuesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Queues")
 
 	returnTemplate(w, r, "queues", t)
-	return
 }
 
 type queuesTemplate struct {
@@ -57,7 +56,7 @@ func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Sort by name, no datatable
 	sort.Slice(queues, func(i int, j int) bool {
-		return queues[i].Name > queues[i].Name
+		return queues[i].Name > queues[j].Name
 	})
 
 	// Encode

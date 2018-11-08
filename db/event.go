@@ -35,8 +35,9 @@ func (event Event) GetCreatedNice() (t string) {
 func (event Event) GetUserAgentShort() (t string) {
 
 	if len(event.UserAgent) > 50 {
-		event.UserAgent = event.UserAgent[0:50] + "&hellip;"
+		return event.UserAgent[0:50] + "&hellip;"
 	}
+
 	return event.UserAgent
 }
 

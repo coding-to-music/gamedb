@@ -77,6 +77,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			for _, v := range friends {
 
 				err = queuePlayer(r, player, toasts, "Profile queued for an update!", db.PlayerUpdateFriends)
+				logging.Error(err)
 
 				p, err := json.Marshal(queue.RabbitMessageProfile{
 					PlayerID: v.SteamID,

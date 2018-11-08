@@ -250,16 +250,15 @@ func (p Player) GetTimeLong() (ret string) {
 
 func (p Player) GetTimeToUpdate(updateType UpdateType) int64 {
 
-	if updateType == PlayerUpdateAuto {
+	if updateType == PlayerUpdateFriends {
 		return p.FriendsAddedAt.Add(time.Hour * 24 * 365).Unix() - time.Now().Unix() // 1 year
 	} else if updateType == PlayerUpdateAuto {
 		return p.UpdatedAt.Add(time.Hour * 24 * 7).Unix() - time.Now().Unix() // 1 week
 	} else {
 		if p.Donated == 0 {
 			return p.UpdatedAt.Add(time.Hour * 24).Unix() - time.Now().Unix() // 1 day
-		} else {
-			return p.UpdatedAt.Add(time.Hour * 1).Unix() - time.Now().Unix() // 1 hour
 		}
+		return p.UpdatedAt.Add(time.Hour * 1).Unix() - time.Now().Unix() // 1 hour
 	}
 }
 
@@ -589,6 +588,8 @@ func (p *Player) updateBadges() (error) {
 	// Make map of app rows
 	var appRowsMap = map[int]App{}
 	appRows, err := GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
+	logging.Error(err)
+
 	for _, v := range appRows {
 		appRowsMap[v.ID] = v
 	}

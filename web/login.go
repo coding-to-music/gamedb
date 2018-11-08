@@ -24,7 +24,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	t.Domain = viper.GetString("DOMAIN")
 
 	returnTemplate(w, r, "login", t)
-	return
 }
 
 type loginTemplate struct {
@@ -51,11 +50,12 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Recaptcha
 		err = recaptcha.CheckFromRequest(r)
 		if err != nil {
+
 			if err == recaptcha.ErrNotChecked {
 				return ErrInvalidCaptcha
-			} else {
-				return err
 			}
+
+			return err
 		}
 
 		// Field validation
@@ -125,8 +125,6 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		session.SetGoodFlash(w, r, "Login successful")
 		http.Redirect(w, r, "/settings", 302)
 	}
-
-	return
 }
 
 func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -149,7 +147,6 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, url, 303)
-	return
 }
 
 // todo
@@ -179,6 +176,10 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if we have the player
 	player, err := db.GetPlayer(idInt)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+		return
+	}
 
 	// Get player if they're new
 	if player.PersonaName == "" {
@@ -206,9 +207,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redirect
 	http.Redirect(w, r, "/settings", 302)
-	return
 }
 
 func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.User) (err error) {
@@ -236,6 +235,7 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := getPlayerIDFromSession(r)
+	logging.Error(err)
 
 	err = db.CreateEvent(r, id, db.EventLogout)
 	logging.Error(err)

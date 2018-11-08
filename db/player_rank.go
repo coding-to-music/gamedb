@@ -111,11 +111,11 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 	var errors []error
 	for _, v := range keys {
-		playerId, err := strconv.ParseInt(v.Name, 10, 64)
+		playerID, err := strconv.ParseInt(v.Name, 10, 64)
 		if err != nil {
 			errors = append(errors, err)
 		} else {
-			keysMap[playerId] = v
+			keysMap[playerID] = v
 		}
 	}
 
@@ -127,8 +127,6 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 }
 
 func CountRanks() (count int, err error) {
-
-	return PlayersToRank, nil
 
 	return memcache.GetSetInt(memcache.RanksCount, func() (count int, err error) {
 

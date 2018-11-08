@@ -9,18 +9,18 @@ import (
 	"github.com/gamedb/website/logging"
 )
 
-type productType string
+type ProductType string
 
 const (
-	ProductTypeApp     productType = "product"
-	ProductTypePackage             = "package"
+	ProductTypeApp     ProductType = "product"
+	ProductTypePackage ProductType = "package"
 )
 
 var ErrInvalidCountryCode = errors.New("invalid code")
 
 type productInterface interface {
 	GetID() int
-	GetType() productType
+	GetType() ProductType
 	GetName() string
 	GetIcon() string
 }

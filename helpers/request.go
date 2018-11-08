@@ -9,9 +9,5 @@ func IsBot(userAgent string) bool {
 	}
 
 	r, _ := regexp.Compile("/bot|crawl|slurp|spider|google|msn|bing|yahoo|jeeves|facebook/i")
-	if r.MatchString(userAgent) {
-		return true
-	}
-
-	return false
+	return r.MatchString(userAgent)
 }

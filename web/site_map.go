@@ -48,5 +48,4 @@ func SiteMapHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(sm.XMLContent())
-	return
 }

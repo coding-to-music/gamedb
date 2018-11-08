@@ -27,7 +27,6 @@ func StatsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 
 	returnTemplate(w, r, "publishers", t)
-	return
 }
 
 type statsPublishersTemplate struct {

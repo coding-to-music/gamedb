@@ -61,12 +61,13 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		// Recaptcha
 		err = recaptcha.CheckFromRequest(r)
 		if err != nil {
+
 			if err == recaptcha.ErrNotChecked {
 				return errors.New("please check the captcha")
-			} else {
-				logging.Error(err)
-				return ErrSomething
 			}
+
+			logging.Error(err)
+			return ErrSomething
 		}
 
 		// Send
@@ -103,6 +104,4 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		session.SetGoodFlash(w, r, "Message sent!")
 		http.Redirect(w, r, "/contact", 302)
 	}
-
-	return
 }

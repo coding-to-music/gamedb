@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/Masterminds/squirrel"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 )
@@ -39,21 +38,19 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 		}
 
 		return gormConnectionDebug, nil
+	}
 
-	} else {
+	if gormConnection == nil {
 
-		if gormConnection == nil {
-
-			db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN")+options)
-			if err != nil {
-				return db, err
-			}
-
-			gormConnection = db
+		db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN")+options)
+		if err != nil {
+			return db, err
 		}
 
-		return gormConnection, nil
+		gormConnection = db
 	}
+
+	return gormConnection, nil
 }
 
 //
@@ -244,7 +241,7 @@ func (ui UpdateInsertData) formattedColumns() (columns string) {
 	for _, v := range ui.sortedColumns() {
 		slice = append(slice, "`"+v+"`")
 	}
-	return strings.Join(ui.sortedColumns(), ", ")
+	return strings.Join(slice, ", ")
 }
 
 func (ui UpdateInsertData) getDupes() (columns string) {

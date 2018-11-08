@@ -137,7 +137,6 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 	t.Games = templateGames
 
 	returnTemplate(w, r, "coop", t)
-	return
 }
 
 type coopTemplate struct {

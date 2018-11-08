@@ -35,7 +35,7 @@ func getGoogleLog(name ...string) (*logging.Logger) {
 
 	if len(name) > 0 {
 		return client.Logger(name[0] + "-" + env)
-	} else {
-		return client.Logger(LogGameDB + "-" + env)
 	}
+
+	return client.Logger(LogGameDB + "-" + env)
 }

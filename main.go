@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/storage"
 	"github.com/gamedb/website/web"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/rollbar/rollbar-go"
 	"github.com/spf13/viper"
 )

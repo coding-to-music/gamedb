@@ -93,7 +93,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 	for _, chunk := range chunks {
 
 		wg.Add(1)
-		go func() {
+		go func(chunk []Kind, wait bool) {
 
 			keys := make([]*datastore.Key, 0, len(chunk))
 			for _, vv := range chunk {
@@ -120,7 +120,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 			}
 
 			wg.Done()
-		}()
+		}(chunk, wait)
 	}
 
 	if wait {

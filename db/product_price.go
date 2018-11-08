@@ -135,7 +135,7 @@ func CreateProductPrice(product productInterface, currency steam.CountryCode, pr
 	return price
 }
 
-func GetProductPrices(ID int, productType productType, currency steam.CountryCode) (prices []ProductPrice, err error) {
+func GetProductPrices(ID int, productType ProductType, currency steam.CountryCode) (prices []ProductPrice, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {

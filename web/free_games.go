@@ -50,7 +50,6 @@ func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Types = types
 
 	returnTemplate(w, r, "free_games", t)
-	return
 }
 
 type freeGamesTemplate struct {
@@ -59,8 +58,8 @@ type freeGamesTemplate struct {
 }
 
 type freeGameType struct {
-	Type  string `column:type"`
-	Count int    `column:count"`
+	Type  string `column:"type"`
+	Count int    `column:"count"`
 }
 
 func (f freeGameType) GetType() string {

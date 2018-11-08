@@ -61,7 +61,6 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	returnTemplate(w, r, "ranks", t)
-	return
 }
 
 type playersTemplate struct {
@@ -101,7 +100,6 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/players/"+strconv.FormatInt(dbPlayer.PlayerID, 10), 302)
-	return
 }
 
 func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -151,7 +149,23 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 					logging.Error(err)
 
 					for _, v := range ranks {
-						ranksExtra = append(ranksExtra, RankExtra{RankRow: v}.SetRank(column))
+
+						rank := RankExtra{RankRow: v}
+
+						switch column {
+						case "badges_rank":
+							rank.Rank = humanize.Ordinal(rank.RankRow.BadgesRank)
+						case "friends_rank":
+							rank.Rank = humanize.Ordinal(rank.RankRow.FriendsRank)
+						case "games_rank":
+							rank.Rank = humanize.Ordinal(rank.RankRow.GamesRank)
+						case "level_rank", "":
+							rank.Rank = humanize.Ordinal(rank.RankRow.LevelRank)
+						case "play_time_rank":
+							rank.Rank = humanize.Ordinal(rank.RankRow.PlayTimeRank)
+						}
+
+						ranksExtra = append(ranksExtra, rank)
 					}
 				}
 			}
@@ -193,25 +207,8 @@ type RankExtra struct {
 	Rank    string
 }
 
-func (r RankExtra) SetRank(sort string) RankExtra {
-	switch sort {
-	case "badges_rank":
-		r.Rank = humanize.Ordinal(r.RankRow.BadgesRank)
-	case "friends_rank":
-		r.Rank = humanize.Ordinal(r.RankRow.FriendsRank)
-	case "games_rank":
-		r.Rank = humanize.Ordinal(r.RankRow.GamesRank)
-	case "level_rank", "":
-		r.Rank = humanize.Ordinal(r.RankRow.LevelRank)
-	case "play_time_rank":
-		r.Rank = humanize.Ordinal(r.RankRow.PlayTimeRank)
-	}
-
-	return r
-}
-
 // Data array for datatables
-func (r RankExtra) outputForJSON() (output []interface{}) {
+func (r *RankExtra) outputForJSON() (output []interface{}) {
 
 	return []interface{}{
 		r.Rank,

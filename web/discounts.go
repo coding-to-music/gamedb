@@ -10,7 +10,6 @@ func DiscountsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Discounts")
 
 	returnTemplate(w, r, "discounts", t)
-	return
 }
 
 type discountsTemplate struct {

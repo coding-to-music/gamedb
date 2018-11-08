@@ -27,7 +27,6 @@ func StatsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 
 	returnTemplate(w, r, "tags", t)
-	return
 }
 
 type statsTagsTemplate struct {

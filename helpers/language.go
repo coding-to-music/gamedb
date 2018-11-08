@@ -96,7 +96,7 @@ func CurrencySymbol(code steam.CountryCode) string {
 
 	if val, ok := x[code]; ok {
 		return val
-	} else {
-		return "$"
 	}
+
+	return "$"
 }

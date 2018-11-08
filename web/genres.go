@@ -27,7 +27,6 @@ func StatsGenresHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 
 	returnTemplate(w, r, "genres", t)
-	return
 }
 
 type statsGenresTemplate struct {

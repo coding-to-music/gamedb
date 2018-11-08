@@ -74,7 +74,6 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Configs = configs
 
 	returnTemplate(w, r, "admin", t)
-	return
 }
 
 type adminTemplate struct {
@@ -137,6 +136,7 @@ func adminDonations() {
 
 		player.Donated = v
 		_, err = db.SaveKind(player.GetKey(), player)
+		logging.Error(err)
 	}
 
 	//
@@ -242,13 +242,13 @@ func adminGenres() {
 	for _, v := range genresToDelete {
 
 		wg.Add(1)
-		go func() {
+		go func(v int) {
 
 			err := db.DeleteGenre(v)
 			logging.Error(err)
 
 			wg.Done()
-		}()
+		}(v)
 	}
 
 	// Update current publishers
@@ -739,9 +739,8 @@ func adminRanks() {
 
 	// Make ranks
 	var prev int
-	var rank int
+	var rank = 0
 
-	rank = 0
 	sort.Slice(ranks, func(i, j int) bool {
 		return ranks[i].Level > ranks[j].Level
 	})

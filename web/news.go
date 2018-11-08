@@ -56,7 +56,6 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Articles = templateArticles
 
 	returnTemplate(w, r, "news", t)
-	return
 }
 
 type newsTemplate struct {

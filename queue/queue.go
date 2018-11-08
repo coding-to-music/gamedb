@@ -121,10 +121,10 @@ func (s rabbitMessageBase) produce(data []byte) (err error) {
 
 	//
 	ch, qu, err := s.getQueue(producerConnection)
-	defer ch.Close()
 	if err != nil {
 		return err
 	}
+	defer ch.Close()
 
 	err = ch.Publish("", qu.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,

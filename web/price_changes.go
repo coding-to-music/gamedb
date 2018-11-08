@@ -17,7 +17,6 @@ func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Price Changes")
 
 	returnTemplate(w, r, "price_changes", t)
-	return
 }
 
 type priceChangesTemplate struct {

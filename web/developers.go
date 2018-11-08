@@ -27,7 +27,6 @@ func StatsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 
 	returnTemplate(w, r, "developers", t)
-	return
 }
 
 type statsDevelopersTemplate struct {

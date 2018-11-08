@@ -29,7 +29,7 @@ func (tag Tag) GetPath() string {
 func (tag Tag) GetName() (name string) {
 
 	if tag.Name == "" {
-		tag.Name = "Tag " + strconv.Itoa(tag.ID)
+		return "Tag " + strconv.Itoa(tag.ID)
 	}
 
 	return tag.Name

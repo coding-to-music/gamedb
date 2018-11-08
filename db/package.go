@@ -82,7 +82,7 @@ func (pack Package) GetIcon() string {
 	return DefaultAppIcon
 }
 
-func (pack Package) GetType() productType {
+func (pack Package) GetType() ProductType {
 	return ProductTypePackage
 }
 
@@ -226,10 +226,10 @@ func (pack *Package) SetAppIDs(apps []int) (err error) {
 	bytes, err := json.Marshal(apps)
 	if err != nil {
 		return err
-	} else {
-		pack.PICSAppIDs = string(bytes)
-		pack.AppsCount = len(apps)
 	}
+
+	pack.PICSAppIDs = string(bytes)
+	pack.AppsCount = len(apps)
 
 	return err
 }
@@ -459,12 +459,7 @@ func (pack *Package) Update() (err error) {
 }
 
 func IsValidPackageID(id int) bool {
-
-	if id == 0 {
-		return false
-	}
-
-	return true
+	return id != 0
 }
 
 func getPackagePath(id int, name string) string {

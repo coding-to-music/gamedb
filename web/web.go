@@ -183,10 +183,10 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something has gone wrong!", Error: err})
 		return err
-	} else {
-		w.WriteHeader(200)
-		buf.WriteTo(w)
 	}
+
+	w.WriteHeader(200)
+	buf.WriteTo(w)
 
 	return nil
 }
@@ -392,12 +392,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 }
 
 func (t GlobalTemplate) ShowAd() (bool) {
-
-	if t.IsLocal() {
-		return false
-	}
-
-	return true
+	return !t.IsLocal()
 }
 
 func (t *GlobalTemplate) AddToast(toast Toast) {
