@@ -55,6 +55,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Queue profile for a refresh
 	err = queuePlayer(r, player, toasts, "Profile queued for an update!", db.PlayerUpdateAuto)
+	err = helpers.IgnoreErrors(err, db.ErrUpdatingBot, db.ErrUpdatingTooSoon)
 	logging.Error(err)
 
 	var wg sync.WaitGroup
@@ -331,8 +332,10 @@ func queuePlayer(r *http.Request, player db.Player, toasts []Toast, successMessa
 			RemoteAddr: r.RemoteAddr,
 		})
 		if err == nil {
+
 			err = queue.Produce(queue.QueueProfiles, bytes)
 			if err == nil {
+
 				toasts = append(toasts, Toast{
 					Message: successMessage,
 					Link:    player.GetPath(),
