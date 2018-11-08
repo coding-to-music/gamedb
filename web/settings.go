@@ -28,11 +28,10 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 			session.SetBadFlash(w, r, "please login")
 			http.Redirect(w, r, "/login", 302)
 			return
-		} else {
-			logging.Error(err)
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
 		}
+
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving your data.", Error: err})
+		return
 	}
 
 	//
@@ -130,15 +129,14 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Get user
 	user, err := getUser(r, 0)
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an eror saving your information.", Error: err})
 		return
 	}
 
 	// Parse form
-	if err := r.ParseForm(); err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+	err = r.ParseForm()
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an eror saving your information.", Error: err})
 		return
 	}
 

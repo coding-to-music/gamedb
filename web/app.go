@@ -22,18 +22,18 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		returnErrorTemplate(w, r, 400, "Invalid App ID")
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID."})
 		return
 	}
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
-		returnErrorTemplate(w, r, 400, "Invalid App ID: "+id)
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
 		return
 	}
 
 	if !db.IsValidAppID(idx) {
-		returnErrorTemplate(w, r, 400, "Invalid App ID: "+id)
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
 		return
 	}
 
@@ -42,11 +42,11 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err == db.ErrCantFindApp {
-			returnErrorTemplate(w, r, 404, "Sorry but we can not find this app.")
+			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Sorry but we can not find this app."})
 			return
 		}
 
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the app.", Error: err})
 		return
 	}
 

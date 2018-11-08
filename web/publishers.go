@@ -16,8 +16,7 @@ func StatsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 	// Get publishers
 	publishers, err := db.GetAllPublishers()
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, "Error getting publishers")
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the publishers.", Error: err})
 		return
 	}
 

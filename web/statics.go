@@ -36,17 +36,12 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	returnTemplate(w, r, "donate", t)
 }
 
-func Error404Handler(w http.ResponseWriter, r *http.Request) {
-
-	returnErrorTemplate(w, r, 404, "page not found")
-}
-
 func RootFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := ioutil.ReadFile(viper.GetString("PATH") + r.URL.Path)
 	if err != nil {
 		logging.Error(err)
-		returnErrorTemplate(w, r, 404, "Unable to read file.")
+		w.Write([]byte("Unable to read file."))
 		return
 	}
 

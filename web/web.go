@@ -121,9 +121,6 @@ func Serve() error {
 	// File server
 	fileServer(r)
 
-	// 404
-	r.NotFound(Error404Handler)
-
 	return http.ListenAndServe("0.0.0.0:"+viper.GetString("PORT"), r)
 }
 
@@ -165,7 +162,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	w.Header().Set("Content-Type", "text/html")
 
-	// Load templates needed
 	folder := viper.GetString("PATH")
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/templates/_header.gohtml",
@@ -177,8 +173,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/templates/"+page+".gohtml",
 	)
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 404, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Something has gone wrong!", Error: err})
 		return err
 	}
 
@@ -186,33 +181,41 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	buf := &bytes.Buffer{}
 	err = t.ExecuteTemplate(buf, page, pageData)
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, "Something has gone wrong, the error has been logged!")
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something has gone wrong!", Error: err})
 		return err
 	} else {
-		// No error, send the content, HTTP 200 response status implied
+		w.WriteHeader(200)
 		buf.WriteTo(w)
 	}
 
 	return nil
 }
 
-func returnErrorTemplate(w http.ResponseWriter, r *http.Request, code int, message string) {
+func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTemplate) {
 
-	w.WriteHeader(code)
+	if data.Title == "" {
+		data.Title = "Error " + strconv.Itoa(data.Code)
+	}
 
-	tmpl := errorTemplate{}
-	tmpl.Fill(w, r, "Error")
-	tmpl.Code = code
-	tmpl.Message = message
+	if data.Code == 0 {
+		data.Code = 500
+	}
 
-	returnTemplate(w, r, "error", tmpl)
+	logging.Error(data.Error)
+
+	data.Fill(w, r, "Error")
+
+	w.WriteHeader(data.Code)
+
+	returnTemplate(w, r, "error", data)
 }
 
 type errorTemplate struct {
 	GlobalTemplate
-	Code    int
+	Title   string
 	Message string
+	Code    int
+	Error   error
 }
 
 func getTemplateFuncMap() map[string]interface{} {
@@ -264,7 +267,11 @@ func getTemplateFuncMap() map[string]interface{} {
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
 		"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
-		"json":       func(v interface{}) (string, error) { b, err := json.Marshal(v); return string(b), err },
+		"json": func(v interface{}) (string, error) {
+			b, err := json.Marshal(v)
+			logging.Error(err)
+			return string(b), err
+		},
 	}
 }
 

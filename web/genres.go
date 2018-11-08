@@ -16,8 +16,7 @@ func StatsGenresHandler(w http.ResponseWriter, r *http.Request) {
 	// Get genres
 	genres, err := db.GetAllGenres()
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, "Error getting genres")
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the genres.", Error: err})
 		return
 	}
 

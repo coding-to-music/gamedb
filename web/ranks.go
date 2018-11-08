@@ -92,7 +92,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 				logging.Error(err)
 			}
 
-			returnErrorTemplate(w, r, 404, "Can't find user: "+post)
+			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Can't find user: " + post})
 			return
 		}
 

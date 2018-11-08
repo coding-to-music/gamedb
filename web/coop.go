@@ -30,7 +30,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check for max number of players
 	if len(playerInts) > maxPlayers {
-		returnErrorTemplate(w, r, 404, "You can only compare games from up to "+strconv.Itoa(maxPlayers)+" people.")
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "You can only compare games from up to " + strconv.Itoa(maxPlayers) + " people."})
 		return
 	}
 
@@ -119,21 +119,10 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make visible tags
-	// todo, store in memcache
-	coopTags, err := db.GetTagsByID(db.GetCoopTags())
-	if err != nil {
-		logging.Error(err)
-	}
-
-	var coopTagsInts = map[int]string{}
-	for _, v := range coopTags {
-		coopTagsInts[v.ID] = v.GetName()
-	}
-
 	var templateGames []coopGameTemplate
 	for _, v := range games {
 
-		coopTags, err := v.GetCoopTags(coopTagsInts)
+		coopTags, err := v.GetCoopTags()
 		logging.Error(err)
 
 		templateGames = append(templateGames, coopGameTemplate{

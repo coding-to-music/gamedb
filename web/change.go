@@ -14,20 +14,19 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		returnErrorTemplate(w, r, 404, "Invaid Change ID")
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invaid Change ID.", Error: err})
 		return
 	}
 
 	change, err := db.GetChange(id)
 	if err != nil {
-		if err.Error() == "datastore: no such entity" {
-			returnErrorTemplate(w, r, 404, "We can't find this change in our database, there may not be one with this ID.")
-			return
-		} else {
-			logging.Error(err)
-			returnErrorTemplate(w, r, 500, err.Error())
+		if err == db.ErrNoSuchEntity {
+			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "We don't have this change in the database."})
 			return
 		}
+
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the change.", Error: err})
+		return
 	}
 
 	// Template

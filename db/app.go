@@ -335,11 +335,23 @@ func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err e
 	return screenshots, err
 }
 
-func (app App) GetCoopTags(tagMap map[int]string) (string, error) {
+func (app App) GetCoopTags() (string, error) {
 
 	tags, err := app.GetTagIDs()
 	if err != nil {
 		return "", err
+	}
+
+	var tagMap = map[int]string{
+		1685: "Co-op",
+		3843: "Online co-op",
+		3841: "Local co-op",
+		4508: "Co-op campaign",
+
+		3859:  "Multiplayer",
+		128:   "Massively multiplayer",
+		7368:  "Local multiplayer",
+		17770: "Asynchronous multiplayer",
 	}
 
 	var coopTags []string

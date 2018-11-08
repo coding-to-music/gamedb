@@ -4,15 +4,13 @@ import (
 	"net/http"
 
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
 )
 
 func NewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	articles, err := db.GetArticles()
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, "Error getting articles")
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Error getting articles.", Error: err})
 		return
 	}
 
@@ -34,8 +32,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get apps
 	apps, err := db.GetAppsByID(appIDs, []string{"id", "name", "icon"})
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, "Error getting apps")
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Error getting apps.", Error: err})
 		return
 	}
 

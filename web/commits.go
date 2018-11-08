@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gamedb/website/logging"
 	"github.com/google/go-github/github"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
@@ -43,8 +42,7 @@ func CommitsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	t.Commits, _, err = githubClient.Repositories.ListCommits(githubContext, "gamedb", "website", &options)
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, "Can't connect to GitHub")
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the commits.", Error: err})
 		return
 	}
 

@@ -240,10 +240,6 @@ func (p Player) GetGameStats() (stats PlayerAppStatsTemplate, err error) {
 	return stats, err
 }
 
-func (p Player) ShouldUpdateFriends() bool {
-	return p.FriendsAddedAt.Unix() < (time.Now().Unix() - int64(60*60*24*30))
-}
-
 func (p Player) GetTimeShort() (ret string) {
 	return helpers.GetTimeShort(p.PlayTime, 2)
 }
@@ -252,27 +248,30 @@ func (p Player) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(p.PlayTime, 5)
 }
 
-func (p Player) shouldUpdateAuto() bool {
-	return p.UpdatedAt.Add(time.Hour * 168).Unix() < time.Now().Unix() // A week
-}
+func (p Player) GetTimeToUpdate(updateType UpdateType) int64 {
 
-func (p Player) shouldUpdateManual() bool {
-
-	if p.Donated > 0 {
-		return p.UpdatedAt.Add(time.Hour * 1).Unix() < time.Now().Unix() // An hour
+	if updateType == PlayerUpdateAuto {
+		return p.FriendsAddedAt.Add(time.Hour * 24 * 365).Unix() - time.Now().Unix() // 1 year
+	} else if updateType == PlayerUpdateAuto {
+		return p.UpdatedAt.Add(time.Hour * 24 * 7).Unix() - time.Now().Unix() // 1 week
+	} else {
+		if p.Donated == 0 {
+			return p.UpdatedAt.Add(time.Hour * 24).Unix() - time.Now().Unix() // 1 day
+		} else {
+			return p.UpdatedAt.Add(time.Hour * 1).Unix() - time.Now().Unix() // 1 hour
+		}
 	}
-
-	return p.UpdatedAt.Add(time.Hour * 24).Unix() < time.Now().Unix() // A day
 }
 
-type updateType string
+type UpdateType string
 
 const (
-	PlayerUpdateAuto   updateType = "auto"
-	PlayerUpdateManual updateType = "manual"
+	PlayerUpdateAuto    UpdateType = "auto"
+	PlayerUpdateManual  UpdateType = "manual"
+	PlayerUpdateFriends UpdateType = "friends"
 )
 
-func (p Player) ShouldUpdate(r *http.Request, updateType updateType) error {
+func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) error {
 
 	if !IsValidPlayerID(p.PlayerID) {
 		return ErrInvalidPlayerID
@@ -282,22 +281,18 @@ func (p Player) ShouldUpdate(r *http.Request, updateType updateType) error {
 		return ErrUpdatingBot
 	}
 
+	timeLeft := p.GetTimeToUpdate(updateType)
+	if timeLeft > 0 {
+		return ErrUpdatingTooSoon
+	}
+
 	// todo, check memcache
-
-	// todo, move code from shouldUpdateAuto & shouldUpdateManual to here
-	if updateType == PlayerUpdateAuto && !p.shouldUpdateAuto() {
-		return ErrUpdatingTooSoon
-	}
-
-	if updateType == PlayerUpdateManual && !p.shouldUpdateManual() {
-		return ErrUpdatingTooSoon
-	}
 
 	return nil
 }
 
 // todo, just return one error, log the rest
-func (p *Player) Update(r *http.Request, updateType updateType) (errs []error) {
+func (p *Player) Update(r *http.Request, updateType UpdateType) (errs []error) {
 
 	err := p.ShouldUpdate(r, updateType)
 	if err != nil {

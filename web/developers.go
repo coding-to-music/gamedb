@@ -16,8 +16,7 @@ func StatsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 	// Get developers
 	developers, err := db.GetAllDevelopers()
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, "Error getting developers")
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the developers.", Error: err})
 		return
 	}
 

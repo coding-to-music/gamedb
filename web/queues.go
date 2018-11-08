@@ -32,8 +32,7 @@ func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	queuesResp, err := GetQeueus()
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the queues.", Error: err})
 		return
 	}
 

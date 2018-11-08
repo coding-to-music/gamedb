@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -34,26 +35,34 @@ func (tag Tag) GetName() (name string) {
 	return tag.Name
 }
 
-func (tag Tag) GetMeanPrice(code steam.CountryCode) float64 {
-	return helpers.CentsFloat(tag.MeanPrice)
-}
+func (tag Tag) GetMeanPrice(code steam.CountryCode) (string, error) {
 
-func (tag Tag) GetMeanScore(code steam.CountryCode) float64 {
-	return helpers.DollarsFloat(tag.MeanScore)
-}
+	means := map[steam.CountryCode]int{}
 
-func GetCoopTags() []int {
-	return []int{
-		1685, // Co-op
-		3843, // Online co-op
-		3841, // Local co-op
-		4508, // Co-op campaign
+	symbol := helpers.CurrencySymbol(code)
 
-		3859,  // Multiplayer
-		128,   // Massively multiplayer
-		7368,  // Local multiplayer
-		17770, // Asynchronous multiplayer
+	err := helpers.Unmarshal([]byte(tag.MeanPrice), &means)
+	if err == nil {
+		if val, ok := means[code]; ok {
+			return symbol + fmt.Sprintf("%0.2f", float64(val)/100), err
+		}
 	}
+
+	return symbol + "0", err
+}
+
+func (tag Tag) GetMeanScore(code steam.CountryCode) (string, error) {
+
+	means := map[steam.CountryCode]float64{}
+
+	err := helpers.Unmarshal([]byte(tag.MeanPrice), &means)
+	if err == nil {
+		if val, ok := means[code]; ok {
+			return fmt.Sprintf("%0.2f", val) + "%", err
+		}
+	}
+
+	return "0%", err
 }
 
 func GetAllTags() (tags []Tag, err error) {

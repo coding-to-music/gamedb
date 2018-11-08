@@ -14,9 +14,7 @@ import (
 const namespace = "game-db-"
 
 var client *memcache.Client
-
 var ErrCacheMiss = memcache.ErrCacheMiss
-
 var day int32 = 86400
 var (
 	// Counts
@@ -44,6 +42,9 @@ var (
 	// Other
 	MostExpensiveApp = func(code steam.CountryCode) memcache.Item {
 		return memcache.Item{Key: "most-expensive-app-" + string(code), Expiration: day * 7}
+	}
+	PlayerRefreshed = func(playerID int64) memcache.Item {
+		return memcache.Item{Key: "player-refreshed-" + strconv.FormatInt(playerID, 10), Expiration: 0}
 	}
 )
 

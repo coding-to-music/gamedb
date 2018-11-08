@@ -24,23 +24,27 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		returnErrorTemplate(w, r, 404, "Invalid Player ID: "+id)
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid Player ID: " + id, Error: err})
 		return
 	}
 
 	if !db.IsValidPlayerID(idx) {
-		returnErrorTemplate(w, r, 404, "Invalid Player ID: "+id)
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid Player ID: " + id})
 		return
 	}
 
 	// Find the player row
 	player, err := db.GetPlayer(idx)
 	if err != nil {
-		if err != db.ErrNoSuchEntity {
-			logging.Error(err)
-			returnErrorTemplate(w, r, 500, err.Error())
-			return
+		if err == db.ErrNoSuchEntity {
+
+			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now."}
+			data.Toasts = []Toast{{Title: "Player added to scan queue!"}}
+			returnErrorTemplate(w, r, data)
+		} else {
+			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player.", Error: err})
 		}
+		return
 	}
 
 	// Redirect to correct slug
@@ -50,24 +54,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue profile for a refresh
-	err = player.ShouldUpdate(r, db.PlayerUpdateAuto)
-	if err == nil {
-
-		bytes, err := json.Marshal(queue.RabbitMessageProfile{
-			PlayerID:   player.PlayerID,
-			Time:       time.Now(),
-			UserAgent:  r.Header.Get("User-Agent"),
-			RemoteAddr: r.RemoteAddr,
-		})
-		if err == nil {
-			err = queue.Produce(queue.QueueProfiles, bytes)
-			if err == nil {
-				toasts = append(toasts, Toast{
-					Message: "Profile queued for an update!",
-				})
-			}
-		}
-	}
+	err = queuePlayer(r, player, toasts, "Profile queued for an update!", db.PlayerUpdateAuto)
 	logging.Error(err)
 
 	var wg sync.WaitGroup
@@ -79,12 +66,18 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		friends, err = player.GetFriends()
-		logging.Error(err)
+		if err != nil {
+			logging.Error(err)
+			return
+		}
 
 		// Queue friends to be scanned
-		if player.ShouldUpdateFriends() {
+		if player.ShouldUpdate(r, db.PlayerUpdateFriends) == nil {
 
 			for _, v := range friends {
+
+				err = queuePlayer(r, player, toasts, "Profile queued for an update!", db.PlayerUpdateFriends)
+
 				p, err := json.Marshal(queue.RabbitMessageProfile{
 					PlayerID: v.SteamID,
 					Time:     time.Now(),
@@ -323,6 +316,39 @@ func (p playerRanksTemplate) GetTimePercent() string {
 
 func (p playerRanksTemplate) GetFriendsPercent() string {
 	return p.formatPercent(p.Ranks.FriendsRank)
+}
+
+func queuePlayer(r *http.Request, player db.Player, toasts []Toast, successMessage string, updateType db.UpdateType) (err error) {
+
+	err = player.ShouldUpdate(r, db.PlayerUpdateAuto)
+	if err == nil {
+
+		bytes, err := json.Marshal(queue.RabbitMessageProfile{
+			PlayerID:   player.PlayerID,
+			Time:       time.Now(),
+			UserAgent:  r.Header.Get("User-Agent"),
+			RemoteAddr: r.RemoteAddr,
+		})
+		if err == nil {
+			err = queue.Produce(queue.QueueProfiles, bytes)
+			if err == nil {
+				toasts = append(toasts, Toast{
+					Message: successMessage,
+					Link:    player.GetPath(),
+				})
+
+				//timeLeft := player.GetTimeToUpdate(updateType)
+				//
+				//memcache.Set(
+				//	memcache.PlayerRefreshed(player.PlayerID).Key,
+				//	"x",
+				//	int32(player.GetTimeToUpdate(updateType)),
+				//)
+			}
+		}
+	}
+
+	return err
 }
 
 func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {

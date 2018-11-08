@@ -16,8 +16,7 @@ func StatsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get tags
 	tags, err := db.GetAllTags()
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, "Error getting tags")
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the tags.", Error: err})
 		return
 	}
 

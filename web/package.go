@@ -19,7 +19,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
-		returnErrorTemplate(w, r, 404, "Invalid package ID")
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid package ID.", Error: err})
 		return
 	}
 
@@ -28,12 +28,11 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err == db.ErrNotFound {
-			returnErrorTemplate(w, r, 404, "We can't find this package in our database, there may not be one with this ID.")
+			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this package."})
 			return
 		}
 
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the package.", Error: err})
 		return
 	}
 

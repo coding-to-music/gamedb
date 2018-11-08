@@ -144,8 +144,7 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	var url string
 	url, err = openid.RedirectURL("https://steamcommunity.com/openid", viper.GetString("DOMAIN")+"/login/callback", viper.GetString("DOMAIN")+"/")
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong sending you to Steam.", Error: err})
 		return
 	}
 
@@ -167,16 +166,14 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Get ID from OpenID
 	openID, err := openid.Verify(viper.GetString("DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return
 	}
 
 	// Convert to int
 	idInt, err := strconv.ParseInt(path.Base(openID), 10, 64)
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return
 	}
 
@@ -205,8 +202,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = login(w, r, player, user)
 	if err != nil {
-		logging.Error(err)
-		returnErrorTemplate(w, r, 500, err.Error())
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
 		return
 	}
 
