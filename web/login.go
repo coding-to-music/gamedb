@@ -9,6 +9,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
 	"github.com/spf13/viper"
@@ -233,6 +234,7 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := getPlayerIDFromSession(r)
+	err = helpers.IgnoreErrors(err, errNotLoggedIn)
 	logging.Error(err)
 
 	err = db.CreateEvent(r, id, db.EventLogout)
