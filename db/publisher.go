@@ -79,24 +79,6 @@ func GetPublishersForSelect() (pubs []Publisher, err error) {
 	return pubs, err
 }
 
-func SaveOrUpdatePublisher(name string, vals Publisher) (err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	publisher := new(Publisher)
-	publisher.DeletedAt = nil
-
-	db.Assign(vals).FirstOrCreate(publisher, Publisher{Name: name})
-	if db.Error != nil {
-		return db.Error
-	}
-
-	return nil
-}
-
 func DeletePublishers(ids []int) (err error) {
 
 	if len(ids) == 0 {

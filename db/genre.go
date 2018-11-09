@@ -78,22 +78,6 @@ func GetGenresForSelect() (genres []Genre, err error) {
 	return genres, err
 }
 
-func SaveOrUpdateGenre(id int, name string, apps int) (err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	genre := new(Genre)
-	db.Attrs(Genre{Name: name}).Assign(Genre{Apps: apps}).FirstOrCreate(genre, Genre{ID: id})
-	if db.Error != nil {
-		return db.Error
-	}
-
-	return nil
-}
-
 func DeleteGenres(ids []int) (err error) {
 
 	if len(ids) == 0 {
