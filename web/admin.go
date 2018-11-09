@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
@@ -568,6 +569,8 @@ func adminTags() {
 	appsWithTags, err := db.GetAppsWithTags()
 	logging.Error(err)
 
+	fmt.Println("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
+
 	newTags := make(map[int]*adminTag)
 	for _, app := range appsWithTags {
 
@@ -632,15 +635,22 @@ func adminTags() {
 		wg.Add(1)
 		go func(tagID int, v *adminTag) {
 
-			tag := db.Tag{
-				ID:        tagID,
-				Name:      v.name,
-				Apps:      v.count,
-				MeanPrice: v.GetMeanPrice(),
-				MeanScore: v.GetMeanScore(),
+			fmt.Println("Updating tag: " + strconv.Itoa(tagID))
+
+			var tag db.Tag
+
+			gorm.Unscoped().FirstOrInit(&tag, db.Tag{ID: tagID})
+			if gorm.Error != nil {
+				logging.Error(gorm.Error)
 			}
 
-			gorm = gorm.Where(db.Tag{ID: tagID}).Assign(v).FirstOrCreate(&tag)
+			tag.Name = v.name
+			tag.Apps = v.GetCount()
+			tag.MeanPrice = v.GetMeanPrice()
+			tag.MeanScore = v.GetMeanScore()
+			tag.DeletedAt = nil
+
+			gorm.Unscoped().Save(&tag)
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
@@ -669,7 +679,7 @@ func (t adminTag) GetMeanPrice() string {
 	means := map[steam.CountryCode]float64{}
 
 	for code, total := range t.totalPrice {
-		means[code] = float64(total) / float64(t.count)
+		means[code] = float64(total) / float64(t.GetCount())
 	}
 
 	bytes, err := json.Marshal(means)
@@ -683,13 +693,17 @@ func (t adminTag) GetMeanScore() string {
 	means := map[steam.CountryCode]float64{}
 
 	for code, total := range t.totalScore {
-		means[code] = float64(total) / float64(t.count)
+		means[code] = float64(total) / float64(t.GetCount())
 	}
 
 	bytes, err := json.Marshal(means)
 	logging.Error(err)
 
 	return string(bytes)
+}
+
+func (t adminTag) GetCount() int {
+	return int(float64(t.count) / float64(len(steam.Countries)))
 }
 
 func adminRanks() {

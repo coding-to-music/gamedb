@@ -23,7 +23,7 @@ type Tag struct {
 }
 
 func (tag Tag) GetPath() string {
-	return "/games?tag=" + strconv.Itoa(tag.ID)
+	return "/games#tags=" + strconv.Itoa(tag.ID)
 }
 
 func (tag Tag) GetName() (name string) {
@@ -55,7 +55,7 @@ func (tag Tag) GetMeanScore(code steam.CountryCode) (string, error) {
 
 	means := map[steam.CountryCode]float64{}
 
-	err := helpers.Unmarshal([]byte(tag.MeanPrice), &means)
+	err := helpers.Unmarshal([]byte(tag.MeanScore), &means)
 	if err == nil {
 		if val, ok := means[code]; ok {
 			return fmt.Sprintf("%0.2f", val) + "%", err
@@ -124,6 +124,8 @@ func GetTagsByID(ids []int) (tags []Tag, err error) {
 }
 
 func DeleteTags(ids []int) (err error) {
+
+	fmt.Println("Deleteing " + strconv.Itoa(len(ids)) + " tags")
 
 	if len(ids) == 0 {
 		return nil

@@ -879,14 +879,14 @@ func GetAppsWithTags() (apps []App, err error) {
 
 	db = db.Where("JSON_DEPTH(tags) = 2")
 	db = db.Select([]string{"tags", "prices", "reviews_score"})
-	//db = db.Limit(100)
+	db = db.Order("id asc")
 
 	db = db.Find(&apps)
 	if db.Error != nil {
 		return apps, db.Error
 	}
 
-	return apps, err
+	return apps, nil
 }
 
 func GetAppsWithDevelopers() (apps []App, err error) {
@@ -904,73 +904,8 @@ func GetAppsWithDevelopers() (apps []App, err error) {
 		return apps, db.Error
 	}
 
-	return apps, err
+	return apps, nil
 }
-
-//func SearchApps(query url.Values, limit int, page int, sort string, columns []string) (apps []App, err error) {
-//
-//	db, err := GetMySQLClient()
-//	if err != nil {
-//		return apps, err
-//	}
-//
-//	if limit > 0 {
-//		db = db.Limit(limit)
-//	}
-//
-//	offset := (page - 1) * limit
-//	db = db.Offset(offset)
-//
-//	if sort != "" {
-//		db = db.Order(sort)
-//	}
-//
-//	if len(columns) > 0 {
-//		db = db.Select(columns)
-//	}
-//
-//	// Type
-//	if _, ok := query["type"]; ok {
-//		db = db.Where("type = ?", query.Get("type"))
-//	}
-//
-//	// Tags depth
-//	if _, ok := query["tags_depth"]; ok {
-//		db = db.Where("JSON_DEPTH(tags) = ?", query.Get("tags_depth"))
-//	}
-//
-//	// Genres depth
-//	if _, ok := query["genres_depth"]; ok {
-//		db = db.Where("JSON_DEPTH(genres) = ?", query.Get("genres_depth"))
-//	}
-//
-//	// Free
-//	if _, ok := query["is_free"]; ok {
-//		db = db.Where("is_free = ?", query.Get("is_free"))
-//	}
-//
-//	// Platforms
-//	if _, ok := query["platforms"]; ok {
-//		db = db.Where("JSON_CONTAINS(platforms, [\"?\"])", query.Get("platforms"))
-//
-//	}
-//
-//	// Tag
-//	if _, ok := query["tags"]; ok {
-//		db = db.Where("JSON_CONTAINS(tags, ?)", "[\""+query.Get("tags")+"\"]")
-//	}
-//
-//	// Genres
-//	// select * from apps WHERE JSON_SEARCH(genres, 'one', 'Action') IS NOT NULL;
-//
-//	// Query
-//	db = db.Find(&apps)
-//	if db.Error != nil {
-//		return apps, db.Error
-//	}
-//
-//	return apps, err
-//}
 
 func GetDLC(app App, columns []string) (apps []App, err error) {
 

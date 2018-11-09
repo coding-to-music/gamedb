@@ -247,7 +247,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var tags []string
 			for _, v := range a {
-				tags = append(tags, "<a class=\"badge badge-success\" href=\"/games?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
+				tags = append(tags, "<a class=\"badge badge-success\" href=\"/games#tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
 			}
 			return template.HTML(strings.Join(tags, " "))
 		},
@@ -259,7 +259,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var genres []string
 			for _, v := range a {
-				genres = append(genres, "<a class=\"badge badge-success\" href=\"/games?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
+				genres = append(genres, "<a class=\"badge badge-success\" href=\"/games#genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
 			}
 			return template.HTML(strings.Join(genres, " "))
 		},
@@ -277,7 +277,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Title  string // page title
+	Title  string // Page title
 	Avatar string
 	Path   string // URL
 	Env    string
@@ -288,7 +288,7 @@ type GlobalTemplate struct {
 	UserName           string // Username
 	UserID             int
 	UserLevel          int
-	UserCountry        string
+	UserCountry        steam.CountryCode
 	UserCurrencySymbol string
 
 	// Session
@@ -338,7 +338,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// Country
 	var code = session.GetCountryCode(r)
-	t.UserCountry = string(code)
+	t.UserCountry = code
 	t.UserCurrencySymbol = helpers.CurrencySymbol(code)
 
 	// Flashes

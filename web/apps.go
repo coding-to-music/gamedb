@@ -143,11 +143,11 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			// Tags
 			tags := query.GetSearchSlice("tags")
-			if len(types) > 0 {
+			if len(tags) > 0 {
 
 				var or squirrel.Or
 				for _, v := range tags {
-					or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, '[\"" + v + "\"]')": 1})
+					or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, '[" + v + "]')": 1})
 				}
 				sql, data, err := or.ToSql()
 				logging.Error(err)
@@ -156,6 +156,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Genres
+			// select * from apps WHERE JSON_SEARCH(genres, 'one', 'Action') IS NOT NULL;
 			genres := query.GetSearchSlice("genres")
 			if len(genres) > 0 {
 
@@ -223,7 +224,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			// Score range
 			scores := query.GetSearchSlice("scores")
-			if len(prices) == 2 {
+			if len(scores) == 2 {
 
 				gorm = gorm.Where("FLOOR(reviews_score) >= ?", scores[0])
 				gorm = gorm.Where("FLOOR(reviews_score) <= ?", scores[1])
