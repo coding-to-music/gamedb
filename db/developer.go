@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/memcache"
 )
@@ -16,24 +17,24 @@ type Developer struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice float64    `gorm:"not null"`
-	MeanScore float64    `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"`
+	MeanScore string     `gorm:"not null"`
 }
 
 func (d Developer) GetPath() string {
-	return "/games?developer=" + strconv.Itoa(d.ID)
+	return "/games#developers=" + strconv.Itoa(d.ID)
 }
 
 func (d Developer) GetName() (name string) {
 	return d.Name
 }
 
-func (d Developer) GetMeanPrice() float64 {
-	return helpers.CentsFloat(d.MeanPrice)
+func (d Developer) GetMeanPrice(code steam.CountryCode) (string, error) {
+	return helpers.GetMeanPrice(code, d.MeanPrice)
 }
 
-func (d Developer) GetMeanScore() float64 {
-	return helpers.DollarsFloat(d.MeanScore)
+func (d Developer) GetMeanScore(code steam.CountryCode) (string, error) {
+	return helpers.GetMeanScore(code, d.MeanScore)
 }
 
 func GetAllDevelopers() (developers []Developer, err error) {

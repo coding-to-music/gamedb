@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/memcache"
 )
@@ -15,24 +16,24 @@ type Genre struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice float64    `gorm:"not null"`
-	MeanScore float64    `gorm:"not null"`
+	MeanPrice string    `gorm:"not null"`
+	MeanScore string    `gorm:"not null"`
 }
 
 func (g Genre) GetPath() string {
-	return "/games?genre=" + g.Name
+	return "/games#genres=" + g.Name
 }
 
 func (g Genre) GetName() string {
 	return g.Name
 }
 
-func (g Genre) GetMeanPrice() float64 {
-	return helpers.CentsFloat(g.MeanPrice)
+func (g Genre) GetMeanPrice(code steam.CountryCode) (string, error) {
+	return helpers.GetMeanPrice(code, g.MeanPrice)
 }
 
-func (g Genre) GetMeanScore() float64 {
-	return helpers.DollarsFloat(g.MeanScore)
+func (g Genre) GetMeanScore(code steam.CountryCode) (string, error) {
+	return helpers.GetMeanScore(code, g.MeanScore)
 }
 
 func GetAllGenres() (genres []Genre, err error) {

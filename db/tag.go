@@ -36,33 +36,11 @@ func (tag Tag) GetName() (name string) {
 }
 
 func (tag Tag) GetMeanPrice(code steam.CountryCode) (string, error) {
-
-	means := map[steam.CountryCode]int{}
-
-	symbol := helpers.CurrencySymbol(code)
-
-	err := helpers.Unmarshal([]byte(tag.MeanPrice), &means)
-	if err == nil {
-		if val, ok := means[code]; ok {
-			return symbol + fmt.Sprintf("%0.2f", float64(val)/100), err
-		}
-	}
-
-	return symbol + "0", err
+	return helpers.GetMeanPrice(code, tag.MeanPrice)
 }
 
 func (tag Tag) GetMeanScore(code steam.CountryCode) (string, error) {
-
-	means := map[steam.CountryCode]float64{}
-
-	err := helpers.Unmarshal([]byte(tag.MeanScore), &means)
-	if err == nil {
-		if val, ok := means[code]; ok {
-			return fmt.Sprintf("%0.2f", val) + "%", err
-		}
-	}
-
-	return "0%", err
+	return helpers.GetMeanScore(code, tag.MeanScore)
 }
 
 func GetAllTags() (tags []Tag, err error) {

@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/memcache"
 )
@@ -16,24 +17,24 @@ type Publisher struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice float64    `gorm:"not null"`
-	MeanScore float64    `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"`
+	MeanScore string     `gorm:"not null"`
 }
 
 func (p Publisher) GetPath() string {
-	return "/games?publisher=" + strconv.Itoa(p.ID)
+	return "/games#publishers=" + strconv.Itoa(p.ID)
 }
 
 func (p Publisher) GetName() (name string) {
 	return p.Name
 }
 
-func (p Publisher) GetMeanPrice() float64 {
-	return helpers.CentsFloat(p.MeanPrice)
+func (p Publisher) GetMeanPrice(code steam.CountryCode) (string, error) {
+	return helpers.GetMeanPrice(code, p.MeanPrice)
 }
 
-func (p Publisher) GetMeanScore() float64 {
-	return helpers.DollarsFloat(p.MeanScore)
+func (p Publisher) GetMeanScore(code steam.CountryCode) (string, error) {
+	return helpers.GetMeanScore(code, p.MeanScore)
 }
 
 func GetAllPublishers() (publishers []Publisher, err error) {
