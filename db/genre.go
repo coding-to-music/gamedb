@@ -16,8 +16,8 @@ type Genre struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice string    `gorm:"not null"`
-	MeanScore string    `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"`
+	MeanScore string     `gorm:"not null"`
 }
 
 func (g Genre) GetPath() string {
@@ -87,24 +87,6 @@ func SaveOrUpdateGenre(id int, name string, apps int) (err error) {
 
 	genre := new(Genre)
 	db.Attrs(Genre{Name: name}).Assign(Genre{Apps: apps}).FirstOrCreate(genre, Genre{ID: id})
-	if db.Error != nil {
-		return db.Error
-	}
-
-	return nil
-}
-
-func DeleteGenre(id int) (err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	genre := new(Genre)
-	genre.ID = id
-
-	db.Delete(genre)
 	if db.Error != nil {
 		return db.Error
 	}

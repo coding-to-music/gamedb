@@ -182,88 +182,124 @@ func adminQueues(r *http.Request) {
 
 func adminGenres() {
 
-	// Get current genres, to delete old ones
-	genres, err := db.GetAllGenres()
-	if err != nil {
-		logging.Error(err)
-		return
-	}
+	logging.InfoL("Genres updating")
 
-	genresToDelete := map[int]int{}
-	for _, v := range genres {
-		genresToDelete[v.ID] = v.ID
-	}
-
-	// Get apps with a genre
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		logging.Error(err)
 		return
 	}
 
-	gorm = gorm.Select([]string{})
-	gorm = gorm.Where("JSON_DEPTH(genres) = ?", 3)
-
-	var apps []db.App
-
-	gorm = gorm.Find(&apps)
-	if gorm.Error != nil {
-		logging.Error(gorm.Error)
+	// Get current genres, to delete old ones
+	currentGenres, err := db.GetAllGenres()
+	if err != nil {
+		logging.Error(err)
 		return
 	}
 
-	counts := make(map[int]*statsRow)
+	genresToDelete := map[int]int{}
+	for _, v := range currentGenres {
+		genresToDelete[v.ID] = v.ID
+	}
 
-	for _, app := range apps {
+	// Get apps from mysql
+	appsWithGenres, err := db.GetAppsWithGenres()
+	logging.Error(err)
 
-		genres, err := app.GetGenres()
+	fmt.Println("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
+
+	newGenres := make(map[int]*statsRow)
+	for _, app := range appsWithGenres {
+
+		appGenres, err := app.GetGenres()
 		if err != nil {
 			logging.Error(err)
 			continue
 		}
 
-		for _, genre := range genres {
+		if len(appGenres) == 0 {
+			appGenres = []steam.AppDetailsGenre{{ID: 0, Description: "No Genre"}}
+		}
+
+		for _, genre := range appGenres {
 
 			delete(genresToDelete, genre.ID)
 
-			if _, ok := counts[genre.ID]; ok {
-				counts[genre.ID].Count++
-			} else {
-				counts[genre.ID] = &statsRow{
-					Count: 1,
-					Genre: genre,
+			for code := range steam.Countries {
+
+				price := app.GetPrice(code)
+
+				if _, ok := newGenres[genre.ID]; ok {
+					newGenres[genre.ID].count++
+					newGenres[genre.ID].totalPrice[code] += price.Final
+					newGenres[genre.ID].totalScore[code] += app.ReviewsScore
+				} else {
+					newGenres[genre.ID] = &statsRow{
+						name:       genre.Description,
+						count:      1,
+						totalPrice: map[steam.CountryCode]int{code: price.Final},
+						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
+					}
 				}
 			}
 		}
 	}
 
+	var limit int
 	var wg sync.WaitGroup
 
-	// Delete old publishers
-	for _, v := range genresToDelete {
+	// Delete old genres
+	limit++
+	wg.Add(1)
+	go func() {
 
+		var genresToDeleteSlice []int
+		for _, v := range genresToDelete {
+			genresToDeleteSlice = append(genresToDeleteSlice, v)
+		}
+
+		err := db.DeleteGenres(genresToDeleteSlice)
+		logging.Error(err)
+
+		limit--
+		wg.Done()
+	}()
+
+	// Update current genres
+	for k, v := range newGenres {
+
+		if limit >= 5 {
+			wg.Wait()
+		}
+
+		limit++
 		wg.Add(1)
-		go func(v int) {
+		go func(genreID int, v *statsRow) {
 
-			err := db.DeleteGenre(v)
-			logging.Error(err)
+			fmt.Println("Updating genre: " + v.name)
 
+			var genre db.Genre
+
+			gorm.Unscoped().FirstOrInit(&genre, db.Genre{ID: genreID})
+			if gorm.Error != nil {
+				logging.Error(gorm.Error)
+			}
+
+			genre.Name = v.name
+			genre.Apps = v.GetCount()
+			genre.MeanPrice = v.GetMeanPrice()
+			genre.MeanScore = v.GetMeanScore()
+			genre.DeletedAt = nil
+
+			gorm.Unscoped().Save(&genre)
+			if gorm.Error != nil {
+				logging.Error(gorm.Error)
+			}
+
+			limit--
 			wg.Done()
-		}(v)
-	}
 
-	// Update current publishers
-	for _, v := range counts {
-
-		wg.Add(1)
-		go func(v *statsRow) {
-
-			err := db.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
-			logging.Error(err)
-
-			wg.Done()
-
-		}(v)
+		}(k, v)
 	}
 	wg.Wait()
 
@@ -276,7 +312,13 @@ func adminGenres() {
 
 func adminPublishers() {
 
-	logging.InfoL("Publishers Updating")
+	logging.InfoL("Publishers updating")
+
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		logging.Error(err)
+		return
+	}
 
 	// Get current publishers, to delete old ones
 	currentPublishers, err := db.GetAllPublishers()
@@ -285,32 +327,19 @@ func adminPublishers() {
 		return
 	}
 
-	pubsToDelete := map[string]int{}
+	publishersToDelete := map[string]int{}
 	for _, publisherRow := range currentPublishers {
-		pubsToDelete[slug.Make(publisherRow.Name)] = publisherRow.ID
+		publishersToDelete[slug.Make(publisherRow.Name)] = publisherRow.ID
 	}
 
-	// Get apps with a publisher
-	gorm, err := db.GetMySQLClient()
-	if err != nil {
-		logging.Error(err)
-		return
-	}
+	// Get apps from mysql
+	appsWithPublishers, err := db.GetAppsWithPublishers()
+	logging.Error(err)
 
-	gorm = gorm.Select([]string{"name", "price_final", "publishers", "reviews_score"})
-	// todo, filter on apps with a publisher
+	fmt.Println("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
 
-	var apps []db.App
-
-	gorm = gorm.Find(&apps)
-	if gorm.Error != nil {
-		logging.Error(gorm.Error)
-		return
-	}
-
-	publishersToAdd := make(map[string]*statsRow)
-
-	for _, app := range apps {
+	newPublishers := make(map[string]*statsRow)
+	for _, app := range appsWithPublishers {
 
 		appPublishers, err := app.GetPublishers()
 		if err != nil {
@@ -324,22 +353,23 @@ func adminPublishers() {
 
 		for _, publisher := range appPublishers {
 
-			key := slug.Make(publisher)
+			delete(publishersToDelete, publisher)
 
-			delete(pubsToDelete, key)
+			for code := range steam.Countries {
 
-			price := app.GetPrice(steam.CountryUS) // todo, need to do this for all codes?
+				price := app.GetPrice(code)
 
-			if _, ok := publishersToAdd[key]; ok {
-				publishersToAdd[key].count++
-				publishersToAdd[key].totalPrice += price.Final
-				publishersToAdd[key].totalScore += app.ReviewsScore
-			} else {
-				publishersToAdd[key] = &statsRow{
-					count:      1,
-					totalPrice: price.Final,
-					totalScore: app.ReviewsScore,
-					name:       publisher,
+				if _, ok := newPublishers[publisher]; ok {
+					newPublishers[publisher].count++
+					newPublishers[publisher].totalPrice[code] += price.Final
+					newPublishers[publisher].totalScore[code] += app.ReviewsScore
+				} else {
+					newPublishers[publisher] = &statsRow{
+						name:       publisher,
+						count:      1,
+						totalPrice: map[steam.CountryCode]int{code: price.Final},
+						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
+					}
 				}
 			}
 		}
@@ -354,7 +384,7 @@ func adminPublishers() {
 	go func() {
 
 		var pubsToDeleteSlice []int
-		for _, v := range pubsToDelete {
+		for _, v := range publishersToDelete {
 			pubsToDeleteSlice = append(pubsToDeleteSlice, v)
 		}
 
@@ -366,7 +396,7 @@ func adminPublishers() {
 	}()
 
 	// Update current publishers
-	for k, v := range publishersToAdd {
+	for k, v := range newPublishers {
 
 		if limit >= 5 {
 			wg.Wait()
@@ -374,15 +404,27 @@ func adminPublishers() {
 
 		limit++
 		wg.Add(1)
-		go func(k string, v *statsRow) {
+		go func(publisherName string, v *statsRow) {
 
-			err := db.SaveOrUpdatePublisher(k, db.Publisher{
-				Apps:      v.count,
-				MeanPrice: v.GetMeanPrice(),
-				MeanScore: v.GetMeanScore(),
-				Name:      v.name,
-			})
-			logging.Error(err)
+			fmt.Println("Updating publisher: " + publisherName)
+
+			var publisher db.Developer
+
+			gorm.Unscoped().FirstOrInit(&publisher, db.Developer{Name: publisherName})
+			if gorm.Error != nil {
+				logging.Error(gorm.Error)
+			}
+
+			publisher.Name = v.name
+			publisher.Apps = v.GetCount()
+			publisher.MeanPrice = v.GetMeanPrice()
+			publisher.MeanScore = v.GetMeanScore()
+			publisher.DeletedAt = nil
+
+			gorm.Unscoped().Save(&publisher)
+			if gorm.Error != nil {
+				logging.Error(gorm.Error)
+			}
 
 			limit--
 			wg.Done()
@@ -400,26 +442,34 @@ func adminPublishers() {
 
 func adminDevelopers() {
 
-	// Get current publishers, to delete old ones
-	developers, err := db.GetAllPublishers()
+	logging.InfoL("Developers updating")
+
+	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		logging.Error(err)
 		return
 	}
 
-	devsToDelete := map[string]int{}
-	for _, v := range developers {
-		key := slug.Make(v.Name)
-		devsToDelete[key] = v.ID
+	// Get current developers, to delete old ones
+	currentDevelopers, err := db.GetAllPublishers()
+	if err != nil {
+		logging.Error(err)
+		return
+	}
+
+	developersToDelete := map[string]int{}
+	for _, v := range currentDevelopers {
+		developersToDelete[v.Name] = v.ID
 	}
 
 	// Get apps from mysql
-	apps, err := db.GetAppsWithDevelopers()
+	appsWithDevelopers, err := db.GetAppsWithDevelopers()
 	logging.Error(err)
 
-	counts := make(map[string]*statsRow)
+	fmt.Println("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
-	for _, app := range apps {
+	newDevelopers := make(map[string]*statsRow)
+	for _, app := range appsWithDevelopers {
 
 		appDevelopers, err := app.GetDevelopers()
 		if err != nil {
@@ -433,22 +483,23 @@ func adminDevelopers() {
 
 		for _, developer := range appDevelopers {
 
-			key := slug.Make(developer)
+			delete(developersToDelete, developer)
 
-			delete(devsToDelete, key)
+			for code := range steam.Countries {
 
-			price := app.GetPrice(steam.CountryUS) // todo, need to do this for all codes?
+				price := app.GetPrice(code)
 
-			if _, ok := counts[key]; ok {
-				counts[key].count++
-				counts[key].totalPrice += price.Final
-				counts[key].totalScore += app.ReviewsScore
-			} else {
-				counts[key] = &statsRow{
-					name:       app.GetName(),
-					count:      1,
-					totalPrice: price.Final,
-					totalScore: app.ReviewsScore,
+				if _, ok := newDevelopers[developer]; ok {
+					newDevelopers[developer].count++
+					newDevelopers[developer].totalPrice[code] += price.Final
+					newDevelopers[developer].totalScore[code] += app.ReviewsScore
+				} else {
+					newDevelopers[developer] = &statsRow{
+						name:       developer,
+						count:      1,
+						totalPrice: map[steam.CountryCode]int{code: price.Final},
+						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
+					}
 				}
 			}
 		}
@@ -463,7 +514,7 @@ func adminDevelopers() {
 	go func() {
 
 		var devsToDeleteSlice []int
-		for _, v := range devsToDelete {
+		for _, v := range developersToDelete {
 			devsToDeleteSlice = append(devsToDeleteSlice, v)
 		}
 
@@ -474,7 +525,7 @@ func adminDevelopers() {
 	}()
 
 	// Update current developers
-	for k, v := range counts {
+	for k, v := range newDevelopers {
 
 		if limit >= 5 {
 			wg.Wait()
@@ -482,15 +533,27 @@ func adminDevelopers() {
 
 		limit++
 		wg.Add(1)
-		go func(k string, v *statsRow) {
+		go func(developerName string, v *statsRow) {
 
-			err := db.SaveOrUpdateDeveloper(k, db.Developer{
-				Apps:      v.count,
-				MeanPrice: v.GetMeanPrice(),
-				MeanScore: v.GetMeanScore(),
-				Name:      v.name,
-			})
-			logging.Error(err)
+			fmt.Println("Updating developer: " + developerName)
+
+			var developer db.Developer
+
+			gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: developerName})
+			if gorm.Error != nil {
+				logging.Error(gorm.Error)
+			}
+
+			developer.Name = v.name
+			developer.Apps = v.GetCount()
+			developer.MeanPrice = v.GetMeanPrice()
+			developer.MeanScore = v.GetMeanScore()
+			developer.DeletedAt = nil
+
+			gorm.Unscoped().Save(&developer)
+			if gorm.Error != nil {
+				logging.Error(gorm.Error)
+			}
 
 			limit--
 			wg.Done()
@@ -539,13 +602,13 @@ func adminTags() {
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
 
-		tags, err := app.GetTagIDs()
+		appTags, err := app.GetTagIDs()
 		if err != nil {
 			logging.Error(err)
 			continue
 		}
 
-		for _, tagID := range tags {
+		for _, tagID := range appTags {
 
 			delete(tagsToDelete, tagID)
 
@@ -622,6 +685,7 @@ func adminTags() {
 
 			limit--
 			wg.Done()
+
 		}(k, v)
 	}
 	wg.Wait()

@@ -79,24 +79,6 @@ func GetDevelopersForSelect() (devs []Developer, err error) {
 	return devs, err
 }
 
-func SaveOrUpdateDeveloper(name string, vals Developer) (err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	developer := new(Developer)
-	developer.DeletedAt = nil
-
-	db.Assign(vals).FirstOrCreate(developer, Developer{Name: name})
-	if db.Error != nil {
-		return db.Error
-	}
-
-	return nil
-}
-
 func DeleteDevelopers(ids []int) (err error) {
 
 	if len(ids) == 0 {

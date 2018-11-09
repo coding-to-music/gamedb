@@ -870,6 +870,7 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) { // todo,
 	return apps, nil
 }
 
+// todo, these methods could all be one?
 func GetAppsWithTags() (apps []App, err error) {
 
 	db, err := GetMySQLClient()
@@ -877,8 +878,8 @@ func GetAppsWithTags() (apps []App, err error) {
 		return apps, err
 	}
 
-	db = db.Where("JSON_DEPTH(tags) = 2")
 	db = db.Select([]string{"tags", "prices", "reviews_score"})
+	db = db.Where("JSON_DEPTH(tags) = 2")
 	db = db.Order("id asc")
 
 	db = db.Find(&apps)
@@ -896,8 +897,44 @@ func GetAppsWithDevelopers() (apps []App, err error) {
 		return apps, err
 	}
 
+	db = db.Select([]string{"developers", "prices", "reviews_score"})
 	db = db.Where("JSON_DEPTH(developers) = 2")
-	db = db.Select([]string{"name", "developers", "price_final", "reviews_score"})
+
+	db = db.Find(&apps)
+	if db.Error != nil {
+		return apps, db.Error
+	}
+
+	return apps, nil
+}
+
+func GetAppsWithPublishers() (apps []App, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return apps, err
+	}
+
+	db = db.Select([]string{"publishers", "prices", "reviews_score"})
+	db = db.Where("JSON_DEPTH(publishers) = 2")
+
+	db = db.Find(&apps)
+	if db.Error != nil {
+		return apps, db.Error
+	}
+
+	return apps, nil
+}
+
+func GetAppsWithGenres() (apps []App, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return apps, err
+	}
+
+	db = db.Select([]string{"genres", "prices", "reviews_score"})
+	db = db.Where("JSON_DEPTH(genres) = 3")
 
 	db = db.Find(&apps)
 	if db.Error != nil {
