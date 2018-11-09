@@ -212,7 +212,7 @@ func adminGenres() {
 		return
 	}
 
-	counts := make(map[int]*adminGenreCount)
+	counts := make(map[int]*statsRow)
 
 	for _, app := range apps {
 
@@ -229,7 +229,7 @@ func adminGenres() {
 			if _, ok := counts[genre.ID]; ok {
 				counts[genre.ID].Count++
 			} else {
-				counts[genre.ID] = &adminGenreCount{
+				counts[genre.ID] = &statsRow{
 					Count: 1,
 					Genre: genre,
 				}
@@ -256,7 +256,7 @@ func adminGenres() {
 	for _, v := range counts {
 
 		wg.Add(1)
-		go func(v *adminGenreCount) {
+		go func(v *statsRow) {
 
 			err := db.SaveOrUpdateGenre(v.Genre.ID, v.Genre.Description, v.Count)
 			logging.Error(err)
@@ -272,11 +272,6 @@ func adminGenres() {
 	logging.Error(err)
 
 	logging.Info("Genres updated")
-}
-
-type adminGenreCount struct {
-	Count int
-	Genre steam.AppDetailsGenre
 }
 
 func adminPublishers() {
@@ -313,7 +308,7 @@ func adminPublishers() {
 		return
 	}
 
-	publishersToAdd := make(map[string]*adminPublisher)
+	publishersToAdd := make(map[string]*statsRow)
 
 	for _, app := range apps {
 
@@ -340,7 +335,7 @@ func adminPublishers() {
 				publishersToAdd[key].totalPrice += price.Final
 				publishersToAdd[key].totalScore += app.ReviewsScore
 			} else {
-				publishersToAdd[key] = &adminPublisher{
+				publishersToAdd[key] = &statsRow{
 					count:      1,
 					totalPrice: price.Final,
 					totalScore: app.ReviewsScore,
@@ -379,7 +374,7 @@ func adminPublishers() {
 
 		limit++
 		wg.Add(1)
-		go func(k string, v *adminPublisher) {
+		go func(k string, v *statsRow) {
 
 			err := db.SaveOrUpdatePublisher(k, db.Publisher{
 				Apps:      v.count,
@@ -403,21 +398,6 @@ func adminPublishers() {
 	logging.Info("Publishers updated")
 }
 
-type adminPublisher struct {
-	name       string
-	count      int
-	totalPrice int
-	totalScore float64
-}
-
-func (p adminPublisher) GetMeanPrice() float64 {
-	return float64(p.totalPrice) / float64(p.count)
-}
-
-func (p adminPublisher) GetMeanScore() float64 {
-	return float64(p.totalScore) / float64(p.count)
-}
-
 func adminDevelopers() {
 
 	// Get current publishers, to delete old ones
@@ -437,7 +417,7 @@ func adminDevelopers() {
 	apps, err := db.GetAppsWithDevelopers()
 	logging.Error(err)
 
-	counts := make(map[string]*adminDeveloper)
+	counts := make(map[string]*statsRow)
 
 	for _, app := range apps {
 
@@ -464,7 +444,7 @@ func adminDevelopers() {
 				counts[key].totalPrice += price.Final
 				counts[key].totalScore += app.ReviewsScore
 			} else {
-				counts[key] = &adminDeveloper{
+				counts[key] = &statsRow{
 					name:       app.GetName(),
 					count:      1,
 					totalPrice: price.Final,
@@ -502,7 +482,7 @@ func adminDevelopers() {
 
 		limit++
 		wg.Add(1)
-		go func(k string, v *adminDeveloper) {
+		go func(k string, v *statsRow) {
 
 			err := db.SaveOrUpdateDeveloper(k, db.Developer{
 				Apps:      v.count,
@@ -523,21 +503,6 @@ func adminDevelopers() {
 	logging.Error(err)
 
 	logging.Info("Developers updated")
-}
-
-type adminDeveloper struct {
-	name       string
-	count      int
-	totalPrice int
-	totalScore float64
-}
-
-func (t adminDeveloper) GetMeanPrice() float64 {
-	return float64(t.totalPrice) / float64(t.count)
-}
-
-func (t adminDeveloper) GetMeanScore() float64 {
-	return float64(t.totalScore) / float64(t.count)
 }
 
 func adminTags() {
@@ -571,7 +536,7 @@ func adminTags() {
 
 	fmt.Println("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
 
-	newTags := make(map[int]*adminTag)
+	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
 
 		tags, err := app.GetTagIDs()
@@ -593,7 +558,7 @@ func adminTags() {
 					newTags[tagID].totalPrice[code] += price.Final
 					newTags[tagID].totalScore[code] += app.ReviewsScore
 				} else {
-					newTags[tagID] = &adminTag{
+					newTags[tagID] = &statsRow{
 						name:       steamTagMap[tagID],
 						count:      1,
 						totalPrice: map[steam.CountryCode]int{code: price.Final},
@@ -633,7 +598,7 @@ func adminTags() {
 
 		limit++
 		wg.Add(1)
-		go func(tagID int, v *adminTag) {
+		go func(tagID int, v *statsRow) {
 
 			fmt.Println("Updating tag: " + strconv.Itoa(tagID))
 
@@ -665,45 +630,6 @@ func adminTags() {
 	logging.Error(err)
 
 	logging.Info("Tags updated")
-}
-
-type adminTag struct {
-	name       string
-	count      int
-	totalPrice map[steam.CountryCode]int
-	totalScore map[steam.CountryCode]float64
-}
-
-func (t adminTag) GetMeanPrice() string {
-
-	means := map[steam.CountryCode]float64{}
-
-	for code, total := range t.totalPrice {
-		means[code] = float64(total) / float64(t.GetCount())
-	}
-
-	bytes, err := json.Marshal(means)
-	logging.Error(err)
-
-	return string(bytes)
-}
-
-func (t adminTag) GetMeanScore() string {
-
-	means := map[steam.CountryCode]float64{}
-
-	for code, total := range t.totalScore {
-		means[code] = float64(total) / float64(t.GetCount())
-	}
-
-	bytes, err := json.Marshal(means)
-	logging.Error(err)
-
-	return string(bytes)
-}
-
-func (t adminTag) GetCount() int {
-	return int(float64(t.count) / float64(len(steam.Countries)))
 }
 
 func adminRanks() {
@@ -888,4 +814,43 @@ func adminDev() {
 	//}
 	//
 	//logging.Info("Done")
+}
+
+type statsRow struct {
+	name       string
+	count      int
+	totalPrice map[steam.CountryCode]int
+	totalScore map[steam.CountryCode]float64
+}
+
+func (t statsRow) GetMeanPrice() string {
+
+	means := map[steam.CountryCode]float64{}
+
+	for code, total := range t.totalPrice {
+		means[code] = float64(total) / float64(t.GetCount())
+	}
+
+	bytes, err := json.Marshal(means)
+	logging.Error(err)
+
+	return string(bytes)
+}
+
+func (t statsRow) GetMeanScore() string {
+
+	means := map[steam.CountryCode]float64{}
+
+	for code, total := range t.totalScore {
+		means[code] = float64(total) / float64(t.GetCount())
+	}
+
+	bytes, err := json.Marshal(means)
+	logging.Error(err)
+
+	return string(bytes)
+}
+
+func (t statsRow) GetCount() int {
+	return int(float64(t.count) / float64(len(steam.Countries)))
 }
