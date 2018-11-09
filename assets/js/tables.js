@@ -1,7 +1,5 @@
-// Local datatable
-
+// Local
 const $dataTables = $('table.table-datatable');
-const $searchField = $('input#search');
 
 $dataTables.each(function (i) {
 
@@ -70,48 +68,20 @@ $dataTables.each(function (i) {
 
 });
 
-// Filter table on search box enter key
-$searchField.keypress(function (e) {
-    if (e.which === 13) {
-        const table = $('#DataTables_Table_0');
-        if (table.length === 1) {
-            table.DataTable().search($(this).val()).draw();
-        }
-    }
+// Local search
+const $searchField = $('input#search');
+$searchField.on('keyup', function (e) {
+    $dataTables.DataTable().search($(this).val()).draw();
 });
 
-// Clear search box on escape and reset filter
 $searchField.on('keyup', function (e) {
     if ($(this).val() && e.key === "Escape") {
-
         $(this).val('');
-
-        const table = $('#DataTables_Table_0');
-        if (table.length) {
-            table.DataTable().search($(this).val()).draw();
-        }
+        $dataTables.DataTable().search($(this).val()).draw();
     }
 });
 
-
-// Server side datatable events
-$('table.table-datatable2').on('page.dt search.dt', function (e, settings, processing) {
-
-    $(this).fadeTo(500, 0.3);
-
-    if (e.type === 'page') {
-
-        const top = $(this).prev().offset().top - 15;
-        $('html, body').animate({scrollTop: top}, 500);
-    }
-
-}).on('draw.dt', function (e, settings, processing) {
-
-    $(this).fadeTo(100, 1);
-    highLightOwnedGames();
-
-});
-
+// Local events
 $dataTables.on('page.dt', function (e, settings, processing) {
 
     const top = $(this).prev().offset().top - 15;
@@ -119,10 +89,7 @@ $dataTables.on('page.dt', function (e, settings, processing) {
 
 });
 
-// Lock icon
-const $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
-
-// Server side defaults
+// Server side
 const dtDefaultOptions = {
     "ajax": function (data, callback, settings) {
 
@@ -161,6 +128,28 @@ const dtDefaultOptions = {
     }
 };
 
+// Server side events
+$('table.table-datatable2').on('page.dt search.dt', function (e, settings, processing) {
+
+    $(this).fadeTo(500, 0.3);
+
+    if (e.type === 'page') {
+
+        const top = $(this).prev().offset().top - 15;
+        $('html, body').animate({scrollTop: top}, 500);
+    }
+
+}).on('draw.dt', function (e, settings, processing) {
+
+    $(this).fadeTo(100, 1);
+    highLightOwnedGames();
+
+});
+
+// Lock icon
+const $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
+
+//
 function addDataTablesRow(columnDefs, data, limit, $table) {
 
     const $row = $('<tr class="fade-green" />');
