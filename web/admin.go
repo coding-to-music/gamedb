@@ -408,9 +408,9 @@ func adminPublishers() {
 
 			fmt.Println("Updating publisher: " + publisherName)
 
-			var publisher db.Developer
+			var publisher db.Publisher
 
-			gorm.Unscoped().FirstOrInit(&publisher, db.Developer{Name: publisherName})
+			gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: publisherName})
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
