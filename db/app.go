@@ -41,6 +41,7 @@ type App struct {
 	Background             string     `gorm:"not null;column:background"`
 	Categories             string     `gorm:"not null;column:categories;type:json"`
 	ChangeNumber           int        `gorm:"not null;column:change_number"`
+	ChangeNumberDate       int64      `gorm:"not null;column:change_number_date"`
 	ClientIcon             string     `gorm:"not null;column:client_icon"`
 	ComingSoon             bool       `gorm:"not null;column:coming_soon"`
 	Developers             string     `gorm:"not null;column:developers;type:json"`

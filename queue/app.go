@@ -44,6 +44,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 	//
 	//if message.PICSChangeID != 0 {
 	//	app.ChangeNumber = message.PICSChangeID
+	//  app.ChangeNumberDate = time.now().Unix()
 	//}
 	//
 	//priceBeforeFill := app.PriceFinal

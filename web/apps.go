@@ -133,7 +133,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			gorm = gorm.Model(db.App{})
-			gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "type", "dlc_count", "prices", "updated_at"})
+			gorm = gorm.Select([]string{"id", "name", "icon", "type", "reviews_score", "prices", "updated_at"})
 
 			// Types
 			types := query.GetSearchSlice("types")
@@ -216,7 +216,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			prices := query.GetSearchSlice("prices")
 			if len(prices) == 2 {
 
-				// No apps have prices yet
+				// todo, remove this line when apps have prices
 				//gorm = gorm.Where("FLOOR(JSON_EXTRACT(prices, \"$.US.final\")/100)*100 >= ?", prices[0]+"00")
 				//gorm = gorm.Where("FLOOR(JSON_EXTRACT(prices, \"$.US.final\")/100)*100 <= ?", prices[1]+"00")
 
