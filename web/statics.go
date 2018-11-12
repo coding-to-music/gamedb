@@ -36,6 +36,10 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	returnTemplate(w, r, "donate", t)
 }
 
+func Error404Handler(w http.ResponseWriter, r *http.Request) {
+	returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "This page doesnt exist"})
+}
+
 func RootFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := ioutil.ReadFile(viper.GetString("PATH") + r.URL.Path)

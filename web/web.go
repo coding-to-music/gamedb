@@ -121,6 +121,9 @@ func Serve() error {
 	// File server
 	fileServer(r)
 
+	// 404
+	r.NotFound(Error404Handler)
+
 	return http.ListenAndServe("0.0.0.0:"+viper.GetString("PORT"), r)
 }
 
