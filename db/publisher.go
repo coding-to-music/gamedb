@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/json"
+	"sort"
 	"strconv"
 	"time"
 
@@ -62,10 +63,14 @@ func GetPublishersForSelect() (pubs []Publisher, err error) {
 		}
 
 		var pubs []Publisher
-		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&pubs)
+		db = db.Select([]string{"name"}).Order("apps DESC").Limit(500).Find(&pubs)
 		if db.Error != nil {
 			return s, db.Error
 		}
+
+		sort.Slice(pubs, func(i, j int) bool {
+			return pubs[i].Name < pubs[j].Name
+		})
 
 		bytes, err := json.Marshal(pubs)
 		return string(bytes), err

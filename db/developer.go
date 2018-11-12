@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/json"
+	"sort"
 	"strconv"
 	"time"
 
@@ -62,10 +63,14 @@ func GetDevelopersForSelect() (devs []Developer, err error) {
 		}
 
 		var devs []Developer
-		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&devs)
+		db = db.Select([]string{"name"}).Order("apps DESC").Limit(500).Find(&devs)
 		if db.Error != nil {
 			return s, db.Error
 		}
+
+		sort.Slice(devs, func(i, j int) bool {
+			return devs[i].Name < devs[j].Name
+		})
 
 		bytes, err := json.Marshal(devs)
 		return string(bytes), err
