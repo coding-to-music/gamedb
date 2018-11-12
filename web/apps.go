@@ -156,7 +156,6 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Genres
-			// select * from apps WHERE JSON_SEARCH(genres, 'one', 'Action') IS NOT NULL;
 			genres := query.GetSearchSlice("genres")
 			if len(genres) > 0 {
 

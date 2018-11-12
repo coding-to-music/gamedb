@@ -63,7 +63,7 @@ func GetDevelopersForSelect() (devs []Developer, err error) {
 		}
 
 		var devs []Developer
-		db = db.Select([]string{"name"}).Order("apps DESC").Limit(500).Find(&devs)
+		db = db.Select([]string{"id", "name"}).Order("apps DESC").Limit(500).Find(&devs)
 		if db.Error != nil {
 			return s, db.Error
 		}
