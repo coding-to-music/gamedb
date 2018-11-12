@@ -78,7 +78,7 @@
                             </label>
                             <select multiple data-placeholder="Choose Publishers" class="form-control form-control-chosen" id="publishers" name="publishers">
                             {{ range $key, $value := .Publishers }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
+                                <option value="{{ .GetName }}">{{ .GetName }}</option>
                             {{ end }}
                             </select>
                         </div>

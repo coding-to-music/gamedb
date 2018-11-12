@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -21,7 +22,7 @@ type Genre struct {
 }
 
 func (g Genre) GetPath() string {
-	return "/games#genres=" + g.Name
+	return "/games#genres=" + strconv.Itoa(g.ID)
 }
 
 func (g Genre) GetName() string {
