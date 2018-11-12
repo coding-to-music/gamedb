@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -218,7 +219,7 @@ func adminGenres() {
 		}
 
 		if len(appGenres) == 0 {
-			appGenres = []steam.AppDetailsGenre{{ID: 0, Description: "No Genre"}}
+			appGenres = []steam.AppDetailsGenre{{ID: 0, Description: ""}}
 		}
 
 		for _, genre := range appGenres {
@@ -235,7 +236,7 @@ func adminGenres() {
 					newGenres[genre.ID].totalScore[code] += app.ReviewsScore
 				} else {
 					newGenres[genre.ID] = &statsRow{
-						name:       genre.Description,
+						name:       strings.TrimSpace(genre.Description),
 						count:      1,
 						totalPrice: map[steam.CountryCode]int{code: price.Final},
 						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
@@ -266,17 +267,18 @@ func adminGenres() {
 	}()
 
 	// Update current genres
+	var count = 1
 	for k, v := range newGenres {
 
 		if limit >= 5 {
 			wg.Wait()
 		}
 
+		adminStatsLogger(len(newGenres), count, v.name, "genre")
+
 		limit++
 		wg.Add(1)
 		go func(genreID int, v *statsRow) {
-
-			fmt.Println("Updating genre: " + v.name)
 
 			var genre db.Genre
 
@@ -300,6 +302,8 @@ func adminGenres() {
 			wg.Done()
 
 		}(k, v)
+
+		count++
 	}
 	wg.Wait()
 
@@ -365,7 +369,7 @@ func adminPublishers() {
 					newPublishers[publisher].totalScore[code] += app.ReviewsScore
 				} else {
 					newPublishers[publisher] = &statsRow{
-						name:       publisher,
+						name:       strings.TrimSpace(publisher),
 						count:      1,
 						totalPrice: map[steam.CountryCode]int{code: price.Final},
 						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
@@ -396,17 +400,18 @@ func adminPublishers() {
 	}()
 
 	// Update current publishers
+	var count = 1
 	for k, v := range newPublishers {
 
 		if limit >= 5 {
 			wg.Wait()
 		}
 
+		adminStatsLogger(len(newPublishers), count, k, "publisher")
+
 		limit++
 		wg.Add(1)
 		go func(publisherName string, v *statsRow) {
-
-			fmt.Println("Updating publisher: " + publisherName)
 
 			var publisher db.Publisher
 
@@ -430,6 +435,8 @@ func adminPublishers() {
 			wg.Done()
 
 		}(k, v)
+
+		count++
 	}
 
 	wg.Wait()
@@ -478,7 +485,7 @@ func adminDevelopers() {
 		}
 
 		if len(appDevelopers) == 0 {
-			appDevelopers = []string{"No Developer"}
+			appDevelopers = []string{""}
 		}
 
 		for _, developer := range appDevelopers {
@@ -495,7 +502,7 @@ func adminDevelopers() {
 					newDevelopers[developer].totalScore[code] += app.ReviewsScore
 				} else {
 					newDevelopers[developer] = &statsRow{
-						name:       developer,
+						name:       strings.TrimSpace(developer),
 						count:      1,
 						totalPrice: map[steam.CountryCode]int{code: price.Final},
 						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
@@ -525,17 +532,18 @@ func adminDevelopers() {
 	}()
 
 	// Update current developers
+	var count = 1
 	for k, v := range newDevelopers {
 
 		if limit >= 5 {
 			wg.Wait()
 		}
 
+		adminStatsLogger(len(newDevelopers), count, k, "developer")
+
 		limit++
 		wg.Add(1)
 		go func(developerName string, v *statsRow) {
-
-			fmt.Println("Updating developer: " + developerName)
 
 			var developer db.Developer
 
@@ -559,6 +567,8 @@ func adminDevelopers() {
 			wg.Done()
 
 		}(k, v)
+
+		count++
 	}
 	wg.Wait()
 
@@ -608,6 +618,10 @@ func adminTags() {
 			continue
 		}
 
+		if len(appTags) == 0 {
+			//appTags = []int{}
+		}
+
 		for _, tagID := range appTags {
 
 			delete(tagsToDelete, tagID)
@@ -622,7 +636,7 @@ func adminTags() {
 					newTags[tagID].totalScore[code] += app.ReviewsScore
 				} else {
 					newTags[tagID] = &statsRow{
-						name:       steamTagMap[tagID],
+						name:       strings.TrimSpace(steamTagMap[tagID]),
 						count:      1,
 						totalPrice: map[steam.CountryCode]int{code: price.Final},
 						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
@@ -653,17 +667,18 @@ func adminTags() {
 	}()
 
 	// Update current tags
+	var count = 1
 	for k, v := range newTags {
 
 		if limit >= 5 {
 			wg.Wait()
 		}
 
+		adminStatsLogger(len(newTags), count, strconv.Itoa(k), "tag")
+
 		limit++
 		wg.Add(1)
 		go func(tagID int, v *statsRow) {
-
-			fmt.Println("Updating tag: " + strconv.Itoa(tagID))
 
 			var tag db.Tag
 
@@ -687,6 +702,8 @@ func adminTags() {
 			wg.Done()
 
 		}(k, v)
+
+		count++
 	}
 	wg.Wait()
 
@@ -694,6 +711,14 @@ func adminTags() {
 	logging.Error(err)
 
 	logging.Info("Tags updated")
+}
+
+func adminStatsLogger(total int, count int, rowName string, tableName string) {
+
+	var lenString = strconv.Itoa(total)
+	var lenString2 = strconv.Itoa(len(lenString))
+
+	logging.Info("Updating " + tableName + " - " + fmt.Sprintf("%"+lenString2+"d", count) + " / " + lenString + ": " + rowName)
 }
 
 func adminRanks() {
