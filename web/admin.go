@@ -26,25 +26,25 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	option := chi.URLParam(r, "option")
 
 	switch option {
-	case "re-add-all-apps":
+	case "refresh-all-apps":
 		go adminApps()
 	case "count-donations":
 		go adminDonations()
-	case "count-genres":
+	case "refresh-genres":
 		go adminGenres()
+	case "refresh-tags":
+		go adminTags()
+	case "refresh-developers":
+		go adminDevelopers()
+	case "refresh-publishers":
+		go adminPublishers()
 	case "queues":
 		r.ParseForm()
 		go adminQueues(r)
 	case "calculate-ranks":
 		go adminRanks()
-	case "count-tags":
-		go adminTags()
-	case "count-developers":
-		go adminDevelopers()
 	case "wipe-memcache":
 		go adminMemcache()
-	case "count-publishers":
-		go adminPublishers()
 	case "disable-consumers":
 		go adminDisableConsumers()
 	case "dev":
