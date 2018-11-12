@@ -102,7 +102,7 @@ type appsTemplate struct {
 	GlobalTemplate
 	Count        int
 	ExpensiveApp int
-	Types        map[string]string
+	Types        []db.AppType
 	Tags         []db.Tag
 	Genres       []db.Genre
 	Publishers   []db.Publisher

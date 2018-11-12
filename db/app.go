@@ -41,7 +41,7 @@ type App struct {
 	Background             string     `gorm:"not null;column:background"`
 	Categories             string     `gorm:"not null;column:categories;type:json"`
 	ChangeNumber           int        `gorm:"not null;column:change_number"`
-	ChangeNumberDate       int64      `gorm:"not null;column:change_number_date"`
+	ChangeNumberDate       time.Time  `gorm:"not null;column:change_number_date"`
 	ClientIcon             string     `gorm:"not null;column:client_icon"`
 	ComingSoon             bool       `gorm:"not null;column:coming_soon"`
 	Developers             string     `gorm:"not null;column:developers;type:json"`
@@ -143,34 +143,6 @@ func (app App) GetType() (ret string) {
 	default:
 		return strings.Title(app.Type)
 	}
-}
-
-func GetTypesForSelect() (ret map[string]string) {
-
-	types := []string{
-		"",
-		"advertising",
-		"application",
-		"config",
-		"demo",
-		"dlc",
-		"episode",
-		"game",
-		"guide",
-		"hardware",
-		"media",
-		"mod",
-		"movie",
-		"series",
-		"tool",
-		"video",
-	}
-
-	m := map[string]string{}
-	for _, v := range types {
-		m[v] = App{Type: v}.GetType()
-	}
-	return m
 }
 
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
@@ -827,6 +799,43 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	}
 
 	return errs
+}
+
+func GetTypesForSelect() []AppType {
+
+	types := []string{
+		"game",
+		"advertising",
+		"application",
+		"config",
+		"demo",
+		"dlc",
+		"episode",
+		"guide",
+		"hardware",
+		"media",
+		"mod",
+		"movie",
+		"series",
+		"tool",
+		"", // Displays as Unknown
+		"video",
+	}
+
+	var ret []AppType
+	for _, v := range types {
+		ret = append(ret, AppType{
+			ID:   v,
+			Name: App{Type: v}.GetType(),
+		})
+	}
+
+	return ret
+}
+
+type AppType struct {
+	ID   string
+	Name string
 }
 
 func GetApp(id int) (app App, err error) {

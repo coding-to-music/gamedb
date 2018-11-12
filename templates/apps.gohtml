@@ -99,7 +99,7 @@
                             <label for="types">Type</label>
                             <select multiple data-placeholder="Choose Types" class="form-control form-control-chosen" id="types" name="types">
                             {{ range $key, $value := .Types }}
-                                <option value="{{ $key }}">{{ $value }}</option>
+                                <option value="{{ .ID }}">{{ .Name }}</option>
                             {{ end }}
                             </select>
                         </div>
