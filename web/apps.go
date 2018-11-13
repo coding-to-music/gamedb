@@ -89,8 +89,6 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 		// Convert cents to dollars
 		t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
 
-		t.ExpensiveApp = 101 // todo, remove this line when apps have prices
-
 		wg.Done()
 	}(r)
 
