@@ -158,22 +158,12 @@ func adminDonations() {
 
 func adminQueues(r *http.Request) {
 
-	if val := r.PostForm.Get("change-id"); val != "" {
-
-		logging.Info("Change: " + val)
-		//queue.Produce(queue.ProduceOptions{queue.chang, []byte(val)), 1})
-	}
-
 	if val := r.PostForm.Get("player-id"); val != "" {
 
-		logging.Info("Player: " + val)
+		logging.Info("Player ID: " + val)
+
 		playerID, err := strconv.ParseInt(val, 10, 64)
 		logging.Error(err)
-
-		message := queue.RabbitMessageProfile{}
-		message.Fill(r, playerID, db.PlayerUpdateAdmin)
-
-		queue.Produce(queue.QueueProfiles, message.ToBytes())
 
 		player := db.Player{}
 		player.PlayerID = playerID
@@ -184,13 +174,13 @@ func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
-		logging.Info("App: " + val)
+		logging.Info("App ID: " + val)
 		queue.Produce(queue.QueueApps, []byte(val))
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
-		logging.Info("Package: " + val)
+		logging.Info("Package ID: " + val)
 		queue.Produce(queue.QueuePackages, []byte(val))
 	}
 }
