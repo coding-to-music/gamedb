@@ -28,15 +28,12 @@ if ($('#changes-page').length > 0) {
             "targets": 2,
             "render": function (data, type, row) {
 
-                var apps = [];
-                for (var i in row[3]) {
-                    if (row[3].hasOwnProperty(i)) {
-
-                        if (row[3][i].name === '') {
-                            apps.push('Unknown App');
-                        } else {
-                            apps.push('<a href="/games/' + row[3][i].id + '">' + row[3][i].name + '</a>');
-                        }
+                let apps = [];
+                for (const v of row[3]) {
+                    if (v.name === '') {
+                        apps.push('Unknown App');
+                    } else {
+                        apps.push('<a href="/games/' + v.id + '">' + v.name + '</a>');
                     }
                 }
 
@@ -49,15 +46,12 @@ if ($('#changes-page').length > 0) {
             "targets": 3,
             "render": function (data, type, row) {
 
-                var packages = [];
-                for (var i in row[4]) {
-                    if (row[4].hasOwnProperty(i)) {
-
-                        if (row[4][i].name === '') {
-                            packages.push('Unknown Package');
-                        } else {
-                            packages.push('<a href="/packages/' + row[4][i].id + '">' + row[4][i].name + '</a>');
-                        }
+                let packages = [];
+                for (const v of row[4]) {
+                    if (v.name === '') {
+                        packages.push('Unknown Package');
+                    } else {
+                        packages.push('<a href="/packages/' + v.id + '">' + v.name + '</a>');
                     }
                 }
 
@@ -79,16 +73,14 @@ if ($('#changes-page').length > 0) {
 
     websocketListener('changes', function (e) {
 
-        var info = dt.page.info();
+        const info = dt.page.info();
         if (info.page === 0) { // Page 1
 
-            var data = $.parseJSON(e.data);
+            const data = $.parseJSON(e.data);
 
             // Loop changes in websocket data and add each one
-            for (var i in data.Data) {
-                if (data.Data.hasOwnProperty(i)) {
-                    addDataTablesRow(columnDefs, data.Data[i], info.length, $table);
-                }
+            for (const v of data.Data) {
+                addDataTablesRow(columnDefs, v, info.length, $table);
             }
         }
     })
