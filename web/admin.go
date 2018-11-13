@@ -28,8 +28,6 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	switch option {
 	case "refresh-all-apps":
 		go adminApps()
-	case "count-donations":
-		go adminDonations()
 	case "refresh-genres":
 		go adminGenres()
 	case "refresh-tags":
@@ -38,10 +36,9 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminDevelopers()
 	case "refresh-publishers":
 		go adminPublishers()
-	case "queues":
-		r.ParseForm()
-		go adminQueues(r)
-	case "calculate-ranks":
+	case "refresh-donations":
+		go adminDonations()
+	case "refresh-ranks":
 		go adminRanks()
 	case "wipe-memcache":
 		go adminMemcache()
@@ -49,6 +46,9 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminDisableConsumers()
 	case "dev":
 		go adminDev()
+	case "queues":
+		r.ParseForm()
+		go adminQueues(r)
 	}
 
 	// Redirect away after action
@@ -67,6 +67,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		db.ConfAddedAllApps,
 		db.ConfDevelopersUpdated,
 		db.ConfPublishersUpdated,
+		db.ConfWipeMemcache,
 	})
 	logging.Error(err)
 
@@ -166,6 +167,12 @@ func adminQueues(r *http.Request) {
 		message.Fill(r, playerID, db.PlayerUpdateAdmin)
 
 		queue.Produce(queue.QueueProfiles, message.ToBytes())
+
+		player := db.Player{}
+		player.PlayerID = playerID
+
+		err = queuePlayer(r, player, player.PlayerID, db.PlayerUpdateAdmin)
+		logging.Error(err)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
@@ -869,6 +876,9 @@ func adminRanks() {
 func adminMemcache() {
 
 	err := memcache.Wipe()
+	logging.Error(err)
+
+	err = db.SetConfig(db.ConfWipeMemcache, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
 
 	logging.Info("Memcache wiped")

@@ -27,53 +27,55 @@
             <div class="tab-content">
                 <div class="tab-pane show active" id="actions" role="tabpanel">
 
-                    <div class="list-group list-group-flush" id="actions">
-                        <a href="/admin/refresh-all-apps" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "added-all-apps").Value }}"></small>
-                            <h5 class="mb-1">Apps</h5>
-                            <p class="mb-1">Get every app from steam and add to queue</p>
-                        </a>
-                    {{ if .IsProduction }}
-                        <a href="/admin/deploy" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "deployed").Value }}"></small>
-                            <h5 class="mb-1">Deploy</h5>
-                            <p class="mb-1">Pull master, build and restart</p>
-                        </a>
-                    {{end}}
-                        <a href="/admin/count-donations" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "donations-updated").Value }}"></small>
-                            <h5 class="mb-1">Donations</h5>
-                            <p class="mb-1">Read donations table and calculate totals</p>
-                        </a>
-                        <a href="/admin/refresh-genres" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "genres-updated").Value }}"></small>
-                            <h5 class="mb-1">Genres</h5>
-                            <p class="mb-1">Scan all apps for genres, count them, update genres table</p>
-                        </a>
-                        <a href="/admin/calculate-ranks" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "ranks-updated").Value }}"></small>
-                            <h5 class="mb-1">Ranks</h5>
-                            <p class="mb-1">Scan all players, update ranks table</p>
-                        </a>
-                        <a href="/admin/refresh-tags" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "tags-updated").Value }}"></small>
-                            <h5 class="mb-1">Tags</h5>
-                            <p class="mb-1">Scan all apps for tags, count them, update tags table</p>
-                        </a>
-                        <a href="/admin/refresh-developers" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "developers-updated").Value }}"></small>
-                            <h5 class="mb-1">Developers</h5>
-                            <p class="mb-1">Scan all apps for developers, count them, update developers table</p>
-                        </a>
-                        <a href="/admin/refresh-publishers" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <small class="text-muted float-right" data-livestamp="{{ (index .Configs "publishers-updated").Value }}"></small>
-                            <h5 class="mb-1">Publishers</h5>
-                            <p class="mb-1">Scan all apps for publishers, count them, update publishers table</p>
-                        </a>
-                        <a href="/admin/wipe-memcache" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <h5 class="mb-1">Wipe Memcache</h5>
-                            <p class="mb-1">Clear all memcache</p>
-                        </a>
+                    <div class="row" id="actions">
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-tags" role="button" class="btn btn-success btn-block mb-4">
+                                Refresh Tags<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-tags").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-genres" role="button" class="btn btn-success btn-block mb-4">
+                                Refresh Genres<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-genres").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-developers" role="button" class="btn btn-success btn-block mb-4">
+                                Refresh Developers<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-developers").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-publishers" role="button" class="btn btn-success btn-block mb-4">
+                                Refresh Publishers<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-publishers").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-all-apps" role="button" class="btn btn-success btn-block mb-4">
+                                Refresh All Apps<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-all-apps").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-donations" role="button" class="btn btn-success btn-block mb-4">
+                                Refresh Donations<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-donations").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-ranks" role="button" class="btn btn-success btn-block mb-4">
+                                Refresh Ranks<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-ranks").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/wipe-memcache" role="button" class="btn btn-success btn-block mb-4">
+                                Wipe Memcache<br/>
+                                <small data-livestamp="{{ (index .Configs "wipe-memcache").Value }}"></small>
+                            </a>
+                        </div>
                     </div>
 
                 </div>

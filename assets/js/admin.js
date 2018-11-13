@@ -3,18 +3,8 @@ if ($('#admin-page').length > 0) {
     const $actions = $('#actions a');
 
     $actions.on('click', function () {
-        const text = $(this).find('p').text();
-        return confirm(text + '?');
+        return confirm('Are you sure?');
     });
-
-    $actions.hover(
-        function () {
-            $(this).addClass('list-group-item-danger')
-        },
-        function () {
-            $(this).removeClass('list-group-item-danger')
-        }
-    );
 
     const queuesForm = $('form#queues');
     queuesForm.on("submit", function (e) {
