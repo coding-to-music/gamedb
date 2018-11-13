@@ -12,15 +12,18 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type WebsocketPage string
+
 const (
-	PageChanges = "changes"
-	PageChat    = "chat"
-	PageNews    = "news"
-	PagePrices  = "prices"
-	PageProfile = "profile"
+	PageChanges WebsocketPage = "changes"
+	PageChat    WebsocketPage = "chat"
+	PageNews    WebsocketPage = "news"
+	PagePrices  WebsocketPage = "prices"
+	PageProfile WebsocketPage = "profile"
+	PageAdmin   WebsocketPage = "admin"
 )
 
-var pages map[string]Page
+var pages map[WebsocketPage]Page
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -30,8 +33,8 @@ var upgrader = websocket.Upgrader{
 var ErrInvalidPage = errors.New("invalid page")
 
 func init() {
-	pages = map[string]Page{}
-	for _, v := range []string{PageChanges, PageChat, PageNews, PagePrices, PageProfile} {
+	pages = map[WebsocketPage]Page{}
+	for _, v := range []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageProfile, PageAdmin} {
 		pages[v] = Page{
 			name:        v,
 			connections: map[int]*websocket.Conn{},
@@ -43,7 +46,7 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	page, err := GetPage(id)
+	page, err := GetPage(WebsocketPage(id))
 	if err != nil {
 
 		bytes, err := json.Marshal(websocketPayload{Error: "Invalid page"})
@@ -62,10 +65,10 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page.SetConnection(connection)
+	page.setConnection(connection)
 }
 
-func GetPage(page string) (p Page, err error) {
+func GetPage(page WebsocketPage) (p Page, err error) {
 
 	if val, ok := pages[page]; ok {
 		return val, nil
@@ -74,7 +77,7 @@ func GetPage(page string) (p Page, err error) {
 }
 
 type Page struct {
-	name        string
+	name        WebsocketPage
 	connections map[int]*websocket.Conn
 }
 
@@ -82,7 +85,7 @@ func (p Page) HasConnections() bool {
 	return len(p.connections) > 0
 }
 
-func (p *Page) SetConnection(conn *websocket.Conn) {
+func (p *Page) setConnection(conn *websocket.Conn) {
 	p.connections[rand.Int()] = conn
 }
 
@@ -115,6 +118,6 @@ func (p *Page) Send(data interface{}) {
 
 type websocketPayload struct {
 	Data  interface{}
-	Page  string
+	Page  WebsocketPage
 	Error string
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
 )
@@ -107,6 +108,9 @@ func adminApps() {
 	err = db.SetConfig(db.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
 
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
+
 	logging.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
 
@@ -145,6 +149,9 @@ func adminDonations() {
 	//
 	err = db.SetConfig(db.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
 
 	logging.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
@@ -318,6 +325,9 @@ func adminGenres() {
 	err = db.SetConfig(db.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
 
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
+
 	logging.Info("Genres updated")
 }
 
@@ -451,6 +461,9 @@ func adminPublishers() {
 	err = db.SetConfig(db.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
 
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
+
 	logging.Info("Publishers updated")
 }
 
@@ -581,6 +594,9 @@ func adminDevelopers() {
 
 	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
 
 	logging.Info("Developers updated")
 }
@@ -716,6 +732,9 @@ func adminTags() {
 
 	err = db.SetConfig(db.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
 
 	logging.Info("Tags updated")
 }
@@ -870,6 +889,9 @@ func adminRanks() {
 	err = db.SetConfig(db.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
 
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
+
 	logging.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
 }
 
@@ -880,6 +902,9 @@ func adminMemcache() {
 
 	err = db.SetConfig(db.ConfWipeMemcache, strconv.Itoa(int(time.Now().Unix())))
 	logging.Error(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfWipeMemcache + " complete"})
 
 	logging.Info("Memcache wiped")
 }
@@ -952,4 +977,8 @@ func (t statsRow) GetMeanScore() string {
 
 func (t statsRow) GetCount() int {
 	return int(float64(t.count) / float64(len(steam.Countries)))
+}
+
+type adminWebsocket struct {
+	Message string `json:"message"`
 }

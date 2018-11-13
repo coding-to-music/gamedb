@@ -128,14 +128,14 @@ if (toasts) {
     }
 }
 
-function toast(body, title = '', timeout = '', link = '') {
+function toast(body, title = '', timeout = 8, link = '') {
 
     const redirect = function () {
         window.location.replace(link);
     };
 
     toastr.success(body, title, {
-        timeOut: timeout ? timeout * 1000 : 5000,
+        timeOut: Number(timeout),
         onclick: link ? redirect : null,
 
         newestOnTop: true,

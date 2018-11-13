@@ -15,4 +15,10 @@ if ($('#admin-page').length > 0) {
             data: $(this).serialize()
         });
     });
+
+    websocketListener('admin', function (e) {
+
+        const data = $.parseJSON(e.data);
+        toast(data.Data.message, '', 0);
+    })
 }
