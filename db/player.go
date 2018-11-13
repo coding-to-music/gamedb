@@ -251,7 +251,9 @@ func (p Player) GetTimeLong() (ret string) {
 
 func (p Player) GetTimeToUpdate(updateType UpdateType) int64 {
 
-	if updateType == PlayerUpdateFriends {
+	if updateType == PlayerUpdateAdmin {
+		return -1
+	} else if updateType == PlayerUpdateFriends {
 		return p.FriendsAddedAt.Add(time.Hour * 24 * 365).Unix() - time.Now().Unix() // 1 year
 	} else if updateType == PlayerUpdateAuto {
 		return p.UpdatedAt.Add(time.Hour * 24 * 7).Unix() - time.Now().Unix() // 1 week
