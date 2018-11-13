@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
@@ -18,14 +19,13 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := packagesTemplate{}
 	t.Fill(w, r, "Packages")
-	t.Total = total
+	t.Description = "The last " + humanize.Comma(int64(total)) + " packages to be updated."
 
 	returnTemplate(w, r, "packages", t)
 }
 
 type packagesTemplate struct {
 	GlobalTemplate
-	Total int
 }
 
 func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {

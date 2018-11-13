@@ -139,6 +139,7 @@ func CoopHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Co-op")
 	t.Players = players
 	t.Games = templateGames
+	t.Description = "Find a game to play with friends."
 
 	returnTemplate(w, r, "coop", t)
 }

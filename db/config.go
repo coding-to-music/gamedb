@@ -5,14 +5,15 @@ import (
 )
 
 const (
-	ConfTagsUpdated       = "tags-updated"
-	ConfPublishersUpdated = "publishers-updated"
-	ConfDevelopersUpdated = "developers-updated"
-	ConfGenresUpdated     = "genres-updated"
+	ConfTagsUpdated       = "refresh-tags"
+	ConfGenresUpdated     = "refresh-genres"
+	ConfPublishersUpdated = "refresh-publishers"
+	ConfDevelopersUpdated = "refresh-developers"
 
-	ConfRanksUpdated     = "ranks-updated"
-	ConfDonationsUpdated = "donations-updated"
-	ConfAddedAllApps     = "added-all-apps"
+	ConfRanksUpdated     = "refresh-ranks"
+	ConfDonationsUpdated = "refresh-donations"
+	ConfAddedAllApps     = "refresh-all-apps"
+	ConfWipeMemcache     = "wipe-memcache"
 )
 
 type Config struct {

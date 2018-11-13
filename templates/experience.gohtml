@@ -4,10 +4,7 @@
 
     <div class="jumbotron">
         <h1 class="display-4"><i class="fas fa-level-up-alt"></i> Experience</h1>
-        <p class="lead">
-            Check how much XP you need to go up a level.
-        {{ if .IsLoggedIn }}You are level <a href="/experience/{{.UserLevel}}" data-level="{{.UserLevel}}">{{.UserLevel}}</a>.{{end}}
-        </p>
+        <p class="lead">{{ .Description }} {{ if .IsLoggedIn }}You are level <a href="/experience/{{.UserLevel}}" data-level="{{.UserLevel}}">{{.UserLevel}}</a>.{{end}}</p>
     </div>
 
     <div class="card">

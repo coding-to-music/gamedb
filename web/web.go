@@ -3,6 +3,7 @@ package web
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"math"
 	"net/http"
@@ -280,7 +281,9 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Title  string // Page title
+	Title       string // Page title
+	Description string // Page description
+
 	Avatar string
 	Path   string // URL
 	Env    string

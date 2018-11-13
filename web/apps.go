@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/Masterminds/squirrel"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
@@ -28,6 +29,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Count, err = db.CountApps()
+		t.Description = "A live database of " + humanize.Comma(int64(t.Count)) + " Steam games."
 		logging.Error(err)
 
 		wg.Done()

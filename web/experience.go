@@ -50,6 +50,7 @@ func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
 	t := experienceTemplate{}
 	t.Fill(w, r, "Experience")
 	t.Chunks = chunk(rows, chunkRows)
+	t.Description = "Check how much XP you need to go up a level."
 
 	// Default calculator levels if logged out
 	t.UserLevelTo = t.UserLevel + 10

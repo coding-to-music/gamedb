@@ -19,6 +19,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := playersTemplate{}
 	t.Fill(w, r, "Players")
+	t.Description = "See where you come against the rest of the world"
 
 	//
 	var wg sync.WaitGroup

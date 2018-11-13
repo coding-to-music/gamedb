@@ -54,6 +54,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	t := newsTemplate{}
 	t.Fill(w, r, "News")
 	t.Articles = templateArticles
+	t.Description = "All the news from all the games, all in one place."
 
 	returnTemplate(w, r, "news", t)
 }

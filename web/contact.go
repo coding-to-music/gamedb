@@ -17,6 +17,7 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	t := contactTemplate{}
 	t.Fill(w, r, "Contact")
 	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
+	t.Description = "Get in touch."
 
 	returnTemplate(w, r, "contact", t)
 }

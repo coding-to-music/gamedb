@@ -156,7 +156,6 @@ func Dec(key string) (err error) {
 	return err
 }
 
-// todo, add button to admin
 func Wipe() (err error) {
 
 	client := getClient()
