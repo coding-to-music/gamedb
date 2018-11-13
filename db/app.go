@@ -484,7 +484,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 					continue
 				}
 
-				kinds = append(kinds, CreateArticle(v))
+				kinds = append(kinds, CreateArticle(*app, v))
 			}
 
 			err = BulkSaveKinds(kinds, KindNews, false)

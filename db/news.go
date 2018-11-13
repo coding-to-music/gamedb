@@ -1,6 +1,7 @@
 package db
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
@@ -13,7 +14,6 @@ type News struct {
 	CreatedAt  time.Time `datastore:"created_at,noindex"`
 	UpdatedAt  time.Time `datastore:"updated_at,noindex"`
 	ArticleID  int64     `datastore:"article_id,noindex"`
-	AppID      int       `datastore:"app_id"`
 	Title      string    `datastore:"title,noindex"`
 	URL        string    `datastore:"url,noindex"`
 	IsExternal bool      `datastore:"is_external,noindex"`
@@ -23,6 +23,10 @@ type News struct {
 	FeedLabel  string    `datastore:"feed_label,noindex"`
 	FeedName   string    `datastore:"feed_name,noindex"`
 	FeedType   int8      `datastore:"feed_type,noindex"`
+
+	AppID   int    `datastore:"app_id"`
+	AppName string `datastore:"app_name,noindex"`
+	AppIcon string `datastore:"app_icon,noindex"`
 }
 
 func (article News) GetKey() (key *datastore.Key) {
@@ -35,6 +39,21 @@ func (article News) GetTimestamp() (int64) {
 
 func (article News) GetNiceDate() (string) {
 	return article.Date.Format(helpers.DateYear)
+}
+
+// Data array for datatables
+func (article News) OutputForJSON(r *http.Request) (output []interface{}) {
+
+	return []interface{}{
+		article.ArticleID,
+		article.Title,
+		article.Author,
+		article.Date,
+		article.AppID,
+		article.AppName,
+		article.AppIcon,
+		getAppPath(article.AppID, article.AppName),
+	}
 }
 
 func GetAppArticles(appID int) (articles []News, err error) {
@@ -72,7 +91,7 @@ func GetArticles() (articles []News, err error) {
 	return articles, err
 }
 
-func CreateArticle(resp steam.NewsArticle) (news News) {
+func CreateArticle(app App, resp steam.NewsArticle) (news News) {
 
 	news.ArticleID = resp.GID
 	news.Title = resp.Title
@@ -84,7 +103,10 @@ func CreateArticle(resp steam.NewsArticle) (news News) {
 	news.Date = time.Unix(int64(resp.Date), 0)
 	news.FeedName = resp.Feedname
 	news.FeedType = int8(resp.FeedType)
+
 	news.AppID = resp.AppID
+	news.AppName = app.Name
+	news.AppIcon = app.Icon
 
 	return news
 }

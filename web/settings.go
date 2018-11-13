@@ -277,7 +277,6 @@ func SettingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w)
-
 }
 
 func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {

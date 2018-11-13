@@ -92,6 +92,7 @@ func Serve() error {
 	r.Get("/login/callback", LoginCallbackHandler)
 	r.Get("/logout", LogoutHandler)
 	r.Get("/news", NewsHandler)
+	r.Get("/news/ajax", NewsAjaxHandler)
 	r.Get("/packages", PackagesHandler)
 	r.Get("/packages/ajax", PackagesAjaxHandler)
 	r.Get("/packages/{id}", PackageHandler)
