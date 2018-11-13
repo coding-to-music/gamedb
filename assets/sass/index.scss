@@ -1,7 +1,6 @@
 // Bootstrap
 @import "bootstrap/bootstrap";
 // Global
-@import "mixins";
 @import "global";
 @import "tables";
 @import "media-lists";
@@ -10,14 +9,11 @@
 @import "apps";
 @import "avatars";
 @import "chat";
-@import "commits";
 @import "coop";
 @import "donate";
 @import "error";
 @import "experience";
 @import "genres";
-@import "login";
-@import "news";
 @import "package";
 @import "product";
 @import "player";
