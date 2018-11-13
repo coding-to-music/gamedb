@@ -41,11 +41,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:596e8d6da717a402e6156fe0a3e9d526b320ce2d46a328e16dc92fbe6ad483d1"
+  digest = "1:d9ab14a36706248b8894e6d8c4847fce54e3eaf620b7f4c0899f7fd33c39ddb8"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "abc989980c0d2d5101e28142c981322b16a7ae73"
+  revision = "e73ab5032af786c39608debcb677a83c0e5af721"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -197,12 +197,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:e097a364f4e8d8d91b9b9eeafb992d3796a41fde3eb548c1a87eb9d9f60725cf"
+  digest = "1:84d63b33b6c28a5e1b02d74046188463402eb5e35553ae255e8c84f716bb58ad"
   name = "github.com/googleapis/gax-go"
   packages = ["."]
   pruneopts = ""
-  revision = "317e0006254c44a0ac427cc52a0e083ff0b9622f"
-  version = "v2.0.0"
+  revision = "9c40fc3d3ebe7d42ebfb043d738aaee663ac7101"
+  version = "v2.0.1"
 
 [[projects]]
   digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"
@@ -315,7 +315,7 @@
   version = "v3.3.7"
 
 [[projects]]
-  digest = "1:f0c583bb1189614701bb928f1a73a7f71a3d31b76f1fbbe6619a83d92cbd2def"
+  digest = "1:44f403f58ba6ffcc60f0946169d02879dc79a4bf5a84d4215f5f7c6a5865f74b"
   name = "github.com/labstack/gommon"
   packages = [
     "bytes",
@@ -324,8 +324,8 @@
     "random",
   ]
   pruneopts = ""
-  revision = "2a618302b929cc20862dda3aa6f02f64dbe740dd"
-  version = "v0.2.7"
+  revision = "7fd9f68ece0bcb1a905fac8f1549f0083f71c51b"
+  version = "v0.2.8"
 
 [[projects]]
   branch = "master"
@@ -562,7 +562,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a242f23ceb22423c0a2111d9488a2ab19a2e817111a4f3e2385f5f89a53e619f"
+  digest = "1:f7be435e0ca22e2cd62b2d2542081a231685837170a87a3662abb7cdf9f3f1cd"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -576,11 +576,11 @@
     "ssh/terminal",
   ]
   pruneopts = ""
-  revision = "e4dc69e5b2fd71dcaf8bd5d054eb936deb78d1fa"
+  revision = "3d3f9f413869b949e48070b5bc593aa22cc2b8f2"
 
 [[projects]]
   branch = "master"
-  digest = "1:33ff56b9cc51b337d3bf1f5b375c9928221f7cfa72e94773d48482d5437f6468"
+  digest = "1:fbc2896199a45d32325e24ceb56624c7db49f9cfb068f739ee53339a8fb183b3"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -596,7 +596,7 @@
     "websocket",
   ]
   pruneopts = ""
-  revision = "a544f70c90f196e50d198126db0c4cb2b562fec0"
+  revision = "88d92db4c548972d942ac2a3531a8a9a34c82ca6"
 
 [[projects]]
   branch = "master"
@@ -614,11 +614,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b2ea75de0ccb2db2ac79356407f8a4cd8f798fe15d41b381c00abf3ae8e55ed1"
+  digest = "1:88ecca26e54f601a8733c9a31d9f0883b915216a177673f0467f6b864fd0d90f"
   name = "golang.org/x/sync"
   packages = ["semaphore"]
   pruneopts = ""
-  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
+  revision = "42b317875d0fa942474b76e1b46a6060d720ae6e"
 
 [[projects]]
   branch = "master"
@@ -665,7 +665,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:074992158633df677fc4570114ed67cd070877f8b9cee87111f46f9fab0a973a"
+  digest = "1:e052ac016676b0750da59a64debe6110fbd2ccd1cb368d5d561b5e721edbb1bc"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -683,7 +683,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "bae21c44055eca9988e06701ad26a6d799ff6156"
+  revision = "c5e41677a12edeac5437ebceb220505ec6b90669"
 
 [[projects]]
   digest = "1:77d3cff3a451d50be4b52db9c7766c0d8570ba47593f0c9dc72173adb208e788"
@@ -709,7 +709,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:80aae82eb03dd30038e2002cdbf3dc269bc17bfd170ef5c5a816b224ae29776f"
+  digest = "1:212d4045ef941b209a154001718705dc723bd77e0200fcea36d15ec87ed49dec"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -727,7 +727,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "c830210a61dfaa790e1920f8d0470fc27bc2efbe"
+  revision = "b5d43981345bdb2c233eb4bf3277847b48c6fdc6"
 
 [[projects]]
   digest = "1:1293087271e314cfa2b3decededba2ecba0ff327e7b7809e00f73f616449191c"

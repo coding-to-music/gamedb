@@ -464,7 +464,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *App) {
 
-		resp, _, err := helpers.GetSteam().GetNews(app.ID)
+		resp, _, err := helpers.GetSteam().GetNews(app.ID, 1000)
 		if err != nil {
 
 			logging.Error(err)
