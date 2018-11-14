@@ -23,7 +23,7 @@ type Publisher struct {
 }
 
 func (p Publisher) GetPath() string {
-	return "/games#publishers=" + strconv.Itoa(p.ID)
+	return "/games?publishers=" + strconv.Itoa(p.ID)
 }
 
 func (p Publisher) GetName() (name string) {
