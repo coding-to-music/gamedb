@@ -60,12 +60,3 @@ func NewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.output(w)
 }
-
-//<tr data-link="{{ .App.GetPath }}#news">
-//<td class="img">
-//<img class="rounded" src="{{ .App.GetIcon }}" alt="{{ .Article.Title }}">
-//<span data-app-id="{{ .App.ID }}">{{ .App.GetName }}</span>
-//<td>{{ .Article.Title }}</td>
-//<td>{{ .Article.Author }}</td>
-//<td><span data-toggle="tooltip" data-placement="top" title="{{ .Article.GetNiceDate }}" data-livestamp="{{ .Article.GetTimestamp }}"></span></td>
-//</tr>

@@ -8,24 +8,59 @@
     </div>
 
     <div class="card">
+        <div class="card-header d-none">
+
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#apps" role="tab">App News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#steam" role="tab">Steam News</a>
+                </li>
+            </ul>
+
+        </div>
         <div class="card-body">
 
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/news/ajax">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Game</th>
-                        <th scope="col">Title</th>
-                        <th scope="col">Author</th>
-                        <th scope="col">Date</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+            <div class="tab-content">
 
-                    </tbody>
-                </table>
+            {{/* Apps */}}
+                <div class="tab-pane show active" id="apps" role="tabpanel">
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/news/ajax">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Game</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            {{/* Steam */}}
+                <div class="tab-pane" id="steam" role="tabpanel">
+
+                </div>
+
             </div>
 
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="news-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+
+                </div>
+            </div>
         </div>
     </div>
 

@@ -2,20 +2,19 @@ package web
 
 import (
 	"encoding/json"
-	"html/template"
 	"net/http"
 	"regexp"
 	"strconv"
 	"sync"
 	"time"
 
+	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
-	"github.com/grokify/html-strip-tags-go"
 )
 
 func AppHandler(w http.ResponseWriter, r *http.Request) {
@@ -165,43 +164,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
-	// Get news
-	wg.Add(1)
-	go func() {
-
-		newsResp, err := db.GetAppArticles(idx)
-		if err != nil {
-
-			logging.Error(err)
-
-		} else {
-
-			// todo, use a different bbcode library that works for app 418460 & 218620
-			// todo, add http to links here instead of JS
-			//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
-			//var conv bbConvert.HTMLConverter
-			//conv.ImplementDefaults()
-
-			for _, v := range newsResp {
-
-				// Fix broken links
-				//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
-
-				// Convert BBCdoe to HTML
-				//v.Contents = conv.Convert(v.Contents)
-
-				t.Articles = append(t.Articles, appArticleTemplate{
-					ID:       v.ArticleID,
-					Title:    v.Title,
-					Contents: template.HTML(strip.HTMLEscapeString(v.Contents)),
-					Author:   v.Author,
-				})
-			}
-		}
-
-		wg.Done()
-	}()
-
 	// Get packages
 	wg.Add(1)
 	go func() {
@@ -298,7 +260,6 @@ type appTemplate struct {
 	App          db.App
 	Packages     []db.Package
 	DLC          []db.App
-	Articles     []appArticleTemplate
 	Prices       string
 	PricesCount  int
 	Achievements []appAchievementTemplate
@@ -319,13 +280,6 @@ func (a appAchievementTemplate) GetCompleted() float64 {
 	return helpers.DollarsFloat(a.Completed)
 }
 
-type appArticleTemplate struct {
-	ID       int64
-	Title    string
-	Contents template.HTML
-	Author   string
-}
-
 type appReviewTemplate struct {
 	Review     string
 	Player     db.Player
@@ -333,4 +287,103 @@ type appReviewTemplate struct {
 	VotesGood  int
 	VotesFunny int
 	Vote       bool
+}
+
+func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID."})
+		return
+	}
+
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
+		return
+	}
+
+	query := DataTablesQuery{}
+	query.FillFromURL(r.URL.Query())
+
+	//
+	var wg sync.WaitGroup
+
+	// Get events
+	var articles []db.News
+
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		client, ctx, err := db.GetDSClient()
+		if err != nil {
+
+			logging.Error(err)
+
+		} else {
+
+			q := datastore.NewQuery(db.KindNews).Filter("app_id =", idx).Limit(100)
+			q, err = query.SetOrderOffsetDS(q, map[string]string{})
+			q = q.Order("-date")
+			if err != nil {
+
+				logging.Error(err)
+
+			} else {
+
+				_, err := client.GetAll(ctx, q, &articles)
+				logging.Error(err)
+
+				// todo, use a different bbcode library that works for app 418460 & 218620
+				// todo, add http to links here instead of JS
+				//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
+				//var conv bbConvert.HTMLConverter
+				//conv.ImplementDefaults()
+				// Fix broken links
+				//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
+				// Convert BBCdoe to HTML
+				//v.Contents = conv.Convert(v.Contents)
+
+			}
+		}
+
+		wg.Done()
+	}(r)
+
+	// Get total
+	var total int
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		var err error
+		app, err := db.GetApp(idx)
+		if err != nil {
+			logging.Error(err)
+			return
+		}
+
+		newsIDs, err := app.GetNewsIDs()
+		if err != nil {
+			logging.Error(err)
+			return
+		}
+
+		total = len(newsIDs)
+
+		wg.Done()
+	}(r)
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.Itoa(total)
+	response.RecordsFiltered = strconv.Itoa(total)
+	response.Draw = query.Draw
+
+	for _, v := range articles {
+		response.AddRow(v.OutputForJSON(r))
+	}
+
+	response.output(w)
 }

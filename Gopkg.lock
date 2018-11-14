@@ -120,6 +120,14 @@
   version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:8d4abcbd4326b9fbf1a8232dd95be6fce6d0b4522acff134e3143baac4e0ad81"
+  name = "github.com/frustra/bbcode"
+  packages = ["."]
+  pruneopts = ""
+  revision = "48be21ce690cf183d28c122317390a1f046a61cc"
+
+[[projects]]
   digest = "1:eb53021a8aa3f599d29c7102e65026242bdedce998a54837dc67f14b6a97c5fd"
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
@@ -243,14 +251,6 @@
   pruneopts = ""
   revision = "283c8d10b72e48ecfd721b1739de574713e57a0b"
   version = "v1.3.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:96b2228ec52e3129a311293afd1310cc4a4d8dd88c7370006c6f3e21d3ec03bb"
-  name = "github.com/grokify/html-strip-tags-go"
-  packages = ["."]
-  pruneopts = ""
-  revision = "e9e44961e26f513866063f54bf85070db95600f7"
 
 [[projects]]
   digest = "1:d14365c51dd1d34d5c79833ec91413bfbb166be978724f15701e17080dc06dec"
@@ -796,6 +796,7 @@
     "github.com/bwmarrin/discordgo",
     "github.com/derekstavis/go-qs",
     "github.com/dustin/go-humanize",
+    "github.com/frustra/bbcode",
     "github.com/go-chi/chi",
     "github.com/go-chi/chi/middleware",
     "github.com/go-sql-driver/mysql",
@@ -804,7 +805,6 @@
     "github.com/gorilla/sessions",
     "github.com/gorilla/websocket",
     "github.com/gosimple/slug",
-    "github.com/grokify/html-strip-tags-go",
     "github.com/ikeikeikeike/go-sitemap-generator/stm",
     "github.com/jinzhu/gorm",
     "github.com/mitchellh/mapstructure",

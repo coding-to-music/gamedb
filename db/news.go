@@ -33,62 +33,25 @@ func (article News) GetKey() (key *datastore.Key) {
 	return datastore.NameKey(KindNews, strconv.FormatInt(article.ArticleID, 10), nil)
 }
 
-func (article News) GetTimestamp() (int64) {
-	return article.Date.Unix()
-}
-
-func (article News) GetNiceDate() (string) {
-	return article.Date.Format(helpers.DateYear)
+func (article News) GetBody() (string) {
+	return helpers.BBCodeCompiler.Compile(article.Contents)
 }
 
 // Data array for datatables
 func (article News) OutputForJSON(r *http.Request) (output []interface{}) {
 
 	return []interface{}{
-		article.ArticleID,
-		article.Title,
-		article.Author,
-		article.Date,
-		article.AppID,
-		article.AppName,
-		article.AppIcon,
-		getAppPath(article.AppID, article.AppName),
+		article.ArticleID,                          // 0
+		article.Title,                              // 1
+		article.Author,                             // 2
+		article.Date.Unix(),                        // 3
+		article.Date.Format(helpers.DateYear),      // 4
+		article.GetBody(),                          // 5
+		article.AppID,                              // 6
+		article.AppName,                            // 7
+		article.AppIcon,                            // 8
+		getAppPath(article.AppID, article.AppName), // 9
 	}
-}
-
-func GetAppArticles(appID int) (articles []News, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return articles, err
-	}
-
-	q := datastore.NewQuery(KindNews).Order("-date").Limit(1000)
-	q = q.Filter("app_id =", appID)
-
-	_, err = client.GetAll(ctx, q, &articles)
-	if err != nil {
-		return articles, err
-	}
-
-	return articles, err
-}
-
-func GetArticles() (articles []News, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return articles, err
-	}
-
-	q := datastore.NewQuery(KindNews).Order("-date").Limit(100)
-
-	_, err = client.GetAll(ctx, q, &articles)
-	if err != nil {
-		return articles, err
-	}
-
-	return articles, err
 }
 
 func CreateArticle(app App, resp steam.NewsArticle) (news News) {
