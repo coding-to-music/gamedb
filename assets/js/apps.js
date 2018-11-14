@@ -30,7 +30,7 @@ if ($('#apps-page').length > 0) {
         step: 1,
         range: {
             'min': 0,
-            'max': parseInt(priceMax)
+            'max': parseInt(priceMax ? priceMax : 101) // Default if can't read the real max
         }
     });
 
