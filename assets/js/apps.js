@@ -81,7 +81,7 @@ if ($('#apps-page').length > 0) {
         });
 
         $table.DataTable().draw();
-        history.pushState({}, document.title, "/games#" + $.param(formData));
+        history.pushState({}, document.title, "/games?" + $.param(formData));
         updateLabels(e);
         return false;
     }
