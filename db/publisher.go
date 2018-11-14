@@ -38,6 +38,29 @@ func (p Publisher) GetMeanScore(code steam.CountryCode) (string, error) {
 	return helpers.GetMeanScore(code, p.MeanScore)
 }
 
+func GetPublishersByID(ids []int, columns []string) (publishers []Publisher, err error) {
+
+	if len(ids) == 0 {
+		return publishers, nil
+	}
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return publishers, err
+	}
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	db.Where("id IN (?)", ids).Find(&publishers)
+	if db.Error != nil {
+		return publishers, db.Error
+	}
+
+	return publishers, nil
+}
+
 func GetAllPublishers() (publishers []Publisher, err error) {
 
 	db, err := GetMySQLClient()

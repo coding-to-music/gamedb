@@ -38,6 +38,29 @@ func (d Developer) GetMeanScore(code steam.CountryCode) (string, error) {
 	return helpers.GetMeanScore(code, d.MeanScore)
 }
 
+func GetDevelopersByID(ids []int, columns []string) (developers []Developer, err error) {
+
+	if len(ids) == 0 {
+		return developers, nil
+	}
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return developers, err
+	}
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	db.Where("id IN (?)", ids).Find(&developers)
+	if db.Error != nil {
+		return developers, db.Error
+	}
+
+	return developers, nil
+}
+
 func GetAllDevelopers() (developers []Developer, err error) {
 
 	db, err := GetMySQLClient()

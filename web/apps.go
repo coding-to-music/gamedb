@@ -65,6 +65,42 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 		t.Publishers, err = db.GetPublishersForSelect()
 		logging.Error(err)
 
+		if val, ok := r.URL.Query()["publishers"]; ok {
+
+			var publishersToLoad []int
+			for _, v := range val { // Loop IDs in URL
+
+				// Convert to int
+				publisherID, err := strconv.Atoi(v)
+				if err != nil {
+					logging.Error(err)
+					continue
+				}
+
+				// Check if we already have this publisher
+				var alreadyHavePublisher = false
+				for _, vv := range t.Publishers {
+					if publisherID == vv.ID {
+						alreadyHavePublisher = true
+						break
+					}
+				}
+
+				// Add to slice to load
+				if !alreadyHavePublisher {
+					publishersToLoad = append(publishersToLoad, publisherID)
+				}
+			}
+
+			publishers, err := db.GetPublishersByID(publishersToLoad, []string{"id", "name"})
+			logging.Error(err)
+			if err == nil {
+				for _, vvv := range publishers {
+					t.Publishers = append(t.Publishers, vvv)
+				}
+			}
+		}
+
 		wg.Done()
 	}()
 
@@ -75,6 +111,42 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Developers, err = db.GetDevelopersForSelect()
 		logging.Error(err)
+
+		if val, ok := r.URL.Query()["developers"]; ok {
+
+			var developersToLoad []int
+			for _, v := range val { // Loop IDs in URL
+
+				// Convert to int
+				developerID, err := strconv.Atoi(v)
+				if err != nil {
+					logging.Error(err)
+					continue
+				}
+
+				// Check if we already have this developer
+				var alreadyHaveDeveloper = false
+				for _, vv := range t.Developers {
+					if developerID == vv.ID {
+						alreadyHaveDeveloper = true
+						break
+					}
+				}
+
+				// Add to slice to load
+				if !alreadyHaveDeveloper {
+					developersToLoad = append(developersToLoad, developerID)
+				}
+			}
+
+			developers, err := db.GetDevelopersByID(developersToLoad, []string{"id", "name"})
+			logging.Error(err)
+			if err == nil {
+				for _, vvv := range developers {
+					t.Developers = append(t.Developers, vvv)
+				}
+			}
+		}
 
 		wg.Done()
 	}()
