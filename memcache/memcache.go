@@ -64,12 +64,11 @@ func getClient() *memcache.Client {
 
 func Get(key string, i interface{}) error {
 
-	logging.Info("Loading " + key + " from memcache.")
-
 	client := getClient()
 
 	item, err := client.Get(namespace + key)
 	if err != nil {
+		logging.Info("Memcache miss: " + key)
 		return err
 	}
 
