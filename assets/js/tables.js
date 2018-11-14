@@ -154,24 +154,27 @@ function addDataTablesRow(columnDefs, data, limit, $table) {
 
     const $row = $('<tr class="fade-green" />');
 
-    for (const v of columnDefs) {
+    if (isIterable(columnDefs)) {
+        for (const v of columnDefs) {
 
-        let value = data[v];
+            let value = data[v];
 
-        if ('render' in v) {
-            value = v.render(null, null, data);
+            if ('render' in v) {
+                value = v.render(null, null, data);
+            }
+
+            const $td = $('<td />').html(value);
+
+            if ('createdCell' in v) {
+                v.createdCell($td[0], null, data, null, null); // todo, this [0] may not be needed
+            }
+
+            $td.find('[data-livestamp]').html('a few seconds ago');
+
+            $row.append($td);
         }
-
-        const $td = $('<td />').html(value);
-
-        if ('createdCell' in v) {
-            v.createdCell($td[0], null, data, null, null); // todo, this [0] may not be needed
-        }
-
-        $td.find('[data-livestamp]').html('a few seconds ago');
-
-        $row.append($td);
     }
+
 
     $table.prepend($row);
 

@@ -36,8 +36,10 @@ if ($('#queues-page').length > 0) {
                 url: "/queues/queues.json",
                 success: function (data, status) {
                     $body.empty();
-                    for (const v of data) {
-                        $body.append($('<tr><td>' + v.Name + '</td><td>' + v.Messages + '</td><td>' + v.Rate + '/s</td></tr>'));
+                    if (isIterable(data)) {
+                        for (const v of data) {
+                            $body.append($('<tr><td>' + v.Name + '</td><td>' + v.Messages + '</td><td>' + v.Rate + '/s</td></tr>'));
+                        }
                     }
                 }
             });

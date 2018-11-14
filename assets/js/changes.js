@@ -29,11 +29,13 @@ if ($('#changes-page').length > 0) {
             "render": function (data, type, row) {
 
                 let apps = [];
-                for (const v of row[3]) {
-                    if (v.name === '') {
-                        apps.push('Unknown App');
-                    } else {
-                        apps.push('<a href="/games/' + v.id + '">' + v.name + '</a>');
+                if (isIterable(Array)) {
+                    for (const v of row[3]) {
+                        if (v.name === '') {
+                            apps.push('Unknown App');
+                        } else {
+                            apps.push('<a href="/games/' + v.id + '">' + v.name + '</a>');
+                        }
                     }
                 }
 
@@ -47,13 +49,16 @@ if ($('#changes-page').length > 0) {
             "render": function (data, type, row) {
 
                 let packages = [];
-                for (const v of row[4]) {
-                    if (v.name === '') {
-                        packages.push('Unknown Package');
-                    } else {
-                        packages.push('<a href="/packages/' + v.id + '">' + v.name + '</a>');
+                if (isIterable(row[4])) {
+                    for (const v of row[4]) {
+                        if (v.name === '') {
+                            packages.push('Unknown Package');
+                        } else {
+                            packages.push('<a href="/packages/' + v.id + '">' + v.name + '</a>');
+                        }
                     }
                 }
+
 
                 return packages.join('<br/>');
             },
@@ -79,8 +84,10 @@ if ($('#changes-page').length > 0) {
             const data = $.parseJSON(e.data);
 
             // Loop changes in websocket data and add each one
-            for (const v of data.Data) {
-                addDataTablesRow(columnDefs, v, info.length, $table);
+            if (isIterable(data.Data)) {
+                for (const v of data.Data) {
+                    addDataTablesRow(columnDefs, v, info.length, $table);
+                }
             }
         }
     })

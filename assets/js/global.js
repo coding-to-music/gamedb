@@ -123,8 +123,10 @@ if (user.showAds) {
 
 // Toasts
 if (toasts) {
-    for (const v of toasts) {
-        toast(v.message, v.title, v.timeout, v.link);
+    if (isIterable(toasts)) {
+        for (const v of toasts) {
+            toast(v.message, v.title, v.timeout, v.link);
+        }
     }
 }
 
@@ -142,4 +144,12 @@ function toast(body, title = '', timeout = 8, link = '') {
         preventDuplicates: false,
         extendedTimeOut: 0, // Keep alive on hover
     });
+}
+
+function isIterable(obj) {
+    // checks for null and undefined
+    if (obj == null) {
+        return false;
+    }
+    return typeof obj[Symbol.iterator] === 'function';
 }
