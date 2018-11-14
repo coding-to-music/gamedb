@@ -64,6 +64,8 @@ func getClient() *memcache.Client {
 
 func Get(key string, i interface{}) error {
 
+	logging.Info("Loading " + key + " from memcache.")
+
 	client := getClient()
 
 	item, err := client.Get(namespace + key)
@@ -96,8 +98,6 @@ func GetSetInt(item memcache.Item, f func() (j int, err error)) (count int, err 
 
 	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
 
-		logging.Info("Loading " + item.Key + " from memcache.")
-
 		count, err := f()
 		if err != nil {
 			return count, err
@@ -115,8 +115,6 @@ func GetSetString(item memcache.Item, f func() (j string, err error)) (s string,
 	err = Get(item.Key, &s)
 
 	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
-
-		logging.Info("Loading " + item.Key + " from memcache.")
 
 		s, err := f()
 		if err != nil {
