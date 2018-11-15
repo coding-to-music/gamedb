@@ -372,7 +372,11 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 func (t GlobalTemplate) GetFooterText() (text string) {
 
-	text = "Page created @ " + time.Now().Format("2006-01-02 15:04:05")
+	ts := time.Now()
+	dayint, err := strconv.Atoi(ts.Format("2"))
+	logging.Error(err)
+
+	text = "Page created @ " + ts.Format("15:04:05") + " on " + ts.Format("Mon") + " " + humanize.Ordinal(dayint)
 
 	// Get cashed
 	if t.IsCache() {
