@@ -47,9 +47,19 @@ func middlewareLog(next http.Handler) http.Handler {
 	})
 }
 
+func middlewareTime(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		r.Header.Set("start-time", strconv.FormatInt(time.Now().UnixNano(), 10))
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func Serve() error {
 
 	r := chi.NewRouter()
+	r.Use(middlewareTime)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.DefaultCompress)
 	r.Use(middleware.GetHead)
@@ -284,7 +294,6 @@ func getTemplateFuncMap() map[string]interface{} {
 type GlobalTemplate struct {
 	Title       string // Page title
 	Description string // Page description
-	FooterText  string
 
 	Avatar string
 	Path   string // URL
@@ -359,12 +368,32 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	// All session data
 	t.Session, err = session.ReadAll(r)
 	logging.Error(err)
+}
 
-	// Footer text
-	t.FooterText = "Page created @ " + time.Now().Format("2006-01-02 15:04:05")
+func (t GlobalTemplate) GetFooterText() (text string) {
+
+	text = "Page created @ " + time.Now().Format("2006-01-02 15:04:05")
+
+	// Get cashed
 	if t.IsCache() {
-		t.FooterText += " from cache"
+		text += " from cache"
 	}
+
+	// Get time
+	startTimeString := t.request.Header.Get("start-time")
+	if startTimeString == "" {
+		return text
+	}
+
+	startTimeInt, err := strconv.ParseInt(startTimeString, 10, 64)
+	if err != nil {
+		logging.Error(err)
+		return text
+	}
+
+	d := time.Duration(time.Now().UnixNano() - startTimeInt)
+
+	return text + " in " + d.String()
 }
 
 func (t GlobalTemplate) IsLoggedIn() bool {
