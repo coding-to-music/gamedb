@@ -13,7 +13,8 @@ if ($('#apps-page').length > 0) {
     $chosens.chosen({
         disable_search_threshold: 10,
         allow_single_deselect: true,
-        rtl: false
+        rtl: false,
+        max_selected_options: 10
     });
 
     // Setup Sliders
