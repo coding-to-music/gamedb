@@ -284,6 +284,7 @@ func getTemplateFuncMap() map[string]interface{} {
 type GlobalTemplate struct {
 	Title       string // Page title
 	Description string // Page description
+	FooterText  string
 
 	Avatar string
 	Path   string // URL
@@ -358,6 +359,12 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	// All session data
 	t.Session, err = session.ReadAll(r)
 	logging.Error(err)
+
+	// Footer text
+	t.FooterText = "Page created @ " + time.Now().Format("2006-01-02 15:04:05")
+	if t.IsCache() {
+		t.FooterText += " from cache"
+	}
 }
 
 func (t GlobalTemplate) IsLoggedIn() bool {
@@ -368,8 +375,8 @@ func (t GlobalTemplate) IsLocal() bool {
 	return t.Env == "local"
 }
 
-func (t GlobalTemplate) IsVarnished() bool {
-	return t.request.Header.Get("through-varnish") == "true"
+func (t GlobalTemplate) IsCache() bool {
+	return t.request.Header.Get("X-Cache") == "HIT"
 }
 
 func (t GlobalTemplate) IsProduction() bool {
