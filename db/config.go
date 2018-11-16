@@ -1,7 +1,11 @@
 package db
 
 import (
+	"encoding/json"
 	"time"
+
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/memcache"
 )
 
 const (
@@ -35,20 +39,39 @@ func SetConfig(id string, value string) (err error) {
 
 	db.Attrs().Assign(Config{Value: value}).FirstOrInit(config)
 	db.Save(config)
+	if db.Error != nil {
+		return db.Error
+	}
 
-	return db.Error
+	// Save to memcache
+	item := memcache.ConfigRow(id)
+	return memcache.Set(item.Key, value, item.Expiration)
 }
 
 func GetConfig(id string) (config Config, err error) {
 
-	db, err := GetMySQLClient()
+	s, err := memcache.GetSetString(memcache.ConfigRow(id), func() (s string, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return s, err
+		}
+
+		db.Where("id = ?", id).First(&config)
+		if db.Error != nil {
+			return s, db.Error
+		}
+
+		bytes, err := json.Marshal(config)
+		return string(bytes), err
+	})
+
 	if err != nil {
 		return config, err
 	}
 
-	db.Where("id = ?", id).First(&config)
-
-	return config, db.Error
+	err = helpers.Unmarshal([]byte(s), &config)
+	return config, err
 }
 
 func GetConfigs(ids []string) (configsMap map[string]Config, err error) {

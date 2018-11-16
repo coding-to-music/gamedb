@@ -14,7 +14,6 @@ import (
 const namespace = "game-db-"
 
 var client *memcache.Client
-var ErrCacheMiss = memcache.ErrCacheMiss
 var day int32 = 86400
 var (
 	// Counts
@@ -37,6 +36,9 @@ var (
 	// Rows
 	ChangeRow = func(changeID int64) memcache.Item {
 		return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: day * 30}
+	}
+	ConfigRow = func(key string) memcache.Item {
+		return memcache.Item{Key: "config-item-" + key, Expiration: 0}
 	}
 
 	// Other
@@ -75,9 +77,9 @@ func Get(key string, i interface{}) error {
 	return helpers.Unmarshal(item.Value, i)
 }
 
-func Set(key string, i interface{}, expiration int32) error {
+func Set(key string, value interface{}, expiration int32) error {
 
-	bytes, err := json.Marshal(i)
+	bytes, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
@@ -95,7 +97,7 @@ func GetSetInt(item memcache.Item, f func() (j int, err error)) (count int, err 
 
 	err = Get(item.Key, &count)
 
-	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
+	if err != nil && (err == memcache.ErrCacheMiss || err.Error() == "EOF") {
 
 		count, err := f()
 		if err != nil {
@@ -113,7 +115,7 @@ func GetSetString(item memcache.Item, f func() (j string, err error)) (s string,
 
 	err = Get(item.Key, &s)
 
-	if err != nil && (err == ErrCacheMiss || err.Error() == "EOF") {
+	if err != nil && (err == memcache.ErrCacheMiss || err.Error() == "EOF") {
 
 		s, err := f()
 		if err != nil {
@@ -130,11 +132,8 @@ func GetSetString(item memcache.Item, f func() (j string, err error)) (s string,
 func Delete(item memcache.Item) (err error) {
 
 	client := getClient()
-	err = client.Delete(item.Key)
-	if err != nil && err != memcache.ErrCacheMiss {
-		return err
-	}
-	return nil
+	err = client.Delete(namespace + item.Key)
+	return helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 }
 
 func Inc(key string) (err error) {
