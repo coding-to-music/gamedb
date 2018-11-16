@@ -592,7 +592,10 @@ func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, code steam.CountryCode,
 
 func (q DataTablesQuery) SetOrderOffsetDS(qu *datastore.Query, columns map[string]string) (*datastore.Query, error) {
 
-	q.SetOffsetDS(qu)
+	qu, err := q.SetOffsetDS(qu)
+	if err != nil {
+		return qu, err
+	}
 
 	order := q.GetOrderDS(columns, true)
 	if order != "" {
