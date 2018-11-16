@@ -38,6 +38,30 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
+	// Get app review scores
+	var types []appType
+	wg.Add(1)
+	go func() {
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+
+			logging.Error(err)
+
+		} else {
+
+			gorm = gorm.Select([]string{"type", "count(type) as count"})
+			gorm = gorm.Table("apps")
+			gorm = gorm.Group("type")
+			gorm = gorm.Order("count asc")
+			gorm = gorm.Find(&types)
+
+			logging.Error(gorm.Error)
+		}
+
+		wg.Done()
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -45,6 +69,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	t := statsTemplate{}
 	t.Fill(w, r, "Stats")
 	t.setScoresJSON(scores)
+	t.setTypesJSON(types)
 
 	returnTemplate(w, r, "stats", t)
 }
@@ -52,6 +77,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 type statsTemplate struct {
 	GlobalTemplate
 	Scores string
+	Types  string
 }
 
 func (s *statsTemplate) setScoresJSON(scores []appScore) {
@@ -70,7 +96,20 @@ func (s *statsTemplate) setScoresJSON(scores []appScore) {
 	s.Scores = string(bytes)
 }
 
+func (s *statsTemplate) setTypesJSON(scores []appType) {
+
+	bytes, err := json.Marshal(scores)
+	logging.Error(err)
+
+	s.Types = string(bytes)
+}
+
 type appScore struct {
 	Score int
+	Count int
+}
+
+type appType struct {
+	Type  string
 	Count int
 }
