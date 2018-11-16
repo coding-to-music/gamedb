@@ -78,6 +78,10 @@ type chatWebsocketPayload struct {
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Template
+	t := chatTemplate{}
+	t.Fill(w, r, "Chat")
+
 	setNoCacheHeaders(w)
 
 	// Get ID from URL
@@ -85,12 +89,12 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	if id == "" {
 		id = generalChannelID
 	}
+	t.ChannelID = id
 
 	//
 	var wg sync.WaitGroup
 
 	// Get channels
-	var channels []*discordgo.Channel
 	wg.Add(1)
 	go func() {
 
@@ -101,9 +105,11 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 			if v.Type == discordgo.ChannelTypeGuildText {
 
 				// Fix channel name
-				v.Name = strings.Title(strings.Replace(v.Name, "-", " ", 1))
+				v.Name = strings.Replace(v.Name, "-", " ", 1)
+				v.Name = strings.Replace(v.Name, "db", "DB", 1)
+				v.Name = strings.Title(v.Name)
 
-				channels = append(channels, v)
+				t.Channels = append(t.Channels, v)
 			}
 		}
 
@@ -112,7 +118,6 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get messages
-	var messages []*discordgo.Message
 	wg.Add(1)
 	go func() {
 
@@ -121,7 +126,23 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, v := range messagesResponse {
 			if !v.Author.Bot && v.Type == discordgo.MessageTypeDefault {
-				messages = append(messages, v)
+				t.Messages = append(t.Messages, v)
+			}
+		}
+
+		wg.Done()
+	}()
+
+	// Get members
+	wg.Add(1)
+	go func() {
+
+		membersResponse, err := discordSession.GuildMembers(guildID, "", 1000)
+		logging.Error(err)
+
+		for _, v := range membersResponse {
+			if !v.User.Bot {
+				t.Members = append(t.Members, v)
 			}
 		}
 
@@ -131,19 +152,13 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	// Template
-	t := chatTemplate{}
-	t.Fill(w, r, "Chat")
-	t.Channels = channels
-	t.Messages = messages
-	t.ChannelID = id
-
 	returnTemplate(w, r, "chat", t)
 }
 
 type chatTemplate struct {
 	GlobalTemplate
+	ChannelID string
 	Channels  []*discordgo.Channel
 	Messages  []*discordgo.Message
-	ChannelID string // Selected channel
+	Members   []*discordgo.Member
 }
