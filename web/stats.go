@@ -40,7 +40,6 @@ func StatsScoresHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Table("apps")
 		gorm = gorm.Where("reviews_score > ?", 0)
 		gorm = gorm.Group("FLOOR(reviews_score)")
-		//gorm = gorm.Order("reviews_score ASC")
 		gorm = gorm.Find(&scores)
 
 		logging.Error(gorm.Error)
