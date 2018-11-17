@@ -3,7 +3,9 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 
+	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 )
@@ -78,7 +80,7 @@ func StatsTypesHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Select([]string{"type", "count(type) as count"})
 		gorm = gorm.Table("apps")
 		gorm = gorm.Group("type")
-		gorm = gorm.Order("count asc")
+		gorm = gorm.Order("count desc")
 		gorm = gorm.Find(&types)
 
 		logging.Error(gorm.Error)
@@ -107,30 +109,46 @@ func StatsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	var types []appType
-	gorm, err := db.GetMySQLClient()
+	var ranks []db.PlayerRank
+
+	client, ctx, err := db.GetDSClient()
+
+	q := datastore.NewQuery(db.KindPlayerRank)
+
+	_, err = client.GetAll(ctx, q, &ranks)
 	if err != nil {
-
 		logging.Error(err)
+	}
 
-	} else {
+	// Tally up
+	tally := map[string]int{}
+	for _, v := range ranks {
+		if _, ok := tally[v.CountryCode]; ok {
+			tally[v.CountryCode]++
+		} else {
+			tally[v.CountryCode] = 1
+		}
+	}
 
-		gorm = gorm.Select([]string{"type", "count(type) as count"})
-		gorm = gorm.Table("apps")
-		gorm = gorm.Group("type")
-		gorm = gorm.Order("count asc")
-		gorm = gorm.Find(&types)
-
-		logging.Error(gorm.Error)
+	// Filter
+	for k, v := range tally {
+		if v < 10 {
+			delete(tally, k)
+		}
 	}
 
 	var ret [][]interface{}
 
-	for _, v := range types {
-		app := db.App{}
-		app.Type = v.Type
-		ret = append(ret, []interface{}{app.GetType(), v.Count})
+	for k, v := range tally {
+		if k == "" {
+			k = "?"
+		}
+		ret = append(ret, []interface{}{k, v})
 	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i][1].(int) > ret[j][1].(int)
+	})
 
 	bytes, err := json.Marshal(ret)
 	logging.Error(err)

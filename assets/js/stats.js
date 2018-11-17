@@ -19,7 +19,8 @@ if ($('#stats-page').length > 0) {
         xAxis: {
             title: {
                 text: ''
-            }
+            },
+            type: 'category'
         },
         yAxis: {
             title: {
@@ -46,7 +47,6 @@ if ($('#stats-page').length > 0) {
             Highcharts.chart('scores', $.extend(true, {}, columnDefaults, {
                 xAxis: {
                     tickInterval: 5,
-                    type: 'category',
                 },
                 tooltip: {
                     formatter: function () {
@@ -80,7 +80,6 @@ if ($('#stats-page').length > 0) {
 
             Highcharts.chart('types', $.extend(true, {}, columnDefaults, {
                 xAxis: {
-                    type: 'category',
                     labels: {
                         rotation: -20,
                     }
@@ -102,6 +101,34 @@ if ($('#stats-page').length > 0) {
                             }
                         }
                     }
+                },
+                series: [{
+                    data: data,
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function () {
+                            return this.y.toLocaleString();
+                        }
+                    }
+                }]
+            }));
+        },
+        dataType: 'json'
+    });
+
+    $.ajax({
+        type: "GET",
+        url: '/stats/ranked-countries',
+        success: function (data, textStatus, jqXHR) {
+
+            Highcharts.chart('countries', $.extend(true, {}, columnDefaults, {
+                xAxis: {
+                    tickInterval: 1,
+                },
+                tooltip: {
+                    formatter: function () {
+                        return this.y + ' ' + this.key + ' players';
+                    },
                 },
                 series: [{
                     data: data,
