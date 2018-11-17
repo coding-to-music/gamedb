@@ -127,6 +127,9 @@ func Serve() error {
 	r.Get("/sitemap.xml", SiteMapHandler)
 	r.Get("/site.webmanifest", RootFileHandler)
 	r.Get("/stats", StatsHandler)
+	r.Get("/stats/app-scores", StatsScoresHandler)
+	r.Get("/stats/app-types", StatsTypesHandler)
+	r.Get("/stats/ranked-countries", StatsCountriesHandler)
 	r.Get("/tags", StatsTagsHandler)
 	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
 
@@ -262,7 +265,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var tags []string
 			for _, v := range a {
-				tags = append(tags, "<a class=\"badge badge-success\" href=\"/games#tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
+				tags = append(tags, "<a class=\"badge badge-success\" href=\"/games?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
 			}
 			return template.HTML(strings.Join(tags, " "))
 		},
@@ -274,7 +277,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var genres []string
 			for _, v := range a {
-				genres = append(genres, "<a class=\"badge badge-success\" href=\"/games#genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
+				genres = append(genres, "<a class=\"badge badge-success\" href=\"/games?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
 			}
 			return template.HTML(strings.Join(genres, " "))
 		},

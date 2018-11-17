@@ -4,18 +4,21 @@
 
     <div class="jumbotron">
         <h1 class="display-4"><i class="fas fa-chart-bar"></i> Stats</h1>
+        <p class="lead">{{ .Description }}</p>
     </div>
 
     <div class="card">
     {{ template "_stats_header" . }}
         <div class="card-body">
 
-            <h5>Game review scores</h5>
-            <script>
-                const scores = JSON.parse('{{ .Scores }}');
-                const types = JSON.parse('{{ .Types }}');
-            </script>
+            <h5>App Scores</h5>
             <div id="scores"></div>
+
+            <h5>App Types</h5>
+            <div id="types"></div>
+
+            <h5>Ranked Player Countries</h5>
+            <div id="countries"></div>
 
         </div>
     </div>

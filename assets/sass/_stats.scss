@@ -1,5 +1,17 @@
 #stats-page {
+
     #scores {
-        height: 200px;
+        height: 300px;
+        @extend .mb-3;
+    }
+
+    #types {
+        height: 300px;
+        @extend .mb-3;
+    }
+
+    #countries {
+        height: 300px;
+        //@extend .mb-3;
     }
 }
