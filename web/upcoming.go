@@ -48,7 +48,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm = gorm.Model(db.App{})
 		gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
-		gorm = gorm.Order("release_date_unix desc")
+		gorm = gorm.Order("release_date_unix asc")
 		gorm = gorm.Where("release_date_unix > ?", time.Now().Unix())
 
 		// Count before limitting
