@@ -126,10 +126,7 @@ func Serve() error {
 	r.Get("/settings/ajax/events", SettingsEventsAjaxHandler)
 	r.Get("/sitemap.xml", SiteMapHandler)
 	r.Get("/site.webmanifest", RootFileHandler)
-	r.Get("/stats", StatsHandler)
-	r.Get("/stats/app-scores", StatsScoresHandler)
-	r.Get("/stats/app-types", StatsTypesHandler)
-	r.Get("/stats/ranked-countries", StatsCountriesHandler)
+	r.Mount("/stats", statsRouter())
 	r.Get("/tags", StatsTagsHandler)
 	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
 

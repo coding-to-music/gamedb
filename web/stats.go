@@ -8,7 +8,17 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
+	"github.com/go-chi/chi"
 )
+
+func statsRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", StatsHandler)
+	r.Get("/app-scores", StatsScoresHandler)
+	r.Get("/app-types", StatsTypesHandler)
+	r.Get("/ranked-countries", StatsCountriesHandler)
+	return r
+}
 
 func StatsHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -140,7 +150,7 @@ func StatsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	for k, v := range tally {
 		if k == "" {
-			k = "?"
+			k = "??"
 		}
 		ret = append(ret, []interface{}{k, v})
 	}
