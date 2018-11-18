@@ -15,7 +15,14 @@ const (
 	chunkRows = 100
 )
 
-func ExperienceHandler(w http.ResponseWriter, r *http.Request) {
+func experienceRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", experienceHandler)
+	r.Get("/{id}", experienceHandler)
+	return r
+}
+
+func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
 	var rows []level
 	xp := 0

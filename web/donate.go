@@ -2,7 +2,7 @@ package web
 
 import "net/http"
 
-func DonateHandler(w http.ResponseWriter, r *http.Request) {
+func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := GlobalTemplate{}
 	t.Fill(w, r, "Donate")

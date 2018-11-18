@@ -13,14 +13,14 @@ import (
 
 func statsRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", StatsHandler)
-	r.Get("/app-scores", StatsScoresHandler)
-	r.Get("/app-types", StatsTypesHandler)
-	r.Get("/ranked-countries", StatsCountriesHandler)
+	r.Get("/", statsHandler)
+	r.Get("/app-scores", statsScoresHandler)
+	r.Get("/app-types", statsTypesHandler)
+	r.Get("/ranked-countries", statsCountriesHandler)
 	return r
 }
 
-func StatsHandler(w http.ResponseWriter, r *http.Request) {
+func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := statsTemplate{}
@@ -34,7 +34,7 @@ type statsTemplate struct {
 	GlobalTemplate
 }
 
-func StatsScoresHandler(w http.ResponseWriter, r *http.Request) {
+func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -74,7 +74,7 @@ type appScore struct {
 	Count int
 }
 
-func StatsTypesHandler(w http.ResponseWriter, r *http.Request) {
+func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -114,7 +114,7 @@ type appType struct {
 	Count int
 }
 
-func StatsCountriesHandler(w http.ResponseWriter, r *http.Request) {
+func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 

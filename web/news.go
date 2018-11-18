@@ -8,7 +8,7 @@ import (
 	"github.com/gamedb/website/logging"
 )
 
-func NewsHandler(w http.ResponseWriter, r *http.Request) {
+func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newsTemplate{}
 	t.Fill(w, r, "News")
@@ -21,7 +21,7 @@ type newsTemplate struct {
 	GlobalTemplate
 }
 
-func NewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	query.FillFromURL(r.URL.Query())

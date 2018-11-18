@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func RootFileHandler(w http.ResponseWriter, r *http.Request) {
+func rootFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := ioutil.ReadFile(viper.GetString("PATH") + r.URL.Path)
 	if err != nil {

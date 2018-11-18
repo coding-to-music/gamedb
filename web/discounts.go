@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func DiscountsHandler(w http.ResponseWriter, r *http.Request) {
+func discountsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := discountsTemplate{}
 	t.Fill(w, r, "Discounts")

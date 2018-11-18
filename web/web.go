@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
@@ -59,6 +58,7 @@ func middlewareTime(next http.Handler) http.Handler {
 func Serve() error {
 
 	r := chi.NewRouter()
+
 	r.Use(middlewareTime)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.DefaultCompress)
@@ -69,65 +69,40 @@ func Serve() error {
 		r.Use(middlewareLog)
 	}
 
-	r.Get("/", HomeHandler)
 	r.Mount("/admin", adminRouter())
-	r.Get("/browserconfig.xml", RootFileHandler)
-	r.Get("/changes", ChangesHandler)
-	r.Get("/changes/ajax", ChangesAjaxHandler)
-	r.Get("/changes/{id}", ChangeHandler)
-	r.Get("/chat", ChatHandler)
-	r.Get("/chat/{id}", ChatHandler)
-	r.Get("/commits", CommitsHandler)
-	r.Get("/contact", ContactHandler)
-	r.Post("/contact", PostContactHandler)
-	r.Get("/coop", CoopHandler)
-	r.Get("/discounts", DiscountsHandler)
-	r.Get("/developers", StatsDevelopersHandler)
-	r.Get("/donate", DonateHandler)
-	r.Get("/esi/header", HeaderHandler)
-	r.Get("/experience", ExperienceHandler)
-	r.Get("/experience/{id}", ExperienceHandler)
-	r.Get("/free-games", FreeGamesHandler)
-	r.Get("/free-games/ajax", FreeGamesAjaxHandler)
-	r.Get("/games", AppsHandler)
-	r.Get("/games/ajax", AppsAjaxHandler)
-	r.Get("/games/{id}", AppHandler)
-	r.Get("/games/{id}/ajax/news", AppNewsAjaxHandler)
-	r.Get("/games/{id}/{slug}", AppHandler)
-	r.Get("/health-check", HealthCheckHandler)
-	r.Get("/genres", StatsGenresHandler)
-	r.Get("/info", InfoHandler)
-	r.Get("/login", LoginHandler)
-	r.Post("/login", LoginPostHandler)
-	r.Get("/login/openid", LoginOpenIDHandler)
-	r.Get("/login/callback", LoginCallbackHandler)
-	r.Get("/logout", LogoutHandler)
-	r.Get("/news", NewsHandler)
-	r.Get("/news/ajax", NewsAjaxHandler)
-	r.Get("/packages", PackagesHandler)
-	r.Get("/packages/ajax", PackagesAjaxHandler)
-	r.Get("/packages/{id}", PackageHandler)
-	r.Get("/packages/{id}/{slug}", PackageHandler)
-	r.Get("/players", PlayersHandler)
-	r.Post("/players", PlayerIDHandler)
-	r.Get("/players/ajax", PlayersAjaxHandler)
-	r.Get("/players/{id:[0-9]+}", PlayerHandler)
-	r.Get("/players/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
-	r.Get("/players/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
-	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
-	r.Get("/price-changes", PriceChangesHandler)
-	r.Get("/price-changes/ajax", PriceChangesAjaxHandler)
-	r.Get("/publishers", StatsPublishersHandler)
-	r.Get("/queues", QueuesHandler)
-	r.Get("/queues/queues.json", QueuesJSONHandler)
-	r.Get("/robots.txt", RootFileHandler)
-	r.Get("/settings", SettingsHandler)
-	r.Post("/settings", SettingsPostHandler)
-	r.Get("/settings/ajax/events", SettingsEventsAjaxHandler)
-	r.Get("/sitemap.xml", SiteMapHandler)
-	r.Get("/site.webmanifest", RootFileHandler)
+	r.Mount("/changes", changesRouter())
+	r.Mount("/chat", chatRouter())
+	r.Mount("/contact", contactRouter())
+	r.Mount("/experience", experienceRouter())
+	r.Mount("/free-games", freeGamesRouter())
+	r.Mount("/games", gamesRouter())
+	r.Mount("/login", loginRouter())
+	r.Mount("/packages", packagesRouter())
+	r.Mount("/players", playersRouter())
+	r.Mount("/price-changes", priceChangeRouter())
+	r.Mount("/queues", queuesRouter())
+	r.Mount("/settings", settingsRouter())
 	r.Mount("/stats", statsRouter())
-	r.Get("/tags", StatsTagsHandler)
+	r.Mount("/upcoming", upcomingRouter())
+	r.Get("/", homeHandler)
+	r.Get("/browserconfig.xml", rootFileHandler)
+	r.Get("/commits", commitsHandler)
+	r.Get("/coop", coopHandler)
+	r.Get("/discounts", discountsHandler)
+	r.Get("/developers", statsDevelopersHandler)
+	r.Get("/donate", donateHandler)
+	r.Get("/esi/header", headerHandler)
+	r.Get("/health-check", healthCheckHandler)
+	r.Get("/genres", statsGenresHandler)
+	r.Get("/info", infoHandler)
+	r.Get("/logout", logoutHandler)
+	r.Get("/news", newsHandler)
+	r.Get("/news/ajax", newsAjaxHandler)
+	r.Get("/publishers", statsPublishersHandler)
+	r.Get("/robots.txt", rootFileHandler)
+	r.Get("/sitemap.xml", siteMapHandler)
+	r.Get("/site.webmanifest", rootFileHandler)
+	r.Get("/tags", statsTagsHandler)
 	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
 
 	// File server
@@ -139,14 +114,42 @@ func Serve() error {
 	return http.ListenAndServe("0.0.0.0:"+viper.GetString("PORT"), r)
 }
 
-func adminRouter() http.Handler {
+func playersRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Use(basicauth.New("Steam", map[string][]string{
-		viper.GetString("ADMIN_USER"): {viper.GetString("ADMIN_PASS")},
-	}))
-	r.Get("/", AdminHandler)
-	r.Get("/{option}", AdminHandler)
-	r.Post("/{option}", AdminHandler)
+	r.Get("/players", PlayersHandler)
+	r.Post("/players", PlayerIDHandler)
+	r.Get("/players/ajax", PlayersAjaxHandler)
+	r.Get("/players/{id:[0-9]+}", PlayerHandler)
+	r.Get("/players/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
+	r.Get("/players/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
+	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
+	return r
+}
+
+func gamesRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/games", AppsHandler)
+	r.Get("/games/ajax", AppsAjaxHandler)
+	r.Get("/games/{id}", AppHandler)
+	r.Get("/games/{id}/ajax/news", AppNewsAjaxHandler)
+	r.Get("/games/{id}/{slug}", AppHandler)
+	return r
+}
+
+func changesRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/changes", ChangesHandler)
+	r.Get("/changes/ajax", ChangesAjaxHandler)
+	r.Get("/changes/{id}", ChangeHandler)
+	return r
+}
+
+func packagesRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/packages", PackagesHandler)
+	r.Get("/packages/ajax", PackagesAjaxHandler)
+	r.Get("/packages/{id}", PackageHandler)
+	r.Get("/packages/{id}/{slug}", PackageHandler)
 	return r
 }
 

@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/website/logging"
 )
 
-func StatsGenresHandler(w http.ResponseWriter, r *http.Request) {
+func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfGenresUpdated)

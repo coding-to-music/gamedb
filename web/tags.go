@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/website/logging"
 )
 
-func StatsTagsHandler(w http.ResponseWriter, r *http.Request) {
+func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfTagsUpdated)

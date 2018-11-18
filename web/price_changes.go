@@ -9,9 +9,17 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
+	"github.com/go-chi/chi"
 )
 
-func PriceChangesHandler(w http.ResponseWriter, r *http.Request) {
+func priceChangeRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/price-changes", priceChangesHandler)
+	r.Get("/price-changes/ajax", priceChangesAjaxHandler)
+	return r
+}
+
+func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := priceChangesTemplate{}
 	t.Fill(w, r, "Price Changes")
@@ -24,7 +32,7 @@ type priceChangesTemplate struct {
 	GlobalTemplate
 }
 
-func PriceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 

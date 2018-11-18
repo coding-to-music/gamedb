@@ -14,7 +14,7 @@ const (
 	maxPlayers = 4
 )
 
-func CoopHandler(w http.ResponseWriter, r *http.Request) {
+func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get player ints
 	var playerInts []int64

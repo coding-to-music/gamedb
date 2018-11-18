@@ -12,10 +12,18 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
+	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
 )
 
-func QueuesHandler(w http.ResponseWriter, r *http.Request) {
+func queuesRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/queues", queuesHandler)
+	r.Get("/queues/queues.json", queuesJSONHandler)
+	return r
+}
+
+func queuesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := queuesTemplate{}
 	t.Fill(w, r, "Queues")
@@ -28,7 +36,7 @@ type queuesTemplate struct {
 	GlobalTemplate
 }
 
-func QueuesJSONHandler(w http.ResponseWriter, r *http.Request) {
+func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	queuesResp, err := GetQeueus()
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 	"github.com/gamedb/website/logging"
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeTemplate{}
 	t.Fill(w, r, "Home")

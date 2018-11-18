@@ -27,7 +27,7 @@ func InitCommits() {
 	githubClient = github.NewClient(tc)
 }
 
-func CommitsHandler(w http.ResponseWriter, r *http.Request) {
+func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	options := github.CommitsListOptions{
 		ListOptions: github.ListOptions{

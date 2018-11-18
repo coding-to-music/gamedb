@@ -7,10 +7,18 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
+	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/spf13/viper"
 )
+
+func contactRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/contact", ContactHandler)
+	r.Post("/contact", PostContactHandler)
+	return r
+}
 
 func ContactHandler(w http.ResponseWriter, r *http.Request) {
 

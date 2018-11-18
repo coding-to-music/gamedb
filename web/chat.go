@@ -38,6 +38,13 @@ func InitChat() {
 	}
 }
 
+func chatRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/chat", ChatHandler)
+	r.Get("/chat/{id}", ChatHandler)
+	return r
+}
+
 func connectToDiscord() error {
 
 	var err error

@@ -32,7 +32,7 @@ var pages = []string{
 	"/tags",
 }
 
-func SiteMapHandler(w http.ResponseWriter, r *http.Request) {
+func siteMapHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := stm.NewSitemap(1)
 	sm.SetDefaultHost("https://gamedb.online/")

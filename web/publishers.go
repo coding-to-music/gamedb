@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/website/logging"
 )
 
-func StatsPublishersHandler(w http.ResponseWriter, r *http.Request) {
+func statsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfPublishersUpdated)

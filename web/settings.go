@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
+	"github.com/go-chi/chi"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,7 +21,15 @@ var (
 	errNotLoggedIn = errors.New("not logged in")
 )
 
-func SettingsHandler(w http.ResponseWriter, r *http.Request) {
+func settingsRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/settings", settingsHandler)
+	r.Post("/settings", settingsPostHandler)
+	r.Get("/settings/ajax/events", settingsEventsAjaxHandler)
+	return r
+}
+
+func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	player, err := getPlayer(r)
 	if err != nil {
@@ -124,7 +133,7 @@ type settingsTemplate struct {
 	Countries [][]string
 }
 
-func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
+func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get user
 	user, err := getUser(r, 0)
@@ -198,7 +207,7 @@ func SettingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", 302)
 }
 
-func SettingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	query.FillFromURL(r.URL.Query())

@@ -10,9 +10,17 @@ import (
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/session"
+	"github.com/go-chi/chi"
 )
 
-func FreeGamesHandler(w http.ResponseWriter, r *http.Request) {
+func freeGamesRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/free-games", freeGamesHandler)
+	r.Get("/free-games/ajax", freeGamesAjaxHandler)
+	return r
+}
+
+func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
@@ -82,7 +90,7 @@ func (f freeGameType) GetCount() string {
 	return humanize.Comma(int64(f.Count))
 }
 
-func FreeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	query.FillFromURL(r.URL.Query())

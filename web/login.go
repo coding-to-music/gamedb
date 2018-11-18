@@ -12,10 +12,20 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
+	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func loginRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/login", LoginHandler)
+	r.Post("/login", LoginPostHandler)
+	r.Get("/login/openid", LoginOpenIDHandler)
+	r.Get("/login/callback", LoginCallbackHandler)
+	return r
+}
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -231,7 +241,7 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 	return nil
 }
 
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := getPlayerIDFromSession(r)
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)
