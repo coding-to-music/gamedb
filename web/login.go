@@ -20,10 +20,10 @@ import (
 
 func loginRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/login", LoginHandler)
-	r.Post("/login", LoginPostHandler)
-	r.Get("/login/openid", LoginOpenIDHandler)
-	r.Get("/login/callback", LoginCallbackHandler)
+	r.Get("/", LoginHandler)
+	r.Post("/", LoginPostHandler)
+	r.Get("/openid", LoginOpenIDHandler)
+	r.Get("/callback", LoginCallbackHandler)
 	return r
 }
 

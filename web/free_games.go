@@ -15,8 +15,8 @@ import (
 
 func freeGamesRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/free-games", freeGamesHandler)
-	r.Get("/free-games/ajax", freeGamesAjaxHandler)
+	r.Get("/", freeGamesHandler)
+	r.Get("/ajax", freeGamesAjaxHandler)
 	return r
 }
 

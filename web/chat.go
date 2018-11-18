@@ -40,8 +40,8 @@ func InitChat() {
 
 func chatRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/chat", ChatHandler)
-	r.Get("/chat/{id}", ChatHandler)
+	r.Get("/", ChatHandler)
+	r.Get("/{id}", ChatHandler)
 	return r
 }
 

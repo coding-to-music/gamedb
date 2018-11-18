@@ -15,8 +15,8 @@ import (
 
 func contactRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/contact", ContactHandler)
-	r.Post("/contact", PostContactHandler)
+	r.Get("/", ContactHandler)
+	r.Post("/", PostContactHandler)
 	return r
 }
 

@@ -116,40 +116,40 @@ func Serve() error {
 
 func playersRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/players", PlayersHandler)
-	r.Post("/players", PlayerIDHandler)
-	r.Get("/players/ajax", PlayersAjaxHandler)
-	r.Get("/players/{id:[0-9]+}", PlayerHandler)
-	r.Get("/players/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
-	r.Get("/players/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
-	r.Get("/players/{id:[0-9]+}/{slug}", PlayerHandler)
+	r.Get("/", PlayersHandler)
+	r.Post("/", PlayerIDHandler)
+	r.Get("/ajax", PlayersAjaxHandler)
+	r.Get("/{id:[0-9]+}", PlayerHandler)
+	r.Get("/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
+	r.Get("/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
+	r.Get("/{id:[0-9]+}/{slug}", PlayerHandler)
 	return r
 }
 
 func gamesRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/games", AppsHandler)
-	r.Get("/games/ajax", AppsAjaxHandler)
-	r.Get("/games/{id}", AppHandler)
-	r.Get("/games/{id}/ajax/news", AppNewsAjaxHandler)
-	r.Get("/games/{id}/{slug}", AppHandler)
+	r.Get("/", AppsHandler)
+	r.Get("/ajax", AppsAjaxHandler)
+	r.Get("/{id}", AppHandler)
+	r.Get("/{id}/ajax/news", AppNewsAjaxHandler)
+	r.Get("/{id}/{slug}", AppHandler)
 	return r
 }
 
 func changesRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/changes", ChangesHandler)
-	r.Get("/changes/ajax", ChangesAjaxHandler)
-	r.Get("/changes/{id}", ChangeHandler)
+	r.Get("/", ChangesHandler)
+	r.Get("/ajax", ChangesAjaxHandler)
+	r.Get("/{id}", ChangeHandler)
 	return r
 }
 
 func packagesRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/packages", PackagesHandler)
-	r.Get("/packages/ajax", PackagesAjaxHandler)
-	r.Get("/packages/{id}", PackageHandler)
-	r.Get("/packages/{id}/{slug}", PackageHandler)
+	r.Get("/", PackagesHandler)
+	r.Get("/ajax", PackagesAjaxHandler)
+	r.Get("/{id}", PackageHandler)
+	r.Get("/{id}/{slug}", PackageHandler)
 	return r
 }
 
