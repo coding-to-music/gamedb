@@ -63,7 +63,14 @@ $dataTables.each(function (i) {
                 "targets": disabled,
                 "orderable": false
             }
-        ]
+        ],
+        "drawCallback": function (settings, json) {
+
+            const api = this.api();
+            if (api.page.info().pages <= 1) {
+                $('.dt-pagination').hide();
+            }
+        }
     });
 
 });
@@ -122,6 +129,12 @@ const dtDefaultOptions = {
         "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
     },
     "drawCallback": function (settings, json) {
+
+        const api = this.api();
+        if (api.page.info().pages <= 1) {
+            $('.dt-pagination').hide();
+        }
+
         $(".paginate_button > a").on("focus", function () {
             $(this).blur(); // Fixes scrolling to pagination on every click
         });
