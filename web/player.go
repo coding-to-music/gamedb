@@ -317,10 +317,7 @@ func queuePlayer(r *http.Request, checkPlayer db.Player, queuePlayer int64, upda
 	timeLeft, err := checkPlayer.ShouldUpdate(r, updateType)
 	if err == nil {
 
-		message := queue.RabbitMessageProfile{}
-		message.Fill(r, queuePlayer, updateType)
-
-		err = queue.Produce(queue.QueueProfiles, message.ToBytes())
+		err = queue.Produce(queue.QueueProfiles, []byte(strconv.FormatInt(queuePlayer, 10)))
 		if err == nil {
 
 			memcacheItem := memcache.PlayerRefreshed(queuePlayer)

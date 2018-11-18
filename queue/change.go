@@ -15,29 +15,6 @@ type RabbitMessageChanges struct {
 	PICSChanges RabbitMessageChangesPICS `json:"PICSChanges"`
 }
 
-type RabbitMessageChangesPICS struct {
-	LastChangeNumber    int  `json:"LastChangeNumber"`
-	CurrentChangeNumber int  `json:"CurrentChangeNumber"`
-	RequiresFullUpdate  bool `json:"RequiresFullUpdate"`
-	PackageChanges      map[string]struct {
-		ID           int  `json:"ID"`
-		ChangeNumber int  `json:"ChangeNumber"`
-		NeedsToken   bool `json:"NeedsToken"`
-	} `json:"PackageChanges"`
-	AppChanges map[string]struct {
-		ID           int  `json:"ID"`
-		ChangeNumber int  `json:"ChangeNumber"`
-		NeedsToken   bool `json:"NeedsToken"`
-	} `json:"AppChanges"`
-	JobID struct {
-		SequentialCount int    `json:"SequentialCount"`
-		StartTime       string `json:"StartTime"`
-		ProcessID       int    `json:"ProcessID"`
-		BoxID           int    `json:"BoxID"`
-		Value           int64  `json:"Value"`
-	} `json:"JobID"`
-}
-
 func (d RabbitMessageChanges) getQueueName() string {
 	return QueueChangesData
 }
@@ -157,4 +134,27 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	return true, false, nil
+}
+
+type RabbitMessageChangesPICS struct {
+	LastChangeNumber    int  `json:"LastChangeNumber"`
+	CurrentChangeNumber int  `json:"CurrentChangeNumber"`
+	RequiresFullUpdate  bool `json:"RequiresFullUpdate"`
+	PackageChanges      map[string]struct {
+		ID           int  `json:"ID"`
+		ChangeNumber int  `json:"ChangeNumber"`
+		NeedsToken   bool `json:"NeedsToken"`
+	} `json:"PackageChanges"`
+	AppChanges map[string]struct {
+		ID           int  `json:"ID"`
+		ChangeNumber int  `json:"ChangeNumber"`
+		NeedsToken   bool `json:"NeedsToken"`
+	} `json:"AppChanges"`
+	JobID struct {
+		SequentialCount int    `json:"SequentialCount"`
+		StartTime       string `json:"StartTime"`
+		ProcessID       int    `json:"ProcessID"`
+		BoxID           int    `json:"BoxID"`
+		Value           int64  `json:"Value"`
+	} `json:"JobID"`
 }

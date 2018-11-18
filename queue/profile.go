@@ -12,20 +12,7 @@ import (
 )
 
 type RabbitMessageProfile struct {
-	Time       time.Time
-	PlayerID   int64
-	UserAgent  string
-	RemoteAddr string
-	UpdateType db.UpdateType
-}
-
-func (d *RabbitMessageProfile) Fill(r *http.Request, playerID int64, updateType db.UpdateType) {
-
-	d.Time = time.Now()
-	d.PlayerID = playerID
-	d.UserAgent = r.Header.Get("User-Agent")
-	d.RemoteAddr = r.RemoteAddr
-	d.UpdateType = updateType
+	ProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
 }
 
 func (d *RabbitMessageProfile) ToBytes() []byte {
@@ -52,8 +39,11 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, false, err
 	}
 
+	var ID = message.ProfileInfo.SteamID.AccountID
+
 	// Update player
-	player, err := db.GetPlayer(int64(message.PlayerID))
+	player, err := db.GetPlayer(ID)
+	player.PlayerID = ID
 	if err != nil {
 		if err != db.ErrNoSuchEntity {
 			logging.Error(err)
@@ -72,4 +62,41 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	return true, false, nil
+}
+
+type RabbitMessageProfilePICS struct {
+	Result  int `json:"Result"`
+	SteamID struct {
+		IsBlankAnonAccount            bool  `json:"IsBlankAnonAccount"`
+		IsGameServerAccount           bool  `json:"IsGameServerAccount"`
+		IsPersistentGameServerAccount bool  `json:"IsPersistentGameServerAccount"`
+		IsAnonGameServerAccount       bool  `json:"IsAnonGameServerAccount"`
+		IsContentServerAccount        bool  `json:"IsContentServerAccount"`
+		IsClanAccount                 bool  `json:"IsClanAccount"`
+		IsChatAccount                 bool  `json:"IsChatAccount"`
+		IsLobby                       bool  `json:"IsLobby"`
+		IsIndividualAccount           bool  `json:"IsIndividualAccount"`
+		IsAnonAccount                 bool  `json:"IsAnonAccount"`
+		IsAnonUserAccount             bool  `json:"IsAnonUserAccount"`
+		IsConsoleUserAccount          bool  `json:"IsConsoleUserAccount"`
+		IsValid                       bool  `json:"IsValid"`
+		AccountID                     int64 `json:"AccountID"`
+		AccountInstance               int   `json:"AccountInstance"`
+		AccountType                   int   `json:"AccountType"`
+		AccountUniverse               int   `json:"AccountUniverse"`
+	} `json:"SteamID"`
+	TimeCreated time.Time `json:"TimeCreated"`
+	RealName    string    `json:"RealName"`
+	CityName    string    `json:"CityName"`
+	StateName   string    `json:"StateName"`
+	CountryName string    `json:"CountryName"`
+	Headline    string    `json:"Headline"`
+	Summary     string    `json:"Summary"`
+	JobID       struct {
+		SequentialCount int    `json:"SequentialCount"`
+		StartTime       string `json:"StartTime"`
+		ProcessID       int    `json:"ProcessID"`
+		BoxID           int    `json:"BoxID"`
+		Value           int64  `json:"Value"`
+	} `json:"JobID"`
 }
