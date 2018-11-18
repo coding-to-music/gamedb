@@ -64,6 +64,7 @@ type App struct {
 	Platforms              string     `gorm:"not null;column:platforms;type:json"`
 	Publishers             string     `gorm:"not null;column:publishers;type:json"`
 	ReleaseDate            string     `gorm:"not null;column:release_date"`
+	ReleaseDateUnix        int64      `gorm:"not null;column:release_date_unix"`
 	ReleaseState           string     `gorm:"not null;column:release_state"`
 	Schema                 string     `gorm:"not null;column:schema;type:text"`
 	Screenshots            string     `gorm:"not null;column:screenshots;type:text"`
@@ -156,6 +157,20 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.ReviewsScore,
 		helpers.CurrencyFormat(app.GetPrice(code).Currency, app.GetPrice(code).Final),
 		app.UpdatedAt.Unix(),
+	}
+}
+
+func (app App) OutputForJSONComingSoon(code steam.CountryCode) (output []interface{}) {
+
+	return []interface{}{
+		app.ID,
+		app.GetName(),
+		app.GetIcon(),
+		app.GetPath(),
+		app.GetType(),
+		app.GetPrice(code).GetFinal(),
+		app.GetReleaseDateNice(),
+		app.GetReleaseDateUnix(),
 	}
 }
 
@@ -671,6 +686,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 		app.GameID = response.Data.Fullgame.AppID
 		app.GameName = response.Data.Fullgame.Name
 		app.ReleaseDate = response.Data.ReleaseDate.Date
+		app.ReleaseDateUnix = app.GetReleaseDateUnix() // Must be after setting app.ReleaseDate
 		app.ComingSoon = response.Data.ReleaseDate.ComingSoon
 
 		// todo, loop through all languages
