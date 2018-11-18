@@ -30,6 +30,7 @@ var pages = []string{
 	"/queues",
 	"/stats",
 	"/tags",
+	"/upcoming",
 }
 
 func siteMapHandler(w http.ResponseWriter, r *http.Request) {

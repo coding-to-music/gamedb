@@ -201,7 +201,10 @@ func (app App) GetReleaseDateNice() string {
 
 func (app App) GetReleaseDateUnix() int64 {
 
-	return helpers.GetReleaseDateUnix(app.ReleaseDate)
+	if app.ReleaseDateUnix == 0 {
+		return helpers.GetReleaseDateUnix(app.ReleaseDate)
+	}
+	return app.ReleaseDateUnix
 }
 
 func (app App) GetIcon() (ret string) {
