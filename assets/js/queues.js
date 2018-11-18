@@ -33,7 +33,7 @@ if ($('#queues-page').length > 0) {
                 cache: false,
                 dataType: 'json',
                 method: 'GET',
-                url: "/queues/queues.json",
+                url: "/queues/ajax",
                 success: function (data, status) {
                     $body.empty();
                     if (isIterable(data)) {

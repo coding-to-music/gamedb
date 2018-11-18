@@ -18,8 +18,8 @@ import (
 
 func queuesRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/queues", queuesHandler)
-	r.Get("/queues/queues.json", queuesJSONHandler)
+	r.Get("/", queuesHandler)
+	r.Get("/ajax", queuesJSONHandler)
 	return r
 }
 
