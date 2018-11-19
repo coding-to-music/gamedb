@@ -56,8 +56,8 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Queue profile for a refresh
 	// "Profile queued for an update!"
-	err = queuePlayer(r, player, player.PlayerID, db.PlayerUpdateAuto)
-	err = helpers.IgnoreErrors(err, db.ErrUpdatingBot, db.ErrUpdatingTooSoon)
+	err = queuePlayer(r, player, db.PlayerUpdateAuto)
+	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon)
 	logging.Error(err)
 
 	var wg sync.WaitGroup
@@ -75,19 +75,25 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Queue friends to be scanned
-		_, err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
-		if err == nil {
+		err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
+		if err != nil {
+			logging.Error(err)
+			return
+		}
 
-			for _, friend := range friends {
-				err = queuePlayer(r, player, friend.SteamID, db.PlayerUpdateFriends)
-				logging.Error(err)
-			}
+		for _, friend := range friends {
 
-			player.FriendsAddedAt = time.Now()
+			f := db.Player{}
+			f.PlayerID = friend.SteamID
 
-			err = player.Save() // todo, switch to update query so not to overwrite other player changes
+			err = queuePlayer(r, f, db.PlayerUpdateAuto)
 			logging.Error(err)
 		}
+
+		player.FriendsAddedAt = time.Now()
+
+		err = player.Save() // todo, switch to update query so not to overwrite other player changes
+		logging.Error(err)
 
 		wg.Done()
 
@@ -312,20 +318,18 @@ func (p playerRanksTemplate) GetFriendsPercent() string {
 	return p.formatPercent(p.Ranks.FriendsRank)
 }
 
-func queuePlayer(r *http.Request, checkPlayer db.Player, queuePlayer int64, updateType db.UpdateType) (err error) {
+func queuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (err error) {
 
-	timeLeft, err := checkPlayer.ShouldUpdate(r, updateType)
+	err = player.ShouldUpdate(r, updateType)
 	if err == nil {
 
-		err = queue.Produce(queue.QueueProfiles, []byte(strconv.FormatInt(queuePlayer, 10)))
+		err = queue.Produce(queue.QueueProfiles, []byte(strconv.FormatInt(player.PlayerID, 10)))
 		if err == nil {
 
-			memcacheItem := memcache.PlayerRefreshed(queuePlayer)
-			err = memcache.Set(memcacheItem.Key, memcacheItem.Value, int32(timeLeft))
+			err = memcache.SetItem(memcache.PlayerRefreshed(player.PlayerID))
+			logging.Error(err)
 		}
 	}
-
-	err = helpers.IgnoreErrors()
 
 	return err
 }
@@ -444,7 +448,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
-			_, err := player.ShouldUpdate(r, db.PlayerUpdateManual)
+			err := player.ShouldUpdate(r, db.PlayerUpdateManual)
 			if err != nil {
 
 				response = PlayersUpdateResponse{Message: "Player is up to date", Success: false}
@@ -459,7 +463,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 					response = PlayersUpdateResponse{Message: "Updating player", Success: true}
 				}
 
-				err = queuePlayer(r, player, player.PlayerID, db.PlayerUpdateManual)
+				err = queuePlayer(r, player, db.PlayerUpdateManual)
 				if err != nil {
 
 					response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}

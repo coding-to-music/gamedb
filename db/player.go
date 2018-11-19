@@ -27,9 +27,10 @@ const defaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
-	ErrUpdatingTooSoon   = errors.New("updating too soon")
-	ErrUpdatingBot       = errors.New("bots can't update")
-	ErrUpdatingInQueue   = errors.New("player is already in the queue")
+
+	ErrUpdatingPlayerTooSoon = errors.New("updating too soon")
+	ErrUpdatingPlayerBot     = errors.New("bots can't update")
+	ErrUpdatingPlayerInQueue = errors.New("player is already in the queue")
 )
 
 type Player struct {
@@ -274,17 +275,19 @@ const (
 	PlayerUpdateAdmin   UpdateType = "admin"
 )
 
-// todo, return bool not err?
-func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (timeLeft int64, err error) {
-
-	timeLeft = p.GetTimeToUpdate(updateType)
+func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (err error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
-		return timeLeft, ErrInvalidPlayerID
+		return ErrInvalidPlayerID
 	}
 
 	if helpers.IsBot(r.UserAgent()) {
-		return timeLeft, ErrUpdatingBot
+		return ErrUpdatingPlayerBot
+	}
+
+	timeLeft := p.GetTimeToUpdate(updateType)
+	if timeLeft > 0 {
+		return ErrUpdatingPlayerTooSoon
 	}
 
 	// Check if player is in queue
@@ -292,14 +295,10 @@ func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (timeLeft i
 	var inQueue string
 	memcache.Get(memcacheItem.Key, &inQueue)
 	if inQueue == string(memcacheItem.Value) {
-		return timeLeft, ErrUpdatingInQueue
+		return ErrUpdatingPlayerInQueue
 	}
 
-	if timeLeft > 0 {
-		return timeLeft, ErrUpdatingTooSoon
-	}
-
-	return timeLeft, nil
+	return nil
 }
 
 func (p *Player) Update() (err error) {
@@ -385,6 +384,9 @@ func (p *Player) Update() (err error) {
 		logging.Error(err)
 		wg.Done()
 	}(p)
+
+	err = memcache.Delete(memcache.PlayerRefreshed(p.PlayerID))
+	logging.Error(err)
 
 	// Wait
 	wg.Wait()

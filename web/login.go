@@ -194,7 +194,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get player if they're new
 	if player.PersonaName == "" {
-		err = queuePlayer(r, player, player.PlayerID, db.PlayerUpdateAuto)
+		err = queuePlayer(r, player, db.PlayerUpdateAuto)
 		logging.Error(err)
 	}
 

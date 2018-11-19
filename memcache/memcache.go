@@ -93,6 +93,10 @@ func Set(key string, value interface{}, expiration int32) error {
 	return client.Set(item)
 }
 
+func SetItem(item memcache.Item) error {
+	return Set(item.Key, item.Value, item.Expiration)
+}
+
 func GetSetInt(item memcache.Item, f func() (j int, err error)) (count int, err error) {
 
 	err = Get(item.Key, &count)

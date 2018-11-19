@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"errors"
 	"time"
 
 	"github.com/gamedb/website/db"
@@ -30,12 +31,21 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, false, err
 	}
 
+	if !message.ProfileInfo.SteamID.IsValid {
+		return false, false, errors.New("not valid account id")
+	}
+	if !message.ProfileInfo.SteamID.IsIndividualAccount {
+		return false, false, errors.New("not individual account id")
+	}
+
 	// Update player
 	player, err := db.GetPlayer(message.ProfileInfo.SteamID.AccountID)
 	err = helpers.IgnoreErrors(db.ErrNoSuchEntity)
 	if err != nil {
 		return false, true, err
 	}
+
+	// todo, do checks here too!!
 
 	player.PlayerID = message.ProfileInfo.SteamID.AccountID
 	player.RealName = message.ProfileInfo.RealName
