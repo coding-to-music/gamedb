@@ -242,3 +242,11 @@ func (s *rabbitMessageBase) IncrementAttempts() {
 
 	s.EndTime = s.StartTime.Add(time.Second * time.Duration(rounded))
 }
+
+type SteamKitJob struct {
+	SequentialCount int    `json:"SequentialCount"`
+	StartTime       string `json:"StartTime"`
+	ProcessID       int    `json:"ProcessID"`
+	BoxID           int    `json:"BoxID"`
+	Value           int64  `json:"Value"`
+}

@@ -85,18 +85,12 @@ type RabbitMessageProfilePICS struct {
 		AccountType                   int   `json:"AccountType"`
 		AccountUniverse               int   `json:"AccountUniverse"`
 	} `json:"SteamID"`
-	TimeCreated time.Time `json:"TimeCreated"`
-	RealName    string    `json:"RealName"`
-	CityName    string    `json:"CityName"`
-	StateName   string    `json:"StateName"`
-	CountryName string    `json:"CountryName"`
-	Headline    string    `json:"Headline"`
-	Summary     string    `json:"Summary"`
-	JobID       struct {
-		SequentialCount int    `json:"SequentialCount"`
-		StartTime       string `json:"StartTime"`
-		ProcessID       int    `json:"ProcessID"`
-		BoxID           int    `json:"BoxID"`
-		Value           int64  `json:"Value"`
-	} `json:"JobID"`
+	TimeCreated time.Time   `json:"TimeCreated"`
+	RealName    string      `json:"RealName"`
+	CityName    string      `json:"CityName"`
+	StateName   string      `json:"StateName"`
+	CountryName string      `json:"CountryName"`
+	Headline    string      `json:"Headline"`
+	Summary     string      `json:"Summary"`
+	JobID       SteamKitJob `json:"JobID"`
 }

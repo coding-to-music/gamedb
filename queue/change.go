@@ -150,11 +150,5 @@ type RabbitMessageChangesPICS struct {
 		ChangeNumber int  `json:"ChangeNumber"`
 		NeedsToken   bool `json:"NeedsToken"`
 	} `json:"AppChanges"`
-	JobID struct {
-		SequentialCount int    `json:"SequentialCount"`
-		StartTime       string `json:"StartTime"`
-		ProcessID       int    `json:"ProcessID"`
-		BoxID           int    `json:"BoxID"`
-		Value           int64  `json:"Value"`
-	} `json:"JobID"`
+	JobID SteamKitJob `json:"JobID"`
 }
