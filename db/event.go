@@ -84,7 +84,7 @@ func (event Event) GetIcon() string {
 }
 
 // Data array for datatables
-func (event Event) OutputForJSON(r *http.Request) (output []interface{}) {
+func (event Event) OutputForJSON(ip string) (output []interface{}) {
 
 	return []interface{}{
 		event.CreatedAt.Unix(),
@@ -93,7 +93,7 @@ func (event Event) OutputForJSON(r *http.Request) (output []interface{}) {
 		event.GetIP(""),
 		event.UserAgent,
 		event.GetUserAgentShort(),
-		event.GetIP(r.RemoteAddr),
+		event.GetIP(ip),
 		event.GetIcon(),
 	}
 }

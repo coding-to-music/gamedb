@@ -325,6 +325,8 @@ func queuePlayer(r *http.Request, checkPlayer db.Player, queuePlayer int64, upda
 		}
 	}
 
+	err = helpers.IgnoreErrors()
+
 	return err
 }
 

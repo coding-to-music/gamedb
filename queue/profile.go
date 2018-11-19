@@ -1,24 +1,15 @@
 package queue
 
 import (
-	"encoding/json"
-	"net/http"
 	"time"
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
 	"github.com/streadway/amqp"
 )
 
 type RabbitMessageProfile struct {
 	ProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
-}
-
-func (d *RabbitMessageProfile) ToBytes() []byte {
-	bytes, err := json.Marshal(d)
-	logging.Error(err)
-	return bytes
 }
 
 func (d RabbitMessageProfile) getQueueName() string {
@@ -39,29 +30,24 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, false, err
 	}
 
-	var ID = message.ProfileInfo.SteamID.AccountID
-
 	// Update player
-	player, err := db.GetPlayer(ID)
-	player.PlayerID = ID
+	player, err := db.GetPlayer(message.ProfileInfo.SteamID.AccountID)
+	err = helpers.IgnoreErrors(db.ErrNoSuchEntity)
 	if err != nil {
-		if err != db.ErrNoSuchEntity {
-			logging.Error(err)
-			return false, true, err
-		}
-	}
-
-	r := new(http.Request)
-	r.Header.Set("User-Agent", d.UserAgent)
-	r.RemoteAddr = d.RemoteAddr
-
-	err = player.Update(r, db.PlayerUpdateManual)
-	if err != nil {
-		logging.Error(err)
 		return false, true, err
 	}
 
-	return true, false, nil
+	player.PlayerID = message.ProfileInfo.SteamID.AccountID
+	player.RealName = message.ProfileInfo.RealName
+	player.StateCode = message.ProfileInfo.StateName
+	player.CountryCode = message.ProfileInfo.CountryName
+
+	err = player.Update()
+	if err != nil {
+		return false, true, err
+	}
+
+	return true, false, err
 }
 
 type RabbitMessageProfilePICS struct {

@@ -29,7 +29,7 @@ var (
 	ErrInvalidPlayerName = errors.New("invalid name")
 	ErrUpdatingTooSoon   = errors.New("updating too soon")
 	ErrUpdatingBot       = errors.New("bots can't update")
-	ErrInQueue           = errors.New("player is already in the queue")
+	ErrUpdatingInQueue   = errors.New("player is already in the queue")
 )
 
 type Player struct {
@@ -274,7 +274,10 @@ const (
 	PlayerUpdateAdmin   UpdateType = "admin"
 )
 
+// todo, return bool not err?
 func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (timeLeft int64, err error) {
+
+	timeLeft = p.GetTimeToUpdate(updateType)
 
 	if !IsValidPlayerID(p.PlayerID) {
 		return timeLeft, ErrInvalidPlayerID
@@ -284,27 +287,22 @@ func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (timeLeft i
 		return timeLeft, ErrUpdatingBot
 	}
 
-	timeLeft = p.GetTimeToUpdate(updateType)
-	if timeLeft > 0 {
-		return timeLeft, ErrUpdatingTooSoon
-	}
-
+	// Check if player is in queue
 	var memcacheItem = memcache.PlayerRefreshed(p.PlayerID)
 	var inQueue string
 	memcache.Get(memcacheItem.Key, &inQueue)
 	if inQueue == string(memcacheItem.Value) {
-		return timeLeft, ErrInQueue
+		return timeLeft, ErrUpdatingInQueue
+	}
+
+	if timeLeft > 0 {
+		return timeLeft, ErrUpdatingTooSoon
 	}
 
 	return timeLeft, nil
 }
 
-func (p *Player) Update(r *http.Request, updateType UpdateType) (err error) {
-
-	_, err = p.ShouldUpdate(r, updateType)
-	if err != nil {
-		return err
-	}
+func (p *Player) Update() (err error) {
 
 	// Get summary
 	err = p.updateSummary()
@@ -380,12 +378,13 @@ func (p *Player) Update(r *http.Request, updateType UpdateType) (err error) {
 
 	// Save event
 	wg.Add(1)
-	go func(p *Player, r *http.Request) {
+	go func(p *Player) {
 		var err error
-		err = CreateEvent(r, p.PlayerID, EventRefresh)
+
+		err = CreateEvent(new(http.Request), p.PlayerID, EventRefresh)
 		logging.Error(err)
 		wg.Done()
-	}(p, r)
+	}(p)
 
 	// Wait
 	wg.Wait()

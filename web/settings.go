@@ -282,7 +282,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, v := range events {
-		response.AddRow(v.OutputForJSON(r))
+		response.AddRow(v.OutputForJSON(r.RemoteAddr))
 	}
 
 	response.output(w)
