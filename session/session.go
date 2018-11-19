@@ -125,7 +125,9 @@ func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes [
 
 	flashes = session.Flashes(group)
 
-	return flashes, nil
+	err = session.Save(r, w)
+
+	return flashes, err
 }
 
 func GetGoodFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{}, err error) {
