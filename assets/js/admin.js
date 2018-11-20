@@ -19,6 +19,6 @@ if ($('#admin-page').length > 0) {
     websocketListener('admin', function (e) {
 
         const data = $.parseJSON(e.data);
-        toast(data.Data.message, '', 0);
+        toast(true, data.Data.message, '', 0);
     })
 }

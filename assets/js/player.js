@@ -4,19 +4,15 @@ if ($('#player-page').length > 0) {
 
         const $link = $(this);
 
-        $link.removeClass('fade-red').removeClass('fade-green');
+        $('i', $link).addClass('fa-spin');
 
         $.ajax({
             url: '/players/' + $(this).attr('data-update-id') + '/ajax/update',
             success: function (data, textStatus, jqXHR) {
 
-                toast(data.message);
+                toast(data.success, data.message);
 
-                if (data.success) {
-                    $link.addClass('fade-green');
-                } else {
-                    $link.addClass('fade-red');
-                }
+                $('i', $link).removeClass('fa-spin');
 
                 if (data.error) {
                     console.log(data.error);

@@ -76,7 +76,7 @@ function websocketListener(page, onMessage) {
 
     if (window.WebSocket === undefined) {
 
-        toast(message);
+        toast(false, 'Your browser does not support websockets');
 
     } else {
 
@@ -89,12 +89,12 @@ function websocketListener(page, onMessage) {
 
         socket.onclose = function (e) {
             $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
-            toast('Live functionality has stopped');
+            toast(false, 'Live functionality has stopped');
         };
 
         socket.onerror = function (e) {
             $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
-            toast('Live functionality has stopped');
+            toast(false, 'Live functionality has stopped');
         };
 
         socket.onmessage = onMessage;
@@ -122,28 +122,33 @@ if (user.showAds) {
 }
 
 // Toasts
-if (toasts) {
-    if (isIterable(toasts)) {
-        for (const v of toasts) {
-            toast(v.message, v.title, v.timeout, v.link);
-        }
+if (isIterable(toasts)) {
+    for (const v of toasts) {
+        toast(v.success, v.message, v.title, v.timeout, v.link);
     }
 }
 
-function toast(body, title = '', timeout = 8, link = '') {
+function toast(success = true, body, title = '', timeout = 8, link = '') {
 
     const redirect = function () {
         window.location.replace(link);
     };
 
-    toastr.success(body, title, {
-        timeOut: Number(timeout),
+    const options = {
+        timeOut: Number(timeout) * 1000,
         onclick: link ? redirect : null,
 
         newestOnTop: true,
         preventDuplicates: false,
         extendedTimeOut: 0, // Keep alive on hover
-    });
+    };
+
+    if (success) {
+        toastr.success(body, title, options);
+    } else {
+        toastr.error(body, title, options);
+    }
+
 }
 
 function isIterable(obj) {
