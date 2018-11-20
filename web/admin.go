@@ -188,13 +188,15 @@ func adminQueues(r *http.Request) {
 	if val := r.PostForm.Get("app-id"); val != "" {
 
 		logging.Info("App ID: " + val)
-		queue.Produce(queue.QueueApps, []byte(val))
+		err := queue.Produce(queue.QueueApps, []byte(val))
+		logging.Error(err)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
 		logging.Info("Package ID: " + val)
-		queue.Produce(queue.QueuePackages, []byte(val))
+		err := queue.Produce(queue.QueuePackages, []byte(val))
+		logging.Error(err)
 	}
 }
 
