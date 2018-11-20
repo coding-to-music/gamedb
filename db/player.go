@@ -163,7 +163,7 @@ func (p Player) GetAllPlayerApps(sort string, limit int) (apps []PlayerApp, err 
 
 func (p Player) GetBadges() (badges []ProfileBadge, err error) {
 
-	if p.Badges == "" {
+	if p.Badges == "" || p.Badges == "null" {
 		return
 	}
 
@@ -190,7 +190,7 @@ func (p Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
 
 func (p Player) GetFriends() (friends []ProfileFriend, err error) {
 
-	if p.Friends == "" {
+	if p.Friends == "" || p.Friends == "null" {
 		return
 	}
 
