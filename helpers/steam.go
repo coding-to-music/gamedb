@@ -17,7 +17,7 @@ func Init() {
 		LogChannel: GetSteamLogsChan(),
 		UserAgent:  "http://gamedb.online",
 		APIRate:    time.Hour * 24 / 100000,
-		StoreRate:  time.Millisecond * 1600,
+		StoreRate:  time.Millisecond * 1050,
 	}
 }
 
