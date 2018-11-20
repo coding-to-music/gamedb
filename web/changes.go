@@ -6,7 +6,16 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
+	"github.com/go-chi/chi"
 )
+
+func changesRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", ChangesHandler)
+	r.Get("/ajax", ChangesAjaxHandler)
+	r.Get("/{id}", ChangeHandler)
+	return r
+}
 
 func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 

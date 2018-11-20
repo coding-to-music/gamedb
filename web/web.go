@@ -69,41 +69,44 @@ func Serve() error {
 		r.Use(middlewareLog)
 	}
 
+	// Pages
+	r.Get("/", homeHandler)
 	r.Mount("/admin", adminRouter())
 	r.Mount("/changes", changesRouter())
 	r.Mount("/chat", chatRouter())
-	r.Mount("/contact", contactRouter())
-	r.Mount("/experience", experienceRouter())
-	r.Mount("/free-games", freeGamesRouter())
-	r.Mount("/games", gamesRouter())
-	r.Mount("/login", loginRouter())
-	r.Mount("/packages", packagesRouter())
-	r.Mount("/players", playersRouter())
-	r.Mount("/price-changes", priceChangeRouter())
-	r.Mount("/queues", queuesRouter())
-	r.Mount("/settings", settingsRouter())
-	r.Mount("/stats", statsRouter())
-	r.Mount("/upcoming", upcomingRouter())
-	r.Get("/", homeHandler)
-	r.Get("/browserconfig.xml", rootFileHandler)
 	r.Get("/commits", commitsHandler)
+	r.Mount("/contact", contactRouter())
 	r.Get("/coop", coopHandler)
 	r.Get("/discounts", discountsHandler)
 	r.Get("/developers", statsDevelopersHandler)
 	r.Get("/donate", donateHandler)
 	r.Get("/esi/header", headerHandler)
-	r.Get("/health-check", healthCheckHandler)
+	r.Mount("/experience", experienceRouter())
+	r.Mount("/free-games", freeGamesRouter())
+	r.Mount("/games", gamesRouter())
 	r.Get("/genres", statsGenresHandler)
+	r.Get("/health-check", healthCheckHandler)
 	r.Get("/info", infoHandler)
+	r.Mount("/login", loginRouter())
 	r.Get("/logout", logoutHandler)
 	r.Get("/news", newsHandler)
 	r.Get("/news/ajax", newsAjaxHandler)
+	r.Mount("/packages", packagesRouter())
+	r.Mount("/players", playersRouter())
+	r.Mount("/price-changes", priceChangeRouter())
 	r.Get("/publishers", statsPublishersHandler)
+	r.Mount("/queues", queuesRouter())
+	r.Mount("/settings", settingsRouter())
+	r.Mount("/stats", statsRouter())
+	r.Get("/tags", statsTagsHandler)
+	r.Mount("/upcoming", upcomingRouter())
+	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
+
+	// Files
+	r.Get("/browserconfig.xml", rootFileHandler)
 	r.Get("/robots.txt", rootFileHandler)
 	r.Get("/sitemap.xml", siteMapHandler)
 	r.Get("/site.webmanifest", rootFileHandler)
-	r.Get("/tags", statsTagsHandler)
-	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
 
 	// File server
 	fileServer(r)
@@ -112,45 +115,6 @@ func Serve() error {
 	r.NotFound(Error404Handler)
 
 	return http.ListenAndServe("0.0.0.0:"+viper.GetString("PORT"), r)
-}
-
-func playersRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Get("/", PlayersHandler)
-	r.Post("/", PlayerIDHandler)
-	r.Get("/ajax", PlayersAjaxHandler)
-	r.Get("/{id:[0-9]+}", PlayerHandler)
-	r.Get("/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
-	r.Get("/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
-	r.Get("/{id:[0-9]+}/{slug}", PlayerHandler)
-	return r
-}
-
-func gamesRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Get("/", AppsHandler)
-	r.Get("/ajax", AppsAjaxHandler)
-	r.Get("/{id}", AppHandler)
-	r.Get("/{id}/ajax/news", AppNewsAjaxHandler)
-	r.Get("/{id}/{slug}", AppHandler)
-	return r
-}
-
-func changesRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Get("/", ChangesHandler)
-	r.Get("/ajax", ChangesAjaxHandler)
-	r.Get("/{id}", ChangeHandler)
-	return r
-}
-
-func packagesRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Get("/", PackagesHandler)
-	r.Get("/ajax", PackagesAjaxHandler)
-	r.Get("/{id}", PackageHandler)
-	r.Get("/{id}/{slug}", PackageHandler)
-	return r
 }
 
 // FileServer conveniently sets up a http.FileServer handler to serve

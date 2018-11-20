@@ -9,7 +9,17 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
+	"github.com/go-chi/chi"
 )
+
+func packagesRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", PackagesHandler)
+	r.Get("/ajax", PackagesAjaxHandler)
+	r.Get("/{id}", PackageHandler)
+	r.Get("/{id}/{slug}", PackageHandler)
+	return r
+}
 
 func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 

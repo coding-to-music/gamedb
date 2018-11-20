@@ -11,7 +11,18 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/session"
+	"github.com/go-chi/chi"
 )
+
+func gamesRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", AppsHandler)
+	r.Get("/ajax", AppsAjaxHandler)
+	r.Get("/{id}", AppHandler)
+	r.Get("/{id}/ajax/news", AppNewsAjaxHandler)
+	r.Get("/{id}/{slug}", AppHandler)
+	return r
+}
 
 func AppsHandler(w http.ResponseWriter, r *http.Request) {
 

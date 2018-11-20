@@ -12,7 +12,20 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
+	"github.com/go-chi/chi"
 )
+
+func playersRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", PlayersHandler)
+	r.Post("/", PlayerIDHandler)
+	r.Get("/ajax", PlayersAjaxHandler)
+	r.Get("/{id:[0-9]+}", PlayerHandler)
+	r.Get("/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
+	r.Get("/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
+	r.Get("/{id:[0-9]+}/{slug}", PlayerHandler)
+	return r
+}
 
 func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 
