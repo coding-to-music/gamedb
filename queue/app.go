@@ -9,11 +9,11 @@ type RabbitMessageApp struct {
 	RabbitMessageProduct
 }
 
-func (d RabbitMessageApp) getQueueName() string {
+func (d RabbitMessageApp) getQueueName() RabbitQueue {
 	return QueueAppsData
 }
 
-func (d RabbitMessageApp) getProduceQueue() string {
+func (d RabbitMessageApp) getProduceQueue() RabbitQueue {
 	return QueueApps
 }
 

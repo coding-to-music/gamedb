@@ -16,11 +16,11 @@ type RabbitMessagePackage struct {
 	PICSPackageInfo RabbitMessageProduct
 }
 
-func (d RabbitMessagePackage) getQueueName() string {
+func (d RabbitMessagePackage) getConsumeQueue() RabbitQueue {
 	return QueuePackagesData
 }
 
-func (d RabbitMessagePackage) getProduceQueue() string {
+func (d RabbitMessagePackage) getProduceQueue() RabbitQueue {
 	return QueuePackages
 }
 

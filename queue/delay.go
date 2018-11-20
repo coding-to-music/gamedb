@@ -12,26 +12,23 @@ import (
 
 type RabbitMessageDelay struct {
 	rabbitConsumer
-	OriginalQueue   string
+	OriginalQueue   RabbitQueue
 	OriginalMessage string
 }
 
-func (d RabbitMessageDelay) getQueueName() string {
+func (d RabbitMessageDelay) getConsumeQueue() RabbitQueue {
 	return QueueDelaysData
 }
 
-func (d RabbitMessageDelay) getProduceQueue() string {
+func (d RabbitMessageDelay) getProduceQueue() RabbitQueue {
 	return ""
 }
-
 
 func (d RabbitMessageDelay) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
 func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
-
-	//time.Sleep(time.Second) // Minimum 1 second wait
 
 	if len(msg.Body) == 0 {
 		return false, false, errEmptyMessage
@@ -60,14 +57,14 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 			return false, false, err
 		}
 
-		err = Produce(delayMessage.getQueueName(), bytes)
+		err = Produce(delayMessage.getConsumeQueue(), bytes)
 
 	} else {
 
 		// Add to original queue
 		fmt.Println("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
 
-		err = Produce(delayMessage.getQueueName(), []byte(delayMessage.OriginalMessage))
+		err = Produce(delayMessage.getConsumeQueue(), []byte(delayMessage.OriginalMessage))
 	}
 
 	if err != nil {

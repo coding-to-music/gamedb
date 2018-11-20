@@ -15,11 +15,11 @@ type RabbitMessageProfile struct {
 	ProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
 }
 
-func (d RabbitMessageProfile) getQueueName() string {
+func (d RabbitMessageProfile) getConsumeQueue() RabbitQueue {
 	return QueueProfilesData
 }
 
-func (d RabbitMessageProfile) getProduceQueue() string {
+func (d RabbitMessageProfile) getProduceQueue() RabbitQueue {
 	return QueueProfiles
 }
 

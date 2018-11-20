@@ -15,11 +15,11 @@ type RabbitMessageChanges struct {
 	PICSChanges RabbitMessageChangesPICS `json:"PICSChanges"`
 }
 
-func (d RabbitMessageChanges) getQueueName() string {
+func (d RabbitMessageChanges) getConsumeQueue() RabbitQueue {
 	return QueueChangesData
 }
 
-func (d RabbitMessageChanges) getProduceQueue() string {
+func (d RabbitMessageChanges) getProduceQueue() RabbitQueue {
 	return ""
 }
 

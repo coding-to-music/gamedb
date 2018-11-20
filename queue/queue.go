@@ -11,19 +11,25 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type RabbitQueue string
+
+func (rq RabbitQueue) String() string {
+	return string(rq)
+}
+
 const (
-	QueueApps         = "Steam_Apps"          // Only takes IDs
-	QueueAppsData     = "Steam_Apps_Data"     //
-	QueueChangesData  = "Steam_Changes_Data"  //
-	QueueDelaysData   = "Steam_Delays_Data"   //
-	QueuePackages     = "Steam_Packages"      // Only takes IDs
-	QueuePackagesData = "Steam_Packages_Data" //
-	QueueProfiles     = "Steam_Profiles"      // Only takes IDs
-	QueueProfilesData = "Steam_Profiles_Data" //
+	QueueApps         RabbitQueue = "Steam_Apps"          // Only takes IDs
+	QueueAppsData     RabbitQueue = "Steam_Apps_Data"     //
+	QueueChangesData  RabbitQueue = "Steam_Changes_Data"  //
+	QueueDelaysData   RabbitQueue = "Steam_Delays_Data"   //
+	QueuePackages     RabbitQueue = "Steam_Packages"      // Only takes IDs
+	QueuePackagesData RabbitQueue = "Steam_Packages_Data" //
+	QueueProfiles     RabbitQueue = "Steam_Profiles"      // Only takes IDs
+	QueueProfilesData RabbitQueue = "Steam_Profiles_Data" //
 )
 
 var (
-	consumers = map[string]rabbitConsumer{}
+	consumers = map[RabbitQueue]rabbitConsumer{}
 
 	errInvalidQueue = errors.New("invalid queue")
 	errEmptyMessage = errors.New("empty message")
@@ -38,8 +44,8 @@ var (
 )
 
 type queueInterface interface {
-	getProduceQueue() (string)
-	getQueueName() (string)
+	getProduceQueue() RabbitQueue
+	getConsumeQueue() RabbitQueue
 	getRetryData() (RabbitMessageDelay)
 	process(msg amqp.Delivery) (ack bool, requeue bool, err error)
 }
@@ -58,7 +64,7 @@ func init() {
 	}
 
 	for _, v := range qs {
-		consumers[v.Message.getQueueName()] = v
+		consumers[v.Message.getConsumeQueue()] = v
 	}
 }
 
@@ -79,7 +85,7 @@ func RunConsumers() {
 	}
 }
 
-func Produce(queue string, data []byte) (err error) {
+func Produce(queue RabbitQueue, data []byte) (err error) {
 
 	for _, v := range consumers {
 		if queue == v.Message.getProduceQueue() {
@@ -105,7 +111,7 @@ func (s rabbitConsumer) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu am
 	err = ch.Qos(10, 0, true)
 	logging.Error(err)
 
-	qu, err = ch.QueueDeclare(s.Message.getQueueName(), true, false, false, false, nil)
+	qu, err = ch.QueueDeclare(s.Message.getConsumeQueue().String(), true, false, false, false, nil)
 	logging.Error(err)
 
 	return ch, qu, err
@@ -113,7 +119,7 @@ func (s rabbitConsumer) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu am
 
 func (s rabbitConsumer) produce(data []byte) (err error) {
 
-	logging.Info("Producing to: " + s.Message.getProduceQueue())
+	logging.Info("Producing to: " + s.Message.getProduceQueue().String())
 
 	// Connect
 	if producerConnection == nil {
@@ -144,7 +150,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 
 func (s rabbitConsumer) consume() {
 
-	logging.InfoL("Consuming from: " + s.Message.getQueueName())
+	logging.InfoL("Consuming from: " + s.Message.getConsumeQueue().String())
 
 	var breakFor = false
 	var err error
@@ -217,7 +223,7 @@ func (s rabbitConsumer) requeueMessage(msg amqp.Delivery) error {
 		EndTime:   s.EndTime,
 		Message: RabbitMessageDelay{
 			OriginalMessage: string(msg.Body),
-			OriginalQueue:   s.Message.getQueueName(),
+			OriginalQueue:   s.Message.getConsumeQueue(),
 		},
 	}
 
