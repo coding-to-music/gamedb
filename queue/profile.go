@@ -61,7 +61,7 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	err = player.ShouldUpdate(new(http.Request), db.PlayerUpdateAdmin)
-	err = helpers.IgnoreErrors(db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 	if err != nil {
 		return false, false, err
 	}
