@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/logging"
 	"github.com/go-chi/chi"
@@ -20,7 +21,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 	change, err := db.GetChange(id)
 	if err != nil {
-		if err == db.ErrNoSuchEntity {
+		if err == datastore.ErrNoSuchEntity {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "We don't have this change in the database."})
 			return
 		}

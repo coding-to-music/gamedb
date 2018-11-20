@@ -27,7 +27,6 @@ const (
 )
 
 var (
-	ErrNoSuchEntity = datastore.ErrNoSuchEntity
 	ErrorTooMany    = errors.New("datastore: too many")
 )
 

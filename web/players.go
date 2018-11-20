@@ -93,7 +93,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 	dbPlayer, err := db.GetPlayerByName(post)
 	if err != nil {
 
-		if err != db.ErrNoSuchEntity {
+		if err != datastore.ErrNoSuchEntity {
 			logging.Error(err)
 		}
 

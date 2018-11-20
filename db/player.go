@@ -967,7 +967,7 @@ func checkGetMultiPlayerErrors(err error) error {
 				return err3
 			}
 
-		} else if err.Error() == ErrNoSuchEntity.Error() {
+		} else if err.Error() == datastore.ErrNoSuchEntity.Error() {
 
 			return nil
 

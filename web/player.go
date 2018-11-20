@@ -37,7 +37,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Find the player row
 	player, err := db.GetPlayer(idx)
 	if err != nil {
-		if err == db.ErrNoSuchEntity {
+		if err == datastore.ErrNoSuchEntity {
 
 			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now."}
 			data.Toasts = []Toast{{Title: "Player added to scan queue!"}}
@@ -112,7 +112,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		ranks, err = db.GetRank(player.PlayerID)
 		if err != nil {
-			if err != db.ErrNoSuchEntity {
+			if err != datastore.ErrNoSuchEntity {
 				logging.Error(err)
 			}
 		}
@@ -446,7 +446,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		player, err := db.GetPlayer(idx)
-		if err != nil && err != db.ErrNoSuchEntity {
+		if err != nil && err != datastore.ErrNoSuchEntity {
 
 			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
 			logging.Error(err)
@@ -462,7 +462,7 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 
 				// All good
-				if err != nil && err == db.ErrNoSuchEntity {
+				if err != nil && err == datastore.ErrNoSuchEntity {
 					response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true, Error: err.Error()}
 				} else {
 					response = PlayersUpdateResponse{Message: "Updating player", Success: true}

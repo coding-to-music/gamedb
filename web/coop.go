@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
@@ -43,7 +44,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 			player, err := db.GetPlayer(id)
 			if err != nil {
-				if err != db.ErrNoSuchEntity {
+				if err != datastore.ErrNoSuchEntity {
 					logging.Error(err)
 					return
 				}
