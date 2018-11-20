@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/streadway/amqp"
@@ -25,23 +26,25 @@ func (d RabbitMessageProfile) getRetryData() RabbitMessageDelay {
 func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
 
 	// Get message
-	message := new(RabbitMessageProfile)
+	rabbitMessage := new(RabbitMessageProfile)
 
-	err = helpers.Unmarshal(msg.Body, message)
+	err = helpers.Unmarshal(msg.Body, rabbitMessage)
 	if err != nil {
 		return false, false, err
 	}
 
-	if !message.ProfileInfo.SteamID.IsValid {
+	var message = rabbitMessage.ProfileInfo
+
+	if !message.SteamID.IsValid {
 		return false, false, errors.New("not valid account id")
 	}
-	if !message.ProfileInfo.SteamID.IsIndividualAccount {
+	if !message.SteamID.IsIndividualAccount {
 		return false, false, errors.New("not individual account id")
 	}
 
 	// Update player
-	player, err := db.GetPlayer(message.ProfileInfo.SteamID.AccountID)
-	err = helpers.IgnoreErrors(db.ErrNoSuchEntity)
+	player, err := db.GetPlayer(message.SteamID.AccountID)
+	err = helpers.IgnoreErrors(datastore.ErrNoSuchEntity)
 	if err != nil {
 		return false, true, err
 	}
@@ -52,10 +55,10 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, false, err
 	}
 
-	player.PlayerID = message.ProfileInfo.SteamID.AccountID
-	player.RealName = message.ProfileInfo.RealName
-	player.StateCode = message.ProfileInfo.StateName
-	player.CountryCode = message.ProfileInfo.CountryName
+	player.PlayerID = message.SteamID.AccountID
+	player.RealName = message.RealName
+	player.StateCode = message.StateName
+	player.CountryCode = message.CountryName
 
 	err = player.Update()
 	if err != nil {

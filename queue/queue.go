@@ -12,14 +12,14 @@ import (
 )
 
 const (
-	QueueApps         = "Steam_Apps"
-	QueueAppsData     = "Steam_Apps_Data"
-	QueueChangesData  = "Steam_Changes_Data"
-	QueueDelaysData   = "Steam_Delays_Data"
-	QueuePackages     = "Steam_Packages"
-	QueuePackagesData = "Steam_Packages_Data"
-	QueueProfiles     = "Steam_Profiles"
-	QueueProfilesData = "Steam_Profiles_Data"
+	QueueApps         = "Steam_Apps"          // Only takes IDs
+	QueueAppsData     = "Steam_Apps_Data"     //
+	QueueChangesData  = "Steam_Changes_Data"  //
+	QueueDelaysData   = "Steam_Delays_Data"   //
+	QueuePackages     = "Steam_Packages"      // Only takes IDs
+	QueuePackagesData = "Steam_Packages_Data" //
+	QueueProfiles     = "Steam_Profiles"      // Only takes IDs
+	QueueProfilesData = "Steam_Profiles_Data" //
 )
 
 var (
@@ -52,8 +52,8 @@ func init() {
 		//{Message: RabbitMessageApp{}},
 		{Message: RabbitMessageChanges{}},
 		//{Message: RabbitMessageDelay{}},
-		//{Message: RabbitMessagePackage{}},
-		//{Message: RabbitMessageProfile{}},
+		{Message: RabbitMessagePackage{}},
+		{Message: RabbitMessageProfile{}},
 	}
 
 	for _, v := range qs {
@@ -97,6 +97,9 @@ type rabbitMessageBase struct {
 func (s rabbitMessageBase) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
+	logging.Error(err)
+
+	err = ch.Qos(10, 0, true)
 	logging.Error(err)
 
 	qu, err = ch.QueueDeclare(s.Message.getQueueName(), true, false, false, false, nil)
