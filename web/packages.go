@@ -98,18 +98,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, v := range packages {
-
-		response.AddRow([]interface{}{
-			v.ID,
-			v.GetName(),
-			v.GetBillingType(),
-			v.GetLicenseType(),
-			v.GetStatus(),
-			v.AppsCount,
-			v.GetUpdatedUnix(),
-			v.GetUpdatedNice(),
-			v.GetPath(),
-		})
+		response.AddRow(v.OutputForJSON())
 	}
 
 	response.output(w)

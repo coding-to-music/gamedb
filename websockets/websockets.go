@@ -15,12 +15,13 @@ import (
 type WebsocketPage string
 
 const (
-	PageChanges WebsocketPage = "changes"
-	PageChat    WebsocketPage = "chat"
-	PageNews    WebsocketPage = "news"
-	PagePrices  WebsocketPage = "prices"
-	PageProfile WebsocketPage = "profile"
-	PageAdmin   WebsocketPage = "admin"
+	PageChanges  WebsocketPage = "changes"
+	PageChat     WebsocketPage = "chat"
+	PageNews     WebsocketPage = "news"
+	PagePrices   WebsocketPage = "prices"
+	PageProfile  WebsocketPage = "profile"
+	PageAdmin    WebsocketPage = "admin"
+	PagePackages WebsocketPage = "packages"
 )
 
 var pages map[WebsocketPage]Page
@@ -34,7 +35,7 @@ var ErrInvalidPage = errors.New("invalid page")
 
 func init() {
 	pages = map[WebsocketPage]Page{}
-	for _, v := range []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageProfile, PageAdmin} {
+	for _, v := range []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageProfile, PageAdmin, PagePackages} {
 		pages[v] = Page{
 			name:        v,
 			connections: map[int]*websocket.Conn{},

@@ -399,6 +399,21 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 	return ret, nil
 }
 
+func (pack Package) OutputForJSON() (output []interface{}) {
+
+	return []interface{}{
+		pack.ID,
+		pack.GetName(),
+		pack.GetBillingType(),
+		pack.GetLicenseType(),
+		pack.GetStatus(),
+		pack.AppsCount,
+		pack.GetUpdatedUnix(),
+		pack.GetUpdatedNice(),
+		pack.GetPath(),
+	}
+}
+
 // Loop through every language and get prices for each one
 // Saves other setails i nenglish only
 func (pack *Package) Update() (err error) {

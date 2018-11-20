@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/websockets"
 	"github.com/streadway/amqp"
 )
 
@@ -173,6 +174,13 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	err = db.BulkSaveKinds(kinds, db.KindProductPrice, true)
 	if err != nil {
 		return false, true, err
+	}
+
+	// Send websocket
+	page, err := websockets.GetPage(websockets.PagePackages)
+	if err == nil && page.HasConnections() {
+
+		page.Send(pack.OutputForJSON())
 	}
 
 	return true, false, nil
