@@ -19,6 +19,10 @@ func (d RabbitMessageProfile) getQueueName() string {
 	return QueueProfilesData
 }
 
+func (d RabbitMessageProfile) getProduceQueue() string {
+	return QueueProfiles
+}
+
 func (d RabbitMessageProfile) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }

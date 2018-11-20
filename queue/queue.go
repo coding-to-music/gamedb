@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	queues = map[string]rabbitMessageBase{}
+	consumers = map[string]rabbitConsumer{}
 
 	errInvalidQueue = errors.New("invalid queue")
 	errEmptyMessage = errors.New("empty message")
@@ -38,6 +38,7 @@ var (
 )
 
 type queueInterface interface {
+	getProduceQueue() (string)
 	getQueueName() (string)
 	getRetryData() (RabbitMessageDelay)
 	process(msg amqp.Delivery) (ack bool, requeue bool, err error)
@@ -48,7 +49,7 @@ func init() {
 	consumerCloseChannel = make(chan *amqp.Error)
 	producerCloseChannel = make(chan *amqp.Error)
 
-	qs := []rabbitMessageBase{
+	qs := []rabbitConsumer{
 		//{Message: RabbitMessageApp{}},
 		{Message: RabbitMessageChanges{}},
 		//{Message: RabbitMessageDelay{}},
@@ -57,7 +58,7 @@ func init() {
 	}
 
 	for _, v := range qs {
-		queues[v.Message.getQueueName()] = v
+		consumers[v.Message.getQueueName()] = v
 	}
 }
 
@@ -73,28 +74,30 @@ func Init() {
 
 func RunConsumers() {
 
-	for _, v := range queues {
+	for _, v := range consumers {
 		go v.consume()
 	}
 }
 
 func Produce(queue string, data []byte) (err error) {
 
-	if val, ok := queues[queue]; ok {
-		return val.produce(data)
+	for _, v := range consumers {
+		if queue == v.Message.getProduceQueue() {
+			return v.produce(data)
+		}
 	}
 
 	return errInvalidQueue
 }
 
-type rabbitMessageBase struct {
+type rabbitConsumer struct {
 	Message   queueInterface
 	Attempt   int
 	StartTime time.Time // Time first placed in delay queue
 	EndTime   time.Time // Time to retry from delay queue
 }
 
-func (s rabbitMessageBase) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu amqp.Queue, err error) {
+func (s rabbitConsumer) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
 	logging.Error(err)
@@ -108,9 +111,9 @@ func (s rabbitMessageBase) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu
 	return ch, qu, err
 }
 
-func (s rabbitMessageBase) produce(data []byte) (err error) {
+func (s rabbitConsumer) produce(data []byte) (err error) {
 
-	logging.Info("Producing to: " + s.Message.getQueueName())
+	logging.Info("Producing to: " + s.Message.getProduceQueue())
 
 	// Connect
 	if producerConnection == nil {
@@ -139,7 +142,7 @@ func (s rabbitMessageBase) produce(data []byte) (err error) {
 	return nil
 }
 
-func (s rabbitMessageBase) consume() {
+func (s rabbitConsumer) consume() {
 
 	logging.InfoL("Consuming from: " + s.Message.getQueueName())
 
@@ -206,9 +209,9 @@ func (s rabbitMessageBase) consume() {
 	}
 }
 
-func (s rabbitMessageBase) requeueMessage(msg amqp.Delivery) error {
+func (s rabbitConsumer) requeueMessage(msg amqp.Delivery) error {
 
-	delayeMessage := rabbitMessageBase{
+	delayeMessage := rabbitConsumer{
 		Attempt:   s.Attempt,
 		StartTime: s.StartTime,
 		EndTime:   s.EndTime,
@@ -230,7 +233,7 @@ func (s rabbitMessageBase) requeueMessage(msg amqp.Delivery) error {
 	return nil
 }
 
-func (s *rabbitMessageBase) IncrementAttempts() {
+func (s *rabbitConsumer) IncrementAttempts() {
 
 	// Increment attemp
 	s.Attempt++

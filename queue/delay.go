@@ -11,7 +11,7 @@ import (
 )
 
 type RabbitMessageDelay struct {
-	rabbitMessageBase
+	rabbitConsumer
 	OriginalQueue   string
 	OriginalMessage string
 }
@@ -19,6 +19,11 @@ type RabbitMessageDelay struct {
 func (d RabbitMessageDelay) getQueueName() string {
 	return QueueDelaysData
 }
+
+func (d RabbitMessageDelay) getProduceQueue() string {
+	return ""
+}
+
 
 func (d RabbitMessageDelay) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
