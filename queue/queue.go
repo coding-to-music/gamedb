@@ -103,7 +103,7 @@ type rabbitConsumer struct {
 	EndTime   time.Time // Time to retry from delay queue
 }
 
-func (s rabbitConsumer) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu amqp.Queue, err error) {
+func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
 	logging.Error(err)
@@ -111,7 +111,7 @@ func (s rabbitConsumer) getQueue(conn *amqp.Connection) (ch *amqp.Channel, qu am
 	err = ch.Qos(10, 0, true)
 	logging.Error(err)
 
-	qu, err = ch.QueueDeclare(s.Message.getConsumeQueue().String(), true, false, false, false, nil)
+	qu, err = ch.QueueDeclare(queue.String(), true, false, false, false, nil)
 	logging.Error(err)
 
 	return ch, qu, err
@@ -132,7 +132,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	}
 
 	//
-	ch, qu, err := s.getQueue(producerConnection)
+	ch, qu, err := s.getQueue(producerConnection, s.Message.getProduceQueue())
 	if err != nil {
 		return err
 	}
@@ -169,7 +169,7 @@ func (s rabbitConsumer) consume() {
 		}
 
 		//
-		ch, qu, err := s.getQueue(consumerConnection)
+		ch, qu, err := s.getQueue(consumerConnection, s.Message.getConsumeQueue())
 		if err != nil {
 			logging.Error(err)
 			return
