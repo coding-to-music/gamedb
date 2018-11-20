@@ -70,30 +70,35 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		friends, err = player.GetFriends()
 		if err != nil {
+
 			logging.Error(err)
-			return
+
+		} else {
+
+			// Queue friends to be scanned
+			err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
+			if err != nil {
+
+				logging.Error(helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon))
+
+			} else {
+
+				for _, friend := range friends {
+
+					f := db.Player{}
+					f.PlayerID = friend.SteamID
+
+					err = queuePlayer(r, f, db.PlayerUpdateAuto)
+					err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon)
+					logging.Error(err)
+				}
+
+				player.FriendsAddedAt = time.Now()
+
+				err = player.Save() // todo, switch to update query so not to overwrite other player changes
+				logging.Error(err)
+			}
 		}
-
-		// Queue friends to be scanned
-		err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
-		if err != nil {
-			logging.Error(err)
-			return
-		}
-
-		for _, friend := range friends {
-
-			f := db.Player{}
-			f.PlayerID = friend.SteamID
-
-			err = queuePlayer(r, f, db.PlayerUpdateAuto)
-			logging.Error(err)
-		}
-
-		player.FriendsAddedAt = time.Now()
-
-		err = player.Save() // todo, switch to update query so not to overwrite other player changes
-		logging.Error(err)
 
 		wg.Done()
 
