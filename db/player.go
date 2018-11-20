@@ -418,6 +418,8 @@ func (p *Player) updateSummary() (error) {
 
 func (p *Player) updateGames() (error) {
 
+	return nil // TODO!
+
 	resp, _, err := helpers.GetSteam().GetOwnedGames(p.PlayerID)
 	if err != nil {
 		return err
