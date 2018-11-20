@@ -2,6 +2,7 @@ package queue
 
 import (
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/gamedb/website/db"
@@ -45,7 +46,11 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, true, err
 	}
 
-	// todo, do checks here too!!
+	err = player.ShouldUpdate(new(http.Request), db.PlayerUpdateAdmin)
+	err = helpers.IgnoreErrors(db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+	if err != nil {
+		return false, false, err
+	}
 
 	player.PlayerID = message.ProfileInfo.SteamID.AccountID
 	player.RealName = message.ProfileInfo.RealName
