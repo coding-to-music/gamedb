@@ -3,6 +3,7 @@ package queue
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -46,9 +47,15 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, false, errors.New("not individual account id")
 	}
 
+	// Convert steamID3 to steamID64
+	id64, err := helpers.GetSteam().GetID(strconv.FormatInt(int64(message.SteamID.AccountID), 10))
+	if err != nil {
+		return false, false, err
+	}
+
 	// Update player
-	player, err := db.GetPlayer(message.SteamID.AccountID)
-	err = helpers.IgnoreErrors(datastore.ErrNoSuchEntity)
+	player, err := db.GetPlayer(id64)
+	err = helpers.IgnoreErrors(err, datastore.ErrNoSuchEntity)
 	if err != nil {
 		return false, true, err
 	}
@@ -59,7 +66,7 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, false, err
 	}
 
-	player.PlayerID = message.SteamID.AccountID
+	player.PlayerID = id64
 	player.RealName = message.RealName
 	player.StateCode = message.StateName
 	player.CountryCode = message.CountryName
@@ -75,23 +82,23 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 type RabbitMessageProfilePICS struct {
 	Result  int `json:"Result"`
 	SteamID struct {
-		IsBlankAnonAccount            bool  `json:"IsBlankAnonAccount"`
-		IsGameServerAccount           bool  `json:"IsGameServerAccount"`
-		IsPersistentGameServerAccount bool  `json:"IsPersistentGameServerAccount"`
-		IsAnonGameServerAccount       bool  `json:"IsAnonGameServerAccount"`
-		IsContentServerAccount        bool  `json:"IsContentServerAccount"`
-		IsClanAccount                 bool  `json:"IsClanAccount"`
-		IsChatAccount                 bool  `json:"IsChatAccount"`
-		IsLobby                       bool  `json:"IsLobby"`
-		IsIndividualAccount           bool  `json:"IsIndividualAccount"`
-		IsAnonAccount                 bool  `json:"IsAnonAccount"`
-		IsAnonUserAccount             bool  `json:"IsAnonUserAccount"`
-		IsConsoleUserAccount          bool  `json:"IsConsoleUserAccount"`
-		IsValid                       bool  `json:"IsValid"`
-		AccountID                     int64 `json:"AccountID"`
-		AccountInstance               int   `json:"AccountInstance"`
-		AccountType                   int   `json:"AccountType"`
-		AccountUniverse               int   `json:"AccountUniverse"`
+		IsBlankAnonAccount            bool `json:"IsBlankAnonAccount"`
+		IsGameServerAccount           bool `json:"IsGameServerAccount"`
+		IsPersistentGameServerAccount bool `json:"IsPersistentGameServerAccount"`
+		IsAnonGameServerAccount       bool `json:"IsAnonGameServerAccount"`
+		IsContentServerAccount        bool `json:"IsContentServerAccount"`
+		IsClanAccount                 bool `json:"IsClanAccount"`
+		IsChatAccount                 bool `json:"IsChatAccount"`
+		IsLobby                       bool `json:"IsLobby"`
+		IsIndividualAccount           bool `json:"IsIndividualAccount"`
+		IsAnonAccount                 bool `json:"IsAnonAccount"`
+		IsAnonUserAccount             bool `json:"IsAnonUserAccount"`
+		IsConsoleUserAccount          bool `json:"IsConsoleUserAccount"`
+		IsValid                       bool `json:"IsValid"`
+		AccountID                     int  `json:"AccountID"` // steamID3
+		AccountInstance               int  `json:"AccountInstance"`
+		AccountType                   int  `json:"AccountType"`
+		AccountUniverse               int  `json:"AccountUniverse"`
 	} `json:"SteamID"`
 	TimeCreated time.Time   `json:"TimeCreated"`
 	RealName    string      `json:"RealName"`
