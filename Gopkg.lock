@@ -2,14 +2,13 @@
 
 
 [[projects]]
-  digest = "1:c1c3d6b976bf8a04d745f8f5003156ddce4f3965851939ff5d84304c85161c46"
+  digest = "1:dd029f90457e0bc0fc4a549a241327bdcac1f2a36692041a19ef02aec4c36103"
   name = "cloud.google.com/go"
   packages = [
     "compute/metadata",
     "datastore",
     "iam",
     "internal",
-    "internal/atomiccache",
     "internal/fields",
     "internal/optional",
     "internal/trace",
@@ -20,8 +19,8 @@
     "storage",
   ]
   pruneopts = ""
-  revision = "1fd54cf41e6e0e178ffe3c52b0e2260281f603e3"
-  version = "v0.32.0"
+  revision = "74b12019e2aa53ec27882158f59192d7cd6d1998"
+  version = "v0.33.1"
 
 [[projects]]
   branch = "master"
@@ -41,11 +40,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d9ab14a36706248b8894e6d8c4847fce54e3eaf620b7f4c0899f7fd33c39ddb8"
+  digest = "1:fb3ec40038f8a08872c20d017f2279c78a83755689383d2aa5c8294354301060"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "e73ab5032af786c39608debcb677a83c0e5af721"
+  revision = "bb0ecec135a6408f42e950f0eff48c56cc1b3cf3"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -155,12 +154,12 @@
   version = "v7.4.0"
 
 [[projects]]
-  digest = "1:c07de423ca37dc2765396d6971599ab652a339538084b9b58c9f7fc533b28525"
+  digest = "1:e692d16fdfbddb94e9e4886aaf6c08bdbae5cb4ac80651445de9181b371c6e46"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   pruneopts = ""
-  revision = "d523deb1b23d913de5bdada721a6071e71283618"
-  version = "v1.4.0"
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
 
 [[projects]]
   digest = "1:3dd078fda7500c341bc26cfbc6c6a34614f295a2457149fc1045cab767cbcf18"
@@ -205,12 +204,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:84d63b33b6c28a5e1b02d74046188463402eb5e35553ae255e8c84f716bb58ad"
+  digest = "1:463579773f7f97e3a97ae6fb32abc90c03493e903a11c756a588bed06d0535e2"
   name = "github.com/googleapis/gax-go"
   packages = ["."]
   pruneopts = ""
-  revision = "9c40fc3d3ebe7d42ebfb043d738aaee663ac7101"
-  version = "v2.0.1"
+  revision = "b001040cd31805261cbd978842099e326dfa857b"
+  version = "v2.0.2"
 
 [[projects]]
   digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"
@@ -580,7 +579,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fbc2896199a45d32325e24ceb56624c7db49f9cfb068f739ee53339a8fb183b3"
+  digest = "1:4ac199b027ed34460ec4e0a92c882156f561e78cd046fef095e50f867462435a"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -596,7 +595,7 @@
     "websocket",
   ]
   pruneopts = ""
-  revision = "88d92db4c548972d942ac2a3531a8a9a34c82ca6"
+  revision = "adae6a3d119ae4890b46832a2e88a95adc62b8e7"
 
 [[projects]]
   branch = "master"
@@ -622,14 +621,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3f5c191d90f1cf365ff1f88e4b08eb766ee6ade1cb2e4efd7c316cf7e015ac17"
+  digest = "1:0ad2730a94694f9968449f91f0311788b58b2822ff5eff299202e02f538c6027"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
+  revision = "ec83556a53fe16b65c452a104ea9d1e86a671852"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -665,7 +664,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e052ac016676b0750da59a64debe6110fbd2ccd1cb368d5d561b5e721edbb1bc"
+  digest = "1:9d8463f4fe9e21db9353dd9dc8bcd6a1e11edfc51b5e1959c4d9a38013777828"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -683,7 +682,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "c5e41677a12edeac5437ebceb220505ec6b90669"
+  revision = "83a9d304b1e613fc253e1e2710778642fe81af53"
 
 [[projects]]
   digest = "1:77d3cff3a451d50be4b52db9c7766c0d8570ba47593f0c9dc72173adb208e788"
@@ -775,11 +774,11 @@
 
 [[projects]]
   branch = "v2"
-  digest = "1:f0620375dd1f6251d9973b5f2596228cc8042e887cd7f827e4220bc1ce8c30e2"
+  digest = "1:cedccf16b71e86db87a24f8d4c70b0a855872eb967cb906a66b95de56aefbd0d"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
-  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
 
 [solve-meta]
   analyzer-name = "dep"
