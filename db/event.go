@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/gamedb/website/helpers"
 )
 
@@ -126,5 +127,7 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 		return err
 	}
 
-	return helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID))
+	err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID))
+	err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
+	return err
 }

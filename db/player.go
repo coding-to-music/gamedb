@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
@@ -382,13 +383,13 @@ func (p *Player) Update() (err error) {
 	wg.Add(1)
 	go func(p *Player) {
 		var err error
-
 		err = CreateEvent(new(http.Request), p.PlayerID, EventRefresh)
 		logging.Error(err)
 		wg.Done()
 	}(p)
 
 	err = helpers.GetMemcache().Delete(helpers.MemcachePlayerRefreshed(p.PlayerID))
+	err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 	logging.Error(err)
 
 	// Wait
