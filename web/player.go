@@ -57,7 +57,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// Queue profile for a refresh
 	// "Profile queued for an update!"
 	err = queuePlayer(r, player, db.PlayerUpdateAuto)
-	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon)
+	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 	logging.Error(err)
 
 	var wg sync.WaitGroup
@@ -79,7 +79,8 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
 			if err != nil {
 
-				logging.Error(helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon))
+				err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+				logging.Error(err)
 
 			} else {
 
@@ -332,7 +333,6 @@ func queuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (e
 		if err == nil {
 
 			err = memcache.SetItem(memcache.PlayerRefreshed(player.PlayerID))
-			logging.Error(err)
 		}
 	}
 

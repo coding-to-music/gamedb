@@ -294,13 +294,15 @@ func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (err error)
 
 	// Check if player is in queue
 	var memcacheItem = memcache.PlayerRefreshed(p.PlayerID)
-	var inQueue string
-	memcache.Get(memcacheItem.Key, &inQueue)
-	if inQueue == string(memcacheItem.Value) {
-		return ErrUpdatingPlayerInQueue
-	}
 
-	return nil
+	err = memcache.Get(memcacheItem.Key, new([]byte))
+	if err == memcache.ErrCacheMiss {
+		return nil // Not in queue
+	} else if err == nil {
+		return ErrUpdatingPlayerInQueue // In queue
+	} else {
+		return err // Error
+	}
 }
 
 func (p *Player) Update() (err error) {

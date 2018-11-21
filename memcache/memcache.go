@@ -13,6 +13,7 @@ import (
 
 const namespace = "game-db-"
 
+var ErrCacheMiss = memcache.ErrCacheMiss
 var client *memcache.Client
 var day int32 = 86400
 var (
@@ -64,6 +65,7 @@ func getClient() *memcache.Client {
 	return client
 }
 
+// Returns []byte
 func Get(key string, i interface{}) error {
 
 	client := getClient()
