@@ -46,7 +46,7 @@ var (
 type queueInterface interface {
 	getProduceQueue() RabbitQueue
 	getConsumeQueue() RabbitQueue
-	getRetryData() (RabbitMessageDelay)
+	getRetryData() RabbitMessageDelay
 	process(msg amqp.Delivery) (ack bool, requeue bool, err error)
 }
 

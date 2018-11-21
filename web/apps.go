@@ -178,7 +178,8 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	returnTemplate(w, r, "apps", t)
+	err := returnTemplate(w, r, "apps", t)
+	logging.Error(err)
 }
 
 type appsTemplate struct {

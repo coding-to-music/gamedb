@@ -27,7 +27,8 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Stats")
 	t.Description = "Some interesting Steam Store stats"
 
-	returnTemplate(w, r, "stats", t)
+	err := returnTemplate(w, r, "stats", t)
+	logging.Error(err)
 }
 
 type statsTemplate struct {

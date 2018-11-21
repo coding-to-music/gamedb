@@ -159,7 +159,8 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	returnTemplate(w, r, "chat", t)
+	err := returnTemplate(w, r, "chat", t)
+	logging.Error(err)
 }
 
 type chatTemplate struct {

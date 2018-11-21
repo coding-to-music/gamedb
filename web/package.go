@@ -124,7 +124,8 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices = pricesString
 	t.PricesCount = pricesCount
 
-	returnTemplate(w, r, "package", t)
+	err = returnTemplate(w, r, "package", t)
+	logging.Error(err)
 }
 
 type packageTemplate struct {

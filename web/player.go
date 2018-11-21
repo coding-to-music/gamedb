@@ -222,7 +222,8 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Bans = bans
 	t.Toasts = toasts
 
-	returnTemplate(w, r, "player", t)
+	err = returnTemplate(w, r, "player", t)
+	logging.Error(err)
 }
 
 type playerTemplate struct {

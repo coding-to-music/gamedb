@@ -14,7 +14,8 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "News")
 	t.Description = "All the news from all the games, all in one place."
 
-	returnTemplate(w, r, "news", t)
+	err := returnTemplate(w, r, "news", t)
+	logging.Error(err)
 }
 
 type newsTemplate struct {

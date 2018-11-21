@@ -27,7 +27,8 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
 	t.Description = "Get in touch."
 
-	returnTemplate(w, r, "contact", t)
+	err := returnTemplate(w, r, "contact", t)
+	logging.Error(err)
 }
 
 type contactTemplate struct {

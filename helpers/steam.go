@@ -21,7 +21,7 @@ func InitSteam() {
 	}
 }
 
-func GetSteam() (*steam.Steam) {
+func GetSteam() *steam.Steam {
 	return steamClient
 }
 

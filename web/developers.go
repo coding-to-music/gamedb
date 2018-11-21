@@ -26,7 +26,8 @@ func statsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Developers = developers
 	t.Date = config.Value
 
-	returnTemplate(w, r, "developers", t)
+	err := returnTemplate(w, r, "developers", t)
+	logging.Error(err)
 }
 
 type statsDevelopersTemplate struct {

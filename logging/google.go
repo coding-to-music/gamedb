@@ -29,7 +29,7 @@ func InfoG(message string, log ...string) {
 	}
 }
 
-func getGoogleLog(name ...string) (*logging.Logger) {
+func getGoogleLog(name ...string) *logging.Logger {
 
 	env := viper.GetString("ENV")
 

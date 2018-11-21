@@ -26,7 +26,8 @@ func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 	t.Genres = genres
 	t.Date = config.Value
 
-	returnTemplate(w, r, "genres", t)
+	err = returnTemplate(w, r, "genres", t)
+	logging.Error(err)
 }
 
 type statsGenresTemplate struct {

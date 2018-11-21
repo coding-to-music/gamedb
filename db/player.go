@@ -78,27 +78,27 @@ func (p Player) GetName() string {
 	return getPlayerName(p.PlayerID, p.PersonaName)
 }
 
-func (p Player) GetSteamTimeUnix() (int64) {
+func (p Player) GetSteamTimeUnix() int64 {
 	return p.TimeCreated.Unix()
 }
 
-func (p Player) GetSteamTimeNice() (string) {
+func (p Player) GetSteamTimeNice() string {
 	return p.TimeCreated.Format(helpers.DateYear)
 }
 
-func (p Player) GetLogoffUnix() (int64) {
+func (p Player) GetLogoffUnix() int64 {
 	return p.LastLogOff.Unix()
 }
 
-func (p Player) GetLogoffNice() (string) {
+func (p Player) GetLogoffNice() string {
 	return p.LastLogOff.Format(helpers.DateYearTime)
 }
 
-func (p Player) GetUpdatedUnix() (int64) {
+func (p Player) GetUpdatedUnix() int64 {
 	return p.UpdatedAt.Unix()
 }
 
-func (p Player) GetUpdatedNice() (string) {
+func (p Player) GetUpdatedNice() string {
 	return p.UpdatedAt.Format(helpers.DateTime)
 }
 
@@ -398,7 +398,7 @@ func (p *Player) Update() (err error) {
 	return p.Save()
 }
 
-func (p *Player) updateSummary() (error) {
+func (p *Player) updateSummary() error {
 
 	summary, _, err := helpers.GetSteam().GetPlayer(p.PlayerID)
 	if err != nil {
@@ -418,7 +418,7 @@ func (p *Player) updateSummary() (error) {
 	return err
 }
 
-func (p *Player) updateGames() (error) {
+func (p *Player) updateGames() error {
 
 	return nil // TODO!
 
@@ -523,7 +523,7 @@ func (p *Player) updateGames() (error) {
 	return nil
 }
 
-func (p *Player) updateRecentGames() (error) {
+func (p *Player) updateRecentGames() error {
 
 	recentResponse, _, err := helpers.GetSteam().GetRecentlyPlayedGames(p.PlayerID)
 	if err != nil {
@@ -551,7 +551,7 @@ func (p *Player) updateRecentGames() (error) {
 	return nil
 }
 
-func (p *Player) updateBadges() (error) {
+func (p *Player) updateBadges() error {
 
 	response, _, err := helpers.GetSteam().GetBadges(p.PlayerID)
 	if err != nil {
@@ -631,7 +631,7 @@ func (p *Player) updateBadges() (error) {
 	return nil
 }
 
-func (p *Player) updateFriends() (error) {
+func (p *Player) updateFriends() error {
 
 	resp, _, err := helpers.GetSteam().GetFriendList(p.PlayerID)
 	if err != nil {
@@ -700,7 +700,7 @@ func (p *Player) updateFriends() (error) {
 	return nil
 }
 
-func (p *Player) updateLevel() (error) {
+func (p *Player) updateLevel() error {
 
 	level, _, err := helpers.GetSteam().GetSteamLevel(p.PlayerID)
 	if err != nil {
@@ -712,7 +712,7 @@ func (p *Player) updateLevel() (error) {
 	return nil
 }
 
-func (p *Player) updateBans() (error) {
+func (p *Player) updateBans() error {
 
 	bans, _, err := helpers.GetSteam().GetPlayerBans(p.PlayerID)
 	if err == steam.ErrNoUserFound {
@@ -735,7 +735,7 @@ func (p *Player) updateBans() (error) {
 	return nil
 }
 
-func (p *Player) updateGroups() (error) {
+func (p *Player) updateGroups() error {
 
 	resp, _, err := helpers.GetSteam().GetUserGroupList(p.PlayerID)
 	if err != nil {
@@ -1120,22 +1120,22 @@ type ProfileBadge struct {
 	Scarcity       int    `json:"sc"`
 }
 
-func (p ProfileBadge) GetTimeFormatted() (string) {
+func (p ProfileBadge) GetTimeFormatted() string {
 	return time.Unix(p.CompletionTime, 0).Format(helpers.DateYearTime)
 }
 
-func (p ProfileBadge) GetAppPath() (string) {
+func (p ProfileBadge) GetAppPath() string {
 	return getAppPath(p.AppID, p.AppName)
 }
 
-func (p ProfileBadge) GetAppName() (string) {
+func (p ProfileBadge) GetAppName() string {
 	if p.AppID == 0 {
 		return "No App"
 	}
 	return getAppName(p.AppID, p.AppName)
 }
 
-func (p ProfileBadge) GetIcon() (string) {
+func (p ProfileBadge) GetIcon() string {
 	if p.AppIcon == "" {
 		return DefaultAppIcon
 	}

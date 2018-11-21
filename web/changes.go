@@ -24,7 +24,8 @@ func ChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Changes")
 	t.Description = "Every time the Steam library gets updated, a change record is created. We use these to keep website information up to date."
 
-	returnTemplate(w, r, "changes", t)
+	err := returnTemplate(w, r, "changes", t)
+	logging.Error(err)
 }
 
 type changesTemplate struct {

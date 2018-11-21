@@ -40,7 +40,7 @@ func InitDS() {
 }
 
 type Kind interface {
-	GetKey() (*datastore.Key)
+	GetKey() *datastore.Key
 }
 
 func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {

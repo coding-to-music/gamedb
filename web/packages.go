@@ -31,7 +31,8 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Packages")
 	t.Description = "The last " + humanize.Comma(int64(total)) + " packages to be updated."
 
-	returnTemplate(w, r, "packages", t)
+	err = returnTemplate(w, r, "packages", t)
+	logging.Error(err)
 }
 
 type packagesTemplate struct {

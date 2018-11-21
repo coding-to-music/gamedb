@@ -57,7 +57,8 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Free Games")
 	t.Types = types
 
-	returnTemplate(w, r, "free_games", t)
+	err := returnTemplate(w, r, "free_games", t)
+	logging.Error(err)
 }
 
 type freeGamesTemplate struct {

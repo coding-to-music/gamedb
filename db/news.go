@@ -33,7 +33,7 @@ func (article News) GetKey() (key *datastore.Key) {
 	return datastore.NameKey(KindNews, strconv.FormatInt(article.ArticleID, 10), nil)
 }
 
-func (article News) GetBody() (string) {
+func (article News) GetBody() string {
 	return helpers.BBCodeCompiler.Compile(article.Contents)
 }
 

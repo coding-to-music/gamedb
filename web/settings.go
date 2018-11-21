@@ -120,7 +120,8 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Games = games
 	t.Countries = countries
 
-	returnTemplate(w, r, "settings", t)
+	err = returnTemplate(w, r, "settings", t)
+	logging.Error(err)
 }
 
 type settingsTemplate struct {

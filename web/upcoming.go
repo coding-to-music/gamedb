@@ -24,7 +24,8 @@ func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 	t := upcomingTemplate{}
 	t.Fill(w, r, "Upcoming Apps")
 
-	returnTemplate(w, r, "upcoming", t)
+	err := returnTemplate(w, r, "upcoming", t)
+	logging.Error(err)
 }
 
 type upcomingTemplate struct {

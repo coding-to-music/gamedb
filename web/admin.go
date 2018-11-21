@@ -60,7 +60,8 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	case "dev":
 		go adminDev()
 	case "queues":
-		r.ParseForm()
+		err := r.ParseForm()
+		logging.Error(err)
 		go adminQueues(r)
 	}
 
@@ -89,7 +90,8 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Admin")
 	t.Configs = configs
 
-	returnTemplate(w, r, "admin", t)
+	err = returnTemplate(w, r, "admin", t)
+	logging.Error(err)
 }
 
 type adminTemplate struct {

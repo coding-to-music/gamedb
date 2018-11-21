@@ -47,7 +47,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	returnTemplate(w, r, "home", t)
+	err := returnTemplate(w, r, "home", t)
+	logging.Error(err)
 }
 
 type homeTemplate struct {

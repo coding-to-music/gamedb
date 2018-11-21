@@ -29,7 +29,8 @@ func queuesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Queues")
 	t.Description = "When new items get added to the site, they go through a queue to not overload the servers."
 
-	returnTemplate(w, r, "queues", t)
+	err := returnTemplate(w, r, "queues", t)
+	logging.Error(err)
 }
 
 type queuesTemplate struct {

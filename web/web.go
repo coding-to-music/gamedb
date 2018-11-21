@@ -189,7 +189,8 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 
 	w.WriteHeader(data.Code)
 
-	returnTemplate(w, r, "error", data)
+	err := returnTemplate(w, r, "error", data)
+	logging.Error(err)
 }
 
 type errorTemplate struct {
@@ -405,7 +406,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 	return string(b)
 }
 
-func (t GlobalTemplate) ShowAd() (bool) {
+func (t GlobalTemplate) ShowAd() bool {
 	return !t.IsLocal()
 }
 

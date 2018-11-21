@@ -30,11 +30,11 @@ func (change Change) GetName() (name string) {
 	return "Change " + strconv.Itoa(change.ChangeID)
 }
 
-func (change Change) GetTimestamp() (int64) {
+func (change Change) GetTimestamp() int64 {
 	return change.CreatedAt.Unix()
 }
 
-func (change Change) GetNiceDate() (string) {
+func (change Change) GetNiceDate() string {
 	return change.CreatedAt.Format(helpers.DateYearTime)
 }
 

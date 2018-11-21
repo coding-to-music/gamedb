@@ -89,7 +89,8 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	returnTemplate(w, r, "change", t)
+	err = returnTemplate(w, r, "change", t)
+	logging.Error(err)
 }
 
 type changeTemplate struct {

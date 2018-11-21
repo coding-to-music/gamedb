@@ -2,6 +2,8 @@ package web
 
 import (
 	"net/http"
+
+	"github.com/gamedb/website/logging"
 )
 
 func discountsHandler(w http.ResponseWriter, r *http.Request) {
@@ -9,7 +11,8 @@ func discountsHandler(w http.ResponseWriter, r *http.Request) {
 	t := discountsTemplate{}
 	t.Fill(w, r, "Discounts")
 
-	returnTemplate(w, r, "discounts", t)
+	err := returnTemplate(w, r, "discounts", t)
+	logging.Error(err)
 }
 
 type discountsTemplate struct {

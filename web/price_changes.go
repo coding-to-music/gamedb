@@ -25,7 +25,8 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Price Changes")
 	t.Description = "Pick up a bargain"
 
-	returnTemplate(w, r, "price_changes", t)
+	err := returnTemplate(w, r, "price_changes", t)
+	logging.Error(err)
 }
 
 type priceChangesTemplate struct {
