@@ -13,7 +13,6 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
-	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/queue"
 	"github.com/go-chi/chi"
 )
@@ -332,7 +331,7 @@ func queuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (e
 		err = queue.Produce(queue.QueueProfiles, []byte(strconv.FormatInt(player.PlayerID, 10)))
 		if err == nil {
 
-			err = memcache.SetItem(memcache.PlayerRefreshed(player.PlayerID))
+			err = helpers.GetMemcache().SetItem(helpers.MemcachePlayerRefreshed(player.PlayerID))
 		}
 	}
 

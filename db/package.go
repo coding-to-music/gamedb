@@ -9,7 +9,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
-	"github.com/gamedb/website/memcache"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
@@ -543,7 +542,7 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 func CountPackages() (count int, err error) {
 
-	return memcache.GetSetInt(memcache.PackagesCount, func() (count int, err error) {
+	return helpers.GetMemcache().GetSetInt(helpers.MemcachePackagesCount, func() (count int, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

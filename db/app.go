@@ -13,7 +13,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
-	"github.com/gamedb/website/memcache"
 	"github.com/gosimple/slug"
 	"github.com/spf13/viper"
 )
@@ -1000,7 +999,7 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	return memcache.GetSetInt(memcache.AppsCount, func() (count int, err error) {
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheAppsCount, func() (count int, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -1014,7 +1013,7 @@ func CountApps() (count int, err error) {
 
 func GetMostExpensiveApp(code steam.CountryCode) (price int, err error) {
 
-	return memcache.GetSetInt(memcache.MostExpensiveApp(code), func() (count int, err error) {
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheMostExpensiveApp(code), func() (count int, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

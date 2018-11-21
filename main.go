@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
-	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/storage"
 	"github.com/gamedb/website/web"
@@ -23,8 +22,8 @@ import (
 func init() {
 	configSetup()  // First
 	logging.Init() // Second
-	helpers.Init()
-	memcache.Init()
+	helpers.InitSteam()
+	helpers.InitMemcache()
 	db.InitDS()
 	storage.Init()
 	queue.Init()

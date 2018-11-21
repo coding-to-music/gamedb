@@ -7,7 +7,6 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/memcache"
 )
 
 const (
@@ -100,7 +99,7 @@ func (event Event) OutputForJSON(ip string) (output []interface{}) {
 
 func CountPlayerEvents(playerID int64) (count int, err error) {
 
-	return memcache.GetSetInt(memcache.PlayerEventsCount(playerID), func() (count int, err error) {
+	return helpers.GetMemcache().GetSetInt(helpers.MemcachePlayerEventsCount(playerID), func() (count int, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
@@ -127,5 +126,5 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 		return err
 	}
 
-	return memcache.Delete(memcache.PlayerEventsCount(playerID))
+	return helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID))
 }

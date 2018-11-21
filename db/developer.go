@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/memcache"
 )
 
 type Developer struct {
@@ -78,7 +77,7 @@ func GetAllDevelopers() (developers []Developer, err error) {
 
 func GetDevelopersForSelect() (devs []Developer, err error) {
 
-	s, err := memcache.GetSetString(memcache.DeveloperKeyNames, func() (s string, err error) {
+	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheDeveloperKeyNames, func() (s string, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

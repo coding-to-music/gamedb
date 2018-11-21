@@ -16,7 +16,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
-	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/storage"
 	"github.com/gosimple/slug"
 )
@@ -293,10 +292,10 @@ func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (err error)
 	}
 
 	// Check if player is in queue
-	var memcacheItem = memcache.PlayerRefreshed(p.PlayerID)
+	var memcacheItem = helpers.MemcachePlayerRefreshed(p.PlayerID)
 
-	err = memcache.Get(memcacheItem.Key, new([]byte))
-	if err == memcache.ErrCacheMiss {
+	err = helpers.GetMemcache().Get(memcacheItem.Key, new([]byte))
+	if err == helpers.ErrCacheMiss {
 		return nil // Not in queue
 	} else if err == nil {
 		return ErrUpdatingPlayerInQueue // In queue
@@ -389,7 +388,7 @@ func (p *Player) Update() (err error) {
 		wg.Done()
 	}(p)
 
-	err = memcache.Delete(memcache.PlayerRefreshed(p.PlayerID))
+	err = helpers.GetMemcache().Delete(helpers.MemcachePlayerRefreshed(p.PlayerID))
 	logging.Error(err)
 
 	// Wait
@@ -987,7 +986,7 @@ func checkGetMultiPlayerErrors(err error) error {
 
 func CountPlayers() (count int, err error) {
 
-	return memcache.GetSetInt(memcache.CountPlayers, func() (count int, err error) {
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheCountPlayers, func() (count int, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {

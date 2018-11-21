@@ -7,7 +7,6 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/memcache"
 )
 
 const PlayersToRank = 1000
@@ -128,7 +127,7 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 func CountRanks() (count int, err error) {
 
-	return memcache.GetSetInt(memcache.RanksCount, func() (count int, err error) {
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheRanksCount, func() (count int, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/memcache"
 )
 
 const (
@@ -44,13 +43,13 @@ func SetConfig(id string, value string) (err error) {
 	}
 
 	// Save to memcache
-	item := memcache.ConfigRow(id)
-	return memcache.Set(item.Key, value, item.Expiration)
+	item := helpers.MemcacheConfigRow(id)
+	return helpers.GetMemcache().Set(item.Key, value, item.Expiration)
 }
 
 func GetConfig(id string) (config Config, err error) {
 
-	s, err := memcache.GetSetString(memcache.ConfigRow(id), func() (s string, err error) {
+	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheConfigRow(id), func() (s string, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

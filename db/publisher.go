@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/memcache"
 )
 
 type Publisher struct {
@@ -78,7 +77,7 @@ func GetAllPublishers() (publishers []Publisher, err error) {
 
 func GetPublishersForSelect() (pubs []Publisher, err error) {
 
-	s, err := memcache.GetSetString(memcache.PublisherKeyNames, func() (s string, err error) {
+	s, err := helpers.GetMemcache().GetSetString(helpers.MemcachePublisherKeyNames, func() (s string, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

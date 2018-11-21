@@ -7,8 +7,8 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
-	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -150,7 +150,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		count, err = memcache.GetSetInt(memcache.FreeAppsCount, func() (count int, err error) {
+		count, err = helpers.GetMemcache().GetSetInt(helpers.MemcacheFreeAppsCount, func() (count int, err error) {
 
 			gorm, err := db.GetMySQLClient()
 			if err != nil {

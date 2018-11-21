@@ -7,7 +7,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/memcache"
 )
 
 type Genre struct {
@@ -54,7 +53,7 @@ func GetAllGenres() (genres []Genre, err error) {
 
 func GetGenresForSelect() (genres []Genre, err error) {
 
-	s, err := memcache.GetSetString(memcache.GenreKeyNames, func() (s string, err error) {
+	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheGenreKeyNames, func() (s string, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/memcache"
 )
 
 type Tag struct {
@@ -60,7 +59,7 @@ func GetAllTags() (tags []Tag, err error) {
 
 func GetTagsForSelect() (tags []Tag, err error) {
 
-	s, err := memcache.GetSetString(memcache.TagKeyNames, func() (s string, err error) {
+	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheTagKeyNames, func() (s string, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

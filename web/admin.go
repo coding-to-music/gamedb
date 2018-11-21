@@ -16,7 +16,6 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
-	"github.com/gamedb/website/memcache"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
@@ -902,7 +901,7 @@ func adminRanks() {
 
 func adminMemcache() {
 
-	err := memcache.DeleteAll()
+	err := helpers.GetMemcache().DeleteAll()
 	logging.Error(err)
 
 	err = db.SetConfig(db.ConfWipeMemcache, strconv.Itoa(int(time.Now().Unix())))

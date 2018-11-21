@@ -7,7 +7,6 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/memcache"
 )
 
 type Change struct {
@@ -70,7 +69,7 @@ func (change Change) OutputForJSON() (output []interface{}) {
 
 func GetChange(id int64) (change Change, err error) {
 
-	s, err := memcache.GetSetString(memcache.ChangeRow(id), func() (s string, err error) {
+	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheChangeRow(id), func() (s string, err error) {
 
 		client, context, err := GetDSClient()
 		if err != nil {
