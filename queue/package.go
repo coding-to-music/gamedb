@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"encoding/json"
 	"errors"
 	"strconv"
 
@@ -70,25 +71,26 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	pack.PICSName = message.KeyValues.Name
 	pack.PICSRaw = string(msg.Body)
 
-	var i int
-	var i64 int64
-
 	for _, v := range message.KeyValues.Children {
 
 		switch v.Name {
 		case "billingtype":
+			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
 			pack.PICSBillingType = int8(i64)
 		case "licensetype":
+			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
 			pack.PICSLicenseType = int8(i64)
 		case "status":
+			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
 			pack.PICSStatus = int8(i64)
 		case "packageid":
 			// Empty
 		case "appids":
 
+			var i int
 			var appIDs []int
 			for _, vv := range v.Children {
 				i, err = strconv.Atoi(vv.Value.(string))
@@ -99,6 +101,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 		case "depotids":
 
+			var i int
 			var depotIDs []int
 			for _, vv := range v.Children {
 				i, err = strconv.Atoi(vv.Value.(string))
@@ -121,7 +124,13 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 			var extended = db.Extended{}
 			for _, vv := range v.Children {
-				extended[vv.Name] = vv.Value.(string)
+				if vv.Value == nil {
+					bytes, err := json.Marshal(vv.GetChildrenAsSlice())
+					logging.Error(err)
+					extended[vv.Name] = string(bytes)
+				} else {
+					extended[vv.Name] = vv.Value.(string)
+				}
 			}
 			pack.SetExtended(extended)
 

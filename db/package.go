@@ -577,6 +577,7 @@ var PackageExtendedKeys = Extended{
 	"complimentarypackagegrants":            "Complimentary Package Grants",
 	"curatorconnect":                        "Curator Connect",
 	"devcomp":                               "Devcomp",
+	"disallowedpaymentmethods":              "Disallowed Payment Methods",
 	"dontallowrunincountries":               "Dont Allow Run In Countries",
 	"dontgrantifappidowned":                 "Dont Grant If App ID Owned",
 	"enforceintraeeaactivationrestrictions": "Enforce Intraeeaactivation Restrictions",
