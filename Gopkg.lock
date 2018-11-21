@@ -652,21 +652,12 @@
   packages = [
     "collate",
     "collate/build",
-    "currency",
-    "feature/plural",
-    "internal",
-    "internal/catmsg",
     "internal/colltab",
-    "internal/format",
     "internal/gen",
-    "internal/number",
-    "internal/stringset",
     "internal/tag",
     "internal/triegen",
     "internal/ucd",
     "language",
-    "message",
-    "message/catalog",
     "secure/bidirule",
     "transform",
     "unicode/bidi",
@@ -834,9 +825,6 @@
     "github.com/yohcop/openid-go",
     "golang.org/x/crypto/bcrypt",
     "golang.org/x/oauth2",
-    "golang.org/x/text/currency",
-    "golang.org/x/text/language",
-    "golang.org/x/text/message",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
