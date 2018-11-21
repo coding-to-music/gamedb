@@ -21,6 +21,8 @@ if ($('#player-page').length > 0) {
             dataType: 'json',
             cache: false
         });
+
+        return false;
     });
 
     $('#games table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
