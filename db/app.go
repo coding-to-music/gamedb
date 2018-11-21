@@ -154,7 +154,7 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.GetPath(),
 		app.GetType(),
 		app.ReviewsScore,
-		helpers.CurrencyFormat(app.GetPrice(code).Currency, app.GetPrice(code).Final),
+		helpers.CurrencyFormat(code, app.GetPrice(code).Final),
 		app.UpdatedAt.Unix(),
 	}
 }
@@ -167,7 +167,7 @@ func (app App) OutputForJSONComingSoon(code steam.CountryCode) (output []interfa
 		app.GetIcon(),
 		app.GetPath(),
 		app.GetType(),
-		app.GetPrice(code).GetFinal(),
+		app.GetPrice(code).GetFinal(code),
 		app.GetReleaseDateNice(),
 		app.GetReleaseDateUnix(),
 	}

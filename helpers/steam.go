@@ -10,7 +10,7 @@ import (
 var steamClient *steam.Steam
 
 // Called from main
-func Init() {
+func InitSteam() {
 
 	steamClient = &steam.Steam{
 		Key:        viper.GetString("API_KEY"),

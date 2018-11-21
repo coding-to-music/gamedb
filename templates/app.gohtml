@@ -80,7 +80,7 @@
                         </tr>
                         <tr>
                             <th scope="row" nowrap="nowrap" width="1%">Price</th>
-                            <td>${{ (.App.GetPrice "us").Final }}</td>
+                            <td>{{ (.App.GetPrice .UserCountry).GetFinal .UserCountry }}</td>
                         </tr>
                         <tr>
                             <th scope="row" nowrap="nowrap" width="1%">App Type</th>
@@ -141,10 +141,10 @@
                                     <img src="/assets/img/flags/{{$key}}.png" alt="{{ $key }}" class="rounded">
                                     <span>{{ (.GetCountryName $key) }} ({{ $key }})</span>
                                 </td>
-                                <td>{{ .GetInitial }}</td>
-                                <td>{{ .GetFinal }}</td>
+                                <td>{{ .GetInitial $key }}</td>
+                                <td>{{ .GetFinal $key }}</td>
                                 <td>{{ .GetDiscountPercent }}%</td>
-                                <td>{{ .GetIndividual }}</td>
+                                <td>{{ .GetIndividual $key }}</td>
                             </tr>
                         {{ end }}
                         </table>

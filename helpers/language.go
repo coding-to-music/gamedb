@@ -3,10 +3,8 @@ package helpers
 import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/logging"
+	"github.com/leekchan/accounting"
 	"github.com/pariz/gountries"
-	"golang.org/x/text/currency"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 )
 
 // https://partner.steamgames.com/doc/store/localization
@@ -37,17 +35,10 @@ func CountryCodeToName(code string) string {
 	return country.Name.Common
 }
 
-func CurrencyFormat(currencyCode string, amount int) string {
+func CurrencyFormat(code steam.CountryCode, amount int) string {
 
-	if currencyCode == "" {
-		return ""
-	}
-
-	unit, err := currency.ParseISO(currencyCode)
-	logging.Error(err)
-
-	p := message.NewPrinter(language.AmericanEnglish)
-	return p.Sprint(currency.Symbol(unit.Amount(float64(amount) / 100)))
+	ac := accounting.Accounting{Symbol: CurrencySymbol(code), Precision: 2}
+	return ac.FormatMoney(float64(amount) / 100)
 }
 
 func CurrencySymbol(code steam.CountryCode) string {

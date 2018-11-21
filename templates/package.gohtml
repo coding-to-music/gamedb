@@ -103,19 +103,19 @@
                             <table class="table">
                                 <tr>
                                     <td>Initial Price</td>
-                                    <td>${{ (.Package.GetPrice "us").Initial }}</td>
+                                    <td>{{ (.Package.GetPrice .UserCountry).GetInitial .UserCountry }}</td>
                                 </tr>
                                 <tr>
                                     <td>Final Price</td>
-                                    <td>${{ (.Package.GetPrice "us").Final }}</td>
+                                    <td>{{ (.Package.GetPrice .UserCountry).GetFinal .UserCountry }}</td>
                                 </tr>
                                 <tr>
                                     <td>Discount Percent</td>
-                                    <td>${{ (.Package.GetPrice "us").DiscountPercent }}</td>
+                                    <td>{{ (.Package.GetPrice .UserCountry).GetDiscountPercent }}</td>
                                 </tr>
                                 <tr>
                                     <td>Individual Price</td>
-                                    <td>${{ (.Package.GetPrice "us").Individual }}</td>
+                                    <td>{{ (.Package.GetPrice .UserCountry).GetIndividual .UserCountry }}</td>
                                 </tr>
                             </table>
 
@@ -196,10 +196,10 @@
                                     <img src="/assets/img/flags/{{$key}}.png" alt="{{ $key }}" class="rounded">
                                     <span>{{ (.GetCountryName $key) }} ({{ $key }})</span>
                                 </td>
-                                <td>{{ .GetInitial }}</td>
-                                <td>{{ .GetFinal }}</td>
+                                <td>{{ .GetInitial $key }}</td>
+                                <td>{{ .GetFinal $key }}</td>
                                 <td>{{ .GetDiscountPercent }}%</td>
-                                <td>{{ .GetIndividual }}</td>
+                                <td>{{ .GetIndividual $key }}</td>
                             </tr>
                         {{ end }}
                         </table>
@@ -211,5 +211,7 @@
         </div>
 
     </div>
+
+</div>
 
 {{ template "_footer" . }} {{end}}

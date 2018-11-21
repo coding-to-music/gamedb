@@ -69,20 +69,20 @@ type ProductPriceCache struct {
 	Individual      int    `json:"individual"`
 }
 
-func (p ProductPriceCache) GetInitial() float64 {
-	return helpers.CentsInt(p.Initial)
+func (p ProductPriceCache) GetInitial(code steam.CountryCode) string {
+	return helpers.CurrencyFormat(code, p.Initial)
 }
 
-func (p ProductPriceCache) GetFinal() float64 {
-	return helpers.CentsInt(p.Final)
+func (p ProductPriceCache) GetFinal(code steam.CountryCode) string {
+	return helpers.CurrencyFormat(code, p.Final)
 }
 
-func (p ProductPriceCache) GetDiscountPercent() float64 {
-	return helpers.CentsInt(p.Initial)
+func (p ProductPriceCache) GetDiscountPercent() int {
+	return p.DiscountPercent
 }
 
-func (p ProductPriceCache) GetIndividual() float64 {
-	return helpers.CentsInt(p.Final)
+func (p ProductPriceCache) GetIndividual(code steam.CountryCode) string {
+	return helpers.CurrencyFormat(code, p.Individual)
 }
 
 func (p ProductPriceCache) GetCountryName(code steam.CountryCode) string {
