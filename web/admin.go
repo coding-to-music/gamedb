@@ -902,7 +902,7 @@ func adminRanks() {
 
 func adminMemcache() {
 
-	err := memcache.Wipe()
+	err := memcache.DeleteAll()
 	logging.Error(err)
 
 	err = db.SetConfig(db.ConfWipeMemcache, strconv.Itoa(int(time.Now().Unix())))

@@ -142,25 +142,30 @@ func Delete(item memcache.Item) (err error) {
 	return helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 }
 
-func Inc(key string) (err error) {
+func Inc(key string, delta ...uint64) (err error) {
+
+	if len(delta) == 0 {
+		delta = []uint64{1}
+	}
 
 	client := getClient()
-	_, err = client.Increment(namespace+key, 1)
+	_, err = client.Increment(namespace+key, delta[0])
 
 	return err
 }
 
-func Dec(key string) (err error) {
+func Dec(key string, delta ...uint64) (err error) {
+
+	if len(delta) == 0 {
+		delta = []uint64{1}
+	}
 
 	client := getClient()
-	_, err = client.Decrement(namespace+key, 1)
+	_, err = client.Decrement(namespace+key, delta[0])
 
 	return err
 }
 
-func Wipe() (err error) {
-
-	client := getClient()
-
-	return client.DeleteAll()
+func DeleteAll() (err error) {
+	return getClient().DeleteAll()
 }
