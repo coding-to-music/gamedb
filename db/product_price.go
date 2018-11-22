@@ -161,18 +161,3 @@ func GetProductPrices(ID int, productType ProductType, currency steam.CountryCod
 
 	return prices, err
 }
-
-func GetPrices(currency steam.CountryCode) (prices []ProductPrice, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return prices, err
-	}
-
-	q := datastore.NewQuery(KindProductPrice).Order("-created_at").Limit(1000)
-	q = q.Filter("currency =", string(currency))
-
-	_, err = client.GetAll(ctx, q, &prices)
-
-	return prices, err
-}
