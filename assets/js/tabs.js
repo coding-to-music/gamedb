@@ -4,7 +4,6 @@
     // Choose tab from URL
     const hashes = window.location.hash;
     if (hashes) {
-        // console.log(hashes.split(','));
         hashes.split(',').map(function (hash) {
             $('.nav-link[href="' + hash + '"]').tab('show');
         });

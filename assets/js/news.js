@@ -10,6 +10,9 @@ if ($('#news-page').length > 0) {
     // Data tables
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "order": [[2, 'desc']],
+        "createdRow": function (row, data, dataIndex) {
+            $(row).attr('data-id', data[0]);
+        },
         "columnDefs": [
             // Game
             {

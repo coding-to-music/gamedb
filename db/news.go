@@ -40,17 +40,20 @@ func (article News) GetBody() string {
 // Data array for datatables
 func (article News) OutputForJSON(r *http.Request) (output []interface{}) {
 
+	var id = strconv.FormatInt(article.ArticleID, 10)
+	var path = getAppPath(article.AppID, article.AppName)
+
 	return []interface{}{
-		article.ArticleID,                          // 0
-		article.Title,                              // 1
-		article.Author,                             // 2
-		article.Date.Unix(),                        // 3
-		article.Date.Format(helpers.DateYear),      // 4
-		article.GetBody(),                          // 5
-		article.AppID,                              // 6
-		article.AppName,                            // 7
-		article.AppIcon,                            // 8
-		getAppPath(article.AppID, article.AppName), // 9
+		id,                                    // 0
+		article.Title,                         // 1
+		article.Author,                        // 2
+		article.Date.Unix(),                   // 3
+		article.Date.Format(helpers.DateYear), // 4
+		article.GetBody(),                     // 5
+		article.AppID,                         // 6
+		article.AppName,                       // 7
+		article.AppIcon,                       // 8
+		path + "#news," + id,                  // 9
 	}
 }
 
