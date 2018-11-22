@@ -27,7 +27,7 @@ const (
 )
 
 var (
-	ErrorTooMany    = errors.New("datastore: too many")
+	ErrorTooMany = errors.New("datastore: too many")
 )
 
 var (
@@ -36,7 +36,8 @@ var (
 
 // Called from main
 func InitDS() {
-	GetDSClient()
+	_, _, err := GetDSClient()
+	logging.Error(err)
 }
 
 type Kind interface {

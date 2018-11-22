@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 
+	"github.com/gamedb/website/logging"
 	"github.com/ikeikeikeike/go-sitemap-generator/stm"
 )
 
@@ -48,5 +49,6 @@ func siteMapHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	w.Write(sm.XMLContent())
+	_, err := w.Write(sm.XMLContent())
+	logging.Error(err)
 }

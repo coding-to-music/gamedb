@@ -45,17 +45,19 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		var ErrSomething = errors.New("something went wrong")
 
 		// Parse form
-		if err := r.ParseForm(); err != nil {
+		err = r.ParseForm()
+		if err != nil {
 			logging.Error(err)
 			return err
 		}
 
 		// Backup
-		session.WriteMany(w, r, map[string]string{
+		err = session.WriteMany(w, r, map[string]string{
 			"login-name":    r.PostForm.Get("name"),
 			"login-email":   r.PostForm.Get("email"),
 			"login-message": r.PostForm.Get("message"),
 		})
+		logging.Error(err)
 
 		// Form validation
 		if r.PostForm.Get("name") == "" {
@@ -97,21 +99,24 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove backup
-		session.WriteMany(w, r, map[string]string{
+		err = session.WriteMany(w, r, map[string]string{
 			"login-name":    "",
 			"login-email":   "",
 			"login-message": "",
 		})
+		logging.Error(err)
 
 		return nil
 	}()
 
 	// Redirect
 	if err != nil {
-		session.SetGoodFlash(w, r, err.Error())
+		err = session.SetGoodFlash(w, r, err.Error())
+		logging.Error(err)
 		http.Redirect(w, r, "/contact", 302)
 	} else {
-		session.SetGoodFlash(w, r, "Message sent!")
+		err = session.SetGoodFlash(w, r, "Message sent!")
+		logging.Error(err)
 		http.Redirect(w, r, "/contact", 302)
 	}
 }

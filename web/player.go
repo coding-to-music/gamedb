@@ -350,7 +350,8 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := DataTablesQuery{}
-	query.FillFromURL(r.URL.Query())
+	err = query.FillFromURL(r.URL.Query())
+	logging.Error(err)
 
 	//
 	var wg sync.WaitGroup
@@ -482,7 +483,8 @@ func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(response)
 	logging.Error(err)
 	if err == nil {
-		w.Write(bytes)
+		_, err := w.Write(bytes)
+		logging.Error(err)
 	}
 }
 

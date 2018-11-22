@@ -13,9 +13,10 @@ func rootFileHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadFile(viper.GetString("PATH") + r.URL.Path)
 	if err != nil {
 		logging.Error(err)
-		w.Write([]byte("Unable to read file."))
+		_, err := w.Write([]byte("Unable to read file."))
+		logging.Error(err)
 		return
 	}
 
-	w.Write(data)
+	_, err = w.Write(data)
 }

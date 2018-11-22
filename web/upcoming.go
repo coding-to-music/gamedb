@@ -35,7 +35,8 @@ type upcomingTemplate struct {
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
-	query.FillFromURL(r.URL.Query())
+	err := query.FillFromURL(r.URL.Query())
+	logging.Error(err)
 
 	var count int
 	var apps []db.App

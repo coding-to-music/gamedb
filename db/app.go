@@ -509,7 +509,8 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 				errs = append(errs, err)
 			}
 
-			app.SetNewsIDs(resp)
+			err := app.SetNewsIDs(resp)
+			logging.Error(err)
 		}
 
 		wg.Done()

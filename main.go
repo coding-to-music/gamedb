@@ -48,7 +48,10 @@ func main() {
 	flag.Parse()
 
 	if *flagPprof {
-		go http.ListenAndServe(":"+viper.GetString("PORT"), nil)
+		go func() {
+			err := http.ListenAndServe(":"+viper.GetString("PORT"), nil)
+			logging.Error(err)
+		}()
 	}
 
 	if *flagConsumers {
@@ -85,7 +88,8 @@ func configSetup() {
 
 	// Google
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
+		err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
+		logging.Error(err)
 	}
 
 	//

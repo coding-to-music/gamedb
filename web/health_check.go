@@ -1,7 +1,12 @@
 package web
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/gamedb/website/logging"
+)
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+	_, err := w.Write([]byte("OK"))
+	logging.Error(err)
 }

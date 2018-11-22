@@ -38,7 +38,8 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	query.FillFromURL(r.URL.Query())
+	err := query.FillFromURL(r.URL.Query())
+	logging.Error(err)
 
 	//
 	var wg sync.WaitGroup

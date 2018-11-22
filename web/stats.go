@@ -67,7 +67,8 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(ret)
 	logging.Error(err)
 
-	w.Write(bytes)
+	_, err = w.Write(bytes)
+	logging.Error(err)
 }
 
 type appScore struct {
@@ -107,7 +108,8 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(ret)
 	logging.Error(err)
 
-	w.Write(bytes)
+	_, err = w.Write(bytes)
+	logging.Error(err)
 }
 
 type appType struct {
@@ -163,5 +165,6 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(ret)
 	logging.Error(err)
 
-	w.Write(bytes)
+	_, err = w.Write(bytes)
+	logging.Error(err)
 }

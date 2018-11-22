@@ -34,7 +34,8 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	player, err := getPlayer(r)
 	if err != nil {
 		if err == errNotLoggedIn {
-			session.SetBadFlash(w, r, "please login")
+			err := session.SetBadFlash(w, r, "please login")
+			logging.Error(err)
 			http.Redirect(w, r, "/login", 302)
 			return
 		}
@@ -156,7 +157,8 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	if len(password) > 0 {
 
 		if len(password) < 8 {
-			session.SetBadFlash(w, r, "Password must be at least 8 characters long")
+			err := session.SetBadFlash(w, r, "Password must be at least 8 characters long")
+			logging.Error(err)
 			http.Redirect(w, r, "/settings", 302)
 			return
 		}
@@ -164,7 +166,8 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 		if err != nil {
 			logging.Error(err)
-			session.SetBadFlash(w, r, "Something went wrong encrypting your password")
+			err := session.SetBadFlash(w, r, "Something went wrong encrypting your password")
+			logging.Error(err)
 			http.Redirect(w, r, "/settings", 302)
 			return
 		}
@@ -192,11 +195,13 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Save user
 	err = user.UpdateInsert()
+	logging.Error(err)
 	if err != nil {
+		err = session.SetBadFlash(w, r, "Something went wrong saving settings")
 		logging.Error(err)
-		session.SetBadFlash(w, r, "Something went wrong saving settings")
 	} else {
-		session.SetGoodFlash(w, r, "Settings saved")
+		err = session.SetGoodFlash(w, r, "Settings saved")
+		logging.Error(err)
 	}
 
 	// Update session
@@ -211,7 +216,8 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
-	query.FillFromURL(r.URL.Query())
+	err := query.FillFromURL(r.URL.Query())
+	logging.Error(err)
 
 	//
 	var wg sync.WaitGroup

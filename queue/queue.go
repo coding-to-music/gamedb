@@ -193,7 +193,8 @@ func (s rabbitConsumer) consume() {
 				logging.Error(err)
 
 				if ack {
-					msg.Ack(false)
+					err = msg.Ack(false)
+					logging.Error(err)
 				} else {
 
 					if requeue {
@@ -201,7 +202,8 @@ func (s rabbitConsumer) consume() {
 						logging.Error(err)
 					}
 
-					msg.Nack(false, false)
+					err = msg.Nack(false, false)
+					logging.Error(err)
 				}
 			}
 
@@ -211,7 +213,8 @@ func (s rabbitConsumer) consume() {
 		}
 
 		//conn.Close()
-		ch.Close()
+		err = ch.Close()
+		logging.Error(err)
 	}
 }
 
@@ -234,7 +237,8 @@ func (s rabbitConsumer) requeueMessage(msg amqp.Delivery) error {
 		return err
 	}
 
-	Produce(QueueDelaysData, data)
+	err = Produce(QueueDelaysData, data)
+	logging.Error(err)
 
 	return nil
 }

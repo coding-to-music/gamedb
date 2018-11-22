@@ -115,7 +115,8 @@ func adminApps() {
 	}
 
 	for _, v := range apps.Apps {
-		queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.AppID)))
+		err = queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.AppID)))
+		logging.Error(err)
 	}
 
 	//
@@ -551,7 +552,8 @@ func adminDevelopers() {
 			devsToDeleteSlice = append(devsToDeleteSlice, v)
 		}
 
-		db.DeleteDevelopers(devsToDeleteSlice)
+		err := db.DeleteDevelopers(devsToDeleteSlice)
+		logging.Error(err)
 
 		limit--
 		wg.Done()

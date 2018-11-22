@@ -168,7 +168,8 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	}
 
 	w.WriteHeader(200)
-	buf.WriteTo(w)
+	_, err = buf.WriteTo(w)
+	logging.Error(err)
 
 	return nil
 }
@@ -432,12 +433,11 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter) {
 	}
 
 	bytesx, err := json.Marshal(t)
-	if err != nil {
-		logging.Error(err)
-	}
+	logging.Error(err)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(bytesx)
+	_, err = w.Write(bytesx)
+	logging.Error(err)
 }
 
 type DataTablesQuery struct {

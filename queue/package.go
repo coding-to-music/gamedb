@@ -97,7 +97,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 				logging.Error(err)
 				appIDs = append(appIDs, i)
 			}
-			pack.SetAppIDs(appIDs)
+			err = pack.SetAppIDs(appIDs)
+			logging.Error(err)
 
 		case "depotids":
 
@@ -108,7 +109,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 				logging.Error(err)
 				depotIDs = append(depotIDs, i)
 			}
-			pack.SetDepotIDs(depotIDs)
+			err = pack.SetDepotIDs(depotIDs)
+			logging.Error(err)
 
 		case "appitems":
 
@@ -118,7 +120,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 					appItems[vv.Name] = vv.Children[0].Value.(string)
 				}
 			}
-			pack.SetAppItems(appItems)
+			err = pack.SetAppItems(appItems)
+			logging.Error(err)
 
 		case "extended":
 
@@ -132,7 +135,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 					extended[vv.Name] = vv.Value.(string)
 				}
 			}
-			pack.SetExtended(extended)
+			err = pack.SetExtended(extended)
+			logging.Error(err)
 
 		default:
 			logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeID) + ")")

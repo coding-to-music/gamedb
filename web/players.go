@@ -120,7 +120,8 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
-	query.FillFromURL(r.URL.Query())
+	err := query.FillFromURL(r.URL.Query())
+	logging.Error(err)
 
 	//
 	var wg sync.WaitGroup
@@ -191,10 +192,10 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get total
 	var total int
-	var err error
 	wg.Add(1)
 	go func() {
 
+		var err error
 		total, err = db.CountRanks()
 		logging.Error(err)
 

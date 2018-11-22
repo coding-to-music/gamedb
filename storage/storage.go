@@ -25,7 +25,8 @@ var (
 // Called from main
 func Init() {
 	bucket = viper.GetString("GOOGLE_BUCKET")
-	getClient()
+	_, _, err := getClient()
+	logging.Error(err)
 }
 
 var (

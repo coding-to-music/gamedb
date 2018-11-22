@@ -53,7 +53,8 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 		bytes, err := json.Marshal(websocketPayload{Error: "Invalid page"})
 		logging.Error(err)
 
-		w.Write(bytes)
+		_, err = w.Write(bytes)
+		logging.Error(err)
 		return
 	}
 
@@ -107,7 +108,8 @@ func (p *Page) Send(data interface{}) {
 			// Clean up old connections
 			if strings.Contains(err.Error(), "broken pipe") {
 
-				v.Close()
+				err := v.Close()
+				logging.Error(err)
 				delete(p.connections, k)
 
 			} else {

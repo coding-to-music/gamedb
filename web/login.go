@@ -57,7 +57,8 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Save email so they don't need to keep typing it
-		session.Write(w, r, "login-email", r.PostForm.Get("email"))
+		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
+		logging.Error(err)
 
 		// Recaptcha
 		err = recaptcha.CheckFromRequest(r)
@@ -118,7 +119,8 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove form prefill on success
-		session.Write(w, r, "login-email", "")
+		err = session.Write(w, r, "login-email", "")
+		logging.Error(err)
 
 		return nil
 	}()
@@ -131,10 +133,12 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			logging.Error(err)
 		}
 
-		session.SetGoodFlash(w, r, err.Error())
+		err = session.SetGoodFlash(w, r, err.Error())
+		logging.Error(err)
 		http.Redirect(w, r, "/login", 302)
 	} else {
-		session.SetGoodFlash(w, r, "Login successful")
+		err = session.SetGoodFlash(w, r, "Login successful")
+		logging.Error(err)
 		http.Redirect(w, r, "/settings", 302)
 	}
 }
@@ -251,7 +255,8 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = db.CreateEvent(r, id, db.EventLogout)
 	logging.Error(err)
 
-	session.Clear(w, r)
+	err = session.Clear(w, r)
+	logging.Error(err)
 
 	http.Redirect(w, r, "/", 303)
 }
