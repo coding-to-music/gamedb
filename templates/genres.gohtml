@@ -21,7 +21,7 @@
     </div>
 
     <div class="card">
-    {{ template "_stats_header" . }}
+        {{ template "_stats_header" . }}
         <div class="card-body">
 
             <div class="table-responsive">
@@ -36,12 +36,12 @@
                     </thead>
                     <tbody class="tags-list">
                     {{ range $key, $value := .Genres }}
-                    <tr data-link="{{.GetPath}}">
-                        <td><i class="fas fa-film"></i> {{ .Name }}</td>
-                        <td>{{ comma .Apps }}</td>
-                        <td>{{ .GetMeanPrice $.UserCountry }}</td>
-                        <td>{{ .GetMeanScore $.UserCountry }}</td>
-                    </tr>
+                        <tr data-link="{{.GetPath}}">
+                            <td><i class="fas fa-film"></i> {{ .Name }}</td>
+                            <td>{{ comma .Apps }}</td>
+                            <td>{{ .GetMeanPrice $.UserCountry }}</td>
+                            <td>{{ .GetMeanScore $.UserCountry }}</td>
+                        </tr>
                     {{ end }}
                     </tbody>
                 </table>

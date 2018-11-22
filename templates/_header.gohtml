@@ -29,11 +29,11 @@
     <title>{{.Title}} - Game DB</title>
     <meta name="Description" content="{{ .Description }}">
 
-{{if .IsCache }}
-    <esi:include src="/esi/header"/>
-{{else}}
-    {{ template "_header_esi" . }}
-{{end}}
+    {{if .IsCache }}
+        <esi:include src="/esi/header"/>
+    {{else}}
+        {{ template "_header_esi" . }}
+    {{end}}
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
     <script>
@@ -81,7 +81,7 @@
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/price-changes">Price Changes</a>
                         <a class="dropdown-item" href="/free-games">Free Games</a>
-                    {{/*<a class="dropdown-item" href="/discounts">Discounts</a>*/}}
+                        {{/*<a class="dropdown-item" href="/discounts">Discounts</a>*/}}
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -102,31 +102,31 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
-            {{ if .IsLoggedIn }}
-                <li class="nav-item">
-                    <img src="/assets/img/flags/{{ .UserCountry }}.png" alt="" id="header-flag">
-                </li>
-            {{else}}
-                <li class="nav-item">
-                    <a href="/login"><img src="/assets/img/flags/{{ .UserCountry }}.png" alt="" id="header-flag"></a>
-                </li>
-            {{end}}
+                {{ if .IsLoggedIn }}
+                    <li class="nav-item">
+                        <img src="/assets/img/flags/{{ .UserCountry }}.png" alt="" id="header-flag">
+                    </li>
+                {{else}}
+                    <li class="nav-item">
+                        <a href="/login"><img src="/assets/img/flags/{{ .UserCountry }}.png" alt="" id="header-flag"></a>
+                    </li>
+                {{end}}
 
-            {{ if .IsAdmin }}
-                <li class="nav-item {{if startsWith .Path "/admin" }}active{{end}}">
-                    <a class="nav-link" href="/admin">Admin</a>
-                </li>
-            {{end}}
+                {{ if .IsAdmin }}
+                    <li class="nav-item {{if startsWith .Path "/admin" }}active{{end}}">
+                        <a class="nav-link" href="/admin">Admin</a>
+                    </li>
+                {{end}}
 
-            {{ if .IsLoggedIn }}
-                <li class="nav-item">
-                    <a class="nav-link" href="/players/{{ .UserID }}">{{.UserName}}</a>
-                </li>
-            {{else}}
-                <li class="nav-item">
-                    <a class="nav-link" href="/login">Login</a>
-                </li>
-            {{end}}
+                {{ if .IsLoggedIn }}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/players/{{ .UserID }}">{{.UserName}}</a>
+                    </li>
+                {{else}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                {{end}}
 
                 <li class="nav-item {{if startsWith .Path "/contact" }}active{{end}}">
                     <a class="nav-link" href="/contact">Contact</a>
@@ -137,11 +137,11 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
                     <div class="dropdown-menu">
-                    {{ if .IsLoggedIn }}
-                        <a class="dropdown-item" href="/settings">Settings</a>
-                        <a class="dropdown-item" href="/logout">Logout</a>
-                        <div class="dropdown-divider"></div>
-                    {{end}}
+                        {{ if .IsLoggedIn }}
+                            <a class="dropdown-item" href="/settings">Settings</a>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                            <div class="dropdown-divider"></div>
+                        {{end}}
                         <a class="dropdown-item" href="/packages">Packages</a>
                         <a class="dropdown-item" href="/experience">Experience</a>
                         <a class="dropdown-item" href="/changes">Changes</a>

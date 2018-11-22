@@ -8,9 +8,9 @@
         <p class="lead">
             <a href="{{ .App.GetCommunityLink }}" data-toggle="tooltip" data-placement="top" title="Community Page"><i class="fas fa-users"></i></a>
             <a href="{{ .App.GetStoreLink }}" data-toggle="tooltip" data-placement="top" title="Store Page"><i class="fas fa-shopping-cart"></i></a>
-        {{if ne .App.Homepage ""}}
-            <a href="{{ .App.Homepage }}" data-toggle="tooltip" data-placement="top" title="Official Website"><i class="fas fa-home"></i></a>
-        {{end}}
+            {{if ne .App.Homepage ""}}
+                <a href="{{ .App.Homepage }}" data-toggle="tooltip" data-placement="top" title="Official Website"><i class="fas fa-home"></i></a>
+            {{end}}
             <a href="{{ .App.GetInstallLink }}" data-toggle="tooltip" data-placement="top" title="Install"><i class="fas fa-sign-in-alt"></i></a>
             <a href="{{ .App.GetPCGamingWikiLink }}" data-toggle="tooltip" data-placement="top" title="PC Gaming Wiki"><i class="fab fa-wikipedia-w"></i></a>
         </p>
@@ -23,57 +23,57 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
-            {{if gt (len .App.GetPrices) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
-                </li>
-            {{end}}
-            {{if gt (len .DLC) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC ({{len .DLC}})</a>
-                </li>
-            {{end}}
-            {{if gt (len .Packages) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ len .Packages }})</a>
-                </li>
-            {{end}}
-            {{if gt (len .Achievements) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ len .Achievements }})</a>
-                </li>
-            {{end}}
-            {{if gt (len .App.GetNewsIDs) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .App.GetNewsIDs }})</a>
-                </li>
-            {{end}}
-            {{if gt .ReviewsCount.TotalReviews 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .ReviewsCount.TotalReviews }})</a>
-                </li>
-            {{end}}
-            {{if gt (len .App.GetScreenshots) 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
-                </li>
-            {{end}}
+                {{if gt (len .App.GetPrices) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
+                    </li>
+                {{end}}
+                {{if gt (len .DLC) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC ({{len .DLC}})</a>
+                    </li>
+                {{end}}
+                {{if gt (len .Packages) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ len .Packages }})</a>
+                    </li>
+                {{end}}
+                {{if gt (len .Achievements) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ len .Achievements }})</a>
+                    </li>
+                {{end}}
+                {{if gt (len .App.GetNewsIDs) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .App.GetNewsIDs }})</a>
+                    </li>
+                {{end}}
+                {{if gt .ReviewsCount.TotalReviews 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .ReviewsCount.TotalReviews }})</a>
+                    </li>
+                {{end}}
+                {{if gt (len .App.GetScreenshots) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
+                    </li>
+                {{end}}
             </ul>
 
         </div>
         <div class="card-body">
             <div class="tab-content" id="tab-content">
 
-            {{/* Info */}}
+                {{/* Info */}}
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
                     <table class="table mb-0">
-                    {{ if ne .App.GameName "" }}
-                        <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">For Game</th>
-                            <td><a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
-                        </tr>
-                    {{ end }}
+                        {{ if ne .App.GameName "" }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">For Game</th>
+                                <td><a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
+                            </tr>
+                        {{ end }}
                         <tr>
                             <th scope="row" nowrap="nowrap" width="1%">Review Score</th>
                             <td>{{ .App.ReviewsScore }}%</td>
@@ -90,35 +90,35 @@
                             <th scope="row" nowrap="nowrap" width="1%">Release State</th>
                             <td>{{ .App.GetReleaseState }}</td>
                         </tr>
-                    {{ if gt .App.ChangeNumber 0 }}
-                        <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
-                            <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
-                        </tr>
-                    {{ end }}
-                    {{ if gt (len .App.GetPlatforms) 0 }}
-                        <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">Platforms</th>
-                            <td class="platforms">{{ .App.GetPlatformImages }}</td>
-                        </tr>
-                    {{ end }}
-                    {{ if gt (len .App.GetGenres) 0 }}
-                        <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">Genres</th>
-                            <td>{{ genres .App.GetGenres }}</td>
-                        </tr>
-                    {{ end }}
-                    {{ if gt (len .Tags) 0 }}
-                        <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">Tags</th>
-                            <td>{{ tags .Tags }}</td>
-                        </tr>
-                    {{ end }}
+                        {{ if gt .App.ChangeNumber 0 }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
+                                <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
+                            </tr>
+                        {{ end }}
+                        {{ if gt (len .App.GetPlatforms) 0 }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">Platforms</th>
+                                <td class="platforms">{{ .App.GetPlatformImages }}</td>
+                            </tr>
+                        {{ end }}
+                        {{ if gt (len .App.GetGenres) 0 }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">Genres</th>
+                                <td>{{ genres .App.GetGenres }}</td>
+                            </tr>
+                        {{ end }}
+                        {{ if gt (len .Tags) 0 }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">Tags</th>
+                                <td>{{ tags .Tags }}</td>
+                            </tr>
+                        {{ end }}
                     </table>
 
                 </div>
 
-            {{/* Prices */}}
+                {{/* Prices */}}
                 <div class="tab-pane" id="prices" role="tabpanel">
 
                     <script>const prices = JSON.parse('{{ .Prices }}');</script>
@@ -135,256 +135,256 @@
                                 <th scope="col">Individual</th>
                             </tr>
                             </thead>
-                        {{ range $key, $value := .App.GetPrices }}
-                            <tr data-code="{{ $key }}">
-                                <td class="img flag">
-                                    <img src="/assets/img/flags/{{$key}}.png" alt="{{ $key }}" class="rounded">
-                                    <span>{{ (.GetCountryName $key) }} ({{ $key }})</span>
-                                </td>
-                                <td>{{ .GetInitial $key }}</td>
-                                <td>{{ .GetFinal $key }}</td>
-                                <td>{{ .GetDiscountPercent }}%</td>
-                                <td>{{ .GetIndividual $key }}</td>
-                            </tr>
-                        {{ end }}
+                            {{ range $key, $value := .App.GetPrices }}
+                                <tr data-code="{{ $key }}">
+                                    <td class="img flag">
+                                        <img src="/assets/img/flags/{{$key}}.png" alt="{{ $key }}" class="rounded">
+                                        <span>{{ (.GetCountryName $key) }} ({{ $key }})</span>
+                                    </td>
+                                    <td>{{ .GetInitial $key }}</td>
+                                    <td>{{ .GetFinal $key }}</td>
+                                    <td>{{ .GetDiscountPercent }}%</td>
+                                    <td>{{ .GetIndividual $key }}</td>
+                                </tr>
+                            {{ end }}
                         </table>
                     </div>
 
                     <iframe src="https://store.steampowered.com/widget/{{ .App.ID }}/" frameborder="0"></iframe>
                 </div>
 
-            {{/* DLC */}}
+                {{/* DLC */}}
                 <div class="tab-pane" id="dlc" role="tabpanel">
 
-                {{if gt (len .DLC) 0}}
+                    {{if gt (len .DLC) 0}}
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col" data-sort="desc">Release</th>
-                            </tr>
-                            </thead>
-                        {{ range $key, $value := .DLC }}
-                            <tr data-link="{{.GetPath}}">
-                                <td class="img">
-                                    <img class="rounded square" src="{{ .GetIcon }}" alt="{{.GetName}}">
-                                    <span>{{.GetName}}</span>
-                                </td>
-                                <td data-sort="{{ .GetReleaseDateUnix }}" nowrap="nowrap">{{.GetReleaseDateNice}}</td>
-                            </tr>
-                        {{ end }}
-                        </table>
-                    </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col" data-sort="desc">Release</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .DLC }}
+                                    <tr data-link="{{.GetPath}}">
+                                        <td class="img">
+                                            <img class="rounded square" src="{{ .GetIcon }}" alt="{{.GetName}}">
+                                            <span>{{.GetName}}</span>
+                                        </td>
+                                        <td data-sort="{{ .GetReleaseDateUnix }}" nowrap="nowrap">{{.GetReleaseDateNice}}</td>
+                                    </tr>
+                                {{ end }}
+                            </table>
+                        </div>
 
-                {{ else }}
+                    {{ else }}
 
-                    <p>This app has no DLC.</p>
+                        <p>This app has no DLC.</p>
 
-                {{ end }}
+                    {{ end }}
 
                 </div>
 
-            {{/* App Achievements */}}
+                {{/* App Achievements */}}
                 <div class="tab-pane" id="achievements" role="tabpanel">
 
-                {{if gt (len .Achievements) 0}}
+                    {{if gt (len .Achievements) 0}}
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Description</th>
-                                <th scope="col" data-sort="desc">Completed</th>
-                            </tr>
-                            </thead>
-                        {{ range $key, $value := .Achievements }}
-                            <tr>
-                                <td class="img" nowrap="nowrap">
-                                    <img src="{{ .Icon }}" class="rounded square" alt="{{ .Name }}">
-                                    <span>{{ .Name }}</span>
-                                </td>
-                                <td>{{ .Description }}</td>
-                                <td>{{ .GetCompleted }}%</td>
-                            </tr>
-                        {{ end }}
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col" data-sort="desc">Completed</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Achievements }}
+                                    <tr>
+                                        <td class="img" nowrap="nowrap">
+                                            <img src="{{ .Icon }}" class="rounded square" alt="{{ .Name }}">
+                                            <span>{{ .Name }}</span>
+                                        </td>
+                                        <td>{{ .Description }}</td>
+                                        <td>{{ .GetCompleted }}%</td>
+                                    </tr>
+                                {{ end }}
+                            </table>
 
-                    </div>
+                        </div>
 
-                {{ else }}
+                    {{ else }}
 
-                    <p>This app has no achievements.</p>
+                        <p>This app has no achievements.</p>
 
-                {{ end }}
+                    {{ end }}
 
                 </div>
 
-            {{/* News */}}
+                {{/* News */}}
                 <div class="tab-pane" id="news" role="tabpanel">
 
-                {{if gt (len .App.GetNewsIDs) 0}}
+                    {{if gt (len .App.GetNewsIDs) 0}}
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/games/{{ .App.ID }}/ajax/news">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Title</th>
-                                <th scope="col">Author</th>
-                                <th scope="col">Date</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/games/{{ .App.ID }}/ajax/news">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Author</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
 
-                            </tbody>
-                        </table>
-                    </div>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="news-modal">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-body">
+                        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="news-modal">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-body">
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                {{ else }}
+                    {{ else }}
 
-                    <p>This app has no news.</p>
+                        <p>This app has no news.</p>
 
-                {{ end }}
+                    {{ end }}
 
                 </div>
 
-            {{/* Packages */}}
+                {{/* Packages */}}
                 <div class="tab-pane" id="packages" role="tabpanel">
 
-                {{if gt (len .Packages) 0}}
+                    {{if gt (len .Packages) 0}}
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col" data-sort="asc">Package ID</th>
-                                <th scope="col">Billing</th>
-                                <th scope="col">License</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Apps</th>
-                            </tr>
-                            </thead>
-                        {{ range $key, $value := .Packages }}
-                            <tr>
-                                <td><a href="/packages/{{ .ID }}">{{.GetName}}</a></td>
-                                <td>{{ .GetBillingType }}</td>
-                                <td>{{ .GetLicenseType }}</td>
-                                <td>{{ .GetStatus }}</td>
-                                <td>{{ comma (len .GetAppIDs) }}</td>
-                            </tr>
-                        {{ end }}
-                        </table>
-                    </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" data-sort="asc">Package ID</th>
+                                    <th scope="col">Billing</th>
+                                    <th scope="col">License</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Apps</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Packages }}
+                                    <tr>
+                                        <td><a href="/packages/{{ .ID }}">{{.GetName}}</a></td>
+                                        <td>{{ .GetBillingType }}</td>
+                                        <td>{{ .GetLicenseType }}</td>
+                                        <td>{{ .GetStatus }}</td>
+                                        <td>{{ comma (len .GetAppIDs) }}</td>
+                                    </tr>
+                                {{ end }}
+                            </table>
+                        </div>
 
-                {{ else }}
+                    {{ else }}
 
-                    <p>This app is not in a package.</p>
+                        <p>This app is not in a package.</p>
 
-                {{ end }}
+                    {{ end }}
 
                 </div>
 
-            {{/* Reviews */}}
+                {{/* Reviews */}}
                 <div class="tab-pane" id="reviews" role="tabpanel">
 
-                {{if gt .ReviewsCount.TotalReviews 0}}
+                    {{if gt .ReviewsCount.TotalReviews 0}}
 
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <th scope="row" width="15%">Score</th>
-                            <td>{{ .App.ReviewsScore }}%</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" width="20%">Positive / Negative</th>
-                            <td>
-                                <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .ReviewsCount.TotalPositive }} ({{ printf "%.2f" .ReviewsCount.GetPositivePercent }}%)" style="width: {{ .ReviewsCount.GetPositivePercent }}%">
-                                    {{ comma .ReviewsCount.TotalPositive }} ({{ printf "%.0f" .ReviewsCount.GetPositivePercent }}%)
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row" width="15%">Score</th>
+                                <td>{{ .App.ReviewsScore }}%</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" width="20%">Positive / Negative</th>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .ReviewsCount.TotalPositive }} ({{ printf "%.2f" .ReviewsCount.GetPositivePercent }}%)" style="width: {{ .ReviewsCount.GetPositivePercent }}%">
+                                            {{ comma .ReviewsCount.TotalPositive }} ({{ printf "%.0f" .ReviewsCount.GetPositivePercent }}%)
+                                        </div>
+                                        <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .ReviewsCount.TotalNegative }} ({{ printf "%.2f" .ReviewsCount.GetNegativePercent }}%)" style="width: {{ .ReviewsCount.GetNegativePercent }}%">
+                                            {{ comma .ReviewsCount.TotalNegative }} ({{ printf "%.0f" .ReviewsCount.GetNegativePercent }}%)
+                                        </div>
                                     </div>
-                                    <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .ReviewsCount.TotalNegative }} ({{ printf "%.2f" .ReviewsCount.GetNegativePercent }}%)" style="width: {{ .ReviewsCount.GetNegativePercent }}%">
-                                    {{ comma .ReviewsCount.TotalNegative }} ({{ printf "%.0f" .ReviewsCount.GetNegativePercent }}%)
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        {{ range $key, $value := .Reviews }}
+
+                            <div class="card mt-4">
+                                <div class="card-header" data-vote="{{ .Vote }}">
+                                    <div class="float-right">
+                                        {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>
+                                        {{ .VotesFunny }} <i class="fas fa-grin-squint-tears" data-toggle="tooltip" data-placement="top" title="Funny Review"></i>
                                     </div>
+                                    By <a href="{{.Player.GetPath}}">{{.Player.GetName}}</a> on {{ .Date }}
                                 </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                {{ range $key, $value := .Reviews }}
-
-                    <div class="card mt-4">
-                        <div class="card-header" data-vote="{{ .Vote }}">
-                            <div class="float-right">
-                            {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>
-                            {{ .VotesFunny }} <i class="fas fa-grin-squint-tears" data-toggle="tooltip" data-placement="top" title="Funny Review"></i>
+                                <div class="card-body">
+                                    <blockquote class="blockquote mb-0">
+                                        <p class="mb-0">
+                                            <small style="white-space: pre-wrap;">{{.Review}}</small>
+                                        </p>
+                                    </blockquote>
+                                </div>
                             </div>
-                            By <a href="{{.Player.GetPath}}">{{.Player.GetName}}</a> on {{ .Date }}
-                        </div>
-                        <div class="card-body">
-                            <blockquote class="blockquote mb-0">
-                                <p class="mb-0">
-                                    <small style="white-space: pre-wrap;">{{.Review}}</small>
-                                </p>
-                            </blockquote>
-                        </div>
-                    </div>
 
-                {{ end }}
+                        {{ end }}
 
-                {{ else }}
+                    {{ else }}
 
-                    <p>This app has no reviews.</p>
+                        <p>This app has no reviews.</p>
 
-                {{ end }}
+                    {{ end }}
 
                 </div>
 
-            {{/* Media */}}
+                {{/* Media */}}
                 <div class="tab-pane" id="media" role="tabpanel">
 
-                {{if gt (len .App.GetScreenshots) 0}}
+                    {{if gt (len .App.GetScreenshots) 0}}
 
-                    <div id="mediaCarousel" class="carousel slide" data-ride="carousel">
-                        <ol class="carousel-indicators">
-                        {{ range $key, $value := .App.GetScreenshots }}
-                            <li data-target="#mediaCarousel" data-slide-to="{{ $key }}" class="{{if eq $key 0}}active{{end}}"></li>
-                        {{ end }}
-                        </ol>
-                        <div class="carousel-inner">
-                        {{ range $key, $value := .App.GetScreenshots }}
-                            <div class="carousel-item {{if eq $key 0}}active{{end}}">
-                                <img class="d-block w-100" src="{{ .PathFull }}" alt="Media">
+                        <div id="mediaCarousel" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                {{ range $key, $value := .App.GetScreenshots }}
+                                    <li data-target="#mediaCarousel" data-slide-to="{{ $key }}" class="{{if eq $key 0}}active{{end}}"></li>
+                                {{ end }}
+                            </ol>
+                            <div class="carousel-inner">
+                                {{ range $key, $value := .App.GetScreenshots }}
+                                    <div class="carousel-item {{if eq $key 0}}active{{end}}">
+                                        <img class="d-block w-100" src="{{ .PathFull }}" alt="Media">
+                                    </div>
+                                {{ end }}
                             </div>
-                        {{ end }}
+                            <a class="carousel-control-prev" href="#mediaCarousel" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#mediaCarousel" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
                         </div>
-                        <a class="carousel-control-prev" href="#mediaCarousel" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#mediaCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </div>
 
-                {{ else }}
+                    {{ else }}
 
-                    <p>This app has no screenshots.</p>
+                        <p>This app has no screenshots.</p>
 
-                {{ end }}
+                    {{ end }}
 
                 </div>
             </div>

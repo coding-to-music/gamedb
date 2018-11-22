@@ -1,33 +1,33 @@
 {{define "_deals_header"}}
 
-<div class="card-header">
-    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" role="tablist">
 
-        <li class="nav-item">
-        {{if startsWith .Path "/price-changes" }}
-            <span class="nav-link active" role="tab">Price Changes</span>
-        {{else}}
-            <a class="nav-link" href="/price-changes" role="tab">Price Changes</a>
-        {{end}}
-        </li>
+            <li class="nav-item">
+                {{if startsWith .Path "/price-changes" }}
+                    <span class="nav-link active" role="tab">Price Changes</span>
+                {{else}}
+                    <a class="nav-link" href="/price-changes" role="tab">Price Changes</a>
+                {{end}}
+            </li>
 
-        <li class="nav-item">
-        {{if startsWith .Path "/free-games" }}
-            <span class="nav-link active" role="tab">Free Games</span>
-        {{else}}
-            <a class="nav-link" href="/free-games" role="tab">Free Games</a>
-        {{end}}
-        </li>
+            <li class="nav-item">
+                {{if startsWith .Path "/free-games" }}
+                    <span class="nav-link active" role="tab">Free Games</span>
+                {{else}}
+                    <a class="nav-link" href="/free-games" role="tab">Free Games</a>
+                {{end}}
+            </li>
 
-        {{/*<li class="nav-item">*/}}
-        {{/*{{if startsWith .Path "/discounts" }}*/}}
+            {{/*<li class="nav-item">*/}}
+            {{/*{{if startsWith .Path "/discounts" }}*/}}
             {{/*<span class="nav-link active" role="tab">Discounts</span>*/}}
-        {{/*{{else}}*/}}
+            {{/*{{else}}*/}}
             {{/*<a class="nav-link" href="/discounts" role="tab">Discounts</a>*/}}
-        {{/*{{end}}*/}}
-        {{/*</li>*/}}
+            {{/*{{end}}*/}}
+            {{/*</li>*/}}
 
-    </ul>
-</div>
+        </ul>
+    </div>
 
 {{end}}

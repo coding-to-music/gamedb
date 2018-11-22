@@ -19,11 +19,11 @@
                         <div class="input-group-append">
                             <input type="submit" value="Add" class="input-group-text btn btn-success">
                         </div>
-                    {{ if .IsLoggedIn }}
-                        <div class="input-group-append">
-                            <input type="button" value="Add Me" class="input-group-text btn btn-success" data-id="{{ .UserID }}" id="addme">
-                        </div>
-                    {{end}}
+                        {{ if .IsLoggedIn }}
+                            <div class="input-group-append">
+                                <input type="button" value="Add Me" class="input-group-text btn btn-success" data-id="{{ .UserID }}" id="addme">
+                            </div>
+                        {{end}}
                     </div>
                 </form>
 
@@ -34,53 +34,53 @@
     <div class="card">
         <div class="card-body">
 
-        {{if gt (len .Players) 0 }}
+            {{if gt (len .Players) 0 }}
 
-            <h5>Players</h5>
-            <div class="players clearfix mb-4">
-            {{ range $key, $value := .Players }}
-            {{ if eq .PlayerID 0 }}
-                <img data-toggle="tooltip" data-placement="top" title="Unknown Player" alt="Unknown Player" src="{{.GetDefaultAvatar}}" class="rounded avatar">
-            {{ else }}
-                <a href="{{.GetPath}}">
-                    <img data-toggle="tooltip" data-placement="top" title="{{ .PersonaName }}" alt="{{ .PersonaName }}" src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
-                </a>
+                <h5>Players</h5>
+                <div class="players clearfix mb-4">
+                    {{ range $key, $value := .Players }}
+                        {{ if eq .PlayerID 0 }}
+                            <img data-toggle="tooltip" data-placement="top" title="Unknown Player" alt="Unknown Player" src="{{.GetDefaultAvatar}}" class="rounded avatar">
+                        {{ else }}
+                            <a href="{{.GetPath}}">
+                                <img data-toggle="tooltip" data-placement="top" title="{{ .PersonaName }}" alt="{{ .PersonaName }}" src="{{ .GetAvatar }}" class="rounded avatar" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                            </a>
+                        {{ end }}
+                    {{ end }}
+                </div>
+
             {{ end }}
-            {{ end }}
-            </div>
 
-        {{ end }}
+            {{if gt (len .Players) 1 }}
 
-        {{if gt (len .Players) 1 }}
+                <h5>Games</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-datatable mb-0">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" data-sort="asc">Game</th>
+                            <th scope="col" data-disabled>Platforms</th>
+                            <th scope="col">Achievements</th>
+                            <th scope="col" data-disabled>Co-op Tags</th>
+                        </tr>
+                        </thead>
+                        {{ range $key, $value := .Games }}
+                            <tr data-link="/games/{{ .Game.ID }}">
+                                <td class="img" data-app-id="{{ .Game.ID }}">
+                                    <img src="{{.Game.GetIcon}}" class="rounded square" alt="{{ .Game.GetName }}">
+                                    <span>{{ .Game.GetName }}</span>
+                                </td>
+                                <td class="platforms">{{ .Game.GetPlatformImages }}</td>
+                                <td>{{ comma .Game.GetAchievements.Total }}</td>
+                                <td>{{.Tags}}</td>
+                            </tr>
+                        {{ end }}
+                    </table>
+                </div>
 
-            <h5>Games</h5>
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable mb-0">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col" data-sort="asc">Game</th>
-                        <th scope="col" data-disabled>Platforms</th>
-                        <th scope="col">Achievements</th>
-                        <th scope="col" data-disabled>Co-op Tags</th>
-                    </tr>
-                    </thead>
-                {{ range $key, $value := .Games }}
-                    <tr data-link="/games/{{ .Game.ID }}">
-                        <td class="img" data-app-id="{{ .Game.ID }}">
-                            <img src="{{.Game.GetIcon}}" class="rounded square" alt="{{ .Game.GetName }}">
-                            <span>{{ .Game.GetName }}</span>
-                        </td>
-                        <td class="platforms">{{ .Game.GetPlatformImages }}</td>
-                        <td>{{ comma .Game.GetAchievements.Total }}</td>
-                        <td>{{.Tags}}</td>
-                    </tr>
-                {{ end }}
-                </table>
-            </div>
-
-        {{else}}
-            <p class="mb-0">Add at least 2 player IDs</p>
-        {{end}}
+            {{else}}
+                <p class="mb-0">Add at least 2 player IDs</p>
+            {{end}}
 
 
         </div>

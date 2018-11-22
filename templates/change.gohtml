@@ -7,73 +7,73 @@
     </div>
 
     <div class="card">
-    {{ if and (eq (len .Apps) 0) (eq (len .Packages) 0) }}
-        <div class="card-body">No apps or packages were updated on this change. ¯\_(ツ)_/¯</div>
-    {{else}}
-        <div class="card-header">
+        {{ if and (eq (len .Apps) 0) (eq (len .Packages) 0) }}
+            <div class="card-body">No apps or packages were updated on this change. ¯\_(ツ)_/¯</div>
+        {{else}}
+            <div class="card-header">
 
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#apps">Apps ({{ len .Apps }})</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#packages">Packages ({{ len .Packages }})</a>
-                </li>
-            </ul>
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#apps">Apps ({{ len .Apps }})</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#packages">Packages ({{ len .Packages }})</a>
+                    </li>
+                </ul>
 
-        </div>
-        <div class="card-body">
-
-            <div class="tab-content">
-                <div class="tab-pane show active" id="apps" role="tabpanel">
-
-                {{/* Apps */}}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col" data-sort="asc">App</th>
-                                <th scope="col">Type</th>
-                            </tr>
-                            </thead>
-                        {{ range $key, $value := .Apps }}
-                            <tr data-link="{{.GetPath}}">
-                                <td class="img">
-                                    <img class="rounded square" alt="{{.GetName}}" src="{{ .GetIcon }}">
-                                    <span>{{.GetName}}</span>
-                                </td>
-                                <td>{{ .GetType }}</td>
-                            </tr>
-                        {{ end }}
-                        </table>
-                    </div>
-
-                </div>
-                <div class="tab-pane" id="packages" role="tabpanel">
-
-                {{/* Packages */}}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col" data-sort="asc">Package</th>
-                                <th scope="col">Apps #</th>
-                            </tr>
-                            </thead>
-                        {{ range $key, $value := .Packages }}
-                            <tr data-link="{{.GetPath}}">
-                                <td>{{.GetName}}</td>
-                                <td>{{ .GetAppsCountString }}</td>
-                            </tr>
-                        {{ end }}
-                        </table>
-                    </div>
-
-                </div>
             </div>
+            <div class="card-body">
 
-        </div>
-    {{ end }}
+                <div class="tab-content">
+                    <div class="tab-pane show active" id="apps" role="tabpanel">
+
+                        {{/* Apps */}}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" data-sort="asc">App</th>
+                                    <th scope="col">Type</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Apps }}
+                                    <tr data-link="{{.GetPath}}">
+                                        <td class="img">
+                                            <img class="rounded square" alt="{{.GetName}}" src="{{ .GetIcon }}">
+                                            <span>{{.GetName}}</span>
+                                        </td>
+                                        <td>{{ .GetType }}</td>
+                                    </tr>
+                                {{ end }}
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="tab-pane" id="packages" role="tabpanel">
+
+                        {{/* Packages */}}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" data-sort="asc">Package</th>
+                                    <th scope="col">Apps #</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Packages }}
+                                    <tr data-link="{{.GetPath}}">
+                                        <td>{{.GetName}}</td>
+                                        <td>{{ .GetAppsCountString }}</td>
+                                    </tr>
+                                {{ end }}
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        {{ end }}
     </div>
 
 </div>

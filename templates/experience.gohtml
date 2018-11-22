@@ -29,33 +29,33 @@
                 </div>
             </div>
 
-        {{/* XP Table */}}
+            {{/* XP Table */}}
             <div class="table-responsive">
-            {{ range $key, $value := .Chunks }}
-                <table class="table table-hover table-striped mb-0">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col" width="20%" data-sort="asc">Level</th>
-                        <th scope="col" width="20%">Start XP</th>
-                        <th scope="col" width="20%">End XP</th>
-                        <th scope="col" width="20%">For Next Level</th>
-                        <th scope="col" width="20%">Friends Max</th>
-                    </tr>
-                    </thead>
-                {{ range $keyx, $valuex := $value }}
-                    <tr data-level="{{ .Level }}">
-                        <td class="img">
-                            <div class="{{ .GetAvatar2 }} square"></div>
-                            <span>{{ comma .Level }}</span>
-                        </td>
-                        <td>{{ comma .Start }}</td>
-                        <td>{{ comma .End }}</td>
-                        <td>{{ comma .Diff }}</td>
-                        <td>{{ comma .GetFriends }}</td>
-                    </tr>
+                {{ range $key, $value := .Chunks }}
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" width="20%" data-sort="asc">Level</th>
+                            <th scope="col" width="20%">Start XP</th>
+                            <th scope="col" width="20%">End XP</th>
+                            <th scope="col" width="20%">For Next Level</th>
+                            <th scope="col" width="20%">Friends Max</th>
+                        </tr>
+                        </thead>
+                        {{ range $keyx, $valuex := $value }}
+                            <tr data-level="{{ .Level }}">
+                                <td class="img">
+                                    <div class="{{ .GetAvatar2 }} square"></div>
+                                    <span>{{ comma .Level }}</span>
+                                </td>
+                                <td>{{ comma .Start }}</td>
+                                <td>{{ comma .End }}</td>
+                                <td>{{ comma .Diff }}</td>
+                                <td>{{ comma .GetFriends }}</td>
+                            </tr>
+                        {{ end }}
+                    </table>
                 {{ end }}
-                </table>
-            {{ end }}
             </div>
 
         </div>
@@ -64,9 +64,9 @@
 </div>
 
 {{ if gt .Level -1}}
-<script>
-    const scrollTo = 'tr[data-level={{ .Level }}]'
-</script>
+    <script>
+        const scrollTo = 'tr[data-level={{ .Level }}]'
+    </script>
 {{end}}
 
 {{ template "_footer" . }} {{end}}

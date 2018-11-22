@@ -16,19 +16,19 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{ len .Package.GetAppIDs }})</a>
                 </li>
-            {{if gt .PricesCount 0}}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
-                </li>
-            {{end}}
+                {{if gt .PricesCount 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
+                    </li>
+                {{end}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                 </li>
-            {{ if gt (len .Package.GetDepotIDs) 0 }}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#depots" role="tab">Depots ({{ (len .Package.GetDepotIDs) }})</a>
-                </li>
-            {{end}}
+                {{ if gt (len .Package.GetDepotIDs) 0 }}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#depots" role="tab">Depots ({{ (len .Package.GetDepotIDs) }})</a>
+                    </li>
+                {{end}}
             </ul>
         </div>
         <div class="card-body">
@@ -39,23 +39,23 @@
                     <div class="row">
                         <div class="col-12 col-md-7">
 
-                        {{ range $k, $v := .Banners }}
-                            <div class="alert alert-{{ $k }}" role="alert">
-                            {{ range $kk, $vv := $v }}
-                                <div>{{ $vv }}</div>
+                            {{ range $k, $v := .Banners }}
+                                <div class="alert alert-{{ $k }}" role="alert">
+                                    {{ range $kk, $vv := $v }}
+                                        <div>{{ $vv }}</div>
+                                    {{ end }}
+                                </div>
                             {{ end }}
-                            </div>
-                        {{ end }}
 
-                        {{/* Package Details */}}
+                            {{/* Package Details */}}
                             <div class="table-responsive">
                                 <table class="table">
-                                {{ if ne .Package.ReleaseDate "" }}
-                                    <tr>
-                                        <td>ReleaseDate</td>
-                                        <td>{{ .Package.ReleaseDate }}</td>
-                                    </tr>
-                                {{ end }}
+                                    {{ if ne .Package.ReleaseDate "" }}
+                                        <tr>
+                                            <td>ReleaseDate</td>
+                                            <td>{{ .Package.ReleaseDate }}</td>
+                                        </tr>
+                                    {{ end }}
                                     <tr>
                                         <td>Coming Soon</td>
                                         <td>{{ .Package.GetComingSoon }}</td>
@@ -72,28 +72,28 @@
                                         <td>Status</td>
                                         <td>{{ .Package.GetStatus }}</td>
                                     </tr>
-                                {{ if gt .Package.PICSChangeID 0 }}
-                                    <tr>
-                                        <td>Change ID</td>
-                                        <td><a href="/changes/{{ .Package.PICSChangeID }}">Change {{ .Package.PICSChangeID }}</a></td>
-                                    </tr>
-                                {{ end }}
+                                    {{ if gt .Package.PICSChangeID 0 }}
+                                        <tr>
+                                            <td>Change ID</td>
+                                            <td><a href="/changes/{{ .Package.PICSChangeID }}">Change {{ .Package.PICSChangeID }}</a></td>
+                                        </tr>
+                                    {{ end }}
                                     <tr>
                                         <td>Platforms</td>
                                         <td class="platforms">{{ .Package.GetPlatformImages }}</td>
                                     </tr>
-                                {{ range $key, $value := .Package.GetExtendedNice }}
-                                    <tr>
-                                        <td>{{ $key }}</td>
-                                        <td>{{ $value }}</td>
-                                    </tr>
-                                {{ end }}
-                                {{ range $key, $value := .Package.GetControllerNice }}
-                                    <tr>
-                                        <td>{{ $key }}</td>
-                                        <td>{{ $value }}</td>
-                                    </tr>
-                                {{ end }}
+                                    {{ range $key, $value := .Package.GetExtendedNice }}
+                                        <tr>
+                                            <td>{{ $key }}</td>
+                                            <td>{{ $value }}</td>
+                                        </tr>
+                                    {{ end }}
+                                    {{ range $key, $value := .Package.GetControllerNice }}
+                                        <tr>
+                                            <td>{{ $key }}</td>
+                                            <td>{{ $value }}</td>
+                                        </tr>
+                                    {{ end }}
                                 </table>
                             </div>
 
@@ -126,7 +126,7 @@
 
                 <div class="tab-pane" id="apps" role="tabpanel">
 
-                {{/* Apps in Package */}}
+                    {{/* Apps in Package */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
@@ -137,23 +137,23 @@
                                 <th scope="col">DLC #</th>
                             </tr>
                             </thead>
-                        {{ range $key, $value := .Apps }}
-                            <tr data-link="{{.GetPath}}">
-                                <td data-app-id="{{ .ID }}" class="img">
-                                    <img class="rounded square" src="{{ .GetIcon }}" alt="{{.GetName}}">
-                                    <span>{{.GetName}}</span>
-                                </td>
-                                <td>{{ .GetType }}</td>
-                                <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
-                                <td>{{ comma (len .GetDLC) }}</td>
-                            </tr>
-                        {{ end }}
+                            {{ range $key, $value := .Apps }}
+                                <tr data-link="{{.GetPath}}">
+                                    <td data-app-id="{{ .ID }}" class="img">
+                                        <img class="rounded square" src="{{ .GetIcon }}" alt="{{.GetName}}">
+                                        <span>{{.GetName}}</span>
+                                    </td>
+                                    <td>{{ .GetType }}</td>
+                                    <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
+                                    <td>{{ comma (len .GetDLC) }}</td>
+                                </tr>
+                            {{ end }}
                         </table>
                     </div>
 
                 </div>
 
-            {{/* Apps in Package */}}
+                {{/* Apps in Package */}}
                 <div class="tab-pane" id="depots" role="tabpanel">
 
                     <div class="table-responsive">
@@ -163,17 +163,17 @@
                                 <th scope="col" data-sort="asc">ID</th>
                             </tr>
                             </thead>
-                        {{ range $key, $value := .Package.GetDepotIDs }}
-                            <tr>
-                                <td>{{ $value }}</td>
-                            </tr>
-                        {{ end }}
+                            {{ range $key, $value := .Package.GetDepotIDs }}
+                                <tr>
+                                    <td>{{ $value }}</td>
+                                </tr>
+                            {{ end }}
                         </table>
                     </div>
 
                 </div>
 
-            {{/* Prices */}}
+                {{/* Prices */}}
                 <div class="tab-pane" id="prices" role="tabpanel">
 
                     <script>const prices = JSON.parse('{{ .Prices }}');</script>
@@ -190,18 +190,18 @@
                                 <th scope="col" nowrap="nowrap">Discount %</th>
                             </tr>
                             </thead>
-                        {{ range $key, $value := .Package.GetPrices }}
-                            <tr data-code="{{ $key }}">
-                                <td class="img flag">
-                                    <img src="/assets/img/flags/{{$key}}.png" alt="{{ $key }}" class="rounded">
-                                    <span>{{ (.GetCountryName $key) }} ({{ $key }})</span>
-                                </td>
-                                <td>{{ .GetInitial $key }}</td>
-                                <td>{{ .GetFinal $key }}</td>
-                                <td>{{ .GetIndividual $key }}</td>
-                                <td>{{ .GetDiscountPercent }}%</td>
-                            </tr>
-                        {{ end }}
+                            {{ range $key, $value := .Package.GetPrices }}
+                                <tr data-code="{{ $key }}">
+                                    <td class="img flag">
+                                        <img src="/assets/img/flags/{{$key}}.png" alt="{{ $key }}" class="rounded">
+                                        <span>{{ (.GetCountryName $key) }} ({{ $key }})</span>
+                                    </td>
+                                    <td>{{ .GetInitial $key }}</td>
+                                    <td>{{ .GetFinal $key }}</td>
+                                    <td>{{ .GetIndividual $key }}</td>
+                                    <td>{{ .GetDiscountPercent }}%</td>
+                                </tr>
+                            {{ end }}
                         </table>
                     </div>
 

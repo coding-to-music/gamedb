@@ -30,7 +30,7 @@
 
                 <div class="row">
                     <div class="d-none">
-                    {{/* This div is so Chrome auto-fills this one and not the rest! */}}
+                        {{/* This div is so Chrome auto-fills this one and not the rest! */}}
                         <label for="hidden">Hidden</label>
                         <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
                         </select>
@@ -41,9 +41,9 @@
                                 <small>(<a href="/tags" class="stop-prop">Tags</a>)</small>
                             </label>
                             <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags" name="tags">
-                            {{ range $key, $value := .Tags }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
+                                {{ range $key, $value := .Tags }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
                             </select>
                         </div>
                     </div>
@@ -53,9 +53,9 @@
                                 <small>(<a href="/genres" class="stop-prop">Genres</a>)</small>
                             </label>
                             <select multiple data-placeholder="Choose Genres" class="form-control form-control-chosen" id="genres" name="genres">
-                            {{ range $key, $value := .Genres }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
+                                {{ range $key, $value := .Genres }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
                             </select>
                         </div>
                     </div>
@@ -65,9 +65,9 @@
                                 <small>(<a href="/developers" class="stop-prop">Developers</a>)</small>
                             </label>
                             <select multiple data-placeholder="Choose Developers" class="form-control form-control-chosen" id="developers" name="developers">
-                            {{ range $key, $value := .Developers }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
+                                {{ range $key, $value := .Developers }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
                             </select>
                         </div>
                     </div>
@@ -77,9 +77,9 @@
                                 <small>(<a href="/publishers" class="stop-prop">Publishers</a>)</small>
                             </label>
                             <select multiple data-placeholder="Choose Publishers" class="form-control form-control-chosen" id="publishers" name="publishers">
-                            {{ range $key, $value := .Publishers }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
+                                {{ range $key, $value := .Publishers }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
                             </select>
                         </div>
                     </div>
@@ -98,9 +98,9 @@
                         <div class="form-group">
                             <label for="types">Type</label>
                             <select multiple data-placeholder="Choose Types" class="form-control form-control-chosen" id="types" name="types">
-                            {{ range $key, $value := .Types }}
-                                <option value="{{ .ID }}">{{ .Name }}</option>
-                            {{ end }}
+                                {{ range $key, $value := .Types }}
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
+                                {{ end }}
                             </select>
                         </div>
                     </div>

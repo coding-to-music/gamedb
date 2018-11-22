@@ -30,10 +30,10 @@
 
             <div class="tab-content">
 
-            {{/* Settings */}}
+                {{/* Settings */}}
                 <div class="tab-pane show active" id="settings" role="tabpanel">
 
-                {{ template "_flashes" . }}
+                    {{ template "_flashes" . }}
 
                     <form action="/settings" method="post">
 
@@ -61,9 +61,9 @@
                                 <div class="form-group">
                                     <label for="country">Country</label>
                                     <select class="form-control" id="country" name="country_code">
-                                    {{ range $key, $value := .Countries }}
-                                        <option value="{{ (index $value 0) }}" {{ if eq $.User.CountryCode (index $value 0) }} selected{{ end }}>{{ index $value 1 }}</option>
-                                    {{ end }}
+                                        {{ range $key, $value := .Countries }}
+                                            <option value="{{ (index $value 0) }}" {{ if eq $.User.CountryCode (index $value 0) }} selected{{ end }}>{{ index $value 1 }}</option>
+                                        {{ end }}
                                     </select>
                                     <small class="form-text text-muted">Used for currency</small>
                                 </div>
@@ -88,35 +88,35 @@
 
                 </div>
 
-            {{/* Donations */}}
+                {{/* Donations */}}
                 <div class="tab-pane" id="donations" role="tabpanel">
 
-                {{if eq (len .Donations) 0 }}
-                    <p class="mb-0">No donations.</p>
-                {{else}}
+                    {{if eq (len .Donations) 0 }}
+                        <p class="mb-0">No donations.</p>
+                    {{else}}
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Amount</th>
-                                <th scope="col" data-sort="desc">Date</th>
-                            </tr>
-                            </thead>
-                        {{ range $key, $value := .Donations }}
-                            <tr>
-                                <td>{{ .Amount }}</td>
-                                <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
-                            </tr>
-                        {{ end }}
-                        </table>
-                    </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col" data-sort="desc">Date</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Donations }}
+                                    <tr>
+                                        <td>{{ .Amount }}</td>
+                                        <td data-order="{{.GetCreatedUnix}}" nowrap="nowrap">{{ .GetCreatedNice }}</td>
+                                    </tr>
+                                {{ end }}
+                            </table>
+                        </div>
 
-                {{end}}
+                    {{end}}
 
                 </div>
 
-            {{/* Events */}}
+                {{/* Events */}}
                 <div class="tab-pane" id="events" role="tabpanel">
 
                     <div class="table-responsive">
@@ -145,9 +145,9 @@
 </div>
 
 {{ if ne .Games "" }}
-<script>
-    localStorage.setItem("games", '{{ .Games }}');
-</script>
+    <script>
+        localStorage.setItem("games", '{{ .Games }}');
+    </script>
 {{ end }}
 
 {{ template "_footer" . }} {{end}}

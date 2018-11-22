@@ -45,7 +45,7 @@
             <div class="tab-content">
                 <div class="tab-pane show active" id="details" role="tabpanel">
 
-                {{/* Info */}}
+                    {{/* Info */}}
                     <div class="row">
                         <div class="col-sm-12 col-lg-6 col-xl-4">
 
@@ -74,21 +74,21 @@
                                             <th scope="row" nowrap="nowrap">Profile</th>
                                             <td><a href="{{ .Player.GetSteamCommunityLink }}"><i class="fab fa-steam-square"></i> {{ .Player.VanintyURL }}</a></td>
                                         </tr>
-                                    {{ if ne .Player.CountryCode "" }}
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap">Country</th>
-                                            <td class="img flag">
-                                                <img class="rounded" data-toggle="tooltip" data-placement="top" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}">
-                                                <span>{{ .Player.CountryCode }}</span>
-                                            </td>
-                                        </tr>
-                                    {{ end }}
-                                    {{ if eq .Player.CountryCode "US" }}
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap">State</th>
-                                            <td>{{ .Player.StateCode }}</td>
-                                        </tr>
-                                    {{ end }}
+                                        {{ if ne .Player.CountryCode "" }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap">Country</th>
+                                                <td class="img flag">
+                                                    <img class="rounded" data-toggle="tooltip" data-placement="top" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}">
+                                                    <span>{{ .Player.CountryCode }}</span>
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+                                        {{ if eq .Player.CountryCode "US" }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap">State</th>
+                                                <td>{{ .Player.StateCode }}</td>
+                                            </tr>
+                                        {{ end }}
                                     </table>
 
                                 </div>
@@ -186,53 +186,53 @@
                 </div>
                 <div class="tab-pane" id="friends" role="tabpanel">
 
-                {{ if gt .Player.FriendsCount 0 }}
+                    {{ if gt .Player.FriendsCount 0 }}
 
-                {{/* Friends */}}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Player</th>
-                                <th scope="col" data-sort="desc">Level</th>
-                                <th scope="col">Games</th>
-                                <th scope="col">Logged Off</th>
-                                <th scope="col">Friend Since</th>
-                            </tr>
-                            </thead>
-                        {{ range $key, $value := .Friends }}
-                            <tr data-link="{{ .GetPath }}">
-                                <td class="img" data-sort="{{ .GetName }}">
-                                    <img src="{{ .Avatar }}" alt="{{ .GetName }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
-                                    <span>{{ .GetName }}</span>
-                                </td>
-                                <td>{{ .GetLevel }}</td>
-                                <td>
-                                {{ if not .Scanned }}
-                                    -
-                                {{ else if eq .Games 0 }}
-                                    <i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>
-                                {{ else }}
-                                    {{ comma .Games }}
+                        {{/* Friends */}}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Player</th>
+                                    <th scope="col" data-sort="desc">Level</th>
+                                    <th scope="col">Games</th>
+                                    <th scope="col">Logged Off</th>
+                                    <th scope="col">Friend Since</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Friends }}
+                                    <tr data-link="{{ .GetPath }}">
+                                        <td class="img" data-sort="{{ .GetName }}">
+                                            <img src="{{ .Avatar }}" alt="{{ .GetName }}" class="avatar rounded square" onError="this.onerror=null;this.src='{{.GetDefaultAvatar}}';">
+                                            <span>{{ .GetName }}</span>
+                                        </td>
+                                        <td>{{ .GetLevel }}</td>
+                                        <td>
+                                            {{ if not .Scanned }}
+                                                -
+                                            {{ else if eq .Games 0 }}
+                                                <i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>
+                                            {{ else }}
+                                                {{ comma .Games }}
+                                            {{ end }}
+                                        </td>
+                                        <td data-sort="{{ .LoggedOff }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .LoggedOff }}"{{ end }}>{{ .GetLoggedOff }}</td>
+                                        <td data-sort="{{ .FriendSince }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .FriendSince }}"{{ end }}>{{ .GetFriendSince }}</td>
+                                    </tr>
                                 {{ end }}
-                                </td>
-                                <td data-sort="{{ .LoggedOff }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .LoggedOff }}"{{ end }}>{{ .GetLoggedOff }}</td>
-                                <td data-sort="{{ .FriendSince }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .FriendSince }}"{{ end }}>{{ .GetFriendSince }}</td>
-                            </tr>
-                        {{ end }}
-                        </table>
-                    </div>
+                            </table>
+                        </div>
 
-                {{ else }}
+                    {{ else }}
 
-                    This player either has no friends or has them hidden to the public. Go <a target="_blank" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.
+                        This player either has no friends or has them hidden to the public. Go <a target="_blank" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.
 
-                {{ end }}
+                    {{ end }}
 
                 </div>
                 <div class="tab-pane" id="badges" role="tabpanel">
 
-                {{/* XP Info */}}
+                    {{/* XP Info */}}
                     <table class="table">
                         <tbody>
                         <tr>
@@ -258,7 +258,7 @@
                         </tbody>
                     </table>
 
-                {{/* Badges */}}
+                    {{/* Badges */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0">
                             <thead class="thead-light">
@@ -271,28 +271,28 @@
                                 <th scope="col">Owners</th>
                             </tr>
                             </thead>
-                        {{ range $key, $value := .Badges }}
-                            <tr{{if gt .AppID 0}} data-link="{{ .GetAppPath }}"{{end}}>
-                                <td class="img" data-order="{{ .GetAppName }}">
-                                    <img src="{{ .GetIcon }}" alt="{{ .GetAppName }}" class="rounded square">
-                                    <span class="truncate" style="width: 500px;">{{ .GetAppName }}</span>
-                                </td>
-                                <td>{{ comma .BadgeID }}</td>
-                                <td>{{ comma .Level }}</td>
-                                <td data-order="{{.CompletionTime}}" nowrap="nowrap">{{ .GetTimeFormatted }}</td>
-                                <td>{{ comma .XP }}</td>
-                                <td>{{ comma .Scarcity }}</td>
-                            </tr>
-                        {{ end }}
+                            {{ range $key, $value := .Badges }}
+                                <tr{{if gt .AppID 0}} data-link="{{ .GetAppPath }}"{{end}}>
+                                    <td class="img" data-order="{{ .GetAppName }}">
+                                        <img src="{{ .GetIcon }}" alt="{{ .GetAppName }}" class="rounded square">
+                                        <span class="truncate" style="width: 500px;">{{ .GetAppName }}</span>
+                                    </td>
+                                    <td>{{ comma .BadgeID }}</td>
+                                    <td>{{ comma .Level }}</td>
+                                    <td data-order="{{.CompletionTime}}" nowrap="nowrap">{{ .GetTimeFormatted }}</td>
+                                    <td>{{ comma .XP }}</td>
+                                    <td>{{ comma .Scarcity }}</td>
+                                </tr>
+                            {{ end }}
                         </table>
                     </div>
 
                 </div>
                 <div class="tab-pane" id="games" role="tabpanel">
 
-                {{ if gt .Player.GamesCount 0 }}
+                    {{ if gt .Player.GamesCount 0 }}
 
-                {{/* Game Stats */}}
+                    {{/* Game Stats */}}
                     <div class="row">
                         <div class="col-12 col-md-6">
 
@@ -353,8 +353,8 @@
                     <script>const heatMapData = JSON.parse('{{ .Player.GetGameHeatMap }}');</script>
                     <div id="heatmap"></div>
 
-                {{/* Recent Games */}}
-                {{ if gt (len .RecentGames) 0}}
+                    {{/* Recent Games */}}
+                    {{ if gt (len .RecentGames) 0}}
                     <h5>Recent Games</h5>
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-4">
@@ -365,22 +365,22 @@
                                 <th scope="col">All Time</th>
                             </tr>
                             </thead>
-                        {{ range $key, $value := .RecentGames }}
-                            <tr data-link="/games/{{ .AppID }}">
-                                <td class="img">
-                                    <img src="{{ .Icon }}" alt="{{ .Name }}" class="rounded square">
-                                    <span>{{ .Name }}</span>
-                                </td>
-                                <td data-order="{{ .Weeks }}">{{ .WeeksNice }}</td>
-                                <td data-order="{{ .AllTime }}">{{ .AllTimeNice }}</td>
-                            </tr>
-                        {{ end }}
+                            {{ range $key, $value := .RecentGames }}
+                                <tr data-link="/games/{{ .AppID }}">
+                                    <td class="img">
+                                        <img src="{{ .Icon }}" alt="{{ .Name }}" class="rounded square">
+                                        <span>{{ .Name }}</span>
+                                    </td>
+                                    <td data-order="{{ .Weeks }}">{{ .WeeksNice }}</td>
+                                    <td data-order="{{ .AllTime }}">{{ .AllTimeNice }}</td>
+                                </tr>
+                            {{ end }}
                         </table>
                     </div>
                     <h5>All Games</h5>
-                {{end}}
+                    {{end}}
 
-                {{/* Games List */}}
+                    {{/* Games List */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/players/{{ .Player.PlayerID }}/ajax/games">
                             <thead class="thead-light">
@@ -397,11 +397,11 @@
                         </table>
                     </div>
 
-                {{ else }}
+                    {{ else }}
 
                     This player either has no games or has them hidden to the public. Go <a target="_blank" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.
 
-                {{ end }}
+                    {{ end }}
 
                 </div>
             </div>

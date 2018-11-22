@@ -11,21 +11,21 @@
         <div class="card-body">
 
             <ul class="list-unstyled">
-            {{ range $key, $value := .Commits }}
+                {{ range $key, $value := .Commits }}
 
-                <li class="media">
-                    <div class="media-body">
-                        <h5 class="mt-0 mb-1">{{ .Commit.Message }}</h5>
-                        <p class="text-muted">
-                            <span data-livestamp="{{ .Commit.Author.Date.Unix }}">{{ .Commit.Author.Date.Unix }}</span>
-                            <a href="{{ .HTMLURL }}">
-                                <i class="fas fa-paperclip" aria-hidden="true"></i>
-                            </a>
-                        </p>
-                    </div>
-                </li>
+                    <li class="media">
+                        <div class="media-body">
+                            <h5 class="mt-0 mb-1">{{ .Commit.Message }}</h5>
+                            <p class="text-muted">
+                                <span data-livestamp="{{ .Commit.Author.Date.Unix }}">{{ .Commit.Author.Date.Unix }}</span>
+                                <a href="{{ .HTMLURL }}">
+                                    <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                </a>
+                            </p>
+                        </div>
+                    </li>
 
-            {{ end }}
+                {{ end }}
             </ul>
 
         </div>
