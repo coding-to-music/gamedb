@@ -186,8 +186,8 @@
                                 <th scope="col">Country</th>
                                 <th scope="col">Initial</th>
                                 <th scope="col">Final</th>
-                                <th scope="col" nowrap="nowrap">Discount %</th>
                                 <th scope="col">Individual</th>
+                                <th scope="col" nowrap="nowrap">Discount %</th>
                             </tr>
                             </thead>
                         {{ range $key, $value := .Package.GetPrices }}
@@ -198,8 +198,8 @@
                                 </td>
                                 <td>{{ .GetInitial $key }}</td>
                                 <td>{{ .GetFinal $key }}</td>
-                                <td>{{ .GetDiscountPercent }}%</td>
                                 <td>{{ .GetIndividual $key }}</td>
+                                <td>{{ .GetDiscountPercent }}%</td>
                             </tr>
                         {{ end }}
                         </table>
