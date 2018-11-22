@@ -12,6 +12,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeTemplate{}
 	t.Fill(w, r, "Home")
+	t.Description = "Stats and information on the Steam Catalogue"
 
 	var wg sync.WaitGroup
 
