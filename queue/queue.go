@@ -191,6 +191,9 @@ func (s rabbitConsumer) consume() {
 
 				ack, requeue, err := s.Message.process(msg)
 				logging.Error(err)
+				if requeue {
+					logging.Info("Requeue")
+				}
 
 				if ack {
 					err = msg.Ack(false)
