@@ -163,12 +163,13 @@ $('table.table-datatable2').on('page.dt search.dt', function (e, settings, proce
 const $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
 
 //
-function addDataTablesRow(columnDefs, data, limit, $table) {
+function addDataTablesRow(options, data, limit, $table) {
 
-    const $row = $('<tr class="fade-green" />');
+    let $row = $('<tr class="fade-green" />');
+    options.createdRow($row[0], data, null);
 
-    if (isIterable(columnDefs)) {
-        for (const v of columnDefs) {
+    if (isIterable(options.columnDefs)) {
+        for (const v of options.columnDefs) {
 
             let value = data[v];
 

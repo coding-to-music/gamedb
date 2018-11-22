@@ -64,6 +64,7 @@ func (change Change) OutputForJSON() (output []interface{}) {
 		change.CreatedAt.Format(helpers.DateYearTime),
 		change.Apps,
 		change.Packages,
+		change.GetPath(),
 	}
 }
 
