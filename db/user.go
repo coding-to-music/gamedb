@@ -46,7 +46,7 @@ func GetUser(playerID int64) (user User, err error) {
 	return user, nil
 }
 
-func (u User) UpdateInsert() (result sql.Result, err error) {
+func (u User) UpdateInsert() error {
 
 	return UpdateInsert("users", UpdateInsertData{
 		"player_id":    u.PlayerID,
