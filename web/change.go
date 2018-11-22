@@ -34,6 +34,8 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	t := changeTemplate{}
 	t.Fill(w, r, change.GetName())
 	t.Change = change
+	t.Apps = map[int]db.App{}
+	t.Packages = map[int]db.Package{}
 
 	//
 	var wg sync.WaitGroup
