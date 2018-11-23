@@ -751,7 +751,7 @@ func adminStatsLogger(total int, count int, rowName string, tableName string) {
 
 	var lenString = strconv.Itoa(total)
 
-	logging.Info("Updating " + tableName + " - " + helpers.PadInt(count, len(lenString)) + " / " + lenString + ": " + rowName)
+	logging.Info("Updating " + tableName + " - " + fmt.Sprintf("%"+strconv.Itoa(len(lenString))+"d", count) + " / " + lenString + ": " + rowName)
 }
 
 func adminRanks() {

@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
@@ -70,21 +71,30 @@ type ProductPriceCache struct {
 }
 
 func (p ProductPriceCache) GetInitial(code steam.CountryCode) string {
-	return helpers.CurrencyFormat(code, p.Initial)
+
+	locale, err := helpers.GetLocaleFromCountry(code)
+	logging.Error(err)
+	return locale.Format(p.Initial)
 }
 
 func (p ProductPriceCache) GetFinal(code steam.CountryCode) string {
-	return helpers.CurrencyFormat(code, p.Final)
+	locale, err := helpers.GetLocaleFromCountry(code)
+	logging.Error(err)
+	return locale.Format(p.Final)
 }
 
-func (p ProductPriceCache) GetDiscountPercent() int {
-	return p.DiscountPercent
+func (p ProductPriceCache) GetDiscountPercent() string {
+	return strconv.Itoa(p.DiscountPercent) + "%"
 }
 
 func (p ProductPriceCache) GetIndividual(code steam.CountryCode) string {
-	return helpers.CurrencyFormat(code, p.Individual)
+	locale, err := helpers.GetLocaleFromCountry(code)
+	logging.Error(err)
+	return locale.Format(p.Individual)
 }
 
 func (p ProductPriceCache) GetCountryName(code steam.CountryCode) string {
-	return helpers.CountryCodeToName(string(code))
+	locale, err := helpers.GetLocaleFromCountry(code)
+	logging.Error(err)
+	return locale.CountryName
 }

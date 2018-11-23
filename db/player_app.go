@@ -41,7 +41,7 @@ func (p PlayerApp) GetPriceHourFormatted() string {
 	if x == -1 {
 		return "∞"
 	}
-	return strconv.FormatFloat(helpers.DollarsFloat(x), 'f', 2, 64)
+	return helpers.FloatToString(helpers.RoundFloatTo2DP(x), 2)
 }
 
 func (p PlayerApp) GetPriceHourSort() string {
@@ -50,7 +50,7 @@ func (p PlayerApp) GetPriceHourSort() string {
 	if x == -1 {
 		return "1000000"
 	}
-	return strconv.FormatFloat(helpers.DollarsFloat(x), 'f', 2, 64)
+	return helpers.FloatToString(helpers.RoundFloatTo2DP(x), 2)
 }
 
 func (p *PlayerApp) SetPriceHour() {

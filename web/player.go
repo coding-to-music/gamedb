@@ -300,7 +300,7 @@ func (p playerRanksTemplate) formatPercent(rank int) string {
 	}
 
 	percent := (float64(rank) / float64(p.Players)) * 100
-	return strconv.FormatFloat(percent, 'f', precision, 64) + "%"
+	return helpers.FloatToString(percent, precision) + "%"
 
 }
 
@@ -423,7 +423,7 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.GetIcon(),
 			v.AppTime,
 			v.GetTimeNice(),
-			helpers.CentsInt(v.AppPrice),
+			helpers.RoundIntTo2DP(v.AppPrice),
 			v.GetPriceHourFormatted(),
 		})
 	}

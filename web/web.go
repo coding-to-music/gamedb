@@ -325,7 +325,9 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	// Country
 	var code = session.GetCountryCode(r)
 	t.UserCountry = code
-	t.UserCurrencySymbol = helpers.CurrencySymbol(code)
+
+	locale, err := helpers.GetLocaleFromCountry(code)
+	t.UserCurrencySymbol = locale.CurrencySymbol
 
 	// Flashes
 	t.FlashesGood, err = session.GetGoodFlashes(w, r)

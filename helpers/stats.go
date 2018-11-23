@@ -2,22 +2,24 @@ package helpers
 
 import (
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/logging"
 )
 
 func GetMeanPrice(code steam.CountryCode, prices string) (string, error) {
 
 	means := map[steam.CountryCode]int{}
 
-	symbol := CurrencySymbol(code)
+	locale, err := GetLocaleFromCountry(code)
+	logging.Error(err)
 
-	err := Unmarshal([]byte(prices), &means)
+	err = Unmarshal([]byte(prices), &means)
 	if err == nil {
 		if val, ok := means[code]; ok {
-			return symbol + IntToFloat(float64(val)/100, 2), err
+			return locale.CurrencySymbol + FloatToString(RoundFloatTo2DP(float64(val)/100), 2), err
 		}
 	}
 
-	return symbol + "0", err
+	return locale.CurrencySymbol + "0", err
 }
 
 func GetMeanScore(code steam.CountryCode, scores string) (string, error) {
@@ -27,7 +29,7 @@ func GetMeanScore(code steam.CountryCode, scores string) (string, error) {
 	err := Unmarshal([]byte(scores), &means)
 	if err == nil {
 		if val, ok := means[code]; ok {
-			return IntToFloat(val, 2) + "%", err
+			return FloatToString(RoundFloatTo2DP(val), 2) + "%", err
 		}
 	}
 

@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"math"
-	"strconv"
 )
 
 func GetAvatar2(level int) string {
@@ -12,10 +11,10 @@ func GetAvatar2(level int) string {
 	n100 := math.Floor(float64(level)/100) * 100
 	if n100 >= 100 {
 
-		ret += " lvl_" + strconv.FormatFloat(n100, 'f', 0, 64)
+		ret += " lvl_" + FloatToString(n100, 0)
 
 		n10 := math.Floor(float64(level)/10) * 10
-		n10String := strconv.FormatFloat(n10, 'f', 0, 64)
+		n10String := FloatToString(n10, 0)
 		n10String = n10String[len(n10String)-2:]
 
 		if n10String != "00" {

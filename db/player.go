@@ -1045,15 +1045,15 @@ func (p *playerAppStatsInnerTemplate) AddApp(app PlayerApp) {
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePrice() float64 {
-	return helpers.DollarsFloat(float64(p.Price) / float64(p.Count))
+	return helpers.RoundFloatTo2DP(float64(p.Price) / float64(p.Count))
 }
 
 func (p playerAppStatsInnerTemplate) GetTotalPrice() float64 {
-	return helpers.DollarsFloat(float64(p.Price))
+	return helpers.RoundFloatTo2DP(float64(p.Price))
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePriceHour() float64 {
-	return helpers.DollarsFloat(p.PriceHour / float64(p.Count))
+	return helpers.RoundFloatTo2DP(p.PriceHour / float64(p.Count))
 }
 func (p playerAppStatsInnerTemplate) GetAverageTime() string {
 	return helpers.GetTimeShort(int(float64(p.Time)/float64(p.Count)), 2)

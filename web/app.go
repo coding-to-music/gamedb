@@ -278,7 +278,7 @@ type appAchievementTemplate struct {
 }
 
 func (a appAchievementTemplate) GetCompleted() float64 {
-	return helpers.DollarsFloat(a.Completed)
+	return helpers.RoundFloatTo2DP(a.Completed)
 }
 
 type appReviewTemplate struct {

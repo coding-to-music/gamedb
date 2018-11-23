@@ -58,16 +58,16 @@ func (p ProductPrice) GetCreatedUnix() int64 {
 }
 
 func (p ProductPrice) GetPriceBefore() float64 {
-	return helpers.CentsInt(p.PriceBefore)
+	return helpers.RoundIntTo2DP(p.PriceBefore)
 }
 
 func (p ProductPrice) GetPriceAfter() float64 {
-	return helpers.CentsInt(p.PriceAfter)
+	return helpers.RoundIntTo2DP(p.PriceAfter)
 }
 
 func (p ProductPrice) GetDifference() string {
 
-	diff := strconv.FormatFloat(float64(p.Difference)/100, 'f', 2, 64)
+	diff := helpers.FloatToString(float64(p.Difference)/100, 2)
 
 	if p.Difference > 0 {
 		return "+" + diff
@@ -80,7 +80,7 @@ func (p ProductPrice) GetDifference() string {
 
 func (p ProductPrice) GetDifferencePercent() string {
 
-	diff := strconv.FormatFloat(p.DifferencePercent, 'f', 2, 64)
+	diff := helpers.FloatToString(p.DifferencePercent, 2)
 
 	if p.DifferencePercent > 0 {
 		return "+" + diff + "%"

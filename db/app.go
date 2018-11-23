@@ -147,6 +147,9 @@ func (app App) GetType() (ret string) {
 
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
+	locale, err := helpers.GetLocaleFromCountry(code)
+	logging.Error(err)
+
 	return []interface{}{
 		app.ID,
 		app.GetName(),
@@ -154,7 +157,7 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.GetPath(),
 		app.GetType(),
 		app.ReviewsScore,
-		helpers.CurrencyFormat(code, app.GetPrice(code).Final),
+		locale.Format(app.GetPrice(code).Final),
 		app.UpdatedAt.Unix(),
 	}
 }
@@ -287,7 +290,7 @@ func (app *App) SetReviewScore() {
 		average := float64(app.ReviewsPositive) / total
 		score := average - (average-0.5)*math.Pow(2, -math.Log10(total + 1))
 
-		app.ReviewsScore = helpers.DollarsFloat(score * 100)
+		app.ReviewsScore = helpers.RoundFloatTo2DP(score * 100)
 	}
 }
 
