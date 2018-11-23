@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/logging"
 	"github.com/gosimple/slug"
+	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 )
 
@@ -34,19 +35,23 @@ type App struct {
 	ID                     int        `gorm:"not null;column:id;primary_key"`
 	CreatedAt              *time.Time `gorm:"not null;column:created_at"`
 	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`
+	PICSChangeNumber       int        `gorm:"not null;column:change_number"`
+	PICSConfig             string     `gorm:"not null;column:config"`
+	PICSCommon             string     `gorm:"not null;column:common"`
+	PICSDepots             string     `gorm:"not null;column:depots"`
+	PICSExtended           string     `gorm:"not null;column:extended"`
+	PICSRaw                string     `gorm:"not null;column:raw_pics"` // JSON (TEXT)
 	ScannedAt              *time.Time `gorm:"not null;column:scanned_at"`
 	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text"`
 	Achievements           string     `gorm:"not null;column:achievements;type:text"`
 	Background             string     `gorm:"not null;column:background"`
 	Categories             string     `gorm:"not null;column:categories;type:json"`
-	ChangeNumber           int        `gorm:"not null;column:change_number"`
 	ChangeNumberDate       time.Time  `gorm:"not null;column:change_number_date"`
 	ClientIcon             string     `gorm:"not null;column:client_icon"`
 	ComingSoon             bool       `gorm:"not null;column:coming_soon"`
 	Developers             string     `gorm:"not null;column:developers;type:json"`
 	DLC                    string     `gorm:"not null;column:dlc;type:json"`
 	DLCCount               int        `gorm:"not null;column:dlc_count"`
-	Extended               string     `gorm:"not null;column:extended"`
 	GameID                 int        `gorm:"not null;column:game_id"`
 	GameName               string     `gorm:"not null;column:game_name"`
 	Genres                 string     `gorm:"not null;column:genres;type:json"`
@@ -78,56 +83,64 @@ type App struct {
 	NewsIDs                string     `gorm:"not null;column:news_ids"`
 }
 
-//func (app *App) BeforeCreate(scope *gorm.Scope) error {
-//
-//	if app.AchievementPercentages == "" {
-//		app.AchievementPercentages = "[]"
-//	}
-//	if app.Achievements == "" {
-//		app.Achievements = "{}"
-//	}
-//	if app.Categories == "" {
-//		app.Categories = "[]"
-//	}
-//	if app.Developers == "" {
-//		app.Developers = "[]"
-//	}
-//	if app.DLC == "" {
-//		app.DLC = "[]"
-//	}
-//	if app.Extended == "" {
-//		app.Extended = "{}"
-//	}
-//	if app.Prices == "" {
-//		app.Prices = "{}"
-//	}
-//	if app.Genres == "" {
-//		app.Genres = "[]"
-//	}
-//	if app.Movies == "" {
-//		app.Movies = "[]"
-//	}
-//	if app.Packages == "" {
-//		app.Packages = "[]"
-//	}
-//	if app.Platforms == "" {
-//		app.Platforms = "[]"
-//	}
-//	if app.Publishers == "" {
-//		app.Publishers = "[]"
-//	}
-//	if app.Schema == "" {
-//		app.Schema = "{}"
-//	}
-//	if app.Screenshots == "" {
-//		app.Screenshots = "[]"
-//	}
-//	if app.StoreTags == "" {
-//		app.StoreTags = "[]"
-//	}
-//
-//	return nil
-//}
+func (app *App) BeforeCreate(scope *gorm.Scope) error {
+
+	if app.AchievementPercentages == "" {
+		app.AchievementPercentages = "[]"
+	}
+	if app.Achievements == "" {
+		app.Achievements = "{}"
+	}
+	if app.Categories == "" {
+		app.Categories = "[]"
+	}
+	if app.Developers == "" {
+		app.Developers = "[]"
+	}
+	if app.DLC == "" {
+		app.DLC = "[]"
+	}
+	if app.PICSExtended == "" {
+		app.PICSExtended = "{}"
+	}
+	if app.Prices == "" {
+		app.Prices = "{}"
+	}
+	if app.Genres == "" {
+		app.Genres = "[]"
+	}
+	if app.Movies == "" {
+		app.Movies = "[]"
+	}
+	if app.Packages == "" {
+		app.Packages = "[]"
+	}
+	if app.Platforms == "" {
+		app.Platforms = "[]"
+	}
+	if app.Publishers == "" {
+		app.Publishers = "[]"
+	}
+	if app.Schema == "" {
+		app.Schema = "{}"
+	}
+	if app.Screenshots == "" {
+		app.Screenshots = "[]"
+	}
+	if app.StoreTags == "" {
+		app.StoreTags = "[]"
+	}
+
+	return nil
+}
+
+func (app App) GetID() int {
+	return app.ID
+}
+
+func (app App) GetProductType() ProductType {
+	return ProductTypeApp
+}
 
 func (app App) GetPath() string {
 	return getAppPath(app.ID, app.Name)
@@ -292,6 +305,86 @@ func (app *App) SetReviewScore() {
 
 		app.ReviewsScore = helpers.RoundFloatTo2DP(score * 100)
 	}
+}
+
+func (app *App) SetExtended(extended PICSExtended) (err error) {
+
+	bytes, err := json.Marshal(extended)
+	if err != nil {
+		return err
+	}
+
+	app.PICSExtended = string(bytes)
+
+	return nil
+}
+
+func (app App) GetExtended() (extended PICSExtended, err error) {
+
+	extended = PICSExtended{}
+
+	err = helpers.Unmarshal([]byte(app.PICSExtended), &extended)
+	return extended, err
+}
+
+func (app *App) SetCommon(common PICSAppCommon) (err error) {
+
+	bytes, err := json.Marshal(common)
+	if err != nil {
+		return err
+	}
+
+	app.PICSCommon = string(bytes)
+
+	return nil
+}
+
+func (app App) GetCommon() (common PICSAppCommon, err error) {
+
+	common = PICSAppCommon{}
+
+	err = helpers.Unmarshal([]byte(app.PICSCommon), &common)
+	return common, err
+}
+
+func (app *App) SetConfig(config PICSAppConfig) (err error) {
+
+	bytes, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	app.PICSConfig = string(bytes)
+
+	return nil
+}
+
+func (app App) GetConfig() (config PICSAppConfig, err error) {
+
+	config = PICSAppConfig{}
+
+	err = helpers.Unmarshal([]byte(app.PICSConfig), &config)
+	return config, err
+}
+
+func (app *App) SetDepots(depots PICSAppDepots) (err error) {
+
+	bytes, err := json.Marshal(depots)
+	if err != nil {
+		return err
+	}
+
+	app.PICSDepots = string(bytes)
+
+	return nil
+}
+
+func (app App) GetDepots() (depots PICSAppDepots, err error) {
+
+	depots = PICSAppDepots{}
+
+	err = helpers.Unmarshal([]byte(app.PICSDepots), &depots)
+	return depots, err
 }
 
 func (app App) GetCommunityLink() string {
@@ -762,63 +855,6 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	// Tidy
 	app.Type = strings.ToLower(app.Type)
 	app.ReleaseState = strings.ToLower(app.ReleaseState)
-
-	// Default JSON values
-	if app.StoreTags == "" || app.StoreTags == "null" {
-		app.StoreTags = "[]"
-	}
-
-	if app.Categories == "" || app.Categories == "null" {
-		app.Categories = "[]"
-	}
-
-	if app.Genres == "" || app.Genres == "null" {
-		app.Genres = "[]"
-	}
-
-	if app.Screenshots == "" || app.Screenshots == "null" {
-		app.Screenshots = "[]"
-	}
-
-	if app.Movies == "" || app.Movies == "null" {
-		app.Movies = "[]"
-	}
-
-	if app.Achievements == "" || app.Achievements == "null" {
-		app.Achievements = "{}"
-	}
-
-	if app.Platforms == "" || app.Platforms == "null" {
-		app.Platforms = "[]"
-	}
-
-	if app.DLC == "" || app.DLC == "null" {
-		app.DLC = "[]"
-	}
-
-	if app.Packages == "" || app.Packages == "null" {
-		app.Packages = "[]"
-	}
-
-	if app.AchievementPercentages == "" || app.AchievementPercentages == "null" {
-		app.AchievementPercentages = "[]"
-	}
-
-	if app.Developers == "" || app.Developers == "null" {
-		app.Developers = "[]"
-	}
-
-	if app.Publishers == "" || app.Publishers == "null" {
-		app.Publishers = "[]"
-	}
-
-	if app.Schema == "" || app.Schema == "null" {
-		app.Schema = "{}"
-	}
-
-	if app.Extended == "" || app.Extended == "null" {
-		app.Extended = "{}"
-	}
 
 	return errs
 }

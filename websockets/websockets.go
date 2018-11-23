@@ -22,6 +22,7 @@ const (
 	PageProfile  WebsocketPage = "profile"
 	PageAdmin    WebsocketPage = "admin"
 	PagePackages WebsocketPage = "packages"
+	PageApps     WebsocketPage = "apps"
 )
 
 var pages map[WebsocketPage]Page

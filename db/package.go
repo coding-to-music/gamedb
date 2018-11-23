@@ -81,7 +81,7 @@ func (pack Package) GetIcon() string {
 	return DefaultAppIcon
 }
 
-func (pack Package) GetType() ProductType {
+func (pack Package) GetProductType() ProductType {
 	return ProductTypePackage
 }
 
@@ -296,7 +296,7 @@ func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceCache, e
 	return price, nil
 }
 
-func (pack *Package) SetExtended(extended Extended) (err error) {
+func (pack *Package) SetExtended(extended PICSExtended) (err error) {
 
 	bytes, err := json.Marshal(extended)
 	if err != nil {
@@ -554,9 +554,9 @@ func CountPackages() (count int, err error) {
 	})
 }
 
-type Extended map[string]string
 
-var PackageExtendedKeys = Extended{
+
+var PackageExtendedKeys = PICSExtended{
 	"allowcrossregiontradingandgifting":     "Allow Cross Region Trading & Gifting",
 	"allowpurchasefromretrictedcountries":   "Allow Purchase From Restricted Countries",
 	"allowpurchasefromrestrictedcountries":  "Allow Purchase From Restricted Countries",

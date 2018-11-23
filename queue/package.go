@@ -44,7 +44,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	logging.Info("Consuming package: " + strconv.Itoa(message.ID))
 
 	if !db.IsValidPackageID(message.ID) {
-		return false, false, errors.New("invalid package ID")
+		return false, false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
 	}
 
 	// Load current package
@@ -53,7 +53,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, true, err
 	}
 
-	pack := new(db.Package)
+	pack := db.Package{}
 	gorm.First(&pack, message.ID)
 	if gorm.Error != nil && !gorm.RecordNotFound() {
 		return false, true, gorm.Error
@@ -125,7 +125,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 		case "extended":
 
-			var extended = db.Extended{}
+			var extended = db.PICSExtended{}
 			for _, vv := range v.Children {
 				if vv.Value == nil {
 					bytes, err := json.Marshal(vv.GetChildrenAsSlice())
@@ -200,5 +200,5 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		page.Send(pack.OutputForJSON())
 	}
 
-	return true, false, nil
+	return true, false, err
 }

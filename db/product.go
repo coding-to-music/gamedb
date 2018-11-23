@@ -10,6 +10,22 @@ import (
 	"github.com/gamedb/website/logging"
 )
 
+type productInterface interface {
+	GetID() int
+	GetProductType() ProductType
+	GetName() string
+	GetIcon() string
+}
+
+var ErrInvalidCountryCode = errors.New("invalid code")
+
+//
+type PICSExtended map[string]string
+type PICSAppCommon map[string]string
+type PICSAppConfig map[string]string
+type PICSAppDepots map[string]string
+
+//
 type ProductType string
 
 const (
@@ -17,15 +33,7 @@ const (
 	ProductTypePackage ProductType = "package"
 )
 
-var ErrInvalidCountryCode = errors.New("invalid code")
-
-type productInterface interface {
-	GetID() int
-	GetType() ProductType
-	GetName() string
-	GetIcon() string
-}
-
+//
 type ProductPrices map[steam.CountryCode]ProductPriceCache
 
 func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam.PackageDetailsBody) {
@@ -62,6 +70,7 @@ func (p ProductPrices) String() string {
 	return string(bytes)
 }
 
+//
 type ProductPriceCache struct {
 	Currency        string `json:"currency"`
 	Initial         int    `json:"initial"`

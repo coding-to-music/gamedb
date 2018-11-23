@@ -115,9 +115,9 @@ func CreateProductPrice(product productInterface, currency steam.CountryCode, pr
 
 	price := ProductPrice{}
 
-	if product.GetType() == ProductTypeApp {
+	if product.GetProductType() == ProductTypeApp {
 		price.AppID = product.GetID()
-	} else if product.GetType() == ProductTypeApp {
+	} else if product.GetProductType() == ProductTypePackage {
 		price.PackageID = product.GetID()
 	} else {
 		panic("Invalid productType")
