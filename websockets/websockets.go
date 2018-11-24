@@ -25,18 +25,20 @@ const (
 	PageApps     WebsocketPage = "apps"
 )
 
-var pages map[WebsocketPage]Page
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
+var (
+	pages      map[WebsocketPage]Page
+	pagesSlice = []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageProfile, PageAdmin, PagePackages, PageApps}
+	upgrader   = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+)
 
 var ErrInvalidPage = errors.New("invalid page")
 
 func init() {
 	pages = map[WebsocketPage]Page{}
-	for _, v := range []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageProfile, PageAdmin, PagePackages} {
+	for _, v := range pagesSlice {
 		pages[v] = Page{
 			name:        v,
 			connections: map[int]*websocket.Conn{},
