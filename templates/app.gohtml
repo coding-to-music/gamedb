@@ -90,10 +90,10 @@
                             <th scope="row" nowrap="nowrap" width="1%">Release State</th>
                             <td>{{ .App.GetReleaseState }}</td>
                         </tr>
-                        {{ if gt .App.ChangeNumber 0 }}
+                        {{ if gt .App.PICSChangeNumber 0 }}
                             <tr>
                                 <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
-                                <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
+                                <td><a href="/changes/{{ .App.PICSChangeNumber }}">Change {{ .App.PICSChangeNumber }}</a></td>
                             </tr>
                         {{ end }}
                         {{ if gt (len .App.GetPlatforms) 0 }}
