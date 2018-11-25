@@ -90,29 +90,32 @@ func (i RabbitMessageProductKeyValues) GetAppConfig() (config db.PICSAppConfig, 
 	return config, launch
 }
 
-func (i RabbitMessageProductKeyValues) GetAppDepots() (depots []db.PICSAppDepot, branches []db.PICSAppDepotBranches) {
+func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
+
+	depots.Extra = map[string]string{}
 
 	// Loop depots
 	for _, v := range i.Children {
 
 		if v.Name == "branches" {
-			branches = v.GetAppDepotBranches()
+			depots.Branches = v.GetAppDepotBranches()
 			continue
 		}
 
 		id, err := strconv.Atoi(v.Name)
-		logging.Error(err)
+		if err != nil {
+			depots.Extra[v.Name] = v.Value.(string)
+			continue
+		}
 
-		depot := db.PICSAppDepot{}
+		depot := db.PICSAppDepotItem{}
 		depot.ID = id
 
 		for _, vv := range v.Children {
 
-			var value = vv.Value.(string)
-
 			switch vv.Name {
 			case "name":
-				depot.Name = value
+				depot.Name = vv.Value.(string)
 			case "config":
 				depot.Configs = vv.GetChildrenAsMap()
 			case "manifests":
@@ -122,23 +125,23 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots []db.PICSAppDepot,
 				logging.Error(err)
 				depot.EncryptedManifests = string(manifests)
 			case "maxsize":
-				maxSize, err := strconv.ParseInt(value, 10, 64)
+				maxSize, err := strconv.ParseInt(vv.Value.(string), 10, 64)
 				logging.Error(err)
 				depot.MaxSize = maxSize
 			case "dlcappid":
-				appID, err := strconv.Atoi(value)
+				appID, err := strconv.Atoi(vv.Value.(string))
 				logging.Error(err)
 				depot.DLCApp = appID
 			case "depotfromapp":
-				app, err := strconv.Atoi(value)
+				app, err := strconv.Atoi(vv.Value.(string))
 				logging.Error(err)
 				depot.App = app
 			case "systemdefined":
-				if value == "1" {
+				if vv.Value.(string) == "1" {
 					depot.SystemDefined = true
 				}
 			case "optional":
-				if value == "1" {
+				if vv.Value.(string) == "1" {
 					depot.Optional = true
 				}
 			default:
@@ -146,10 +149,10 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots []db.PICSAppDepot,
 			}
 		}
 
-		depots = append(depots, depot)
+		depots.Depots = append(depots.Depots, depot)
 	}
 
-	return depots, branches
+	return depots
 }
 
 func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICSAppDepotBranches) {
@@ -225,8 +228,12 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 			launchItem.OSList = v.Value.(string)
 		case "osarch":
 			launchItem.OSArch = v.Value.(string)
+		case "betakey":
+			launchItem.BetaKey = v.Value.(string)
 		case "ownsdlc":
-			launchItem.OSArch = v.Value.(string)
+			dlc, err := strconv.Atoi(v.Value.(string))
+			logging.Error(err)
+			launchItem.OwnsDLC = dlc
 		case "config":
 			v.getAppLaunchItem(launchItem)
 		default:

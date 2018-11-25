@@ -122,12 +122,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 
 		case "depots":
 
-			depots, branches := v.GetAppDepots()
-
-			err = app.SetDepots(depots)
-			logging.Error(err)
-
-			err = app.SetBranches(branches)
+			err = app.SetDepots(v.GetAppDepots())
 			logging.Error(err)
 
 		case "public_only":

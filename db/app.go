@@ -371,7 +371,7 @@ func (app App) GetConfig() (config PICSAppConfig, err error) {
 	return config, err
 }
 
-func (app *App) SetDepots(depots []PICSAppDepot) (err error) {
+func (app *App) SetDepots(depots PicsDepots) (err error) {
 
 	bytes, err := json.Marshal(depots)
 	if err != nil {
@@ -383,7 +383,7 @@ func (app *App) SetDepots(depots []PICSAppDepot) (err error) {
 	return nil
 }
 
-func (app App) GetDepots() (depots []PICSAppDepot, err error) {
+func (app App) GetDepots() (depots PicsDepots, err error) {
 
 	err = helpers.Unmarshal([]byte(app.PICSDepots), &depots)
 	return depots, err

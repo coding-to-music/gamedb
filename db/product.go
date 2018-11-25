@@ -34,7 +34,12 @@ type PICSAppConfigLaunchItem struct {
 	OSArch      string `json:"osarch"`
 	OwnsDLC     string `json:"ownsdlc"`
 }
-type PICSAppDepot struct {
+type PicsDepots struct {
+	Depots   []PICSAppDepotItem
+	Branches []PICSAppDepotBranches
+	Extra    map[string]string
+}
+type PICSAppDepotItem struct {
 	ID                 int               `json:"id"`
 	Name               string            `json:"name"`
 	Configs            map[string]string `json:"config"`
