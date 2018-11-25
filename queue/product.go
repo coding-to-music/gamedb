@@ -108,9 +108,11 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots []db.PICSAppDepot,
 
 		for _, vv := range v.Children {
 
+			var value = vv.Value.(string)
+
 			switch vv.Name {
 			case "name":
-				depot.Name = vv.Value.(string)
+				depot.Name = value
 			case "config":
 				depot.Configs = vv.GetChildrenAsMap()
 			case "manifests":
@@ -120,17 +122,25 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots []db.PICSAppDepot,
 				logging.Error(err)
 				depot.EncryptedManifests = string(manifests)
 			case "maxsize":
-				maxSize, err := strconv.ParseInt(vv.Value.(string), 10, 64)
+				maxSize, err := strconv.ParseInt(value, 10, 64)
 				logging.Error(err)
 				depot.MaxSize = maxSize
 			case "dlcappid":
-				appID, err := strconv.Atoi(vv.Value.(string))
+				appID, err := strconv.Atoi(value)
 				logging.Error(err)
 				depot.DLCApp = appID
 			case "depotfromapp":
-				app, err := strconv.Atoi(vv.Value.(string))
+				app, err := strconv.Atoi(value)
 				logging.Error(err)
 				depot.App = app
+			case "systemdefined":
+				if value == "1" {
+					depot.SystemDefined = true
+				}
+			case "optional":
+				if value == "1" {
+					depot.Optional = true
+				}
 			default:
 				logging.Info("GetAppDepots missing case: " + vv.Name)
 			}

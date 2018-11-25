@@ -43,6 +43,8 @@ type PICSAppDepot struct {
 	MaxSize            int64             `json:"maxsize"`
 	App                int               `json:"depotfromapp"`
 	DLCApp             int               `json:"dlcappid"`
+	SystemDefined      bool              `json:"systemdefined"`
+	Optional           bool              `json:"optional"`
 }
 type PICSAppDepotBranches struct {
 	Name             string `json:"name"`
