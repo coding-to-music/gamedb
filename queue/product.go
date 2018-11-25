@@ -162,9 +162,6 @@ func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICS
 		branch := db.PICSAppDepotBranches{}
 		branch.Name = v.Name
 
-		// 767390: hasdepotsindlc
-		// 438100: baselanguages
-
 		for _, vv := range v.Children {
 
 			switch vv.Name {

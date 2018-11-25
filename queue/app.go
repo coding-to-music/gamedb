@@ -146,6 +146,10 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 			err = app.SetUFS(common)
 			logging.Error(err)
 
+		case "install":
+
+			app.SetInstall(v.ToNestedMaps())
+
 		default:
 			logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(app.PICSChangeNumber) + ")")
 		}

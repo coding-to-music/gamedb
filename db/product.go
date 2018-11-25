@@ -32,7 +32,8 @@ type PICSAppConfigLaunchItem struct {
 	Typex       string `json:"type"`
 	OSList      string `json:"oslist"`
 	OSArch      string `json:"osarch"`
-	OwnsDLC     string `json:"ownsdlc"`
+	OwnsDLC     int    `json:"ownsdlc"`
+	BetaKey     string `json:"betakey"`
 }
 type PicsDepots struct {
 	Depots   []PICSAppDepotItem

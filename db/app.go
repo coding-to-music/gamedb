@@ -35,7 +35,7 @@ type App struct {
 	ID                     int        `gorm:"not null;column:id;primary_key"`                    //
 	CreatedAt              *time.Time `gorm:"not null;column:created_at"`                        //
 	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`                        //
-	PICSBranches           string     `gorm:"not null;column:pics_branches"`                     //
+	PICSInstall            string     `gorm:"not null;column:pics_install"`                      //
 	PICSChangeNumber       int        `gorm:"not null;column:change_number"`                     //
 	PICSChangeNumberDate   time.Time  `gorm:"not null;column:change_number_date"`                //
 	PICSConfig             string     `gorm:"not null;column:config"`                            //
@@ -407,22 +407,23 @@ func (app App) GetLaunch() (items []PICSAppConfigLaunchItem, err error) {
 	return items, err
 }
 
-func (app *App) SetBranches(branches []PICSAppDepotBranches) (err error) {
+func (app *App) SetInstall(install map[string]interface{}) (err error) {
 
-	bytes, err := json.Marshal(branches)
+	bytes, err := json.Marshal(install)
 	if err != nil {
 		return err
 	}
 
-	app.PICSBranches = string(bytes)
+	app.PICSInstall = string(bytes)
 
 	return nil
 }
 
-func (app App) GetBranches() (branches []PICSAppDepotBranches, err error) {
+func (app App) GetInstall() (install map[string]interface{}, err error) {
 
-	err = helpers.Unmarshal([]byte(app.PICSBranches), &branches)
-	return branches, err
+	install = map[string]interface{}{}
+	err = helpers.Unmarshal([]byte(app.PICSInstall), &install)
+	return install, err
 }
 
 func (app *App) SetUFS(ufs PICSAppUFS) (err error) {
