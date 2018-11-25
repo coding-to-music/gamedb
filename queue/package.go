@@ -133,7 +133,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	}
 
 	// Save new data
-	gorm.Save(&pack)
+	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
 		return false, true, gorm.Error
 	}

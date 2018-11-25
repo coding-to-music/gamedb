@@ -303,7 +303,7 @@ func adminGenres() {
 
 			var genre db.Genre
 
-			gorm.Unscoped().FirstOrInit(&genre, db.Genre{ID: genreID})
+			gorm = gorm.Unscoped().FirstOrInit(&genre, db.Genre{ID: genreID})
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
@@ -314,7 +314,7 @@ func adminGenres() {
 			genre.MeanScore = v.GetMeanScore()
 			genre.DeletedAt = nil
 
-			gorm.Unscoped().Save(&genre)
+			gorm = gorm.Unscoped().Save(&genre)
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
@@ -439,7 +439,7 @@ func adminPublishers() {
 
 			var publisher db.Publisher
 
-			gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: publisherName})
+			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: publisherName})
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
@@ -450,7 +450,7 @@ func adminPublishers() {
 			publisher.MeanScore = v.GetMeanScore()
 			publisher.DeletedAt = nil
 
-			gorm.Unscoped().Save(&publisher)
+			gorm = gorm.Unscoped().Save(&publisher)
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
@@ -575,7 +575,7 @@ func adminDevelopers() {
 
 			var developer db.Developer
 
-			gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: developerName})
+			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: developerName})
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
@@ -586,7 +586,7 @@ func adminDevelopers() {
 			developer.MeanScore = v.GetMeanScore()
 			developer.DeletedAt = nil
 
-			gorm.Unscoped().Save(&developer)
+			gorm = gorm.Unscoped().Save(&developer)
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
@@ -713,7 +713,7 @@ func adminTags() {
 
 			var tag db.Tag
 
-			gorm.Unscoped().FirstOrInit(&tag, db.Tag{ID: tagID})
+			gorm = gorm.Unscoped().FirstOrInit(&tag, db.Tag{ID: tagID})
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
@@ -724,7 +724,7 @@ func adminTags() {
 			tag.MeanScore = v.GetMeanScore()
 			tag.DeletedAt = nil
 
-			gorm.Unscoped().Save(&tag)
+			gorm = gorm.Unscoped().Save(&tag)
 			if gorm.Error != nil {
 				logging.Error(gorm.Error)
 			}
