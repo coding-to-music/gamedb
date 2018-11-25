@@ -144,6 +144,10 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 				if vv.Value.(string) == "1" {
 					depot.Optional = true
 				}
+			case "sharedinstall":
+				if vv.Value.(string) == "1" {
+					depot.SharedInstall = true
+				}
 			default:
 				logging.Info("GetAppDepots missing case: " + vv.Name)
 			}
@@ -178,6 +182,10 @@ func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICS
 			case "pwdrequired":
 				if vv.Value.(string) == "1" {
 					branch.PasswordRequired = true
+				}
+			case "lcsrequired":
+				if vv.Value.(string) == "1" {
+					branch.LCSRequired = true
 				}
 			default:
 				logging.Info("GetAppDepotBranches missing case: " + vv.Name)
@@ -227,6 +235,8 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 			launchItem.OSArch = v.Value.(string)
 		case "betakey":
 			launchItem.BetaKey = v.Value.(string)
+		case "workingdir":
+			launchItem.WorkingDir = v.Value.(string)
 		case "ownsdlc":
 			dlc, err := strconv.Atoi(v.Value.(string))
 			logging.Error(err)

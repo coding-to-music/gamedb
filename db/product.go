@@ -34,6 +34,7 @@ type PICSAppConfigLaunchItem struct {
 	OSArch      string `json:"osarch"`
 	OwnsDLC     int    `json:"ownsdlc"`
 	BetaKey     string `json:"betakey"`
+	WorkingDir  string `json:"workingdir"`
 }
 type PicsDepots struct {
 	Depots   []PICSAppDepotItem
@@ -51,6 +52,7 @@ type PICSAppDepotItem struct {
 	DLCApp             int               `json:"dlcappid"`
 	SystemDefined      bool              `json:"systemdefined"`
 	Optional           bool              `json:"optional"`
+	SharedInstall      bool              `json:"sharedinstall"`
 }
 type PICSAppDepotBranches struct {
 	Name             string `json:"name"`
@@ -58,6 +60,7 @@ type PICSAppDepotBranches struct {
 	BuildID          int    `json:"buildid"`
 	TimeUpdated      int64  `json:"timeupdated"`
 	PasswordRequired bool   `json:"pwdrequired"`
+	LCSRequired      bool   `json:"lcsrequired"`
 }
 
 //
