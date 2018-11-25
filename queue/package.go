@@ -1,9 +1,9 @@
 package queue
 
 import (
-	"encoding/json"
 	"errors"
 	"strconv"
+	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
@@ -59,7 +59,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		return false, true, gorm.Error
 	}
 
-	if pack.PICSChangeID >= message.ChangeNumber {
+	if pack.PICSChangeNumber >= message.ChangeNumber {
 		return true, false, nil
 	}
 
@@ -67,7 +67,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	// Update with new details
 	pack.ID = message.ID
-	pack.PICSChangeID = message.ChangeNumber
+
+	if message.ChangeNumber > pack.PICSChangeNumber {
+		pack.PICSChangeNumberDate = time.Now()
+	}
+
+	pack.PICSChangeNumber = message.ChangeNumber
 	pack.PICSName = message.KeyValues.Name
 	pack.PICSRaw = string(msg.Body)
 
@@ -90,26 +95,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 			// Empty
 		case "appids":
 
-			var i int
-			var appIDs []int
-			for _, vv := range v.Children {
-				i, err = strconv.Atoi(vv.Value.(string))
-				logging.Error(err)
-				appIDs = append(appIDs, i)
-			}
-			err = pack.SetAppIDs(appIDs)
+			err = pack.SetAppIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
 			logging.Error(err)
 
 		case "depotids":
 
-			var i int
-			var depotIDs []int
-			for _, vv := range v.Children {
-				i, err = strconv.Atoi(vv.Value.(string))
-				logging.Error(err)
-				depotIDs = append(depotIDs, i)
-			}
-			err = pack.SetDepotIDs(depotIDs)
+			err = pack.SetAppIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
 			logging.Error(err)
 
 		case "appitems":
@@ -125,21 +116,11 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 		case "extended":
 
-			var extended = db.PICSExtended{}
-			for _, vv := range v.Children {
-				if vv.Value == nil {
-					bytes, err := json.Marshal(vv.GetChildrenAsSlice())
-					logging.Error(err)
-					extended[vv.Name] = string(bytes)
-				} else {
-					extended[vv.Name] = vv.Value.(string)
-				}
-			}
-			err = pack.SetExtended(extended)
+			err = pack.SetExtended(v.GetExtended())
 			logging.Error(err)
 
 		default:
-			logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeID) + ")")
+			logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeNumber) + ")")
 		}
 
 		logging.Error(err)

@@ -22,8 +22,35 @@ var ErrInvalidCountryCode = errors.New("invalid code")
 //
 type PICSExtended map[string]string
 type PICSAppCommon map[string]string
+type PICSAppUFS map[string]string
 type PICSAppConfig map[string]string
-type PICSAppDepots map[string]string
+type PICSAppConfigLaunchItem struct {
+	Order       int    `json:"order"`
+	Executable  string `json:"executable"`
+	Arguments   string `json:"arguments"`
+	Description string `json:"description"`
+	Typex       string `json:"type"`
+	OSList      string `json:"oslist"`
+	OSArch      string `json:"osarch"`
+	OwnsDLC     string `json:"ownsdlc"`
+}
+type PICSAppDepot struct {
+	ID                 int               `json:"id"`
+	Name               string            `json:"name"`
+	Configs            map[string]string `json:"config"`
+	Manifests          map[string]string `json:"manifests"`
+	EncryptedManifests string            `json:"encryptedmanifests"`
+	MaxSize            int64             `json:"maxsize"`
+	App                int               `json:"depotfromapp"`
+	DLCApp             int               `json:"dlcappid"`
+}
+type PICSAppDepotBranches struct {
+	Name             string `json:"name"`
+	Description      string `json:"description"`
+	BuildID          int    `json:"buildid"`
+	TimeUpdated      int64  `json:"timeupdated"`
+	PasswordRequired bool   `json:"pwdrequired"`
+}
 
 //
 type ProductType string

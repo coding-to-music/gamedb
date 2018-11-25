@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
@@ -67,23 +68,34 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 
 	// Update with new details
 	app.ID = message.ID
+
+	if message.ChangeNumber > app.PICSChangeNumber {
+		app.PICSChangeNumberDate = time.Now()
+	}
+
 	app.PICSChangeNumber = message.ChangeNumber
 	app.Name = message.KeyValues.Name
 	app.PICSRaw = string(msg.Body)
+
+	//x, _ := json.Marshal(message.KeyValues.Children)
+	//fmt.Println(string(x))
 
 	for _, v := range message.KeyValues.Children {
 
 		switch v.Name {
 		case "appid":
+
 			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
+			logging.Error(err)
 			app.ID = int(i64)
+
 		case "common":
 
 			var common = db.PICSAppCommon{}
 			for _, vv := range v.Children {
 				if vv.Value == nil {
-					bytes, err := json.Marshal(vv.GetChildrenAsSlice()) // todo, flatten, not slice
+					bytes, err := json.Marshal(vv.ToNestedMaps())
 					logging.Error(err)
 					common[vv.Name] = string(bytes)
 				} else {
@@ -95,54 +107,53 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 
 		case "extended":
 
-			var extended = db.PICSExtended{}
-			for _, vv := range v.Children {
-				if vv.Value == nil {
-					bytes, err := json.Marshal(vv.GetChildrenAsSlice()) // todo, flatten, not slice
-					logging.Error(err)
-					extended[vv.Name] = string(bytes)
-				} else {
-					extended[vv.Name] = vv.Value.(string)
-				}
-			}
-			err = app.SetExtended(extended)
+			err = app.SetExtended(v.GetExtended())
 			logging.Error(err)
 
 		case "config":
 
-			var config = db.PICSAppConfig{}
-			for _, vv := range v.Children {
-				if vv.Value == nil {
-					bytes, err := json.Marshal(vv.GetChildrenAsSlice()) // todo, flatten, not slice
-					logging.Error(err)
-					config[vv.Name] = string(bytes)
-				} else {
-					config[vv.Name] = vv.Value.(string)
-				}
-			}
+			config, launch := v.GetAppConfig()
+
 			err = app.SetConfig(config)
+			logging.Error(err)
+
+			err = app.SetLaunch(launch)
 			logging.Error(err)
 
 		case "depots":
 
-			var depots = db.PICSAppDepots{}
+			depots, branches := v.GetAppDepots()
+
+			err = app.SetDepots(depots)
+			logging.Error(err)
+
+			err = app.SetBranches(branches)
+			logging.Error(err)
+
+		case "public_only":
+
+			if v.Value.(string) == "1" {
+				app.PICSPublicOnly = true
+			}
+
+		case "ufs":
+
+			var common = db.PICSAppUFS{}
 			for _, vv := range v.Children {
 				if vv.Value == nil {
-					bytes, err := json.Marshal(vv.GetChildrenAsSlice()) // todo, flatten, not slice
+					bytes, err := json.Marshal(vv.ToNestedMaps())
 					logging.Error(err)
-					depots[vv.Name] = string(bytes)
+					common[vv.Name] = string(bytes)
 				} else {
-					depots[vv.Name] = vv.Value.(string)
+					common[vv.Name] = vv.Value.(string)
 				}
 			}
-			err = app.SetDepots(depots)
+			err = app.SetUFS(common)
 			logging.Error(err)
 
 		default:
 			logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(app.PICSChangeNumber) + ")")
 		}
-
-		logging.Error(err)
 	}
 
 	// Update from API
@@ -201,88 +212,8 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageApps)
 	if err == nil && page.HasConnections() {
-		//page.Send(app.OutputForJSON())
+		page.Send(app.OutputForJSON(steam.CountryUS))
 	}
 
 	return true, false, err
-
-	//app := new(db.App)
-	//
-	//// Update app
-	//gorm, err := db.GetMySQLClient()
-	//if err != nil {
-	//	logging.Error(err)
-	//}
-	//
-	//gorm.FirstOrCreate(app, db.App{ID: message.AppID})
-	//if gorm.Error != nil {
-	//	logging.Error(gorm.Error)
-	//}
-	//
-	//if message.PICSChangeID != 0 {
-	//	app.PICSChangeNumber = message.PICSChangeID
-	//  app.ChangeNumberDate = time.now().Unix()
-	//}
-	//
-	//priceBeforeFill := app.PriceFinal
-	//
-	//errs := app.UpdateFromAPI()
-	//if len(errs) > 0 {
-	//	// Nack on hard fails
-	//	for _, err = range errs {
-	//		if err2, ok := err.(gorm.UpdateError); ok {
-	//			if err2.IsHard() {
-	//				return false, false, err2
-	//			}
-	//		}
-	//	}
-	//	// Retry on all other errors
-	//	for _, err = range errs {
-	//		if err != steam.ErrNullResponse {
-	//			logging.Error(err)
-	//		}
-	//		return false, true, err
-	//	}
-	//}
-	////if v.Error() == steam.ErrInvalidJson || v == steam.ErrBadResponse || strings.HasSuffix(v.Error(), "connect: connection refused") {
-	////	return false, true
-	////}
-	//
-	//gorm.Save(app)
-	//if gorm.Error != nil {
-	//	logging.Error(gorm.Error)
-	//}
-	//
-	//// Save price change
-	//price := new(db.AppPrice)
-	//price.CreatedAt = time.Now()
-	//price.AppID = app.ID
-	//price.Name = app.GetName()
-	//price.PriceInitial = app.PriceInitial
-	//price.PriceFinal = app.PriceFinal
-	//price.Discount = app.PriceDiscount
-	//price.Currency = "usd"
-	//price.Change = app.PriceFinal - priceBeforeFill
-	//price.Icon = app.Icon
-	//price.ReleaseDateNice = app.GetReleaseDateNice()
-	//price.ReleaseDateUnix = app.GetReleaseDateUnix()
-	//
-	//if price.Change != 0 {
-	//
-	//	prices, err := db.GetAppPrices(app.ID, 1)
-	//	if err != nil {
-	//		logging.Error(err)
-	//	}
-	//
-	//	if len(prices) == 0 {
-	//		price.First = true
-	//	}
-	//
-	//	_, err = db.SaveKind(price.GetKey(), price)
-	//	if err != nil {
-	//		logging.Error(err)
-	//	}
-	//}
-	//
-	//return true, false, err
 }

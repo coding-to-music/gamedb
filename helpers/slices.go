@@ -1,6 +1,23 @@
 package helpers
 
-import "math"
+import (
+	"math"
+	"strconv"
+
+	"github.com/gamedb/website/logging"
+)
+
+func StringSliceToIntSlice(in []string) (ret []int) {
+
+	for _, v := range in {
+		i, err := strconv.Atoi(v)
+		logging.Error(err)
+		if err == nil {
+			ret = append(ret, i)
+		}
+	}
+	return ret
+}
 
 func SliceHasInt(slice []int, i int) bool {
 	for _, v := range slice {

@@ -32,55 +32,59 @@ var (
 )
 
 type App struct {
-	ID                     int        `gorm:"not null;column:id;primary_key"`
-	CreatedAt              *time.Time `gorm:"not null;column:created_at"`
-	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`
-	PICSChangeNumber       int        `gorm:"not null;column:change_number"`
-	PICSConfig             string     `gorm:"not null;column:config"`
-	PICSCommon             string     `gorm:"not null;column:common"`
-	PICSDepots             string     `gorm:"not null;column:depots"`
-	PICSExtended           string     `gorm:"not null;column:extended"`
-	PICSRaw                string     `gorm:"not null;column:raw_pics"` // JSON (TEXT)
-	ScannedAt              *time.Time `gorm:"not null;column:scanned_at"`
-	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text"`
-	Achievements           string     `gorm:"not null;column:achievements;type:text"`
-	Background             string     `gorm:"not null;column:background"`
-	Categories             string     `gorm:"not null;column:categories;type:json"`
-	ChangeNumberDate       time.Time  `gorm:"not null;column:change_number_date"`
-	ClientIcon             string     `gorm:"not null;column:client_icon"`
-	ComingSoon             bool       `gorm:"not null;column:coming_soon"`
-	Developers             string     `gorm:"not null;column:developers;type:json"`
-	DLC                    string     `gorm:"not null;column:dlc;type:json"`
-	DLCCount               int        `gorm:"not null;column:dlc_count"`
-	GameID                 int        `gorm:"not null;column:game_id"`
-	GameName               string     `gorm:"not null;column:game_name"`
-	Genres                 string     `gorm:"not null;column:genres;type:json"`
-	HeaderImage            string     `gorm:"not null;column:image_header"`
-	Homepage               string     `gorm:"not null;column:homepage"`
-	Icon                   string     `gorm:"not null;column:icon"`
-	IsFree                 bool       `gorm:"not null;column:is_free;type:tinyint(1)"`
-	Logo                   string     `gorm:"not null;column:logo"`
-	MetacriticScore        int8       `gorm:"not null;column:metacritic_score"`
-	MetacriticURL          string     `gorm:"not null;column:metacritic_url"`
-	Movies                 string     `gorm:"not null;column:movies;type:text"`
-	Name                   string     `gorm:"not null;column:name"`
-	Packages               string     `gorm:"not null;column:packages;type:json"`
-	Platforms              string     `gorm:"not null;column:platforms;type:json"`
-	Publishers             string     `gorm:"not null;column:publishers;type:json"`
-	ReleaseDate            string     `gorm:"not null;column:release_date"`
-	ReleaseDateUnix        int64      `gorm:"not null;column:release_date_unix"`
-	ReleaseState           string     `gorm:"not null;column:release_state"`
-	Schema                 string     `gorm:"not null;column:schema;type:text"`
-	Screenshots            string     `gorm:"not null;column:screenshots;type:text"`
-	ShortDescription       string     `gorm:"not null;column:description_short"`
-	StoreTags              string     `gorm:"not null;column:tags;type:json"`
-	Type                   string     `gorm:"not null;column:type"`
-	Reviews                string     `gorm:"not null;column:reviews"`
-	ReviewsScore           float64    `gorm:"not null;column:reviews_score"`
-	ReviewsPositive        int        `gorm:"not null;column:reviews_positive"`
-	ReviewsNegative        int        `gorm:"not null;column:reviews_negative"`
-	Prices                 string     `gorm:"not null;column:prices"`
-	NewsIDs                string     `gorm:"not null;column:news_ids"`
+	ID                     int        `gorm:"not null;column:id;primary_key"`                    //
+	CreatedAt              *time.Time `gorm:"not null;column:created_at"`                        //
+	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`                        //
+	PICSBranches           string     `gorm:"not null;column:pics_branches"`                     //
+	PICSChangeNumber       int        `gorm:"not null;column:change_number"`                     //
+	PICSChangeNumberDate   time.Time  `gorm:"not null;column:change_number_date"`                //
+	PICSConfig             string     `gorm:"not null;column:config"`                            //
+	PICSCommon             string     `gorm:"not null;column:common"`                            //
+	PICSDepots             string     `gorm:"not null;column:depots"`                            //
+	PICSExtended           string     `gorm:"not null;column:extended"`                          //
+	PICSLaunch             string     `gorm:"not null;column:pics_launch"`                       //
+	PICSUFS                string     `gorm:"not null;column:pics_ufs"`                          //
+	PICSRaw                string     `gorm:"not null;column:pics_raw"`                          //
+	PICSPublicOnly         bool       `gorm:"not null;column:public_only"`                       //
+	ScannedAt              *time.Time `gorm:"not null;column:scanned_at"`                        //
+	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text"` //
+	Achievements           string     `gorm:"not null;column:achievements;type:text"`            //
+	Background             string     `gorm:"not null;column:background"`                        //
+	Categories             string     `gorm:"not null;column:categories;type:json"`              //
+	ClientIcon             string     `gorm:"not null;column:client_icon"`                       //
+	ComingSoon             bool       `gorm:"not null;column:coming_soon"`                       //
+	Developers             string     `gorm:"not null;column:developers;type:json"`              //
+	DLC                    string     `gorm:"not null;column:dlc;type:json"`                     //
+	DLCCount               int        `gorm:"not null;column:dlc_count"`                         //
+	GameID                 int        `gorm:"not null;column:game_id"`                           //
+	GameName               string     `gorm:"not null;column:game_name"`                         //
+	Genres                 string     `gorm:"not null;column:genres;type:json"`                  //
+	HeaderImage            string     `gorm:"not null;column:image_header"`                      //
+	Homepage               string     `gorm:"not null;column:homepage"`                          //
+	Icon                   string     `gorm:"not null;column:icon"`                              //
+	IsFree                 bool       `gorm:"not null;column:is_free;type:tinyint(1)"`           //
+	Logo                   string     `gorm:"not null;column:logo"`                              //
+	MetacriticScore        int8       `gorm:"not null;column:metacritic_score"`                  //
+	MetacriticURL          string     `gorm:"not null;column:metacritic_url"`                    //
+	Movies                 string     `gorm:"not null;column:movies;type:text"`                  //
+	Name                   string     `gorm:"not null;column:name"`                              //
+	Packages               string     `gorm:"not null;column:packages;type:json"`                //
+	Platforms              string     `gorm:"not null;column:platforms;type:json"`               //
+	Publishers             string     `gorm:"not null;column:publishers;type:json"`              //
+	ReleaseDate            string     `gorm:"not null;column:release_date"`                      //
+	ReleaseDateUnix        int64      `gorm:"not null;column:release_date_unix"`                 //
+	ReleaseState           string     `gorm:"not null;column:release_state"`                     //
+	Schema                 string     `gorm:"not null;column:schema;type:text"`                  //
+	Screenshots            string     `gorm:"not null;column:screenshots;type:text"`             //
+	ShortDescription       string     `gorm:"not null;column:description_short"`                 //
+	StoreTags              string     `gorm:"not null;column:tags;type:json"`                    //
+	Type                   string     `gorm:"not null;column:type"`                              //
+	Reviews                string     `gorm:"not null;column:reviews"`                           //
+	ReviewsScore           float64    `gorm:"not null;column:reviews_score"`                     //
+	ReviewsPositive        int        `gorm:"not null;column:reviews_positive"`                  //
+	ReviewsNegative        int        `gorm:"not null;column:reviews_negative"`                  //
+	Prices                 string     `gorm:"not null;column:prices"`                            //
+	NewsIDs                string     `gorm:"not null;column:news_ids"`                          //
 }
 
 func (app *App) BeforeCreate(scope *gorm.Scope) error {
@@ -367,7 +371,7 @@ func (app App) GetConfig() (config PICSAppConfig, err error) {
 	return config, err
 }
 
-func (app *App) SetDepots(depots PICSAppDepots) (err error) {
+func (app *App) SetDepots(depots []PICSAppDepot) (err error) {
 
 	bytes, err := json.Marshal(depots)
 	if err != nil {
@@ -379,12 +383,65 @@ func (app *App) SetDepots(depots PICSAppDepots) (err error) {
 	return nil
 }
 
-func (app App) GetDepots() (depots PICSAppDepots, err error) {
-
-	depots = PICSAppDepots{}
+func (app App) GetDepots() (depots []PICSAppDepot, err error) {
 
 	err = helpers.Unmarshal([]byte(app.PICSDepots), &depots)
 	return depots, err
+}
+
+func (app *App) SetLaunch(items []PICSAppConfigLaunchItem) (err error) {
+
+	bytes, err := json.Marshal(items)
+	if err != nil {
+		return err
+	}
+
+	app.PICSLaunch = string(bytes)
+
+	return nil
+}
+
+func (app App) GetLaunch() (items []PICSAppConfigLaunchItem, err error) {
+
+	err = helpers.Unmarshal([]byte(app.PICSLaunch), &items)
+	return items, err
+}
+
+func (app *App) SetBranches(branches []PICSAppDepotBranches) (err error) {
+
+	bytes, err := json.Marshal(branches)
+	if err != nil {
+		return err
+	}
+
+	app.PICSBranches = string(bytes)
+
+	return nil
+}
+
+func (app App) GetBranches() (branches []PICSAppDepotBranches, err error) {
+
+	err = helpers.Unmarshal([]byte(app.PICSBranches), &branches)
+	return branches, err
+}
+
+func (app *App) SetUFS(ufs PICSAppUFS) (err error) {
+
+	bytes, err := json.Marshal(ufs)
+	if err != nil {
+		return err
+	}
+
+	app.PICSUFS = string(bytes)
+
+	return nil
+}
+
+func (app App) GetUFS() (ufs PICSAppDepotBranches, err error) {
+
+	ufs = PICSAppDepotBranches{}
+	err = helpers.Unmarshal([]byte(app.PICSUFS), &ufs)
+	return ufs, err
 }
 
 func (app App) GetCommunityLink() string {
@@ -681,7 +738,6 @@ func (app *App) UpdateFromAPI() (errs []error) {
 
 		response, _, err := helpers.GetSteam().GetAppDetails(app.ID, steam.CountryUS, steam.LanguageEnglish)
 		if err != nil {
-
 			if err == steam.ErrNullResponse {
 				errs = append(errs, err)
 			}
@@ -802,6 +858,13 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	go func(app *App) {
 
 		percentages, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
+
+		// This endpoint returns 500 if the app has no achievement data, so it's probably fine.
+		err2, ok := err.(steam.Error)
+		if ok && err2.Code() == 500 {
+			err = nil
+		}
+
 		if err != nil {
 
 			errs = append(errs, err)
