@@ -148,7 +148,13 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 
 		case "install":
 
-			app.SetInstall(v.ToNestedMaps())
+			err = app.SetInstall(v.ToNestedMaps())
+			logging.Error(err)
+
+		case "localization":
+
+			err = app.SetLocalization(v.ToNestedMaps())
+			logging.Error(err)
 
 		default:
 			logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(app.PICSChangeNumber) + ")")
@@ -167,7 +173,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 	}
 
 	// Save new data
-	gorm.Save(&app)
+	gorm = gorm.Save(&app)
 	if gorm.Error != nil {
 		return false, true, gorm.Error
 	}

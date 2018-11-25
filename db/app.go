@@ -43,6 +43,7 @@ type App struct {
 	PICSDepots             string     `gorm:"not null;column:depots"`                            //
 	PICSExtended           string     `gorm:"not null;column:extended"`                          //
 	PICSLaunch             string     `gorm:"not null;column:pics_launch"`                       //
+	PICSLocalization       string     `gorm:"not null;column:pics_localization"`                 //
 	PICSUFS                string     `gorm:"not null;column:pics_ufs"`                          //
 	PICSRaw                string     `gorm:"not null;column:pics_raw"`                          //
 	PICSPublicOnly         bool       `gorm:"not null;column:public_only"`                       //
@@ -424,6 +425,25 @@ func (app App) GetInstall() (install map[string]interface{}, err error) {
 	install = map[string]interface{}{}
 	err = helpers.Unmarshal([]byte(app.PICSInstall), &install)
 	return install, err
+}
+
+func (app *App) SetLocalization(localization map[string]interface{}) (err error) {
+
+	bytes, err := json.Marshal(localization)
+	if err != nil {
+		return err
+	}
+
+	app.PICSInstall = string(bytes)
+
+	return nil
+}
+
+func (app App) GetLocalization() (localization map[string]interface{}, err error) {
+
+	localization = map[string]interface{}{}
+	err = helpers.Unmarshal([]byte(app.PICSInstall), &localization)
+	return localization, err
 }
 
 func (app *App) SetUFS(ufs PICSAppUFS) (err error) {

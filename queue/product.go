@@ -177,6 +177,10 @@ func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICS
 				time, err := strconv.ParseInt(vv.Value.(string), 10, 64)
 				logging.Error(err)
 				branch.TimeUpdated = time
+			case "defaultforsubs":
+				branch.DefaultForSubs = vv.Value.(string)
+			case "unlockforsubs":
+				branch.UnlockForSubs = vv.Value.(string)
 			case "description":
 				branch.Description = vv.Value.(string)
 			case "pwdrequired":
@@ -235,6 +239,8 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 			launchItem.OSArch = v.Value.(string)
 		case "betakey":
 			launchItem.BetaKey = v.Value.(string)
+		case "vacmodulefilename":
+			launchItem.VACModuleFilename = v.Value.(string)
 		case "workingdir":
 			launchItem.WorkingDir = v.Value.(string)
 		case "ownsdlc":
