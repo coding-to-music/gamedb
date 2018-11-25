@@ -24,6 +24,8 @@ type newsTemplate struct {
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
+	setNoCacheHeaders(w)
+
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
 	logging.Error(err)
