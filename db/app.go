@@ -175,7 +175,7 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.GetType(),
 		app.ReviewsScore,
 		locale.Format(app.GetPrice(code).Final),
-		app.UpdatedAt.Unix(),
+		app.PICSChangeNumberDate.Unix(),
 	}
 }
 

@@ -218,7 +218,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			gorm = gorm.Model(db.App{})
-			gorm = gorm.Select([]string{"id", "name", "icon", "type", "reviews_score", "prices", "updated_at"})
+			gorm = gorm.Select([]string{"id", "name", "icon", "type", "reviews_score", "prices", "change_number_date"})
 
 			// Types
 			types := query.GetSearchSlice("types")
@@ -330,7 +330,7 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				"0": "name",
 				"2": "reviews_score",
 				"3": "price",
-				"4": "updated_at",
+				"4": "change_number_date",
 			})
 
 			// Get rows
