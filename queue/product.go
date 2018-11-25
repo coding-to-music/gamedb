@@ -79,7 +79,7 @@ func (i RabbitMessageProductKeyValues) GetAppConfig() (config db.PICSAppConfig, 
 		if v.Name == "launch" {
 			launch = v.GetAppLaunch()
 		} else if v.Value == nil {
-			bytes, err := json.Marshal(v.GetChildrenAsSlice())
+			bytes, err := json.Marshal(v.ToNestedMaps())
 			logging.Error(err)
 			config[v.Name] = string(bytes)
 		} else {
