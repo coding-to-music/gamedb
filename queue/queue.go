@@ -161,6 +161,10 @@ func (s rabbitConsumer) consume() {
 		if consumerConnection == nil {
 
 			consumerConnection, err = amqp.Dial(rabbitDSN)
+			if consumerConnection == nil {
+				logging.Error(errors.New("rabbit not found"))
+				return
+			}
 			consumerConnection.NotifyClose(consumerCloseChannel)
 			if err != nil {
 				logging.Error(err)
