@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
@@ -62,8 +63,8 @@ type PICSAppDepotBranches struct {
 	TimeUpdated      int64  `json:"timeupdated"`
 	PasswordRequired bool   `json:"pwdrequired"`
 	LCSRequired      bool   `json:"lcsrequired"`
-	DefaultForSubs   string   `json:"defaultforsubs"`
-	UnlockForSubs    string   `json:"unlockforsubs"`
+	DefaultForSubs   string `json:"defaultforsubs"`
+	UnlockForSubs    string `json:"unlockforsubs"`
 }
 
 //
@@ -147,4 +148,8 @@ func (p ProductPriceCache) GetCountryName(code steam.CountryCode) string {
 	locale, err := helpers.GetLocaleFromCountry(code)
 	logging.Error(err)
 	return locale.CountryName
+}
+
+func (p ProductPriceCache) GetFlag(code steam.CountryCode) string {
+	return "/assets/img/flags/" + strings.ToLower(string(code)) + ".png"
 }

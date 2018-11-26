@@ -193,8 +193,8 @@
                             {{ range $key, $value := .Package.GetPrices }}
                                 <tr data-code="{{ $key }}">
                                     <td class="img flag">
-                                        <img src="/assets/img/flags/{{$key}}.png" alt="{{ $key }}" class="rounded">
-                                        <span>{{ (.GetCountryName $key) }} ({{ $key }})</span>
+                                        <img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}" class="rounded">
+                                        <span>{{ .GetCountryName $key }}</span>
                                     </td>
                                     <td>{{ .GetInitial $key }}</td>
                                     <td>{{ .GetFinal $key }}</td>
