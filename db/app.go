@@ -757,119 +757,131 @@ func (app *App) UpdateFromAPI() (errs []error) {
 	wg.Add(1)
 	go func(app *App) {
 
-		response, _, err := helpers.GetSteam().GetAppDetails(app.ID, steam.CountryUS, steam.LanguageEnglish)
-		if err != nil {
-			if err == steam.ErrNullResponse {
+		prices := ProductPrices{}
+
+		for _, code := range helpers.GetActiveCountries() {
+
+			// Get app details
+			response, _, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
+			if err != nil {
+
+				// Presume that if not found in one language, wont be found in any.
+				if err == steam.ErrAppNotFound {
+					break
+				}
+
 				errs = append(errs, err)
+				return
+			}
+
+			prices.AddPriceFromApp(steam.CountryUS, response)
+
+			if code == steam.CountryUS {
+
+				// Screenshots
+				screenshotsString, err := json.Marshal(response.Data.Screenshots)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// Movies
+				moviesString, err := json.Marshal(response.Data.Movies)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// Achievements
+				achievementsString, err := json.Marshal(response.Data.Achievements)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// DLC
+				dlcString, err := json.Marshal(response.Data.DLC)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// Packages
+				packagesString, err := json.Marshal(response.Data.Packages)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// Publishers
+				publishersString, err := json.Marshal(response.Data.Publishers)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// Developers
+				developersString, err := json.Marshal(response.Data.Developers)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// Categories
+				var categories []int8
+				for _, v := range response.Data.Categories {
+					categories = append(categories, v.ID)
+				}
+
+				categoriesString, err := json.Marshal(categories)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				genresString, err := json.Marshal(response.Data.Genres)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// Platforms
+				var platforms []string
+				if response.Data.Platforms.Linux {
+					platforms = append(platforms, "linux")
+				}
+				if response.Data.Platforms.Windows {
+					platforms = append(platforms, "windows")
+				}
+				if response.Data.Platforms.Windows {
+					platforms = append(platforms, "macos")
+				}
+
+				platformsString, err := json.Marshal(platforms)
+				if err != nil {
+					errs = append(errs, err)
+				}
+
+				// Other
+				app.Name = response.Data.Name
+				app.Type = response.Data.Type
+				app.IsFree = response.Data.IsFree
+				app.DLC = string(dlcString)
+				app.DLCCount = len(response.Data.DLC)
+				app.ShortDescription = response.Data.ShortDescription
+				app.HeaderImage = response.Data.HeaderImage
+				app.Developers = string(developersString)
+				app.Publishers = string(publishersString)
+				app.Packages = string(packagesString)
+				app.MetacriticScore = response.Data.Metacritic.Score
+				app.MetacriticURL = response.Data.Metacritic.URL
+				app.Categories = string(categoriesString)
+				app.Genres = string(genresString)
+				app.Screenshots = string(screenshotsString)
+				app.Movies = string(moviesString)
+				app.Achievements = string(achievementsString)
+				app.Background = response.Data.Background
+				app.Platforms = string(platformsString)
+				app.GameID = response.Data.Fullgame.AppID
+				app.GameName = response.Data.Fullgame.Name
+				app.ReleaseDate = response.Data.ReleaseDate.Date
+				app.ReleaseDateUnix = app.GetReleaseDateUnix() // Must be after setting app.ReleaseDate
+				app.ComingSoon = response.Data.ReleaseDate.ComingSoon
 			}
 		}
 
-		// Screenshots
-		screenshotsString, err := json.Marshal(response.Data.Screenshots)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Movies
-		moviesString, err := json.Marshal(response.Data.Movies)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Achievements
-		achievementsString, err := json.Marshal(response.Data.Achievements)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// DLC
-		dlcString, err := json.Marshal(response.Data.DLC)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Packages
-		packagesString, err := json.Marshal(response.Data.Packages)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Publishers
-		publishersString, err := json.Marshal(response.Data.Publishers)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Developers
-		developersString, err := json.Marshal(response.Data.Developers)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Categories
-		var categories []int8
-		for _, v := range response.Data.Categories {
-			categories = append(categories, v.ID)
-		}
-
-		categoriesString, err := json.Marshal(categories)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		genresString, err := json.Marshal(response.Data.Genres)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Platforms
-		var platforms []string
-		if response.Data.Platforms.Linux {
-			platforms = append(platforms, "linux")
-		}
-		if response.Data.Platforms.Windows {
-			platforms = append(platforms, "windows")
-		}
-		if response.Data.Platforms.Windows {
-			platforms = append(platforms, "macos")
-		}
-
-		platformsString, err := json.Marshal(platforms)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		// Other
-		app.Name = response.Data.Name
-		app.Type = response.Data.Type
-		app.IsFree = response.Data.IsFree
-		app.DLC = string(dlcString)
-		app.DLCCount = len(response.Data.DLC)
-		app.ShortDescription = response.Data.ShortDescription
-		app.HeaderImage = response.Data.HeaderImage
-		app.Developers = string(developersString)
-		app.Publishers = string(publishersString)
-		app.Packages = string(packagesString)
-		app.MetacriticScore = response.Data.Metacritic.Score
-		app.MetacriticURL = response.Data.Metacritic.URL
-		app.Categories = string(categoriesString)
-		app.Genres = string(genresString)
-		app.Screenshots = string(screenshotsString)
-		app.Movies = string(moviesString)
-		app.Achievements = string(achievementsString)
-		app.Background = response.Data.Background
-		app.Platforms = string(platformsString)
-		app.GameID = response.Data.Fullgame.AppID
-		app.GameName = response.Data.Fullgame.Name
-		app.ReleaseDate = response.Data.ReleaseDate.Date
-		app.ReleaseDateUnix = app.GetReleaseDateUnix() // Must be after setting app.ReleaseDate
-		app.ComingSoon = response.Data.ReleaseDate.ComingSoon
-
-		// todo, loop through all languages
-		prices := ProductPrices{}
-		prices.AddPriceFromApp(steam.CountryUS, response)
-
-		app.Prices = prices.String()
+		app.Prices = prices.JSON()
 
 		wg.Done()
 	}(app)

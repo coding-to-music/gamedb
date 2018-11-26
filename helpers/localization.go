@@ -18,11 +18,11 @@ var locales = []Locale{
 	{CountryCode: steam.CountryCA, CurrencyCode: steam.CurrencyCAD, CurrencySymbol: "$", CountryName: "Canada"},
 	{CountryCode: steam.CountryCH, CurrencyCode: steam.CurrencyCHF, CurrencySymbol: "CHF", CountryName: "Switzerland"},
 	{CountryCode: steam.CountryCL, CurrencyCode: steam.CurrencyCLP, CurrencySymbol: "$", CountryName: "Chile"},
-	{CountryCode: steam.CountryCN, CurrencyCode: steam.CurrencyCNY, CurrencySymbol: "¥", CountryName: "China"},
+	{CountryCode: steam.CountryCN, CurrencyCode: steam.CurrencyCNY, CurrencySymbol: "¥", CountryName: "China", Enabled: true},
 	{CountryCode: steam.CountryCO, CurrencyCode: steam.CurrencyCOP, CurrencySymbol: "$", CountryName: "Colombia"},
 	{CountryCode: steam.CountryCR, CurrencyCode: steam.CurrencyCRC, CurrencySymbol: "₡", CountryName: "Costa Rica"},
-	{CountryCode: steam.CountryDE, CurrencyCode: steam.CurrencyEUR, CurrencySymbol: "€", CountryName: "Germany"},
-	{CountryCode: steam.CountryGB, CurrencyCode: steam.CurrencyGBP, CurrencySymbol: "£", CountryName: "United Kingdom"},
+	{CountryCode: steam.CountryDE, CurrencyCode: steam.CurrencyEUR, CurrencySymbol: "€", CountryName: "Germany", Enabled: true},
+	{CountryCode: steam.CountryGB, CurrencyCode: steam.CurrencyGBP, CurrencySymbol: "£", CountryName: "United Kingdom", Enabled: true},
 	{CountryCode: steam.CountryHK, CurrencyCode: steam.CurrencyHKD, CurrencySymbol: "$", CountryName: "Hong Kong"},
 	{CountryCode: steam.CountryIL, CurrencyCode: steam.CurrencyILS, CurrencySymbol: "₪", CountryName: "Israel"},
 	{CountryCode: steam.CountryID, CurrencyCode: steam.CurrencyIDR, CurrencySymbol: "Rp", CountryName: "Indonesia"},
@@ -39,14 +39,14 @@ var locales = []Locale{
 	{CountryCode: steam.CountryPH, CurrencyCode: steam.CurrencyPHP, CurrencySymbol: "₱", CountryName: "Philippines"},
 	{CountryCode: steam.CountryPL, CurrencyCode: steam.CurrencyPLN, CurrencySymbol: "zł", CountryName: "Poland"},
 	{CountryCode: steam.CountryQA, CurrencyCode: steam.CurrencyQAR, CurrencySymbol: "QAR", CountryName: "Qatar"},
-	{CountryCode: steam.CountryRU, CurrencyCode: steam.CurrencyRUB, CurrencySymbol: "₽", CountryName: "Russia"},
+	{CountryCode: steam.CountryRU, CurrencyCode: steam.CurrencyRUB, CurrencySymbol: "₽", CountryName: "Russia", Enabled: true},
 	{CountryCode: steam.CountrySA, CurrencyCode: steam.CurrencySAR, CurrencySymbol: "SAR", CountryName: "Saudi Arabia"},
 	{CountryCode: steam.CountrySG, CurrencyCode: steam.CurrencySGD, CurrencySymbol: "$", CountryName: "Singapore"},
 	{CountryCode: steam.CountryTH, CurrencyCode: steam.CurrencyTHB, CurrencySymbol: "฿", CountryName: "Thailand"},
 	{CountryCode: steam.CountryTR, CurrencyCode: steam.CurrencyTRY, CurrencySymbol: "₺", CountryName: "Turkey"},
 	{CountryCode: steam.CountryTW, CurrencyCode: steam.CurrencyTWD, CurrencySymbol: "$", CountryName: "Taiwan"},
 	{CountryCode: steam.CountryUA, CurrencyCode: steam.CurrencyUAH, CurrencySymbol: "₴", CountryName: "Ukraine"},
-	{CountryCode: steam.CountryUS, CurrencyCode: steam.CurrencyUSD, CurrencySymbol: "$", CountryName: "United States"},
+	{CountryCode: steam.CountryUS, CurrencyCode: steam.CurrencyUSD, CurrencySymbol: "$", CountryName: "United States", Enabled: true},
 	{CountryCode: steam.CountryUY, CurrencyCode: steam.CurrencyUYU, CurrencySymbol: "$", CountryName: "Uruguay"},
 	{CountryCode: steam.CountryVN, CurrencyCode: steam.CurrencyVND, CurrencySymbol: "₫", CountryName: "Vietnam"},
 	{CountryCode: steam.CountryZA, CurrencyCode: steam.CurrencyZAR, CurrencySymbol: "R", CountryName: "South Africa"},
@@ -75,11 +75,21 @@ func GetLocaleFromCountry(code steam.CountryCode) (loc Locale, err error) {
 	return loc, err
 }
 
+func GetActiveCountries() (ret []steam.CountryCode) {
+	for _, v := range locales {
+		if v.Enabled {
+			ret = append(ret, v.CountryCode)
+		}
+	}
+	return ret
+}
+
 type Locale struct {
 	CountryCode    steam.CountryCode
 	CountryName    string
 	CurrencyCode   steam.CurrencyCode
 	CurrencySymbol string
+	Enabled        bool
 }
 
 func (l Locale) Format(amount int) string {

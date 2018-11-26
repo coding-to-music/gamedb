@@ -420,7 +420,7 @@ func (pack *Package) Update() (err error) {
 
 	prices := ProductPrices{}
 
-	for code := range steam.Countries {
+	for _, code := range helpers.GetActiveCountries() {
 
 		// Get package details
 		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
@@ -468,7 +468,7 @@ func (pack *Package) Update() (err error) {
 		}
 	}
 
-	pack.Prices = prices.String()
+	pack.Prices = prices.JSON()
 
 	return nil
 }
