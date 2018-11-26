@@ -48,11 +48,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fb3ec40038f8a08872c20d017f2279c78a83755689383d2aa5c8294354301060"
+  digest = "1:c8ab901b1a6f156d49709aeabd784e16f6ed7082f72cd57921cbc1f5f0e0101c"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "bb0ecec135a6408f42e950f0eff48c56cc1b3cf3"
+  revision = "43578d45c72b4f08a6d8ec1135fb372fb67521f5"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -196,12 +196,12 @@
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
-  digest = "1:4f646745e87604d6ac39bd2a96b3c2f4a898d1866069fff26b8281d6f84b919e"
+  digest = "1:c5e3c78cae31c64ee8f2c4ad33f05083ccace2cd7b4d327fb9f7eb4a3528021d"
   name = "github.com/google/go-github"
   packages = ["github"]
   pruneopts = ""
-  revision = "f55b50f38167644bb7e4be03d9a2bde71d435239"
-  version = "v18.2.0"
+  revision = "35781f7f4db7b3d7fc3359527472838da65023c6"
+  version = "v19.1.0"
 
 [[projects]]
   digest = "1:cea4aa2038169ee558bf507d5ea02c94ca85bcca28a4c7bb99fd59b31e43a686"
@@ -252,12 +252,12 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:2bec93296844270e8381feeb3f79709b76442275744b105709157281b1e0960d"
+  digest = "1:6f54dfa323906671c6e3fa6f2ff8092ac6c7ae23f2bcb10e4ae15d9ae052397e"
   name = "github.com/gosimple/slug"
   packages = ["."]
   pruneopts = ""
-  revision = "283c8d10b72e48ecfd721b1739de574713e57a0b"
-  version = "v1.3.0"
+  revision = "399d1fc3ebc635e15ea96980d1ae8e0f7e9e3b5b"
+  version = "v1.4.0"
 
 [[projects]]
   digest = "1:d14365c51dd1d34d5c79833ec91413bfbb166be978724f15701e17080dc06dec"
@@ -311,15 +311,15 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:ee8972a7d8929386df488da75ef0a670bbd94890a0da2a1c92fc0c53e99bd62d"
+  digest = "1:93ccea591e2831353980e9217eb5ec60052565c6fab3c497db8f74602af3fc86"
   name = "github.com/labstack/echo"
   packages = [
     ".",
     "middleware",
   ]
   pruneopts = ""
-  revision = "2e9f4ea4e010fa328318107ba074b1b72381c571"
-  version = "v3.3.7"
+  revision = "c7eb8da9ec73e78c4f38413f3f835e0cd52c7d72"
+  version = "v3.3.8"
 
 [[projects]]
   digest = "1:44f403f58ba6ffcc60f0946169d02879dc79a4bf5a84d4215f5f7c6a5865f74b"
@@ -558,17 +558,8 @@
     ".",
     "exemplar",
     "internal",
-    "internal/tagencoding",
-    "plugin/ocgrpc",
-    "plugin/ochttp",
-    "plugin/ochttp/propagation/b3",
-    "stats",
-    "stats/internal",
-    "stats/view",
-    "tag",
     "trace",
     "trace/internal",
-    "trace/propagation",
     "trace/tracestate",
   ]
   pruneopts = ""
@@ -577,7 +568,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f7be435e0ca22e2cd62b2d2542081a231685837170a87a3662abb7cdf9f3f1cd"
+  digest = "1:e8e4a203435ece7d6a119a9c2bd5078c401e94a4b93db3ca37ae0394ce77a919"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -591,7 +582,7 @@
     "ssh/terminal",
   ]
   pruneopts = ""
-  revision = "3d3f9f413869b949e48070b5bc593aa22cc2b8f2"
+  revision = "e657309f52e71501f9934566ac06dc5c2f7f11a1"
 
 [[projects]]
   branch = "master"
@@ -637,14 +628,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2e1aadff5bda52e267975408bf6b5e90135fc643829c9e4e964ff82c3826a1dd"
+  digest = "1:303c0ee48d6229a2423950f41b3ccb5a2067dc4c7b65f8863cfbd962bef05a85"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "0cf1ed9e522b7dbb416f080a5c8003de9b702bf4"
+  revision = "62eef0e2fa9b2c385f7b2778e763486da6880d37"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -670,8 +661,8 @@
   version = "v0.3.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:3cc81122a989a68e1a53ab7296c88f63a7ef6faf7a7dfdc29a835fe2d1d69ea3"
+  branch = "dartman"
+  digest = "1:5a6ee87b0ebade698219e3d82646bc1172d4bd37d687cf3c3e19fa3d3180c18a"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -686,10 +677,9 @@
     "transport",
     "transport/grpc",
     "transport/http",
-    "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "faade3cbb06a30202f2da53a8a5e3c4afe60b0c2"
+  revision = "2607571202e982f1ec528c1ab15580fe21d500fe"
 
 [[projects]]
   digest = "1:77d3cff3a451d50be4b52db9c7766c0d8570ba47593f0c9dc72173adb208e788"
