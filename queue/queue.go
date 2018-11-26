@@ -6,6 +6,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/logging"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
@@ -199,22 +200,27 @@ func (s rabbitConsumer) consume() {
 
 				ack, requeue, err := s.Message.process(msg)
 				logging.Error(err)
-				if requeue {
-					logging.Info("Requeue")
-				}
 
+				// Ack/Nack/Requeue
 				if ack {
 					err = msg.Ack(false)
 					logging.Error(err)
 				} else {
 
 					if requeue {
+						logging.Info("Requeuing")
 						err = s.requeueMessage(msg)
 						logging.Error(err)
 					}
 
 					err = msg.Nack(false, false)
 					logging.Error(err)
+				}
+
+				// Might be getting rate limited
+				if err == steam.ErrNullResponse {
+					logging.Info("Null response, sleeping for 10 seconds")
+					time.Sleep(time.Second * 10)
 				}
 			}
 
