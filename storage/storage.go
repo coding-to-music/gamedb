@@ -58,6 +58,8 @@ func IsStorageLocaion(x string) bool {
 
 func Upload(path string, data []byte, public bool) (err error) {
 
+	path = strings.TrimLeft(path, "/")
+
 	// Encode
 	data = snappy.Encode(nil, data)
 
