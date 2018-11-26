@@ -94,7 +94,12 @@ type Locale struct {
 
 func (l Locale) Format(amount int) string {
 
-	ac := accounting.Accounting{Symbol: l.CurrencySymbol, Precision: 2}
+	ac := accounting.Accounting{
+		Symbol:     l.CurrencySymbol,
+		FormatZero: "0",
+		Precision:  2,
+		Format:     "%s %v",
+	}
 	return ac.FormatMoney(float64(amount) / 100)
 }
 
