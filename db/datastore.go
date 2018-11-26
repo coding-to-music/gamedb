@@ -109,6 +109,10 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 				_, err = client.PutMulti(ctx, keys, kindsToChanges(chunk))
 			case KindPlayerRank:
 				_, err = client.PutMulti(ctx, keys, kindsToPlayerRanks(chunk))
+			case KindProductPrice:
+				_, err = client.PutMulti(ctx, keys, kindsToProductPrices(chunk))
+			default:
+				logging.Error(errors.New("missing case in BulkSaveKinds"))
 			}
 
 			if err != nil {
@@ -256,6 +260,19 @@ func kindsToPlayerRanks(a []Kind) (b []PlayerRank) {
 	for _, v := range a {
 
 		original, ok := v.(PlayerRank)
+		if ok {
+			b = append(b, original)
+		}
+	}
+
+	return b
+}
+
+func kindsToProductPrices(a []Kind) (b []ProductPrice) {
+
+	for _, v := range a {
+
+		original, ok := v.(ProductPrice)
 		if ok {
 			b = append(b, original)
 		}
