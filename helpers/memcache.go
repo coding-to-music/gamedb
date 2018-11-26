@@ -53,6 +53,6 @@ var (
 		return memcache.Item{Key: "most-expensive-app-" + string(code), Expiration: 86400 * 7}
 	}
 	MemcachePlayerRefreshed = func(playerID int64) memcache.Item {
-		return memcache.Item{Key: "player-refreshed-" + strconv.FormatInt(playerID, 10), Expiration: 0, Value: []byte("x")}
+		return memcache.Item{Key: "player-refreshed-" + strconv.FormatInt(playerID, 10), Expiration: 86400 * 7, Value: []byte("x")}
 	}
 )
