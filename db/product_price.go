@@ -29,13 +29,14 @@ func (p ProductPrice) GetKey() (key *datastore.Key) {
 }
 
 func (p ProductPrice) GetPath() string {
+
 	if p.AppID != 0 {
 		return getAppPath(p.AppID, p.Name)
 	} else if p.PackageID != 0 {
 		return getPackagePath(p.PackageID, p.Name)
-	} else {
-		return ""
 	}
+
+	return ""
 }
 
 func (p ProductPrice) GetIcon() string {
