@@ -300,8 +300,8 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			prices := query.GetSearchSlice("prices")
 			if len(prices) == 2 {
 
-				//gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") >= ?", prices[0]+"00")
-				//gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") <= ?", prices[1]+"00")
+				gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") >= ?", prices[0]+"00")
+				gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") <= ?", prices[1]+"00")
 
 			}
 
