@@ -7,7 +7,7 @@ import (
 
 func GetMeanPrice(code steam.CountryCode, prices string) (string, error) {
 
-	means := map[steam.CountryCode]int{}
+	means := map[steam.CountryCode]float64{}
 
 	locale, err := GetLocaleFromCountry(code)
 	logging.Error(err)
