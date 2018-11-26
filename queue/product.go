@@ -104,7 +104,14 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 
 		id, err := strconv.Atoi(v.Name)
 		if err != nil {
-			depots.Extra[v.Name] = v.Value.(string)
+			if v.Children == nil {
+				depots.Extra[v.Name] = v.Value.(string)
+			} else {
+				bytes, err := json.Marshal(v.ToNestedMaps())
+				logging.Error(err)
+				depots.Extra[v.Name] = string(bytes)
+			}
+
 			continue
 		}
 
