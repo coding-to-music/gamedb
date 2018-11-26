@@ -62,12 +62,12 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			gorm = gorm.Model(&db.Package{})
-			gorm = gorm.Select([]string{"id", "name", "billing_type", "license_type", "status", "apps_count", "updated_at"})
+			gorm = gorm.Select([]string{"id", "name", "billing_type", "license_type", "status", "apps_count", "change_number_date"})
 
 			gorm = query.SetOrderOffsetGorm(gorm, session.GetCountryCode(r), map[string]string{
 				"0": "name",
 				"4": "apps_count",
-				"5": "updated_at",
+				"5": "change_number_date",
 			})
 
 			gorm = gorm.Limit(100)

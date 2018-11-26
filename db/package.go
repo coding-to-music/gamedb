@@ -408,8 +408,8 @@ func (pack Package) OutputForJSON() (output []interface{}) {
 		pack.GetLicenseType(),
 		pack.GetStatus(),
 		pack.AppsCount,
-		pack.GetUpdatedUnix(),
-		pack.GetUpdatedNice(),
+		pack.PICSChangeNumberDate.Unix(),
+		pack.PICSChangeNumberDate.Format(helpers.DateYearTime),
 		pack.GetPath(),
 	}
 }
