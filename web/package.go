@@ -68,7 +68,6 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	var pricesString string
-	var pricesCount int
 	wg.Add(1)
 	go func() {
 
@@ -78,10 +77,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 		pricesResp, err := db.GetProductPrices(pack.ID, db.ProductTypePackage, code)
 		logging.Error(err)
 
-		pricesCount = len(pricesResp)
-
 		var prices [][]float64
-
 		for _, v := range pricesResp {
 			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceAfter) / 100})
 		}
@@ -122,7 +118,6 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Package = pack
 	t.Apps = apps
 	t.Prices = pricesString
-	t.PricesCount = pricesCount
 
 	err = returnTemplate(w, r, "package", t)
 	logging.Error(err)
@@ -130,9 +125,8 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 type packageTemplate struct {
 	GlobalTemplate
-	Package     db.Package
-	Apps        map[int]db.App
-	Banners     map[string][]string
-	Prices      string
-	PricesCount int
+	Package db.Package
+	Apps    map[int]db.App
+	Banners map[string][]string
+	Prices  string
 }

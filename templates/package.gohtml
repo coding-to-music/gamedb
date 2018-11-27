@@ -16,11 +16,6 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{ len .Package.GetAppIDs }})</a>
                 </li>
-                {{if gt .PricesCount 0}}
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
-                    </li>
-                {{end}}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                 </li>
