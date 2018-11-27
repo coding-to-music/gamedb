@@ -163,8 +163,8 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 		logging.Error(v)
 	}
 	for _, v := range errs {
-		if v != steam.ErrAppNotFound {
-			return false, true, err
+		if v != nil && v != steam.ErrAppNotFound {
+			return false, true, v
 		}
 	}
 
