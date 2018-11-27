@@ -892,9 +892,9 @@ func (app *App) UpdateFromAPI() (errs []error) {
 
 		percentages, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 
-		// This endpoint returns 500 if the app has no achievement data, so it's probably fine.
+		// This endpoint returns 403 if the app has no achievement data, so it's probably fine.
 		err2, ok := err.(steam.Error)
-		if ok && err2.Code() == 500 {
+		if ok && err2.Code() == 403 {
 			err = nil
 		}
 
