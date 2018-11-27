@@ -431,7 +431,8 @@ func (pack *Package) Update() (err error) {
 				break
 			}
 
-			return err
+			logging.Error(err)
+			continue
 		}
 
 		prices.AddPriceFromPackage(code, response)
@@ -468,9 +469,7 @@ func (pack *Package) Update() (err error) {
 		}
 	}
 
-	pack.Prices = prices.JSON()
-
-	return nil
+	return pack.SetPrices(prices)
 }
 
 func IsValidPackageID(id int) bool {

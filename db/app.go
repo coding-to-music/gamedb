@@ -771,7 +771,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 				}
 
 				errs = append(errs, err)
-				return
+				continue
 			}
 
 			prices.AddPriceFromApp(steam.CountryUS, response)
@@ -881,7 +881,8 @@ func (app *App) UpdateFromAPI() (errs []error) {
 			}
 		}
 
-		app.Prices = prices.JSON()
+		err := app.SetPrices(prices)
+		errs = append(errs, err)
 
 		wg.Done()
 	}(app)

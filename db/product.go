@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -103,13 +102,6 @@ func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceCache, err
 		return val, err
 	}
 	return price, ErrInvalidCountryCode
-}
-
-func (p ProductPrices) JSON() string {
-
-	bytes, err := json.Marshal(p)
-	logging.Error(err)
-	return string(bytes)
 }
 
 //
