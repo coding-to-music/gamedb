@@ -51,47 +51,11 @@ func (p ProductPrice) GetIcon() string {
 	}
 }
 
-//func (p ProductPrice) GetCreatedNice() string {
-//	return p.CreatedAt.Format(helpers.DateTime)
-//}
-//
-//func (p ProductPrice) GetCreatedUnix() int64 {
-//	return p.CreatedAt.Unix()
-//}
+func (p ProductPrice) GetPercentChange() string {
 
-//func (p ProductPrice) GetPriceBefore() float64 {
-//	return helpers.RoundIntTo2DP(p.PriceBefore)
-//}
-//
-//func (p ProductPrice) GetPriceAfter() float64 {
-//	return helpers.RoundIntTo2DP(p.PriceAfter)
-//}
+	return helpers.FloatToString(p.DifferencePercent, 2) + "%"
 
-//func (p ProductPrice) GetDifference() string {
-//
-//	diff := helpers.FloatToString(float64(p.Difference)/100, 2)
-//
-//	if p.Difference > 0 {
-//		return "+" + diff
-//	} else if p.Difference < 0 {
-//		return diff
-//	}
-//
-//	return "0"
-//}
-
-//func (p ProductPrice) GetDifferencePercent() string {
-//
-//	diff := helpers.FloatToString(p.DifferencePercent, 2)
-//
-//	if p.DifferencePercent > 0 {
-//		return "+" + diff + "%"
-//	} else if p.Difference < 0 {
-//		return "-" + diff + "%"
-//	}
-//
-//	return "0%"
-//}
+}
 
 // Data array for datatables
 func (p ProductPrice) OutputForJSON() (output []interface{}) {
@@ -109,7 +73,7 @@ func (p ProductPrice) OutputForJSON() (output []interface{}) {
 		locale.Format(p.PriceBefore),
 		locale.Format(p.PriceAfter),
 		locale.Format(p.Difference),
-		helpers.RoundFloatTo2DP(p.DifferencePercent),
+		p.GetPercentChange(),
 		p.CreatedAt.Format(helpers.DateTime),
 		p.CreatedAt.Unix(),
 		p.Difference, // Raw difference
