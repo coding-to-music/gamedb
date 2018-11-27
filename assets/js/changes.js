@@ -74,7 +74,6 @@ if ($('#changes-page').length > 0) {
     });
 
     const $table = $('table.table-datatable2');
-
     const dt = $table.DataTable(options);
 
     websocketListener('changes', function (e) {
@@ -91,5 +90,5 @@ if ($('#changes-page').length > 0) {
                 }
             }
         }
-    })
+    });
 }

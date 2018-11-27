@@ -71,7 +71,6 @@ if ($('#packages-page').length > 0) {
     });
 
     const $table = $('table.table-datatable2');
-
     const dt = $table.DataTable(options);
 
     websocketListener('packages', function (e) {
@@ -80,8 +79,7 @@ if ($('#packages-page').length > 0) {
         if (info.page === 0) { // Page 1
 
             const data = $.parseJSON(e.data);
-            console.log(data);
             addDataTablesRow(options, data.Data, info.length, $table);
         }
-    })
+    });
 }

@@ -1,14 +1,14 @@
 if ($('#price-changes-page').length > 0) {
 
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
-        "order": [[5, 'desc']],
+    const options = $.extend(true, {}, dtDefaultOptions, {
+        "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);
             $(row).attr('data-link', data[5]);
 
-            if (data[7] > 0) {
+            if (data[12] > 0) {
                 $(row).addClass('table-danger');
-            } else if (data[7] < 0) {
+            } else if (data[12] < 0) {
                 $(row).addClass('table-success');
             }
         },
@@ -40,11 +40,14 @@ if ($('#price-changes-page').length > 0) {
                 },
                 "orderable": false
             },
-            // Discount
+            // Change
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return row[8] + ' - ' + row[9] + '%';
+                    return row[8] + ' <small>(' + row[9] + ')</small>';
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 "orderable": false
             },
@@ -56,69 +59,22 @@ if ($('#price-changes-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
-                }
+                },
+                "orderable": false
             }
         ]
-    }));
+    });
 
-    // var $hideRed = $('#hide-red');
-    // var $hideGreen = $('#hide-green');
-    // var $hideApps = $('#hide-apps');
-    // var $hidePackages = $('#hide-packages');
-    // var $hideOwned = $('#hide-owned');
-    //
-    // $.fn.dataTable.ext.search.push(
-    //     function (settings, searchData, index, rowData, counter) {
-    //
-    //         var change = Number(searchData[5].replace(/[^0-9\.-]+/g, ""));
-    //
-    //         if ($hideRed.is(':checked') && change > 0) {
-    //             return false;
-    //         }
-    //
-    //         if ($hideGreen.is(':checked') && change < 0) {
-    //             return false;
-    //         }
-    //
-    //         if ($hideApps.is(':checked')) {
-    //
-    //             var appID = table
-    //                 .row(index)         //get the row to evaluate
-    //                 .nodes()                //extract the HTML - node() does not support to$
-    //                 .to$()                  //get as jQuery object
-    //                 // .find('td[data-label]') //find column with data-label
-    //                 // .data('label');         //get the value of data-label
-    //                 .attr('data-app-id');
-    //
-    //             if (appID > 0) {
-    //                 return false;
-    //             }
-    //         }
-    //
-    //         if ($hidePackages.is(':checked')) {
-    //
-    //             var packageID = table
-    //                 .row(index)         //get the row to evaluate
-    //                 .nodes()                //extract the HTML - node() does not support to$
-    //                 .to$()                  //get as jQuery object
-    //                 // .find('td[data-label]') //find column with data-label
-    //                 // .data('label');         //get the value of data-label
-    //                 .attr('data-package-id');
-    //
-    //             if (packageID > 0) {
-    //                 return false;
-    //             }
-    //         }
-    //
-    //         return true;
-    //     }
-    // );
-    //
-    // $('#hide-red, #hide-green, #hide-apps, #hide-packages, #hide-owned').change(function () {
-    //
-    //     $('#DataTables_Table_0').DataTable().draw();
-    //
-    // })
+    const $table = $('table.table-datatable2');
+    const dt = $table.DataTable(options);
 
+    websocketListener('prices', function (e) {
 
+        const info = dt.page.info();
+        if (info.page === 0) { // Page 1
+
+            const data = $.parseJSON(e.data);
+            addDataTablesRow(options, data.Data, info.length, $table);
+        }
+    });
 }
