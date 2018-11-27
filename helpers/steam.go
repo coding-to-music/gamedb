@@ -16,7 +16,7 @@ func InitSteam() {
 		Key:        viper.GetString("API_KEY"),
 		LogChannel: GetSteamLogsChan(),
 		UserAgent:  "http://gamedb.online",
-		APIRate:    time.Hour * 24 / 100000,
+		APIRate:    time.Millisecond * 1000,
 		StoreRate:  time.Millisecond * 1600,
 	}
 }
