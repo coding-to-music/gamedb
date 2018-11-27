@@ -16,6 +16,17 @@ module.exports = function (grunt) {
                 }
             }
         },
+        cssmin: {
+            options: {
+                sourceMap: false,
+                roundingPrecision: -1
+            },
+            target: {
+                files: {
+                    'assets/compiled.min.css': ['assets/concatenate.css']
+                }
+            }
+        },
         concat: {
             js: {
                 src: [
@@ -37,15 +48,13 @@ module.exports = function (grunt) {
                 dest: 'assets/concatenate.css'
             }
         },
-        cssmin: {
-            options: {
-                sourceMap: false,
-                roundingPrecision: -1
-            },
-            target: {
-                files: {
-                    'assets/compiled.min.css': ['assets/concatenate.css']
-                }
+        cacheBust: {
+            taskName: {
+                options: {
+                    assets: ['assets/compiled.min.css', 'assets/compiled.min.js'],
+                    queryString: true,
+                },
+                src: ['templates/_header.gohtml', 'templates/_footer.gohtml']
             }
         },
         watch: {
@@ -77,6 +86,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-cache-bust');
     grunt.loadNpmTasks('grunt-notify');
     grunt.loadNpmTasks('grunt-sass');
 
@@ -94,6 +104,7 @@ module.exports = function (grunt) {
         'concat:js',
 
         //
+        'cacheBust',
         'clean',
         'notify:done',
         'watch'
