@@ -27,7 +27,6 @@ type Package struct {
 	PICSAppIDs           string     `gorm:"not null;column:apps"`               // JSON
 	PICSAppItems         string     `gorm:"not null;column:app_items"`          // JSON (TEXT)
 	PICSDepotIDs         string     `gorm:"not null;column:depot_ids"`          // JSON
-	PICSRaw              string     `gorm:"not null;column:raw_pics"`           // JSON (TEXT)
 	AppsCount            int        `gorm:"not null;column:apps_count"`         //
 	ImagePage            string     `gorm:"not null;column:image_page"`         //
 	ImageHeader          string     `gorm:"not null;column:image_header"`       //
@@ -53,9 +52,6 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 	}
 	if pack.Controller == "" {
 		pack.Controller = "{}"
-	}
-	if pack.PICSRaw == "" {
-		pack.PICSRaw = "{}"
 	}
 	if pack.Platforms == "" {
 		pack.Platforms = "[]"

@@ -75,10 +75,6 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 
 	app.PICSChangeNumber = message.ChangeNumber
 	app.Name = message.KeyValues.Name
-	app.PICSRaw = string(msg.Body)
-
-	//x, _ := json.Marshal(message.KeyValues.Children)
-	//fmt.Println(string(x))
 
 	for _, v := range message.KeyValues.Children {
 

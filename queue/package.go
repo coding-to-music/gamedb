@@ -74,7 +74,6 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	pack.PICSChangeNumber = message.ChangeNumber
 	pack.PICSName = message.KeyValues.Name
-	pack.PICSRaw = string(msg.Body)
 
 	for _, v := range message.KeyValues.Children {
 
