@@ -16,6 +16,12 @@ func IsJSON(str string) bool {
 	return json.Unmarshal([]byte(str), &js) == nil
 }
 
+func MarshalLog(v interface{}) []byte {
+	bytes, err := json.Marshal(v)
+	logging.Error(err)
+	return bytes
+}
+
 // Wraps json.Unmarshal and adds logging
 func Unmarshal(data []byte, v interface{}) (err error) {
 
@@ -29,13 +35,6 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 
 	err = json.Unmarshal(data, v)
 	if err != nil {
-
-		//if err2, ok := err.(*json.UnmarshalTypeError); ok {
-		//	if SliceHasString([]string{"[]db.ProfileFriend", "[]db.ProfileBadge"}, err2.Type.String()) {
-		//		logging.ErrorG(err2)
-		//		return nil
-		//	}
-		//}
 
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 
