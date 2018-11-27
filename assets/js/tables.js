@@ -6,11 +6,18 @@ $dataTables.each(function (i) {
     let order = [[0, 'asc']];
     let pageLength = 100;
     let paging = true;
+    let ordering = true;
 
     // Limit
     const limit = $(this).attr('data-limit');
     if (limit > 0) {
         pageLength = Number(limit);
+    }
+
+    // Ordering
+    const noSort = $(this).attr('data-no-sort');
+    if (noSort) {
+        ordering = false;
     }
 
     // Paging
@@ -47,7 +54,7 @@ $dataTables.each(function (i) {
         "pageLength": pageLength,
         "order": order,
         "paging": paging,
-        "ordering": true,
+        "ordering": ordering,
         "fixedHeader": true,
         "info": false,
         "searching": true,
