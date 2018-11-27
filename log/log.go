@@ -60,7 +60,9 @@ func Init() {
 	// Setup Google
 	var err error
 	googleClient, err = logging.NewClient(googleCtx, viper.GetString("GOOGLE_PROJECT"))
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// Setup Roolbar
 	rollbar.SetToken(viper.GetString("ROLLBAR_PRIVATE"))

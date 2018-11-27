@@ -2,11 +2,11 @@ package queue
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 	"github.com/streadway/amqp"
 )
 
@@ -48,7 +48,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
 
 		// Re-delay
-		fmt.Println("Re-delay: attemp: " + strconv.Itoa(delayMessage.Attempt))
+		logging.Info("Re-delay: attemp: " + strconv.Itoa(delayMessage.Attempt))
 
 		delayMessage.IncrementAttempts()
 
@@ -62,7 +62,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 	} else {
 
 		// Add to original queue
-		fmt.Println("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
+		logging.Info("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
 
 		err = Produce(delayMessage.getConsumeQueue(), []byte(delayMessage.OriginalMessage))
 	}

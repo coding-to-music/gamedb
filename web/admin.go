@@ -228,7 +228,7 @@ func adminGenres() {
 	appsWithGenres, err := db.GetAppsWithGenres()
 	logging.Error(err)
 
-	fmt.Println("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
+	logging.Info("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
 
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
@@ -364,7 +364,7 @@ func adminPublishers() {
 	appsWithPublishers, err := db.GetAppsWithPublishers()
 	logging.Error(err)
 
-	fmt.Println("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
+	logging.Info("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
 
 	newPublishers := make(map[string]*statsRow)
 	for _, app := range appsWithPublishers {
@@ -500,7 +500,7 @@ func adminDevelopers() {
 	appsWithDevelopers, err := db.GetAppsWithDevelopers()
 	logging.Error(err)
 
-	fmt.Println("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
+	logging.Info("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
 	newDevelopers := make(map[string]*statsRow)
 	for _, app := range appsWithDevelopers {
@@ -638,7 +638,7 @@ func adminTags() {
 	appsWithTags, err := db.GetAppsWithTags()
 	logging.Error(err)
 
-	fmt.Println("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
+	logging.Info("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
 
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
@@ -941,7 +941,6 @@ func adminDev() {
 	//	//v.Games = ""
 	//	err := v.Save()
 	//	logging.Error(err)
-	//	fmt.Print(".")
 	//}
 	//
 	//logging.Info("Done")

@@ -2,12 +2,12 @@ package db
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/logging"
 )
 
 type Tag struct {
@@ -102,7 +102,7 @@ func GetTagsByID(ids []int) (tags []Tag, err error) {
 
 func DeleteTags(ids []int) (err error) {
 
-	fmt.Println("Deleteing " + strconv.Itoa(len(ids)) + " tags")
+	logging.Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
 
 	if len(ids) == 0 {
 		return nil
