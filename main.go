@@ -9,12 +9,12 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/storage"
 	"github.com/gamedb/website/web"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/rollbar/rollbar-go"
 	"github.com/spf13/viper"
 )
 
@@ -22,6 +22,7 @@ import (
 func init() {
 	configSetup()  // First
 	logging.Init() // Second
+	log.Init()     // Second
 	helpers.InitSteam()
 	helpers.InitMemcache()
 	db.InitDS()
@@ -31,12 +32,6 @@ func init() {
 }
 
 func main() {
-
-	// Rollbar
-	rollbar.SetToken(viper.GetString("ROLLBAR_PRIVATE"))
-	rollbar.SetEnvironment(viper.GetString("ENV"))     // defaults to "development"
-	rollbar.SetCodeVersion("master")                   // optional Git hash/branch/tag (required for GitHub integration)
-	rollbar.SetServerRoot("github.com/gamedb/website") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 
 	// Recaptcha
 	recaptcha.SetSecret(viper.GetString("RECAPTCHA_PRIVATE"))
