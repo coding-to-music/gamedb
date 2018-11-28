@@ -10,11 +10,12 @@ import (
 	"github.com/gamedb/website/log"
 )
 
-type productInterface interface {
+type ProductInterface interface {
 	GetID() int
 	GetProductType() ProductType
 	GetName() string
 	GetIcon() string
+	GetPrices() (prices ProductPrices, err error)
 }
 
 var ErrInvalidCountryCode = errors.New("invalid code")

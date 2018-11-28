@@ -81,7 +81,7 @@ func (p ProductPrice) OutputForJSON() (output []interface{}) {
 }
 
 // Does not save here so can be bulk saved elsewear
-func CreateProductPrice(product productInterface, currency steam.CountryCode, priceBefore int, priceAfter int) ProductPrice {
+func CreateProductPrice(product ProductInterface, currency steam.CountryCode, priceBefore int, priceAfter int) ProductPrice {
 
 	price := ProductPrice{}
 

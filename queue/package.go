@@ -138,39 +138,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	// Save price changes
-	var prices db.ProductPrices
-	var price db.ProductPriceCache
-	var kinds []db.Kind
-	for code := range steam.Countries {
-
-		var oldPrice, newPrice int
-
-		prices, err = packageBeforeUpdate.GetPrices()
-		if err == nil {
-			price, err = prices.Get(code)
-			if err == nil {
-				oldPrice = price.Final
-			} else {
-				continue // Only compare if there is an old price to compare to
-			}
-		}
-
-		prices, err = pack.GetPrices()
-		if err == nil {
-			price, err = prices.Get(code)
-			if err == nil {
-				newPrice = price.Final
-			} else {
-				continue // Only compare if there is a new price to compare to
-			}
-		}
-
-		if oldPrice != newPrice {
-			kinds = append(kinds, db.CreateProductPrice(pack, code, oldPrice, newPrice))
-		}
-	}
-
-	err = db.BulkSaveKinds(kinds, db.KindProductPrice, true)
+	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
 		return true, err
 	}

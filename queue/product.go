@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 )
@@ -260,4 +261,42 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 			log.Log(log.SeverityInfo, "getAppLaunchItem missing case: " + v.Name)
 		}
 	}
+}
+
+// Save prices
+func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (err error) {
+
+	var prices db.ProductPrices
+	var price db.ProductPriceCache
+	var kinds []db.Kind
+	for code := range steam.Countries {
+
+		var oldPrice, newPrice int
+
+		prices, err = before.GetPrices()
+		if err == nil {
+			price, err = prices.Get(code)
+			if err == nil {
+				oldPrice = price.Final
+			} else {
+				continue // Only compare if there is an old price to compare to
+			}
+		}
+
+		prices, err = after.GetPrices()
+		if err == nil {
+			price, err = prices.Get(code)
+			if err == nil {
+				newPrice = price.Final
+			} else {
+				continue // Only compare if there is a new price to compare to
+			}
+		}
+
+		if oldPrice != newPrice {
+			kinds = append(kinds, db.CreateProductPrice(after, code, oldPrice, newPrice))
+		}
+	}
+
+	return db.BulkSaveKinds(kinds, db.KindProductPrice, true)
 }
