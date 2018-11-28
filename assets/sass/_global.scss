@@ -35,6 +35,7 @@ div#top.show {
 
     .navbar-brand {
         padding: 0;
+
         img {
             height: 40px;
         }
@@ -62,9 +63,11 @@ div#top.show {
         white-space: nowrap;
         font-size: 2.5rem;
     }
+
     .lead {
         margin: 0;
     }
+
     img {
         position: relative;
         z-index: 100;
@@ -80,16 +83,19 @@ div#top.show {
 // Top ads
 #ad-top {
     text-align: center;
+
     .ad-top-small {
         padding: 0;
         margin: 0 0 10px 0;
         height: 50px;
     }
+
     .ad-top-big {
         .chitikaAdContainer {
             padding: 0;
             margin: 0 0 10px 0;
             height: 90px;
+
             img {
                 width: 690px;
             }
@@ -193,4 +199,9 @@ div#top.show {
 .fade-red {
     -webkit-animation: fade-red 2s ease-in 1;
     animation: fade-red 2s ease-in 1;
+}
+
+//
+.cursor-pointer {
+    cursor: pointer;
 }
