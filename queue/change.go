@@ -27,14 +27,14 @@ func (d RabbitMessageChanges) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	// Get change
 	message := new(RabbitMessageChanges)
 
 	err = helpers.Unmarshal(msg.Body, message)
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	// Group products by change id
@@ -119,7 +119,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 	if viper.GetString("ENV") == logging.EnvProd {
 		err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
 		if err != nil {
-			return false, true, err
+			return true, err
 		}
 	}
 
@@ -137,7 +137,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (ack bool, requeue bool
 		page.Send(ws)
 	}
 
-	return true, false, nil
+	return false, nil
 }
 
 type RabbitMessageChangesPICS struct {

@@ -48,7 +48,7 @@ type queueInterface interface {
 	getProduceQueue() RabbitQueue
 	getConsumeQueue() RabbitQueue
 	getRetryData() RabbitMessageDelay
-	process(msg amqp.Delivery) (ack bool, requeue bool, err error)
+	process(msg amqp.Delivery) (requeue bool, err error)
 }
 
 func init() {
@@ -198,24 +198,17 @@ func (s rabbitConsumer) consume() {
 
 			case msg := <-msgs:
 
-				ack, requeue, err := s.Message.process(msg)
+				requeue, err := s.Message.process(msg)
 				logging.Error(err)
 
-				// Ack/Nack/Requeue
-				if ack {
-					err = msg.Ack(false)
-					logging.Error(err)
-				} else {
-
-					if requeue {
-						logging.Info("Requeuing")
-						err = s.requeueMessage(msg)
-						logging.Error(err)
-					}
-
-					err = msg.Nack(false, false)
+				if requeue {
+					logging.Info("Requeuing")
+					err = s.requeueMessage(msg)
 					logging.Error(err)
 				}
+
+				err = msg.Ack(false)
+				logging.Error(err)
 
 				// Might be getting rate limited
 				if err == steam.ErrNullResponse {

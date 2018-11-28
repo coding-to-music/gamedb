@@ -29,14 +29,14 @@ func (d RabbitMessagePackage) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	// Get message
 	rabbitMessage := new(RabbitMessagePackage)
 
 	err = helpers.Unmarshal(msg.Body, rabbitMessage)
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	message := rabbitMessage.PICSPackageInfo
@@ -44,23 +44,23 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	logging.Info("Consuming package: " + strconv.Itoa(message.ID))
 
 	if !db.IsValidPackageID(message.ID) {
-		return false, false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
+		return false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
 	}
 
 	// Load current package
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		return false, true, err
+		return true, err
 	}
 
 	pack := db.Package{}
 	gorm.First(&pack, message.ID)
 	if gorm.Error != nil && !gorm.RecordNotFound() {
-		return false, true, gorm.Error
+		return true, gorm.Error
 	}
 
 	if pack.PICSChangeNumber >= message.ChangeNumber {
-		return true, false, nil
+		return false, nil
 	}
 
 	var packageBeforeUpdate = pack
@@ -128,13 +128,13 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	// Update from API
 	err = pack.Update()
 	if err != nil && err != steam.ErrPackageNotFound {
-		return false, true, err
+		return true, err
 	}
 
 	// Save new data
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
-		return false, true, gorm.Error
+		return true, gorm.Error
 	}
 
 	// Save price changes
@@ -172,7 +172,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	err = db.BulkSaveKinds(kinds, db.KindProductPrice, true)
 	if err != nil {
-		return false, true, err
+		return true, err
 	}
 
 	// Send websocket
@@ -182,5 +182,5 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 		page.Send(pack.OutputForJSON(steam.CountryUS))
 	}
 
-	return true, false, err
+	return false, err
 }

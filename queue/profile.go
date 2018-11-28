@@ -28,42 +28,42 @@ func (d RabbitMessageProfile) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+func (d RabbitMessageProfile) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	// Get message
 	rabbitMessage := new(RabbitMessageProfile)
 
 	err = helpers.Unmarshal(msg.Body, rabbitMessage)
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	var message = rabbitMessage.ProfileInfo
 
 	if !message.SteamID.IsValid {
-		return false, false, errors.New("not valid account id")
+		return false, errors.New("not valid account id")
 	}
 	if !message.SteamID.IsIndividualAccount {
-		return false, false, errors.New("not individual account id")
+		return false, errors.New("not individual account id")
 	}
 
 	// Convert steamID3 to steamID64
 	id64, err := helpers.GetSteam().GetID(strconv.FormatInt(int64(message.SteamID.AccountID), 10))
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	// Update player
 	player, err := db.GetPlayer(id64)
 	err = helpers.IgnoreErrors(err, datastore.ErrNoSuchEntity)
 	if err != nil {
-		return false, true, err
+		return true, err
 	}
 
 	err = player.ShouldUpdate(new(http.Request), db.PlayerUpdateAdmin)
 	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	player.PlayerID = id64
@@ -73,10 +73,10 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (ack bool, requeue bool
 
 	err = player.Update()
 	if err != nil {
-		return false, true, err
+		return true, err
 	}
 
-	return true, false, err
+	return false, err
 }
 
 type RabbitMessageProfilePICS struct {

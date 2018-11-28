@@ -28,21 +28,21 @@ func (d RabbitMessageDelay) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	if len(msg.Body) == 0 {
-		return false, false, errEmptyMessage
+		return false, errEmptyMessage
 	}
 
 	delayMessage := RabbitMessageDelay{}
 
 	err = helpers.Unmarshal(msg.Body, &delayMessage)
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	if len(delayMessage.OriginalMessage) == 0 {
-		return false, false, errEmptyMessage
+		return false, errEmptyMessage
 	}
 
 	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
@@ -54,7 +54,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 
 		bytes, err := json.Marshal(delayMessage)
 		if err != nil {
-			return false, false, err
+			return false, err
 		}
 
 		err = Produce(delayMessage.getConsumeQueue(), bytes)
@@ -68,8 +68,8 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (ack bool, requeue bool, 
 	}
 
 	if err != nil {
-		return false, true, err
+		return true, err
 	}
 
-	return true, false, nil
+	return false, nil
 }

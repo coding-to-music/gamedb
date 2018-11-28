@@ -30,14 +30,14 @@ func (d RabbitMessageApp) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, err error) {
+func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	// Get message payload
 	rabbitMessage := new(RabbitMessageApp)
 
 	err = helpers.Unmarshal(msg.Body, rabbitMessage)
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	message := rabbitMessage.PICSAppInfo
@@ -45,23 +45,23 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 	logging.Info("Consuming app: " + strconv.Itoa(message.ID))
 
 	if !db.IsValidAppID(message.ID) {
-		return false, false, errors.New("invalid app ID: " + strconv.Itoa(message.ID))
+		return false, errors.New("invalid app ID: " + strconv.Itoa(message.ID))
 	}
 
 	// Load current app
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		return false, true, err
+		return true, err
 	}
 
 	app := db.App{}
 	gorm.First(&app, message.ID)
 	if gorm.Error != nil && !gorm.RecordNotFound() {
-		return false, true, gorm.Error
+		return true, gorm.Error
 	}
 
 	if app.PICSChangeNumber >= message.ChangeNumber {
-		return true, false, nil
+		return false, nil
 	}
 
 	var appBeforeUpdate = app
@@ -164,14 +164,14 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 	}
 	for _, v := range errs {
 		if v != nil && v != steam.ErrAppNotFound {
-			return false, true, v
+			return true, v
 		}
 	}
 
 	// Save new data
 	gorm = gorm.Save(&app)
 	if gorm.Error != nil {
-		return false, true, gorm.Error
+		return true, gorm.Error
 	}
 
 	// Save price changes
@@ -209,7 +209,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 
 	err = db.BulkSaveKinds(kinds, db.KindProductPrice, true)
 	if err != nil {
-		return false, true, err
+		return true, err
 	}
 
 	// Send websocket
@@ -218,5 +218,5 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (ack bool, requeue bool, er
 		page.Send(app.OutputForJSON(steam.CountryUS))
 	}
 
-	return true, false, err
+	return false, err
 }
