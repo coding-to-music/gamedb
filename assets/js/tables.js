@@ -77,6 +77,14 @@ $dataTables.each(function (i) {
             if (api.page.info().pages <= 1) {
                 $('.dt-pagination').hide();
             }
+        },
+        "initComplete": function (settings, json) {
+
+            $('table.table-datatable').on('order.dt', function (e, settings, processing) {
+
+                $('#live-badge').trigger('click');
+
+            });
         }
     });
 
@@ -144,6 +152,14 @@ const dtDefaultOptions = {
 
         $(".paginate_button > a").on("focus", function () {
             $(this).blur(); // Fixes scrolling to pagination on every click
+        });
+    },
+    "initComplete": function (settings, json) {
+
+        $('table.table-datatable2').on('order.dt', function (e, settings, processing) {
+
+            $('#live-badge').trigger('click');
+
         });
     }
 };

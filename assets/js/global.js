@@ -100,9 +100,11 @@ function websocketListener(page, onMessage) {
         socket.onmessage = onMessage;
 
         $badge.on('click', function (e) {
-            socket.close(1000);
-            $badge.addClass('badge-danger').removeClass('badge-secondary badge-success cursor-pointer');
-            toast(true, 'Live functionality stopped');
+            if ($(this).hasClass('cursor-pointer')) {
+                socket.close(1000);
+                $badge.addClass('badge-danger').removeClass('badge-secondary badge-success cursor-pointer');
+                toast(true, 'Live functionality stopped');
+            }
         });
     }
 }
