@@ -53,7 +53,7 @@ func (p ProductPrice) GetIcon() string {
 
 func (p ProductPrice) GetPercentChange() string {
 
-	return helpers.FloatToString(p.DifferencePercent, 2) + "%"
+	return helpers.FloatToString(p.DifferencePercent, 0) + "%"
 
 }
 

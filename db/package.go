@@ -395,18 +395,23 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 	return ret, nil
 }
 
-func (pack Package) OutputForJSON() (output []interface{}) {
+func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{}) {
+
+	locale, err := helpers.GetLocaleFromCountry(code)
+	logging.Error(err)
+
+	price, err := pack.GetPrice(code)
+	logging.Error(err)
 
 	return []interface{}{
 		pack.ID,
+		pack.GetPath(),
 		pack.GetName(),
-		pack.GetBillingType(),
-		pack.GetLicenseType(),
-		pack.GetStatus(),
+		pack.GetComingSoon(),
 		pack.AppsCount,
+		locale.Format(price.Final),
 		pack.PICSChangeNumberDate.Unix(),
 		pack.PICSChangeNumberDate.Format(helpers.DateYearTime),
-		pack.GetPath(),
 	}
 }
 

@@ -179,7 +179,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (ack bool, requeue bool
 	page, err := websockets.GetPage(websockets.PagePackages)
 	if err == nil && page.HasConnections() {
 
-		page.Send(pack.OutputForJSON())
+		page.Send(pack.OutputForJSON(steam.CountryUS))
 	}
 
 	return true, false, err

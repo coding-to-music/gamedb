@@ -48,6 +48,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	logging.Error(err)
 
 	//
+	var code = session.GetCountryCode(r)
 	var wg sync.WaitGroup
 
 	// Get apps
@@ -64,12 +65,13 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			gorm = gorm.Model(&db.Package{})
-			gorm = gorm.Select([]string{"id", "name", "billing_type", "license_type", "status", "apps_count", "change_number_date"})
+			gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon"})
 
-			gorm = query.SetOrderOffsetGorm(gorm, session.GetCountryCode(r), map[string]string{
+			gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
 				"0": "name",
-				"4": "apps_count",
-				"5": "change_number_date",
+				"2": "apps_count",
+				"3": "price",
+				"4": "change_number_date",
 			})
 
 			gorm = gorm.Limit(100)
@@ -102,7 +104,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, v := range packages {
-		response.AddRow(v.OutputForJSON())
+		response.AddRow(v.OutputForJSON(code))
 	}
 
 	response.output(w)
