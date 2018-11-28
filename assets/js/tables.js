@@ -75,7 +75,7 @@ $dataTables.each(function (i) {
 
             const api = this.api();
             if (api.page.info().pages <= 1) {
-                $('.dt-pagination').hide();
+                $(this).parent().find('.dt-pagination').hide();
             }
         },
         "initComplete": function (settings, json) {
@@ -147,7 +147,7 @@ const dtDefaultOptions = {
 
         const api = this.api();
         if (api.page.info().pages <= 1) {
-            $('.dt-pagination').hide();
+            $(this).parent().find('.dt-pagination').hide();
         }
 
         $(".paginate_button > a").on("focus", function () {
