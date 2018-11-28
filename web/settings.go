@@ -194,7 +194,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save user
-	err = user.UpdateInsert()
+	err = user.Save()
 	log.Log(err)
 	if err != nil {
 		err = session.SetBadFlash(w, r, "Something went wrong saving settings")

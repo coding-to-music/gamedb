@@ -15,6 +15,21 @@ type User struct {
 	CountryCode string     `gorm:"not null"`
 }
 
+func (u User) Save() error {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	db = db.Assign(u).FirstOrCreate(&u)
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}
+
 func GetUsersByEmail(email string) (users []User, err error) {
 
 	db, err := GetMySQLClient()
@@ -43,16 +58,4 @@ func GetUser(playerID int64) (user User, err error) {
 	}
 
 	return user, nil
-}
-
-func (u User) UpdateInsert() error {
-
-	return UpdateInsert("users", UpdateInsertData{
-		"player_id":    u.PlayerID,
-		"email":        u.Email,
-		"password":     u.Password,
-		"hide_profile": u.HideProfile,
-		"show_alerts":  u.ShowAlerts,
-		"country_code": u.CountryCode,
-	})
 }
