@@ -57,7 +57,7 @@ func init() {
 	producerCloseChannel = make(chan *amqp.Error)
 
 	qs := []rabbitConsumer{
-		//{Message: RabbitMessageApp{}},
+		{Message: RabbitMessageApp{}},
 		{Message: RabbitMessageChanges{}},
 		//{Message: RabbitMessageDelay{}},
 		{Message: RabbitMessagePackage{}},
