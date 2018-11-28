@@ -329,7 +329,7 @@ func (pack Package) GetExtendedNice() (ret map[string]interface{}) {
 		if val, ok := PackageExtendedKeys[k]; ok {
 			ret[val] = v
 		} else {
-			log.Log(log.SeverityInfo, "Need to add " + k + " to extended map")
+			log.Log(log.SeverityInfo, "Need to add "+k+" to extended map")
 			ret[k] = v
 		}
 	}
@@ -361,7 +361,7 @@ func (pack Package) GetControllerNice() (ret map[string]interface{}) {
 		if val, ok := PackageControllerKeys[k]; ok {
 			ret[val] = v
 		} else {
-			log.Log(log.SeverityInfo, "Need to add " + k + " to controller map")
+			log.Log(log.SeverityInfo, "Need to add "+k+" to controller map")
 			ret[k] = v
 		}
 	}

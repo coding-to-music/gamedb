@@ -42,7 +42,7 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 				data = data[0:1000]
 			}
 
-			log.Log(log.SeverityInfo, err.Error() + " - " + string(data) + "...")
+			log.Log(log.SeverityInfo, err.Error()+" - "+string(data)+"...")
 
 		} else {
 			log.Log(err)

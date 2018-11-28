@@ -79,7 +79,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 		return nil
 	}
 
-	log.Log(log.SeverityInfo, "Bulk saving " + strconv.Itoa(len(kinds)) + " " + kind + "s")
+	log.Log(log.SeverityInfo, "Bulk saving "+strconv.Itoa(len(kinds))+" "+kind+"s")
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -159,7 +159,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 		return nil
 	}
 
-	log.Log(log.SeverityInfo, "Bulk deleting " + strconv.Itoa(len(keys)) + " keys")
+	log.Log(log.SeverityInfo, "Bulk deleting "+strconv.Itoa(len(keys))+" keys")
 
 	client, ctx, err := GetDSClient()
 	if err != nil {

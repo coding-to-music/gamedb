@@ -157,7 +157,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 					depot.SharedInstall = true
 				}
 			default:
-				log.Log(log.SeverityInfo, "GetAppDepots missing case: " + vv.Name)
+				log.Log(log.SeverityInfo, "GetAppDepots missing case: "+vv.Name)
 			}
 		}
 
@@ -200,7 +200,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICS
 					branch.LCSRequired = true
 				}
 			default:
-				log.Log(log.SeverityInfo, "GetAppDepotBranches missing case: " + vv.Name)
+				log.Log(log.SeverityInfo, "GetAppDepotBranches missing case: "+vv.Name)
 			}
 		}
 
@@ -258,7 +258,7 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 		case "config":
 			v.getAppLaunchItem(launchItem)
 		default:
-			log.Log(log.SeverityInfo, "getAppLaunchItem missing case: " + v.Name)
+			log.Log(log.SeverityInfo, "getAppLaunchItem missing case: "+v.Name)
 		}
 	}
 }

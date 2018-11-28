@@ -41,7 +41,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 
 	message := rabbitMessage.PICSPackageInfo
 
-	log.Log(log.SeverityInfo, "Consuming package: " + strconv.Itoa(message.ID))
+	log.Log(log.SeverityInfo, "Consuming package: "+strconv.Itoa(message.ID))
 
 	if !db.IsValidPackageID(message.ID) {
 		return false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
@@ -119,7 +119,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 			log.Log(err)
 
 		default:
-			log.Log(log.SeverityInfo, v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeNumber) + ")")
+			log.Log(log.SeverityInfo, v.Name+" field in PICS ignored (Change "+strconv.Itoa(pack.PICSChangeNumber)+")")
 		}
 
 		log.Log(err)
@@ -146,7 +146,6 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PagePackages)
 	if err == nil && page.HasConnections() {
-
 		page.Send(pack.OutputForJSON(steam.CountryUS))
 	}
 
