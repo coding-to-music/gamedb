@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -51,14 +51,14 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get apps
 		appIDs, err := pack.GetAppIDs()
-		logging.Error(err)
+		log.Log(err)
 
 		for _, v := range appIDs {
 			apps[v] = db.App{ID: v}
 		}
 
 		appRows, err := db.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
-		logging.Error(err)
+		log.Log(err)
 
 		for _, v := range appRows {
 			apps[v.ID] = v
@@ -75,7 +75,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get prices
 		pricesResp, err := db.GetProductPrices(pack.ID, db.ProductTypePackage, code)
-		logging.Error(err)
+		log.Log(err)
 
 		var prices [][]float64
 		for _, v := range pricesResp {
@@ -84,13 +84,13 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Add current price
 		pricesStruct, err := pack.GetPrice(code)
-		logging.Error(err)
+		log.Log(err)
 
 		prices = append(prices, []float64{float64(time.Now().Unix()), float64(pricesStruct.Final) / 100})
 
 		// Make into a JSON string
 		pricesBytes, err := json.Marshal(prices)
-		logging.Error(err)
+		log.Log(err)
 
 		pricesString = string(pricesBytes)
 
@@ -120,7 +120,7 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices = pricesString
 
 	err = returnTemplate(w, r, "package", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type packageTemplate struct {

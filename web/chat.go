@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
@@ -31,7 +31,7 @@ func InitChat() {
 		if err != nil && i < 3 {
 			time.Sleep(time.Second)
 		} else if err != nil {
-			logging.Error(err)
+			log.Log(err)
 		} else {
 			break
 		}
@@ -106,7 +106,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		channelsResponse, err := discordSession.GuildChannels(guildID)
-		logging.Error(err)
+		log.Log(err)
 
 		for _, v := range channelsResponse {
 			if v.Type == discordgo.ChannelTypeGuildText {
@@ -129,7 +129,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
-		logging.Error(err)
+		log.Log(err)
 
 		for _, v := range messagesResponse {
 			if !v.Author.Bot && v.Type == discordgo.MessageTypeDefault {
@@ -145,7 +145,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		membersResponse, err := discordSession.GuildMembers(guildID, "", 1000)
-		logging.Error(err)
+		log.Log(err)
 
 		for _, v := range membersResponse {
 			if !v.User.Bot {
@@ -160,7 +160,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err := returnTemplate(w, r, "chat", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type chatTemplate struct {

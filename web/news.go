@@ -5,7 +5,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 func newsHandler(w http.ResponseWriter, r *http.Request) {
@@ -15,7 +15,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = "All the news from all the games, all in one place."
 
 	err := returnTemplate(w, r, "news", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type newsTemplate struct {
@@ -28,14 +28,14 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	logging.Error(err)
+	log.Log(err)
 
 	var articles []db.News
 
 	client, ctx, err := db.GetDSClient()
 	if err != nil {
 
-		logging.Error(err)
+		log.Log(err)
 
 	} else {
 
@@ -44,12 +44,12 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q = q.Order("-date")
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
 			_, err := client.GetAll(ctx, q, &articles)
-			logging.Error(err)
+			log.Log(err)
 		}
 	}
 

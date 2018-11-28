@@ -12,7 +12,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -59,7 +59,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	// todo, add to queue instead!!
 	errs := app.UpdateFromRequest(r.UserAgent())
 	for _, v := range errs {
-		logging.Error(v)
+		log.Log(v)
 	}
 
 	// Template
@@ -78,7 +78,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	//	achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 	//	if err != nil {
 	//
-	//		logging.Error(err)
+	//		log.Log(err)
 	//
 	//	} else {
 	//
@@ -91,7 +91,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	//		schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
 	//		if err != nil {
 	//
-	//			logging.Error(err)
+	//			log.Log(err)
 	//
 	//		} else {
 	//
@@ -116,7 +116,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Tags, err = app.GetTags()
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}()
@@ -130,7 +130,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp, code)
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -152,7 +152,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			pricesBytes, err := json.Marshal(prices)
 			if err != nil {
 
-				logging.Error(err)
+				log.Log(err)
 
 			} else {
 
@@ -170,7 +170,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Packages, err = db.GetPackagesAppIsIn(app.ID)
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}()
@@ -181,7 +181,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.DLC, err = db.GetDLC(app, []string{"id", "name"})
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}()
@@ -193,7 +193,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		reviewsResponse, err := app.GetReviews()
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -208,7 +208,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			players, err := db.GetPlayersByIDs(playerIDs)
 			if err != nil {
 
-				logging.Error(err)
+				log.Log(err)
 
 			} else {
 
@@ -253,7 +253,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err = returnTemplate(w, r, "app", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type appTemplate struct {
@@ -306,7 +306,7 @@ func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err = query.FillFromURL(r.URL.Query())
-	logging.Error(err)
+	log.Log(err)
 
 	//
 	var wg sync.WaitGroup
@@ -320,7 +320,7 @@ func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -329,12 +329,12 @@ func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			q = q.Order("-date")
 			if err != nil {
 
-				logging.Error(err)
+				log.Log(err)
 
 			} else {
 
 				_, err := client.GetAll(ctx, q, &articles)
-				logging.Error(err)
+				log.Log(err)
 
 				// todo, use a different bbcode library that works for app 418460 & 218620
 				// todo, add http to links here instead of JS
@@ -360,13 +360,13 @@ func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		app, err := db.GetApp(idx)
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			return
 		}
 
 		newsIDs, err := app.GetNewsIDs()
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			return
 		}
 

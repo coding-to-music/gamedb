@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go"
@@ -28,7 +28,7 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = "Get in touch."
 
 	err := returnTemplate(w, r, "contact", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type contactTemplate struct {
@@ -47,7 +47,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 		// Parse form
 		err = r.ParseForm()
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			return err
 		}
 
@@ -57,7 +57,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 			"login-email":   r.PostForm.Get("email"),
 			"login-message": r.PostForm.Get("message"),
 		})
-		logging.Error(err)
+		log.Log(err)
 
 		// Form validation
 		if r.PostForm.Get("name") == "" {
@@ -78,7 +78,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 				return errors.New("please check the captcha")
 			}
 
-			logging.Error(err)
+			log.Log(err)
 			return ErrSomething
 		}
 
@@ -94,7 +94,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, err = client.Send(message)
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			return ErrSomething
 		}
 
@@ -104,7 +104,7 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 			"login-email":   "",
 			"login-message": "",
 		})
-		logging.Error(err)
+		log.Log(err)
 
 		return nil
 	}()
@@ -112,11 +112,11 @@ func PostContactHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect
 	if err != nil {
 		err = session.SetGoodFlash(w, r, err.Error())
-		logging.Error(err)
+		log.Log(err)
 		http.Redirect(w, r, "/contact", 302)
 	} else {
 		err = session.SetGoodFlash(w, r, "Message sent!")
-		logging.Error(err)
+		log.Log(err)
 		http.Redirect(w, r, "/contact", 302)
 	}
 }

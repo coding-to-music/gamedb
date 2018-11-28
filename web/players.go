@@ -11,7 +11,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
 )
 
@@ -42,7 +42,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		config, err := db.GetConfig(db.ConfRanksUpdated)
-		logging.Error(err)
+		log.Log(err)
 
 		t.Date = config.Value
 
@@ -55,7 +55,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.PlayersCount, err = db.CountPlayers()
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}()
@@ -66,7 +66,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.RanksCount, err = db.CountRanks()
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}()
@@ -75,7 +75,7 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err := returnTemplate(w, r, "ranks", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type playersTemplate struct {
@@ -95,7 +95,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err != datastore.ErrNoSuchEntity {
-			logging.Error(err)
+			log.Log(err)
 		}
 
 		// Check steam
@@ -103,7 +103,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			if err != steam.ErrNoUserFound {
-				logging.Error(err)
+				log.Log(err)
 			}
 
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Can't find user: " + post})
@@ -121,7 +121,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	logging.Error(err)
+	log.Log(err)
 
 	//
 	var wg sync.WaitGroup
@@ -135,7 +135,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -154,7 +154,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				q, err = query.SetOrderOffsetDS(q, columns)
 				if err != nil {
 
-					logging.Error(err)
+					log.Log(err)
 
 				} else {
 
@@ -162,7 +162,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 					var ranks []db.PlayerRank
 					_, err := client.GetAll(ctx, q, &ranks)
-					logging.Error(err)
+					log.Log(err)
 
 					for _, v := range ranks {
 
@@ -197,7 +197,7 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = db.CountRanks()
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}()

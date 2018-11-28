@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
 )
@@ -61,7 +61,7 @@ func GetCountryCode(r *http.Request) steam.CountryCode {
 
 	val, err := Read(r, UserCountry)
 	if err != nil || val == "" {
-		logging.Error(err)
+		log.Log(err)
 		return steam.CountryUS
 	}
 

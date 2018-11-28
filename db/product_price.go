@@ -9,7 +9,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 type ProductPrice struct {
@@ -61,7 +61,7 @@ func (p ProductPrice) GetPercentChange() string {
 func (p ProductPrice) OutputForJSON() (output []interface{}) {
 
 	locale, err := helpers.GetLocaleFromCountry(p.Currency)
-	logging.Error(err)
+	log.Log(err)
 
 	return []interface{}{
 		p.AppID,

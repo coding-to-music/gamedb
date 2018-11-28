@@ -12,7 +12,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
@@ -165,7 +165,7 @@ func (app App) GetType() (ret string) {
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
 	locale, err := helpers.GetLocaleFromCountry(code)
-	logging.Error(err)
+	log.Log(err)
 
 	return []interface{}{
 		app.ID,
@@ -657,7 +657,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		resp, _, err := helpers.GetSteam().GetNews(app.ID, 1000)
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -683,7 +683,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 			}
 
 			err := app.SetNewsIDs(resp)
-			logging.Error(err)
+			log.Log(err)
 		}
 
 		wg.Done()

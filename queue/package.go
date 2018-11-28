@@ -8,7 +8,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/streadway/amqp"
 )
@@ -41,7 +41,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 
 	message := rabbitMessage.PICSPackageInfo
 
-	logging.Info("Consuming package: " + strconv.Itoa(message.ID))
+	log.Log(log.SeverityInfo, "Consuming package: " + strconv.Itoa(message.ID))
 
 	if !db.IsValidPackageID(message.ID) {
 		return false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
@@ -95,12 +95,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		case "appids":
 
 			err = pack.SetAppIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
-			logging.Error(err)
+			log.Log(err)
 
 		case "depotids":
 
 			err = pack.SetDepotIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
-			logging.Error(err)
+			log.Log(err)
 
 		case "appitems":
 
@@ -111,18 +111,18 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 				}
 			}
 			err = pack.SetAppItems(appItems)
-			logging.Error(err)
+			log.Log(err)
 
 		case "extended":
 
 			err = pack.SetExtended(v.GetExtended())
-			logging.Error(err)
+			log.Log(err)
 
 		default:
-			logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeNumber) + ")")
+			log.Log(log.SeverityInfo, v.Name + " field in PICS ignored (Change " + strconv.Itoa(pack.PICSChangeNumber) + ")")
 		}
 
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	// Update from API

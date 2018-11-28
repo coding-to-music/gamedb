@@ -3,8 +3,9 @@ package log
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
-	"runtime/debug"
+	"os"
 	"time"
 
 	"cloud.google.com/go/logging"
@@ -25,25 +26,28 @@ var (
 	googleCtx    = context.Background()
 	googleClient *logging.Client
 
+	// Local
+	logger = log.New(os.Stderr, "", log.Ltime)
+
 	// Environments
 	EnvProd  Environment = "production"
 	EnvLocal Environment = "local"
 
 	// Log names
-	LogConsumers LogName = "gamedb.consumers"
-	LogSteam     LogName = "gamedb.steam"
-	LogGameDB    LogName = "gamedb"
+	LogNameConsumers LogName = "gamedb.consumers"
+	LogNameSteam     LogName = "gamedb.steam"
+	LogNameGameDB    LogName = "gamedb"
 
 	// Severities
-	Default   = logging.Default
-	Debug     = logging.Debug
-	Info      = logging.Info
-	Notice    = logging.Notice
-	Warning   = logging.Warning
-	Error     = logging.Error
-	Critical  = logging.Critical
-	Alert     = logging.Alert
-	Emergency = logging.Emergency
+	SeverityDefault   = logging.Default
+	SeverityDebug     = logging.Debug
+	SeverityInfo      = logging.Info
+	SeverityNotice    = logging.Notice
+	SeverityWarning   = logging.Warning
+	SeverityError     = logging.Error
+	SeverityCritical  = logging.Critical
+	SeverityAlert     = logging.Alert
+	SeverityEmergency = logging.Emergency
 
 	// Services
 	ServiceGoogle  Service = "google"
@@ -71,12 +75,23 @@ func Init() {
 	rollbar.SetServerRoot("github.com/gamedb/website") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 }
 
-func log(interfaces ...interface{}) {
+func Log(interfaces ...interface{}) {
 
-	var services = []Service{ServiceGoogle}
-	var logs []*logging.Logger
+	interfaces = removeNils(interfaces...)
+
+	if len(interfaces) == 0 {
+		return
+	}
+
+	interfaces = addDefaultLogName(interfaces...)
+	interfaces = addDefaultService(interfaces...)
+	interfaces = addDefaultSeverity(interfaces...)
+
+	var loggingServices []Service
+	var googleLogs []*logging.Logger
 	var entry logging.Entry
 
+	// Create entry
 	for _, v := range interfaces {
 
 		if v == nil {
@@ -91,35 +106,101 @@ func log(interfaces ...interface{}) {
 		case error:
 			entry.Payload = val.Error()
 		case LogName:
-			logs = append(logs, googleClient.Logger(string(val)+"-"+string(env)))
+			googleLogs = append(googleLogs, googleClient.Logger(string(val)+"-"+string(env)))
 		case Severity:
 			entry.Severity = val
 		case time.Time:
 			entry.Timestamp = val
 		case Service:
-			services = append(services, val)
+			loggingServices = append(loggingServices, val)
 		default:
-			Text("Invalid value given to Err")
+			Log("Invalid value given to Err")
 		}
 	}
 
+	if entry.Payload.(string) == "" {
+		return
+	}
+
 	// Default log
-	if len(logs) == 0 {
-		logs = append(logs, googleClient.Logger(string(LogGameDB)+"-"+string(env)))
+	if len(googleLogs) == 0 {
+		googleLogs = append(googleLogs, googleClient.Logger(string(LogNameGameDB)+"-"+string(env)))
 	}
 
 	// Add stack to payload
-	entry.Payload = entry.Payload.(string) + "\n\r" + string(debug.Stack())
+	//entry.Payload = entry.Payload.(string) + "\n\r" + string(debug.Stack())
 
-	for _, log := range logs {
-		log.Log(entry)
+	for _, v := range loggingServices {
+		if v == ServiceGoogle {
+			for _, vv := range googleLogs {
+				vv.Log(entry)
+			}
+		}
+		if v == ServiceLocal {
+			logger.Println(entry.Payload.(string))
+		}
+		if v == ServiceRollbar {
+
+			switch entry.Severity {
+			case SeverityCritical:
+				rollbar.Critical(entry.Payload)
+			default:
+			case SeverityError:
+				rollbar.Error(entry.Payload)
+			case SeverityWarning:
+				rollbar.Warning(entry.Payload)
+			case SeverityInfo:
+				rollbar.Info(entry.Payload)
+			case SeverityDebug:
+				rollbar.Debug(entry.Payload)
+			}
+		}
 	}
 }
 
-func Err(err error, interfaces ...interface{}) {
-	log(append(interfaces, err)...)
+func addDefaultService(interfaces ...interface{}) []interface{} {
+
+	for _, v := range interfaces {
+		_, ok := v.(Service)
+		if ok {
+			return interfaces
+		}
+	}
+
+	return append(interfaces, ServiceGoogle, ServiceLocal)
 }
 
-func Text(text string, interfaces ...interface{}) {
-	log(append(interfaces, text)...)
+func addDefaultSeverity(interfaces ...interface{}) []interface{} {
+
+	for _, v := range interfaces {
+		_, ok := v.(Severity)
+		if ok {
+			return interfaces
+		}
+	}
+
+	return append(interfaces, SeverityError)
+}
+
+func addDefaultLogName(interfaces ...interface{}) []interface{} {
+
+	for _, v := range interfaces {
+		_, ok := v.(LogName)
+		if ok {
+			return interfaces
+		}
+	}
+
+	return append(interfaces, LogNameGameDB)
+}
+
+func removeNils(interfaces ...interface{}) (ret []interface{}) {
+
+	for _, v := range interfaces {
+		if v != nil {
+			ret = append(ret, v)
+		}
+	}
+
+	return ret
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/streadway/amqp"
 )
@@ -42,7 +42,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	message := rabbitMessage.PICSAppInfo
 
-	logging.Info("Consuming app: " + strconv.Itoa(message.ID))
+	log.Log(log.SeverityInfo, "Consuming app: "+strconv.Itoa(message.ID))
 
 	if !db.IsValidAppID(message.ID) {
 		return false, errors.New("invalid app ID: " + strconv.Itoa(message.ID))
@@ -83,7 +83,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
-			logging.Error(err)
+			log.Log(err)
 			app.ID = int(i64)
 
 		case "common":
@@ -92,34 +92,34 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 			for _, vv := range v.Children {
 				if vv.Value == nil {
 					bytes, err := json.Marshal(vv.ToNestedMaps())
-					logging.Error(err)
+					log.Log(err)
 					common[vv.Name] = string(bytes)
 				} else {
 					common[vv.Name] = vv.Value.(string)
 				}
 			}
 			err = app.SetCommon(common)
-			logging.Error(err)
+			log.Log(err)
 
 		case "extended":
 
 			err = app.SetExtended(v.GetExtended())
-			logging.Error(err)
+			log.Log(err)
 
 		case "config":
 
 			config, launch := v.GetAppConfig()
 
 			err = app.SetConfig(config)
-			logging.Error(err)
+			log.Log(err)
 
 			err = app.SetLaunch(launch)
-			logging.Error(err)
+			log.Log(err)
 
 		case "depots":
 
 			err = app.SetDepots(v.GetAppDepots())
-			logging.Error(err)
+			log.Log(err)
 
 		case "public_only":
 
@@ -133,34 +133,34 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 			for _, vv := range v.Children {
 				if vv.Value == nil {
 					bytes, err := json.Marshal(vv.ToNestedMaps())
-					logging.Error(err)
+					log.Log(err)
 					common[vv.Name] = string(bytes)
 				} else {
 					common[vv.Name] = vv.Value.(string)
 				}
 			}
 			err = app.SetUFS(common)
-			logging.Error(err)
+			log.Log(err)
 
 		case "install":
 
 			err = app.SetInstall(v.ToNestedMaps())
-			logging.Error(err)
+			log.Log(err)
 
 		case "localization":
 
 			err = app.SetLocalization(v.ToNestedMaps())
-			logging.Error(err)
+			log.Log(err)
 
 		default:
-			logging.Info(v.Name + " field in PICS ignored (Change " + strconv.Itoa(app.PICSChangeNumber) + ")")
+			log.Log(log.SeverityInfo, v.Name+" field in PICS ignored (Change "+strconv.Itoa(app.PICSChangeNumber)+")")
 		}
 	}
 
 	// Update from API
 	errs := app.UpdateFromAPI()
 	for _, v := range errs {
-		logging.Error(v)
+		log.Log(v)
 	}
 	for _, v := range errs {
 		if v != nil && v != steam.ErrAppNotFound {

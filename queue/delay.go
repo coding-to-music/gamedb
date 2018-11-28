@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
 )
 
@@ -48,7 +48,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error)
 	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
 
 		// Re-delay
-		logging.Info("Re-delay: attemp: " + strconv.Itoa(delayMessage.Attempt))
+		log.Log(log.SeverityInfo, "Re-delay: attemp: " + strconv.Itoa(delayMessage.Attempt))
 
 		delayMessage.IncrementAttempts()
 
@@ -62,7 +62,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error)
 	} else {
 
 		// Add to original queue
-		logging.Info("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
+		log.Log(log.SeverityInfo, "Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
 
 		err = Produce(delayMessage.getConsumeQueue(), []byte(delayMessage.OriginalMessage))
 	}

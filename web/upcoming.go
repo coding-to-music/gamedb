@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -25,7 +25,7 @@ func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Upcoming Apps")
 
 	err := returnTemplate(w, r, "upcoming", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type upcomingTemplate struct {
@@ -36,7 +36,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	logging.Error(err)
+	log.Log(err)
 
 	var count int
 	var apps []db.App
@@ -44,7 +44,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		logging.Error(err)
+		log.Log(err)
 
 	} else {
 
@@ -55,13 +55,13 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count before limitting
 		gorm.Count(&count)
-		logging.Error(gorm.Error)
+		log.Log(gorm.Error)
 
 		gorm = gorm.Limit(100)
 		gorm = gorm.Offset(query.Start)
 
 		gorm = gorm.Find(&apps)
-		logging.Error(gorm.Error)
+		log.Log(gorm.Error)
 	}
 
 	var code = session.GetCountryCode(r)

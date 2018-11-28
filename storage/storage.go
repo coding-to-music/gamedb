@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/golang/snappy"
 	"github.com/spf13/viper"
 )
@@ -26,7 +26,7 @@ var (
 func Init() {
 	bucket = viper.GetString("GOOGLE_BUCKET")
 	_, _, err := getClient()
-	logging.Error(err)
+	log.Log(err)
 }
 
 var (
@@ -84,7 +84,7 @@ func Upload(path string, data []byte, public bool) (err error) {
 	// Make public
 	if public {
 		if err := object.ACL().Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-			logging.Error(err)
+			log.Log(err)
 		}
 	}
 
@@ -119,7 +119,7 @@ func Download(path string) (bytes []byte, err error) {
 	// Decode
 	bytes, err = snappy.Decode(nil, data)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		// data is not encoded? Return as is.
 		bytes = data
 	}

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 var ErrUnMarshalNonPointer = errors.New("trying to unmarshal a non-pointer")
@@ -18,7 +18,7 @@ func IsJSON(str string) bool {
 
 func MarshalLog(v interface{}) []byte {
 	bytes, err := json.Marshal(v)
-	logging.Error(err)
+	log.Log(err)
 	return bytes
 }
 
@@ -42,10 +42,10 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 				data = data[0:1000]
 			}
 
-			logging.Info(err.Error() + " - " + string(data) + "...")
+			log.Log(log.SeverityInfo, err.Error() + " - " + string(data) + "...")
 
 		} else {
-			logging.Error(err)
+			log.Log(err)
 		}
 	}
 

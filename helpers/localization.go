@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/leekchan/accounting"
 	"github.com/pariz/gountries"
 )
@@ -114,7 +114,7 @@ func CountryCodeToName(code string) string {
 
 	country, err := gountriesInstance.FindCountryByAlpha(code)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return code
 	}
 

@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"cloud.google.com/go/datastore"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/spf13/viper"
 )
 
@@ -37,7 +37,7 @@ var (
 // Called from main
 func InitDS() {
 	_, _, err := GetDSClient()
-	logging.Error(err)
+	log.Log(err)
 }
 
 type Kind interface {
@@ -79,7 +79,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 		return nil
 	}
 
-	logging.Info("Bulk saving " + strconv.Itoa(len(kinds)) + " " + kind + "s")
+	log.Log(log.SeverityInfo, "Bulk saving " + strconv.Itoa(len(kinds)) + " " + kind + "s")
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -112,14 +112,14 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 			case KindProductPrice:
 				_, err = client.PutMulti(ctx, keys, kindsToProductPrices(chunk))
 			default:
-				logging.Error(errors.New("missing case in BulkSaveKinds"))
+				log.Log(errors.New("missing case in BulkSaveKinds"))
 			}
 
 			if err != nil {
 				if wait {
 					errs = append(errs, err)
 				} else {
-					logging.Error(err)
+					log.Log(err)
 				}
 			}
 
@@ -159,7 +159,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 		return nil
 	}
 
-	logging.Info("Bulk deleting " + strconv.Itoa(len(keys)) + " keys")
+	log.Log(log.SeverityInfo, "Bulk deleting " + strconv.Itoa(len(keys)) + " keys")
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -180,7 +180,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 				if wait {
 					errs = append(errs, err)
 				} else {
-					logging.Error(err)
+					log.Log(err)
 				}
 			}
 
@@ -222,7 +222,7 @@ func kindsToNews(a []Kind) (b []News) {
 		if ok {
 			b = append(b, original)
 		} else {
-			logging.Info("kind not a struct")
+			log.Log(log.SeverityInfo, "kind not a struct")
 		}
 	}
 

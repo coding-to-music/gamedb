@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfGenresUpdated)
-	logging.Error(err)
+	log.Log(err)
 
 	// Get genres
 	genres, err := db.GetAllGenres()
@@ -27,7 +27,7 @@ func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 
 	err = returnTemplate(w, r, "genres", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type statsGenresTemplate struct {

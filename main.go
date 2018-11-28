@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"github.com/gamedb/website/logging"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/storage"
 	"github.com/gamedb/website/web"
@@ -20,9 +19,8 @@ import (
 
 // These are called so everything as access to configs (viper)
 func init() {
-	configSetup()  // First
-	logging.Init() // Second
-	log.Init()     // Second
+	configSetup() // First
+	log.Init()    // Second
 	helpers.InitSteam()
 	helpers.InitMemcache()
 	db.InitDS()
@@ -45,7 +43,7 @@ func main() {
 	if *flagPprof {
 		go func() {
 			err := http.ListenAndServe(":"+viper.GetString("PORT"), nil)
-			logging.Error(err)
+			log.Log(err)
 		}()
 	}
 
@@ -56,7 +54,7 @@ func main() {
 	// Log steam calls
 	go func() {
 		for v := range helpers.GetSteamLogsChan() {
-			logging.InfoG(v.String(), logging.LogSteam)
+			log.Log(log.SeverityInfo, log.ServiceGoogle, v.String(), log.LogNameSteam)
 		}
 	}()
 
@@ -64,7 +62,7 @@ func main() {
 	err := web.Serve()
 	if err != nil {
 
-		logging.Error(err)
+		log.Log(err)
 
 	} else {
 
@@ -84,7 +82,7 @@ func configSetup() {
 	// Google
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	//

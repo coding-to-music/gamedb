@@ -15,7 +15,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
@@ -61,7 +61,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminDev()
 	case "queues":
 		err := r.ParseForm()
-		logging.Error(err)
+		log.Log(err)
 		go adminQueues(r)
 	}
 
@@ -83,7 +83,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		db.ConfPublishersUpdated,
 		db.ConfWipeMemcache,
 	})
-	logging.Error(err)
+	log.Log(err)
 
 	// Template
 	t := adminTemplate{}
@@ -91,7 +91,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Configs = configs
 
 	err = returnTemplate(w, r, "admin", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type adminTemplate struct {
@@ -110,30 +110,30 @@ func adminApps() {
 	// todo, page through results
 	apps, _, err := helpers.GetSteam().GetAppList(steam.GetAppListOptions{})
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
 	for _, v := range apps.Apps {
 		err = queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.AppID)))
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	//
 	err = db.SetConfig(db.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
+	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
 
-	logging.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
+	log.Log(log.SeverityInfo, strconv.Itoa(len(apps.Apps))+" apps added to rabbit")
 }
 
 func adminDonations() {
 
 	donations, err := db.GetDonations(0, 0)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
@@ -152,70 +152,70 @@ func adminDonations() {
 	for k, v := range counts {
 		player, err := db.GetPlayer(k)
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			continue
 		}
 
 		player.Donated = v
 		_, err = db.SaveKind(player.GetKey(), player)
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	//
 	err = db.SetConfig(db.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
+	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
 
-	logging.Info("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
+	log.Log(log.SeverityInfo, "Updated "+strconv.Itoa(len(counts))+" player donation counts")
 }
 
 func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("player-id"); val != "" {
 
-		logging.Info("Player ID: " + val)
+		log.Log(log.SeverityInfo, "Player ID: "+val)
 
 		playerID, err := strconv.ParseInt(val, 10, 64)
-		logging.Error(err)
+		log.Log(err)
 
 		player := db.Player{}
 		player.PlayerID = playerID
 
 		err = queuePlayer(r, player, db.PlayerUpdateAdmin)
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
-		logging.Info("App ID: " + val)
+		log.Log(log.SeverityInfo, "App ID: "+val)
 		err := queue.Produce(queue.QueueApps, []byte(val))
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
-		logging.Info("Package ID: " + val)
+		log.Log(log.SeverityInfo, "Package ID: "+val)
 		err := queue.Produce(queue.QueuePackages, []byte(val))
-		logging.Error(err)
+		log.Log(err)
 	}
 }
 
 func adminGenres() {
 
-	logging.InfoL("Genres updating")
+	log.Log(log.SeverityInfo, log.ServiceLocal, "Genres updating")
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
 	// Get current genres, to delete old ones
 	currentGenres, err := db.GetAllGenres()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
@@ -226,16 +226,16 @@ func adminGenres() {
 
 	// Get apps from mysql
 	appsWithGenres, err := db.GetAppsWithGenres()
-	logging.Error(err)
+	log.Log(err)
 
-	logging.Info("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
+	log.Log(log.SeverityInfo, "Found "+strconv.Itoa(len(appsWithGenres))+" apps with genres")
 
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
 
 		appGenres, err := app.GetGenres()
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			continue
 		}
 
@@ -281,7 +281,7 @@ func adminGenres() {
 		}
 
 		err := db.DeleteGenres(genresToDeleteSlice)
-		logging.Error(err)
+		log.Log(err)
 
 		limit--
 		wg.Done()
@@ -305,7 +305,7 @@ func adminGenres() {
 
 			gorm = gorm.Unscoped().FirstOrInit(&genre, db.Genre{ID: genreID})
 			if gorm.Error != nil {
-				logging.Error(gorm.Error)
+				log.Log(gorm.Error)
 			}
 
 			genre.Name = v.name
@@ -316,7 +316,7 @@ func adminGenres() {
 
 			gorm = gorm.Unscoped().Save(&genre)
 			if gorm.Error != nil {
-				logging.Error(gorm.Error)
+				log.Log(gorm.Error)
 			}
 
 			limit--
@@ -330,28 +330,28 @@ func adminGenres() {
 
 	//
 	err = db.SetConfig(db.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
+	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
 
-	logging.Info("Genres updated")
+	log.Log(log.SeverityInfo, "Genres updated")
 }
 
 func adminPublishers() {
 
-	logging.InfoL("Publishers updating")
+	log.Log(log.SeverityInfo, log.ServiceLocal, "Publishers updating")
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
 	// Get current publishers, to delete old ones
 	currentPublishers, err := db.GetAllPublishers()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
@@ -362,16 +362,16 @@ func adminPublishers() {
 
 	// Get apps from mysql
 	appsWithPublishers, err := db.GetAppsWithPublishers()
-	logging.Error(err)
+	log.Log(err)
 
-	logging.Info("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
+	log.Log(log.SeverityInfo, "Found "+strconv.Itoa(len(appsWithPublishers))+" apps with publishers")
 
 	newPublishers := make(map[string]*statsRow)
 	for _, app := range appsWithPublishers {
 
 		appPublishers, err := app.GetPublishers()
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			continue
 		}
 
@@ -417,7 +417,7 @@ func adminPublishers() {
 		}
 
 		err := db.DeletePublishers(pubsToDeleteSlice)
-		logging.Error(err)
+		log.Log(err)
 
 		limit--
 		wg.Done()
@@ -441,7 +441,7 @@ func adminPublishers() {
 
 			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: publisherName})
 			if gorm.Error != nil {
-				logging.Error(gorm.Error)
+				log.Log(gorm.Error)
 			}
 
 			publisher.Name = v.name
@@ -452,7 +452,7 @@ func adminPublishers() {
 
 			gorm = gorm.Unscoped().Save(&publisher)
 			if gorm.Error != nil {
-				logging.Error(gorm.Error)
+				log.Log(gorm.Error)
 			}
 
 			limit--
@@ -466,28 +466,28 @@ func adminPublishers() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
+	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
 
-	logging.Info("Publishers updated")
+	log.Log(log.SeverityInfo, "Publishers updated")
 }
 
 func adminDevelopers() {
 
-	logging.InfoL("Developers updating")
+	log.Log(log.SeverityInfo, log.ServiceLocal, "Developers updating")
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
 	// Get current developers, to delete old ones
 	currentDevelopers, err := db.GetAllPublishers()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
@@ -498,16 +498,16 @@ func adminDevelopers() {
 
 	// Get apps from mysql
 	appsWithDevelopers, err := db.GetAppsWithDevelopers()
-	logging.Error(err)
+	log.Log(err)
 
-	logging.Info("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
+	log.Log(log.SeverityInfo, "Found "+strconv.Itoa(len(appsWithDevelopers))+" apps with developers")
 
 	newDevelopers := make(map[string]*statsRow)
 	for _, app := range appsWithDevelopers {
 
 		appDevelopers, err := app.GetDevelopers()
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			continue
 		}
 
@@ -553,7 +553,7 @@ func adminDevelopers() {
 		}
 
 		err := db.DeleteDevelopers(devsToDeleteSlice)
-		logging.Error(err)
+		log.Log(err)
 
 		limit--
 		wg.Done()
@@ -577,7 +577,7 @@ func adminDevelopers() {
 
 			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: developerName})
 			if gorm.Error != nil {
-				logging.Error(gorm.Error)
+				log.Log(gorm.Error)
 			}
 
 			developer.Name = v.name
@@ -588,7 +588,7 @@ func adminDevelopers() {
 
 			gorm = gorm.Unscoped().Save(&developer)
 			if gorm.Error != nil {
-				logging.Error(gorm.Error)
+				log.Log(gorm.Error)
 			}
 
 			limit--
@@ -601,26 +601,26 @@ func adminDevelopers() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
+	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
 
-	logging.Info("Developers updated")
+	log.Log(log.SeverityInfo, "Developers updated")
 }
 
 func adminTags() {
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
 	// Get current tags, to delete old ones
 	tags, err := db.GetAllTags()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
@@ -631,21 +631,21 @@ func adminTags() {
 
 	// Get tags from Steam
 	tagsResp, _, err := helpers.GetSteam().GetTags()
-	logging.Error(err)
+	log.Log(err)
 
 	steamTagMap := tagsResp.GetMap()
 
 	appsWithTags, err := db.GetAppsWithTags()
-	logging.Error(err)
+	log.Log(err)
 
-	logging.Info("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
+	log.Log(log.SeverityInfo, "Found "+strconv.Itoa(len(appsWithTags))+" apps with tags")
 
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
 
 		appTags, err := app.GetTagIDs()
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			continue
 		}
 
@@ -691,7 +691,7 @@ func adminTags() {
 		}
 
 		err := db.DeleteTags(tagsToDeleteSlice)
-		logging.Error(err)
+		log.Log(err)
 
 		limit--
 		wg.Done()
@@ -715,7 +715,7 @@ func adminTags() {
 
 			gorm = gorm.Unscoped().FirstOrInit(&tag, db.Tag{ID: tagID})
 			if gorm.Error != nil {
-				logging.Error(gorm.Error)
+				log.Log(gorm.Error)
 			}
 
 			tag.Name = v.name
@@ -726,7 +726,7 @@ func adminTags() {
 
 			gorm = gorm.Unscoped().Save(&tag)
 			if gorm.Error != nil {
-				logging.Error(gorm.Error)
+				log.Log(gorm.Error)
 			}
 
 			limit--
@@ -739,30 +739,30 @@ func adminTags() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
+	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
 
-	logging.Info("Tags updated")
+	log.Log(log.SeverityInfo, "Tags updated")
 }
 
 func adminStatsLogger(total int, count int, rowName string, tableName string) {
 
 	var lenString = strconv.Itoa(total)
 
-	logging.Info("Updating " + tableName + " - " + fmt.Sprintf("%"+strconv.Itoa(len(lenString))+"d", count) + " / " + lenString + ": " + rowName)
+	log.Log(log.SeverityInfo, "Updating "+tableName+" - "+fmt.Sprintf("%"+strconv.Itoa(len(lenString))+"d", count)+" / "+lenString+": "+rowName)
 }
 
 func adminRanks() {
 
-	logging.Info("Ranks updated started")
+	log.Log(log.SeverityInfo, "Ranks updated started")
 
 	timeStart := time.Now().Unix()
 
 	oldKeys, err := db.GetRankKeys()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
@@ -778,7 +778,7 @@ func adminRanks() {
 
 			players, err = db.GetAllPlayers(column, db.PlayersToRank)
 			if err != nil {
-				logging.Error(err)
+				log.Log(err)
 				return
 			}
 
@@ -876,7 +876,7 @@ func adminRanks() {
 	// Update ranks
 	err = db.BulkSaveKinds(kinds, db.KindPlayerRank, false)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
@@ -888,47 +888,47 @@ func adminRanks() {
 
 	err = db.BulkDeleteKinds(keysToDelete, false)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
 	// Update config
 	err = db.SetConfig(db.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
+	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
 
-	logging.Info("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
+	log.Log(log.SeverityInfo, "Ranks updated in "+strconv.FormatInt(time.Now().Unix()-timeStart, 10)+" seconds")
 }
 
 func adminMemcache() {
 
 	err := helpers.GetMemcache().DeleteAll()
-	logging.Error(err)
+	log.Log(err)
 
 	err = db.SetConfig(db.ConfWipeMemcache, strconv.Itoa(int(time.Now().Unix())))
-	logging.Error(err)
+	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfWipeMemcache + " complete"})
 
-	logging.Info("Memcache wiped")
+	log.Log(log.SeverityInfo, "Memcache wiped")
 }
 
 func adminDev() {
 
 	//return
 	//
-	//logging.Info("Dev")
+	//log.Log(log.SeverityInfo, "Dev")
 	//
 	//players, err := db.GetAllPlayers("__key__", 0)
 	//
-	//logging.Info("Got players")
+	//log.Log(log.SeverityInfo, "Got players")
 	//
 	//if err != nil {
 	//
-	//	logging.Error(err)
+	//	log.Log(err)
 	//
 	//	if _, ok := err.(*ds.ErrFieldMismatch); ok {
 	//
@@ -940,10 +940,10 @@ func adminDev() {
 	//for _, v := range players {
 	//	//v.Games = ""
 	//	err := v.Save()
-	//	logging.Error(err)
+	//	log.Log(err)
 	//}
 	//
-	//logging.Info("Done")
+	//log.Log(log.SeverityInfo, "Done")
 }
 
 type statsRow struct {
@@ -962,7 +962,7 @@ func (t statsRow) GetMeanPrice() string {
 	}
 
 	bytes, err := json.Marshal(means)
-	logging.Error(err)
+	log.Log(err)
 
 	return string(bytes)
 }
@@ -976,7 +976,7 @@ func (t statsRow) GetMeanScore() string {
 	}
 
 	bytes, err := json.Marshal(means)
-	logging.Error(err)
+	log.Log(err)
 
 	return string(bytes)
 }

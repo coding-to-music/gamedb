@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 type RabbitMessageProduct struct {
@@ -63,7 +63,7 @@ func (i RabbitMessageProductKeyValues) GetExtended() (extended db.PICSExtended) 
 	for _, v := range i.Children {
 		if v.Value == nil {
 			bytes, err := json.Marshal(v.GetChildrenAsSlice())
-			logging.Error(err)
+			log.Log(err)
 			extended[v.Name] = string(bytes)
 		} else {
 			extended[v.Name] = v.Value.(string)
@@ -80,7 +80,7 @@ func (i RabbitMessageProductKeyValues) GetAppConfig() (config db.PICSAppConfig, 
 			launch = v.GetAppLaunch()
 		} else if v.Value == nil {
 			bytes, err := json.Marshal(v.ToNestedMaps())
-			logging.Error(err)
+			log.Log(err)
 			config[v.Name] = string(bytes)
 		} else {
 			config[v.Name] = v.Value.(string)
@@ -108,7 +108,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 				depots.Extra[v.Name] = v.Value.(string)
 			} else {
 				bytes, err := json.Marshal(v.ToNestedMaps())
-				logging.Error(err)
+				log.Log(err)
 				depots.Extra[v.Name] = string(bytes)
 			}
 
@@ -129,19 +129,19 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 				depot.Manifests = vv.GetChildrenAsMap()
 			case "encryptedmanifests":
 				manifests, err := json.Marshal(vv.ToNestedMaps())
-				logging.Error(err)
+				log.Log(err)
 				depot.EncryptedManifests = string(manifests)
 			case "maxsize":
 				maxSize, err := strconv.ParseInt(vv.Value.(string), 10, 64)
-				logging.Error(err)
+				log.Log(err)
 				depot.MaxSize = maxSize
 			case "dlcappid":
 				appID, err := strconv.Atoi(vv.Value.(string))
-				logging.Error(err)
+				log.Log(err)
 				depot.DLCApp = appID
 			case "depotfromapp":
 				app, err := strconv.Atoi(vv.Value.(string))
-				logging.Error(err)
+				log.Log(err)
 				depot.App = app
 			case "systemdefined":
 				if vv.Value.(string) == "1" {
@@ -156,7 +156,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 					depot.SharedInstall = true
 				}
 			default:
-				logging.Info("GetAppDepots missing case: " + vv.Name)
+				log.Log(log.SeverityInfo, "GetAppDepots missing case: " + vv.Name)
 			}
 		}
 
@@ -178,11 +178,11 @@ func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICS
 			switch vv.Name {
 			case "buildid":
 				buildID, err := strconv.Atoi(vv.Value.(string))
-				logging.Error(err)
+				log.Log(err)
 				branch.BuildID = buildID
 			case "timeupdated":
 				time, err := strconv.ParseInt(vv.Value.(string), 10, 64)
-				logging.Error(err)
+				log.Log(err)
 				branch.TimeUpdated = time
 			case "defaultforsubs":
 				branch.DefaultForSubs = vv.Value.(string)
@@ -199,7 +199,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICS
 					branch.LCSRequired = true
 				}
 			default:
-				logging.Info("GetAppDepotBranches missing case: " + vv.Name)
+				log.Log(log.SeverityInfo, "GetAppDepotBranches missing case: " + vv.Name)
 			}
 		}
 
@@ -214,7 +214,7 @@ func (i RabbitMessageProductKeyValues) GetAppLaunch() (items []db.PICSAppConfigL
 	for _, v := range i.Children {
 
 		order, err := strconv.Atoi(v.Name)
-		logging.Error(err)
+		log.Log(err)
 
 		item := db.PICSAppConfigLaunchItem{}
 		item.Order = order
@@ -252,12 +252,12 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 			launchItem.WorkingDir = v.Value.(string)
 		case "ownsdlc":
 			dlc, err := strconv.Atoi(v.Value.(string))
-			logging.Error(err)
+			log.Log(err)
 			launchItem.OwnsDLC = dlc
 		case "config":
 			v.getAppLaunchItem(launchItem)
 		default:
-			logging.Info("getAppLaunchItem missing case: " + v.Name)
+			log.Log(log.SeverityInfo, "getAppLaunchItem missing case: " + v.Name)
 		}
 	}
 }

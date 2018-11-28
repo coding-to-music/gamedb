@@ -7,7 +7,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
 )
 
@@ -28,7 +28,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = "Some interesting Steam Store stats"
 
 	err := returnTemplate(w, r, "stats", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type statsTemplate struct {
@@ -43,7 +43,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		logging.Error(err)
+		log.Log(err)
 
 	} else {
 
@@ -53,7 +53,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Group("FLOOR(reviews_score)")
 		gorm = gorm.Find(&scores)
 
-		logging.Error(gorm.Error)
+		log.Log(gorm.Error)
 	}
 
 	ret := make([]int, 101) // 0-100
@@ -65,10 +65,10 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	logging.Error(err)
+	log.Log(err)
 
 	_, err = w.Write(bytes)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type appScore struct {
@@ -84,7 +84,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		logging.Error(err)
+		log.Log(err)
 
 	} else {
 
@@ -94,7 +94,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Order("count desc")
 		gorm = gorm.Find(&types)
 
-		logging.Error(gorm.Error)
+		log.Log(gorm.Error)
 	}
 
 	var ret [][]interface{}
@@ -106,10 +106,10 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	logging.Error(err)
+	log.Log(err)
 
 	_, err = w.Write(bytes)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type appType struct {
@@ -129,7 +129,7 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = client.GetAll(ctx, q, &ranks)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	// Tally up
@@ -163,8 +163,8 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	bytes, err := json.Marshal(ret)
-	logging.Error(err)
+	log.Log(err)
 
 	_, err = w.Write(bytes)
-	logging.Error(err)
+	log.Log(err)
 }

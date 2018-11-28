@@ -10,7 +10,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
@@ -35,7 +35,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	t.Domain = viper.GetString("DOMAIN")
 
 	err := returnTemplate(w, r, "login", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type loginTemplate struct {
@@ -58,7 +58,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Save email so they don't need to keep typing it
 		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
-		logging.Error(err)
+		log.Log(err)
 
 		// Recaptcha
 		err = recaptcha.CheckFromRequest(r)
@@ -120,7 +120,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Remove form prefill on success
 		err = session.Write(w, r, "login-email", "")
-		logging.Error(err)
+		log.Log(err)
 
 		return nil
 	}()
@@ -130,15 +130,15 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(time.Second) // Stop brute forces
 
 		if err != ErrInvalidCreds && err != ErrInvalidCaptcha {
-			logging.Error(err)
+			log.Log(err)
 		}
 
 		err = session.SetGoodFlash(w, r, err.Error())
-		logging.Error(err)
+		log.Log(err)
 		http.Redirect(w, r, "/login", 302)
 	} else {
 		err = session.SetGoodFlash(w, r, "Login successful")
-		logging.Error(err)
+		log.Log(err)
 		http.Redirect(w, r, "/settings", 302)
 	}
 }
@@ -147,7 +147,7 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	if loggedIn {
@@ -200,19 +200,19 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Get player if they're new
 	if player.PersonaName == "" {
 		err = queuePlayer(r, player, db.PlayerUpdateAuto)
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	// Get user
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	var user db.User
 	gorm = gorm.First(&user, idInt)
 	if gorm.Error != nil {
-		logging.Error(gorm.Error)
+		log.Log(gorm.Error)
 	}
 
 	err = login(w, r, player, user)
@@ -250,13 +250,13 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := getPlayerIDFromSession(r)
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)
-	logging.Error(err)
+	log.Log(err)
 
 	err = db.CreateEvent(r, id, db.EventLogout)
-	logging.Error(err)
+	log.Log(err)
 
 	err = session.Clear(w, r)
-	logging.Error(err)
+	log.Log(err)
 
 	http.Redirect(w, r, "/", 303)
 }

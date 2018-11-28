@@ -15,7 +15,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/storage"
 	"github.com/gosimple/slug"
 )
@@ -320,7 +320,7 @@ func (p *Player) Update() (err error) {
 	go func(p *Player) {
 		var err error
 		err = p.updateGames()
-		logging.Error(err)
+		log.Log(err)
 		wg.Done()
 	}(p)
 
@@ -329,7 +329,7 @@ func (p *Player) Update() (err error) {
 	go func(p *Player) {
 		var err error
 		err = p.updateRecentGames()
-		logging.Error(err)
+		log.Log(err)
 		wg.Done()
 	}(p)
 
@@ -338,7 +338,7 @@ func (p *Player) Update() (err error) {
 	go func(p *Player) {
 		var err error
 		err = p.updateBadges()
-		logging.Error(err)
+		log.Log(err)
 		wg.Done()
 	}(p)
 
@@ -347,7 +347,7 @@ func (p *Player) Update() (err error) {
 	go func(p *Player) {
 		var err error
 		err = p.updateFriends()
-		logging.Error(err)
+		log.Log(err)
 		wg.Done()
 	}(p)
 
@@ -356,7 +356,7 @@ func (p *Player) Update() (err error) {
 	go func(p *Player) {
 		var err error
 		err = p.updateLevel()
-		logging.Error(err)
+		log.Log(err)
 		wg.Done()
 	}(p)
 
@@ -365,7 +365,7 @@ func (p *Player) Update() (err error) {
 	go func(p *Player) {
 		var err error
 		err = p.updateBans()
-		logging.Error(err)
+		log.Log(err)
 		wg.Done()
 	}(p)
 
@@ -374,7 +374,7 @@ func (p *Player) Update() (err error) {
 	go func(p *Player) {
 		var err error
 		err = p.updateGroups()
-		logging.Error(err)
+		log.Log(err)
 		wg.Done()
 	}(p)
 
@@ -383,7 +383,7 @@ func (p *Player) Update() (err error) {
 	go func(p *Player) {
 		var err error
 		err = CreateEvent(new(http.Request), p.PlayerID, EventRefresh)
-		logging.Error(err)
+		log.Log(err)
 		wg.Done()
 	}(p)
 
@@ -591,7 +591,7 @@ func (p *Player) updateBadges() error {
 	// Make map of app rows
 	var appRowsMap = map[int]App{}
 	appRows, err := GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
-	logging.Error(err)
+	log.Log(err)
 
 	for _, v := range appRows {
 		appRowsMap[v.ID] = v

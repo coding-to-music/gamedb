@@ -7,7 +7,7 @@ import (
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
 )
 
@@ -81,7 +81,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := returnTemplate(w, r, "experience", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 func chunk(rows []level, chunkSize int) (chunked [][]level) {

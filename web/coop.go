@@ -8,7 +8,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 const (
@@ -22,7 +22,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range r.URL.Query()["p"] {
 		i, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 		}
 		playerInts = append(playerInts, i)
 	}
@@ -45,14 +45,14 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			player, err := db.GetPlayer(id)
 			if err != nil {
 				if err != datastore.ErrNoSuchEntity {
-					logging.Error(err)
+					log.Log(err)
 					return
 				}
 			}
 
 			err = queuePlayer(r, player, db.PlayerUpdateManual)
 			if err != nil {
-				logging.Error(err)
+				log.Log(err)
 				return
 			}
 
@@ -76,7 +76,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			var x []int
 			resp, err := player.GetAllPlayerApps("app_name", 0)
 			if err != nil {
-				logging.Error(err)
+				log.Log(err)
 				return
 			}
 			for _, vv := range resp {
@@ -120,7 +120,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	games, err := db.GetAppsByID(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	// Make visible tags
@@ -128,7 +128,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range games {
 
 		coopTags, err := v.GetCoopTags()
-		logging.Error(err)
+		log.Log(err)
 
 		templateGames = append(templateGames, coopGameTemplate{
 			Game: v,
@@ -143,7 +143,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = "Find a game to play with friends."
 
 	err = returnTemplate(w, r, "coop", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type coopTemplate struct {

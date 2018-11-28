@@ -3,7 +3,7 @@ package web
 import (
 	"net/http"
 
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 func donateHandler(w http.ResponseWriter, r *http.Request) {
@@ -13,5 +13,5 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = "Help pay for the server costs or just buy me a beer."
 
 	err := returnTemplate(w, r, "donate", t)
-	logging.Error(err)
+	log.Log(err)
 }

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
 )
@@ -54,10 +54,10 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		bytes, err := json.Marshal(websocketPayload{Error: "Invalid page"})
-		logging.Error(err)
+		log.Log(err)
 
 		_, err = w.Write(bytes)
-		logging.Error(err)
+		log.Log(err)
 		return
 	}
 
@@ -65,7 +65,7 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if !strings.Contains(err.Error(), "websocket: not a websocket handshake") {
-			logging.Error(err)
+			log.Log(err)
 		}
 		return
 	}
@@ -112,11 +112,11 @@ func (p *Page) Send(data interface{}) {
 			if strings.Contains(err.Error(), "broken pipe") {
 
 				err := v.Close()
-				logging.Error(err)
+				log.Log(err)
 				delete(p.connections, k)
 
 			} else {
-				logging.Error(err)
+				log.Log(err)
 			}
 		}
 	}

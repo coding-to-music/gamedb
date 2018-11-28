@@ -8,7 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
@@ -320,7 +320,7 @@ func (pack Package) GetExtendedNice() (ret map[string]interface{}) {
 
 	extended, err := pack.GetExtended()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return ret
 	}
 
@@ -329,7 +329,7 @@ func (pack Package) GetExtendedNice() (ret map[string]interface{}) {
 		if val, ok := PackageExtendedKeys[k]; ok {
 			ret[val] = v
 		} else {
-			logging.Info("Need to add " + k + " to extended map")
+			log.Log(log.SeverityInfo, "Need to add " + k + " to extended map")
 			ret[k] = v
 		}
 	}
@@ -352,7 +352,7 @@ func (pack Package) GetControllerNice() (ret map[string]interface{}) {
 
 	extended, err := pack.GetController()
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return ret
 	}
 
@@ -361,7 +361,7 @@ func (pack Package) GetControllerNice() (ret map[string]interface{}) {
 		if val, ok := PackageControllerKeys[k]; ok {
 			ret[val] = v
 		} else {
-			logging.Info("Need to add " + k + " to controller map")
+			log.Log(log.SeverityInfo, "Need to add " + k + " to controller map")
 			ret[k] = v
 		}
 	}
@@ -398,10 +398,10 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
 	locale, err := helpers.GetLocaleFromCountry(code)
-	logging.Error(err)
+	log.Log(err)
 
 	price, err := pack.GetPrice(code)
-	logging.Error(err)
+	log.Log(err)
 
 	return []interface{}{
 		pack.ID,
@@ -432,7 +432,7 @@ func (pack *Package) Update() (err error) {
 				break
 			}
 
-			logging.Error(err)
+			log.Log(err)
 			continue
 		}
 
@@ -442,7 +442,7 @@ func (pack *Package) Update() (err error) {
 
 			// Controller
 			controllerString, err := json.Marshal(response.Data.Controller)
-			logging.Error(err)
+			log.Log(err)
 
 			// Platforms
 			var platforms []string
@@ -457,7 +457,7 @@ func (pack *Package) Update() (err error) {
 			}
 
 			platformsString, err := json.Marshal(platforms)
-			logging.Error(err)
+			log.Log(err)
 
 			//
 			pack.ImageHeader = response.Data.HeaderImage

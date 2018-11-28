@@ -19,7 +19,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
@@ -41,7 +41,7 @@ func Init() {
 
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logging.InfoG(r.Method + " " + r.URL.Path)
+		log.Log(log.SeverityInfo, log.ServiceLocal, r.Method+" "+r.URL.Path)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -65,7 +65,7 @@ func Serve() error {
 	r.Use(middleware.GetHead)
 	r.Use(middleware.RedirectSlashes)
 
-	if viper.GetString("ENV") == logging.EnvProd {
+	if viper.GetString("ENV") == string(log.EnvProd) {
 		r.Use(middlewareLog)
 	}
 
@@ -124,7 +124,7 @@ func fileServer(r chi.Router) {
 	path := "/assets"
 
 	if strings.ContainsAny(path, "{}*") {
-		logging.Info("FileServer does not permit URL parameters.")
+		log.Log(log.SeverityInfo, "FileServer does not permit URL parameters.")
 	}
 
 	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(viper.GetString("PATH"), "assets"))))
@@ -169,7 +169,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	w.WriteHeader(200)
 	_, err = buf.WriteTo(w)
-	logging.Error(err)
+	log.Log(err)
 
 	return nil
 }
@@ -184,14 +184,14 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 		data.Code = 500
 	}
 
-	logging.Error(data.Error)
+	log.Log(data.Error)
 
 	data.Fill(w, r, "Error")
 
 	w.WriteHeader(data.Code)
 
 	err := returnTemplate(w, r, "error", data)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type errorTemplate struct {
@@ -253,7 +253,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"json": func(v interface{}) (string, error) {
 			b, err := json.Marshal(v)
-			logging.Error(err)
+			log.Log(err)
 			return string(b), err
 		},
 	}
@@ -298,28 +298,28 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// User ID
 	id, err := session.Read(r, session.PlayerID)
-	logging.Error(err)
+	log.Log(err)
 
 	if id == "" {
 		t.UserID = 0
 	} else {
 		t.UserID, err = strconv.Atoi(id)
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	// User name
 	t.UserName, err = session.Read(r, session.PlayerName)
-	logging.Error(err)
+	log.Log(err)
 
 	// Level
 	level, err := session.Read(r, session.PlayerLevel)
-	logging.Error(err)
+	log.Log(err)
 
 	if level == "" {
 		t.UserLevel = 0
 	} else {
 		t.UserLevel, err = strconv.Atoi(level)
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	// Country
@@ -331,21 +331,21 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// Flashes
 	t.FlashesGood, err = session.GetGoodFlashes(w, r)
-	logging.Error(err)
+	log.Log(err)
 
 	t.FlashesBad, err = session.GetBadFlashes(w, r)
-	logging.Error(err)
+	log.Log(err)
 
 	// All session data
 	t.Session, err = session.ReadAll(r)
-	logging.Error(err)
+	log.Log(err)
 }
 
 func (t GlobalTemplate) GetFooterText() (text string) {
 
 	ts := time.Now()
 	dayint, err := strconv.Atoi(ts.Format("2"))
-	logging.Error(err)
+	log.Log(err)
 
 	text = "Page created @ " + ts.Format("15:04:05") + " on " + ts.Format("Mon") + " " + humanize.Ordinal(dayint)
 
@@ -362,7 +362,7 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 
 	startTimeInt, err := strconv.ParseInt(startTimeString, 10, 64)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		return text
 	}
 
@@ -405,7 +405,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 	}
 
 	b, err := json.Marshal(stringMap)
-	logging.Error(err)
+	log.Log(err)
 	return string(b)
 }
 
@@ -435,11 +435,11 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter) {
 	}
 
 	bytesx, err := json.Marshal(t)
-	logging.Error(err)
+	log.Log(err)
 
 	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(bytesx)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type DataTablesQuery struct {

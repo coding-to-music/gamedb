@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 )
@@ -107,27 +107,27 @@ type rabbitConsumer struct {
 func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
-	logging.Error(err)
+	log.Log(err)
 
 	err = ch.Qos(10, 0, true)
-	logging.Error(err)
+	log.Log(err)
 
 	qu, err = ch.QueueDeclare(queue.String(), true, false, false, false, nil)
-	logging.Error(err)
+	log.Log(err)
 
 	return ch, qu, err
 }
 
 func (s rabbitConsumer) produce(data []byte) (err error) {
 
-	logging.Info("Producing to: " + s.Message.getProduceQueue().String())
+	log.Log(log.SeverityInfo, "Producing to: "+s.Message.getProduceQueue().String())
 
 	// Connect
 	if producerConnection == nil {
 
 		producerConnection, err = amqp.Dial(rabbitDSN)
 		if consumerConnection == nil {
-			logging.Error(errors.New("rabbit not found"))
+			log.Log(errors.New("rabbit not found"))
 			return
 		}
 		producerConnection.NotifyClose(producerCloseChannel)
@@ -148,14 +148,14 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 		ContentType:  "application/json",
 		Body:         data,
 	})
-	logging.Error(err)
+	log.Log(err)
 
 	return nil
 }
 
 func (s rabbitConsumer) consume() {
 
-	logging.InfoL("Consuming from: " + s.Message.getConsumeQueue().String())
+	log.Log(log.SeverityInfo, log.ServiceLocal, "Consuming from: "+s.Message.getConsumeQueue().String())
 
 	var breakFor = false
 	var err error
@@ -167,12 +167,12 @@ func (s rabbitConsumer) consume() {
 
 			consumerConnection, err = amqp.Dial(rabbitDSN)
 			if consumerConnection == nil {
-				logging.Error(errors.New("rabbit not found"))
+				log.Log(errors.New("rabbit not found"))
 				return
 			}
 			consumerConnection.NotifyClose(consumerCloseChannel)
 			if err != nil {
-				logging.Error(err)
+				log.Log(err)
 				return
 			}
 		}
@@ -180,13 +180,13 @@ func (s rabbitConsumer) consume() {
 		//
 		ch, qu, err := s.getQueue(consumerConnection, s.Message.getConsumeQueue())
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			return
 		}
 
 		msgs, err := ch.Consume(qu.Name, "", false, false, false, false, nil)
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			return
 		}
 
@@ -199,20 +199,20 @@ func (s rabbitConsumer) consume() {
 			case msg := <-msgs:
 
 				requeue, err := s.Message.process(msg)
-				logging.Error(err)
+				log.Log(err)
 
 				if requeue {
-					logging.Info("Requeuing")
+					log.Log(log.SeverityInfo, "Requeuing")
 					err = s.requeueMessage(msg)
-					logging.Error(err)
+					log.Log(err)
 				}
 
 				err = msg.Ack(false)
-				logging.Error(err)
+				log.Log(err)
 
 				// Might be getting rate limited
 				if err == steam.ErrNullResponse {
-					logging.Info("Null response, sleeping for 10 seconds")
+					log.Log(log.SeverityInfo, "Null response, sleeping for 10 seconds")
 					time.Sleep(time.Second * 10)
 				}
 			}
@@ -224,7 +224,7 @@ func (s rabbitConsumer) consume() {
 
 		//conn.Close()
 		err = ch.Close()
-		logging.Error(err)
+		log.Log(err)
 	}
 }
 
@@ -248,7 +248,7 @@ func (s rabbitConsumer) requeueMessage(msg amqp.Delivery) error {
 	}
 
 	err = Produce(QueueDelaysData, data)
-	logging.Error(err)
+	log.Log(err)
 
 	return nil
 }

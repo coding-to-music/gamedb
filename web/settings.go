@@ -11,7 +11,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 	"golang.org/x/crypto/bcrypt"
@@ -35,7 +35,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == errNotLoggedIn {
 			err := session.SetBadFlash(w, r, "please login")
-			logging.Error(err)
+			log.Log(err)
 			http.Redirect(w, r, "/login", 302)
 			return
 		}
@@ -54,7 +54,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if player.Donated > 0 {
 			donations, err = db.GetDonations(player.PlayerID, 10)
-			logging.Error(err)
+			log.Log(err)
 		}
 
 		wg.Done()
@@ -68,7 +68,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := player.GetAllPlayerApps("app_name", 0)
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			return
 		}
 		var gamesSlice []int
@@ -77,7 +77,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		bytes, err := json.Marshal(gamesSlice)
-		logging.Error(err)
+		log.Log(err)
 
 		games = string(bytes)
 
@@ -92,7 +92,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		user, err = getUser(r, 0)
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			return
 		}
 
@@ -122,7 +122,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Countries = countries
 
 	err = returnTemplate(w, r, "settings", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type settingsTemplate struct {
@@ -158,16 +158,16 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		if len(password) < 8 {
 			err := session.SetBadFlash(w, r, "Password must be at least 8 characters long")
-			logging.Error(err)
+			log.Log(err)
 			http.Redirect(w, r, "/settings", 302)
 			return
 		}
 
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 		if err != nil {
-			logging.Error(err)
+			log.Log(err)
 			err := session.SetBadFlash(w, r, "Something went wrong encrypting your password")
-			logging.Error(err)
+			log.Log(err)
 			http.Redirect(w, r, "/settings", 302)
 			return
 		}
@@ -195,20 +195,20 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Save user
 	err = user.UpdateInsert()
-	logging.Error(err)
+	log.Log(err)
 	if err != nil {
 		err = session.SetBadFlash(w, r, "Something went wrong saving settings")
-		logging.Error(err)
+		log.Log(err)
 	} else {
 		err = session.SetGoodFlash(w, r, "Settings saved")
-		logging.Error(err)
+		log.Log(err)
 	}
 
 	// Update session
 	err = session.WriteMany(w, r, map[string]string{
 		session.UserCountry: user.CountryCode,
 	})
-	logging.Error(err)
+	log.Log(err)
 
 	http.Redirect(w, r, "/settings", 302)
 }
@@ -219,7 +219,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	logging.Error(err)
+	log.Log(err)
 
 	//
 	var wg sync.WaitGroup
@@ -233,14 +233,14 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
 			client, ctx, err := db.GetDSClient()
 			if err != nil {
 
-				logging.Error(err)
+				log.Log(err)
 
 			} else {
 
@@ -249,12 +249,12 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				q = q.Order("-created_at")
 				if err != nil {
 
-					logging.Error(err)
+					log.Log(err)
 
 				} else {
 
 					_, err := client.GetAll(ctx, q, &events)
-					logging.Error(err)
+					log.Log(err)
 				}
 			}
 		}
@@ -270,12 +270,12 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
 			total, err = db.CountPlayerEvents(playerID)
-			logging.Error(err)
+			log.Log(err)
 
 		}
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
@@ -78,10 +78,10 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool, err erro
 
 	// Get mysql rows
 	appRows, err := db.GetAppsByID(appsSlice, []string{"id", "name"})
-	logging.Error(err)
+	log.Log(err)
 
 	packageRows, err := db.GetPackages(packagesSlice, []string{"id", "name"})
-	logging.Error(err)
+	log.Log(err)
 
 	// Make map
 	appRowsMap := map[int]db.App{}
@@ -116,7 +116,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	// Save change to DS
-	if viper.GetString("ENV") == logging.EnvProd {
+	if viper.GetString("ENV") == string(log.EnvProd) {
 		err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
 		if err != nil {
 			return true, err

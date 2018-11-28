@@ -7,7 +7,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
 )
 
@@ -51,7 +51,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 		appsSlice, err := db.GetAppsByID(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -75,7 +75,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 		packagesSlice, err := db.GetPackages(change.GetPackageIDs(), []string{})
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -92,7 +92,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err = returnTemplate(w, r, "change", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type changeTemplate struct {

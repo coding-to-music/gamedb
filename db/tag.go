@@ -7,7 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 type Tag struct {
@@ -102,7 +102,7 @@ func GetTagsByID(ids []int) (tags []Tag, err error) {
 
 func DeleteTags(ids []int) (err error) {
 
-	logging.Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
+	log.Log(log.SeverityInfo, "Deleteing " + strconv.Itoa(len(ids)) + " tags")
 
 	if len(ids) == 0 {
 		return nil

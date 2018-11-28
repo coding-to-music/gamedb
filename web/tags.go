@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfTagsUpdated)
-	logging.Error(err)
+	log.Log(err)
 
 	// Get tags
 	tags, err := db.GetAllTags()
@@ -27,7 +27,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 
 	err = returnTemplate(w, r, "tags", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type statsTagsTemplate struct {

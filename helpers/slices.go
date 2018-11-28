@@ -4,14 +4,14 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 func StringSliceToIntSlice(in []string) (ret []int) {
 
 	for _, v := range in {
 		i, err := strconv.Atoi(v)
-		logging.Error(err)
+		log.Log(err)
 		if err == nil {
 			ret = append(ret, i)
 		}

@@ -11,7 +11,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
 )
@@ -30,7 +30,7 @@ func queuesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = "When new items get added to the site, they go through a queue to not overload the servers."
 
 	err := returnTemplate(w, r, "queues", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type queuesTemplate struct {
@@ -72,13 +72,13 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	// Encode
 	bytes, err := json.Marshal(queues)
 	if err != nil {
-		logging.Error(err)
+		log.Log(err)
 		bytes = []byte("[]")
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(bytes)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type queuesQueue struct {

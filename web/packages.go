@@ -7,7 +7,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -24,7 +24,7 @@ func packagesRouter() http.Handler {
 func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	total, err := db.CountPackages()
-	logging.Error(err)
+	log.Log(err)
 
 	// Template
 	t := packagesTemplate{}
@@ -32,7 +32,7 @@ func PackagesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = "The last " + humanize.Comma(int64(total)) + " packages to be updated."
 
 	err = returnTemplate(w, r, "packages", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type packagesTemplate struct {
@@ -45,7 +45,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	logging.Error(err)
+	log.Log(err)
 
 	//
 	var code = session.GetCountryCode(r)
@@ -60,7 +60,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -77,7 +77,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Limit(100)
 			gorm = gorm.Find(&packages)
 
-			logging.Error(gorm.Error)
+			log.Log(gorm.Error)
 		}
 
 		wg.Done()
@@ -90,7 +90,7 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = db.CountPackages()
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}()

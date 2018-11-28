@@ -8,7 +8,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -32,7 +32,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -43,7 +43,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 			gorm = gorm.Order("count DESC")
 			gorm = gorm.Find(&types)
 
-			logging.Error(gorm.Error)
+			log.Log(gorm.Error)
 		}
 
 		wg.Done()
@@ -58,7 +58,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Types = types
 
 	err := returnTemplate(w, r, "free_games", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type freeGamesTemplate struct {
@@ -95,7 +95,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	logging.Error(err)
+	log.Log(err)
 
 	//
 	var wg sync.WaitGroup
@@ -110,7 +110,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			logging.Error(err)
+			log.Log(err)
 
 		} else {
 
@@ -139,7 +139,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			gorm = gorm.Find(&apps)
 
-			logging.Error(gorm.Error)
+			log.Log(gorm.Error)
 		}
 
 		wg.Done()
@@ -166,7 +166,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return count, gorm.Error
 		})
 
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}()
@@ -182,7 +182,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range apps {
 
 		platforms, err := v.GetPlatformImages()
-		logging.Error(err)
+		log.Log(err)
 
 		response.AddRow([]interface{}{
 			v.ID,

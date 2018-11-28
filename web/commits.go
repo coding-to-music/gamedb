@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/google/go-github/github"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
@@ -49,7 +49,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = returnTemplate(w, r, "commits", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type commitsTemplate struct {

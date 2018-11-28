@@ -7,7 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 )
 
 type productInterface interface {
@@ -116,13 +116,13 @@ type ProductPriceCache struct {
 func (p ProductPriceCache) GetInitial(code steam.CountryCode) string {
 
 	locale, err := helpers.GetLocaleFromCountry(code)
-	logging.Error(err)
+	log.Log(err)
 	return locale.Format(p.Initial)
 }
 
 func (p ProductPriceCache) GetFinal(code steam.CountryCode) string {
 	locale, err := helpers.GetLocaleFromCountry(code)
-	logging.Error(err)
+	log.Log(err)
 	return locale.Format(p.Final)
 }
 
@@ -132,13 +132,13 @@ func (p ProductPriceCache) GetDiscountPercent() string {
 
 func (p ProductPriceCache) GetIndividual(code steam.CountryCode) string {
 	locale, err := helpers.GetLocaleFromCountry(code)
-	logging.Error(err)
+	log.Log(err)
 	return locale.Format(p.Individual)
 }
 
 func (p ProductPriceCache) GetCountryName(code steam.CountryCode) string {
 	locale, err := helpers.GetLocaleFromCountry(code)
-	logging.Error(err)
+	log.Log(err)
 	return locale.CountryName
 }
 

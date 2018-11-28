@@ -7,7 +7,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/logging"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -26,7 +26,7 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = "Pick up a bargain"
 
 	err := returnTemplate(w, r, "price_changes", t)
-	logging.Error(err)
+	log.Log(err)
 }
 
 type priceChangesTemplate struct {
@@ -39,7 +39,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	logging.Error(err)
+	log.Log(err)
 
 	//
 	var wg sync.WaitGroup
@@ -62,7 +62,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		logging.Error(err)
+		log.Log(err)
 
 		wg.Done()
 	}(r)
