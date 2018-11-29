@@ -108,6 +108,9 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 	if app.PICSExtended == "" {
 		app.PICSExtended = "{}"
 	}
+	if app.PICSSystemRequirements == "" {
+		app.PICSSystemRequirements = "{}"
+	}
 	if app.Prices == "" {
 		app.Prices = "{}"
 	}
