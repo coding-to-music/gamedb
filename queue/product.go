@@ -156,6 +156,14 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 				if vv.Value.(string) == "1" {
 					depot.SharedInstall = true
 				}
+			case "shareddepottype":
+				if vv.Value.(string) == "1" {
+					depot.SharedDepotType = true
+				}
+			case "lvcache":
+				if vv.Value.(string) == "1" {
+					depot.LVCache = true
+				}
 			default:
 				log.Log(log.SeverityInfo, "GetAppDepots missing case: "+vv.Name)
 			}

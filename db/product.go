@@ -55,6 +55,8 @@ type PICSAppDepotItem struct {
 	SystemDefined      bool              `json:"systemdefined"`
 	Optional           bool              `json:"optional"`
 	SharedInstall      bool              `json:"sharedinstall"`
+	SharedDepotType    bool              `json:"shareddepottype"`
+	LVCache            bool              `json:"lvcache"`
 }
 type PICSAppDepotBranches struct {
 	Name             string `json:"name"`
