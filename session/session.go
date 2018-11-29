@@ -33,9 +33,19 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 	writeMutex.Lock()
 
 	session, err := store.Get(r, "gamedb-session")
-	session.Options = &sessions.Options{
-		MaxAge: 0, // Session
-		Path:   "/",
+
+	if viper.GetString("ENV") == string(log.EnvProd) {
+		session.Options = &sessions.Options{
+			MaxAge: 86400,
+			Domain: "gamedb.online",
+			Path:   "/",
+			Secure: true,
+		}
+	} else {
+		session.Options = &sessions.Options{
+			MaxAge: 0,
+			Path:   "/",
+		}
 	}
 
 	writeMutex.Unlock()
