@@ -1,5 +1,11 @@
 if ($('#player-page').length > 0) {
 
+    if (user.isLoggedIn) {
+        const $coop = $('#coop-link');
+        $coop.attr('href', $coop.attr('href') + '&p=' + user.userID);
+    }
+
+    //
     $('[data-update-id]').on('click', function (e) {
 
         const $link = $(this);
