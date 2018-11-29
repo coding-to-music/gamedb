@@ -1,5 +1,9 @@
 if ($('#admin-page').length > 0) {
 
+    //
+    $('#player-id').val(user.userID);
+
+    //
     const $actions = $('#actions a');
 
     $actions.on('click', function () {

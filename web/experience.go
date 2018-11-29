@@ -60,13 +60,6 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 	t.Chunks = chunk(rows, chunkRows)
 	t.Description = "Check how much XP you need to go up a level."
 
-	// Default calculator levels if logged out
-	t.UserLevelTo = t.UserLevel + 10
-	if t.UserLevel == 0 {
-		t.UserLevel = 10
-		t.UserLevelTo = 20
-	}
-
 	// Highlight level from URL
 	t.Level = -1
 	id := chi.URLParam(r, "id")
@@ -77,7 +70,6 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			t.Level = i
 		}
-
 	}
 
 	err := returnTemplate(w, r, "experience", t)
@@ -101,9 +93,8 @@ func chunk(rows []level, chunkSize int) (chunked [][]level) {
 
 type experienceTemplate struct {
 	GlobalTemplate
-	Chunks      [][]level
-	Level       int // Low value in form
-	UserLevelTo int // High value in form
+	Chunks [][]level
+	Level  int // Low value in form
 }
 
 type level struct {

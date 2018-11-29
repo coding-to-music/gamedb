@@ -1,5 +1,9 @@
 if ($('#coop-page').length > 0) {
 
+    if (user.isLoggedIn) {
+        $('#addme').removeClass('d-none')
+    }
+
     $('form#add').submit(function (e) {
 
         e.preventDefault();
@@ -17,11 +21,9 @@ if ($('#coop-page').length > 0) {
         document.location = url;
     });
 
-    $('input#addme').click(function (e) {
+    $('#addme input').click(function (e) {
 
-        const id = $(this).attr('data-id');
-
-        $('input#id').val(id);
+        $('input#id').val(user.userID);
         $('form#add').submit();
     });
 }

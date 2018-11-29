@@ -48,8 +48,10 @@ div#top.show {
     }
 
     #header-flag {
-        margin: 0.5rem;
-        height: 24px;
+        img {
+            margin: 0.5rem;
+            height: 24px;
+        }
     }
 }
 

@@ -1,5 +1,7 @@
 if ($('#apps-page').length > 0) {
 
+    $('#user-currency-symbol').append(' ' + user.currencySymbol);
+
     const $chosens = $('select.form-control-chosen');
     const $table = $('table.table-datatable2');
     const $form = $('form');

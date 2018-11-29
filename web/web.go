@@ -263,24 +263,23 @@ func getTemplateFuncMap() map[string]interface{} {
 type GlobalTemplate struct {
 	Title       string // Page title
 	Description string // Page description
-
-	Avatar string
-	Path   string // URL
-	Env    string
-
-	Toasts []Toast
-
-	// User
-	UserName           string // Username
-	UserID             int
-	UserLevel          int
-	UserCountry        steam.CountryCode
-	UserCurrencySymbol string
+	Path        string // URL path
+	Env         string // Environment
 
 	// Session
-	FlashesGood []interface{}
-	FlashesBad  []interface{}
-	Session     map[interface{}]interface{}
+	userName           string // Username
+	userID             int
+	userLevel          int
+	userCountry        steam.CountryCode
+	userCurrencySymbol string
+
+	// Session
+	flashesGood []interface{}
+	flashesBad  []interface{}
+	session     map[string]string
+
+	//
+	toasts []Toast
 
 	//
 	request *http.Request // Internal
@@ -301,14 +300,14 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	log.Log(err)
 
 	if id == "" {
-		t.UserID = 0
+		t.userID = 0
 	} else {
-		t.UserID, err = strconv.Atoi(id)
+		t.userID, err = strconv.Atoi(id)
 		log.Log(err)
 	}
 
 	// User name
-	t.UserName, err = session.Read(r, session.PlayerName)
+	t.userName, err = session.Read(r, session.PlayerName)
 	log.Log(err)
 
 	// Level
@@ -316,28 +315,28 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	log.Log(err)
 
 	if level == "" {
-		t.UserLevel = 0
+		t.userLevel = 0
 	} else {
-		t.UserLevel, err = strconv.Atoi(level)
+		t.userLevel, err = strconv.Atoi(level)
 		log.Log(err)
 	}
 
 	// Country
 	var code = session.GetCountryCode(r)
-	t.UserCountry = code
+	t.userCountry = code
 
 	locale, err := helpers.GetLocaleFromCountry(code)
-	t.UserCurrencySymbol = locale.CurrencySymbol
+	t.userCurrencySymbol = locale.CurrencySymbol
 
 	// Flashes
-	t.FlashesGood, err = session.GetGoodFlashes(w, r)
+	t.flashesGood, err = session.GetGoodFlashes(w, r)
 	log.Log(err)
 
-	t.FlashesBad, err = session.GetBadFlashes(w, r)
+	t.flashesBad, err = session.GetBadFlashes(w, r)
 	log.Log(err)
 
 	// All session data
-	t.Session, err = session.ReadAll(r)
+	t.session, err = session.ReadAll(r)
 	log.Log(err)
 }
 
@@ -371,11 +370,11 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 	return text + " in " + d.String()
 }
 
-func (t GlobalTemplate) IsLoggedIn() bool {
-	return t.UserID > 0
+func (t GlobalTemplate) isLoggedIn() bool {
+	return t.userID > 0
 }
 
-func (t GlobalTemplate) IsLocal() bool {
+func (t GlobalTemplate) isLocal() bool {
 	return t.Env == "local"
 }
 
@@ -387,34 +386,39 @@ func (t GlobalTemplate) IsProduction() bool {
 	return t.Env == "production"
 }
 
-func (t GlobalTemplate) IsAdmin() bool {
+func (t GlobalTemplate) isAdmin() bool {
 	return t.request.Header.Get("Authorization") != ""
 }
 
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
-		"userID":         t.UserID,
-		"userLevel":      t.UserLevel,
-		"userName":       t.UserName,
-		"isLoggedIn":     t.IsLoggedIn(),
-		"isLocal":        t.IsLocal(),
-		"showAds":        t.ShowAd(),
-		"country":        t.UserCountry,
-		"currencySymbol": t.UserCurrencySymbol,
+		"userID":         t.userID,
+		"userLevel":      t.userLevel,
+		"userName":       t.userName,
+		"isLoggedIn":     t.isLoggedIn(),
+		"isLocal":        t.isLocal(),
+		"showAds":        t.showAd(),
+		"country":        t.userCountry,
+		"currencySymbol": t.userCurrencySymbol,
+		"flashesGood":    t.flashesGood,
+		"flashesBad":     t.flashesBad,
+		"toasts":         t.toasts,
+		"session":        t.session,
 	}
 
 	b, err := json.Marshal(stringMap)
 	log.Log(err)
+
 	return string(b)
 }
 
-func (t GlobalTemplate) ShowAd() bool {
-	return !t.IsLocal()
+func (t GlobalTemplate) showAd() bool {
+	return !t.isLocal()
 }
 
 func (t *GlobalTemplate) AddToast(toast Toast) {
-	t.Toasts = append(t.Toasts, toast)
+	t.toasts = append(t.toasts, toast)
 }
 
 type DataTablesAjaxResponse struct {

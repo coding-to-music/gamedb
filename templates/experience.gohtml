@@ -1,10 +1,10 @@
 {{define "experience"}} {{ template "_header" . }}
 
-<div class="container" id="xp-page">
+<div class="container" id="experience-page">
 
     <div class="jumbotron">
         <h1 class="display-4"><i class="fas fa-level-up-alt"></i> Experience</h1>
-        <p class="lead">{{ .Description }} {{ if .IsLoggedIn }}You are level <a href="/experience/{{.UserLevel}}" data-level="{{.UserLevel}}">{{.UserLevel}}</a>.{{end}}</p>
+        <p class="lead">{{ .Description }} <span>{{/* Added with JS */}}</span></p>
     </div>
 
     <div class="card">
@@ -13,11 +13,11 @@
             <div class="mb-4 row">
                 <div class="form-group col-sm-3">
                     <label for="from">Starting Level</label>
-                    <input type="number" class="form-control" id="from" placeholder="From" value="{{.UserLevel}}">
+                    <input type="number" class="form-control" id="from" placeholder="From">
                 </div>
                 <div class="form-group col-sm-3">
                     <label for="to">End Level</label>
-                    <input type="number" class="form-control" id="to" placeholder="To" value="{{.UserLevelTo}}">
+                    <input type="number" class="form-control" id="to" placeholder="To">
                 </div>
                 <div class="form-group col-sm-3">
                     <label for="answer">XP Needed</label>
@@ -65,7 +65,7 @@
 
 {{ if gt .Level -1}}
     <script>
-        const scrollTo = 'tr[data-level={{ .Level }}]'
+        let scrollTo = 'tr[data-level={{ .Level }}]'
     </script>
 {{end}}
 

@@ -68,14 +68,20 @@ func GetCountryCode(r *http.Request) steam.CountryCode {
 	return steam.CountryCode(val)
 }
 
-func ReadAll(r *http.Request) (value map[interface{}]interface{}, err error) {
+func ReadAll(r *http.Request) (ret map[string]string, err error) {
+
+	ret = map[string]string{}
 
 	session, err := getSession(r)
 	if err != nil {
-		return value, err
+		return ret, err
 	}
 
-	return session.Values, err
+	for k, v := range session.Values {
+		ret[k.(string)] = v.(string)
+	}
+
+	return ret, err
 }
 
 func Write(w http.ResponseWriter, r *http.Request, name string, value string) (err error) {

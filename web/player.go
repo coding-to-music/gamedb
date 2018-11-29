@@ -39,7 +39,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		if err == datastore.ErrNoSuchEntity {
 
 			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now."}
-			data.Toasts = []Toast{{Title: "Player added to scan queue!"}}
+			data.toasts = []Toast{{Title: "Player added to scan queue!"}}
 			returnErrorTemplate(w, r, data)
 		} else {
 			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player.", Error: err})
@@ -220,7 +220,7 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames
 	t.Bans = bans
-	t.Toasts = toasts
+	t.toasts = toasts
 
 	err = returnTemplate(w, r, "player", t)
 	log.Log(err)

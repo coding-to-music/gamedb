@@ -130,8 +130,8 @@ if (user.showAds) {
 }
 
 // Toasts
-if (isIterable(toasts)) {
-    for (const v of toasts) {
+if (isIterable(user.toasts)) {
+    for (const v of user.toasts) {
         toast(v.success, v.message, v.title, v.timeout, v.link);
     }
 }
@@ -165,4 +165,48 @@ function isIterable(obj) {
         return false;
     }
     return typeof obj[Symbol.iterator] === 'function';
+}
+
+// Flag
+const flag = $('<img src="/assets/img/flags/' + user.country.toLowerCase() + '.png" alt="' + user.country + '">');
+if (user.isLoggedIn) {
+    $('#header-flag').html(flag);
+} else {
+    $('#header-flag').html('<a href="/login">' + flag.prop('outerHTML') + '</a>');
+}
+
+// Admin link
+if (user.isAdmin) {
+    $('#header-admin').html('<a class="nav-link" href="/admin">Admin</a>');
+}
+
+// User link
+const $headerUser = $('#header-user');
+const $headerSettings = $('#header-settings');
+
+if (user.isLoggedIn) {
+    $headerUser.html('<a class="nav-link" href="/players/' + user.userID + '">' + user.userName + '</a>');
+
+    $headerSettings.prepend('<div class="dropdown-divider"></div>');
+    $headerSettings.prepend('<a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>');
+    $headerSettings.prepend('<a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i> Settings</a>');
+} else {
+    $headerUser.html('<a class="nav-link" href="/login">Login</a>');
+}
+
+// Flashes
+if (isIterable(user.flashesGood)) {
+    let $flashesGood = $('#flashes-good');
+    for (const v of user.flashesGood) {
+        $flashesGood.append('<p>' + v + '</p>');
+        $flashesGood.removeClass('d-none');
+    }
+}
+
+if (isIterable(user.flashesBad)) {
+    let $flashesBad = $('#flashes-bad');
+    for (const v of user.flashesBad) {
+        $flashesBad.append('<p>' + v + '</p>');
+        $flashesBad.removeClass('d-none');
+    }
 }

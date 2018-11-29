@@ -1,4 +1,17 @@
-if ($('#xp-page').length > 0) {
+if ($('#experience-page').length > 0) {
+
+    const $from = $('#from');
+    const $to = $('#to');
+
+    if (user.isLoggedIn) {
+        $('.lead span').html('You are level <a href="/experience/' + user.userLevel + '" data-level="' + user.userLevel + '">' + user.userLevel + '</a>.');
+
+        $from.val(user.userLevel);
+        $to.val(user.userLevel + 10)
+    } else {
+        $from.val(10);
+        $to.val(20)
+    }
 
     // Scroll to number
     function scroll() {
@@ -13,7 +26,7 @@ if ($('#xp-page').length > 0) {
         }
     }
 
-    $("table.table").on("click", "[data-level]", function () {
+    $("#experience-page").on("click", "[data-level]", function () {
 
         const level = $(this).attr('data-level');
 
