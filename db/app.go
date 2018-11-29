@@ -796,7 +796,7 @@ func (app *App) UpdateFromAPI() (errs []error) {
 				continue
 			}
 
-			prices.AddPriceFromApp(steam.CountryUS, response)
+			prices.AddPriceFromApp(code, response)
 
 			if code == steam.CountryUS {
 
