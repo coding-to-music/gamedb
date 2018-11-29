@@ -98,19 +98,19 @@
                             <table class="table">
                                 <tr>
                                     <td>Initial Price</td>
-                                    <td>{{ (.Package.GetPrice .UserCountry).GetInitial .UserCountry }}</td>
+                                    <td>{{ .Price.GetInitial }}</td>
                                 </tr>
                                 <tr>
                                     <td>Final Price</td>
-                                    <td>{{ (.Package.GetPrice .UserCountry).GetFinal .UserCountry }}</td>
+                                    <td>{{ .Price.GetFinal }}</td>
                                 </tr>
                                 <tr>
                                     <td>Discount Percent</td>
-                                    <td>{{ (.Package.GetPrice .UserCountry).GetDiscountPercent }}</td>
+                                    <td>{{ .Price.GetDiscountPercent }}</td>
                                 </tr>
                                 <tr>
                                     <td>Individual Price</td>
-                                    <td>{{ (.Package.GetPrice .UserCountry).GetIndividual .UserCountry }}</td>
+                                    <td>{{ .Price.GetIndividual }}</td>
                                 </tr>
                             </table>
 
@@ -191,9 +191,9 @@
                                         <img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}" class="rounded">
                                         <span>{{ .GetCountryName $key }}</span>
                                     </td>
-                                    <td>{{ .GetInitial $key }}</td>
-                                    <td>{{ .GetFinal $key }}</td>
-                                    <td>{{ .GetIndividual $key }}</td>
+                                    <td>{{ .GetInitial }}</td>
+                                    <td>{{ .GetFinal }}</td>
+                                    <td>{{ .GetIndividual }}</td>
                                     <td>{{ .GetDiscountPercent }}</td>
                                 </tr>
                             {{ end }}

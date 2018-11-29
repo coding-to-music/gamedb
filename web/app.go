@@ -121,7 +121,7 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Done()
 	}()
 
-	// Get prices
+	// Get prices JSON for chart
 	wg.Add(1)
 	go func() {
 
@@ -252,6 +252,10 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
+	// Get price
+	code := session.GetCountryCode(r)
+	t.Price = app.GetPrice(code)
+
 	err = returnTemplate(w, r, "app", t)
 	log.Log(err)
 }
@@ -261,7 +265,8 @@ type appTemplate struct {
 	App          db.App
 	Packages     []db.Package
 	DLC          []db.App
-	Prices       string
+	Price        db.ProductPriceCache
+	Prices       string // Prices JSON for chart
 	PricesCount  int
 	Achievements []appAchievementTemplate
 	Schema       steam.SchemaForGame

@@ -191,7 +191,7 @@ func (app App) OutputForJSONComingSoon(code steam.CountryCode) (output []interfa
 		app.GetIcon(),
 		app.GetPath(),
 		app.GetType(),
-		app.GetPrice(code).GetFinal(code),
+		app.GetPrice(code).GetFinal(),
 		app.GetReleaseDateNice(),
 		app.GetReleaseDateUnix(),
 	}

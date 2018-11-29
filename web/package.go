@@ -119,6 +119,11 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps = apps
 	t.Prices = pricesString
 
+	// Get price
+	code := session.GetCountryCode(r)
+	t.Price, err = pack.GetPrice(code)
+	log.Log(err)
+
 	err = returnTemplate(w, r, "package", t)
 	log.Log(err)
 }
@@ -128,5 +133,6 @@ type packageTemplate struct {
 	Package db.Package
 	Apps    map[int]db.App
 	Banners map[string][]string
+	Price   db.ProductPriceCache
 	Prices  string
 }
