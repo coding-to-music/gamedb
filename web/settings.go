@@ -31,6 +31,8 @@ func settingsRouter() http.Handler {
 
 func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
+	setNoCacheHeaders(w)
+
 	player, err := getPlayer(r)
 	if err != nil {
 		if err == errNotLoggedIn {
@@ -136,6 +138,8 @@ type settingsTemplate struct {
 }
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	setNoCacheHeaders(w)
 
 	// Get user
 	user, err := getUser(r, 0)

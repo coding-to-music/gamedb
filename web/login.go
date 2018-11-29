@@ -29,6 +29,8 @@ func loginRouter() http.Handler {
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
+	setNoCacheHeaders(w)
+
 	t := loginTemplate{}
 	t.Fill(w, r, "Login")
 	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
@@ -48,6 +50,8 @@ var ErrInvalidCreds = errors.New("invalid username or password")
 var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	setNoCacheHeaders(w)
 
 	err := func() (err error) {
 
@@ -145,6 +149,8 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
+	setNoCacheHeaders(w)
+
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
 		log.Log(err)
@@ -175,6 +181,8 @@ var nonceStore = openid.NewSimpleNonceStore()
 var discoveryCache = openid.NewSimpleDiscoveryCache()
 
 func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	setNoCacheHeaders(w)
 
 	// Get ID from OpenID
 	openID, err := openid.Verify(viper.GetString("DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
