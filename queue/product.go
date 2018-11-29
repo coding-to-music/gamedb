@@ -63,7 +63,7 @@ func (i RabbitMessageProductKeyValues) GetExtended() (extended db.PICSExtended) 
 	extended = db.PICSExtended{}
 	for _, v := range i.Children {
 		if v.Value == nil {
-			bytes, err := json.Marshal(v.GetChildrenAsSlice())
+			bytes, err := json.Marshal(v.ToNestedMaps())
 			log.Log(err)
 			extended[v.Name] = string(bytes)
 		} else {
