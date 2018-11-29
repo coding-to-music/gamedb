@@ -158,7 +158,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 			log.Log(err)
 
 		default:
-			log.Log(log.SeverityInfo, v.Name+" field in PICS ignored (Change "+strconv.Itoa(app.PICSChangeNumber)+")")
+			log.Log(log.SeverityInfo, v.Name+" field in app PICS ignored (Change "+strconv.Itoa(app.PICSChangeNumber)+")")
 		}
 	}
 
