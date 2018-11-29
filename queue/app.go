@@ -152,6 +152,11 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 			err = app.SetLocalization(v.ToNestedMaps())
 			log.Log(err)
 
+		case "sysreqs":
+
+			err = app.SetSystemRequirements(v.ToNestedMaps())
+			log.Log(err)
+
 		default:
 			log.Log(log.SeverityInfo, v.Name+" field in PICS ignored (Change "+strconv.Itoa(app.PICSChangeNumber)+")")
 		}

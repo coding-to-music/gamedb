@@ -46,6 +46,7 @@ type App struct {
 	PICSLocalization       string     `gorm:"not null;column:pics_localization"`                 //
 	PICSUFS                string     `gorm:"not null;column:pics_ufs"`                          //
 	PICSPublicOnly         bool       `gorm:"not null;column:public_only"`                       //
+	PICSSystemRequirements string     `gorm:"not null;column:pics_system_requirements"`          //
 	ScannedAt              *time.Time `gorm:"not null;column:scanned_at"`                        //
 	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text"` //
 	Achievements           string     `gorm:"not null;column:achievements;type:text"`            //
@@ -443,6 +444,25 @@ func (app App) GetLocalization() (localization map[string]interface{}, err error
 	localization = map[string]interface{}{}
 	err = helpers.Unmarshal([]byte(app.PICSInstall), &localization)
 	return localization, err
+}
+
+func (app *App) SetSystemRequirements(systemRequirements map[string]interface{}) (err error) {
+
+	bytes, err := json.Marshal(systemRequirements)
+	if err != nil {
+		return err
+	}
+
+	app.PICSSystemRequirements = string(bytes)
+
+	return nil
+}
+
+func (app App) GetSystemRequirements() (systemRequirements map[string]interface{}, err error) {
+
+	systemRequirements = map[string]interface{}{}
+	err = helpers.Unmarshal([]byte(app.PICSSystemRequirements), &systemRequirements)
+	return systemRequirements, err
 }
 
 func (app *App) SetUFS(ufs PICSAppUFS) (err error) {
