@@ -5,6 +5,7 @@ import (
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/session"
 )
 
 func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,11 +21,20 @@ func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	code := session.GetCountryCode(r)
+	prices := map[int]string{}
+	for _, v := range genres {
+		price, err := v.GetMeanPrice(code)
+		log.Log(err)
+		prices[v.ID] = price
+	}
+
 	// Template
 	t := statsGenresTemplate{}
 	t.Fill(w, r, "Genres")
 	t.Genres = genres
 	t.Date = config.Value
+	t.Prices = prices
 
 	err = returnTemplate(w, r, "genres", t)
 	log.Log(err)
@@ -34,4 +44,5 @@ type statsGenresTemplate struct {
 	GlobalTemplate
 	Genres []db.Genre
 	Date   string
+	Prices map[int]string
 }

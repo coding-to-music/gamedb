@@ -5,6 +5,7 @@ import (
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/session"
 )
 
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,11 +21,20 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	code := session.GetCountryCode(r)
+	prices := map[int]string{}
+	for _, v := range tags {
+		price, err := v.GetMeanPrice(code)
+		log.Log(err)
+		prices[v.ID] = price
+	}
+
 	// Template
 	t := statsTagsTemplate{}
 	t.Fill(w, r, "Tags")
 	t.Tags = tags
 	t.Date = config.Value
+	t.Prices = prices
 
 	err = returnTemplate(w, r, "tags", t)
 	log.Log(err)
@@ -32,6 +42,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsTagsTemplate struct {
 	GlobalTemplate
-	Tags []db.Tag
-	Date string
+	Tags   []db.Tag
+	Date   string
+	Prices map[int]string
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/session"
 )
 
 func statsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,11 +21,20 @@ func statsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	code := session.GetCountryCode(r)
+	prices := map[int]string{}
+	for _, v := range developers {
+		price, err := v.GetMeanPrice(code)
+		log.Log(err)
+		prices[v.ID] = price
+	}
+
 	// Template
 	t := statsDevelopersTemplate{}
 	t.Fill(w, r, "Developers")
 	t.Developers = developers
 	t.Date = config.Value
+	t.Prices = prices
 
 	err = returnTemplate(w, r, "developers", t)
 	log.Log(err)
@@ -34,4 +44,5 @@ type statsDevelopersTemplate struct {
 	GlobalTemplate
 	Developers []db.Developer
 	Date       string
+	Prices     map[int]string
 }
