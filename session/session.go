@@ -36,10 +36,11 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 
 	if viper.GetString("ENV") == string(log.EnvProd) {
 		session.Options = &sessions.Options{
-			MaxAge: 86400,
-			Domain: "gamedb.online",
-			Path:   "/",
-			Secure: true,
+			MaxAge:   86400,
+			Domain:   "gamedb.online",
+			Path:     "/",
+			Secure:   true,
+			HttpOnly: true,
 		}
 	} else {
 		session.Options = &sessions.Options{
