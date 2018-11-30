@@ -131,12 +131,6 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		return true, err
 	}
 
-	// Save new data
-	gorm = gorm.Save(&pack)
-	if gorm.Error != nil {
-		return true, gorm.Error
-	}
-
 	// Save price changes
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
@@ -147,6 +141,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	page, err := websockets.GetPage(websockets.PagePackages)
 	if err == nil && page.HasConnections() {
 		page.Send(pack.OutputForJSON(steam.CountryUS))
+	}
+
+	// Save new data
+	gorm = gorm.Save(&pack)
+	if gorm.Error != nil {
+		return true, gorm.Error
 	}
 
 	return false, err
