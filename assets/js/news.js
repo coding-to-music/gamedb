@@ -26,7 +26,7 @@ if ($('#news-page').length > 0) {
                         row[8] = '/assets/img/no-app-image-square.jpg';
                     }
 
-                    return '<img src="' + row[8] + '" class="rounded square"><span data-app-id="' + row[6] + '">' + row[7] + '</span>';
+                    return '<img src="' + row[8] + '" class="rounded square" alt="' + row[7] + '"><span data-app-id="' + row[6] + '">' + row[7] + '</span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

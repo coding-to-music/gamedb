@@ -37,7 +37,7 @@ if ($('#free-games-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<img src="' + row[2] + '" class="rounded square"><span>' + row[1] + '</span>';
+                    return '<img src="' + row[2] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')
