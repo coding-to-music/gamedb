@@ -17,8 +17,8 @@ type Publisher struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice string     `gorm:"not null"`
-	MeanScore string     `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"` // JSON
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (p Publisher) GetPath() string {
@@ -33,8 +33,8 @@ func (p Publisher) GetMeanPrice(code steam.CountryCode) (string, error) {
 	return helpers.GetMeanPrice(code, p.MeanPrice)
 }
 
-func (p Publisher) GetMeanScore(code steam.CountryCode) (string, error) {
-	return helpers.GetMeanScore(code, p.MeanScore)
+func (p Publisher) GetMeanScore() string {
+	return helpers.FloatToString(p.MeanScore, 2) + "%"
 }
 
 func GetPublishersByID(ids []int, columns []string) (publishers []Publisher, err error) {

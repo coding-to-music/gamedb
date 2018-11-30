@@ -21,17 +21,3 @@ func GetMeanPrice(code steam.CountryCode, prices string) (string, error) {
 
 	return locale.CurrencySymbol + "0", err
 }
-
-func GetMeanScore(code steam.CountryCode, scores string) (string, error) {
-
-	means := map[steam.CountryCode]float64{}
-
-	err := Unmarshal([]byte(scores), &means)
-	if err == nil {
-		if val, ok := means[code]; ok {
-			return FloatToString(RoundFloatTo2DP(val), 2) + "%", err
-		}
-	}
-
-	return "0%", err
-}

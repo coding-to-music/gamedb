@@ -17,8 +17,8 @@ type Tag struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice string     `gorm:"not null"`
-	MeanScore string     `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"` // JSON
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (tag Tag) GetPath() string {
@@ -38,8 +38,8 @@ func (tag Tag) GetMeanPrice(code steam.CountryCode) (string, error) {
 	return helpers.GetMeanPrice(code, tag.MeanPrice)
 }
 
-func (tag Tag) GetMeanScore(code steam.CountryCode) (string, error) {
-	return helpers.GetMeanScore(code, tag.MeanScore)
+func (tag Tag) GetMeanScore() string {
+	return helpers.FloatToString(tag.MeanScore, 2) + "%"
 }
 
 func GetAllTags() (tags []Tag, err error) {

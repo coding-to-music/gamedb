@@ -16,8 +16,8 @@ type Genre struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice string     `gorm:"not null"`
-	MeanScore string     `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"` // JSON
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (g Genre) GetPath() string {
@@ -32,8 +32,8 @@ func (g Genre) GetMeanPrice(code steam.CountryCode) (string, error) {
 	return helpers.GetMeanPrice(code, g.MeanPrice)
 }
 
-func (g Genre) GetMeanScore(code steam.CountryCode) (string, error) {
-	return helpers.GetMeanScore(code, g.MeanScore)
+func (g Genre) GetMeanScore() string {
+	return helpers.FloatToString(g.MeanScore, 2) + "%"
 }
 
 func GetAllGenres() (genres []Genre, err error) {

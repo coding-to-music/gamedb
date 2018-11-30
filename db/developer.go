@@ -17,8 +17,8 @@ type Developer struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice string     `gorm:"not null"`
-	MeanScore string     `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"` // JSON
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (d Developer) GetPath() string {
@@ -33,8 +33,8 @@ func (d Developer) GetMeanPrice(code steam.CountryCode) (string, error) {
 	return helpers.GetMeanPrice(code, d.MeanPrice)
 }
 
-func (d Developer) GetMeanScore(code steam.CountryCode) (string, error) {
-	return helpers.GetMeanScore(code, d.MeanScore)
+func (d Developer) GetMeanScore() string {
+	return helpers.FloatToString(d.MeanScore, 2) + "%"
 }
 
 func GetDevelopersByID(ids []int, columns []string) (developers []Developer, err error) {

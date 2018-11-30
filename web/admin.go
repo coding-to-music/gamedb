@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"runtime"
 	"sort"
@@ -246,26 +245,26 @@ func adminGenres() {
 			appGenres = []steam.AppDetailsGenre{{ID: 0, Description: ""}}
 		}
 
+		// For each genre in an app
 		for _, genre := range appGenres {
 
 			delete(genresToDelete, genre.ID)
 
-			for code := range steam.Countries {
-
-				price := app.GetPrice(code)
-
-				if _, ok := newGenres[genre.ID]; ok {
-					newGenres[genre.ID].count++
-					newGenres[genre.ID].totalPrice[code] += price.Final
-					newGenres[genre.ID].totalScore[code] += app.ReviewsScore
-				} else {
-					newGenres[genre.ID] = &statsRow{
-						name:       strings.TrimSpace(genre.Description),
-						count:      1,
-						totalPrice: map[steam.CountryCode]int{code: price.Final},
-						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
-					}
+			if _, ok := newGenres[genre.ID]; ok {
+				newGenres[genre.ID].count++
+				newGenres[genre.ID].totalScore += app.ReviewsScore
+			} else {
+				newGenres[genre.ID] = &statsRow{
+					name:       strings.TrimSpace(genre.Description),
+					count:      1,
+					totalScore: app.ReviewsScore,
+					totalPrice: map[steam.CountryCode]int{},
 				}
+			}
+
+			for code := range steam.Countries {
+				price := app.GetPrice(code)
+				newGenres[genre.ID].totalPrice[code] += price.Final
 			}
 		}
 	}
@@ -312,7 +311,7 @@ func adminGenres() {
 			}
 
 			genre.Name = v.name
-			genre.Apps = v.GetCount()
+			genre.Apps = v.count
 			genre.MeanPrice = v.GetMeanPrice()
 			genre.MeanScore = v.GetMeanScore()
 			genre.DeletedAt = nil
@@ -345,12 +344,6 @@ func adminPublishers() {
 
 	log.Log(log.SeverityInfo, log.ServiceLocal, "Publishers updating")
 
-	gorm, err := db.GetMySQLClient()
-	if err != nil {
-		log.Log(err)
-		return
-	}
-
 	// Get current publishers, to delete old ones
 	currentPublishers, err := db.GetAllPublishers()
 	if err != nil {
@@ -382,26 +375,26 @@ func adminPublishers() {
 			appPublishers = []string{""}
 		}
 
+		// For each publisher in an app
 		for _, publisher := range appPublishers {
 
 			delete(publishersToDelete, publisher)
 
-			for code := range steam.Countries {
-
-				price := app.GetPrice(code)
-
-				if _, ok := newPublishers[publisher]; ok {
-					newPublishers[publisher].count++
-					newPublishers[publisher].totalPrice[code] += price.Final
-					newPublishers[publisher].totalScore[code] += app.ReviewsScore
-				} else {
-					newPublishers[publisher] = &statsRow{
-						name:       strings.TrimSpace(publisher),
-						count:      1,
-						totalPrice: map[steam.CountryCode]int{code: price.Final},
-						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
-					}
+			if _, ok := newPublishers[publisher]; ok {
+				newPublishers[publisher].count++
+				newPublishers[publisher].totalScore += app.ReviewsScore
+			} else {
+				newPublishers[publisher] = &statsRow{
+					name:       strings.TrimSpace(publisher),
+					count:      1,
+					totalPrice: map[steam.CountryCode]int{},
+					totalScore: app.ReviewsScore,
 				}
+			}
+
+			for code := range steam.Countries {
+				price := app.GetPrice(code)
+				newPublishers[publisher].totalPrice[code] += price.Final
 			}
 		}
 	}
@@ -426,6 +419,12 @@ func adminPublishers() {
 		wg.Done()
 	}()
 
+	gorm, err := db.GetMySQLClient(true)
+	if err != nil {
+		log.Log(err)
+		return
+	}
+
 	// Update current publishers
 	var count = 1
 	for k, v := range newPublishers {
@@ -448,7 +447,7 @@ func adminPublishers() {
 			}
 
 			publisher.Name = v.name
-			publisher.Apps = v.GetCount()
+			publisher.Apps = v.count
 			publisher.MeanPrice = v.GetMeanPrice()
 			publisher.MeanScore = v.GetMeanScore()
 			publisher.DeletedAt = nil
@@ -518,26 +517,26 @@ func adminDevelopers() {
 			appDevelopers = []string{""}
 		}
 
+		// For each developer in an app
 		for _, developer := range appDevelopers {
 
 			delete(developersToDelete, developer)
 
-			for code := range steam.Countries {
-
-				price := app.GetPrice(code)
-
-				if _, ok := newDevelopers[developer]; ok {
-					newDevelopers[developer].count++
-					newDevelopers[developer].totalPrice[code] += price.Final
-					newDevelopers[developer].totalScore[code] += app.ReviewsScore
-				} else {
-					newDevelopers[developer] = &statsRow{
-						name:       strings.TrimSpace(developer),
-						count:      1,
-						totalPrice: map[steam.CountryCode]int{code: price.Final},
-						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
-					}
+			if _, ok := newDevelopers[developer]; ok {
+				newDevelopers[developer].count++
+				newDevelopers[developer].totalScore += app.ReviewsScore
+			} else {
+				newDevelopers[developer] = &statsRow{
+					name:       strings.TrimSpace(developer),
+					count:      1,
+					totalPrice: map[steam.CountryCode]int{},
+					totalScore: app.ReviewsScore,
 				}
+			}
+
+			for code := range steam.Countries {
+				price := app.GetPrice(code)
+				newDevelopers[developer].totalPrice[code] += price.Final
 			}
 		}
 	}
@@ -584,7 +583,7 @@ func adminDevelopers() {
 			}
 
 			developer.Name = v.name
-			developer.Apps = v.GetCount()
+			developer.Apps = v.count
 			developer.MeanPrice = v.GetMeanPrice()
 			developer.MeanScore = v.GetMeanScore()
 			developer.DeletedAt = nil
@@ -656,26 +655,26 @@ func adminTags() {
 			//appTags = []int{}
 		}
 
+		// For each tag in an app
 		for _, tagID := range appTags {
 
 			delete(tagsToDelete, tagID)
 
-			for code := range steam.Countries {
-
-				price := app.GetPrice(code)
-
-				if _, ok := newTags[tagID]; ok {
-					newTags[tagID].count++
-					newTags[tagID].totalPrice[code] += price.Final
-					newTags[tagID].totalScore[code] += app.ReviewsScore
-				} else {
-					newTags[tagID] = &statsRow{
-						name:       strings.TrimSpace(steamTagMap[tagID]),
-						count:      1,
-						totalPrice: map[steam.CountryCode]int{code: price.Final},
-						totalScore: map[steam.CountryCode]float64{code: app.ReviewsScore},
-					}
+			if _, ok := newTags[tagID]; ok {
+				newTags[tagID].count++
+				newTags[tagID].totalScore += app.ReviewsScore
+			} else {
+				newTags[tagID] = &statsRow{
+					name:       strings.TrimSpace(steamTagMap[tagID]),
+					count:      1,
+					totalPrice: map[steam.CountryCode]int{},
+					totalScore: app.ReviewsScore,
 				}
+			}
+
+			for code := range steam.Countries {
+				price := app.GetPrice(code)
+				newTags[tagID].totalPrice[code] += price.Final
 			}
 		}
 	}
@@ -722,7 +721,7 @@ func adminTags() {
 			}
 
 			tag.Name = v.name
-			tag.Apps = v.GetCount()
+			tag.Apps = v.count
 			tag.MeanPrice = v.GetMeanPrice()
 			tag.MeanScore = v.GetMeanScore()
 			tag.DeletedAt = nil
@@ -953,7 +952,7 @@ type statsRow struct {
 	name       string
 	count      int
 	totalPrice map[steam.CountryCode]int
-	totalScore map[steam.CountryCode]float64
+	totalScore float64
 }
 
 func (t statsRow) GetMeanPrice() string {
@@ -961,7 +960,7 @@ func (t statsRow) GetMeanPrice() string {
 	means := map[steam.CountryCode]float64{}
 
 	for code, total := range t.totalPrice {
-		means[code] = float64(total) / float64(t.GetCount())
+		means[code] = float64(total) / float64(t.count)
 	}
 
 	bytes, err := json.Marshal(means)
@@ -970,22 +969,8 @@ func (t statsRow) GetMeanPrice() string {
 	return string(bytes)
 }
 
-func (t statsRow) GetMeanScore() string {
-
-	means := map[steam.CountryCode]float64{}
-
-	for code, total := range t.totalScore {
-		means[code] = float64(total) / float64(t.GetCount())
-	}
-
-	bytes, err := json.Marshal(means)
-	log.Log(err)
-
-	return string(bytes)
-}
-
-func (t statsRow) GetCount() int {
-	return int(float64(t.count) / float64(len(steam.Countries)))
+func (t statsRow) GetMeanScore() float64 {
+	return t.totalScore / float64(t.count)
 }
 
 type adminWebsocket struct {
