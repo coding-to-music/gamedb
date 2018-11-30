@@ -398,6 +398,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"userName":       t.userName,
 		"isLoggedIn":     t.isLoggedIn(),
 		"isLocal":        t.isLocal(),
+		"isAdmin":        t.isAdmin(),
 		"showAds":        t.showAd(),
 		"country":        t.userCountry,
 		"currencySymbol": t.userCurrencySymbol,
