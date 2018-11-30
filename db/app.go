@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
+	"github.com/jinzhu/now"
 	"github.com/spf13/viper"
 )
 
@@ -166,6 +167,20 @@ func (app App) GetType() (ret string) {
 	}
 }
 
+func (app App) GetDaysToRelease() string {
+
+	releaseUnix := app.GetReleaseDateUnix()
+	release := time.Unix(releaseUnix, 0)
+
+	days := release.Sub(now.BeginningOfDay()).Hours() / 24
+
+	if days == 0 {
+		return "Today"
+	} else {
+		return "In " + helpers.FloatToString(days, 0) + " days"
+	}
+}
+
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
 	locale, err := helpers.GetLocaleFromCountry(code)
@@ -192,8 +207,8 @@ func (app App) OutputForJSONComingSoon(code steam.CountryCode) (output []interfa
 		app.GetPath(),
 		app.GetType(),
 		app.GetPrice(code).GetFinal(),
+		app.GetDaysToRelease(),
 		app.GetReleaseDateNice(),
-		app.GetReleaseDateUnix(),
 	}
 }
 
