@@ -219,9 +219,7 @@ func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	var user db.User
 	gorm = gorm.First(&user, idInt)
-	if gorm.Error != nil {
-		log.Log(gorm.Error)
-	}
+	log.Log(gorm.Error)
 
 	err = login(w, r, player, user)
 	if err != nil {

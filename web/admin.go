@@ -306,9 +306,7 @@ func adminGenres() {
 			var genre db.Genre
 
 			gorm = gorm.Unscoped().FirstOrInit(&genre, db.Genre{ID: genreID})
-			if gorm.Error != nil {
-				log.Log(gorm.Error)
-			}
+			log.Log(gorm.Error)
 
 			genre.Name = v.name
 			genre.Apps = v.count
@@ -317,9 +315,7 @@ func adminGenres() {
 			genre.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&genre)
-			if gorm.Error != nil {
-				log.Log(gorm.Error)
-			}
+			log.Log(gorm.Error)
 
 			limit--
 			wg.Done()
@@ -442,9 +438,7 @@ func adminPublishers() {
 			var publisher db.Publisher
 
 			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: strings.TrimSpace(publisherName)})
-			if gorm.Error != nil {
-				log.Log(gorm.Error)
-			}
+			log.Log(gorm.Error)
 
 			publisher.Name = v.name
 			publisher.Apps = v.count
@@ -453,9 +447,7 @@ func adminPublishers() {
 			publisher.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&publisher)
-			if gorm.Error != nil {
-				log.Log(gorm.Error)
-			}
+			log.Log(gorm.Error)
 
 			limit--
 			wg.Done()
@@ -578,9 +570,7 @@ func adminDevelopers() {
 			var developer db.Developer
 
 			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: strings.TrimSpace(developerName)})
-			if gorm.Error != nil {
-				log.Log(gorm.Error)
-			}
+			log.Log(gorm.Error)
 
 			developer.Name = v.name
 			developer.Apps = v.count
@@ -589,9 +579,7 @@ func adminDevelopers() {
 			developer.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&developer)
-			if gorm.Error != nil {
-				log.Log(gorm.Error)
-			}
+			log.Log(gorm.Error)
 
 			limit--
 			wg.Done()
@@ -716,9 +704,7 @@ func adminTags() {
 			var tag db.Tag
 
 			gorm = gorm.Unscoped().FirstOrInit(&tag, db.Tag{ID: tagID})
-			if gorm.Error != nil {
-				log.Log(gorm.Error)
-			}
+			log.Log(gorm.Error)
 
 			tag.Name = v.name
 			tag.Apps = v.count
@@ -727,9 +713,7 @@ func adminTags() {
 			tag.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&tag)
-			if gorm.Error != nil {
-				log.Log(gorm.Error)
-			}
+			log.Log(gorm.Error)
 
 			limit--
 			wg.Done()
