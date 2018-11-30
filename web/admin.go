@@ -441,7 +441,7 @@ func adminPublishers() {
 
 			var publisher db.Publisher
 
-			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: publisherName})
+			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: strings.TrimSpace(publisherName)})
 			if gorm.Error != nil {
 				log.Log(gorm.Error)
 			}
@@ -577,7 +577,7 @@ func adminDevelopers() {
 
 			var developer db.Developer
 
-			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: developerName})
+			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: strings.TrimSpace(developerName)})
 			if gorm.Error != nil {
 				log.Log(gorm.Error)
 			}
