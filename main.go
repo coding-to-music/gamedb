@@ -5,6 +5,9 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"runtime"
+	"strconv"
+	"time"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/website/db"
@@ -55,6 +58,14 @@ func main() {
 	go func() {
 		for v := range helpers.GetSteamLogsChan() {
 			log.Log(log.SeverityInfo, log.ServiceGoogle, v.String(), log.LogNameSteam)
+		}
+	}()
+
+	// Log number of goroutines
+	go func() {
+		for {
+			time.Sleep(time.Minute)
+			log.Log("Goroutines running: ", strconv.Itoa(runtime.NumGoroutine()))
 		}
 	}()
 

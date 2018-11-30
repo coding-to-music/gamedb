@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -89,6 +90,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	t := adminTemplate{}
 	t.Fill(w, r, "Admin")
 	t.Configs = configs
+	t.Goroutines = runtime.NumGoroutine()
 
 	err = returnTemplate(w, r, "admin", t)
 	log.Log(err)
@@ -96,8 +98,9 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 type adminTemplate struct {
 	GlobalTemplate
-	Errors  []string
-	Configs map[string]db.Config
+	Errors     []string
+	Configs    map[string]db.Config
+	Goroutines int
 }
 
 func adminDisableConsumers() {
