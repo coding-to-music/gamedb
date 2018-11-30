@@ -39,7 +39,7 @@
                         <tr data-link="{{.GetPath}}">
                             <td><i class="fas fa-tag"></i> {{ .GetName }}</td>
                             <td>{{ comma .Apps }}</td>
-                            <td>{{ .GetMeanPrice }}</td>
+                            <td>{{ index $.Prices .ID }}</td>
                             <td>{{ .GetMeanScore }}</td>
                         </tr>
                     {{ end }}
