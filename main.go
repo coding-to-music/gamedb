@@ -65,7 +65,7 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(time.Minute)
-			log.Log("Goroutines running: ", strconv.Itoa(runtime.NumGoroutine()))
+			log.Log("Goroutines running: " + strconv.Itoa(runtime.NumGoroutine()))
 		}
 	}()
 
