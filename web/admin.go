@@ -297,7 +297,7 @@ func adminGenres() {
 			wg.Wait()
 		}
 
-		adminStatsLogger(len(newGenres), count, v.name, "genre")
+		adminStatsLogger("genre", count, len(newGenres), v.name)
 
 		limit++
 		wg.Add(1)
@@ -433,7 +433,7 @@ func adminPublishers() {
 			wg.Wait()
 		}
 
-		adminStatsLogger(len(newPublishers), count, k, "publisher")
+		adminStatsLogger("publisher", count, len(newPublishers), k)
 
 		limit++
 		wg.Add(1)
@@ -569,7 +569,7 @@ func adminDevelopers() {
 			wg.Wait()
 		}
 
-		adminStatsLogger(len(newDevelopers), count, k, "developer")
+		adminStatsLogger("developer", count, len(newDevelopers), k)
 
 		limit++
 		wg.Add(1)
@@ -707,7 +707,7 @@ func adminTags() {
 			wg.Wait()
 		}
 
-		adminStatsLogger(len(newTags), count, strconv.Itoa(k), "tag")
+		adminStatsLogger("tag", count, len(newTags), strconv.Itoa(k))
 
 		limit++
 		wg.Add(1)
@@ -749,7 +749,7 @@ func adminTags() {
 	log.Log(log.SeverityInfo, "Tags updated")
 }
 
-func adminStatsLogger(total int, count int, rowName string, tableName string) {
+func adminStatsLogger(tableName string, count int, total int, rowName string) {
 
 	log.Log(log.SeverityInfo, "Updating "+tableName+" - "+strconv.Itoa(count)+" / "+strconv.Itoa(total)+": "+rowName)
 }
