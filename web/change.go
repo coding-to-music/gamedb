@@ -44,6 +44,8 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		for _, v := range change.Apps {
 			t.Apps[v.ID] = db.App{ID: v.ID, Name: v.Name}
 		}
@@ -61,12 +63,13 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 
-		wg.Done()
 	}()
 
 	// Get packages
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		for _, v := range change.Packages {
 			t.Packages[v.ID] = db.Package{ID: v.ID, PICSName: v.Name}
@@ -85,7 +88,6 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 
-		wg.Done()
 	}()
 
 	// Wait

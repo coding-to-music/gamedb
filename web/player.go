@@ -66,6 +66,8 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		defer wg.Done()
+
 		var err error
 		friends, err = player.GetFriends()
 		if err != nil {
@@ -100,14 +102,14 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
-
 	}(player)
 
 	// Get ranks
 	var ranks *db.PlayerRank
 	wg.Add(1)
 	go func(player db.Player) {
+
+		defer wg.Done()
 
 		var err error
 		ranks, err = db.GetRank(player.PlayerID)
@@ -117,8 +119,6 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
-
 	}(player)
 
 	// Number of players
@@ -126,11 +126,12 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		defer wg.Done()
+
 		var err error
 		players, err = db.CountPlayers()
 		log.Log(err)
 
-		wg.Done()
 	}(player)
 
 	// Get badges
@@ -138,17 +139,20 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		defer wg.Done()
+
 		var err error
 		badges, err = player.GetBadges()
 		log.Log(err)
 
-		wg.Done()
 	}(player)
 
 	// Get recent games
 	var recentGames []RecentlyPlayedGame
 	wg.Add(1)
 	go func(player db.Player) {
+
+		defer wg.Done()
 
 		response, err := player.GetRecentGames()
 		if err != nil {
@@ -177,7 +181,6 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}(player)
 
 	// Get bans
@@ -185,11 +188,12 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		defer wg.Done()
+
 		var err error
 		bans, err = player.GetBans()
 		log.Log(err)
 
-		wg.Done()
 	}(player)
 
 	// Get badge stats
@@ -197,11 +201,12 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		defer wg.Done()
+
 		var err error
 		badgeStats, err = player.GetBadgeStats()
 		log.Log(err)
 
-		wg.Done()
 	}(player)
 
 	// Wait
@@ -362,6 +367,8 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
@@ -389,13 +396,14 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}()
 
 	// Get total
 	var total int
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		player, err := db.GetPlayer(playerIDInt)
 		if err != nil {
@@ -404,7 +412,6 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			total = player.GamesCount
 		}
 
-		wg.Done()
 	}()
 
 	// Wait

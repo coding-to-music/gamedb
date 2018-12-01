@@ -19,31 +19,34 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.RanksCount, err = db.CountRanks()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		var err error
 		t.AppsCount, err = db.CountApps()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.PackagesCount, err = db.CountPackages()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	wg.Wait()

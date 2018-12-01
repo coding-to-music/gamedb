@@ -318,73 +318,89 @@ func (p *Player) Update() (err error) {
 	// Get games
 	wg.Add(1)
 	go func(p *Player) {
+
+		defer wg.Done()
+
 		var err error
 		err = p.updateGames()
 		log.Log(err)
-		wg.Done()
 	}(p)
 
 	// Get recent games
 	wg.Add(1)
 	go func(p *Player) {
+
+		defer wg.Done()
+
 		var err error
 		err = p.updateRecentGames()
 		log.Log(err)
-		wg.Done()
 	}(p)
 
 	// Get badges
 	wg.Add(1)
 	go func(p *Player) {
+
+		defer wg.Done()
+
 		var err error
 		err = p.updateBadges()
 		log.Log(err)
-		wg.Done()
 	}(p)
 
 	// Get friends
 	wg.Add(1)
 	go func(p *Player) {
+
+		defer wg.Done()
+
 		var err error
 		err = p.updateFriends()
 		log.Log(err)
-		wg.Done()
 	}(p)
 
 	// Get level
 	wg.Add(1)
 	go func(p *Player) {
+
+		defer wg.Done()
+
 		var err error
 		err = p.updateLevel()
 		log.Log(err)
-		wg.Done()
 	}(p)
 
 	// Get bans
 	wg.Add(1)
 	go func(p *Player) {
+
+		defer wg.Done()
+
 		var err error
 		err = p.updateBans()
 		log.Log(err)
-		wg.Done()
 	}(p)
 
 	// Get groups
 	wg.Add(1)
 	go func(p *Player) {
+
+		defer wg.Done()
+
 		var err error
 		err = p.updateGroups()
 		log.Log(err)
-		wg.Done()
 	}(p)
 
 	// Save event
 	wg.Add(1)
 	go func(p *Player) {
+
+		defer wg.Done()
+
 		var err error
 		err = CreateEvent(new(http.Request), p.PlayerID, EventRefresh)
 		log.Log(err)
-		wg.Done()
 	}(p)
 
 	// Wait

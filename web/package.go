@@ -49,6 +49,8 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		// Get apps
 		appIDs, err := pack.GetAppIDs()
 		log.Log(err)
@@ -64,12 +66,13 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 			apps[v.ID] = v
 		}
 
-		wg.Done()
 	}()
 
 	var pricesString string
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		var code = session.GetCountryCode(r)
 
@@ -94,7 +97,6 @@ func PackageHandler(w http.ResponseWriter, r *http.Request) {
 
 		pricesString = string(pricesBytes)
 
-		wg.Done()
 	}()
 
 	// Make banners

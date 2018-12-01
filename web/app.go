@@ -75,6 +75,8 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	//wg.Add(1)
 	//go func() {
 	//
+	//defer wg.Done()
+	//
 	//	achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 	//	if err != nil {
 	//
@@ -107,23 +109,25 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	//		}
 	//	}
 	//
-	//	wg.Done()
 	//}()
 
 	// Tags
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.Tags, err = app.GetTags()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Get prices JSON for chart
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		var code = session.GetCountryCode(r)
 
@@ -161,34 +165,37 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}()
 
 	// Get packages
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.Packages, err = db.GetPackagesAppIsIn(app.ID)
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Get DLC
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.DLC, err = db.GetDLC(app, []string{"id", "name"})
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Get reviews
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		reviewsResponse, err := app.GetReviews()
 		if err != nil {
@@ -246,7 +253,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}()
 
 	// Wait
@@ -322,6 +328,8 @@ func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(r *http.Request) {
 
+		defer wg.Done()
+
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
@@ -354,13 +362,14 @@ func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}(r)
 
 	// Get total
 	var total int
 	wg.Add(1)
 	go func(r *http.Request) {
+
+		defer wg.Done()
 
 		var err error
 		app, err := db.GetApp(idx)
@@ -377,7 +386,6 @@ func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		total = len(newsIDs)
 
-		wg.Done()
 	}(r)
 
 	// Wait

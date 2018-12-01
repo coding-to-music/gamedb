@@ -29,6 +29,8 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
@@ -46,7 +48,6 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 			log.Log(gorm.Error)
 		}
 
-		wg.Done()
 	}()
 
 	// Wait
@@ -107,6 +108,8 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(r *http.Request) {
 
+		defer wg.Done()
+
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
@@ -142,13 +145,14 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Log(gorm.Error)
 		}
 
-		wg.Done()
 	}(r)
 
 	// Get total
 	var count int
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		var err error
 
@@ -168,7 +172,6 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Wait

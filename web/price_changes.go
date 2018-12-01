@@ -50,6 +50,8 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(r *http.Request) {
 
+		defer wg.Done()
+
 		client, ctx, err := db.GetDSClient()
 		if err == nil {
 
@@ -64,7 +66,6 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		log.Log(err)
 
-		wg.Done()
 	}(r)
 
 	// Get total
@@ -72,9 +73,10 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		total = 10000
 
-		wg.Done()
 	}()
 
 	// Wait

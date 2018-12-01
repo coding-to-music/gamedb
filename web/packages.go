@@ -57,6 +57,8 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(r *http.Request) {
 
+		defer wg.Done()
+
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
@@ -80,7 +82,6 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Log(gorm.Error)
 		}
 
-		wg.Done()
 	}(r)
 
 	// Get total
@@ -88,11 +89,12 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		count, err = db.CountPackages()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Wait

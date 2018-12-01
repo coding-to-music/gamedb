@@ -95,6 +95,8 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 		wg.Add(1)
 		go func(chunk []Kind, wait bool) {
 
+			defer wg.Done()
+
 			keys := make([]*datastore.Key, 0, len(chunk))
 			for _, vv := range chunk {
 				keys = append(keys, vv.GetKey())
@@ -123,7 +125,6 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 				}
 			}
 
-			wg.Done()
 		}(chunk, wait)
 	}
 
@@ -175,6 +176,8 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 		wg.Add(1)
 		go func() {
 
+			defer wg.Done()
+
 			err = client.DeleteMulti(ctx, v)
 			if err != nil {
 				if wait {
@@ -184,7 +187,6 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 				}
 			}
 
-			wg.Done()
 		}()
 	}
 

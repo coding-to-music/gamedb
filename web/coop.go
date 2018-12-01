@@ -42,6 +42,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Add(1)
 		go func(id int64) {
 
+			defer wg.Done()
+
 			player, err := db.GetPlayer(id)
 			if err != nil {
 				if err != datastore.ErrNoSuchEntity {
@@ -58,7 +60,6 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 			players = append(players, player)
 
-			wg.Done()
 		}(v)
 	}
 	wg.Wait()
@@ -73,6 +74,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		wg.Add(1)
 		go func(player db.Player) {
 
+			defer wg.Done()
+
 			var x []int
 			resp, err := player.GetAllPlayerApps("app_name", 0)
 			if err != nil {
@@ -85,7 +88,6 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			gamesSlices = append(gamesSlices, x)
 
-			wg.Done()
 		}(player)
 	}
 

@@ -41,34 +41,37 @@ func PlayersHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		config, err := db.GetConfig(db.ConfRanksUpdated)
 		log.Log(err)
 
 		t.Date = config.Value
 
-		wg.Done()
 	}()
 
 	// Count players
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.PlayersCount, err = db.CountPlayers()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Count ranks
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.RanksCount, err = db.CountRanks()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Wait
@@ -132,6 +135,8 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
@@ -187,7 +192,6 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}()
 
 	// Get total
@@ -195,11 +199,12 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		total, err = db.CountRanks()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Wait

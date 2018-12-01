@@ -692,6 +692,8 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	wg.Add(1)
 	go func(p *App) {
 
+		defer wg.Done()
+
 		resp, _, err := helpers.GetSteam().GetNews(app.ID, 1000)
 		if err != nil {
 
@@ -724,12 +726,13 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 			log.Log(err)
 		}
 
-		wg.Done()
 	}(app)
 
 	// Update reviews
 	wg.Add(1)
 	go func(p *App) {
+
+		defer wg.Done()
 
 		var reviewsResp steam.ReviewsResponse
 
@@ -757,7 +760,6 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 			}
 		}
 
-		wg.Done()
 	}(app)
 
 	// Wait

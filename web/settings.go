@@ -54,12 +54,12 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		defer wg.Done()
+
 		if player.Donated > 0 {
 			donations, err = db.GetDonations(player.PlayerID, 10)
 			log.Log(err)
 		}
-
-		wg.Done()
 
 	}(player)
 
@@ -67,6 +67,8 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	var games string
 	wg.Add(1)
 	go func(player db.Player) {
+
+		defer wg.Done()
 
 		resp, err := player.GetAllPlayerApps("app_name", 0)
 		if err != nil {
@@ -83,8 +85,6 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		games = string(bytes)
 
-		wg.Done()
-
 	}(player)
 
 	// Get User
@@ -92,13 +92,13 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(player db.Player) {
 
+		defer wg.Done()
+
 		user, err = getUser(r, 0)
 		if err != nil {
 			log.Log(err)
 			return
 		}
-
-		wg.Done()
 
 	}(player)
 
@@ -234,6 +234,8 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func(r *http.Request) {
 
+		defer wg.Done()
+
 		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
 
@@ -263,13 +265,14 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}(r)
 
 	// Get total
 	var total int
 	wg.Add(1)
 	go func(r *http.Request) {
+
+		defer wg.Done()
 
 		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
@@ -283,7 +286,6 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 
-		wg.Done()
 	}(r)
 
 	// Wait

@@ -105,6 +105,8 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		channelsResponse, err := discordSession.GuildChannels(guildID)
 		log.Log(err)
 
@@ -120,13 +122,13 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
-
 	}()
 
 	// Get messages
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
 		log.Log(err)
@@ -137,12 +139,13 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}()
 
 	// Get members
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		membersResponse, err := discordSession.GuildMembers(guildID, "", 1000)
 		log.Log(err)
@@ -153,7 +156,6 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}()
 
 	// Wait

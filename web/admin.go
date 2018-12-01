@@ -277,6 +277,8 @@ func adminGenres() {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var genresToDeleteSlice []int
 		for _, v := range genresToDelete {
 			genresToDeleteSlice = append(genresToDeleteSlice, v)
@@ -286,7 +288,7 @@ func adminGenres() {
 		log.Log(err)
 
 		limit--
-		wg.Done()
+
 	}()
 
 	// Update current genres
@@ -303,6 +305,8 @@ func adminGenres() {
 		wg.Add(1)
 		go func(genreID int, v *statsRow) {
 
+			defer wg.Done()
+
 			var genre db.Genre
 
 			gorm = gorm.Unscoped().FirstOrInit(&genre, db.Genre{ID: genreID})
@@ -318,7 +322,6 @@ func adminGenres() {
 			log.Log(gorm.Error)
 
 			limit--
-			wg.Done()
 
 		}(k, v)
 
@@ -403,6 +406,8 @@ func adminPublishers() {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var pubsToDeleteSlice []int
 		for _, v := range publishersToDelete {
 			pubsToDeleteSlice = append(pubsToDeleteSlice, v)
@@ -412,7 +417,7 @@ func adminPublishers() {
 		log.Log(err)
 
 		limit--
-		wg.Done()
+
 	}()
 
 	gorm, err := db.GetMySQLClient(true)
@@ -435,6 +440,8 @@ func adminPublishers() {
 		wg.Add(1)
 		go func(publisherName string, v *statsRow) {
 
+			defer wg.Done()
+
 			var publisher db.Publisher
 
 			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: strings.TrimSpace(publisherName)})
@@ -450,7 +457,6 @@ func adminPublishers() {
 			log.Log(gorm.Error)
 
 			limit--
-			wg.Done()
 
 		}(k, v)
 
@@ -541,6 +547,8 @@ func adminDevelopers() {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var devsToDeleteSlice []int
 		for _, v := range developersToDelete {
 			devsToDeleteSlice = append(devsToDeleteSlice, v)
@@ -550,7 +558,7 @@ func adminDevelopers() {
 		log.Log(err)
 
 		limit--
-		wg.Done()
+
 	}()
 
 	// Update current developers
@@ -567,6 +575,8 @@ func adminDevelopers() {
 		wg.Add(1)
 		go func(developerName string, v *statsRow) {
 
+			defer wg.Done()
+
 			var developer db.Developer
 
 			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: strings.TrimSpace(developerName)})
@@ -582,7 +592,6 @@ func adminDevelopers() {
 			log.Log(gorm.Error)
 
 			limit--
-			wg.Done()
 
 		}(k, v)
 
@@ -675,6 +684,8 @@ func adminTags() {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var tagsToDeleteSlice []int
 		for _, v := range tagsToDelete {
 			tagsToDeleteSlice = append(tagsToDeleteSlice, v)
@@ -684,7 +695,7 @@ func adminTags() {
 		log.Log(err)
 
 		limit--
-		wg.Done()
+
 	}()
 
 	// Update current tags
@@ -701,6 +712,8 @@ func adminTags() {
 		wg.Add(1)
 		go func(tagID int, v *statsRow) {
 
+			defer wg.Done()
+
 			var tag db.Tag
 
 			gorm = gorm.Unscoped().FirstOrInit(&tag, db.Tag{ID: tagID})
@@ -716,7 +729,6 @@ func adminTags() {
 			log.Log(gorm.Error)
 
 			limit--
-			wg.Done()
 
 		}(k, v)
 
@@ -760,6 +772,8 @@ func adminRanks() {
 		wg.Add(1)
 		go func(column string) {
 
+			defer wg.Done()
+
 			players, err = db.GetAllPlayers(column, db.PlayersToRank)
 			if err != nil {
 				log.Log(err)
@@ -771,7 +785,6 @@ func adminRanks() {
 				delete(oldKeys, v.PlayerID)
 			}
 
-			wg.Done()
 		}(v)
 
 	}

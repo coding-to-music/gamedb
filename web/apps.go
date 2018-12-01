@@ -39,39 +39,44 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.Count, err = db.CountApps()
 		t.Description = "A live database of " + humanize.Comma(int64(t.Count)) + " Steam games."
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Get tags
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.Tags, err = db.GetTagsForSelect()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Get genres
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		t.Genres, err = db.GetGenresForSelect()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Get publishers
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		var err error
 		t.Publishers, err = db.GetPublishersForSelect()
@@ -113,12 +118,13 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}()
 
 	// Get developers
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		var err error
 		t.Developers, err = db.GetDevelopersForSelect()
@@ -160,12 +166,13 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		wg.Done()
 	}()
 
 	// Get most expensive app
 	wg.Add(1)
 	go func(r *http.Request) {
+
+		defer wg.Done()
 
 		price, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
 		log.Log(err)
@@ -173,7 +180,6 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 		// Convert cents to dollars
 		t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
 
-		wg.Done()
 	}(r)
 
 	// Wait
@@ -212,6 +218,8 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Add(1)
 	go func() {
+
+		defer wg.Done()
 
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
@@ -347,7 +355,6 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Log(gorm.Error)
 		}
 
-		wg.Done()
 	}()
 
 	// Get total
@@ -355,11 +362,12 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go func() {
 
+		defer wg.Done()
+
 		var err error
 		count, err = db.CountApps()
 		log.Log(err)
 
-		wg.Done()
 	}()
 
 	// Wait
