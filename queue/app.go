@@ -42,7 +42,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	message := rabbitMessage.PICSAppInfo
 
-	log.Log(log.SeverityInfo, "Consuming app: "+strconv.Itoa(message.ID))
+	queueLog(log.SeverityInfo, "Consuming app: "+strconv.Itoa(message.ID))
 
 	if !db.IsValidAppID(message.ID) {
 		return false, errors.New("invalid app ID: " + strconv.Itoa(message.ID))
@@ -83,7 +83,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
-			log.Log(err)
+			queueLog(err)
 			app.ID = int(i64)
 
 		case "common":
@@ -92,34 +92,34 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 			for _, vv := range v.Children {
 				if vv.Value == nil {
 					bytes, err := json.Marshal(vv.ToNestedMaps())
-					log.Log(err)
+					queueLog(err)
 					common[vv.Name] = string(bytes)
 				} else {
 					common[vv.Name] = vv.Value.(string)
 				}
 			}
 			err = app.SetCommon(common)
-			log.Log(err)
+			queueLog(err)
 
 		case "extended":
 
 			err = app.SetExtended(v.GetExtended())
-			log.Log(err)
+			queueLog(err)
 
 		case "config":
 
 			config, launch := v.GetAppConfig()
 
 			err = app.SetConfig(config)
-			log.Log(err)
+			queueLog(err)
 
 			err = app.SetLaunch(launch)
-			log.Log(err)
+			queueLog(err)
 
 		case "depots":
 
 			err = app.SetDepots(v.GetAppDepots())
-			log.Log(err)
+			queueLog(err)
 
 		case "public_only":
 
@@ -133,39 +133,39 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 			for _, vv := range v.Children {
 				if vv.Value == nil {
 					bytes, err := json.Marshal(vv.ToNestedMaps())
-					log.Log(err)
+					queueLog(err)
 					common[vv.Name] = string(bytes)
 				} else {
 					common[vv.Name] = vv.Value.(string)
 				}
 			}
 			err = app.SetUFS(common)
-			log.Log(err)
+			queueLog(err)
 
 		case "install":
 
 			err = app.SetInstall(v.ToNestedMaps())
-			log.Log(err)
+			queueLog(err)
 
 		case "localization":
 
 			err = app.SetLocalization(v.ToNestedMaps())
-			log.Log(err)
+			queueLog(err)
 
 		case "sysreqs":
 
 			err = app.SetSystemRequirements(v.ToNestedMaps())
-			log.Log(err)
+			queueLog(err)
 
 		default:
-			log.Log(log.SeverityInfo, v.Name+" field in app PICS ignored (Change "+strconv.Itoa(app.PICSChangeNumber)+")")
+			queueLog(log.SeverityInfo, v.Name+" field in app PICS ignored (Change "+strconv.Itoa(app.PICSChangeNumber)+")")
 		}
 	}
 
 	// Update from API
 	errs := app.UpdateFromAPI()
 	for _, v := range errs {
-		log.Log(v)
+		queueLog(v)
 	}
 	for _, v := range errs {
 		if v != nil && v != steam.ErrAppNotFound {

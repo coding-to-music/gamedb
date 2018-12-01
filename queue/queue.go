@@ -276,3 +276,7 @@ type SteamKitJob struct {
 	BoxID           int    `json:"BoxID"`
 	Value           int64  `json:"Value"`
 }
+
+func queueLog(interfaces ...interface{}) {
+	log.Log(append(interfaces, log.LogNameConsumers)...)
+}

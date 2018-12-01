@@ -41,7 +41,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 
 	message := rabbitMessage.PICSPackageInfo
 
-	log.Log(log.SeverityInfo, "Consuming package: "+strconv.Itoa(message.ID))
+	queueLog(log.SeverityInfo, "Consuming package: "+strconv.Itoa(message.ID))
 
 	if !db.IsValidPackageID(message.ID) {
 		return false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
@@ -95,12 +95,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		case "appids":
 
 			err = pack.SetAppIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
-			log.Log(err)
+			queueLog(err)
 
 		case "depotids":
 
 			err = pack.SetDepotIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
-			log.Log(err)
+			queueLog(err)
 
 		case "appitems":
 
@@ -111,18 +111,18 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 				}
 			}
 			err = pack.SetAppItems(appItems)
-			log.Log(err)
+			queueLog(err)
 
 		case "extended":
 
 			err = pack.SetExtended(v.GetExtended())
-			log.Log(err)
+			queueLog(err)
 
 		default:
-			log.Log(log.SeverityInfo, v.Name+" field in package PICS ignored (Change "+strconv.Itoa(pack.PICSChangeNumber)+")")
+			queueLog(log.SeverityInfo, v.Name+" field in package PICS ignored (Change "+strconv.Itoa(pack.PICSChangeNumber)+")")
 		}
 
-		log.Log(err)
+		queueLog(err)
 	}
 
 	// Update from API
