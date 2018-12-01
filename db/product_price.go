@@ -1,6 +1,7 @@
 package db
 
 import (
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -53,7 +54,10 @@ func (p ProductPrice) GetIcon() string {
 
 func (p ProductPrice) GetPercentChange() string {
 
-	return helpers.FloatToString(p.DifferencePercent, 0) + "%"
+	if math.IsInf(p.DifferencePercent, 0) {
+		return ""
+	}
+	return "(" + helpers.FloatToString(p.DifferencePercent, 0) + "%)"
 
 }
 

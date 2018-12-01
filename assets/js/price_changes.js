@@ -44,7 +44,7 @@ if ($('#price-changes-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return row[8] + ' <small>(' + row[9] + ')</small>';
+                    return row[8] + ' <small>' + row[9] + '</small>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
