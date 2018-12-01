@@ -24,5 +24,5 @@ if ($('#admin-page').length > 0) {
 
         const data = $.parseJSON(e.data);
         toast(true, data.Data.message, '', 0);
-    })
+    });
 }

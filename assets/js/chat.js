@@ -1,44 +1,52 @@
 if ($('#chat-page').length > 0) {
 
-    if (window.WebSocket === undefined) {
-        console.log('Your browser does not support WebSockets');
-    } else {
+    const channel = $('[data-channel-id]').attr('data-channel-id');
 
-        const socket = new WebSocket('ws://' + location.host + "/websocket/chat");
-        const $badge = $('#live-badge');
-
-        socket.onopen = function (e) {
-            // console.log('WebSocket opened');
-            $badge.addClass('badge-success').removeClass('badge-secondary badge-danger')
-        };
-        socket.onclose = function (e) {
-            // console.log('WebSocket closed');
-            $badge.addClass('badge-danger').removeClass('badge-secondary badge-success')
-        };
-        socket.onmessage = function (e) {
-            // console.log('WebSocket recieved');
-            // console.log(e.data);
-
-            let data = jQuery.parseJSON(e.data);
-
-            if (data.Page === 'chat') {
-
-                data = data.Data;
-
-                $('ul.list-unstyled').prepend($(
-                    '<li class="media">' +
-                    '    <img class="mr-3" src="https://cdn.discordapp.com/avatars/' + data.author_id + '/' + data.author_avatar + '.png?size=64" alt="' + data.author_user + '">' +
-                    '    <div class="media-body">' +
-                    '        <h5 class="mt-0 mb-1">' + data.content + '</h5>' +
-                    '        <p class="text-muted">By ' + data.author_user + '</p>' +
-                    '    </div>' +
-                    '</li>'));
-
+    $.ajax({
+        url: '/chat/' + channel + '/ajax',
+        success: function (data, textStatus, jqXHR) {
+            if (isIterable(data)) {
+                for (const v of data) {
+                    chatRow(v, false);
+                }
             }
-        };
-        socket.onerror = function (e) {
-            console.log('WebSocket error');
-            $badge.addClass('badge-danger').removeClass('badge-secondary badge-success')
-        };
+        },
+        dataType: 'json',
+        cache: false
+    });
+
+    websocketListener('chat', function (e) {
+
+        const data = $.parseJSON(e.data);
+        chatRow(data.Data);
+    });
+
+    function chatRow(data, addToTop = true) {
+
+        const $container = $('ul[data-channel-id=' + data.channel + ']');
+
+        $container.json2html(
+            data,
+            {
+                '<>': 'li', 'class': 'media', 'html': [
+                    {'<>': 'img', 'class': 'mr-3 rounded', 'src': 'https://cdn.discordapp.com/avatars/${author_id}/${author_avatar}.png?size=64', 'alt': '${author_user}'},
+                    {
+                        '<>': 'div', 'class': 'media-body', 'html': [
+                            {
+                                '<>': 'h5', 'class': function () {
+                                    return 'mt-0 mb-1 rounded' + (addToTop ? ' fade-green' : '');
+                                }, 'html': '${content}'
+                            },
+                            {'<>': 'p', 'class': 'text-muted', 'html': 'By ${author_user}'}
+                        ]
+                    }
+                ]
+            },
+            {
+                prepend: addToTop,
+            }
+        );
+
+        $container.find('li').slice(50).remove();
     }
 }

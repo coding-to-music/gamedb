@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 	"sync"
@@ -40,8 +41,9 @@ func InitChat() {
 
 func chatRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", ChatHandler)
-	r.Get("/{id}", ChatHandler)
+	r.Get("/", chatHandler)
+	r.Get("/{id}", chatHandler)
+	r.Get("/{id}/ajax", chatAjaxHandler)
 	return r
 }
 
@@ -67,6 +69,7 @@ func connectToDiscord() error {
 					AuthorUser:   m.Author.Username,
 					AuthorAvatar: m.Author.Avatar,
 					Content:      m.Content,
+					Channel:      m.ChannelID,
 				})
 			}
 		}
@@ -81,15 +84,16 @@ type chatWebsocketPayload struct {
 	AuthorUser   string `json:"author_user"`
 	AuthorAvatar string `json:"author_avatar"`
 	Content      string `json:"content"`
+	Channel      string `json:"channel"`
 }
 
-func ChatHandler(w http.ResponseWriter, r *http.Request) {
+func chatHandler(w http.ResponseWriter, r *http.Request) {
+
+	setNoCacheHeaders(w)
 
 	// Template
 	t := chatTemplate{}
 	t.Fill(w, r, "Chat")
-
-	setNoCacheHeaders(w)
 
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
@@ -124,23 +128,6 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Get messages
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
-		log.Log(err)
-
-		for _, v := range messagesResponse {
-			if !v.Author.Bot && v.Type == discordgo.MessageTypeDefault {
-				t.Messages = append(t.Messages, v)
-			}
-		}
-
-	}()
-
 	// Get members
 	wg.Add(1)
 	go func() {
@@ -169,6 +156,38 @@ type chatTemplate struct {
 	GlobalTemplate
 	ChannelID string
 	Channels  []*discordgo.Channel
-	Messages  []*discordgo.Message
 	Members   []*discordgo.Member
+}
+
+func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json")
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		id = generalChannelID
+	}
+
+	messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
+	log.Log(err)
+
+	var messages []chatWebsocketPayload
+	for _, v := range messagesResponse {
+		if !v.Author.Bot && v.Type == discordgo.MessageTypeDefault {
+
+			messages = append(messages, chatWebsocketPayload{
+				AuthorID:     v.Author.ID,
+				AuthorUser:   v.Author.Username,
+				AuthorAvatar: v.Author.Avatar,
+				Content:      v.Content,
+				Channel:      v.ChannelID,
+			})
+		}
+	}
+
+	bytes, err := json.Marshal(messages)
+	log.Log(err)
+
+	_, err = w.Write(bytes)
+	log.Log(err)
 }

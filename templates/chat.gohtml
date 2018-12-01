@@ -24,7 +24,7 @@
     <div class="card">
         <div class="card-header">
 
-            <h5 class="float-right" style="margin-bottom: 0;">
+            <h5 class="float-right mb-0">
                 <span class="badge badge-secondary cursor-pointer" id="live-badge">Live</span>
             </h5>
 
@@ -39,17 +39,8 @@
         </div>
         <div class="card-body">
 
-            <ul class="list-unstyled">
-
-                {{ range $key, $value := .Messages }}
-                    <li class="media">
-                        <img class="mr-3 rounded" src="https://cdn.discordapp.com/avatars/{{ .Author.ID }}/{{ .Author.Avatar }}.png?size=128" alt="{{ .Author.Username }}">
-                        <div class="media-body">
-                            <h5 class="mt-0 mb-1">{{ .Content }}</h5>
-                            <p class="text-muted">By {{ .Author.Username }}</p>
-                        </div>
-                    </li>
-                {{ end }}
+            <ul class="list-unstyled" data-channel-id="{{ .ChannelID }}">
+                {{/* Added with JS */}}
             </ul>
         </div>
     </div>
