@@ -42,10 +42,9 @@ func (p ProductPrice) GetPath() string {
 }
 
 func (p ProductPrice) GetIcon() string {
-
 	if p.Icon == "" {
 		return DefaultAppIcon
-	} else if strings.HasPrefix(p.Icon, "/") {
+	} else if strings.HasPrefix(p.Icon, "/") || strings.HasPrefix(p.Icon, "http") {
 		return p.Icon
 	} else {
 		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(p.AppID) + "/" + p.Icon + ".jpg"
