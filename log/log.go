@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime/debug"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/logging"
@@ -13,12 +15,110 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Severity = logging.Severity
 type LogName string
 type Environment string
 type Service string
+type Option int
+type Severity string
 
-//noinspection GoUnusedGlobalVariable
+func (s Severity) toGoole() (severity logging.Severity) {
+
+	switch s {
+	case SeverityDebug:
+		return logging.Debug
+	case SeverityInfo:
+		return logging.Info
+	case SeverityWarning:
+		return logging.Warning
+	case SeverityError:
+		return logging.Error
+	case SeverityCritical:
+		return logging.Critical
+	default:
+		return logging.Error
+	}
+}
+
+func (s Severity) toRollbar() (severity string) {
+
+	switch s {
+	case SeverityDebug:
+		return rollbar.DEBUG
+	case SeverityInfo:
+		return rollbar.INFO
+	case SeverityWarning:
+		return rollbar.WARN
+	case SeverityError:
+		return rollbar.ERR
+	case SeverityCritical:
+		return rollbar.CRIT
+	default:
+		return rollbar.ERR
+	}
+}
+
+type entry struct {
+	request   *http.Request
+	text      string
+	error     string
+	logName   LogName
+	severity  Severity
+	timestamp time.Time
+	stack     string
+}
+
+func (e entry) toText() string {
+
+	var ret []string
+
+	ret = append(ret, strings.ToUpper(string(e.severity)))
+
+	if e.request != nil {
+		ret = append(ret, e.request.Method, e.request.URL.Path)
+	}
+
+	if e.text != "" {
+		ret = append(ret, e.text)
+	}
+
+	if e.error != "" {
+		ret = append(ret, e.error)
+	}
+
+	if e.stack != "" {
+		ret = append(ret, e.stack)
+	}
+
+	return strings.Join(ret, " - ")
+}
+
+//noinspection GoUnusedConst
+const (
+	// Environments
+	EnvProd  Environment = "production"
+	EnvLocal Environment = "local"
+
+	// Log names
+	LogNameConsumers LogName = "gamedb.consumers"
+	LogNameSteam     LogName = "gamedb.steam"
+	LogNameGameDB    LogName = "gamedb" // Default
+
+	// Severities
+	SeverityDebug    Severity = "debug"
+	SeverityInfo     Severity = "info"
+	SeverityWarning  Severity = "warning"
+	SeverityError    Severity = "error" // Default
+	SeverityCritical Severity = "critical"
+
+	// Services
+	ServiceGoogle  Service = "google"  // Default
+	ServiceRollbar Service = "rollbar" //
+	ServiceLocal   Service = "local"   // Default
+
+	// Options
+	OptionStack Option = iota
+)
+
 var (
 	env Environment
 
@@ -28,31 +128,6 @@ var (
 
 	// Local
 	logger = log.New(os.Stderr, "", log.Ltime)
-
-	// Environments
-	EnvProd  Environment = "production"
-	EnvLocal Environment = "local"
-
-	// Log names
-	LogNameConsumers LogName = "gamedb.consumers"
-	LogNameSteam     LogName = "gamedb.steam"
-	LogNameGameDB    LogName = "gamedb"
-
-	// Severities
-	SeverityDefault   = logging.Default
-	SeverityDebug     = logging.Debug
-	SeverityInfo      = logging.Info
-	SeverityNotice    = logging.Notice
-	SeverityWarning   = logging.Warning
-	SeverityError     = logging.Error
-	SeverityCritical  = logging.Critical
-	SeverityAlert     = logging.Alert
-	SeverityEmergency = logging.Emergency
-
-	// Services
-	ServiceGoogle  Service = "google"
-	ServiceRollbar Service = "rollbar"
-	ServiceLocal   Service = "local"
 )
 
 // Called from main
@@ -87,73 +162,58 @@ func Log(interfaces ...interface{}) {
 	interfaces = addDefaultService(interfaces...)
 	interfaces = addDefaultSeverity(interfaces...)
 
+	var entry entry
 	var loggingServices []Service
-	var googleLogs []*logging.Logger
-	var entry logging.Entry
 
 	// Create entry
 	for _, v := range interfaces {
 
-		if v == nil {
-			continue
-		}
-
 		switch val := v.(type) {
 		case string:
-			entry.Payload = val
+			entry.text = val
 		case *http.Request:
-			entry.HTTPRequest = &logging.HTTPRequest{Request: val}
+			entry.request = val
 		case error:
-			entry.Payload = val.Error()
+			if val != nil {
+				entry.error = val.Error()
+			}
 		case LogName:
-			googleLogs = append(googleLogs, googleClient.Logger(string(val)+"-"+string(env)))
+			entry.logName = val
 		case Severity:
-			entry.Severity = val
+			entry.severity = val
 		case time.Time:
-			entry.Timestamp = val
+			entry.timestamp = val
 		case Service:
 			loggingServices = append(loggingServices, val)
+		case Option:
+			if val == OptionStack {
+				entry.stack = string(debug.Stack())
+			}
 		default:
 			Log("Invalid value given to Err")
 		}
 	}
 
-	if entry.Payload.(string) == "" {
-		return
-	}
-
-	// Default log
-	if len(googleLogs) == 0 {
-		googleLogs = append(googleLogs, googleClient.Logger(string(LogNameGameDB)+"-"+string(env)))
-	}
-
-	// Add stack to payload
-	//entry.Payload = entry.Payload.(string) + "\n\r" + string(debug.Stack())
-
+	// Send entry
 	for _, v := range loggingServices {
-		if v == ServiceGoogle {
-			for _, vv := range googleLogs {
-				vv.Log(entry)
-			}
-		}
-		if v == ServiceLocal {
-			logger.Println(entry.Payload.(string))
-		}
-		if v == ServiceRollbar {
 
-			switch entry.Severity {
-			case SeverityCritical:
-				rollbar.Critical(entry.Payload)
-			default:
-			case SeverityError:
-				rollbar.Error(entry.Payload)
-			case SeverityWarning:
-				rollbar.Warning(entry.Payload)
-			case SeverityInfo:
-				rollbar.Info(entry.Payload)
-			case SeverityDebug:
-				rollbar.Debug(entry.Payload)
-			}
+		// Google
+		if v == ServiceGoogle {
+			googleClient.Logger(string(env) + "-" + string(entry.logName)).Log(logging.Entry{
+				Severity:  entry.severity.toGoole(),
+				Timestamp: entry.timestamp,
+				Payload:   entry.toText(),
+			})
+		}
+
+		// Local
+		if v == ServiceLocal {
+			logger.Println(entry.toText())
+		}
+
+		// Rollbar
+		if v == ServiceRollbar {
+			rollbar.Log(entry.severity.toRollbar(), interfaces...)
 		}
 	}
 }
