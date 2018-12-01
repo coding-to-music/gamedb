@@ -53,16 +53,23 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		client, ctx, err := db.GetDSClient()
-		if err == nil {
+		if err != nil {
 
-			q := datastore.NewQuery(db.KindProductPrice).Limit(100).Order("-created_at")
-			q = q.Filter("currency =", string(session.GetCountryCode(r)))
-
-			q, err = query.SetOffsetDS(q)
-			if err == nil {
-				_, err = client.GetAll(ctx, q, &priceChanges)
-			}
+			log.Log(err)
+			return
 		}
+
+		q := datastore.NewQuery(db.KindProductPrice).Limit(100).Order("-created_at")
+		q = q.Filter("currency =", string(session.GetCountryCode(r)))
+
+		q, err = query.SetOffsetDS(q)
+		if err != nil {
+
+			log.Log(err)
+			return
+		}
+
+		_, err = client.GetAll(ctx, q, &priceChanges)
 
 		log.Log(err)
 

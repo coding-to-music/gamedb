@@ -75,38 +75,36 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 	//wg.Add(1)
 	//go func() {
 	//
-	//defer wg.Done()
+	//	defer wg.Done()
 	//
 	//	achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 	//	if err != nil {
 	//
 	//		log.Log(err)
+	//		return
+	//	}
 	//
-	//	} else {
+	//	achievementsMap := make(map[string]float64)
+	//	for _, v := range achievementsResp.GlobalAchievementPercentage {
+	//		achievementsMap[v.Name] = v.Percent
+	//	}
 	//
-	//		achievementsMap := make(map[string]float64)
-	//		for _, v := range achievementsResp.GlobalAchievementPercentage {
-	//			achievementsMap[v.Name] = v.Percent
-	//		}
+	//	// Get schema
+	//	schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
+	//	if err != nil {
 	//
-	//		// Get schema
-	//		schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
-	//		if err != nil {
+	//		log.Log(err)
+	//		return
+	//	}
 	//
-	//			log.Log(err)
-	//
-	//		} else {
-	//
-	//			// Make template struct
-	//			for _, v := range schema.AvailableGameStats.Achievements {
-	//				t.Achievements = append(t.Achievements, appAchievementTemplate{
-	//					v.Icon,
-	//					v.DisplayName,
-	//					v.Description,
-	//					achievementsMap[v.Name],
-	//				})
-	//			}
-	//		}
+	//	// Make template struct
+	//	for _, v := range schema.AvailableGameStats.Achievements {
+	//		t.Achievements = append(t.Achievements, appAchievementTemplate{
+	//			v.Icon,
+	//			v.DisplayName,
+	//			v.Description,
+	//			achievementsMap[v.Name],
+	//		})
 	//	}
 	//
 	//}()
@@ -135,35 +133,33 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
+			return
 
-		} else {
-
-			t.PricesCount = len(pricesResp)
-
-			var prices [][]float64
-
-			for _, v := range pricesResp {
-
-				prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceAfter) / 100})
-			}
-
-			// Add current price
-			price := app.GetPrice(code)
-
-			prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
-
-			// Make into a JSON string
-			pricesBytes, err := json.Marshal(prices)
-			if err != nil {
-
-				log.Log(err)
-
-			} else {
-
-				t.Prices = string(pricesBytes)
-
-			}
 		}
+
+		t.PricesCount = len(pricesResp)
+
+		var prices [][]float64
+
+		for _, v := range pricesResp {
+			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceAfter) / 100})
+		}
+
+		// Add current price
+		price := app.GetPrice(code)
+
+		prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
+
+		// Make into a JSON string
+		pricesBytes, err := json.Marshal(prices)
+		if err != nil {
+
+			log.Log(err)
+			return
+
+		}
+
+		t.Prices = string(pricesBytes)
 
 	}()
 
@@ -201,56 +197,54 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
+			return
+		}
 
-		} else {
+		t.ReviewsCount = reviewsResponse.QuerySummary
 
-			t.ReviewsCount = reviewsResponse.QuerySummary
+		// Make slice of playerIDs
+		var playerIDs []int64
+		for _, v := range reviewsResponse.Reviews {
+			playerIDs = append(playerIDs, v.Author.SteamID)
+		}
 
-			// Make slice of playerIDs
-			var playerIDs []int64
-			for _, v := range reviewsResponse.Reviews {
-				playerIDs = append(playerIDs, v.Author.SteamID)
-			}
+		players, err := db.GetPlayersByIDs(playerIDs)
+		if err != nil {
 
-			players, err := db.GetPlayersByIDs(playerIDs)
-			if err != nil {
+			log.Log(err)
+			return
+		}
 
-				log.Log(err)
+		// Make map of players
+		var playersMap = map[int64]db.Player{}
+		for _, v := range players {
+			playersMap[v.PlayerID] = v
+		}
 
+		// Make template slice
+		for _, v := range reviewsResponse.Reviews {
+
+			var player db.Player
+			if val, ok := playersMap[v.Author.SteamID]; ok {
+				player = val
 			} else {
-
-				// Make map of players
-				var playersMap = map[int64]db.Player{}
-				for _, v := range players {
-					playersMap[v.PlayerID] = v
-				}
-
-				// Make template slice
-				for _, v := range reviewsResponse.Reviews {
-
-					var player db.Player
-					if val, ok := playersMap[v.Author.SteamID]; ok {
-						player = val
-					} else {
-						player = db.Player{}
-						player.PlayerID = v.Author.SteamID
-						player.PersonaName = "Unknown"
-					}
-
-					// Remove extra new lines
-					regex := regexp.MustCompile("[\n]{3,}") // After comma
-					v.Review = regex.ReplaceAllString(v.Review, "\n\n")
-
-					t.Reviews = append(t.Reviews, appReviewTemplate{
-						Review:     v.Review,
-						Player:     player,
-						Date:       time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
-						VotesGood:  v.VotesUp,
-						VotesFunny: v.VotesFunny,
-						Vote:       v.VotedUp,
-					})
-				}
+				player = db.Player{}
+				player.PlayerID = v.Author.SteamID
+				player.PersonaName = "Unknown"
 			}
+
+			// Remove extra new lines
+			regex := regexp.MustCompile("[\n]{3,}") // After comma
+			v.Review = regex.ReplaceAllString(v.Review, "\n\n")
+
+			t.Reviews = append(t.Reviews, appReviewTemplate{
+				Review:     v.Review,
+				Player:     player,
+				Date:       time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
+				VotesGood:  v.VotesUp,
+				VotesFunny: v.VotesFunny,
+				Vote:       v.VotedUp,
+			})
 		}
 
 	}()
@@ -334,33 +328,30 @@ func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			q := datastore.NewQuery(db.KindNews).Filter("app_id =", idx).Limit(100)
-			q, err = query.SetOrderOffsetDS(q, map[string]string{})
-			q = q.Order("-date")
-			if err != nil {
-
-				log.Log(err)
-
-			} else {
-
-				_, err := client.GetAll(ctx, q, &articles)
-				log.Log(err)
-
-				// todo, use a different bbcode library that works for app 418460 & 218620
-				// todo, add http to links here instead of JS
-				//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
-				//var conv bbConvert.HTMLConverter
-				//conv.ImplementDefaults()
-				// Fix broken links
-				//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
-				// Convert BBCdoe to HTML
-				//v.Contents = conv.Convert(v.Contents)
-
-			}
+			return
 		}
+
+		q := datastore.NewQuery(db.KindNews).Filter("app_id =", idx).Limit(100)
+		q, err = query.SetOrderOffsetDS(q, map[string]string{})
+		q = q.Order("-date")
+		if err != nil {
+
+			log.Log(err)
+			return
+		}
+
+		_, err = client.GetAll(ctx, q, &articles)
+		log.Log(err)
+
+		// todo, use a different bbcode library that works for app 418460 & 218620
+		// todo, add http to links here instead of JS
+		//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
+		//var conv bbConvert.HTMLConverter
+		//conv.ImplementDefaults()
+		// Fix broken links
+		//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
+		// Convert BBCdoe to HTML
+		//v.Contents = conv.Convert(v.Contents)
 
 	}(r)
 

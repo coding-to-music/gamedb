@@ -82,6 +82,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 		t.Publishers, err = db.GetPublishersForSelect()
 		log.Log(err)
 
+		// Check if we need to fetch any more to add to the list
 		if val, ok := r.URL.Query()["publishers"]; ok {
 
 			var publishersToLoad []int
@@ -130,6 +131,7 @@ func AppsHandler(w http.ResponseWriter, r *http.Request) {
 		t.Developers, err = db.GetDevelopersForSelect()
 		log.Log(err)
 
+		// Check if we need to fetch any more to add to the list
 		if val, ok := r.URL.Query()["developers"]; ok {
 
 			var developersToLoad []int
@@ -225,135 +227,134 @@ func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			gorm = gorm.Model(db.App{})
-			gorm = gorm.Select([]string{"id", "name", "icon", "type", "reviews_score", "prices", "change_number_date"})
-
-			// Types
-			types := query.GetSearchSlice("types")
-			if len(types) > 0 {
-				gorm = gorm.Where("type IN (?)", types)
-			}
-
-			// Tags
-			tags := query.GetSearchSlice("tags")
-			if len(tags) > 0 {
-
-				var or squirrel.Or
-				for _, v := range tags {
-					or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, '[" + v + "]')": 1})
-				}
-				sql, data, err := or.ToSql()
-				log.Log(err)
-
-				gorm = gorm.Where(sql, data)
-			}
-
-			// Genres
-			genres := query.GetSearchSlice("genres")
-			if len(genres) > 0 {
-
-				var or squirrel.Or
-				for _, v := range genres {
-					or = append(or, squirrel.Eq{"JSON_CONTAINS(genres, JSON_OBJECT('id', " + v + "))": 1})
-				}
-				sql, data, err := or.ToSql()
-				log.Log(err)
-
-				gorm = gorm.Where(sql, data...)
-			}
-
-			// Developers
-			developers := query.GetSearchSlice("developers")
-			if len(developers) > 0 {
-
-				var or squirrel.Or
-				for _, v := range developers {
-					or = append(or, squirrel.Eq{"JSON_CONTAINS(developers, '[\"" + v + "\"]')": 1})
-				}
-				sql, data, err := or.ToSql()
-				log.Log(err)
-
-				gorm = gorm.Where(sql, data...)
-			}
-
-			// Publishers
-			publishers := query.GetSearchSlice("publishers")
-			if len(publishers) > 0 {
-
-				var or squirrel.Or
-				for _, v := range publishers {
-					or = append(or, squirrel.Eq{"JSON_CONTAINS(publishers, '[\"" + v + "\"]')": 1})
-				}
-				sql, data, err := or.ToSql()
-				log.Log(err)
-
-				gorm = gorm.Where(sql, data...)
-			}
-
-			// Platforms
-			platforms := query.GetSearchSlice("platforms")
-			if len(platforms) > 0 {
-
-				var or squirrel.Or
-				for _, v := range platforms {
-					or = append(or, squirrel.Eq{"JSON_CONTAINS(platforms, '[\"" + v + "\"]')": 1})
-				}
-				sql, data, err := or.ToSql()
-				log.Log(err)
-
-				gorm = gorm.Where(sql, data...)
-			}
-
-			// Price range
-			prices := query.GetSearchSlice("prices")
-			if len(prices) == 2 {
-
-				low, err := strconv.Atoi(strings.Replace(prices[0], ".00", "00", 1))
-				log.Log(err)
-
-				high, err := strconv.Atoi(strings.Replace(prices[1], ".00", "00", 1))
-				log.Log(err)
-
-				gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") >= ?", low)
-				gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") <= ?", high)
-
-			}
-
-			// Score range
-			scores := query.GetSearchSlice("scores")
-			if len(scores) == 2 {
-
-				gorm = gorm.Where("reviews_score >= ?", scores[0])
-				gorm = gorm.Where("reviews_score <= ?", scores[1])
-
-			}
-
-			// Search
-			search := query.GetSearchString("search")
-			if search != "" {
-				gorm = gorm.Where("name LIKE ?", "%"+search+"%")
-			}
-
-			// Count
-			gorm.Count(&recordsFiltered)
-			log.Log(gorm.Error)
-
-			// Order, offset, limit
-			gorm = gorm.Limit(100)
-			gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
-				"0": "name",
-				"2": "reviews_score",
-				"3": "price",
-				"4": "change_number_date",
-			})
-
-			// Get rows
-			gorm = gorm.Find(&apps)
-			log.Log(gorm.Error)
+			return
 		}
+
+		gorm = gorm.Model(db.App{})
+		gorm = gorm.Select([]string{"id", "name", "icon", "type", "reviews_score", "prices", "change_number_date"})
+
+		// Types
+		types := query.GetSearchSlice("types")
+		if len(types) > 0 {
+			gorm = gorm.Where("type IN (?)", types)
+		}
+
+		// Tags
+		tags := query.GetSearchSlice("tags")
+		if len(tags) > 0 {
+
+			var or squirrel.Or
+			for _, v := range tags {
+				or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, '[" + v + "]')": 1})
+			}
+			sql, data, err := or.ToSql()
+			log.Log(err)
+
+			gorm = gorm.Where(sql, data)
+		}
+
+		// Genres
+		genres := query.GetSearchSlice("genres")
+		if len(genres) > 0 {
+
+			var or squirrel.Or
+			for _, v := range genres {
+				or = append(or, squirrel.Eq{"JSON_CONTAINS(genres, JSON_OBJECT('id', " + v + "))": 1})
+			}
+			sql, data, err := or.ToSql()
+			log.Log(err)
+
+			gorm = gorm.Where(sql, data...)
+		}
+
+		// Developers
+		developers := query.GetSearchSlice("developers")
+		if len(developers) > 0 {
+
+			var or squirrel.Or
+			for _, v := range developers {
+				or = append(or, squirrel.Eq{"JSON_CONTAINS(developers, '[\"" + v + "\"]')": 1})
+			}
+			sql, data, err := or.ToSql()
+			log.Log(err)
+
+			gorm = gorm.Where(sql, data...)
+		}
+
+		// Publishers
+		publishers := query.GetSearchSlice("publishers")
+		if len(publishers) > 0 {
+
+			var or squirrel.Or
+			for _, v := range publishers {
+				or = append(or, squirrel.Eq{"JSON_CONTAINS(publishers, '[\"" + v + "\"]')": 1})
+			}
+			sql, data, err := or.ToSql()
+			log.Log(err)
+
+			gorm = gorm.Where(sql, data...)
+		}
+
+		// Platforms
+		platforms := query.GetSearchSlice("platforms")
+		if len(platforms) > 0 {
+
+			var or squirrel.Or
+			for _, v := range platforms {
+				or = append(or, squirrel.Eq{"JSON_CONTAINS(platforms, '[\"" + v + "\"]')": 1})
+			}
+			sql, data, err := or.ToSql()
+			log.Log(err)
+
+			gorm = gorm.Where(sql, data...)
+		}
+
+		// Price range
+		prices := query.GetSearchSlice("prices")
+		if len(prices) == 2 {
+
+			low, err := strconv.Atoi(strings.Replace(prices[0], ".00", "00", 1))
+			log.Log(err)
+
+			high, err := strconv.Atoi(strings.Replace(prices[1], ".00", "00", 1))
+			log.Log(err)
+
+			gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") >= ?", low)
+			gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") <= ?", high)
+
+		}
+
+		// Score range
+		scores := query.GetSearchSlice("scores")
+		if len(scores) == 2 {
+
+			gorm = gorm.Where("reviews_score >= ?", scores[0])
+			gorm = gorm.Where("reviews_score <= ?", scores[1])
+
+		}
+
+		// Search
+		search := query.GetSearchString("search")
+		if search != "" {
+			gorm = gorm.Where("name LIKE ?", "%"+search+"%")
+		}
+
+		// Count
+		gorm.Count(&recordsFiltered)
+		log.Log(gorm.Error)
+
+		// Order, offset, limit
+		gorm = gorm.Limit(100)
+		gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
+			"0": "name",
+			"2": "reviews_score",
+			"3": "price",
+			"4": "change_number_date",
+		})
+
+		// Get rows
+		gorm = gorm.Find(&apps)
+		log.Log(gorm.Error)
 
 	}()
 

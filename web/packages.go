@@ -63,24 +63,23 @@ func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			gorm = gorm.Model(&db.Package{})
-			gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon"})
-
-			gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
-				"0": "name",
-				"2": "apps_count",
-				"3": "price",
-				"4": "change_number_date",
-			})
-
-			gorm = gorm.Limit(100)
-			gorm = gorm.Find(&packages)
-
-			log.Log(gorm.Error)
+			return
 		}
+
+		gorm = gorm.Model(&db.Package{})
+		gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon"})
+
+		gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
+			"0": "name",
+			"2": "apps_count",
+			"3": "price",
+			"4": "change_number_date",
+		})
+
+		gorm = gorm.Limit(100)
+		gorm = gorm.Find(&packages)
+
+		log.Log(gorm.Error)
 
 	}(r)
 

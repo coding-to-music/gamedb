@@ -39,6 +39,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	var players []db.Player
 	var wg sync.WaitGroup
 	for _, v := range playerInts {
+
 		wg.Add(1)
 		go func(id int64) {
 

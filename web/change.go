@@ -54,13 +54,11 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
+			return
+		}
 
-		} else {
-
-			for _, v := range appsSlice {
-				t.Apps[v.ID] = v
-			}
-
+		for _, v := range appsSlice {
+			t.Apps[v.ID] = v
 		}
 
 	}()
@@ -79,13 +77,11 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
+			return
+		}
 
-		} else {
-
-			for _, v := range packagesSlice {
-				t.Packages[v.ID] = v
-			}
-
+		for _, v := range packagesSlice {
+			t.Packages[v.ID] = v
 		}
 
 	}()

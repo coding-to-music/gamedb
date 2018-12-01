@@ -141,54 +141,52 @@ func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
+			return
+		}
 
-		} else {
+		columns := map[string]string{
+			"3": "level_rank",
+			"4": "games_rank",
+			"5": "badges_rank",
+			"6": "play_time_rank",
+			"7": "friends_rank",
+		}
 
-			columns := map[string]string{
-				"3": "level_rank",
-				"4": "games_rank",
-				"5": "badges_rank",
-				"6": "play_time_rank",
-				"7": "friends_rank",
+		q := datastore.NewQuery(db.KindPlayerRank).Limit(100)
+
+		column := query.GetOrderDS(columns, false)
+		if column != "" {
+			q, err = query.SetOrderOffsetDS(q, columns)
+			if err != nil {
+
+				log.Log(err)
+				return
 			}
 
-			q := datastore.NewQuery(db.KindPlayerRank).Limit(100)
+			//q = q.Filter(column+" >", 0)
 
-			column := query.GetOrderDS(columns, false)
-			if column != "" {
-				q, err = query.SetOrderOffsetDS(q, columns)
-				if err != nil {
+			var ranks []db.PlayerRank
+			_, err := client.GetAll(ctx, q, &ranks)
+			log.Log(err)
 
-					log.Log(err)
+			for _, v := range ranks {
 
-				} else {
+				rank := RankExtra{RankRow: v}
 
-					//q = q.Filter(column+" >", 0)
-
-					var ranks []db.PlayerRank
-					_, err := client.GetAll(ctx, q, &ranks)
-					log.Log(err)
-
-					for _, v := range ranks {
-
-						rank := RankExtra{RankRow: v}
-
-						switch column {
-						case "badges_rank":
-							rank.Rank = humanize.Ordinal(rank.RankRow.BadgesRank)
-						case "friends_rank":
-							rank.Rank = humanize.Ordinal(rank.RankRow.FriendsRank)
-						case "games_rank":
-							rank.Rank = humanize.Ordinal(rank.RankRow.GamesRank)
-						case "level_rank", "":
-							rank.Rank = humanize.Ordinal(rank.RankRow.LevelRank)
-						case "play_time_rank":
-							rank.Rank = humanize.Ordinal(rank.RankRow.PlayTimeRank)
-						}
-
-						ranksExtra = append(ranksExtra, rank)
-					}
+				switch column {
+				case "badges_rank":
+					rank.Rank = humanize.Ordinal(rank.RankRow.BadgesRank)
+				case "friends_rank":
+					rank.Rank = humanize.Ordinal(rank.RankRow.FriendsRank)
+				case "games_rank":
+					rank.Rank = humanize.Ordinal(rank.RankRow.GamesRank)
+				case "level_rank", "":
+					rank.Rank = humanize.Ordinal(rank.RankRow.LevelRank)
+				case "play_time_rank":
+					rank.Rank = humanize.Ordinal(rank.RankRow.PlayTimeRank)
 				}
+
+				ranksExtra = append(ranksExtra, rank)
 			}
 		}
 

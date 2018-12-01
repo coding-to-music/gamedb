@@ -698,33 +698,33 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		if err != nil {
 
 			log.Log(err)
+			return
 
-		} else {
+		}
 
-			var kinds []Kind
-			for _, v := range resp.Items {
+		var kinds []Kind
+		for _, v := range resp.Items {
 
-				ids, err := app.GetNewsIDs()
-				if err != nil {
-					errs = append(errs, err)
-					continue
-				}
-
-				if helpers.SliceHasInt64(ids, v.GID) {
-					continue
-				}
-
-				kinds = append(kinds, CreateArticle(*app, v))
-			}
-
-			err = BulkSaveKinds(kinds, KindNews, false)
+			ids, err := app.GetNewsIDs()
 			if err != nil {
 				errs = append(errs, err)
+				continue
 			}
 
-			err := app.SetNewsIDs(resp)
-			log.Log(err)
+			if helpers.SliceHasInt64(ids, v.GID) {
+				continue
+			}
+
+			kinds = append(kinds, CreateArticle(*app, v))
 		}
+
+		err = BulkSaveKinds(kinds, KindNews, false)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		err = app.SetNewsIDs(resp)
+		log.Log(err)
 
 	}(app)
 
@@ -740,24 +740,23 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		if err != nil {
 
 			errs = append(errs, err)
+			return
+		}
 
-		} else {
+		reviewsBytes, err := json.Marshal(reviewsResp)
+		if err != nil {
+			errs = append(errs, err)
+		}
 
-			reviewsBytes, err := json.Marshal(reviewsResp)
-			if err != nil {
-				errs = append(errs, err)
-			}
+		app.Reviews = string(reviewsBytes)
+		app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
+		app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
+		app.SetReviewScore()
 
-			app.Reviews = string(reviewsBytes)
-			app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
-			app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
-			app.SetReviewScore()
-
-			// Log this app score
-			err = SaveAppOverTime(*app)
-			if err != nil {
-				errs = append(errs, err)
-			}
+		// Log this app score
+		err = SaveAppOverTime(*app)
+		if err != nil {
+			errs = append(errs, err)
 		}
 
 	}(app)

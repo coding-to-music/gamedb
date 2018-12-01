@@ -73,34 +73,32 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			// Queue friends to be scanned
-			err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
-			if err != nil {
-
-				err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-				log.Log(err)
-
-			} else {
-
-				for _, friend := range friends {
-
-					f := db.Player{}
-					f.PlayerID = friend.SteamID
-
-					err = queuePlayer(r, f, db.PlayerUpdateAuto)
-					err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon)
-					log.Log(err)
-				}
-
-				player.FriendsAddedAt = time.Now()
-
-				err = player.Save() // todo, switch to update query so not to overwrite other player changes
-				log.Log(err)
-			}
+			return
 		}
+
+		// Queue friends to be scanned
+		err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
+		if err != nil {
+
+			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+			log.Log(err)
+			return
+		}
+
+		for _, friend := range friends {
+
+			f := db.Player{}
+			f.PlayerID = friend.SteamID
+
+			err = queuePlayer(r, f, db.PlayerUpdateAuto)
+			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon)
+			log.Log(err)
+		}
+
+		player.FriendsAddedAt = time.Now()
+
+		err = player.Save() // todo, switch to update query so not to overwrite other player changes
+		log.Log(err)
 
 	}(player)
 
@@ -158,27 +156,26 @@ func PlayerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
+			return
+		}
 
-		} else {
+		for _, v := range response {
 
-			for _, v := range response {
+			game := RecentlyPlayedGame{}
+			game.AppID = v.AppID
+			game.Name = v.Name
+			game.Weeks = v.PlayTime2Weeks
+			game.WeeksNice = helpers.GetTimeShort(v.PlayTime2Weeks, 2)
+			game.AllTime = v.PlayTimeForever
+			game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
 
-				game := RecentlyPlayedGame{}
-				game.AppID = v.AppID
-				game.Name = v.Name
-				game.Weeks = v.PlayTime2Weeks
-				game.WeeksNice = helpers.GetTimeShort(v.PlayTime2Weeks, 2)
-				game.AllTime = v.PlayTimeForever
-				game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
-
-				if v.ImgIconURL == "" {
-					game.Icon = db.DefaultAppIcon
-				} else {
-					game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
-				}
-
-				recentGames = append(recentGames, game)
+			if v.ImgIconURL == "" {
+				game.Icon = db.DefaultAppIcon
+			} else {
+				game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
 			}
+
+			recentGames = append(recentGames, game)
 		}
 
 	}(player)
@@ -373,28 +370,26 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			columns := map[string]string{
-				"0": "app_name",
-				"1": "app_price",
-				"2": "app_time",
-				"3": "app_price_hour",
-			}
-
-			q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt).Limit(100)
-			q, err = query.SetOrderOffsetDS(q, columns)
-			if err != nil {
-
-				log.Log(err)
-
-			} else {
-
-				_, err := client.GetAll(ctx, q, &apps)
-				log.Log(err)
-			}
+			return
 		}
+
+		columns := map[string]string{
+			"0": "app_name",
+			"1": "app_price",
+			"2": "app_time",
+			"3": "app_price_hour",
+		}
+
+		q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt).Limit(100)
+		q, err = query.SetOrderOffsetDS(q, columns)
+		if err != nil {
+
+			log.Log(err)
+			return
+		}
+
+		_, err = client.GetAll(ctx, q, &apps)
+		log.Log(err)
 
 	}()
 
@@ -408,9 +403,10 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		player, err := db.GetPlayer(playerIDInt)
 		if err != nil {
 			log.Log(err)
-		} else {
-			total = player.GamesCount
+			return
 		}
+
+		total = player.GamesCount
 
 	}()
 

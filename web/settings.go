@@ -75,6 +75,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Log(err)
 			return
 		}
+
 		var gamesSlice []int
 		for _, v := range resp {
 			gamesSlice = append(gamesSlice, v.AppID)
@@ -240,30 +241,27 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			client, ctx, err := db.GetDSClient()
-			if err != nil {
-
-				log.Log(err)
-
-			} else {
-
-				q := datastore.NewQuery(db.KindEvent).Filter("player_id =", playerID).Limit(100)
-				q, err = query.SetOrderOffsetDS(q, map[string]string{})
-				q = q.Order("-created_at")
-				if err != nil {
-
-					log.Log(err)
-
-				} else {
-
-					_, err := client.GetAll(ctx, q, &events)
-					log.Log(err)
-				}
-			}
+			return
 		}
+
+		client, ctx, err := db.GetDSClient()
+		if err != nil {
+
+			log.Log(err)
+			return
+		}
+
+		q := datastore.NewQuery(db.KindEvent).Filter("player_id =", playerID).Limit(100)
+		q, err = query.SetOrderOffsetDS(q, map[string]string{})
+		q = q.Order("-created_at")
+		if err != nil {
+
+			log.Log(err)
+			return
+		}
+
+		_, err = client.GetAll(ctx, q, &events)
+		log.Log(err)
 
 	}(r)
 
@@ -278,13 +276,11 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			total, err = db.CountPlayerEvents(playerID)
-			log.Log(err)
-
+			return
 		}
+
+		total, err = db.CountPlayerEvents(playerID)
+		log.Log(err)
 
 	}(r)
 

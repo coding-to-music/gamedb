@@ -35,18 +35,17 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			gorm = gorm.Select([]string{"type", "count(type) as count"})
-			gorm = gorm.Where("is_free = ?", "1")
-			gorm = gorm.Table("apps")
-			gorm = gorm.Group("type")
-			gorm = gorm.Order("count DESC")
-			gorm = gorm.Find(&types)
-
-			log.Log(gorm.Error)
+			return
 		}
+
+		gorm = gorm.Select([]string{"type", "count(type) as count"})
+		gorm = gorm.Where("is_free = ?", "1")
+		gorm = gorm.Table("apps")
+		gorm = gorm.Group("type")
+		gorm = gorm.Order("count DESC")
+		gorm = gorm.Find(&types)
+
+		log.Log(gorm.Error)
 
 	}()
 
@@ -114,36 +113,35 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			log.Log(err)
-
-		} else {
-
-			gorm = gorm.Model(&db.App{})
-			gorm = gorm.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
-			gorm = gorm.Where("is_free = ?", "1")
-
-			search := query.GetSearchString("value")
-			if search != "" {
-				gorm = gorm.Where("name LIKE ?", "%"+search+"%")
-			}
-
-			types := query.GetSearchSlice("types")
-			if len(types) > 0 {
-				gorm = gorm.Where("type IN (?)", types)
-			}
-
-			gorm = query.SetOrderOffsetGorm(gorm, session.GetCountryCode(r), map[string]string{
-				"0": "name",
-				"1": "reviews_score",
-			})
-
-			gorm = gorm.Count(&filtered)
-
-			gorm = gorm.Limit(100)
-
-			gorm = gorm.Find(&apps)
-
-			log.Log(gorm.Error)
+			return
 		}
+
+		gorm = gorm.Model(&db.App{})
+		gorm = gorm.Select([]string{"id", "name", "icon", "type", "platforms", "reviews_score"})
+		gorm = gorm.Where("is_free = ?", "1")
+
+		search := query.GetSearchString("value")
+		if search != "" {
+			gorm = gorm.Where("name LIKE ?", "%"+search+"%")
+		}
+
+		types := query.GetSearchSlice("types")
+		if len(types) > 0 {
+			gorm = gorm.Where("type IN (?)", types)
+		}
+
+		gorm = query.SetOrderOffsetGorm(gorm, session.GetCountryCode(r), map[string]string{
+			"0": "name",
+			"1": "reviews_score",
+		})
+
+		gorm = gorm.Count(&filtered)
+
+		gorm = gorm.Limit(100)
+
+		gorm = gorm.Find(&apps)
+
+		log.Log(gorm.Error)
 
 	}(r)
 
