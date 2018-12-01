@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"encoding/json"
 	"errors"
 	"strconv"
 	"time"
@@ -126,7 +127,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	// Update from API
-	err = pack.Update()
+	err = updatePackagePICS(&pack)
 	if err != nil && err != steam.ErrPackageNotFound {
 		return true, err
 	}
@@ -150,4 +151,63 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	return false, err
+}
+
+func updatePackagePICS(pack *db.Package) (err error) {
+
+	prices := db.ProductPrices{}
+
+	for _, code := range helpers.GetActiveCountries() {
+
+		// Get package details
+		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
+		if err != nil {
+
+			// Presume that if not found in one language, wont be found in any.
+			if err == steam.ErrPackageNotFound {
+				break
+			}
+
+			return err
+		}
+
+		prices.AddPriceFromPackage(code, response)
+
+		if code == steam.CountryUS {
+
+			// Controller
+			controllerString, err := json.Marshal(response.Data.Controller)
+			if err != nil {
+				return err
+			}
+
+			// Platforms
+			var platforms []string
+			if response.Data.Platforms.Linux {
+				platforms = append(platforms, "linux")
+			}
+			if response.Data.Platforms.Windows {
+				platforms = append(platforms, "windows")
+			}
+			if response.Data.Platforms.Windows {
+				platforms = append(platforms, "macos")
+			}
+
+			platformsString, err := json.Marshal(platforms)
+			if err != nil {
+				return err
+			}
+
+			//
+			pack.ImageHeader = response.Data.HeaderImage
+			pack.ImageLogo = response.Data.SmallLogo
+			pack.ImageHeader = response.Data.HeaderImage
+			pack.Platforms = string(platformsString)
+			pack.Controller = string(controllerString)
+			pack.ReleaseDate = response.Data.ReleaseDate.Date
+			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
+		}
+	}
+
+	return pack.SetPrices(prices)
 }

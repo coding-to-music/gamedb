@@ -67,22 +67,22 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	var appBeforeUpdate = app
 
-	err = updatePics(&app, message)
+	err = updateAppPICS(&app, message)
 	if err != nil {
 		return true, err
 	}
 
-	err = updateDetails(&app)
+	err = updateAppDetails(&app)
 	if err != nil && err != steam.ErrAppNotFound {
 		return true, err
 	}
 
-	err = updateAchievements(&app)
+	err = updateAppAchievements(&app)
 	if err != nil {
 		return true, err
 	}
 
-	err = updateSchema(&app)
+	err = updateAppSchema(&app)
 	if err != nil {
 		return true, err
 	}
@@ -102,7 +102,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	}
 
-	//
+	// Misc
 	app.Type = strings.ToLower(app.Type)
 	app.ReleaseState = strings.ToLower(app.ReleaseState)
 
@@ -115,7 +115,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	return false, nil
 }
 
-func updatePics(app *db.App, message RabbitMessageProduct) (err error) {
+func updateAppPICS(app *db.App, message RabbitMessageProduct) (err error) {
 
 	if message.ChangeNumber > app.PICSChangeNumber {
 		app.PICSChangeNumberDate = time.Now()
@@ -238,7 +238,7 @@ func updatePics(app *db.App, message RabbitMessageProduct) (err error) {
 	return nil
 }
 
-func updateDetails(app *db.App) error {
+func updateAppDetails(app *db.App) error {
 
 	prices := db.ProductPrices{}
 
@@ -363,12 +363,10 @@ func updateDetails(app *db.App) error {
 		}
 	}
 
-	err := app.SetPrices(prices)
-
-	return err
+	return app.SetPrices(prices)
 }
 
-func updateAchievements(app *db.App) error {
+func updateAppAchievements(app *db.App) error {
 
 	percentages, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 
@@ -388,7 +386,7 @@ func updateAchievements(app *db.App) error {
 	return nil
 }
 
-func updateSchema(app *db.App) error {
+func updateAppSchema(app *db.App) error {
 
 	schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
 

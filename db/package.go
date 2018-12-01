@@ -415,64 +415,6 @@ func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{})
 	}
 }
 
-// Loop through every language and get prices for each one
-// Saves other setails i nenglish only
-func (pack *Package) Update() (err error) {
-
-	prices := ProductPrices{}
-
-	for _, code := range helpers.GetActiveCountries() {
-
-		// Get package details
-		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
-		if err != nil {
-
-			// Presume that if not found in one language, wont be found in any.
-			if err == steam.ErrPackageNotFound {
-				break
-			}
-
-			log.Log(err)
-			continue
-		}
-
-		prices.AddPriceFromPackage(code, response)
-
-		if code == steam.CountryUS {
-
-			// Controller
-			controllerString, err := json.Marshal(response.Data.Controller)
-			log.Log(err)
-
-			// Platforms
-			var platforms []string
-			if response.Data.Platforms.Linux {
-				platforms = append(platforms, "linux")
-			}
-			if response.Data.Platforms.Windows {
-				platforms = append(platforms, "windows")
-			}
-			if response.Data.Platforms.Windows {
-				platforms = append(platforms, "macos")
-			}
-
-			platformsString, err := json.Marshal(platforms)
-			log.Log(err)
-
-			//
-			pack.ImageHeader = response.Data.HeaderImage
-			pack.ImageLogo = response.Data.SmallLogo
-			pack.ImageHeader = response.Data.HeaderImage
-			pack.Platforms = string(platformsString)
-			pack.Controller = string(controllerString)
-			pack.ReleaseDate = response.Data.ReleaseDate.Date
-			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
-		}
-	}
-
-	return pack.SetPrices(prices)
-}
-
 func IsValidPackageID(id int) bool {
 	return id != 0
 }
