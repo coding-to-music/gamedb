@@ -51,12 +51,12 @@ func (p ProductPrice) GetIcon() string {
 	}
 }
 
-func (p ProductPrice) GetPercentChange() string {
+func (p ProductPrice) GetPercentChange() float64 {
 
 	if math.IsInf(p.DifferencePercent, 0) {
-		return ""
+		return 0
 	}
-	return "(" + helpers.FloatToString(p.DifferencePercent, 0) + "%)"
+	return helpers.RoundFloatTo2DP(p.DifferencePercent)
 
 }
 
@@ -67,19 +67,19 @@ func (p ProductPrice) OutputForJSON() (output []interface{}) {
 	log.Log(err)
 
 	return []interface{}{
-		p.AppID,
-		p.PackageID,
-		p.Currency,
-		p.Name,
-		p.GetIcon(),
-		p.GetPath(),
-		locale.Format(p.PriceBefore),
-		locale.Format(p.PriceAfter),
-		locale.Format(p.Difference),
-		p.GetPercentChange(),
-		p.CreatedAt.Format(helpers.DateTime),
-		p.CreatedAt.Unix(),
-		p.Difference, // Raw difference
+		p.AppID,                              // 0
+		p.PackageID,                          // 1
+		p.Currency,                           // 2
+		p.Name,                               // 3
+		p.GetIcon(),                          // 4
+		p.GetPath(),                          // 5
+		locale.Format(p.PriceBefore),         // 6
+		locale.Format(p.PriceAfter),          // 7
+		locale.Format(p.Difference),          // 8
+		p.GetPercentChange(),                 // 9
+		p.CreatedAt.Format(helpers.DateTime), // 10
+		p.CreatedAt.Unix(),                   // 11
+		p.Difference,                         // 12 Raw difference
 	}
 }
 

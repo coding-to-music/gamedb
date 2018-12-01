@@ -1,0 +1,16 @@
+#price-changes-page {
+
+    table.table tbody {
+        @for $i from 0 through 100 {
+            tr.col-grad-#{$i} {
+                $bg: mix(#f5c6cb, #c3e6cb, $i);
+                background-color: $bg;
+            }
+
+            tr.col-grad-#{$i}:hover {
+                $bg: mix(#f5c6cb, #c3e6cb, $i);
+                background-color: darken($bg, 10);
+            }
+        }
+    }
+}
