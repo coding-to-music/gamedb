@@ -81,3 +81,12 @@ func FirstInts(slice []int, x int) []int {
 	x = int(math.Min(float64(x), float64(len(slice))))
 	return slice[0:x]
 }
+
+func Filter(ss []string, filter func(string) bool) (ret []string) {
+	for _, s := range ss {
+		if filter(s) {
+			ret = append(ret, s)
+		}
+	}
+	return
+}
