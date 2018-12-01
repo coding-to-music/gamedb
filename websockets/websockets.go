@@ -3,13 +3,13 @@ package websockets
 import (
 	"encoding/json"
 	"errors"
-	"math/rand"
 	"net/http"
 	"strings"
 
 	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
+	"github.com/satori/go.uuid"
 )
 
 type WebsocketPage string
@@ -41,7 +41,7 @@ func init() {
 	for _, v := range pagesSlice {
 		pages[v] = Page{
 			name:        v,
-			connections: map[int]*websocket.Conn{},
+			connections: map[uuid.UUID]*websocket.Conn{},
 		}
 	}
 }
@@ -70,7 +70,10 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page.setConnection(connection)
+	err = page.setConnection(connection)
+	if err != nil {
+		log.Log(err)
+	}
 }
 
 func GetPage(page WebsocketPage) (p Page, err error) {
@@ -83,15 +86,23 @@ func GetPage(page WebsocketPage) (p Page, err error) {
 
 type Page struct {
 	name        WebsocketPage
-	connections map[int]*websocket.Conn
+	connections map[uuid.UUID]*websocket.Conn
 }
 
 func (p Page) HasConnections() bool {
 	return len(p.connections) > 0
 }
 
-func (p *Page) setConnection(conn *websocket.Conn) {
-	p.connections[rand.Int()] = conn
+func (p *Page) setConnection(conn *websocket.Conn) error {
+
+	id, err := uuid.NewV4()
+	if err != nil {
+		return err
+	}
+
+	p.connections[id] = conn
+
+	return nil
 }
 
 func (p *Page) Send(data interface{}) {
