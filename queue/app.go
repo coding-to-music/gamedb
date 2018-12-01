@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -66,13 +67,61 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	var appBeforeUpdate = app
 
-	// Update with new details
-	app.ID = message.ID
+	err = updatePics(&app, message)
+	if err != nil {
+		return true, err
+	}
+
+	err = updateDetails(&app)
+	if err != nil && err != steam.ErrAppNotFound {
+		return true, err
+	}
+
+	err = updateAchievements(&app)
+	if err != nil {
+		return true, err
+	}
+
+	err = updateSchema(&app)
+	if err != nil {
+		return true, err
+	}
+
+	// Save price changes
+	err = savePriceChanges(appBeforeUpdate, app)
+	if err != nil {
+		return true, err
+	}
+
+	// Send websocket
+	page, err := websockets.GetPage(websockets.PageApps)
+	if err != nil {
+		return true, err
+	} else if page.HasConnections() {
+		page.Send(app.OutputForJSON(steam.CountryUS))
+
+	}
+
+	//
+	app.Type = strings.ToLower(app.Type)
+	app.ReleaseState = strings.ToLower(app.ReleaseState)
+
+	// Save new data
+	gorm = gorm.Save(&app)
+	if gorm.Error != nil {
+		return true, gorm.Error
+	}
+
+	return false, nil
+}
+
+func updatePics(app *db.App, message RabbitMessageProduct) (err error) {
 
 	if message.ChangeNumber > app.PICSChangeNumber {
 		app.PICSChangeNumberDate = time.Now()
 	}
 
+	app.ID = message.ID
 	app.PICSChangeNumber = message.ChangeNumber
 	app.Name = message.KeyValues.Name
 
@@ -83,7 +132,9 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 			app.ID = int(i64)
 
 		case "common":
@@ -92,34 +143,46 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 			for _, vv := range v.Children {
 				if vv.Value == nil {
 					bytes, err := json.Marshal(vv.ToNestedMaps())
-					queueLog(err)
+					if err != nil {
+						return err
+					}
 					common[vv.Name] = string(bytes)
 				} else {
 					common[vv.Name] = vv.Value.(string)
 				}
 			}
 			err = app.SetCommon(common)
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 		case "extended":
 
 			err = app.SetExtended(v.GetExtended())
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 		case "config":
 
 			config, launch := v.GetAppConfig()
 
 			err = app.SetConfig(config)
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 			err = app.SetLaunch(launch)
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 		case "depots":
 
 			err = app.SetDepots(v.GetAppDepots())
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 		case "public_only":
 
@@ -133,63 +196,214 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 			for _, vv := range v.Children {
 				if vv.Value == nil {
 					bytes, err := json.Marshal(vv.ToNestedMaps())
-					queueLog(err)
+					if err != nil {
+						return err
+					}
 					common[vv.Name] = string(bytes)
 				} else {
 					common[vv.Name] = vv.Value.(string)
 				}
 			}
 			err = app.SetUFS(common)
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 		case "install":
 
 			err = app.SetInstall(v.ToNestedMaps())
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 		case "localization":
 
 			err = app.SetLocalization(v.ToNestedMaps())
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 		case "sysreqs":
 
 			err = app.SetSystemRequirements(v.ToNestedMaps())
-			queueLog(err)
+			if err != nil {
+				return err
+			}
 
 		default:
 			queueLog(log.SeverityInfo, v.Name+" field in app PICS ignored (Change "+strconv.Itoa(app.PICSChangeNumber)+")")
 		}
 	}
 
-	// Update from API
-	errs := app.UpdateFromAPI()
-	for _, v := range errs {
-		queueLog(v)
-	}
-	for _, v := range errs {
-		if v != nil && v != steam.ErrAppNotFound {
-			return true, v
+	return nil
+}
+
+func updateDetails(app *db.App) error {
+
+	prices := db.ProductPrices{}
+
+	for _, code := range helpers.GetActiveCountries() {
+
+		// Get app details
+		response, _, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
+		if err != nil {
+
+			// Presume that if not found in one language, wont be found in any.
+			if err == steam.ErrAppNotFound {
+				break
+			}
+
+			return err
+		}
+
+		prices.AddPriceFromApp(code, response)
+
+		if code == steam.CountryUS {
+
+			// Screenshots
+			screenshotsString, err := json.Marshal(response.Data.Screenshots)
+			if err != nil {
+				return err
+			}
+
+			// Movies
+			moviesString, err := json.Marshal(response.Data.Movies)
+			if err != nil {
+				return err
+			}
+
+			// Achievements
+			achievementsString, err := json.Marshal(response.Data.Achievements)
+			if err != nil {
+				return err
+			}
+
+			// DLC
+			dlcString, err := json.Marshal(response.Data.DLC)
+			if err != nil {
+				return err
+			}
+
+			// Packages
+			packagesString, err := json.Marshal(response.Data.Packages)
+			if err != nil {
+				return err
+			}
+
+			// Publishers
+			publishersString, err := json.Marshal(response.Data.Publishers)
+			if err != nil {
+				return err
+			}
+
+			// Developers
+			developersString, err := json.Marshal(response.Data.Developers)
+			if err != nil {
+				return err
+			}
+
+			// Categories
+			var categories []int8
+			for _, v := range response.Data.Categories {
+				categories = append(categories, v.ID)
+			}
+
+			categoriesString, err := json.Marshal(categories)
+			if err != nil {
+				return err
+			}
+
+			genresString, err := json.Marshal(response.Data.Genres)
+			if err != nil {
+				return err
+			}
+
+			// Platforms
+			var platforms []string
+			if response.Data.Platforms.Linux {
+				platforms = append(platforms, "linux")
+			}
+			if response.Data.Platforms.Windows {
+				platforms = append(platforms, "windows")
+			}
+			if response.Data.Platforms.Windows {
+				platforms = append(platforms, "macos")
+			}
+
+			platformsString, err := json.Marshal(platforms)
+			if err != nil {
+				return err
+			}
+
+			// Other
+			app.Name = response.Data.Name
+			app.Type = response.Data.Type
+			app.IsFree = response.Data.IsFree
+			app.DLC = string(dlcString)
+			app.DLCCount = len(response.Data.DLC)
+			app.ShortDescription = response.Data.ShortDescription
+			app.HeaderImage = response.Data.HeaderImage
+			app.Developers = string(developersString)
+			app.Publishers = string(publishersString)
+			app.Packages = string(packagesString)
+			app.MetacriticScore = response.Data.Metacritic.Score
+			app.MetacriticURL = response.Data.Metacritic.URL
+			app.Categories = string(categoriesString)
+			app.Genres = string(genresString)
+			app.Screenshots = string(screenshotsString)
+			app.Movies = string(moviesString)
+			app.Achievements = string(achievementsString)
+			app.Background = response.Data.Background
+			app.Platforms = string(platformsString)
+			app.GameID = response.Data.Fullgame.AppID
+			app.GameName = response.Data.Fullgame.Name
+			app.ReleaseDate = response.Data.ReleaseDate.Date
+			app.ReleaseDateUnix = app.GetReleaseDateUnix() // Must be after setting app.ReleaseDate
+			app.ComingSoon = response.Data.ReleaseDate.ComingSoon
 		}
 	}
 
-	// Save price changes
-	err = savePriceChanges(appBeforeUpdate, app)
+	err := app.SetPrices(prices)
+
+	return err
+}
+
+func updateAchievements(app *db.App) error {
+
+	percentages, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
+
+	// This endpoint seems to error if the app has no achievement data, so it's probably fine.
+	err2, ok := err.(steam.Error)
+	if ok && (err2.Code() == 403 || err2.Code() == 500) {
+		return nil
+	}
+
+	percentagesString, err := json.Marshal(percentages)
 	if err != nil {
-		return true, err
+		return err
 	}
 
-	// Send websocket
-	page, err := websockets.GetPage(websockets.PageApps)
-	if err == nil && page.HasConnections() {
-		page.Send(app.OutputForJSON(steam.CountryUS))
+	app.AchievementPercentages = string(percentagesString)
+
+	return nil
+}
+
+func updateSchema(app *db.App) error {
+
+	schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
+
+	// This endpoint seems to error if the app has no schema, so it's probably fine.
+	err2, ok := err.(steam.Error)
+	if ok && (err2.Code() == 403) {
+		return nil
 	}
 
-	// Save new data
-	gorm = gorm.Save(&app)
-	if gorm.Error != nil {
-		return true, gorm.Error
+	schemaString, err := json.Marshal(schema)
+	if err != nil {
+		return err
 	}
 
-	return false, err
+	app.Schema = string(schemaString)
+
+	return nil
 }
