@@ -51,7 +51,13 @@ module.exports = function (grunt) {
         cachebreaker: {
             dev: {
                 options: {
-                    match: ['assets/compiled.min.css', 'assets/compiled.min.js'],
+                    match: [
+                        {
+                            'compiled.min.css': 'assets/compiled.min.css',
+                            'compiled.min.js': 'assets/compiled.min.js',
+                        }
+                    ],
+                    replacement: 'md5',
                 },
                 files: {
                     src: ['templates/_header.gohtml', 'templates/_footer.gohtml']
