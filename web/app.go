@@ -17,7 +17,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func AppHandler(w http.ResponseWriter, r *http.Request) {
+func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -295,7 +295,7 @@ type appReviewTemplate struct {
 	Vote       bool
 }
 
-func AppNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {

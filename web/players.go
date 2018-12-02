@@ -17,17 +17,17 @@ import (
 
 func playersRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", PlayersHandler)
-	r.Post("/", PlayerIDHandler)
-	r.Get("/ajax", PlayersAjaxHandler)
-	r.Get("/{id:[0-9]+}", PlayerHandler)
-	r.Get("/{id:[0-9]+}/ajax/games", PlayerGamesAjaxHandler)
-	r.Get("/{id:[0-9]+}/ajax/update", PlayersUpdateAjaxHandler)
-	r.Get("/{id:[0-9]+}/{slug}", PlayerHandler)
+	r.Get("/", playersHandler)
+	r.Post("/", playerIDHandler)
+	r.Get("/ajax", playersAjaxHandler)
+	r.Get("/{id:[0-9]+}", playerHandler)
+	r.Get("/{id:[0-9]+}/ajax/games", playerGamesAjaxHandler)
+	r.Get("/{id:[0-9]+}/ajax/update", playersUpdateAjaxHandler)
+	r.Get("/{id:[0-9]+}/{slug}", playerHandler)
 	return r
 }
 
-func PlayersHandler(w http.ResponseWriter, r *http.Request) {
+func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := playersTemplate{}
@@ -88,7 +88,7 @@ type playersTemplate struct {
 	Date         string
 }
 
-func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
+func playerIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	post := r.PostFormValue("id")
 	post = path.Base(post)
@@ -120,7 +120,7 @@ func PlayerIDHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/players/"+strconv.FormatInt(dbPlayer.PlayerID, 10), 302)
 }
 
-func PlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())

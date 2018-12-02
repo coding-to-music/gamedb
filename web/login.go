@@ -20,14 +20,14 @@ import (
 
 func loginRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", LoginHandler)
-	r.Post("/", LoginPostHandler)
-	r.Get("/openid", LoginOpenIDHandler)
-	r.Get("/callback", LoginCallbackHandler)
+	r.Get("/", loginHandler)
+	r.Post("/", loginPostHandler)
+	r.Get("/openid", loginOpenIDHandler)
+	r.Get("/callback", loginOpenIDCallbackHandler)
 	return r
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
@@ -49,7 +49,7 @@ type loginTemplate struct {
 var ErrInvalidCreds = errors.New("invalid username or password")
 var ErrInvalidCaptcha = errors.New("please check the captcha")
 
-func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
+func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
@@ -147,7 +147,7 @@ func LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
+func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
@@ -180,7 +180,7 @@ func LoginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 var nonceStore = openid.NewSimpleNonceStore()
 var discoveryCache = openid.NewSimpleDiscoveryCache()
 
-func LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 

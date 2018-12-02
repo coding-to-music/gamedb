@@ -28,13 +28,13 @@ func adminRouter() http.Handler {
 	r.Use(basicauth.New("Steam", map[string][]string{
 		viper.GetString("ADMIN_USER"): {viper.GetString("ADMIN_PASS")},
 	}))
-	r.Get("/", AdminHandler)
-	r.Get("/{option}", AdminHandler)
-	r.Post("/{option}", AdminHandler)
+	r.Get("/", adminHandler)
+	r.Get("/{option}", adminHandler)
+	r.Post("/{option}", adminHandler)
 	return r
 }
 
-func AdminHandler(w http.ResponseWriter, r *http.Request) {
+func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	option := chi.URLParam(r, "option")
 

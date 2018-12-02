@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func ChangeHandler(w http.ResponseWriter, r *http.Request) {
+func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

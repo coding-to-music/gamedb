@@ -17,7 +17,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func PlayerHandler(w http.ResponseWriter, r *http.Request) {
+func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	var toasts []Toast
@@ -341,7 +341,7 @@ func queuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (e
 	return err
 }
 
-func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerID := chi.URLParam(r, "id")
 
@@ -435,7 +435,7 @@ func PlayerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func PlayersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response PlayersUpdateResponse
 

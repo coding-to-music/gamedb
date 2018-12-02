@@ -112,7 +112,7 @@ func Serve() error {
 	fileServer(r)
 
 	// 404
-	r.NotFound(Error404Handler)
+	r.NotFound(error404Handler)
 
 	return http.ListenAndServe("0.0.0.0:"+viper.GetString("PORT"), r)
 }
@@ -421,6 +421,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 }
 
 func (t GlobalTemplate) showAd() bool {
+	return true
 	return !t.isLocal()
 }
 

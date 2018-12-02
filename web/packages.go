@@ -14,14 +14,14 @@ import (
 
 func packagesRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", PackagesHandler)
-	r.Get("/ajax", PackagesAjaxHandler)
-	r.Get("/{id}", PackageHandler)
-	r.Get("/{id}/{slug}", PackageHandler)
+	r.Get("/", packagesHandler)
+	r.Get("/ajax", packagesAjaxHandler)
+	r.Get("/{id}", packageHandler)
+	r.Get("/{id}/{slug}", packageHandler)
 	return r
 }
 
-func PackagesHandler(w http.ResponseWriter, r *http.Request) {
+func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	total, err := db.CountPackages()
 	log.Log(err)
@@ -39,7 +39,7 @@ type packagesTemplate struct {
 	GlobalTemplate
 }
 
-func PackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 

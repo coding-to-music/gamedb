@@ -11,13 +11,13 @@ import (
 
 func changesRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", ChangesHandler)
-	r.Get("/ajax", ChangesAjaxHandler)
-	r.Get("/{id}", ChangeHandler)
+	r.Get("/", changesHandler)
+	r.Get("/ajax", changesAjaxHandler)
+	r.Get("/{id}", changeHandler)
 	return r
 }
 
-func ChangesHandler(w http.ResponseWriter, r *http.Request) {
+func changesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := changesTemplate{}
@@ -32,7 +32,7 @@ type changesTemplate struct {
 	GlobalTemplate
 }
 
-func ChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 

@@ -17,15 +17,15 @@ import (
 
 func gamesRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", AppsHandler)
-	r.Get("/ajax", AppsAjaxHandler)
-	r.Get("/{id}", AppHandler)
-	r.Get("/{id}/ajax/news", AppNewsAjaxHandler)
-	r.Get("/{id}/{slug}", AppHandler)
+	r.Get("/", appsHandler)
+	r.Get("/ajax", appsAjaxHandler)
+	r.Get("/{id}", appHandler)
+	r.Get("/{id}/ajax/news", appNewsAjaxHandler)
+	r.Get("/{id}/{slug}", appHandler)
 	return r
 }
 
-func AppsHandler(w http.ResponseWriter, r *http.Request) {
+func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appsTemplate{}
@@ -202,7 +202,7 @@ type appsTemplate struct {
 	Developers   []db.Developer
 }
 
-func AppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 

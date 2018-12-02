@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func PackageHandler(w http.ResponseWriter, r *http.Request) {
+func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 

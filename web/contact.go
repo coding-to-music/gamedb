@@ -15,12 +15,12 @@ import (
 
 func contactRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", ContactHandler)
-	r.Post("/", PostContactHandler)
+	r.Get("/", contactHandler)
+	r.Post("/", postContactHandler)
 	return r
 }
 
-func ContactHandler(w http.ResponseWriter, r *http.Request) {
+func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
 	t.Fill(w, r, "Contact")
@@ -38,7 +38,7 @@ type contactTemplate struct {
 	Success         bool
 }
 
-func PostContactHandler(w http.ResponseWriter, r *http.Request) {
+func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := func() (err error) {
 
