@@ -43,18 +43,19 @@ module.exports = function (grunt) {
                 src: [
                     'assets/css/third-party/*.css',
                     'assets/css/sass/*.css',
-                    'assets/css/*.css'
+                    'assets/css/*.css',
                 ],
                 dest: 'assets/concatenate.css'
             }
         },
-        cacheBust: {
-            taskName: {
+        cachebreaker: {
+            dev: {
                 options: {
-                    assets: ['assets/compiled.min.css', 'assets/compiled.min.js'],
-                    queryString: true,
+                    match: ['assets/compiled.min.css', 'assets/compiled.min.js'],
                 },
-                src: ['templates/_header.gohtml', 'templates/_footer.gohtml']
+                files: {
+                    src: ['templates/_header.gohtml', 'templates/_footer.gohtml']
+                }
             }
         },
         watch: {
@@ -86,7 +87,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-cache-bust');
+    grunt.loadNpmTasks('grunt-cache-breaker');
     grunt.loadNpmTasks('grunt-notify');
     grunt.loadNpmTasks('grunt-sass');
 
