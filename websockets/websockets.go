@@ -50,17 +50,11 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	log.Log(log.SeverityDebug, "1")
-
 	page, err := GetPage(WebsocketPage(id))
 	if err != nil {
 
-		log.Log(log.SeverityDebug, "2")
-
 		bytes, err := json.Marshal(websocketPayload{Error: "Invalid page"})
 		log.Log(err)
-
-		log.Log(log.SeverityDebug, "3")
 
 		_, err = w.Write(bytes)
 		log.Log(err)
@@ -70,26 +64,16 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade the connection
 	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-
-		log.Log(log.SeverityDebug, "4")
-
 		if !strings.Contains(err.Error(), "websocket: not a websocket handshake") {
 			log.Log(err)
 		}
-
-		log.Log(log.SeverityDebug, "5")
-
 		return
 	}
 
-	log.Log(log.SeverityDebug, "5")
-
 	err = page.setConnection(connection)
 	if err != nil {
-		log.Log(log.SeverityDebug, "6")
 		log.Log(err)
 	}
-	log.Log(log.SeverityDebug, "7")
 }
 
 func GetPage(page WebsocketPage) (p Page, err error) {
