@@ -399,7 +399,7 @@ func (t GlobalTemplate) isAdmin() bool {
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
-		"userID":         t.userID,
+		"userID":         strconv.Itoa(t.userID), // Too long for JS int
 		"userLevel":      t.userLevel,
 		"userName":       t.userName,
 		"userEmail":      t.userEmail,
