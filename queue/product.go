@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
@@ -260,9 +261,15 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 		case "workingdir":
 			launchItem.WorkingDir = v.Value.(string)
 		case "ownsdlc":
-			dlc, err := strconv.Atoi(v.Value.(string))
-			queueLog(err)
-			launchItem.OwnsDLC = dlc
+			DLCSlice := strings.Split(",", v.Value.(string))
+			for _, v := range DLCSlice {
+				DLC, err := strconv.Atoi(strings.TrimSpace(v))
+				queueLog(err)
+				if err == nil {
+					launchItem.OwnsDLCs = append(launchItem.OwnsDLCs, DLC)
+				}
+			}
+
 		case "config":
 			v.getAppLaunchItem(launchItem)
 		default:

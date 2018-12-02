@@ -33,7 +33,7 @@ type PICSAppConfigLaunchItem struct {
 	Typex             string `json:"type"`
 	OSList            string `json:"oslist"`
 	OSArch            string `json:"osarch"`
-	OwnsDLC           int    `json:"ownsdlc"`
+	OwnsDLCs          []int  `json:"ownsdlc"`
 	BetaKey           string `json:"betakey"`
 	WorkingDir        string `json:"workingdir"`
 	VACModuleFilename string `json:"vacmodulefilename"`
