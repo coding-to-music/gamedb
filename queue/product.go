@@ -165,6 +165,10 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 				if vv.Value.(string) == "1" {
 					depot.LVCache = true
 				}
+			case "allowaddremovewhilerunning":
+				if vv.Value.(string) == "1" {
+					depot.AllowAddRemoveWhileRunning = true
+				}
 			default:
 				queueLog(log.SeverityWarning, "GetAppDepots missing case: "+vv.Name)
 			}

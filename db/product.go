@@ -44,19 +44,20 @@ type PicsDepots struct {
 	Extra    map[string]string
 }
 type PICSAppDepotItem struct {
-	ID                 int               `json:"id"`
-	Name               string            `json:"name"`
-	Configs            map[string]string `json:"config"`
-	Manifests          map[string]string `json:"manifests"`
-	EncryptedManifests string            `json:"encryptedmanifests"`
-	MaxSize            int64             `json:"maxsize"`
-	App                int               `json:"depotfromapp"`
-	DLCApp             int               `json:"dlcappid"`
-	SystemDefined      bool              `json:"systemdefined"`
-	Optional           bool              `json:"optional"`
-	SharedInstall      bool              `json:"sharedinstall"`
-	SharedDepotType    bool              `json:"shareddepottype"`
-	LVCache            bool              `json:"lvcache"`
+	ID                         int               `json:"id"`
+	Name                       string            `json:"name"`
+	Configs                    map[string]string `json:"config"`
+	Manifests                  map[string]string `json:"manifests"`
+	EncryptedManifests         string            `json:"encryptedmanifests"`
+	MaxSize                    int64             `json:"maxsize"`
+	App                        int               `json:"depotfromapp"`
+	DLCApp                     int               `json:"dlcappid"`
+	SystemDefined              bool              `json:"systemdefined"`
+	Optional                   bool              `json:"optional"`
+	SharedInstall              bool              `json:"sharedinstall"`
+	SharedDepotType            bool              `json:"shareddepottype"`
+	LVCache                    bool              `json:"lvcache"`
+	AllowAddRemoveWhileRunning bool              `json:"allowaddremovewhilerunning"`
 }
 type PICSAppDepotBranches struct {
 	Name             string `json:"name"`
