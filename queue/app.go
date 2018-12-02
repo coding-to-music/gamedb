@@ -88,6 +88,11 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 		return true, err
 	}
 
+	errs := app.UpdateFromRequest("")
+	for _, v := range errs {
+		log.Log(v) // todo, requeue here if no errors should return from UpdateFromRequest
+	}
+
 	// Save price changes
 	err = savePriceChanges(appBeforeUpdate, app)
 	if err != nil {
@@ -99,8 +104,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	if err != nil {
 		return true, err
 	} else if page.HasConnections() {
-		page.Send(app.OutputForJSON(steam.CountryUS))
-
+		page.Send(app.OutputForJSON(steam.CountryUS)) // todo, send one record with an array of all prices
 	}
 
 	// Misc
