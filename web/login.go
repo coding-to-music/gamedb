@@ -237,6 +237,7 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 		session.PlayerID:    strconv.FormatInt(player.PlayerID, 10),
 		session.PlayerName:  player.PersonaName,
 		session.PlayerLevel: strconv.Itoa(player.Level),
+		session.UserEmail:   user.Email,
 		session.UserCountry: user.CountryCode,
 	})
 	if err != nil {

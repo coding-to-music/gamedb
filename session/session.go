@@ -13,6 +13,7 @@ import (
 const (
 	PlayerID    = "id"
 	PlayerName  = "name"
+	UserEmail   = "email"
 	PlayerLevel = "level"
 	UserCountry = "country"
 )

@@ -267,7 +267,8 @@ type GlobalTemplate struct {
 	Env         string // Environment
 
 	// Session
-	userName           string // Username
+	userName           string
+	userEmail          string
 	userID             int
 	userLevel          int
 	userCountry        steam.CountryCode
@@ -310,6 +311,10 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.userName, err = session.Read(r, session.PlayerName)
 	log.Log(err)
 
+	// Email
+	t.userEmail, err = session.Read(r, session.UserEmail)
+	log.Log(err)
+
 	// Level
 	level, err := session.Read(r, session.PlayerLevel)
 	log.Log(err)
@@ -335,7 +340,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.flashesBad, err = session.GetBadFlashes(w, r)
 	log.Log(err)
 
-	// All session data
+	// All session data, todo, remove this, security etc
 	t.session, err = session.ReadAll(r)
 	log.Log(err)
 }
@@ -396,6 +401,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"userID":         t.userID,
 		"userLevel":      t.userLevel,
 		"userName":       t.userName,
+		"userEmail":      t.userEmail,
 		"isLoggedIn":     t.isLoggedIn(),
 		"isLocal":        t.isLocal(),
 		"isAdmin":        t.isAdmin(),
