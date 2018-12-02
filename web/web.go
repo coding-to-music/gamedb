@@ -421,7 +421,6 @@ func (t GlobalTemplate) GetUserJSON() string {
 }
 
 func (t GlobalTemplate) showAd() bool {
-	return true
 	return !t.isLocal()
 }
 
