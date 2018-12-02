@@ -61,11 +61,11 @@ module.exports = function (grunt) {
         watch: {
             sass: {
                 files: ['assets/sass/**/*.scss'],
-                tasks: ['sass', 'concat:css', 'cssmin', 'cacheBust', 'clean', 'notify:done']
+                tasks: ['sass', 'concat:css', 'cssmin', 'cachebreaker', 'clean', 'notify:done']
             },
             js: {
                 files: ['assets/js/*.js'],
-                tasks: ['concat:js', 'cacheBust', 'clean', 'notify:done']
+                tasks: ['concat:js', 'cachebreaker', 'clean', 'notify:done']
             }
         },
         clean: [
@@ -105,7 +105,7 @@ module.exports = function (grunt) {
         'concat:js',
 
         //
-        'cacheBust',
+        'cachebreaker',
         'clean',
         'notify:done',
         'watch'
