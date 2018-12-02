@@ -827,6 +827,7 @@
     "github.com/oxequa/realize",
     "github.com/pariz/gountries",
     "github.com/rollbar/rollbar-go",
+    "github.com/satori/go.uuid",
     "github.com/sendgrid/sendgrid-go",
     "github.com/sendgrid/sendgrid-go/helpers/mail",
     "github.com/spf13/viper",
