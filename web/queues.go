@@ -26,8 +26,7 @@ func queuesRouter() http.Handler {
 func queuesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := queuesTemplate{}
-	t.Fill(w, r, "Queues")
-	t.Description = "When new items get added to the site, they go through a queue to not overload the servers."
+	t.Fill(w, r, "Queues", "When new items get added to the site, they go through a queue to not overload the servers.")
 
 	err := returnTemplate(w, r, "queues", t)
 	log.Log(err)

@@ -9,7 +9,7 @@ import (
 func infoHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := GlobalTemplate{}
-	t.Fill(w, r, "Info")
+	t.Fill(w, r, "Info", "")
 
 	err := returnTemplate(w, r, "info", t)
 	log.Log(err)

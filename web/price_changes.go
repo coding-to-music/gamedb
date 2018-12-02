@@ -22,8 +22,7 @@ func priceChangeRouter() http.Handler {
 func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := priceChangesTemplate{}
-	t.Fill(w, r, "Price Changes")
-	t.Description = "Pick up a bargain"
+	t.Fill(w, r, "Price Changes", "Pick up a bargain.")
 
 	err := returnTemplate(w, r, "price_changes", t)
 	log.Log(err)

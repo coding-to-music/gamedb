@@ -38,8 +38,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := commitsTemplate{}
-	t.Fill(w, r, "Commits")
-	t.Description = "The latest commits to the Game DB code base. If a commit is on this list it does not mean it's in the latest deployment."
+	t.Fill(w, r, "Commits", "The latest commits to the Game DB code base. If a commit is on this list it does not mean it's in the latest deployment.")
 
 	var err error
 	t.Commits, _, err = githubClient.Repositories.ListCommits(githubContext, "gamedb", "website", &options)

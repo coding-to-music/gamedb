@@ -32,7 +32,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	t := loginTemplate{}
-	t.Fill(w, r, "Login")
+	t.Fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
 	t.Domain = viper.GetString("DOMAIN")
 

@@ -93,7 +93,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := chatTemplate{}
-	t.Fill(w, r, "Chat")
+	t.Fill(w, r, "Chat", "The Game DB community.")
 
 	// Get ID from URL
 	id := chi.URLParam(r, "id")

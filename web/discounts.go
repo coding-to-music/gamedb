@@ -9,7 +9,7 @@ import (
 func discountsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := discountsTemplate{}
-	t.Fill(w, r, "Discounts")
+	t.Fill(w, r, "Discounts", "")
 
 	err := returnTemplate(w, r, "discounts", t)
 	log.Log(err)

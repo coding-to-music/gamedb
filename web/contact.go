@@ -23,9 +23,8 @@ func contactRouter() http.Handler {
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
-	t.Fill(w, r, "Contact")
+	t.Fill(w, r, "Contact", "Get in touch with Game DB.")
 	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
-	t.Description = "Get in touch."
 
 	err := returnTemplate(w, r, "contact", t)
 	log.Log(err)

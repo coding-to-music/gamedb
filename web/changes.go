@@ -21,8 +21,7 @@ func changesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := changesTemplate{}
-	t.Fill(w, r, "Changes")
-	t.Description = "Every time the Steam library gets updated, a change record is created. We use these to keep website information up to date."
+	t.Fill(w, r, "Changes", "Every time the Steam library gets updated, a change record is created. We use these to keep website information up to date.")
 
 	err := returnTemplate(w, r, "changes", t)
 	log.Log(err)

@@ -22,8 +22,7 @@ func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := upcomingTemplate{}
-	t.Fill(w, r, "Upcoming")
-	t.Description = "All the apps you have to look forward to!"
+	t.Fill(w, r, "Upcoming", "All the apps you have to look forward to!")
 
 	err := returnTemplate(w, r, "upcoming", t)
 	log.Log(err)

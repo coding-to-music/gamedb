@@ -31,7 +31,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := statsTagsTemplate{}
-	t.Fill(w, r, "Tags")
+	t.Fill(w, r, "Tags", "")
 	t.Tags = tags
 	t.Date = config.Value
 	t.Prices = prices

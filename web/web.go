@@ -186,7 +186,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 
 	log.Log(data.Error)
 
-	data.Fill(w, r, "Error")
+	data.Fill(w, r, "Error", "Something has gone wrong!")
 
 	w.WriteHeader(data.Code)
 
@@ -286,13 +286,14 @@ type GlobalTemplate struct {
 	request *http.Request // Internal
 }
 
-func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title string) {
+func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title string, description string) {
 
 	var err error
 
 	t.request = r
 
 	t.Title = title
+	t.Description = description
 	t.Env = viper.GetString("ENV")
 	t.Path = r.URL.Path
 

@@ -54,7 +54,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := freeGamesTemplate{}
-	t.Fill(w, r, "Free Games")
+	t.Fill(w, r, "Free Games", "All the games you can get for free!")
 	t.Types = types
 
 	err := returnTemplate(w, r, "free_games", t)

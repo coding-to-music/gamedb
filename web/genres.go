@@ -31,7 +31,7 @@ func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := statsGenresTemplate{}
-	t.Fill(w, r, "Genres")
+	t.Fill(w, r, "Genres", "")
 	t.Genres = genres
 	t.Date = config.Value
 	t.Prices = prices

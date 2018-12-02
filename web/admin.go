@@ -87,7 +87,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := adminTemplate{}
-	t.Fill(w, r, "Admin")
+	t.Fill(w, r, "Admin", "")
 	t.Configs = configs
 	t.Goroutines = runtime.NumGoroutine()
 

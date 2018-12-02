@@ -24,8 +24,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := statsTemplate{}
-	t.Fill(w, r, "Stats")
-	t.Description = "Some interesting Steam Store stats"
+	t.Fill(w, r, "Stats", "Some interesting Steam Store stats.")
 
 	err := returnTemplate(w, r, "stats", t)
 	log.Log(err)

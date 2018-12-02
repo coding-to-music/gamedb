@@ -11,8 +11,7 @@ import (
 func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newsTemplate{}
-	t.Fill(w, r, "News")
-	t.Description = "All the news from all the games, all in one place."
+	t.Fill(w, r, "News", "All the news from all the games, all in one place.")
 
 	err := returnTemplate(w, r, "news", t)
 	log.Log(err)

@@ -29,7 +29,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appsTemplate{}
-	t.Fill(w, r, "Games")
+	t.Fill(w, r, "Apps", "") // Description gets set later
 	t.Types = db.GetTypesForSelect()
 
 	//
