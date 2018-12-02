@@ -61,6 +61,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	if pack.PICSChangeNumber >= message.ChangeNumber {
+		log.Log(log.SeverityInfo, "Skipping package (Change number already processed)")
 		return false, nil
 	}
 
