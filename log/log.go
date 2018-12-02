@@ -64,7 +64,6 @@ type entry struct {
 	logName   LogName
 	severity  Severity
 	timestamp time.Time
-	stack     string
 }
 
 func (e entry) toText() string {
@@ -83,10 +82,6 @@ func (e entry) toText() string {
 
 	if e.error != "" {
 		ret = append(ret, e.error)
-	}
-
-	if e.stack != "" {
-		ret = append(ret, e.stack)
 	}
 
 	return strings.Join(ret, " - ")
@@ -116,7 +111,7 @@ const (
 	ServiceLocal   Service = "local"   // Default
 
 	// Options
-	OptionStack Option = iota
+	//OptionStack Option = iota
 )
 
 var (
@@ -186,9 +181,6 @@ func Log(interfaces ...interface{}) {
 		case Service:
 			loggingServices = append(loggingServices, val)
 		case Option:
-			if val == OptionStack {
-				entry.stack = string(debug.Stack())
-			}
 		default:
 			Log("Invalid value given to Err")
 		}
@@ -206,7 +198,7 @@ func Log(interfaces ...interface{}) {
 			googleClient.Logger(string(env) + "-" + string(entry.logName)).Log(logging.Entry{
 				Severity:  entry.severity.toGoole(),
 				Timestamp: entry.timestamp,
-				Payload:   entry.toText(),
+				Payload:   entry.toText() + "\n" + string(debug.Stack()),
 			})
 		}
 
