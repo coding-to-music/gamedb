@@ -194,6 +194,10 @@ func Log(interfaces ...interface{}) {
 		}
 	}
 
+	if entry.text == "" && entry.error == "" {
+		return
+	}
+
 	// Send entry
 	for _, v := range loggingServices {
 
