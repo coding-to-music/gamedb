@@ -64,7 +64,7 @@ func main() {
 	// Log number of goroutines
 	go func() {
 		for {
-			time.Sleep(time.Minute)
+			time.Sleep(time.Minute * 10)
 			log.Log("Goroutines running: "+strconv.Itoa(runtime.NumGoroutine()), log.SeverityInfo)
 		}
 	}()
