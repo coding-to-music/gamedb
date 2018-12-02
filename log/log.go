@@ -218,6 +218,10 @@ func Log(interfaces ...interface{}) {
 	}
 }
 
+func Info(interfaces ...interface{}) {
+	Log(append(interfaces, SeverityInfo)...)
+}
+
 func addDefaultService(interfaces ...interface{}) []interface{} {
 
 	for _, v := range interfaces {
