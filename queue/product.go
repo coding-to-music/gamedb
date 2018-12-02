@@ -261,7 +261,7 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 		case "workingdir":
 			launchItem.WorkingDir = v.Value.(string)
 		case "ownsdlc":
-			DLCSlice := strings.Split(",", v.Value.(string))
+			DLCSlice := strings.Split(v.Value.(string), ",")
 			for _, v := range DLCSlice {
 				DLC, err := strconv.Atoi(strings.TrimSpace(v))
 				queueLog(err)
