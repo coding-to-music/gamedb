@@ -694,7 +694,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		defer wg.Done()
 
-		resp, _, err := helpers.GetSteam().GetNews(app.ID, 1000)
+		resp, _, err := helpers.GetSteam().GetNews(app.ID, 10000)
 		if err != nil {
 
 			log.Log(err)
