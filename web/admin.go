@@ -59,7 +59,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminMemcache()
 	case "disable-consumers":
 		go adminDisableConsumers()
-	case "dev":
+	case "run-dev-code":
 		go adminDev()
 	case "queues":
 		err := r.ParseForm()
@@ -84,6 +84,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		db.ConfDevelopersUpdated,
 		db.ConfPublishersUpdated,
 		db.ConfWipeMemcache,
+		db.ConfRunDevCode,
 	})
 	log.Log(err)
 
@@ -970,8 +971,30 @@ func adminMemcache() {
 
 func adminDev() {
 
-	//return
+	//log.Info("Running...")
 	//
+	//client, ctx, err := db.GetDSClient()
+	//log.Log(err)
+	//
+	//q := datastore.NewQuery(db.KindNews)
+	//
+	//var articles []db.News
+	//_, err = client.GetAll(ctx, q, &articles)
+	//log.Log(err)
+	//
+	//var articlesToDelete []*datastore.Key
+	//for _, v := range articles {
+	//	if strings.TrimSpace(v.Contents) == "" {
+	//		articlesToDelete = append(articlesToDelete, v.GetKey())
+	//		fmt.Println(v.ArticleID)
+	//	}
+	//}
+	//
+	//err = db.BulkDeleteKinds(articlesToDelete, true)
+	//log.Log(err)
+
+	// ######################################################
+
 	//log.Log(log.SeverityInfo, "Dev")
 	//
 	//players, err := db.GetAllPlayers("__key__", 0)
@@ -996,6 +1019,14 @@ func adminDev() {
 	//}
 	//
 	//log.Log(log.SeverityInfo, "Done")
+
+	err := db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
+	log.Log(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
+
+	log.Log(log.SeverityInfo, "Dev code run")
 }
 
 type statsRow struct {

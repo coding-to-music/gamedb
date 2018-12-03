@@ -18,6 +18,7 @@ const (
 	ConfAddedAllApps     = "refresh-all-apps"
 	ConfAddedAllPackages = "refresh-all-packages"
 	ConfWipeMemcache     = "wipe-memcache"
+	ConfRunDevCode       = "run-dev-code"
 )
 
 type Config struct {
