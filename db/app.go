@@ -691,9 +691,8 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		if err != nil {
 
-			log.Log(err)
+			errs = append(errs, err)
 			return
-
 		}
 
 		var kinds []Kind
@@ -718,7 +717,7 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		}
 
 		err = app.SetNewsIDs(resp)
-		log.Log(err)
+		errs = append(errs, err)
 
 	}(app)
 
