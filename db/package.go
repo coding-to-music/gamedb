@@ -278,7 +278,7 @@ func (pack Package) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceCache, err error) {
+func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error) {
 
 	prices, err := pack.GetPrices()
 	if err != nil {

@@ -259,7 +259,7 @@ func (app App) GetPrices() (prices ProductPrices, err error) {
 }
 
 // No erros version, for errors, use GetPrices()
-func (app App) GetPrice(code steam.CountryCode) (price ProductPriceCache) {
+func (app App) GetPrice(code steam.CountryCode) (price ProductPriceStruct) {
 
 	prices, err := app.GetPrices()
 	if err != nil {

@@ -135,6 +135,6 @@ type packageTemplate struct {
 	Package db.Package
 	Apps    map[int]db.App
 	Banners map[string][]string
-	Price   db.ProductPriceCache
+	Price   db.ProductPriceStruct
 	Prices  string
 }

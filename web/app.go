@@ -265,7 +265,7 @@ type appTemplate struct {
 	App          db.App
 	Packages     []db.Package
 	DLC          []db.App
-	Price        db.ProductPriceCache
+	Price        db.ProductPriceStruct
 	Prices       string // Prices JSON for chart
 	PricesCount  int
 	Achievements []appAchievementTemplate

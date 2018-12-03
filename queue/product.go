@@ -286,7 +286,7 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (err error) {
 
 	var prices db.ProductPrices
-	var price db.ProductPriceCache
+	var price db.ProductPriceStruct
 	var kinds []db.Kind
 	for code := range steam.Countries {
 

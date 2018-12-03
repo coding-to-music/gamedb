@@ -79,11 +79,11 @@ const (
 )
 
 //
-type ProductPrices map[steam.CountryCode]ProductPriceCache
+type ProductPrices map[steam.CountryCode]ProductPriceStruct
 
 func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam.PackageDetailsBody) {
 
-	(*p)[code] = ProductPriceCache{
+	(*p)[code] = ProductPriceStruct{
 		Currency:        prices.Data.Price.Currency,
 		Initial:         prices.Data.Price.Initial,
 		Final:           prices.Data.Price.Final,
@@ -93,7 +93,7 @@ func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam
 }
 
 func (p *ProductPrices) AddPriceFromApp(code steam.CountryCode, prices steam.AppDetailsBody) {
-	(*p)[code] = ProductPriceCache{
+	(*p)[code] = ProductPriceStruct{
 		Currency:        prices.Data.PriceOverview.Currency,
 		Initial:         prices.Data.PriceOverview.Initial,
 		Final:           prices.Data.PriceOverview.Final,
@@ -101,7 +101,7 @@ func (p *ProductPrices) AddPriceFromApp(code steam.CountryCode, prices steam.App
 	}
 }
 
-func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceCache, err error) {
+func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceStruct, err error) {
 	if val, ok := p[code]; ok {
 		return val, err
 	}
@@ -109,7 +109,7 @@ func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceCache, err
 }
 
 //
-type ProductPriceCache struct {
+type ProductPriceStruct struct {
 	Currency        string `json:"currency"`
 	Initial         int    `json:"initial"`
 	Final           int    `json:"final"`
@@ -117,7 +117,7 @@ type ProductPriceCache struct {
 	Individual      int    `json:"individual"`
 }
 
-func (p ProductPriceCache) GetInitial() string {
+func (p ProductPriceStruct) GetInitial() string {
 
 	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
 	log.Log(err)
@@ -128,7 +128,7 @@ func (p ProductPriceCache) GetInitial() string {
 	return locale.Format(p.Initial)
 }
 
-func (p ProductPriceCache) GetFinal() string {
+func (p ProductPriceStruct) GetFinal() string {
 
 	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
 	log.Log(err)
@@ -139,11 +139,11 @@ func (p ProductPriceCache) GetFinal() string {
 	return locale.Format(p.Final)
 }
 
-func (p ProductPriceCache) GetDiscountPercent() string {
+func (p ProductPriceStruct) GetDiscountPercent() string {
 	return strconv.Itoa(p.DiscountPercent) + "%"
 }
 
-func (p ProductPriceCache) GetIndividual() string {
+func (p ProductPriceStruct) GetIndividual() string {
 
 	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
 	log.Log(err)
@@ -154,12 +154,12 @@ func (p ProductPriceCache) GetIndividual() string {
 	return locale.Format(p.Individual)
 }
 
-func (p ProductPriceCache) GetCountryName(code steam.CountryCode) string {
+func (p ProductPriceStruct) GetCountryName(code steam.CountryCode) string {
 	locale, err := helpers.GetLocaleFromCountry(code)
 	log.Log(err)
 	return locale.CountryName
 }
 
-func (p ProductPriceCache) GetFlag(code steam.CountryCode) string {
+func (p ProductPriceStruct) GetFlag(code steam.CountryCode) string {
 	return "/assets/img/flags/" + strings.ToLower(string(code)) + ".png"
 }
