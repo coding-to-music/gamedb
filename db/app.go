@@ -698,6 +698,10 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		var kinds []Kind
 		for _, v := range resp.Items {
 
+			if strings.TrimSpace(v.Contents) == "" {
+				continue
+			}
+
 			ids, err := app.GetNewsIDs()
 			if err != nil {
 				errs = append(errs, err)
