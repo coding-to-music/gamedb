@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/Masterminds/squirrel"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
@@ -314,14 +315,26 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		prices := query.GetSearchSlice("prices")
 		if len(prices) == 2 {
 
-			low, err := strconv.Atoi(strings.Replace(prices[0], ".00", "00", 1))
+			low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 			log.Log(err)
 
-			high, err := strconv.Atoi(strings.Replace(prices[1], ".00", "00", 1))
+			high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			log.Log(err)
 
-			gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") >= ?", low)
-			gorm = gorm.Where("JSON_EXTRACT(prices, \"$.US.final\") <= ?", high)
+			var column string
+			if code == steam.CountryUS {
+				column = "prices_us" // This is an index, just for US
+			} else {
+				column = "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")"
+			}
+
+			var orNull string
+			if low == 0 {
+				orNull = " OR " + column + " IS NULL" // Caters for apps with no price set
+			}
+
+			gorm = gorm.Where(column+" >= ?"+orNull, low)
+			gorm = gorm.Where(column+" <= ?", high)
 
 		}
 
