@@ -682,6 +682,13 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		defer wg.Done()
 
 		resp, _, err := helpers.GetSteam().GetNews(app.ID, 10000)
+
+		// This endpoint seems to error if the app has no news, so it's probably fine.
+		err2, ok := err.(steam.Error)
+		if ok && (err2.Code() == 403) {
+			return
+		}
+
 		if err != nil {
 
 			log.Log(err)
