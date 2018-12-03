@@ -874,6 +874,24 @@ func GetAppsWithTags() (apps []App, err error) {
 	return apps, nil
 }
 
+func GetAppsWithPackages() (apps []App, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return apps, err
+	}
+
+	db = db.Select([]string{"packages"})
+	db = db.Where("JSON_DEPTH(packages) = 2")
+
+	db = db.Find(&apps)
+	if db.Error != nil {
+		return apps, db.Error
+	}
+
+	return apps, nil
+}
+
 func GetAppsWithDevelopers() (apps []App, err error) {
 
 	db, err := GetMySQLClient()

@@ -41,6 +41,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	switch option {
 	case "refresh-all-apps":
 		go adminQueueEveryApp()
+	case "refresh-all-packages":
+		go adminQueueEveryPackage()
 	case "refresh-genres":
 		go adminGenres()
 	case "refresh-tags":
@@ -141,6 +143,47 @@ func adminQueueEveryApp() {
 	page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
 
 	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
+}
+
+func adminQueueEveryPackage() {
+
+	apps, err := db.GetAppsWithPackages()
+	if err != nil {
+		log.Log(err)
+		return
+	}
+
+	packageIDs := map[int]bool{}
+	for _, v := range apps {
+
+		packages, err := v.GetPackages()
+		if err != nil {
+			log.Log(err)
+			return
+		}
+
+		for _, vv := range packages {
+			packageIDs[vv] = true
+		}
+	}
+
+	for k := range packageIDs {
+
+		err = queue.Produce(queue.QueuePackages, []byte(strconv.Itoa(k)))
+		if err != nil {
+			log.Log(err)
+			return
+		}
+	}
+
+	//
+	err = db.SetConfig(db.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
+	log.Log(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	page.Send(adminWebsocket{db.ConfAddedAllPackages + " complete"})
+
+	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
 }
 
 func adminDonations() {
