@@ -148,23 +148,19 @@ func Init() {
 
 func Log(interfaces ...interface{}) {
 
-	interfaces = removeNils(interfaces...)
-
-	if len(interfaces) == 0 {
-		return
+	var entry = entry{
+		logName:   LogNameGameDB,
+		severity:  SeverityError,
+		timestamp: time.Now(),
 	}
-
-	interfaces = addDefaultLogName(interfaces...)
-	interfaces = addDefaultService(interfaces...)
-	interfaces = addDefaultSeverity(interfaces...)
-
-	var entry entry
 	var loggingServices []Service
 
 	// Create entry
 	for _, v := range interfaces {
 
 		switch val := v.(type) {
+		case nil:
+			continue
 		case string:
 			entry.text = val
 		case *http.Request:
@@ -189,6 +185,10 @@ func Log(interfaces ...interface{}) {
 
 	if entry.text == "" && entry.error == "" {
 		return
+	}
+
+	if len(loggingServices) == 0 {
+		loggingServices = append(loggingServices, ServiceGoogle, ServiceLocal)
 	}
 
 	// Send entry
@@ -217,51 +217,4 @@ func Log(interfaces ...interface{}) {
 
 func Info(interfaces ...interface{}) {
 	Log(append(interfaces, SeverityInfo)...)
-}
-
-func addDefaultService(interfaces ...interface{}) []interface{} {
-
-	for _, v := range interfaces {
-		_, ok := v.(Service)
-		if ok {
-			return interfaces
-		}
-	}
-
-	return append(interfaces, ServiceGoogle, ServiceLocal)
-}
-
-func addDefaultSeverity(interfaces ...interface{}) []interface{} {
-
-	for _, v := range interfaces {
-		_, ok := v.(Severity)
-		if ok {
-			return interfaces
-		}
-	}
-
-	return append(interfaces, SeverityError)
-}
-
-func addDefaultLogName(interfaces ...interface{}) []interface{} {
-
-	for _, v := range interfaces {
-		_, ok := v.(LogName)
-		if ok {
-			return interfaces
-		}
-	}
-
-	return append(interfaces, LogNameGameDB)
-}
-
-func removeNils(interfaces ...interface{}) (ret []interface{}) {
-
-	for _, v := range interfaces {
-		if v != nil {
-			ret = append(ret, v)
-		}
-	}
-
-	return ret
 }
