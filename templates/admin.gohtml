@@ -57,12 +57,6 @@
                             </a>
                         </div>
                         <div class="col col-xl-3">
-                            <a href="/admin/refresh-all-apps" role="button" class="btn btn-success btn-block mb-4">
-                                Refresh All Apps<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-all-apps").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col col-xl-3">
                             <a href="/admin/refresh-donations" role="button" class="btn btn-success btn-block mb-4">
                                 Refresh Donations<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-donations").Value }}"></small>
@@ -74,10 +68,24 @@
                                 <small data-livestamp="{{ (index .Configs "refresh-ranks").Value }}"></small>
                             </a>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col col-xl-3">
-                            <a href="/admin/wipe-memcache" role="button" class="btn btn-success btn-block mb-4">
+                            <a href="/admin/wipe-memcache" role="button" class="btn btn-danger btn-block mb-4">
                                 Wipe Memcache<br/>
                                 <small data-livestamp="{{ (index .Configs "wipe-memcache").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-all-apps" role="button" class="btn btn-danger btn-block mb-4">
+                                Refresh All Apps<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-all-apps").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-all-packages" role="button" class="btn btn-danger btn-block mb-4">
+                                Refresh All Packages<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-all-packages").Value }}"></small>
                             </a>
                         </div>
                     </div>
