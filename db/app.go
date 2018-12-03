@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
-	"github.com/jinzhu/now"
 	"github.com/spf13/viper"
 )
 
@@ -169,16 +168,7 @@ func (app App) GetType() (ret string) {
 
 func (app App) GetDaysToRelease() string {
 
-	releaseUnix := app.GetReleaseDateUnix()
-	release := time.Unix(releaseUnix, 0)
-
-	days := release.Sub(now.BeginningOfDay()).Hours() / 24
-
-	if days == 0 {
-		return "Today"
-	} else {
-		return "In " + helpers.FloatToString(days, 0) + " days"
-	}
+	return helpers.GetDaysToRelease(app.ReleaseDateUnix)
 }
 
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
@@ -198,7 +188,8 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 	}
 }
 
-func (app App) OutputForJSONComingSoon(code steam.CountryCode) (output []interface{}) {
+// Must be the same as package OutputForJSONUpcoming
+func (app App) OutputForJSONUpcoming(code steam.CountryCode) (output []interface{}) {
 
 	return []interface{}{
 		app.ID,
@@ -234,15 +225,11 @@ func (app App) GetReleaseState() (ret string) {
 
 func (app App) GetReleaseDateNice() string {
 
-	return helpers.GetReleaseDateNice(app.ReleaseDate)
-}
-
-func (app App) GetReleaseDateUnix() int64 {
-
 	if app.ReleaseDateUnix == 0 {
-		return helpers.GetReleaseDateUnix(app.ReleaseDate)
+		return app.ReleaseDate
 	}
-	return app.ReleaseDateUnix
+
+	return time.Unix(app.ReleaseDateUnix, 0).Format(helpers.DateYear)
 }
 
 func (app App) GetIcon() (ret string) {

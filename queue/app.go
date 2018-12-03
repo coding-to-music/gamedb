@@ -363,7 +363,7 @@ func updateAppDetails(app *db.App) error {
 			app.GameID = response.Data.Fullgame.AppID
 			app.GameName = response.Data.Fullgame.Name
 			app.ReleaseDate = response.Data.ReleaseDate.Date
-			app.ReleaseDateUnix = app.GetReleaseDateUnix() // Must be after setting app.ReleaseDate
+			app.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			app.ComingSoon = response.Data.ReleaseDate.ComingSoon
 		}
 	}

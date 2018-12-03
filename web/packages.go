@@ -1,6 +1,7 @@
 package web
 
 import (
+	"html/template"
 	"net/http"
 	"strconv"
 	"sync"
@@ -28,7 +29,7 @@ func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := packagesTemplate{}
-	t.Fill(w, r, "Packages", "The last "+humanize.Comma(int64(total))+" packages to be updated.")
+	t.Fill(w, r, "Packages", "The last "+template.HTML(humanize.Comma(int64(total)))+" packages to be updated.")
 
 	err = returnTemplate(w, r, "packages", t)
 	log.Log(err)

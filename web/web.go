@@ -249,6 +249,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		},
 		"unix":       func(t time.Time) int64 { return t.Unix() },
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
+		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
 		"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"json": func(v interface{}) (string, error) {
@@ -261,10 +262,10 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Title       string // Page title
-	Description string // Page description
-	Path        string // URL path
-	Env         string // Environment
+	Title       string        // Page title
+	Description template.HTML // Page description
+	Path        string        // URL path
+	Env         string        // Environment
 
 	// Session
 	userName           string
@@ -286,7 +287,7 @@ type GlobalTemplate struct {
 	request *http.Request // Internal
 }
 
-func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title string, description string) {
+func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
 
 	var err error
 

@@ -14,25 +14,47 @@ import (
 func upcomingRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", upcomingHandler)
-	r.Get("/ajax", upcomingAjaxHandler)
+	r.Get("/apps", upcomingAppsHandler)
+	r.Get("/apps/ajax", upcomingAppsAjaxHandler)
+	r.Get("/packages", upcomingPackagesHandler)
+	r.Get("/packages/ajax", upcomingPackagesAjaxHandler)
 	return r
 }
 
 func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 
+	http.Redirect(w, r, "/upcoming/apps", 302)
+	return
+}
+
+func upcomingAppsHandler(w http.ResponseWriter, r *http.Request) {
+
 	// Template
 	t := upcomingTemplate{}
-	t.Fill(w, r, "Upcoming", "All the apps you have to look forward to!")
+	t.Fill(w, r, "Upcoming Apps", "The <span></span> apps you have to look forward to!")
+	t.AjaxURL = "/upcoming/apps/ajax"
 
-	err := returnTemplate(w, r, "upcoming", t)
+	err := returnTemplate(w, r, "upcoming_apps", t)
+	log.Log(err)
+}
+
+func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Template
+	t := upcomingTemplate{}
+	t.Fill(w, r, "Upcoming Packages", "The <span></span> packages you have to look forward to!")
+	t.AjaxURL = "/upcoming/packages/ajax"
+
+	err := returnTemplate(w, r, "upcoming_packages", t)
 	log.Log(err)
 }
 
 type upcomingTemplate struct {
 	GlobalTemplate
+	AjaxURL string
 }
 
-func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
@@ -50,8 +72,8 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm = gorm.Model(db.App{})
 		gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
-		gorm = gorm.Order("release_date_unix asc, id asc")
 		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
+		gorm = gorm.Order("release_date_unix asc, id asc")
 
 		// Count before limitting
 		gorm.Count(&count)
@@ -72,7 +94,53 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, v := range apps {
-		response.AddRow(v.OutputForJSONComingSoon(code))
+		response.AddRow(v.OutputForJSONUpcoming(code))
+	}
+
+	response.output(w)
+}
+
+func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := DataTablesQuery{}
+	err := query.FillFromURL(r.URL.Query())
+	log.Log(err)
+
+	var count int
+	var packages []db.Package
+
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+
+		log.Log(err)
+
+	} else {
+
+		gorm = gorm.Model(db.Package{})
+		gorm = gorm.Select([]string{"id", "name", "prices", "release_date_unix"})
+		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
+		gorm = gorm.Order("release_date_unix asc, id asc")
+
+		// Count before limitting
+		gorm.Count(&count)
+		log.Log(gorm.Error)
+
+		gorm = gorm.Limit(100)
+		gorm = gorm.Offset(query.Start)
+
+		gorm = gorm.Find(&packages)
+		log.Log(gorm.Error)
+	}
+
+	var code = session.GetCountryCode(r)
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.Itoa(count)
+	response.RecordsFiltered = strconv.Itoa(count)
+	response.Draw = query.Draw
+
+	for _, v := range packages {
+		response.AddRow(v.OutputForJSONUpcoming(code))
 	}
 
 	response.output(w)

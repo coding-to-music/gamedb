@@ -206,6 +206,7 @@ func updatePackagePICS(pack *db.Package) (err error) {
 			pack.Platforms = string(platformsString)
 			pack.Controller = string(controllerString)
 			pack.ReleaseDate = response.Data.ReleaseDate.Date
+			pack.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
 		}
 	}

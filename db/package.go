@@ -35,6 +35,7 @@ type Package struct {
 	Controller           string     `gorm:"not null;column:controller"`         // JSON (TEXT)
 	ComingSoon           bool       `gorm:"not null;column:coming_soon"`        //
 	ReleaseDate          string     `gorm:"not null;column:release_date"`       //
+	ReleaseDateUnix      int64      `gorm:"not null;column:release_date_unix"`  //
 	Platforms            string     `gorm:"not null;column:platforms"`          // JSON
 	Prices               string     `gorm:"not null;column:prices"`             // JSON
 }
@@ -111,12 +112,11 @@ func (pack Package) GetUpdatedUnix() int64 {
 
 func (pack Package) GetReleaseDateNice() string {
 
-	return helpers.GetReleaseDateNice(pack.ReleaseDate)
-}
+	if pack.ReleaseDateUnix == 0 {
+		return pack.ReleaseDate
+	}
 
-func (pack Package) GetReleaseDateUnix() int64 {
-
-	return helpers.GetReleaseDateUnix(pack.ReleaseDate)
+	return time.Unix(pack.ReleaseDateUnix, 0).Format(helpers.DateYear)
 }
 
 func (pack Package) GetBillingType() string {
@@ -413,6 +413,29 @@ func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{})
 		pack.PICSChangeNumberDate.Unix(),
 		pack.PICSChangeNumberDate.Format(helpers.DateYearTime),
 	}
+}
+
+// Must be the same as app OutputForJSONUpcoming
+func (pack Package) OutputForJSONUpcoming(code steam.CountryCode) (output []interface{}) {
+
+	price, err := pack.GetPrice(code)
+	log.Log(err)
+
+	return []interface{}{
+		pack.ID,
+		pack.GetName(),
+		pack.GetIcon(),
+		pack.GetPath(),
+		"", // Just to match the app one
+		price.GetFinal(),
+		pack.GetDaysToRelease(),
+		pack.GetReleaseDateNice(),
+	}
+}
+
+func (pack Package) GetDaysToRelease() string {
+
+	return helpers.GetDaysToRelease(pack.ReleaseDateUnix)
 }
 
 func IsValidPackageID(id int) bool {

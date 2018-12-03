@@ -3,6 +3,8 @@ package helpers
 import (
 	"errors"
 	"time"
+
+	"github.com/jinzhu/now"
 )
 
 func getReleaseDate(date string) (t time.Time, err error) {
@@ -28,16 +30,6 @@ func getReleaseDate(date string) (t time.Time, err error) {
 	return t, err
 }
 
-func GetReleaseDateNice(date string) (out string) {
-
-	t, err := getReleaseDate(date)
-	if err != nil {
-		return date
-	}
-
-	return t.Format(DateYear)
-}
-
 func GetReleaseDateUnix(date string) int64 {
 
 	t, err := getReleaseDate(date)
@@ -46,4 +38,17 @@ func GetReleaseDateUnix(date string) int64 {
 	}
 
 	return t.Unix()
+}
+
+func GetDaysToRelease(unix int64) string {
+
+	release := time.Unix(unix, 0)
+
+	days := release.Sub(now.BeginningOfDay()).Hours() / 24
+
+	if days == 0 {
+		return "Today"
+	} else {
+		return "In " + FloatToString(days, 0) + " days"
+	}
 }

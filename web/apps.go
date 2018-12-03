@@ -1,6 +1,7 @@
 package web
 
 import (
+	"html/template"
 	"math"
 	"net/http"
 	"strconv"
@@ -43,7 +44,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Count, err = db.CountApps()
-		t.Description = "A live database of " + humanize.Comma(int64(t.Count)) + " Steam games."
+		t.Description = "A live database of " + template.HTML(humanize.Comma(int64(t.Count))) + " Steam games."
 		log.Log(err)
 
 	}()

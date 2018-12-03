@@ -1,0 +1,57 @@
+{{define "upcoming_apps"}} {{ template "_header" . }}
+
+<div class="container" id="upcoming-page">
+
+    <div class="jumbotron">
+
+        <h1 class="display-4"><i class="fas fa-clock"></i> Upcoming</h1>
+        <p class="lead">{{ .Description }}</p>
+        <small>We are only able to show apps that have their release date in a format we can read, so there may be some missing.</small>
+
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+
+                <li class="nav-item">
+                    {{if endsWith .Path "apps" }}
+                        <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Apps</span>
+                    {{else}}
+                        <a class="nav-link" href="/upcoming/apps" role="tab"><i class="fas fa-gamepad"></i> Apps</a>
+                    {{end}}
+                </li>
+
+                <li class="nav-item">
+                    {{if endsWith .Path "packages" }}
+                        <span class="nav-link active" role="tab"><i class="fas fa-cube"></i> Packages</span>
+                    {{else}}
+                        <a class="nav-link" href="/upcoming/packages" role="tab"><i class="fas fa-cube"></i> Packages</a>
+                    {{end}}
+                </li>
+
+            </ul>
+        </div>
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable2 mb-0" data-path="{{ .AjaxURL }}" id="apps">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">App</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Price</th>
+                        <th scope="col" nowrap="nowrap">Release Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{{ template "_footer" . }} {{end}}
