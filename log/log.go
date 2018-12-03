@@ -94,8 +94,9 @@ const (
 	EnvLocal Environment = "local"
 
 	// Log names
-	LogNameConsumers LogName = "gamedb.consumers"
-	LogNameSteam     LogName = "gamedb.steam"
+	LogNameConsumers LogName = "consumers"
+	LogNameCron      LogName = "crons"
+	LogNameSteam     LogName = "steam-calls"
 	LogNameGameDB    LogName = "gamedb" // Default
 
 	// Severities
