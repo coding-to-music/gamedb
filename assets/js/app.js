@@ -1,5 +1,7 @@
 if ($('#app-page').length > 0) {
 
+    const $modal = $('#news-modal');
+
     // Background
     const background = $('.container[data-bg]').attr('data-bg');
     if (background !== '') {
@@ -15,22 +17,36 @@ if ($('#app-page').length > 0) {
         }
     });
 
+    // Add hash when clicking row
+    $('#news table.table').on('click', 'td', function (e) {
+        history.pushState(undefined, undefined, '#news,' + $(this).closest('tr').attr('data-id'));
+        showArt();
+    });
+
+    // Remove hash when closing modal
+    $modal.on('hidden.bs.modal', function (e) {
+        history.pushState(undefined, undefined, "#news");
+        showArt();
+    });
+
     // News modal
     $(window).on('hashchange', showArt);
     $(document).on('draw.dt', showArt);
 
     function showArt() {
+
         const split = window.location.hash.split(',');
-        if (split.length === 2 && (split[0] === 'news' || split[0] === '#news')) {
+
+        // If the hash has a news ID
+        if (split.length === 2 && (split[0] === 'news' || split[0] === '#news') && split[1]) {
+
             const content = $('tr[data-id=' + split[1] + ']').find('.d-none').html();
-            $('#news-modal .modal-body').html(content);
-            $('#news-modal').modal('show');
+            $modal.find('.modal-body').html(content);
+            $modal.modal('show');
+        } else {
+            $modal.modal('hide');
         }
     }
-
-    $('#news table.table').on('click', 'td', function (e) {
-        window.location.hash = 'news,' + $(this).closest('tr').attr('data-id');
-    });
 
     // News data table
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
