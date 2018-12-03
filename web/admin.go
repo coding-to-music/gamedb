@@ -116,13 +116,8 @@ func adminApps() {
 		return
 	}
 
-	for _, v := range apps.Apps {
-		err = queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.AppID)))
-		log.Log(err)
-	}
-
 	//
-	err = db.SetConfig(db.ConfAddedAllApps, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfAddedAllApps, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -164,7 +159,7 @@ func adminDonations() {
 	}
 
 	//
-	err = db.SetConfig(db.ConfDonationsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfDonationsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -330,7 +325,7 @@ func adminGenres() {
 	wg.Wait()
 
 	//
-	err = db.SetConfig(db.ConfGenresUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfGenresUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -465,7 +460,7 @@ func adminPublishers() {
 
 	wg.Wait()
 
-	err = db.SetConfig(db.ConfPublishersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfPublishersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -599,7 +594,7 @@ func adminDevelopers() {
 	}
 	wg.Wait()
 
-	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -736,7 +731,7 @@ func adminTags() {
 	}
 	wg.Wait()
 
-	err = db.SetConfig(db.ConfTagsUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfTagsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -890,7 +885,7 @@ func adminRanks() {
 	}
 
 	// Update config
-	err = db.SetConfig(db.ConfRanksUpdated, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -904,7 +899,7 @@ func adminMemcache() {
 	err := helpers.GetMemcache().DeleteAll()
 	log.Log(err)
 
-	err = db.SetConfig(db.ConfWipeMemcache, strconv.Itoa(int(time.Now().Unix())))
+	err = db.SetConfig(db.ConfWipeMemcache, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
