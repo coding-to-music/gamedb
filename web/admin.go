@@ -40,7 +40,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch option {
 	case "refresh-all-apps":
-		go adminApps()
+		go adminQueueEveryApp()
 	case "refresh-genres":
 		go adminGenres()
 	case "refresh-tags":
@@ -106,14 +106,31 @@ func adminDisableConsumers() {
 
 }
 
-func adminApps() {
+func adminQueueEveryApp() {
 
-	// Get apps
-	// todo, page through results
-	apps, _, err := helpers.GetSteam().GetAppList(steam.GetAppListOptions{})
-	if err != nil {
-		log.Log(err)
-		return
+	var last = 0
+	var keepGoing = true
+	var apps steam.AppList
+	var err error
+
+	for keepGoing == true {
+
+		apps, _, err = helpers.GetSteam().GetAppList(1000, last)
+		if err != nil {
+			log.Log(err)
+			return
+		}
+
+		for _, v := range apps.Apps {
+			err = queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.AppID)))
+			if err != nil {
+				log.Log(err)
+				return
+			}
+			last = v.AppID
+		}
+
+		keepGoing = apps.HaveMoreResults
 	}
 
 	//
@@ -123,7 +140,7 @@ func adminApps() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
 
-	log.Log(log.SeverityInfo, strconv.Itoa(len(apps.Apps))+" apps added to rabbit")
+	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
 
 func adminDonations() {
