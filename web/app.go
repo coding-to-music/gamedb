@@ -56,7 +56,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update news, reviews etc
-	// todo, add to queue instead!!
+	// todo, only do this once a week?
 	errs := app.UpdateFromRequest(r.UserAgent())
 	for _, v := range errs {
 		log.Log(v)
