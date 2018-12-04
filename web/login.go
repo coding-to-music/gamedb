@@ -59,11 +59,11 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			return err
 		}
-
+		log.Log(log.SeverityDebug, "1")
 		// Save email so they don't need to keep typing it
 		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
 		log.Log(err)
-
+		log.Log(log.SeverityDebug, "2")
 		// Recaptcha
 		err = recaptcha.CheckFromRequest(r)
 		if err != nil {
@@ -74,6 +74,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 			return err
 		}
+		log.Log(log.SeverityDebug, "3")
 
 		// Field validation
 		email := r.PostForm.Get("email")
@@ -82,13 +83,13 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		if email == "" || password == "" {
 			return ErrInvalidCreds
 		}
-
+		log.Log(log.SeverityDebug, "4")
 		// Get users that match the email
 		users, err := db.GetUsersByEmail(email)
 		if err != nil {
 			return err
 		}
-
+		log.Log(log.SeverityDebug, "5")
 		if len(users) == 0 {
 			return ErrInvalidCreds
 		}
@@ -105,44 +106,49 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
-
+		log.Log(log.SeverityDebug, "6")
 		if !success {
 			return ErrInvalidCreds
 		}
-
+		log.Log(log.SeverityDebug, "7")
 		// Get player from user
 		player, err := db.GetPlayer(user.PlayerID)
 		if err != nil {
 			return errors.New("no corresponding player")
 		}
-
+		log.Log(log.SeverityDebug, "8")
 		// Log user in
 		err = login(w, r, player, user)
 		if err != nil {
 			return err
 		}
-
+		log.Log(log.SeverityDebug, "9")
 		// Remove form prefill on success
 		err = session.Write(w, r, "login-email", "")
 		log.Log(err)
-
+		log.Log(log.SeverityDebug, "0")
 		return nil
 	}()
 
 	// Redirect
 	if err != nil {
-		time.Sleep(time.Second) // Stop brute forces
 
-		if err != ErrInvalidCreds && err != ErrInvalidCaptcha {
-			log.Log(err)
-		}
+		err = helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
+		log.Log(err)
+
+		// Stop brute forces
+		time.Sleep(time.Second)
 
 		err = session.SetGoodFlash(w, r, err.Error())
 		log.Log(err)
+
 		http.Redirect(w, r, "/login", 302)
+
 	} else {
+
 		err = session.SetGoodFlash(w, r, "Login successful")
 		log.Log(err)
+
 		http.Redirect(w, r, "/settings", 302)
 	}
 }
@@ -212,12 +218,11 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user
-	gorm, err := db.GetMySQLClient()
-	if err != nil {
-		log.Log(err)
-	}
-
 	var user db.User
+
+	gorm, err := db.GetMySQLClient()
+	log.Log(gorm.Error)
+
 	gorm = gorm.First(&user, idInt)
 	log.Log(gorm.Error)
 
@@ -240,21 +245,13 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 		session.UserEmail:   user.Email,
 		session.UserCountry: user.CountryCode,
 	})
-	log.Log(log.SeverityDebug, "1")
+
 	if err != nil {
-		log.Log(log.SeverityDebug, "2")
 		return err
 	}
-	log.Log(log.SeverityDebug, user.CountryCode)
-	log.Log(log.SeverityDebug, "3")
 
 	// Create login record
-	err = db.CreateEvent(r, player.PlayerID, db.EventLogin)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return db.CreateEvent(r, player.PlayerID, db.EventLogin)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
