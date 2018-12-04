@@ -690,7 +690,6 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		}
 
 		if err != nil {
-
 			errs = append(errs, err)
 			return
 		}
@@ -721,7 +720,9 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 		}
 
 		err = app.SetNewsIDs(resp)
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 
 	}(app)
 
@@ -735,7 +736,6 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 		reviewsResp, _, err = helpers.GetSteam().GetReviews(app.ID)
 		if err != nil {
-
 			errs = append(errs, err)
 			return
 		}
