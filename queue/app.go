@@ -62,7 +62,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	}
 
 	if app.PICSChangeNumber >= message.ChangeNumber {
-		log.Log(log.SeverityInfo, "Skipping app (Change number already processed)")
+		queueLog(log.SeverityInfo, "Skipping app (Change number already processed)")
 		return false, nil
 	}
 
@@ -90,7 +90,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	errs := app.UpdateFromRequest("")
 	for _, v := range errs {
-		log.Log(v)
+		queueLog(v)
 	}
 	if len(errs) > 0 {
 		return true, errs[0]
