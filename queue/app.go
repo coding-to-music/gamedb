@@ -384,12 +384,12 @@ func updateAppAchievements(app *db.App) error {
 		return nil
 	}
 
-	percentagesString, err := json.Marshal(percentages)
+	percentagesBytes, err := json.Marshal(percentages)
 	if err != nil {
 		return err
 	}
 
-	app.AchievementPercentages = string(percentagesString)
+	app.AchievementPercentages = string(percentagesBytes)
 
 	return nil
 }

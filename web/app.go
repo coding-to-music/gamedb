@@ -70,48 +70,42 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	// todo, dont call steam here!
 	// Get achievements
-	//wg.Add(1)
-	//go func() {
-	//
-	//	defer wg.Done()
-	//
-	//	achievementsResp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
-	//	if err != nil {
-	//
-	//		log.Log(err)
-	//		return
-	//	}
-	//
-	//	achievementsMap := make(map[string]float64)
-	//	for _, v := range achievementsResp.GlobalAchievementPercentage {
-	//		achievementsMap[v.Name] = v.Percent
-	//	}
-	//
-	//	// Get schema
-	//	schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
-	//	if err != nil {
-	//
-	//		log.Log(err)
-	//		return
-	//	}
-	//
-	//	// Make template struct
-	//	for _, v := range schema.AvailableGameStats.Achievements {
-	//		t.Achievements = append(t.Achievements, appAchievementTemplate{
-	//			v.Icon,
-	//			v.DisplayName,
-	//			v.Description,
-	//			achievementsMap[v.Name],
-	//		})
-	//	}
-	//
-	//}()
+	wg.Add(1)
+	go func(app db.App) {
+
+		defer wg.Done()
+
+		var achievementsResp steam.GlobalAchievementPercentages
+
+		err := helpers.Unmarshal([]byte(app.AchievementPercentages), &achievementsResp)
+		log.Log(err)
+
+		achievementsMap := make(map[string]float64)
+		for _, v := range achievementsResp.GlobalAchievementPercentage {
+			achievementsMap[v.Name] = v.Percent
+		}
+
+		var schema steam.SchemaForGame
+
+		err = helpers.Unmarshal([]byte(app.Schema), &schema)
+		log.Log(err)
+
+		// Make template struct
+		for _, v := range schema.AvailableGameStats.Achievements {
+			t.Achievements = append(t.Achievements, appAchievementTemplate{
+				v.Icon,
+				v.DisplayName,
+				v.Description,
+				achievementsMap[v.Name],
+			})
+		}
+
+	}(app)
 
 	// Tags
 	wg.Add(1)
-	go func() {
+	go func(app db.App) {
 
 		defer wg.Done()
 
@@ -119,7 +113,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		t.Tags, err = app.GetTags()
 		log.Log(err)
 
-	}()
+	}(app)
 
 	// Get prices JSON for chart
 	wg.Add(1)
