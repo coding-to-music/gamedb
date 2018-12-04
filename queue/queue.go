@@ -199,20 +199,20 @@ func (s rabbitConsumer) consume() {
 			case msg := <-msgs:
 
 				requeue, err := s.Message.process(msg)
-				log.Log(err)
+				queueLog(err)
 
 				if requeue {
-					log.Log(log.SeverityInfo, "Requeuing")
+					queueLog(log.SeverityInfo, "Requeuing")
 					err = s.requeueMessage(msg)
-					log.Log(err)
+					queueLog(err)
 				}
 
 				err = msg.Ack(false)
-				log.Log(err)
+				queueLog(err)
 
 				// Might be getting rate limited
 				if err == steam.ErrNullResponse {
-					log.Log(log.SeverityInfo, "Null response, sleeping for 10 seconds")
+					queueLog(log.SeverityInfo, "Null response, sleeping for 10 seconds")
 					time.Sleep(time.Second * 10)
 				}
 			}
