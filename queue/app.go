@@ -90,10 +90,10 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	errs := app.UpdateFromRequest("")
 	for _, v := range errs {
-		log.Log(v) // todo, requeue here if no errors should return from UpdateFromRequest
+		log.Log(v)
 	}
 	if len(errs) > 0 {
-		return true, err
+		return true, errs[0]
 	}
 
 	// Save price changes
