@@ -59,12 +59,20 @@ func Read(r *http.Request, key string) (value string, err error) {
 
 	session, err := getSession(r)
 	if err != nil {
+		log.Log(log.SeverityDebug, "1")
 		return "", err
 	}
 
+	log.Log(log.SeverityDebug, "2")
+
 	if session.Values[key] == nil {
+		log.Log(log.SeverityDebug, "3")
 		session.Values[key] = ""
 	}
+
+	log.Log(log.SeverityDebug, "4")
+	log.Log(log.SeverityDebug, session.Values[key].(string))
+	log.Log(log.SeverityDebug, "5")
 
 	return session.Values[key].(string), nil
 }
