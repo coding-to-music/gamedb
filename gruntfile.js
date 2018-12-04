@@ -72,7 +72,11 @@ module.exports = function (grunt) {
             js: {
                 files: ['assets/js/*.js'],
                 tasks: ['concat:js', 'cachebreaker', 'clean', 'notify:done']
-            }
+            },
+            // ts: {
+            //     files: ['assets/typescript/*.ts'],
+            //     tasks: ['grunt-ts', 'cachebreaker', 'clean', 'notify:done']
+            // }
         },
         clean: [
             'assets/css/sass/',
@@ -96,6 +100,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-cache-breaker');
     grunt.loadNpmTasks('grunt-notify');
     grunt.loadNpmTasks('grunt-sass');
+    grunt.loadNpmTasks("grunt-ts");
 
     // For notify
     grunt.task.run('notify_hooks');
@@ -109,6 +114,7 @@ module.exports = function (grunt) {
 
         // JS
         'concat:js',
+        //'grunt-ts',
 
         //
         'cachebreaker',
