@@ -240,9 +240,13 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 		session.UserEmail:   user.Email,
 		session.UserCountry: user.CountryCode,
 	})
+	log.Log(log.SeverityDebug, "1")
 	if err != nil {
+		log.Log(log.SeverityDebug, "2")
 		return err
 	}
+	log.Log(log.SeverityDebug, user.CountryCode)
+	log.Log(log.SeverityDebug, "3")
 
 	// Create login record
 	err = db.CreateEvent(r, player.PlayerID, db.EventLogin)
