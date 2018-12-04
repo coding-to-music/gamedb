@@ -102,7 +102,7 @@ func GetTagsByID(ids []int) (tags []Tag, err error) {
 
 func DeleteTags(ids []int) (err error) {
 
-	log.Log(log.SeverityInfo, "Deleteing "+strconv.Itoa(len(ids))+" tags")
+	log.Info("Deleteing "+strconv.Itoa(len(ids))+" tags")
 
 	if len(ids) == 0 {
 		return nil

@@ -9,7 +9,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/streadway/amqp"
 )
@@ -42,7 +41,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 
 	message := rabbitMessage.PICSPackageInfo
 
-	queueLog(log.SeverityInfo, "Consuming package: "+strconv.Itoa(message.ID))
+	queueLog("Consuming package: " + strconv.Itoa(message.ID))
 
 	if !db.IsValidPackageID(message.ID) {
 		return false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
@@ -61,7 +60,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	if pack.PICSChangeNumber >= message.ChangeNumber {
-		queueLog(log.SeverityInfo, "Skipping package (Change number already processed)")
+		queueLog("Skipping package (Change number already processed)")
 		return false, nil
 	}
 
@@ -121,7 +120,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 			queueLog(err)
 
 		default:
-			queueLog(log.SeverityInfo, v.Name+" field in package PICS ignored (Change "+strconv.Itoa(pack.PICSChangeNumber)+")")
+			queueLog(v.Name + " field in package PICS ignored (Change " + strconv.Itoa(pack.PICSChangeNumber) + ")")
 		}
 
 		queueLog(err)

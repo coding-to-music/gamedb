@@ -41,7 +41,7 @@ func Init() {
 
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Log(log.SeverityInfo, log.ServiceLocal, r.Method+" "+r.URL.Path)
+		log.Info(log.ServiceLocal, r.Method+" "+r.URL.Path)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -124,7 +124,7 @@ func fileServer(r chi.Router) {
 	path := "/assets"
 
 	if strings.ContainsAny(path, "{}*") {
-		log.Log(log.SeverityInfo, "FileServer does not permit URL parameters.")
+		log.Info("FileServer does not permit URL parameters.")
 	}
 
 	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(viper.GetString("PATH"), "assets"))))

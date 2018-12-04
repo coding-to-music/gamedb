@@ -226,14 +226,14 @@ func adminDonations() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
 
-	cronLog(log.SeverityInfo, "Updated "+strconv.Itoa(len(counts))+" player donation counts")
+	cronLog("Updated "+strconv.Itoa(len(counts))+" player donation counts")
 }
 
 func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("player-id"); val != "" {
 
-		log.Log(log.SeverityInfo, "Player ID: "+val)
+		log.Info("Player ID: " + val)
 
 		playerID, err := strconv.ParseInt(val, 10, 64)
 		log.Log(err)
@@ -247,14 +247,14 @@ func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
-		log.Log(log.SeverityInfo, "App ID: "+val)
+		log.Info("App ID: " + val)
 		err := queue.Produce(queue.QueueApps, []byte(val))
 		log.Log(err)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
-		log.Log(log.SeverityInfo, "Package ID: "+val)
+		log.Info("Package ID: " + val)
 		err := queue.Produce(queue.QueuePackages, []byte(val))
 		log.Log(err)
 	}
@@ -262,7 +262,7 @@ func adminQueues(r *http.Request) {
 
 func adminGenres() {
 
-	cronLog(log.SeverityInfo, log.ServiceLocal, "Genres updating")
+	cronLog(log.ServiceLocal, "Genres updating")
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
@@ -286,7 +286,7 @@ func adminGenres() {
 	appsWithGenres, err := db.GetAppsWithGenres()
 	cronLog(err)
 
-	cronLog(log.SeverityInfo, "Found "+strconv.Itoa(len(appsWithGenres))+" apps with genres")
+	cronLog("Found "+strconv.Itoa(len(appsWithGenres))+" apps with genres")
 
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
@@ -392,12 +392,12 @@ func adminGenres() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
 
-	cronLog(log.SeverityInfo, "Genres updated")
+	cronLog("Genres updated")
 }
 
 func adminPublishers() {
 
-	cronLog(log.SeverityInfo, log.ServiceLocal, "Publishers updating")
+	cronLog(log.ServiceLocal, "Publishers updating")
 
 	// Get current publishers, to delete old ones
 	currentPublishers, err := db.GetAllPublishers()
@@ -415,7 +415,7 @@ func adminPublishers() {
 	appsWithPublishers, err := db.GetAppsWithPublishers()
 	cronLog(err)
 
-	cronLog(log.SeverityInfo, "Found "+strconv.Itoa(len(appsWithPublishers))+" apps with publishers")
+	cronLog("Found "+strconv.Itoa(len(appsWithPublishers))+" apps with publishers")
 
 	newPublishers := make(map[string]*statsRow)
 	for _, app := range appsWithPublishers {
@@ -527,12 +527,12 @@ func adminPublishers() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
 
-	cronLog(log.SeverityInfo, "Publishers updated")
+	cronLog("Publishers updated")
 }
 
 func adminDevelopers() {
 
-	cronLog(log.SeverityInfo, log.ServiceLocal, "Developers updating")
+	cronLog(log.ServiceLocal, "Developers updating")
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
@@ -556,7 +556,7 @@ func adminDevelopers() {
 	appsWithDevelopers, err := db.GetAppsWithDevelopers()
 	cronLog(err)
 
-	cronLog(log.SeverityInfo, "Found "+strconv.Itoa(len(appsWithDevelopers))+" apps with developers")
+	cronLog("Found "+strconv.Itoa(len(appsWithDevelopers))+" apps with developers")
 
 	newDevelopers := make(map[string]*statsRow)
 	for _, app := range appsWithDevelopers {
@@ -661,7 +661,7 @@ func adminDevelopers() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
 
-	cronLog(log.SeverityInfo, "Developers updated")
+	cronLog("Developers updated")
 }
 
 func adminTags() {
@@ -693,7 +693,7 @@ func adminTags() {
 	appsWithTags, err := db.GetAppsWithTags()
 	cronLog(err)
 
-	cronLog(log.SeverityInfo, "Found "+strconv.Itoa(len(appsWithTags))+" apps with tags")
+	cronLog("Found "+strconv.Itoa(len(appsWithTags))+" apps with tags")
 
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
@@ -798,17 +798,17 @@ func adminTags() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
 
-	cronLog(log.SeverityInfo, "Tags updated")
+	cronLog("Tags updated")
 }
 
 func adminStatsLogger(tableName string, count int, total int, rowName string) {
 
-	log.Log(log.SeverityInfo, "Updating "+tableName+" - "+strconv.Itoa(count)+" / "+strconv.Itoa(total)+": "+rowName)
+	log.Info("Updating " + tableName + " - " + strconv.Itoa(count) + " / " + strconv.Itoa(total) + ": " + rowName)
 }
 
 func adminRanks() {
 
-	cronLog(log.SeverityInfo, "Ranks updated started")
+	cronLog("Ranks updated started")
 
 	timeStart := time.Now().Unix()
 
@@ -952,7 +952,7 @@ func adminRanks() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
 
-	cronLog(log.SeverityInfo, "Ranks updated in "+strconv.FormatInt(time.Now().Unix()-timeStart, 10)+" seconds")
+	cronLog("Ranks updated in "+strconv.FormatInt(time.Now().Unix()-timeStart, 10)+" seconds")
 }
 
 func adminMemcache() {
@@ -966,7 +966,7 @@ func adminMemcache() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfWipeMemcache + " complete"})
 
-	log.Log(log.SeverityInfo, "Memcache wiped")
+	log.Info("Memcache wiped")
 }
 
 func adminDev() {
@@ -995,11 +995,11 @@ func adminDev() {
 
 	// ######################################################
 
-	//log.Log(log.SeverityInfo, "Dev")
+	//log.Info("Dev")
 	//
 	//players, err := db.GetAllPlayers("__key__", 0)
 	//
-	//log.Log(log.SeverityInfo, "Got players")
+	//log.Info("Got players")
 	//
 	//if err != nil {
 	//
@@ -1018,7 +1018,7 @@ func adminDev() {
 	//	log.Log(err)
 	//}
 	//
-	//log.Log(log.SeverityInfo, "Done")
+	//log.Info("Done")
 
 	err := db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Log(err)
@@ -1026,7 +1026,7 @@ func adminDev() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
 
-	log.Log(log.SeverityInfo, "Dev code run")
+	log.Info("Dev code run")
 }
 
 type statsRow struct {
@@ -1059,5 +1059,5 @@ type adminWebsocket struct {
 }
 
 func cronLog(interfaces ...interface{}) {
-	log.Log(append(interfaces, log.LogNameCron)...)
+	log.Info(append(interfaces, log.LogNameCron)...)
 }

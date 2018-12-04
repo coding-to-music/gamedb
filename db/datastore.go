@@ -79,7 +79,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 		return nil
 	}
 
-	log.Log(log.SeverityInfo, "Bulk saving "+strconv.Itoa(len(kinds))+" "+kind+"s")
+	log.Info("Bulk saving "+strconv.Itoa(len(kinds))+" "+kind+"s")
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -160,7 +160,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 		return nil
 	}
 
-	log.Log(log.SeverityInfo, "Bulk deleting "+strconv.Itoa(len(keys))+" keys")
+	log.Info("Bulk deleting "+strconv.Itoa(len(keys))+" keys")
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -224,7 +224,7 @@ func kindsToNews(a []Kind) (b []News) {
 		if ok {
 			b = append(b, original)
 		} else {
-			log.Log(log.SeverityInfo, "kind not a struct")
+			log.Info("kind not a struct")
 		}
 	}
 

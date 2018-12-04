@@ -10,7 +10,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/streadway/amqp"
 )
@@ -43,7 +42,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	message := rabbitMessage.PICSAppInfo
 
-	queueLog(log.SeverityInfo, "Consuming app: "+strconv.Itoa(message.ID))
+	queueLog("Consuming app: " + strconv.Itoa(message.ID))
 
 	if !db.IsValidAppID(message.ID) {
 		return false, errors.New("invalid app ID: " + strconv.Itoa(message.ID))
@@ -62,7 +61,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	}
 
 	if app.PICSChangeNumber >= message.ChangeNumber {
-		queueLog(log.SeverityInfo, "Skipping app (Change number already processed)")
+		queueLog("Skipping app (Change number already processed)")
 		return false, nil
 	}
 
@@ -239,7 +238,7 @@ func updateAppPICS(app *db.App, message RabbitMessageProduct) (err error) {
 			}
 
 		default:
-			queueLog(log.SeverityInfo, v.Name+" field in app PICS ignored (Change "+strconv.Itoa(app.PICSChangeNumber)+")")
+			queueLog(v.Name + " field in app PICS ignored (Change " + strconv.Itoa(app.PICSChangeNumber) + ")")
 		}
 	}
 

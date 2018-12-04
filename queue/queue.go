@@ -120,7 +120,7 @@ func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *
 
 func (s rabbitConsumer) produce(data []byte) (err error) {
 
-	log.Log(log.SeverityInfo, "Producing to: "+s.Message.getProduceQueue().String())
+	log.Info("Producing to: " + s.Message.getProduceQueue().String())
 
 	// Connect
 	if producerConnection == nil {
@@ -155,7 +155,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 
 func (s rabbitConsumer) consume() {
 
-	log.Log(log.SeverityInfo, log.ServiceLocal, "Consuming from: "+s.Message.getConsumeQueue().String())
+	log.Info(log.ServiceLocal, "Consuming from: "+s.Message.getConsumeQueue().String())
 
 	var breakFor = false
 	var err error
@@ -202,7 +202,7 @@ func (s rabbitConsumer) consume() {
 				queueLog(err)
 
 				if requeue {
-					queueLog(log.SeverityInfo, "Requeuing")
+					queueLog("Requeuing")
 					err = s.requeueMessage(msg)
 					queueLog(err)
 				}
@@ -212,7 +212,7 @@ func (s rabbitConsumer) consume() {
 
 				// Might be getting rate limited
 				if err == steam.ErrNullResponse {
-					queueLog(log.SeverityInfo, "Null response, sleeping for 10 seconds")
+					queueLog("Null response, sleeping for 10 seconds")
 					time.Sleep(time.Second * 10)
 				}
 			}
@@ -278,5 +278,5 @@ type SteamKitJob struct {
 }
 
 func queueLog(interfaces ...interface{}) {
-	log.Log(append(interfaces, log.LogNameConsumers)...)
+	log.Info(append(interfaces, log.LogNameConsumers)...)
 }
