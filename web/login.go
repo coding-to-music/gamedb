@@ -51,19 +51,30 @@ var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
+	log.Log(log.SeverityDebug, "1")
+
 	setNoCacheHeaders(w)
+
+	log.Log(log.SeverityDebug, "2")
 
 	err := func() (err error) {
 
+		log.Log(log.SeverityDebug, "3")
+
 		// Parse form
 		if err := r.ParseForm(); err != nil {
+
+			log.Log(log.SeverityDebug, "4")
+
 			return err
 		}
-		log.Log(log.SeverityDebug, "1")
+
+		log.Log(log.SeverityDebug, "5")
+
 		// Save email so they don't need to keep typing it
 		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
 		log.Log(err)
-		log.Log(log.SeverityDebug, "2")
+
 		// Recaptcha
 		err = recaptcha.CheckFromRequest(r)
 		if err != nil {
@@ -74,7 +85,6 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 			return err
 		}
-		log.Log(log.SeverityDebug, "3")
 
 		// Field validation
 		email := r.PostForm.Get("email")
@@ -83,13 +93,13 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		if email == "" || password == "" {
 			return ErrInvalidCreds
 		}
-		log.Log(log.SeverityDebug, "4")
+
 		// Get users that match the email
 		users, err := db.GetUsersByEmail(email)
 		if err != nil {
 			return err
 		}
-		log.Log(log.SeverityDebug, "5")
+
 		if len(users) == 0 {
 			return ErrInvalidCreds
 		}
@@ -106,27 +116,27 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
-		log.Log(log.SeverityDebug, "6")
+
 		if !success {
 			return ErrInvalidCreds
 		}
-		log.Log(log.SeverityDebug, "7")
+
 		// Get player from user
 		player, err := db.GetPlayer(user.PlayerID)
 		if err != nil {
 			return errors.New("no corresponding player")
 		}
-		log.Log(log.SeverityDebug, "8")
+
 		// Log user in
 		err = login(w, r, player, user)
 		if err != nil {
 			return err
 		}
-		log.Log(log.SeverityDebug, "9")
+
 		// Remove form prefill on success
 		err = session.Write(w, r, "login-email", "")
 		log.Log(err)
-		log.Log(log.SeverityDebug, "0")
+
 		return nil
 	}()
 
