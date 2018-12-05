@@ -22,7 +22,7 @@ func loginRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", loginHandler)
-	//r.Post("/", loginPostHandler)
+	r.Post("/", loginPostHandler)
 	r.Get("/openid", loginOpenIDHandler)
 	r.Get("/callback", loginOpenIDCallbackHandler)
 	return r
