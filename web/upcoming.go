@@ -29,29 +29,47 @@ func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 
 func upcomingAppsHandler(w http.ResponseWriter, r *http.Request) {
 
+	var err error
+
 	// Template
 	t := upcomingTemplate{}
-	t.Fill(w, r, "Upcoming Apps", "The <span></span> apps you have to look forward to!")
+	t.Fill(w, r, "Upcoming Apps", "The apps you have to look forward to!")
 	t.AjaxURL = "/upcoming/apps/ajax"
 
-	err := returnTemplate(w, r, "upcoming_apps", t)
+	t.Apps, err = db.CountUpcomingApps()
+	log.Log(err)
+
+	t.Packages, err = db.CountUpcomingPackages()
+	log.Log(err)
+
+	err = returnTemplate(w, r, "upcoming_apps", t)
 	log.Log(err)
 }
 
 func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
 
+	var err error
+
 	// Template
 	t := upcomingTemplate{}
-	t.Fill(w, r, "Upcoming Packages", "The <span></span> packages you have to look forward to!")
+	t.Fill(w, r, "Upcoming Packages", "The packages you have to look forward to!")
 	t.AjaxURL = "/upcoming/packages/ajax"
 
-	err := returnTemplate(w, r, "upcoming_packages", t)
+	t.Apps, err = db.CountUpcomingApps()
+	log.Log(err)
+
+	t.Packages, err = db.CountUpcomingPackages()
+	log.Log(err)
+
+	err = returnTemplate(w, r, "upcoming_packages", t)
 	log.Log(err)
 }
 
 type upcomingTemplate struct {
 	GlobalTemplate
-	AjaxURL string
+	AjaxURL  string
+	Apps     int
+	Packages int
 }
 
 func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {

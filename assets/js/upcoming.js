@@ -1,9 +1,9 @@
 if ($('#upcoming-page').length > 0) {
 
-    $('table.table').on('init.dt', function (e) {
-        const count = $(this).DataTable().page.info().recordsTotal;
-        $('p.lead span').html(count);
-    });
+    // $('table.table').on('init.dt', function (e) {
+    //     const count = $(this).DataTable().page.info().recordsTotal;
+    //     $('p.lead span').html(count);
+    // });
 
     // Setup datatable
     $('table#apps').DataTable($.extend(true, {}, dtDefaultOptions, {

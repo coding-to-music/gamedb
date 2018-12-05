@@ -24,12 +24,14 @@ func GetMemcache() *memcache.Memcache {
 
 var (
 	// Counts
-	MemcacheAppsCount         = memcache.Item{Key: "apps-count", Expiration: 86400}
-	MemcacheFreeAppsCount     = memcache.Item{Key: "free-apps-count", Expiration: 86400}
-	MemcachePackagesCount     = memcache.Item{Key: "packages-count", Expiration: 86400}
-	MemcacheRanksCount        = memcache.Item{Key: "ranks-count", Expiration: 86400}
-	MemcacheCountPlayers      = memcache.Item{Key: "players-count", Expiration: 86400 * 7}
-	MemcachePlayerEventsCount = func(playerID int64) memcache.Item {
+	MemcacheAppsCount             = memcache.Item{Key: "apps-count", Expiration: 86400}
+	MemcachePackagesCount         = memcache.Item{Key: "packages-count", Expiration: 86400}
+	MemcacheUpcomingAppsCount     = memcache.Item{Key: "upcoming-apps-count", Expiration: 86400}
+	MemcacheUpcomingPackagesCount = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
+	MemcacheFreeAppsCount         = memcache.Item{Key: "free-apps-count", Expiration: 86400}
+	MemcacheRanksCount            = memcache.Item{Key: "ranks-count", Expiration: 86400}
+	MemcacheCountPlayers          = memcache.Item{Key: "players-count", Expiration: 86400 * 7}
+	MemcachePlayerEventsCount     = func(playerID int64) memcache.Item {
 		return memcache.Item{Key: "players-events-count-" + strconv.FormatInt(playerID, 10), Expiration: 86400}
 	}
 

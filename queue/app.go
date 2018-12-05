@@ -60,16 +60,14 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 		return true, gorm.Error
 	}
 
-	if app.PICSChangeNumber >= message.ChangeNumber {
-		queueLog("Skipping app (Change number already processed)")
-		return false, nil
-	}
-
 	var appBeforeUpdate = app
 
-	err = updateAppPICS(&app, message)
-	if err != nil {
-		return true, err
+	if app.PICSChangeNumber < message.ChangeNumber {
+
+		err = updateAppPICS(&app, message)
+		if err != nil {
+			return true, err
+		}
 	}
 
 	err = updateAppDetails(&app)

@@ -1035,3 +1035,20 @@ func getAppName(id int, name string) string {
 	}
 	return "Unknown App"
 }
+
+func CountUpcomingApps() (count int, err error) {
+
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheUpcomingAppsCount, func() (count int, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		db = db.Model(new(App))
+		db = db.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
+		db = db.Count(&count)
+
+		return count, db.Error
+	})
+}

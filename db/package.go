@@ -329,7 +329,7 @@ func (pack Package) GetExtendedNice() (ret map[string]interface{}) {
 		if val, ok := PackageExtendedKeys[k]; ok {
 			ret[val] = v
 		} else {
-			log.Info("Need to add "+k+" to extended map")
+			log.Info("Need to add " + k + " to extended map")
 			ret[k] = v
 		}
 	}
@@ -361,7 +361,7 @@ func (pack Package) GetControllerNice() (ret map[string]interface{}) {
 		if val, ok := PackageControllerKeys[k]; ok {
 			ret[val] = v
 		} else {
-			log.Info("Need to add "+k+" to controller map")
+			log.Info("Need to add " + k + " to controller map")
 			ret[k] = v
 		}
 	}
@@ -516,6 +516,23 @@ func CountPackages() (count int, err error) {
 		}
 
 		db.Model(&Package{}).Count(&count)
+		return count, db.Error
+	})
+}
+
+func CountUpcomingPackages() (count int, err error) {
+
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheUpcomingPackagesCount, func() (count int, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		db = db.Model(new(Package))
+		db = db.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
+		db = db.Count(&count)
+
 		return count, db.Error
 	})
 }

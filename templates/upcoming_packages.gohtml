@@ -16,17 +16,17 @@
 
                 <li class="nav-item">
                     {{if endsWith .Path "apps" }}
-                        <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Apps</span>
+                        <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Apps ({{ .Apps }})</span>
                     {{else}}
-                        <a class="nav-link" href="/upcoming/apps" role="tab"><i class="fas fa-gamepad"></i> Apps</a>
+                        <a class="nav-link" href="/upcoming/apps" role="tab"><i class="fas fa-gamepad"></i> Apps ({{ .Apps }})</a>
                     {{end}}
                 </li>
 
                 <li class="nav-item">
                     {{if endsWith .Path "packages" }}
-                        <span class="nav-link active" role="tab"><i class="fas fa-cube"></i> Packages</span>
+                        <span class="nav-link active" role="tab"><i class="fas fa-cube"></i> Packages ({{ .Packages }})</span>
                     {{else}}
-                        <a class="nav-link" href="/upcoming/packages" role="tab"><i class="fas fa-cube"></i> Packages</a>
+                        <a class="nav-link" href="/upcoming/packages" role="tab"><i class="fas fa-cube"></i> Packages ({{ .Packages }})</a>
                     {{end}}
                 </li>
 
