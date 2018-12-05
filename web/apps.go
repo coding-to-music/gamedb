@@ -328,13 +328,8 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				column = "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")"
 			}
 
-			var orNull string
-			if low == 0 {
-				orNull = " OR " + column + " IS NULL" // Caters for apps with no price set
-			}
-
-			gorm = gorm.Where(column+" >= ?"+orNull, low)
-			gorm = gorm.Where(column+" <= ?", high)
+			gorm = gorm.Where("COALESCE("+column+", 0) >= ?", low)
+			gorm = gorm.Where("COALESCE("+column+", 0) <= ?", high)
 
 		}
 
