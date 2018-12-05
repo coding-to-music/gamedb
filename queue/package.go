@@ -79,12 +79,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	// Set package name to app name
 	if pack.AppsCount == 1 {
 
-		apps, err := pack.GetAppIDs()
+		appIDs, err := pack.GetAppIDs()
 		if err != nil {
 			return true, err
 		}
 
-		app, err := db.GetApp(apps[0])
+		app, err := db.GetApp(appIDs[0])
 		if err != nil && err != db.ErrCantFindApp {
 			return true, err
 		} else if err != db.ErrCantFindApp && pack.HasDefaultName() {
