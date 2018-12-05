@@ -232,7 +232,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			v.Review = regex.ReplaceAllString(v.Review, "\n\n")
 
 			t.Reviews = append(t.Reviews, appReviewTemplate{
-				Review:     v.Review,
+				Review:     helpers.BBCodeCompiler.Compile(v.Review),
 				Player:     player,
 				Date:       time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
 				VotesGood:  v.VotesUp,
@@ -337,7 +337,6 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		_, err = client.GetAll(ctx, q, &articles)
 		log.Log(err)
 
-		// todo, use a different bbcode library that works for app 418460 & 218620
 		// todo, add http to links here instead of JS
 		//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
 		//var conv bbConvert.HTMLConverter
@@ -346,6 +345,10 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
 		// Convert BBCdoe to HTML
 		//v.Contents = conv.Convert(v.Contents)
+
+		for k, v := range articles {
+			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
+		}
 
 	}(r)
 

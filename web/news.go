@@ -5,6 +5,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 )
 
@@ -49,6 +50,10 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			_, err := client.GetAll(ctx, q, &articles)
 			log.Log(err)
+
+			for k, v := range articles {
+				articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
+			}
 		}
 	}
 
