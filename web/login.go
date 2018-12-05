@@ -19,6 +19,7 @@ import (
 )
 
 func loginRouter() http.Handler {
+	log.Debug("loginRouter")
 	r := chi.NewRouter()
 	r.Get("/", loginHandler)
 	r.Post("/", loginPostHandler)
@@ -28,7 +29,7 @@ func loginRouter() http.Handler {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-
+	log.Debug("loginHandler")
 	setNoCacheHeaders(w)
 
 	t := loginTemplate{}
@@ -50,26 +51,17 @@ var ErrInvalidCreds = errors.New("invalid username or password")
 var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
-
-	log.Log(log.SeverityDebug, "1")
+	log.Debug("loginPostHandler")
 
 	setNoCacheHeaders(w)
 
-	log.Log(log.SeverityDebug, "2")
-
 	err := func() (err error) {
 
-		log.Log(log.SeverityDebug, "3")
-
 		// Parse form
-		if err := r.ParseForm(); err != nil {
-
-			log.Log(log.SeverityDebug, "4")
-
+		err = r.ParseForm()
+		if err != nil {
 			return err
 		}
-
-		log.Log(log.SeverityDebug, "5")
 
 		// Save email so they don't need to keep typing it
 		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
