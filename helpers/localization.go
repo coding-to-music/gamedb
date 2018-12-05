@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"strings"
+
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/log"
 	"github.com/leekchan/accounting"
@@ -100,7 +102,7 @@ func (l Locale) Format(amount int) string {
 		Format:         "%s %v",
 		FormatNegative: "%s -%v",
 	}
-	return ac.FormatMoney(float64(amount) / 100)
+	return strings.TrimSpace(ac.FormatMoney(float64(amount) / 100))
 }
 
 // For player countries
