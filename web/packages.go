@@ -67,7 +67,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		gorm = gorm.Model(&db.Package{})
-		gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon"})
+		gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon", "icon"})
 
 		gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
 			"0": "name",
