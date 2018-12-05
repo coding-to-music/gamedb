@@ -19,7 +19,7 @@ import (
 )
 
 func loginRouter() http.Handler {
-	log.Debug("loginRouter")
+
 	r := chi.NewRouter()
 	r.Get("/", loginHandler)
 	r.Post("/", loginPostHandler)
@@ -29,7 +29,7 @@ func loginRouter() http.Handler {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	log.Debug("loginHandler")
+
 	setNoCacheHeaders(w)
 
 	t := loginTemplate{}
@@ -51,7 +51,6 @@ var ErrInvalidCreds = errors.New("invalid username or password")
 var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
-	log.Debug("loginPostHandler")
 
 	setNoCacheHeaders(w)
 

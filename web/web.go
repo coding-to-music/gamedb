@@ -86,6 +86,7 @@ func Serve() error {
 	r.Get("/health-check", healthCheckHandler)
 	r.Get("/info", infoHandler)
 	r.Mount("/login", loginRouter())
+	r.Post("/login", loginPostHandler)
 	r.Get("/logout", logoutHandler)
 	r.Get("/news", newsHandler)
 	r.Get("/news/ajax", newsAjaxHandler)
