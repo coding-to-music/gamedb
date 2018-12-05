@@ -59,75 +59,19 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		return true, gorm.Error
 	}
 
-	if pack.PICSChangeNumber >= message.ChangeNumber {
-		queueLog("Skipping package (Change number already processed)")
-		return false, nil
-	}
-
 	var packageBeforeUpdate = pack
 
-	// Update with new details
-	pack.ID = message.ID
+	// Update from PICS
+	if pack.PICSChangeNumber < message.ChangeNumber {
 
-	if message.ChangeNumber > pack.PICSChangeNumber {
-		pack.PICSChangeNumberDate = time.Now()
-	}
-
-	pack.PICSChangeNumber = message.ChangeNumber
-	pack.PICSName = message.KeyValues.Name
-
-	for _, v := range message.KeyValues.Children {
-
-		switch v.Name {
-		case "billingtype":
-			var i64 int64
-			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
-			pack.PICSBillingType = int8(i64)
-		case "licensetype":
-			var i64 int64
-			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
-			pack.PICSLicenseType = int8(i64)
-		case "status":
-			var i64 int64
-			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
-			pack.PICSStatus = int8(i64)
-		case "packageid":
-			// Empty
-		case "appids":
-
-			err = pack.SetAppIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
-			queueLog(err)
-
-		case "depotids":
-
-			err = pack.SetDepotIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
-			queueLog(err)
-
-		case "appitems":
-
-			var appItems = map[string]string{}
-			for _, vv := range v.Children {
-				if len(vv.Children) == 1 {
-					appItems[vv.Name] = vv.Children[0].Value.(string)
-				}
-			}
-			err = pack.SetAppItems(appItems)
-			queueLog(err)
-
-		case "extended":
-
-			err = pack.SetExtended(v.GetExtended())
-			queueLog(err)
-
-		default:
-			queueLog(v.Name + " field in package PICS ignored (Change " + strconv.Itoa(pack.PICSChangeNumber) + ")")
+		err = updatePackageFromPICS(&pack, message)
+		if err != nil {
+			return true, err
 		}
-
-		queueLog(err)
 	}
 
 	// Update from API
-	err = updatePackagePICS(&pack)
+	err = updatePackageFromStore(&pack)
 	if err != nil && err != steam.ErrPackageNotFound {
 		return true, err
 	}
@@ -153,7 +97,75 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	return false, err
 }
 
-func updatePackagePICS(pack *db.Package) (err error) {
+func updatePackageFromPICS(pack *db.Package, message RabbitMessageProduct) (err error) {
+
+	// Update with new details
+	if message.ChangeNumber > pack.PICSChangeNumber {
+		pack.PICSChangeNumberDate = time.Now()
+	}
+
+	pack.ID = message.ID
+	pack.PICSChangeNumber = message.ChangeNumber
+	pack.PICSName = message.KeyValues.Name
+
+	for _, v := range message.KeyValues.Children {
+
+		switch v.Name {
+		case "billingtype":
+
+			var i64 int64
+			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+			pack.PICSBillingType = int8(i64)
+
+		case "licensetype":
+
+			var i64 int64
+			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+			pack.PICSLicenseType = int8(i64)
+
+		case "status":
+
+			var i64 int64
+			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+			pack.PICSStatus = int8(i64)
+
+		case "packageid":
+			// Empty
+		case "appids":
+
+			err = pack.SetAppIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
+
+		case "depotids":
+
+			err = pack.SetDepotIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
+
+		case "appitems":
+
+			var appItems = map[string]string{}
+			for _, vv := range v.Children {
+				if len(vv.Children) == 1 {
+					appItems[vv.Name] = vv.Children[0].Value.(string)
+				}
+			}
+			err = pack.SetAppItems(appItems)
+
+		case "extended":
+
+			err = pack.SetExtended(v.GetExtended())
+
+		default:
+			err = errors.New(v.Name + " field in package PICS ignored (Change " + strconv.Itoa(pack.PICSChangeNumber) + ")")
+		}
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func updatePackageFromStore(pack *db.Package) (err error) {
 
 	prices := db.ProductPrices{}
 
