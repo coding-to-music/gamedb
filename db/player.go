@@ -468,7 +468,11 @@ func (p *Player) updateGames() error {
 
 	for _, v := range gamesSQL {
 
-		price := v.GetPrice(steam.CountryUS) // todo, need to save this for all codes?
+		price, err := v.GetPrice(steam.CountryUS) // todo, need to save this for all codes?
+		if err != nil {
+			log.Log(err)
+			continue
+		}
 
 		if price.Final > 0 {
 			appsMap[v.ID].AppPrice = price.Final

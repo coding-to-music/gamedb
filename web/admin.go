@@ -226,7 +226,7 @@ func adminDonations() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
 
-	cronLog("Updated "+strconv.Itoa(len(counts))+" player donation counts")
+	cronLog("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
 
 func adminQueues(r *http.Request) {
@@ -286,7 +286,7 @@ func adminGenres() {
 	appsWithGenres, err := db.GetAppsWithGenres()
 	cronLog(err)
 
-	cronLog("Found "+strconv.Itoa(len(appsWithGenres))+" apps with genres")
+	cronLog("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
 
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
@@ -319,7 +319,11 @@ func adminGenres() {
 			}
 
 			for code := range steam.Countries {
-				price := app.GetPrice(code)
+				price, err := app.GetPrice(code)
+				if err != nil {
+					log.Log(err)
+					continue
+				}
 				newGenres[genre.ID].totalPrice[code] += price.Final
 			}
 		}
@@ -415,7 +419,7 @@ func adminPublishers() {
 	appsWithPublishers, err := db.GetAppsWithPublishers()
 	cronLog(err)
 
-	cronLog("Found "+strconv.Itoa(len(appsWithPublishers))+" apps with publishers")
+	cronLog("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
 
 	newPublishers := make(map[string]*statsRow)
 	for _, app := range appsWithPublishers {
@@ -448,7 +452,11 @@ func adminPublishers() {
 			}
 
 			for code := range steam.Countries {
-				price := app.GetPrice(code)
+				price, err := app.GetPrice(code)
+				if err != nil {
+					log.Log(err)
+					continue
+				}
 				newPublishers[publisher].totalPrice[code] += price.Final
 			}
 		}
@@ -556,7 +564,7 @@ func adminDevelopers() {
 	appsWithDevelopers, err := db.GetAppsWithDevelopers()
 	cronLog(err)
 
-	cronLog("Found "+strconv.Itoa(len(appsWithDevelopers))+" apps with developers")
+	cronLog("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
 	newDevelopers := make(map[string]*statsRow)
 	for _, app := range appsWithDevelopers {
@@ -589,7 +597,11 @@ func adminDevelopers() {
 			}
 
 			for code := range steam.Countries {
-				price := app.GetPrice(code)
+				price, err := app.GetPrice(code)
+				if err != nil {
+					log.Log(err)
+					continue
+				}
 				newDevelopers[developer].totalPrice[code] += price.Final
 			}
 		}
@@ -693,7 +705,7 @@ func adminTags() {
 	appsWithTags, err := db.GetAppsWithTags()
 	cronLog(err)
 
-	cronLog("Found "+strconv.Itoa(len(appsWithTags))+" apps with tags")
+	cronLog("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
 
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
@@ -726,7 +738,11 @@ func adminTags() {
 			}
 
 			for code := range steam.Countries {
-				price := app.GetPrice(code)
+				price, err := app.GetPrice(code)
+				if err != nil {
+					log.Log(err)
+					continue
+				}
 				newTags[tagID].totalPrice[code] += price.Final
 			}
 		}
@@ -952,7 +968,7 @@ func adminRanks() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
 
-	cronLog("Ranks updated in "+strconv.FormatInt(time.Now().Unix()-timeStart, 10)+" seconds")
+	cronLog("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
 }
 
 func adminMemcache() {

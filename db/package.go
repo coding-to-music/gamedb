@@ -285,12 +285,7 @@ func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceStruct, 
 		return price, err
 	}
 
-	price, err = prices.Get(code)
-	if err != nil && err != ErrInvalidCountryCode {
-		return price, err
-	}
-
-	return price, nil
+	return prices.Get(code)
 }
 
 func (pack *Package) SetExtended(extended PICSExtended) (err error) {
@@ -397,19 +392,13 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 
 func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
-	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Log(err)
-
-	price, err := pack.GetPrice(code)
-	log.Log(err)
-
 	return []interface{}{
 		pack.ID,
 		pack.GetPath(),
 		pack.GetName(),
 		pack.GetComingSoon(),
 		pack.AppsCount,
-		locale.Format(price.Final),
+		getFinalPriceFormatted(pack, code),
 		pack.PICSChangeNumberDate.Unix(),
 		pack.PICSChangeNumberDate.Format(helpers.DateYearTime),
 	}
@@ -418,16 +407,13 @@ func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{})
 // Must be the same as app OutputForJSONUpcoming
 func (pack Package) OutputForJSONUpcoming(code steam.CountryCode) (output []interface{}) {
 
-	price, err := pack.GetPrice(code)
-	log.Log(err)
-
 	return []interface{}{
 		pack.ID,
 		pack.GetName(),
 		pack.GetIcon(),
 		pack.GetPath(),
-		"", // Just to match the app one
-		price.GetFinal(),
+		pack.AppsCount,
+		getFinalPriceFormatted(pack, code),
 		pack.GetDaysToRelease(),
 		pack.GetReleaseDateNice(),
 	}

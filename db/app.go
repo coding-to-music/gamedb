@@ -12,7 +12,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
@@ -173,9 +172,6 @@ func (app App) GetDaysToRelease() string {
 
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
-	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Log(err)
-
 	return []interface{}{
 		app.ID,
 		app.GetName(),
@@ -183,7 +179,7 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.GetPath(),
 		app.GetType(),
 		app.ReviewsScore,
-		locale.Format(app.GetPrice(code).Final),
+		getFinalPriceFormatted(app, code),
 		app.PICSChangeNumberDate.Unix(),
 	}
 }
@@ -197,7 +193,7 @@ func (app App) OutputForJSONUpcoming(code steam.CountryCode) (output []interface
 		app.GetIcon(),
 		app.GetPath(),
 		app.GetType(),
-		app.GetPrice(code).GetFinal(),
+		getFinalPriceFormatted(app, code),
 		app.GetDaysToRelease(),
 		app.GetReleaseDateNice(),
 	}
@@ -258,16 +254,14 @@ func (app App) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-// No erros version, for errors, use GetPrices()
-func (app App) GetPrice(code steam.CountryCode) (price ProductPriceStruct) {
+func (app App) GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error) {
 
 	prices, err := app.GetPrices()
 	if err != nil {
-		return price
+		return price, err
 	}
 
-	price, _ = prices.Get(code)
-	return price
+	return prices.Get(code)
 }
 
 func (app App) GetNewsIDs() (ids []int64, err error) {

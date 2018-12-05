@@ -16,9 +16,10 @@ type ProductInterface interface {
 	GetName() string
 	GetIcon() string
 	GetPrices() (prices ProductPrices, err error)
+	GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error)
 }
 
-var ErrInvalidCountryCode = errors.New("invalid code")
+var ErrMissingCountryCode = errors.New("invalid code")
 
 //
 type PICSExtended map[string]string
@@ -105,7 +106,7 @@ func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceStruct, er
 	if val, ok := p[code]; ok {
 		return val, err
 	}
-	return price, ErrInvalidCountryCode
+	return price, ErrMissingCountryCode
 }
 
 //
@@ -162,4 +163,20 @@ func (p ProductPriceStruct) GetCountryName(code steam.CountryCode) string {
 
 func (p ProductPriceStruct) GetFlag(code steam.CountryCode) string {
 	return "/assets/img/flags/" + strings.ToLower(string(code)) + ".png"
+}
+
+func getFinalPriceFormatted(product ProductInterface, code steam.CountryCode) (ret string) {
+
+	price, err := product.GetPrice(code)
+	if err == nil {
+
+		locale, err := helpers.GetLocaleFromCountry(code)
+		if err != nil {
+			log.Log(err)
+			return ""
+		}
+		ret = locale.Format(price.Final)
+	}
+
+	return ret
 }

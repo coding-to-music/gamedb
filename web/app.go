@@ -140,9 +140,11 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Add current price
-		price := app.GetPrice(code)
-
-		prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
+		price, err := app.GetPrice(code)
+		log.Log(err)
+		if err == nil {
+			prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
+		}
 
 		// Make into a JSON string
 		pricesBytes, err := json.Marshal(prices)
@@ -247,8 +249,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Get price
-	code := session.GetCountryCode(r)
-	t.Price = app.GetPrice(code)
+	t.Price, err = app.GetPrice(session.GetCountryCode(r))
+	log.Log(err)
 
 	err = returnTemplate(w, r, "app", t)
 	log.Log(err)
