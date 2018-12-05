@@ -41,7 +41,9 @@ func Init() {
 
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Info(log.ServiceLocal, r.Method+" "+r.URL.Path)
+		if viper.GetString("ENV") == string(log.EnvProd) {
+			log.Info(log.ServiceGoogle, log.LogNameRequests, r.Method+" "+r.URL.Path)
+		}
 		next.ServeHTTP(w, r)
 	})
 }
@@ -62,12 +64,8 @@ func Serve() error {
 	r.Use(middlewareTime)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.DefaultCompress)
-	r.Use(middleware.GetHead)
 	r.Use(middleware.RedirectSlashes)
-
-	if viper.GetString("ENV") == string(log.EnvProd) {
-		r.Use(middlewareLog)
-	}
+	r.Use(middlewareLog)
 
 	// Pages
 	r.Get("/", homeHandler)

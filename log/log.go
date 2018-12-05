@@ -98,6 +98,7 @@ const (
 	LogNameCron      LogName = "crons"
 	LogNameSteam     LogName = "steam-calls"
 	LogNameGameDB    LogName = "gamedb" // Default
+	LogNameRequests  LogName = "requests"
 
 	// Severities
 	SeverityDebug    Severity = "debug"
