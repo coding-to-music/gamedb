@@ -38,6 +38,7 @@ type Package struct {
 	ReleaseDateUnix      int64      `gorm:"not null;column:release_date_unix"`  //
 	Platforms            string     `gorm:"not null;column:platforms"`          // JSON
 	Prices               string     `gorm:"not null;column:prices"`             // JSON
+	Icon                 string     `gorm:"not null;column:icon"`               //
 }
 
 func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
@@ -76,7 +77,10 @@ func (pack Package) GetID() int {
 }
 
 func (pack Package) GetIcon() string {
-	return DefaultAppIcon
+	if pack.Icon == "" {
+		return DefaultAppIcon
+	}
+	return pack.Icon
 }
 
 func (pack Package) GetProductType() ProductType {
@@ -405,6 +409,7 @@ func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{})
 		getFinalPriceFormatted(pack, code),
 		pack.PICSChangeNumberDate.Unix(),
 		pack.PICSChangeNumberDate.Format(helpers.DateYearTime),
+		pack.GetIcon(),
 	}
 }
 

@@ -89,6 +89,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 			return true, err
 		} else if err != db.ErrCantFindApp && pack.HasDefaultName() {
 			pack.PICSName = app.Name
+			pack.Icon = app.GetIcon()
 		}
 	}
 
