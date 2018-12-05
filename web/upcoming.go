@@ -135,7 +135,7 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		gorm = gorm.Model(db.Package{})
-		gorm = gorm.Select([]string{"id", "name", "prices", "release_date_unix"})
+		gorm = gorm.Select([]string{"id", "name", "apps_count", "prices", "release_date_unix"})
 		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
 		gorm = gorm.Order("release_date_unix asc, id asc")
 
