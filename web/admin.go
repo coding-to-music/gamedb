@@ -987,6 +987,26 @@ func adminMemcache() {
 
 func adminDev() {
 
+	//gorm, err := db.GetMySQLClient()
+	//if err != nil {
+	//
+	//	log.Log(err)
+	//	return
+	//}
+	//
+	//var packages []db.App
+	//
+	//gorm = gorm.Select([]string{"id"})
+	//gorm = gorm.Where("name = ?", "appinfo")
+	//gorm = gorm.Find(&packages)
+	//
+	//for _, v := range packages {
+	//	err := queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.ID)))
+	//	log.Log(err)
+	//}
+
+	// ######################################################
+
 	//log.Info("Running...")
 	//
 	//client, ctx, err := db.GetDSClient()

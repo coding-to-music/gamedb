@@ -128,19 +128,19 @@ func updateAppPICS(app *db.App, message RabbitMessageProduct) (err error) {
 
 	app.ID = message.ID
 	app.PICSChangeNumber = message.ChangeNumber
-	app.Name = message.KeyValues.Name
 
 	for _, v := range message.KeyValues.Children {
 
 		switch v.Name {
 		case "appid":
 
-			var i64 int64
-			i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
-			if err != nil {
-				return err
-			}
-			app.ID = int(i64)
+			// No need for this
+			//var i64 int64
+			//i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
+			//if err != nil {
+			//	return err
+			//}
+			//app.ID = int(i64)
 
 		case "common":
 
