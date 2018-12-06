@@ -25,7 +25,7 @@ if ($('#app-page').length > 0) {
 
     // Remove hash when closing modal
     $modal.on('hidden.bs.modal', function (e) {
-        history.pushState(undefined, undefined, "#news");
+        history.pushState("", document.title, "#news");
         showArt();
     });
 
@@ -40,8 +40,7 @@ if ($('#app-page').length > 0) {
         // If the hash has a news ID
         if (split.length === 2 && (split[0] === 'news' || split[0] === '#news') && split[1]) {
 
-            const content = $('tr[data-id=' + split[1] + ']').find('.d-none').html();
-            $modal.find('.modal-body').html(content);
+            $modal.find('.modal-body').html($('tr[data-id=' + split[1] + ']').find('.d-none').html());
             $modal.modal('show');
         } else {
             $modal.modal('hide');

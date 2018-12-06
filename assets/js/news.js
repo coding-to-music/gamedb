@@ -1,11 +1,33 @@
 if ($('#news-page').length > 0) {
 
-    // News modal
-    $(document).on('click', '.article-title', function (e) {
-        const content = $(this).find('.d-none').html();
-        $('#news-modal .modal-body').html(content);
-        $('#news-modal').modal('show');
+    const $modal = $('#news-modal');
+
+    // Add hash when clicking row
+    $('table.table').on('click', '.article-title', function (e) {
+        history.pushState(undefined, undefined, '#' + $(this).closest('tr').attr('data-id'));
+        showArt();
     });
+
+    // Remove hash when closing modal
+    $modal.on('hidden.bs.modal', function (e) {
+        history.pushState("", document.title, window.location.pathname + window.location.search);
+        showArt();
+    });
+
+    // News modal
+    $(window).on('hashchange', showArt);
+    $(document).on('draw.dt', showArt);
+
+    function showArt() {
+
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            $modal.find('.modal-body').html($('tr[data-id=' + hash + ']').find('.d-none').html());
+            $modal.modal('show');
+        } else {
+            $modal.modal('hide');
+        }
+    }
 
     // Data tables
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
