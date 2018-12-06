@@ -5,9 +5,7 @@ import (
 	"net/http"
 	"path"
 	"strconv"
-	"time"
 
-	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -15,7 +13,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
 	"github.com/yohcop/openid-go"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func loginRouter() http.Handler {
@@ -54,106 +51,109 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug("loginPostHandler")
 
-	setNoCacheHeaders(w)
+	_, err := w.Write([]byte("testing"))
+	log.Log(err)
 
-	err := func() (err error) {
-
-		// Parse form
-		err = r.ParseForm()
-		if err != nil {
-			return err
-		}
-
-		// Save email so they don't need to keep typing it
-		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
-		log.Log(err)
-
-		// Recaptcha
-		err = recaptcha.CheckFromRequest(r)
-		if err != nil {
-
-			if err == recaptcha.ErrNotChecked {
-				return ErrInvalidCaptcha
-			}
-
-			return err
-		}
-
-		// Field validation
-		email := r.PostForm.Get("email")
-		password := r.PostForm.Get("password")
-
-		if email == "" || password == "" {
-			return ErrInvalidCreds
-		}
-
-		// Get users that match the email
-		users, err := db.GetUsersByEmail(email)
-		if err != nil {
-			return err
-		}
-
-		if len(users) == 0 {
-			return ErrInvalidCreds
-		}
-
-		// Check password matches
-		var user db.User
-		var success bool
-		for _, v := range users {
-
-			err = bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(password))
-			if err == nil {
-				success = true
-				user = v
-				break
-			}
-		}
-
-		if !success {
-			return ErrInvalidCreds
-		}
-
-		// Get player from user
-		player, err := db.GetPlayer(user.PlayerID)
-		if err != nil {
-			return errors.New("no corresponding player")
-		}
-
-		// Log user in
-		err = login(w, r, player, user)
-		if err != nil {
-			return err
-		}
-
-		// Remove form prefill on success
-		err = session.Write(w, r, "login-email", "")
-		log.Log(err)
-
-		return nil
-	}()
-
-	// Redirect
-	if err != nil {
-
-		err = helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
-		log.Log(err)
-
-		// Stop brute forces
-		time.Sleep(time.Second)
-
-		err = session.SetGoodFlash(w, r, err.Error())
-		log.Log(err)
-
-		http.Redirect(w, r, "/login", 302)
-
-	} else {
-
-		err = session.SetGoodFlash(w, r, "Login successful")
-		log.Log(err)
-
-		http.Redirect(w, r, "/settings", 302)
-	}
+	//setNoCacheHeaders(w)
+	//
+	//err := func() (err error) {
+	//
+	//	// Parse form
+	//	err = r.ParseForm()
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	// Save email so they don't need to keep typing it
+	//	err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
+	//	log.Log(err)
+	//
+	//	// Recaptcha
+	//	err = recaptcha.CheckFromRequest(r)
+	//	if err != nil {
+	//
+	//		if err == recaptcha.ErrNotChecked {
+	//			return ErrInvalidCaptcha
+	//		}
+	//
+	//		return err
+	//	}
+	//
+	//	// Field validation
+	//	email := r.PostForm.Get("email")
+	//	password := r.PostForm.Get("password")
+	//
+	//	if email == "" || password == "" {
+	//		return ErrInvalidCreds
+	//	}
+	//
+	//	// Get users that match the email
+	//	users, err := db.GetUsersByEmail(email)
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	if len(users) == 0 {
+	//		return ErrInvalidCreds
+	//	}
+	//
+	//	// Check password matches
+	//	var user db.User
+	//	var success bool
+	//	for _, v := range users {
+	//
+	//		err = bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(password))
+	//		if err == nil {
+	//			success = true
+	//			user = v
+	//			break
+	//		}
+	//	}
+	//
+	//	if !success {
+	//		return ErrInvalidCreds
+	//	}
+	//
+	//	// Get player from user
+	//	player, err := db.GetPlayer(user.PlayerID)
+	//	if err != nil {
+	//		return errors.New("no corresponding player")
+	//	}
+	//
+	//	// Log user in
+	//	err = login(w, r, player, user)
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	// Remove form prefill on success
+	//	err = session.Write(w, r, "login-email", "")
+	//	log.Log(err)
+	//
+	//	return nil
+	//}()
+	//
+	//// Redirect
+	//if err != nil {
+	//
+	//	err = helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
+	//	log.Log(err)
+	//
+	//	// Stop brute forces
+	//	time.Sleep(time.Second)
+	//
+	//	err = session.SetGoodFlash(w, r, err.Error())
+	//	log.Log(err)
+	//
+	//	http.Redirect(w, r, "/login", 302)
+	//
+	//} else {
+	//
+	//	err = session.SetGoodFlash(w, r, "Login successful")
+	//	log.Log(err)
+	//
+	//	http.Redirect(w, r, "/settings", 302)
+	//}
 }
 
 func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
