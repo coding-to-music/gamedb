@@ -70,6 +70,7 @@ func Serve() error {
 	// Pages
 	r.Get("/", homeRedirectHandler)
 	r.Mount("/admin", adminRouter())
+	r.Mount("/bundles", bundlesRouter())
 	r.Mount("/changes", changesRouter())
 	r.Mount("/chat", chatRouter())
 	r.Get("/commits", commitsHandler)
@@ -152,6 +153,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/templates/_footer.gohtml",
 		folder+"/templates/_stats_header.gohtml",
 		folder+"/templates/_deals_header.gohtml",
+		folder+"/templates/_apps_header.gohtml",
 		folder+"/templates/_flashes.gohtml",
 		folder+"/templates/"+page+".gohtml",
 	)

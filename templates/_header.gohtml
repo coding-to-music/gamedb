@@ -64,12 +64,13 @@
 
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
-                    <a class="nav-link" href="/players">Players</a>
-                </li>
 
                 <li class="nav-item {{if startsWith .Path "/games" }}active{{end}}">
                     <a class="nav-link" href="/games?types=game">Games</a>
+                </li>
+
+                <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
+                    <a class="nav-link" href="/players">Players</a>
                 </li>
 
                 <li class="nav-item {{if startsWith .Path "/upcoming" }}active{{end}}">
@@ -132,7 +133,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
                     <div class="dropdown-menu" id="header-settings">
-                        <a class="dropdown-item" href="/packages">Packages</a>
+                        {{/*<a class="dropdown-item" href="/packages">Packages</a>*/}}
                         <a class="dropdown-item" href="/experience">Experience</a>
                         <a class="dropdown-item" href="/changes">Changes</a>
                         <a class="dropdown-item" href="/queues">Queues</a>
