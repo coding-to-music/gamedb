@@ -91,15 +91,16 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
-	// Template
-	t := chatTemplate{}
-	t.Fill(w, r, "Chat", "The Game DB community.")
-
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		id = generalChannelID
+		http.Redirect(w, r, "/chat/"+generalChannelID, 302)
+		return
 	}
+
+	// Template
+	t := chatTemplate{}
+	t.Fill(w, r, "Chat", "The Game DB community.")
 	t.ChannelID = id
 
 	//
