@@ -179,7 +179,7 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.GetPath(),
 		app.GetType(),
 		app.ReviewsScore,
-		getFinalPriceFormatted(app, code),
+		GetPriceFormatted(app, code),
 		app.PICSChangeNumberDate.Unix(),
 	}
 }
@@ -193,7 +193,7 @@ func (app App) OutputForJSONUpcoming(code steam.CountryCode) (output []interface
 		app.GetIcon(),
 		app.GetPath(),
 		app.GetType(),
-		getFinalPriceFormatted(app, code),
+		GetPriceFormatted(app, code),
 		app.GetDaysToRelease(),
 		app.GetReleaseDateNice(),
 	}

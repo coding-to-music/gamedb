@@ -165,15 +165,26 @@ func (p ProductPriceStruct) GetFlag(code steam.CountryCode) string {
 	return "/assets/img/flags/" + strings.ToLower(string(code)) + ".png"
 }
 
-func getFinalPriceFormatted(product ProductInterface, code steam.CountryCode) (ret string) {
+type ProductPriceFormattedStruct struct {
+	Initial         string `json:"initial"`
+	Final           string `json:"final"`
+	DiscountPercent string `json:"discount_percent"`
+	Individual      string `json:"individual"`
+}
+
+func GetPriceFormatted(product ProductInterface, code steam.CountryCode) (ret ProductPriceFormattedStruct) {
 
 	price, err := product.GetPrice(code)
 	if err == nil {
 
 		locale, err := helpers.GetLocaleFromCountry(code)
-		if err != nil {
-			log.Log(err)
-			return ret
+		if err == nil {
+			ret = ProductPriceFormattedStruct{
+				Initial:         locale.Format(price.Initial),
+				Final:           locale.Format(price.Final),
+				DiscountPercent: locale.Format(price.DiscountPercent),
+				Individual:      locale.Format(price.Individual),
+			}
 		}
 	}
 

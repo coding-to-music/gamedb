@@ -406,7 +406,7 @@ func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{})
 		pack.GetName(),
 		pack.GetComingSoon(),
 		pack.AppsCount,
-		getFinalPriceFormatted(pack, code),
+		GetPriceFormatted(pack, code),
 		pack.PICSChangeNumberDate.Unix(),
 		pack.PICSChangeNumberDate.Format(helpers.DateYearTime),
 		pack.GetIcon(),
@@ -422,7 +422,7 @@ func (pack Package) OutputForJSONUpcoming(code steam.CountryCode) (output []inte
 		pack.GetIcon(),
 		pack.GetPath(),
 		pack.AppsCount,
-		getFinalPriceFormatted(pack, code),
+		GetPriceFormatted(pack, code),
 		pack.GetDaysToRelease(),
 		pack.GetReleaseDateNice(),
 	}

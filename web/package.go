@@ -122,9 +122,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices = pricesString
 
 	// Get price
-	code := session.GetCountryCode(r)
-	t.Price, err = pack.GetPrice(code)
-	log.Log(err)
+	t.Price = db.GetPriceFormatted(pack, session.GetCountryCode(r))
 
 	err = returnTemplate(w, r, "package", t)
 	log.Log(err)
@@ -135,6 +133,6 @@ type packageTemplate struct {
 	Package db.Package
 	Apps    map[int]db.App
 	Banners map[string][]string
-	Price   db.ProductPriceStruct
+	Price   db.ProductPriceFormattedStruct
 	Prices  string
 }

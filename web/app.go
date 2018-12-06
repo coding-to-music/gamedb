@@ -249,8 +249,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Get price
-	t.Price, err = app.GetPrice(session.GetCountryCode(r))
-	log.Log(err)
+	t.Price = db.GetPriceFormatted(app, session.GetCountryCode(r))
 
 	err = returnTemplate(w, r, "app", t)
 	log.Log(err)
@@ -261,7 +260,7 @@ type appTemplate struct {
 	App          db.App
 	Packages     []db.Package
 	DLC          []db.App
-	Price        db.ProductPriceStruct
+	Price        db.ProductPriceFormattedStruct
 	Prices       string // Prices JSON for chart
 	PricesCount  int
 	Achievements []appAchievementTemplate
