@@ -334,6 +334,8 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.userCountry = code
 
 	locale, err := helpers.GetLocaleFromCountry(code)
+	log.Log(err)
+
 	t.userCurrencySymbol = locale.CurrencySymbol
 
 	// Flashes

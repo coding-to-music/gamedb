@@ -224,7 +224,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	var user db.User
 
 	gorm, err := db.GetMySQLClient()
-	log.Log(gorm.Error)
+	log.Log(err)
 
 	gorm = gorm.First(&user, idInt)
 	log.Log(gorm.Error)

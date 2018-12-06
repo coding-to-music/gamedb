@@ -123,6 +123,7 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	var ranks []db.PlayerRank
 
 	client, ctx, err := db.GetDSClient()
+	log.Log(err)
 
 	q := datastore.NewQuery(db.KindPlayerRank)
 

@@ -57,6 +57,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error)
 		}
 
 		err = Produce(delayMessage.getConsumeQueue(), bytes)
+		queueLog(err)
 
 	} else {
 

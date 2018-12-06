@@ -22,9 +22,7 @@ func upcomingRouter() http.Handler {
 }
 
 func upcomingHandler(w http.ResponseWriter, r *http.Request) {
-
 	http.Redirect(w, r, "/upcoming/apps", 302)
-	return
 }
 
 func upcomingAppsHandler(w http.ResponseWriter, r *http.Request) {

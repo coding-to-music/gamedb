@@ -19,4 +19,5 @@ func rootFileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = w.Write(data)
+	log.Log(err)
 }

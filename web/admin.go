@@ -116,7 +116,7 @@ func adminQueueEveryApp() {
 	var apps steam.AppList
 	var err error
 
-	for keepGoing == true {
+	for keepGoing {
 
 		apps, _, err = helpers.GetSteam().GetAppList(1000, last)
 		if err != nil {
@@ -141,6 +141,8 @@ func adminQueueEveryApp() {
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
 
 	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
@@ -182,6 +184,8 @@ func adminQueueEveryPackage() {
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfAddedAllPackages + " complete"})
 
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
@@ -224,6 +228,8 @@ func adminDonations() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
 
 	cronLog("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
@@ -394,6 +400,8 @@ func adminGenres() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
 
 	cronLog("Genres updated")
@@ -533,6 +541,8 @@ func adminPublishers() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
 
 	cronLog("Publishers updated")
@@ -671,6 +681,8 @@ func adminDevelopers() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
 
 	cronLog("Developers updated")
@@ -812,6 +824,8 @@ func adminTags() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
 
 	cronLog("Tags updated")
@@ -980,6 +994,8 @@ func adminMemcache() {
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfWipeMemcache + " complete"})
 
 	log.Info("Memcache wiped")
@@ -1060,6 +1076,8 @@ func adminDev() {
 	log.Log(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Log(err)
+
 	page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
 
 	log.Info("Dev code run")

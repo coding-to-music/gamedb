@@ -175,7 +175,6 @@ func getFinalPriceFormatted(product ProductInterface, code steam.CountryCode) (r
 			log.Log(err)
 			return ret
 		}
-		ret = locale.Format(price.Final)
 	}
 
 	return ret

@@ -15,8 +15,6 @@ type PlayerOverTime struct {
 	BadgesRank   int       `datastore:"badges_rank,noindex"`
 	PlayTimeRank int       `datastore:"play_time_rank,noindex"`
 	FriendsRank  int       `datastore:"friends_rank,noindex"`
-
-	Rank string `datastore:"-"`
 }
 
 func (p PlayerOverTime) GetKey() (key *datastore.Key) {

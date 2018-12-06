@@ -115,9 +115,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			publishers, err := db.GetPublishersByID(publishersToLoad, []string{"id", "name"})
 			log.Log(err)
 			if err == nil {
-				for _, vvv := range publishers {
-					t.Publishers = append(t.Publishers, vvv)
-				}
+				t.Publishers = append(t.Publishers, publishers...)
 			}
 		}
 
@@ -164,9 +162,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			developers, err := db.GetDevelopersByID(developersToLoad, []string{"id", "name"})
 			log.Log(err)
 			if err == nil {
-				for _, vvv := range developers {
-					t.Developers = append(t.Developers, vvv)
-				}
+				t.Developers = append(t.Developers, developers...)
 			}
 		}
 
