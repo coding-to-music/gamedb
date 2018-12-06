@@ -1,16 +1,25 @@
 package queue
 
 import (
+	"encoding/json"
 	"errors"
+	"math"
 	"net/http"
+	"path"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/storage"
 	"github.com/streadway/amqp"
 )
+
+const maxBytesToStore = 1024 * 10
 
 type RabbitMessageProfile struct {
 	ProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
@@ -71,7 +80,53 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (requeue bool, err erro
 	player.StateCode = message.StateName
 	player.CountryCode = message.CountryName
 
-	err = player.Update()
+	// Get summary
+	err = updatePlayerSummary(&player)
+	if err != nil {
+		return true, err
+	}
+
+	err = updatePlayerGames(&player)
+	if err != nil {
+		return true, err
+	}
+
+	err = updatePlayerRecentGames(&player)
+	if err != nil {
+		return true, err
+	}
+
+	err = updatePlayerBadges(&player)
+	if err != nil {
+		return true, err
+	}
+
+	err = updatePlayerFriends(&player)
+	if err != nil {
+		return true, err
+	}
+
+	err = updatePlayerLevel(&player)
+	if err != nil {
+		return true, err
+	}
+
+	err = updatePlayerBans(&player)
+	if err != nil {
+		return true, err
+	}
+
+	err = updatePlayerGroups(&player)
+	if err != nil {
+		return true, err
+	}
+
+	err = db.CreateEvent(new(http.Request), player.PlayerID, db.EventRefresh)
+	if err != nil {
+		return true, err
+	}
+
+	err = player.Save()
 	if err != nil {
 		return true, err
 	}
@@ -108,4 +163,357 @@ type RabbitMessageProfilePICS struct {
 	Headline    string      `json:"Headline"`
 	Summary     string      `json:"Summary"`
 	JobID       SteamKitJob `json:"JobID"`
+}
+
+func updatePlayerSummary(player *db.Player) error {
+
+	summary, _, err := helpers.GetSteam().GetPlayer(player.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	player.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
+	player.VanintyURL = path.Base(summary.ProfileURL)
+	player.RealName = summary.RealName
+	player.CountryCode = summary.LOCCountryCode
+	player.StateCode = summary.LOCStateCode
+	player.PersonaName = summary.PersonaName
+	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
+	player.LastLogOff = time.Unix(summary.LastLogOff, 0)
+	player.PrimaryClanID = summary.PrimaryClanID
+
+	return err
+}
+
+func updatePlayerGames(player *db.Player) error {
+
+	// todo, this is the one that was commented out
+
+	resp, _, err := helpers.GetSteam().GetOwnedGames(player.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	// Loop apps
+	var appsMap = map[int]*db.PlayerApp{}
+	var appIDs []int
+	var playtime = 0
+	for _, v := range resp.Games {
+		playtime = playtime + v.PlaytimeForever
+		appIDs = append(appIDs, v.AppID)
+		appsMap[v.AppID] = &db.PlayerApp{
+			PlayerID:     player.PlayerID,
+			AppID:        v.AppID,
+			AppName:      v.Name,
+			AppIcon:      v.ImgIconURL,
+			AppTime:      v.PlaytimeForever,
+			AppPrice:     0,
+			AppPriceHour: 0,
+		}
+	}
+
+	// Save data to player
+	player.GamesCount = len(resp.Games)
+	player.PlayTime = playtime
+
+	// Go get price info from MySQL
+	gamesSQL, err := db.GetAppsByID(appIDs, []string{"id", "price_final"})
+	if err != nil {
+		return err
+	}
+
+	for _, v := range gamesSQL {
+
+		price, err := v.GetPrice(steam.CountryUS) // todo, need to save this for all codes?
+		if err != nil {
+			log.Log(err)
+			continue
+		}
+
+		if price.Final > 0 {
+			appsMap[v.ID].AppPrice = price.Final
+			appsMap[v.ID].SetPriceHour()
+		}
+	}
+
+	// Convert to slice
+	var appsSlice []db.Kind
+	for _, v := range appsMap {
+		appsSlice = append(appsSlice, *v)
+	}
+
+	err = db.BulkSaveKinds(appsSlice, db.KindPlayerApp, true)
+	if err != nil {
+		return err
+	}
+
+	// Make stats
+	var gameStats = db.PlayerAppStatsTemplate{}
+	for _, v := range appsMap {
+
+		gameStats.All.AddApp(*v)
+		if v.AppTime > 0 {
+			gameStats.Played.AddApp(*v)
+		}
+	}
+
+	bytes, err := json.Marshal(gameStats)
+	if err != nil {
+		return err
+	}
+
+	player.GameStats = string(bytes)
+
+	// Make heatmap
+	var roundedPrices []int
+	var maxPrice int
+	for _, v := range appsMap {
+
+		var roundedPrice = int(math.Floor(float64(v.AppPrice)/500) * 5) // Round down to nearest 5
+
+		roundedPrices = append(roundedPrices, roundedPrice)
+
+		maxPrice = int(math.Max(float64(roundedPrice), float64(maxPrice)))
+	}
+
+	ret := make([][]int, (maxPrice/5)+1)
+	for i := 0; i <= maxPrice/5; i++ {
+		ret[i] = []int{0, 0}
+	}
+	for _, v := range roundedPrices {
+		ret[(v / 5)] = []int{0, ret[(v / 5)][1] + 1}
+	}
+
+	bytes, err = json.Marshal(ret)
+	if err != nil {
+		return err
+	}
+
+	player.GameHeatMap = string(bytes)
+
+	return nil
+}
+
+func updatePlayerRecentGames(player *db.Player) error {
+
+	recentResponse, _, err := helpers.GetSteam().GetRecentlyPlayedGames(player.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	// Encode to JSON bytes
+	bytes, err := json.Marshal(recentResponse.Games)
+	if err != nil {
+		return err
+	}
+
+	// Upload
+	if len(bytes) > maxBytesToStore {
+		storagePath := storage.PathRecentGames(player.PlayerID)
+		err = storage.Upload(storagePath, bytes, false, true)
+		if err != nil {
+			return err
+		}
+		player.GamesRecent = storagePath
+	} else {
+		player.GamesRecent = string(bytes)
+	}
+
+	return nil
+}
+
+func updatePlayerBadges(player *db.Player) error {
+
+	response, _, err := helpers.GetSteam().GetBadges(player.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	// Save count
+	player.BadgesCount = len(response.Badges)
+
+	// Save stats
+	stats := db.ProfileBadgeStats{
+		PlayerXP:                   response.PlayerXP,
+		PlayerLevel:                response.PlayerLevel,
+		PlayerXPNeededToLevelUp:    response.PlayerXPNeededToLevelUp,
+		PlayerXPNeededCurrentLevel: response.PlayerXPNeededCurrentLevel,
+		PercentOfLevel:             response.GetPercentOfLevel(),
+	}
+
+	bytes, err := json.Marshal(stats)
+	if err != nil {
+		return err
+	}
+
+	player.BadgeStats = string(bytes)
+
+	// Start badges slice
+	var badgeSlice []db.ProfileBadge
+	var appIDSlice []int
+	for _, v := range response.Badges {
+		appIDSlice = append(appIDSlice, v.AppID)
+		badgeSlice = append(badgeSlice, db.ProfileBadge{
+			BadgeID:        v.BadgeID,
+			AppID:          v.AppID,
+			Level:          v.Level,
+			CompletionTime: v.CompletionTime,
+			XP:             v.XP,
+			Scarcity:       v.Scarcity,
+		})
+	}
+	appIDSlice = helpers.Unique(appIDSlice)
+
+	// Make map of app rows
+	var appRowsMap = map[int]db.App{}
+	appRows, err := db.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
+	log.Log(err)
+
+	for _, v := range appRows {
+		appRowsMap[v.ID] = v
+	}
+
+	// Finish badges slice
+	for k, v := range badgeSlice {
+		if app, ok := appRowsMap[v.AppID]; ok {
+			badgeSlice[k].AppName = app.GetName()
+			badgeSlice[k].AppIcon = app.GetIcon()
+		}
+	}
+
+	// Encode to JSON bytes
+	bytes, err = json.Marshal(badgeSlice)
+	if err != nil {
+		return err
+	}
+
+	// Upload
+	if len(bytes) > maxBytesToStore {
+		storagePath := storage.PathBadges(player.PlayerID)
+		err = storage.Upload(storagePath, bytes, false, true)
+		if err != nil {
+			return err
+		}
+		player.Badges = storagePath
+	} else {
+		player.Badges = string(bytes)
+	}
+
+	return nil
+}
+
+func updatePlayerFriends(player *db.Player) error {
+
+	resp, _, err := helpers.GetSteam().GetFriendList(player.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	player.FriendsCount = len(resp.Friends)
+
+	// Make friend ID slice & map
+	var friendsMap = map[int64]*db.ProfileFriend{}
+	var friendsSlice []int64
+	for _, v := range resp.Friends {
+
+		friendsSlice = append(friendsSlice, v.SteamID)
+
+		friendsMap[v.SteamID] = &db.ProfileFriend{
+			SteamID:     v.SteamID,
+			FriendSince: v.FriendSince,
+		}
+	}
+
+	// Get friends from DS
+	friendRows, err := db.GetPlayersByIDs(friendsSlice)
+	if err != nil {
+		return err
+	}
+
+	// Fill in the map
+	for _, v := range friendRows {
+		if v.PlayerID != 0 {
+
+			friendsMap[v.PlayerID].Avatar = v.GetAvatar()
+			friendsMap[v.PlayerID].Games = v.GamesCount
+			friendsMap[v.PlayerID].Name = v.GetName()
+			friendsMap[v.PlayerID].Level = v.Level
+			friendsMap[v.PlayerID].LoggedOff = v.GetLogoffUnix()
+
+		}
+	}
+
+	// Make into map again, so it can be unmarshalled
+
+	var friends []db.ProfileFriend
+	for _, v := range friendsMap {
+		friends = append(friends, *v)
+	}
+
+	// Encode to JSON bytes
+	bytes, err := json.Marshal(friends)
+	if err != nil {
+		return err
+	}
+
+	// Upload
+	if len(bytes) > maxBytesToStore {
+		storagePath := storage.PathFriends(player.PlayerID)
+		err = storage.Upload(storagePath, bytes, false, true)
+		if err != nil {
+			return err
+		}
+		player.Friends = storagePath
+	} else {
+		player.Friends = string(bytes)
+	}
+
+	return nil
+}
+
+func updatePlayerLevel(player *db.Player) error {
+
+	level, _, err := helpers.GetSteam().GetSteamLevel(player.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	player.Level = level
+
+	return nil
+}
+
+func updatePlayerBans(player *db.Player) error {
+
+	bans, _, err := helpers.GetSteam().GetPlayerBans(player.PlayerID)
+	if err == steam.ErrNoUserFound {
+		return nil
+	} else if err != nil {
+		return err
+	}
+
+	player.NumberOfGameBans = bans.NumberOfGameBans
+	player.NumberOfVACBans = bans.NumberOfVACBans
+
+	// Encode to JSON bytes
+	bytes, err := json.Marshal(bans)
+	if err != nil {
+		return err
+	}
+
+	player.Bans = string(bytes)
+
+	return nil
+}
+
+func updatePlayerGroups(player *db.Player) error {
+
+	resp, _, err := helpers.GetSteam().GetUserGroupList(player.PlayerID)
+	if err != nil {
+		return err
+	}
+
+	player.Groups = resp.GetIDs()
+
+	return nil
 }
