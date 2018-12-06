@@ -56,12 +56,14 @@ func IsStorageLocaion(x string) bool {
 
 }
 
-func Upload(path string, data []byte, public bool) (err error) {
+func Upload(path string, data []byte, public bool, encode bool) (err error) {
 
 	path = strings.TrimLeft(path, "/")
 
 	// Encode
-	data = snappy.Encode(nil, data)
+	if encode {
+		data = snappy.Encode(nil, data)
+	}
 
 	// Get client
 	client, ctx, err := getClient()
@@ -91,7 +93,7 @@ func Upload(path string, data []byte, public bool) (err error) {
 	return nil
 }
 
-func Download(path string) (bytes []byte, err error) {
+func Download(path string, decode bool) (bytes []byte, err error) {
 
 	path = strings.TrimLeft(path, "/")
 
@@ -117,11 +119,12 @@ func Download(path string) (bytes []byte, err error) {
 	}
 
 	// Decode
-	bytes, err = snappy.Decode(nil, data)
-	if err != nil {
-		log.Log(err)
-		// data is not encoded? Return as is.
-		bytes = data
+	if decode {
+		bytes, err = snappy.Decode(nil, data)
+		if err != nil {
+			log.Log(err)
+			bytes = data // data is not encoded? Return as is.
+		}
 	}
 
 	return bytes, nil
