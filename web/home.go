@@ -8,6 +8,10 @@ import (
 	"github.com/gamedb/website/log"
 )
 
+func homeRedirectHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/games", 302)
+}
+
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeTemplate{}

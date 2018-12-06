@@ -68,7 +68,7 @@ func Serve() error {
 	r.Use(middlewareLog)
 
 	// Pages
-	r.Get("/", homeHandler)
+	r.Get("/", homeRedirectHandler)
 	r.Mount("/admin", adminRouter())
 	r.Mount("/changes", changesRouter())
 	r.Mount("/chat", chatRouter())
