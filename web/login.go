@@ -30,8 +30,6 @@ func loginRouter() http.Handler {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
-
 	t := loginTemplate{}
 	t.Fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
@@ -261,6 +259,8 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
+
+	setNoCacheHeaders(w)
 
 	id, err := getPlayerIDFromSession(r)
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)

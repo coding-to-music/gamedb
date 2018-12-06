@@ -8,6 +8,8 @@ import (
 
 func headerHandler(w http.ResponseWriter, r *http.Request) {
 
+	setNoCacheHeaders(w)
+
 	t := GlobalTemplate{}
 	t.Fill(w, r, "Header", "")
 

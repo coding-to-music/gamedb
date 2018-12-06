@@ -89,8 +89,6 @@ type chatWebsocketPayload struct {
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
-
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -162,6 +160,8 @@ type chatTemplate struct {
 
 func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
+	setNoCacheHeaders(w)
+	
 	w.Header().Set("Content-Type", "application/json")
 
 	id := chi.URLParam(r, "id")
