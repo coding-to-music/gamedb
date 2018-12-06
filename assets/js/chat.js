@@ -5,6 +5,7 @@ if ($('#chat-page').length > 0) {
     $.ajax({
         url: '/chat/' + channel + '/ajax',
         success: function (data, textStatus, jqXHR) {
+            $('.fa-spin').remove();
             if (isIterable(data)) {
                 for (const v of data) {
                     chatRow(v, false);
