@@ -54,9 +54,12 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
+	_, err := w.Write([]byte("testing"))
+	log.Log(err)
+
 	log.Debug("loginPostHandler")
 
-	err := func() (err error) {
+	err = func() (err error) {
 
 		// Parse form
 		err = r.ParseForm()
