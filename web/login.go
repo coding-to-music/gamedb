@@ -55,7 +55,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("testing"))
 	log.Log(err)
 
-	log.Debug("loginPostHandler")
+	log.Debug("loginPostHandler 1")
 
 	err = func() (err error) {
 
@@ -133,6 +133,8 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		return nil
 	}()
+
+	log.Debug("loginPostHandler 2")
 
 	// Redirect
 	if err != nil {
