@@ -72,7 +72,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 
 	// Update from API
 	err = updatePackageFromStore(&pack)
-	if err != nil && err != steam.ErrPackageNotFound {
+	err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
+	if err != nil {
 		return true, err
 	}
 
@@ -85,11 +86,13 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		}
 
 		app, err := db.GetApp(appIDs[0])
-		if err != nil && err != db.ErrCantFindApp {
-			return true, err
-		} else if err != db.ErrCantFindApp && pack.HasDefaultName() {
-			pack.PICSName = app.Name
-			pack.Icon = app.GetIcon()
+		if err != db.ErrCantFindApp {
+			if err != nil {
+				return true, err
+			} else if pack.HasDefaultName() {
+				pack.PICSName = app.Name
+				pack.Icon = app.GetIcon()
+			}
 		}
 	}
 
@@ -191,12 +194,6 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 		// Get package details
 		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
 		if err != nil {
-
-			// Presume that if not found in one language, wont be found in any.
-			if err == steam.ErrPackageNotFound {
-				break
-			}
-
 			return err
 		}
 
@@ -236,6 +233,7 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 			pack.ReleaseDate = response.Data.ReleaseDate.Date
 			pack.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
+			pack.PICSName = response.Data.Name
 		}
 	}
 
