@@ -52,12 +52,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
-	_, err := w.Write([]byte("testing"))
-	log.Log(err)
-
-	log.Debug("loginPostHandler 1")
-
-	err = func() (err error) {
+	err := func() (err error) {
 
 		// Parse form
 		err = r.ParseForm()
@@ -134,7 +129,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		return nil
 	}()
 
-	log.Debug("loginPostHandler 2")
+	log.Debug("loginPostHandler 3")
 
 	// Redirect
 	if err != nil {
@@ -150,12 +145,16 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/login", 302)
 
+		log.Debug("loginPostHandler 4")
+
 	} else {
 
 		err = session.SetGoodFlash(w, r, "Login successful")
 		log.Log(err)
 
 		http.Redirect(w, r, "/settings", 302)
+
+		log.Debug("loginPostHandler 5")
 	}
 }
 
