@@ -217,7 +217,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.outputForJSON())
 	}
 
-	response.output(w)
+	response.output(w, r)
 }
 
 type RankExtra struct {

@@ -162,8 +162,6 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 	
-	w.Header().Set("Content-Type", "application/json")
-
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		id = generalChannelID
@@ -189,6 +187,6 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(messages)
 	log.Log(err)
 
-	_, err = w.Write(bytes)
+	err = returnJSON(w, r, bytes)
 	log.Log(err)
 }

@@ -296,7 +296,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
 	}
 
-	response.output(w)
+	response.output(w, r)
 }
 
 func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {

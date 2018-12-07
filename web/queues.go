@@ -75,8 +75,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		bytes = []byte("[]")
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	_, err = w.Write(bytes)
+	err = returnJSON(w, r, bytes)
 	log.Log(err)
 }
 

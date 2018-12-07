@@ -142,9 +142,20 @@ func fileServer(r chi.Router) {
 	}))
 }
 
+func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+
+	_, err = w.Write(bytes)
+	return err
+}
+
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
 	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+	w.WriteHeader(200)
 
 	folder := viper.GetString("PATH")
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
@@ -170,7 +181,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		return err
 	}
 
-	w.WriteHeader(200)
 	_, err = buf.WriteTo(w)
 	log.Log(err)
 
@@ -446,7 +456,7 @@ func (t *DataTablesAjaxResponse) AddRow(row []interface{}) {
 	t.Data = append(t.Data, row)
 }
 
-func (t DataTablesAjaxResponse) output(w http.ResponseWriter) {
+func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 
 	if len(t.Data) == 0 {
 		t.Data = make([][]interface{}, 0)
@@ -455,8 +465,7 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter) {
 	bytesx, err := json.Marshal(t)
 	log.Log(err)
 
-	w.Header().Set("Content-Type", "application/json")
-	_, err = w.Write(bytesx)
+	err = returnJSON(w, r, bytesx)
 	log.Log(err)
 }
 

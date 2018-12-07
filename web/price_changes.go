@@ -98,5 +98,5 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON())
 	}
 
-	response.output(w)
+	response.output(w, r)
 }

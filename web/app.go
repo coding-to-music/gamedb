@@ -389,5 +389,5 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON(r))
 	}
 
-	response.output(w)
+	response.output(w, r)
 }

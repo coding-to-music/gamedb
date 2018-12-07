@@ -36,8 +36,6 @@ type statsTemplate struct {
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
-
 	var scores []appScore
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
@@ -66,7 +64,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(ret)
 	log.Log(err)
 
-	_, err = w.Write(bytes)
+	err = returnJSON(w, r, bytes)
 	log.Log(err)
 }
 
@@ -76,8 +74,6 @@ type appScore struct {
 }
 
 func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "application/json")
 
 	var types []appType
 	gorm, err := db.GetMySQLClient()
@@ -107,7 +103,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(ret)
 	log.Log(err)
 
-	_, err = w.Write(bytes)
+	err = returnJSON(w, r, bytes)
 	log.Log(err)
 }
 
@@ -117,8 +113,6 @@ type appType struct {
 }
 
 func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "application/json")
 
 	var ranks []db.PlayerRank
 
@@ -165,6 +159,6 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(ret)
 	log.Log(err)
 
-	_, err = w.Write(bytes)
+	err = returnJSON(w, r, bytes)
 	log.Log(err)
 }

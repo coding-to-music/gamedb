@@ -113,7 +113,7 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSONUpcoming(code))
 	}
 
-	response.output(w)
+	response.output(w, r)
 }
 
 func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -159,5 +159,5 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSONUpcoming(code))
 	}
 
-	response.output(w)
+	response.output(w, r)
 }
