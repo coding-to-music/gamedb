@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"sort"
+	"sync"
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
@@ -26,12 +27,52 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	t := statsTemplate{}
 	t.Fill(w, r, "Stats", "Some interesting Steam Store stats.")
 
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.RanksCount, err = db.CountRanks()
+		log.Log(err)
+
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.AppsCount, err = db.CountApps()
+		log.Log(err)
+
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PackagesCount, err = db.CountPackages()
+		log.Log(err)
+
+	}()
+
+	wg.Wait()
+
 	err := returnTemplate(w, r, "stats", t)
 	log.Log(err)
 }
 
 type statsTemplate struct {
 	GlobalTemplate
+	RanksCount    int
+	AppsCount     int
+	PackagesCount int
 }
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {

@@ -11,6 +11,18 @@
         {{ template "_stats_header" . }}
         <div class="card-body">
 
+            <div class="row">
+                <div class="col col-6 col-md-4">
+                    <div role="button" class="btn btn-success btn-block mb-4">Total Ranked Players<br/>{{ comma .RanksCount}}</div>
+                </div>
+                <div class="col col-6 col-md-4">
+                    <div role="button" class="btn btn-success btn-block mb-4">Total Apps<br/>{{ comma .AppsCount}}</div>
+                </div>
+                <div class="col col-6 col-md-4">
+                    <div role="button" class="btn btn-success btn-block mb-4">Total Packages<br/>{{ comma .PackagesCount}}</div>
+                </div>
+            </div>
+
             <h5>App Scores</h5>
             <div id="scores">
                 <i class="fas fa-spinner fa-spin"></i>
@@ -21,8 +33,7 @@
                 <i class="fas fa-spinner fa-spin"></i>
             </div>
 
-            <h5>
-                Number of ranked players from each country
+            <h5>Number of ranked players from each country
                 <small>(where &gt;=10)</small>
             </h5>
             <div id="countries">
