@@ -109,6 +109,17 @@ func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceStruct, er
 	return price, ErrMissingCountryCode
 }
 
+//func (p ProductPrices) ToMap() (ret map[steam.CountryCode]int) {
+//
+//	ret = map[steam.CountryCode]int{}
+//
+//	for k, v := range p {
+//		ret[k] = v.Final
+//	}
+//
+//	return ret
+//}
+
 //
 type ProductPriceStruct struct {
 	Currency        string `json:"currency"`

@@ -3,7 +3,6 @@ package queue
 import (
 	"encoding/json"
 	"errors"
-	"math"
 	"net/http"
 	"path"
 	"strconv"
@@ -187,109 +186,115 @@ func updatePlayerSummary(player *db.Player) error {
 
 func updatePlayerGames(player *db.Player) error {
 
-	// todo, this is the one that was commented out
-
+	// Grab games from Steam
 	resp, _, err := helpers.GetSteam().GetOwnedGames(player.PlayerID)
 	if err != nil {
 		return err
 	}
 
-	// Loop apps
-	var appsMap = map[int]*db.PlayerApp{}
+	// Save count
+	player.GamesCount = len(resp.Games)
+
+	// Start creating PlayerApp's
+	var playerApps = map[int]*db.PlayerApp{}
 	var appIDs []int
 	var playtime = 0
 	for _, v := range resp.Games {
 		playtime = playtime + v.PlaytimeForever
 		appIDs = append(appIDs, v.AppID)
-		appsMap[v.AppID] = &db.PlayerApp{
+		playerApps[v.AppID] = &db.PlayerApp{
 			PlayerID:     player.PlayerID,
 			AppID:        v.AppID,
 			AppName:      v.Name,
 			AppIcon:      v.ImgIconURL,
 			AppTime:      v.PlaytimeForever,
-			AppPrice:     0,
-			AppPriceHour: 0,
+			AppPrices:    map[steam.CountryCode]int{},
+			AppPriceHour: map[steam.CountryCode]float64{},
 		}
 	}
 
-	// Save data to player
-	player.GamesCount = len(resp.Games)
+	// Save playtime
 	player.PlayTime = playtime
 
-	// Go get price info from MySQL
-	gamesSQL, err := db.GetAppsByID(appIDs, []string{"id", "price_final"})
+	// Getting missing price info from MySQL
+	gameRows, err := db.GetAppsByID(appIDs, []string{"id", "prices"})
 	if err != nil {
 		return err
 	}
 
-	for _, v := range gamesSQL {
+	for _, v := range gameRows {
 
-		price, err := v.GetPrice(steam.CountryUS) // todo, need to save this for all codes?
+		prices, err := v.GetPrices()
 		if err != nil {
 			log.Log(err)
 			continue
 		}
 
-		if price.Final > 0 {
-			appsMap[v.ID].AppPrice = price.Final
-			appsMap[v.ID].SetPriceHour()
+		for code, vv := range prices {
+			if vv.Final > 0 {
+				playerApps[v.ID].AppPrices[code] = vv.Final
+
+				if playerApps[v.ID].AppPrices[code] > 0 && playerApps[v.ID].AppTime > 0 {
+					playerApps[v.ID].AppPriceHour[code] = (float64(playerApps[v.ID].AppPrices[code]) / 100) / (float64(playerApps[v.ID].AppTime) / 60)
+				}
+			}
 		}
 	}
 
-	// Convert to slice
-	var appsSlice []db.Kind
-	for _, v := range appsMap {
-		appsSlice = append(appsSlice, *v)
-	}
-
-	err = db.BulkSaveKinds(appsSlice, db.KindPlayerApp, true)
-	if err != nil {
-		return err
-	}
-
-	// Make stats
-	var gameStats = db.PlayerAppStatsTemplate{}
-	for _, v := range appsMap {
-
-		gameStats.All.AddApp(*v)
-		if v.AppTime > 0 {
-			gameStats.Played.AddApp(*v)
-		}
-	}
-
-	bytes, err := json.Marshal(gameStats)
-	if err != nil {
-		return err
-	}
-
-	player.GameStats = string(bytes)
-
-	// Make heatmap
-	var roundedPrices []int
-	var maxPrice int
-	for _, v := range appsMap {
-
-		var roundedPrice = int(math.Floor(float64(v.AppPrice)/500) * 5) // Round down to nearest 5
-
-		roundedPrices = append(roundedPrices, roundedPrice)
-
-		maxPrice = int(math.Max(float64(roundedPrice), float64(maxPrice)))
-	}
-
-	ret := make([][]int, (maxPrice/5)+1)
-	for i := 0; i <= maxPrice/5; i++ {
-		ret[i] = []int{0, 0}
-	}
-	for _, v := range roundedPrices {
-		ret[(v / 5)] = []int{0, ret[(v / 5)][1] + 1}
-	}
-
-	bytes, err = json.Marshal(ret)
-	if err != nil {
-		return err
-	}
-
-	player.GameHeatMap = string(bytes)
+	//// Convert to slice
+	//var appsSlice []db.Kind
+	//for _, v := range playerApps {
+	//	appsSlice = append(appsSlice, *v)
+	//}
+	//
+	//err = db.BulkSaveKinds(appsSlice, db.KindPlayerApp, true)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//// Make stats
+	//var gameStats = db.PlayerAppStatsTemplate{}
+	//for _, v := range playerApps {
+	//
+	//	gameStats.All.AddApp(*v)
+	//	if v.AppTime > 0 {
+	//		gameStats.Played.AddApp(*v)
+	//	}
+	//}
+	//
+	//bytes, err := json.Marshal(gameStats)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//player.GameStats = string(bytes)
+	//
+	//// Make heatmap
+	//var roundedPrices []int
+	//var maxPrice int
+	//for _, v := range playerApps {
+	//
+	//	var roundedPrice = int(math.Floor(float64(v.AppPrice)/500) * 5) // Round down to nearest 5
+	//
+	//	roundedPrices = append(roundedPrices, roundedPrice)
+	//
+	//	maxPrice = int(math.Max(float64(roundedPrice), float64(maxPrice)))
+	//}
+	//
+	//ret := make([][]int, (maxPrice/5)+1)
+	//for i := 0; i <= maxPrice/5; i++ {
+	//	ret[i] = []int{0, 0}
+	//}
+	//for _, v := range roundedPrices {
+	//	ret[(v / 5)] = []int{0, ret[(v / 5)][1] + 1}
+	//}
+	//
+	//bytes, err = json.Marshal(ret)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//player.GameHeatMap = string(bytes)
 
 	return nil
 }

@@ -29,7 +29,7 @@
     <title>{{.Title}} - Game DB</title>
     <meta name="Description" content="{{ .Description }}">
 
-    {{if .IsCache }}
+    {{if .IsFromVarnish }}
         <esi:include src="/esi/header"/>
     {{else}}
         {{ template "_header_esi" . }}

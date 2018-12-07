@@ -24,7 +24,6 @@ import (
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
@@ -142,6 +141,12 @@ func fileServer(r chi.Router) {
 	}))
 }
 
+func setNoCacheHeaders(w http.ResponseWriter) {
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate") // HTTP 1.1.
+	w.Header().Set("Pragma", "no-cache")                                   // HTTP 1.0.
+	w.Header().Set("Expires", "0")                                         // Proxies.
+}
+
 func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
 
 	w.Header().Set("Content-Type", "application/json")
@@ -217,11 +222,11 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
-		"join":   func(a []string) string { return strings.Join(a, ", ") },
-		"title":  func(a string) string { return strings.Title(a) },
+		//"join":   func(a []string) string { return strings.Join(a, ", ") },
+		//"title":  func(a string) string { return strings.Title(a) },
 		"comma":  func(a int) string { return humanize.Comma(int64(a)) },
 		"commaf": func(a float64) string { return humanize.Commaf(a) },
-		"slug":   func(a string) string { return slug.Make(a) },
+		//"slug":   func(a string) string { return slug.Make(a) },
 		"apps": func(a []int, appsMap map[int]db.App) template.HTML {
 			var apps []string
 			for _, v := range a {
@@ -260,16 +265,16 @@ func getTemplateFuncMap() map[string]interface{} {
 			}
 			return template.HTML(strings.Join(genres, " "))
 		},
-		"unix":       func(t time.Time) int64 { return t.Unix() },
+		//"unix":       func(t time.Time) int64 { return t.Unix() },
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
 		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
-		"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
-		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
-		"json": func(v interface{}) (string, error) {
-			b, err := json.Marshal(v)
-			log.Log(err)
-			return string(b), err
-		},
+		//"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
+		"max": func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
+		//"json": func(v interface{}) (string, error) {
+		//	b, err := json.Marshal(v)
+		//	log.Log(err)
+		//	return string(b), err
+		//},
 	}
 }
 
@@ -362,6 +367,31 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	log.Log(err)
 }
 
+func (t GlobalTemplate) GetUserJSON() string {
+
+	stringMap := map[string]interface{}{
+		"userID":         strconv.Itoa(t.userID), // Too long for JS int
+		"userLevel":      t.userLevel,
+		"userName":       t.userName,
+		"userEmail":      t.userEmail,
+		"isLoggedIn":     t.isLoggedIn(),
+		"isLocal":        t.isLocal(),
+		"isAdmin":        t.isAdmin(),
+		"showAds":        t.showAds(),
+		"country":        t.userCountry,
+		"currencySymbol": t.userCurrencySymbol,
+		"flashesGood":    t.flashesGood,
+		"flashesBad":     t.flashesBad,
+		"toasts":         t.toasts,
+		"session":        t.session,
+	}
+
+	b, err := json.Marshal(stringMap)
+	log.Log(err)
+
+	return string(b)
+}
+
 func (t GlobalTemplate) GetFooterText() (text string) {
 
 	ts := time.Now()
@@ -371,7 +401,7 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 	text = "Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04:05")
 
 	// Get cashed
-	if t.IsCache() {
+	if t.IsCacheHit() {
 		text += " from cache"
 	}
 
@@ -392,59 +422,35 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 	return text + " in " + d.String()
 }
 
+func (t GlobalTemplate) IsCacheHit() bool {
+	return t.request.Header.Get("X-Cache") == "HIT"
+}
+
+func (t GlobalTemplate) IsFromVarnish() bool {
+	return t.request.Header.Get("X-From-Varnish") == "true"
+}
+
 func (t GlobalTemplate) isLoggedIn() bool {
 	return t.userID > 0
 }
 
 func (t GlobalTemplate) isLocal() bool {
-	return t.Env == "local"
-}
-
-func (t GlobalTemplate) IsCache() bool {
-	return t.request.Header.Get("X-Cache") == "HIT"
-}
-
-func (t GlobalTemplate) IsProduction() bool {
-	return t.Env == "production"
+	return t.Env == string(log.EnvLocal)
 }
 
 func (t GlobalTemplate) isAdmin() bool {
 	return t.request.Header.Get("Authorization") != ""
 }
 
-func (t GlobalTemplate) GetUserJSON() string {
-
-	stringMap := map[string]interface{}{
-		"userID":         strconv.Itoa(t.userID), // Too long for JS int
-		"userLevel":      t.userLevel,
-		"userName":       t.userName,
-		"userEmail":      t.userEmail,
-		"isLoggedIn":     t.isLoggedIn(),
-		"isLocal":        t.isLocal(),
-		"isAdmin":        t.isAdmin(),
-		"showAds":        t.showAd(),
-		"country":        t.userCountry,
-		"currencySymbol": t.userCurrencySymbol,
-		"flashesGood":    t.flashesGood,
-		"flashesBad":     t.flashesBad,
-		"toasts":         t.toasts,
-		"session":        t.session,
-	}
-
-	b, err := json.Marshal(stringMap)
-	log.Log(err)
-
-	return string(b)
-}
-
-func (t GlobalTemplate) showAd() bool {
+func (t GlobalTemplate) showAds() bool {
 	return !t.isLocal()
 }
 
-func (t *GlobalTemplate) AddToast(toast Toast) {
+func (t *GlobalTemplate) addToast(toast Toast) {
 	t.toasts = append(t.toasts, toast)
 }
 
+// DataTablesAjaxResponse
 type DataTablesAjaxResponse struct {
 	Draw            string          `json:"draw"`
 	RecordsTotal    string          `json:"recordsTotal"`
@@ -469,6 +475,7 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 	log.Log(err)
 }
 
+// DataTablesQuery
 type DataTablesQuery struct {
 	Draw   string
 	Order  map[string]map[string]interface{}
@@ -612,12 +619,6 @@ func (q DataTablesQuery) SetOffsetDS(qu *datastore.Query) (*datastore.Query, err
 	qu = qu.Offset(i)
 
 	return qu, nil
-}
-
-func setNoCacheHeaders(w http.ResponseWriter) {
-	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate") // HTTP 1.1.
-	w.Header().Set("Pragma", "no-cache")                                   // HTTP 1.0.
-	w.Header().Set("Expires", "0")                                         // Proxies.
 }
 
 // Toasts

@@ -307,18 +307,18 @@
                                 <tbody>
                                 <tr>
                                     <th scope="row" nowrap="nowrap">Average Time</th>
-                                    <td>{{ .Player.GetGameStats.All.GetAverageTime }}</td>
-                                    <td>{{ .Player.GetGameStats.Played.GetAverageTime }}</td>
+                                    <td>{{ .GameStats.All.GetAverageTime }}</td>
+                                    <td>{{ .GameStats.Played.GetAverageTime }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row" nowrap="nowrap">Average Price</th>
-                                    <td>${{ commaf .Player.GetGameStats.All.GetAveragePrice }}</td>
-                                    <td>${{ commaf .Player.GetGameStats.Played.GetAveragePrice }}</td>
+                                    <td>${{ commaf .GameStats.All.GetAveragePrice }}</td>
+                                    <td>${{ commaf .GameStats.Played.GetAveragePrice }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row" nowrap="nowrap">Average Price / Hour</th>
-                                    <td>${{ commaf .Player.GetGameStats.All.GetAveragePriceHour }}</td>
-                                    <td>${{ commaf .Player.GetGameStats.Played.GetAveragePriceHour }}</td>
+                                    <td>${{ commaf .GameStats.All.GetAveragePriceHour }}</td>
+                                    <td>${{ commaf .GameStats.Played.GetAveragePriceHour }}</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -337,13 +337,13 @@
                                 <tbody>
                                 <tr>
                                     <th scope="row" nowrap="nowrap">Total Time</th>
-                                    <td>{{ .Player.GetGameStats.All.GetTotalTime }}</td>
-                                    <td>{{ .Player.GetGameStats.Played.GetTotalTime }}</td>
+                                    <td>{{ .GameStats.All.GetTotalTime }}</td>
+                                    <td>{{ .GameStats.Played.GetTotalTime }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row" nowrap="nowrap">Total Price</th>
-                                    <td>${{ commaf .Player.GetGameStats.All.GetTotalPrice }}</td>
-                                    <td>${{ commaf .Player.GetGameStats.Played.GetTotalPrice }}</td>
+                                    <td>${{ commaf .GameStats.All.GetTotalPrice }}</td>
+                                    <td>${{ commaf .GameStats.Played.GetTotalPrice }}</td>
                                 </tr>
                                 </tbody>
                             </table>

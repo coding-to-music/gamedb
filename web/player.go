@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
 
@@ -211,6 +212,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14)
 
+	code := session.GetCountryCode(r)
+
+	gameStats, err := player.GetGameStats()
+	gameStats.All.Code = code
+	gameStats.Played.Code = code
+	log.Log(err)
+
 	// Template
 	t := playerTemplate{}
 	t.Fill(w, r, player.PersonaName, "")
@@ -221,6 +229,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Badges = badges
 	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames
+	t.GameStats = gameStats
 	t.Bans = bans
 	t.toasts = toasts
 
@@ -237,6 +246,7 @@ type playerTemplate struct {
 	Badges      []db.ProfileBadge
 	BadgeStats  db.ProfileBadgeStats
 	RecentGames []RecentlyPlayedGame
+	GameStats   db.PlayerAppStatsTemplate
 	Bans        steam.GetPlayerBanResponse
 }
 
@@ -359,7 +369,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var apps []db.PlayerApp
+	var playerApps []db.PlayerApp
 
 	wg.Add(1)
 	go func() {
@@ -388,7 +398,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, err = client.GetAll(ctx, q, &apps)
+		_, err = client.GetAll(ctx, q, &playerApps)
 		log.Log(err)
 
 	}()
@@ -418,7 +428,9 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsFiltered = strconv.Itoa(total)
 	response.Draw = query.Draw
 
-	for _, v := range apps {
+	code := session.GetCountryCode(r)
+
+	for _, v := range playerApps {
 
 		response.AddRow([]interface{}{
 			v.AppID,
@@ -426,8 +438,8 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.GetIcon(),
 			v.AppTime,
 			v.GetTimeNice(),
-			helpers.RoundIntTo2DP(v.AppPrice),
-			v.GetPriceHourFormatted(),
+			helpers.RoundIntTo2DP(v.AppPrices[code]),
+			v.GetPriceHourFormatted(code),
 		})
 	}
 

@@ -583,28 +583,31 @@ type PlayerAppStatsTemplate struct {
 
 type playerAppStatsInnerTemplate struct {
 	Count     int
-	Price     int
-	PriceHour float64
+	Price     map[steam.CountryCode]int
+	PriceHour map[steam.CountryCode]float64
 	Time      int
+	Code      steam.CountryCode
 }
 
 func (p *playerAppStatsInnerTemplate) AddApp(app PlayerApp) {
 	p.Count++
-	p.Price = p.Price + app.AppPrice
-	p.PriceHour = p.PriceHour + app.AppPriceHour
-	p.Time = p.Time + app.AppTime
+	for code := range steam.Countries {
+		p.Price[code] = p.Price[code] + app.AppPrices[code]
+		p.PriceHour[code] = p.PriceHour[code] + app.AppPriceHour[code]
+		p.Time = p.Time + app.AppTime
+	}
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePrice() float64 {
-	return helpers.RoundFloatTo2DP(float64(p.Price) / float64(p.Count))
+	return helpers.RoundFloatTo2DP(float64(p.Price[p.Code]) / float64(p.Count))
 }
 
 func (p playerAppStatsInnerTemplate) GetTotalPrice() float64 {
-	return helpers.RoundFloatTo2DP(float64(p.Price))
+	return helpers.RoundFloatTo2DP(float64(p.Price[p.Code]))
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePriceHour() float64 {
-	return helpers.RoundFloatTo2DP(p.PriceHour / float64(p.Count))
+	return helpers.RoundFloatTo2DP(p.PriceHour[p.Code] / float64(p.Count))
 }
 func (p playerAppStatsInnerTemplate) GetAverageTime() string {
 	return helpers.GetTimeShort(int(float64(p.Time)/float64(p.Count)), 2)
