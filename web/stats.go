@@ -70,7 +70,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var rows []totalsRow
-		gorm, err := db.GetMySQLClient(true)
+		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
 			log.Log(err)
