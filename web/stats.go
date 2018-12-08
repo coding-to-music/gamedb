@@ -8,7 +8,9 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
 
@@ -62,6 +64,49 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var rows []totalsRow
+		gorm, err := db.GetMySQLClient(true)
+		if err != nil {
+
+			log.Log(err)
+			return
+
+		}
+
+		code := session.GetCountryCode(r)
+
+		gorm = gorm.Select([]string{"type", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
+		gorm = gorm.Table("apps")
+		gorm = gorm.Group("type")
+		gorm = gorm.Order("total desc")
+		gorm = gorm.Find(&rows)
+
+		log.Log(gorm.Error)
+
+		for _, v := range rows {
+
+			locale, err := helpers.GetLocaleFromCountry(code)
+			log.Log(err)
+
+			final := locale.Format(v.Total)
+
+			if v.Total > 0 && (v.Type == "game" || v.Type == "dlc") {
+				app := db.App{}
+				app.Type = v.Type
+				t.Totals = append(t.Totals, totalsTemplate{
+					"Total price of all " + app.GetType() + "s",
+					final,
+				})
+			}
+		}
+
+	}()
+
 	wg.Wait()
 
 	err := returnTemplate(w, r, "stats", t)
@@ -73,6 +118,17 @@ type statsTemplate struct {
 	RanksCount    int
 	AppsCount     int
 	PackagesCount int
+	Totals        []totalsTemplate
+}
+
+type totalsRow struct {
+	Type  string `gorm:"column:type"`
+	Total int    `gorm:"column:total;type:int"`
+}
+
+type totalsTemplate struct {
+	Type  string
+	Total string
 }
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {

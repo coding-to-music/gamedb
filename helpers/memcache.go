@@ -50,6 +50,11 @@ var (
 		return memcache.Item{Key: "config-item-" + key, Expiration: 0}
 	}
 
+	// Stats, let it be cached in varnish
+	//MemcacheStatsScores    = memcache.Item{Key: "stats-scores", Expiration: 86400 * 1}
+	//MemcacheStatsTypes     = memcache.Item{Key: "stats-types", Expiration: 86400 * 1}
+	//MemcacheStatsCountries = memcache.Item{Key: "stats-countries", Expiration: 86400 * 1}
+
 	// Other
 	MemcacheMostExpensiveApp = func(code steam.CountryCode) memcache.Item {
 		return memcache.Item{Key: "most-expensive-app-" + string(code), Expiration: 86400 * 7}
