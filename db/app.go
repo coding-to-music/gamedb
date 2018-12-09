@@ -486,9 +486,9 @@ func (app *App) SetUFS(ufs PICSAppUFS) (err error) {
 	return nil
 }
 
-func (app App) GetUFS() (ufs PICSAppDepotBranches, err error) {
+func (app App) GetUFS() (ufs PICSAppUFS, err error) {
 
-	ufs = PICSAppDepotBranches{}
+	ufs = PICSAppUFS{}
 	err = helpers.Unmarshal([]byte(app.PICSUFS), &ufs)
 	return ufs, err
 }
