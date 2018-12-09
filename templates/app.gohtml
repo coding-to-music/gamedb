@@ -58,6 +58,9 @@
                         <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
                     </li>
                 {{end}}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
+                </li>
             </ul>
 
         </div>
@@ -385,6 +388,247 @@
                         <p>This app has no screenshots.</p>
 
                     {{ end }}
+
+                </div>
+
+                {{/* Dev */}}
+                <div class="tab-pane" id="dev" role="tabpanel">
+
+                    <div class="card">
+                        <div class="card-header bg-light text-white">
+
+                            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#extended" role="tab">Extended Values</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#common" role="tab">Common Values</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#depots" role="tab">Depots</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#config" role="tab">Config</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#ufs" role="tab">UFS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#launch" role="tab">Launch</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#install" role="tab">Install</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#localisation" role="tab">Localisation</a>
+                                </li>
+                            </ul>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="tab-content">
+
+                                {{/* Extended */}}
+                                <div class="tab-pane show active" id="extended" role="tabpanel">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetExtended }}
+                                                <tr>
+                                                    <td>{{ $key }}</td>
+                                                    <td>{{ $value }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                {{/* Common */}}
+                                <div class="tab-pane" id="common" role="tabpanel">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetCommon }}
+                                                <tr>
+                                                    <td>{{ $key }}</td>
+                                                    <td>{{ $value }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                {{/* Depots */}}
+                                <div class="tab-pane" id="depots" role="tabpanel">
+
+                                    <h5>Depots</h5>
+                                    <div class="table-responsive mb-4">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">ID</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Configs</th>
+                                                <th scope="col">Manifests</th>
+                                                <th scope="col">EncryptedManifests</th>
+                                                <th scope="col">MaxSize</th>
+                                                <th scope="col">App</th>
+                                                <th scope="col">DLCApp</th>
+                                                <th scope="col">SystemDefined</th>
+                                                <th scope="col">Optional</th>
+                                                <th scope="col">SharedInstall</th>
+                                                <th scope="col">SharedDepotType</th>
+                                                <th scope="col">LVCache</th>
+                                                <th scope="col">AllowAddRemoveWhileRunning</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetDepots.Depots }}
+                                                <tr>
+                                                    <td>{{ .ID                         }}</td>
+                                                    <td nowrap="nowrap">{{ .Name                       }}</td>
+                                                    <td>{{ json .Configs                    }}</td>
+                                                    <td>{{ json .Manifests                  }}</td>
+                                                    <td>{{ .EncryptedManifests         }}</td>
+                                                    <td>{{ .MaxSize                    }}</td>
+                                                    <td>{{ .App                        }}</td>
+                                                    <td>{{ .DLCApp                     }}</td>
+                                                    <td>{{ .SystemDefined              }}</td>
+                                                    <td>{{ .Optional                   }}</td>
+                                                    <td>{{ .SharedInstall              }}</td>
+                                                    <td>{{ .SharedDepotType            }}</td>
+                                                    <td>{{ .LVCache                    }}</td>
+                                                    <td>{{ .AllowAddRemoveWhileRunning }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
+                                    <h5>Branches</h5>
+                                    <div class="table-responsive mb-4">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Name</th>
+                                                <th scope="col">Description</th>
+                                                <th scope="col">Build ID</th>
+                                                <th scope="col">Time Updated</th>
+                                                <th scope="col">Password Required</th>
+                                                <th scope="col">LCS Required</th>
+                                                <th scope="col">Default For Subs</th>
+                                                <th scope="col">Unlock For Subs</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetDepots.Branches }}
+                                                <tr>
+                                                    <td>{{ .Name }}</td>
+                                                    <td>{{ .Description }}</td>
+                                                    <td>{{ .BuildID }}</td>
+                                                    <td>{{ .TimeUpdated }}</td>
+                                                    <td>{{ .PasswordRequired }}</td>
+                                                    <td>{{ .LCSRequired }}</td>
+                                                    <td>{{ .DefaultForSubs }}</td>
+                                                    <td>{{ .UnlockForSubs }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
+                                    <h5>Extra</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetDepots.Extra }}
+                                                <tr>
+                                                    <td>{{ $key }}</td>
+                                                    <td>{{ $value }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                {{/* Config */}}
+                                <div class="tab-pane" id="config" role="tabpanel">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetConfig }}
+                                                <tr>
+                                                    <td>{{ $key }}</td>
+                                                    <td>{{ $value }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                {{/* UFS */}}
+                                <div class="tab-pane" id="ufs" role="tabpanel">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetUFS }}
+                                                <tr>
+                                                    <td>{{ $key }}</td>
+                                                    <td>{{ $value }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                {{/* Launch */}}
+                                <div class="tab-pane" id="launch" role="tabpanel">
+
+                                </div>
+
+                                {{/* Install */}}
+                                <div class="tab-pane" id="install" role="tabpanel">
+
+                                </div>
+
+                                {{/* Localisation */}}
+                                <div class="tab-pane" id="localisation" role="tabpanel">¬
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>

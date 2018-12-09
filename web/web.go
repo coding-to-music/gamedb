@@ -267,11 +267,11 @@ func getTemplateFuncMap() map[string]interface{} {
 		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
 		//"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
 		"max": func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
-		//"json": func(v interface{}) (string, error) {
-		//	b, err := json.Marshal(v)
-		//	log.Log(err)
-		//	return string(b), err
-		//},
+		"json": func(v interface{}) (string, error) {
+			b, err := json.Marshal(v)
+			log.Log(err)
+			return string(b), err
+		},
 	}
 }
 
