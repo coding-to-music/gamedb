@@ -149,8 +149,6 @@ if ($('#stats-page').length > 0) {
         url: '/stats/release-dates',
         success: function (data, textStatus, jqXHR) {
 
-            console.log(data);
-
             Highcharts.chart('release-dates', $.extend(true, {}, columnDefaults, {
                 chart: {
                     type: 'area',
@@ -166,6 +164,16 @@ if ($('#stats-page').length > 0) {
                 series: [{
                     data: data
                 }],
+                plotOptions: {
+                    area: {
+                        lineWidth: 1,
+                        states: {
+                            hover: {
+                                lineWidth: 1
+                            }
+                        },
+                    }
+                },
             }));
         },
         dataType: 'json'
