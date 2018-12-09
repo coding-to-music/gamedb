@@ -63,7 +63,6 @@ func (p Player) GetKey() (key *datastore.Key) {
 }
 
 func (p Player) GetPath() string {
-
 	return getPlayerPath(p.PlayerID, p.GetName())
 }
 
@@ -337,7 +336,10 @@ func getPlayerPath(id int64, name string) string {
 
 	p := "/players/" + strconv.FormatInt(id, 10)
 	if name != "" {
-		p = p + "/" + slug.Make(name)
+		s := slug.Make(name)
+		if s != "" {
+			p = p + "/" + s
+		}
 	}
 	return p
 }
