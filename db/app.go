@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"html/template"
+	"io/ioutil"
 	"math"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -85,6 +88,13 @@ type App struct {
 	ReviewsNegative        int        `gorm:"not null;column:reviews_negative"`                  //
 	Prices                 string     `gorm:"not null;column:prices"`                            //
 	NewsIDs                string     `gorm:"not null;column:news_ids"`                          //
+
+	SSAveragePlaytimeTwoWeeks int `gorm:"not null;column:ss_average_2weeks"`  //
+	SSAveragePlaytimeForever  int `gorm:"not null;column:ss_average_forever"` //
+	SSMedianPlaytimeForever   int `gorm:"not null;column:ss_median_forever"`  //
+	SSMedianPlaytimeTwoWeeks  int `gorm:"not null;column:ss_median_2weeks"`   //
+	SSOwnersLow               int `gorm:"not null;column:ss_owners_low"`      //
+	SSOwnersHigh              int `gorm:"not null;column:ss_owners_high"`     //
 }
 
 func (app *App) BeforeCreate(scope *gorm.Scope) error {
@@ -752,6 +762,59 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 
 	}(app)
 
+	// Steam Spy
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		query := url.Values{}
+		query.Set("request", "appdetails")
+		query.Set("appid", strconv.Itoa(app.ID))
+
+		// Create request
+		client := &http.Client{}
+
+		req, err := http.NewRequest("GET", "https://steamspy.com/api.php?"+query.Encode(), nil)
+		if err != nil {
+			errs = append(errs, err)
+			return
+		}
+
+		response, err := client.Do(req)
+		if err != nil {
+			errs = append(errs, err)
+			return
+		}
+
+		//noinspection GoUnhandledErrorResult
+		defer response.Body.Close()
+
+		bytes, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			errs = append(errs, err)
+			return
+		}
+
+		// Unmarshal JSON
+		resp := SteamSpyApp{}
+		err = json.Unmarshal(bytes, &resp)
+		if err != nil {
+			errs = append(errs, err)
+			return
+		}
+
+		app.SSAveragePlaytimeForever = resp.AverageForever
+		app.SSAveragePlaytimeTwoWeeks = resp.Average2Weeks
+		app.SSMedianPlaytimeForever = resp.MedianForever
+		app.SSMedianPlaytimeTwoWeeks = resp.Median2Weeks
+
+		owners := resp.GetOwners()
+		app.SSOwnersLow = owners[0]
+		app.SSOwnersHigh = owners[1]
+
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -771,6 +834,41 @@ func (app *App) UpdateFromRequest(userAgent string) (errs []error) {
 	}
 
 	return errs
+}
+
+type SteamSpyApp struct {
+	Appid     int    `json:"appid"`
+	Name      string `json:"name"`
+	Developer string `json:"developer"`
+	Publisher string `json:"publisher"`
+	//ScoreRank      int    `json:"score_rank"` // Can be empty string
+	Positive       int    `json:"positive"`
+	Negative       int    `json:"negative"`
+	Userscore      int    `json:"userscore"`
+	Owners         string `json:"owners"`
+	AverageForever int    `json:"average_forever"`
+	Average2Weeks  int    `json:"average_2weeks"`
+	MedianForever  int    `json:"median_forever"`
+	Median2Weeks   int    `json:"median_2weeks"`
+	Price          string `json:"price"`
+	Initialprice   string `json:"initialprice"`
+	Discount       string `json:"discount"`
+	Languages      string `json:"languages"`
+	Genre          string `json:"genre"`
+	Ccu            int    `json:"ccu"`
+	//Tags           map[string]int `json:"tags"` // Can be an empty slice
+}
+
+func (a SteamSpyApp) GetOwners() (ret []int) {
+
+	owners := strings.Replace(a.Owners, ",", "", -1)
+	owners = strings.Replace(owners, " ", "", -1)
+	ownersStrings := strings.Split(owners, "..")
+	ownersInts := helpers.StringSliceToIntSlice(ownersStrings)
+	if len(ownersInts) == 2 {
+		return ownersInts
+	}
+	return ret
 }
 
 func GetTypesForSelect() []AppType {
