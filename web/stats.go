@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sort"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
@@ -21,6 +22,7 @@ func statsRouter() http.Handler {
 	r.Get("/app-scores", statsScoresHandler)
 	r.Get("/app-types", statsTypesHandler)
 	r.Get("/ranked-countries", statsCountriesHandler)
+	r.Get("/release-dates", statsDatesHandler)
 	return r
 }
 
@@ -70,7 +72,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var rows []totalsRow
+		var rows []statsAppTypeTotalsRow
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
@@ -99,7 +101,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 			if v.Total > 0 && (v.Type == "game" || v.Type == "dlc") {
 				app := db.App{}
 				app.Type = v.Type
-				t.Totals = append(t.Totals, totalsTemplate{
+				t.Totals = append(t.Totals, statsAppTypeTotals{
 					"Total price of all " + app.GetType() + "s",
 					final,
 				})
@@ -119,37 +121,36 @@ type statsTemplate struct {
 	RanksCount    int
 	AppsCount     int
 	PackagesCount int
-	Totals        []totalsTemplate
+	Totals        []statsAppTypeTotals
 }
 
-type totalsRow struct {
+type statsAppTypeTotalsRow struct {
 	Type  string `gorm:"column:type"`
 	Total int    `gorm:"column:total;type:int"`
 }
 
-type totalsTemplate struct {
+type statsAppTypeTotals struct {
 	Type  string
 	Total string
 }
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
-	var scores []appScore
+	var scores []statsAppScore
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
 		log.Log(err)
-
-	} else {
-
-		gorm = gorm.Select([]string{"FLOOR(reviews_score) AS score", "count(reviews_score) AS count"})
-		gorm = gorm.Table("apps")
-		gorm = gorm.Where("reviews_score > ?", 0)
-		gorm = gorm.Group("FLOOR(reviews_score)")
-		gorm = gorm.Find(&scores)
-
-		log.Log(gorm.Error)
+		return
 	}
+
+	gorm = gorm.Select([]string{"FLOOR(reviews_score) AS score", "count(reviews_score) AS count"})
+	gorm = gorm.Table("apps")
+	gorm = gorm.Where("reviews_score > ?", 0)
+	gorm = gorm.Group("FLOOR(reviews_score)")
+	gorm = gorm.Find(&scores)
+
+	log.Log(gorm.Error)
 
 	ret := make([]int, 101) // 0-100
 	for i := 0; i <= 100; i++ {
@@ -166,29 +167,28 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	log.Log(err)
 }
 
-type appScore struct {
+type statsAppScore struct {
 	Score int
 	Count int
 }
 
 func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 
-	var types []appType
+	var types []statsAppType
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
 		log.Log(err)
-
-	} else {
-
-		gorm = gorm.Select([]string{"type", "count(type) as count"})
-		gorm = gorm.Table("apps")
-		gorm = gorm.Group("type")
-		gorm = gorm.Order("count desc")
-		gorm = gorm.Find(&types)
-
-		log.Log(gorm.Error)
+		return
 	}
+
+	gorm = gorm.Select([]string{"type", "count(type) as count"})
+	gorm = gorm.Table("apps")
+	gorm = gorm.Group("type")
+	gorm = gorm.Order("count desc")
+	gorm = gorm.Find(&types)
+
+	log.Log(gorm.Error)
 
 	var ret [][]interface{}
 
@@ -205,7 +205,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	log.Log(err)
 }
 
-type appType struct {
+type statsAppType struct {
 	Type  string
 	Count int
 }
@@ -263,4 +263,43 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = returnJSON(w, r, bytes)
 	log.Log(err)
+}
+
+func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
+
+	var types []statsAppReleaseDate
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+
+		log.Log(err)
+		return
+	}
+
+	gorm = gorm.Select([]string{"count(*) as count", "release_date_unix as date"})
+	gorm = gorm.Table("apps")
+	gorm = gorm.Group("date")
+	gorm = gorm.Order("date desc")
+	//gorm = gorm.Where("release_date_unix > 0")
+	gorm = gorm.Where("release_date_unix < ?", time.Now().Add(time.Hour * 24).Unix())
+	//gorm = gorm.Where("release_date_unix < 2147483648") // 32 bit
+	gorm = gorm.Limit(365)
+	gorm = gorm.Find(&types)
+
+	log.Log(gorm.Error)
+
+	var ret [][]int64
+	for _, v := range types {
+		ret = append(ret, []int64{v.Date * 1000, int64(v.Count)})
+	}
+
+	bytes, err := json.Marshal(ret)
+	log.Log(err)
+
+	err = returnJSON(w, r, bytes)
+	log.Log(err)
+}
+
+type statsAppReleaseDate struct {
+	Date  int64
+	Count int
 }

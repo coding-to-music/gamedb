@@ -13,19 +13,27 @@
 
             <div class="row">
                 <div class="col col-6 col-md-4">
-                    <div role="button" class="btn btn-success btn-block mb-4">Total Ranked Players<br/>{{ comma .RanksCount}}</div>
-                </div>
-                <div class="col col-6 col-md-4">
                     <div role="button" class="btn btn-success btn-block mb-4">Total Apps<br/>{{ comma .AppsCount}}</div>
                 </div>
                 <div class="col col-6 col-md-4">
                     <div role="button" class="btn btn-success btn-block mb-4">Total Packages<br/>{{ comma .PackagesCount}}</div>
+                </div>
+                <div class="col col-6 col-md-4">
+                    <div role="button" class="btn btn-success btn-block mb-4">Total Ranked Players<br/>{{ comma .RanksCount}}</div>
                 </div>
                 {{ range $key, $value := .Totals }}
                     <div class="col col-6 col-md-4">
                         <div role="button" class="btn btn-success btn-block mb-4">{{ .Type }}<br/>{{ .Total }}</div>
                     </div>
                 {{ end }}
+            </div>
+
+            <h5>
+                Release Dates
+                <small>(In the last year)</small>
+            </h5>
+            <div id="release-dates">
+                <i class="fas fa-spinner fa-spin"></i>
             </div>
 
             <h5>App Scores</h5>
@@ -38,7 +46,8 @@
                 <i class="fas fa-spinner fa-spin"></i>
             </div>
 
-            <h5>Number of ranked players from each country
+            <h5>
+                Number of ranked players from each country
                 <small>(where &gt;=10)</small>
             </h5>
             <div id="countries">
