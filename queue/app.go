@@ -253,12 +253,11 @@ func updateAppDetails(app *db.App) error {
 		response, _, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
 		if err != nil {
 
-			// Presume that if not found in one language, wont be found in any.
 			if err == steam.ErrAppNotFound {
-				break
+				continue
+			} else {
+				return err
 			}
-
-			return err
 		}
 
 		prices.AddPriceFromApp(code, response)

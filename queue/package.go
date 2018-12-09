@@ -194,7 +194,11 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 		// Get package details
 		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
 		if err != nil {
-			return err
+			if err == steam.ErrPackageNotFound {
+				continue
+			} else {
+				return err
+			}
 		}
 
 		prices.AddPriceFromPackage(code, response)
