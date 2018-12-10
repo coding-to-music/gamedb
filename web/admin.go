@@ -248,6 +248,7 @@ func adminQueues(r *http.Request) {
 		player.PlayerID = playerID
 
 		err = queuePlayer(r, player, db.PlayerUpdateAdmin)
+		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 		log.Log(err)
 	}
 

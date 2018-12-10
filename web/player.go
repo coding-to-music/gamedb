@@ -488,8 +488,9 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 
 					response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
-					log.Log(err)
 
+					err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+					log.Log(err)
 				}
 			}
 		}

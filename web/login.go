@@ -213,6 +213,8 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Get player if they're new
 	if player.PersonaName == "" {
 		err = queuePlayer(r, player, db.PlayerUpdateAuto)
+
+		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 		log.Log(err)
 	}
 

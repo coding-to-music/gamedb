@@ -55,6 +55,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 			err = queuePlayer(r, player, db.PlayerUpdateManual)
 			if err != nil {
+
+				err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 				log.Log(err)
 				return
 			}
