@@ -136,13 +136,14 @@ type statsAppTypeTotals struct {
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
-	var scores []statsAppScore
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
 		log.Log(err)
 		return
 	}
+
+	var scores []statsAppScore
 
 	gorm = gorm.Select([]string{"FLOOR(reviews_score) AS score", "count(reviews_score) AS count"})
 	gorm = gorm.Table("apps")
@@ -174,13 +175,14 @@ type statsAppScore struct {
 
 func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 
-	var types []statsAppType
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
 		log.Log(err)
 		return
 	}
+
+	var types []statsAppType
 
 	gorm = gorm.Select([]string{"type", "count(type) as count"})
 	gorm = gorm.Table("apps")
@@ -267,7 +269,6 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 
-	var types []statsAppReleaseDate
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
@@ -275,20 +276,20 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var dates []statsAppReleaseDate
+
 	gorm = gorm.Select([]string{"count(*) as count", "release_date_unix as date"})
 	gorm = gorm.Table("apps")
 	gorm = gorm.Group("date")
 	gorm = gorm.Order("date desc")
-	//gorm = gorm.Where("release_date_unix > 0")
-	gorm = gorm.Where("release_date_unix < ?", time.Now().Add(time.Hour * 24).Unix())
-	//gorm = gorm.Where("release_date_unix < 2147483648") // 32 bit
-	gorm = gorm.Limit(365)
-	gorm = gorm.Find(&types)
+	gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(-1, 0, 0).Unix())
+	gorm = gorm.Where("release_date_unix < ?", time.Now().AddDate(0, 0, 1).Unix())
+	gorm = gorm.Find(&dates)
 
 	log.Log(gorm.Error)
 
 	var ret [][]int64
-	for _, v := range types {
+	for _, v := range dates {
 		ret = append(ret, []int64{v.Date * 1000, int64(v.Count)})
 	}
 
