@@ -241,35 +241,35 @@ func updatePlayerGames(player *db.Player) error {
 		}
 	}
 
-	//// Convert to slice
-	//var appsSlice []db.Kind
-	//for _, v := range playerApps {
-	//	appsSlice = append(appsSlice, *v)
-	//}
-	//
-	//err = db.BulkSaveKinds(appsSlice, db.KindPlayerApp, true)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//// Make stats
-	//var gameStats = db.PlayerAppStatsTemplate{}
-	//for _, v := range playerApps {
-	//
-	//	gameStats.All.AddApp(*v)
-	//	if v.AppTime > 0 {
-	//		gameStats.Played.AddApp(*v)
-	//	}
-	//}
-	//
-	//bytes, err := json.Marshal(gameStats)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//player.GameStats = string(bytes)
-	//
-	//// Make heatmap
+	// Convert to slice
+	var appsSlice []db.Kind
+	for _, v := range playerApps {
+		appsSlice = append(appsSlice, *v)
+	}
+
+	err = db.BulkSaveKinds(appsSlice, db.KindPlayerApp, true)
+	if err != nil {
+		return err
+	}
+
+	// Make stats
+	var gameStats = db.PlayerAppStatsTemplate{}
+	for _, v := range playerApps {
+
+		gameStats.All.AddApp(*v)
+		if v.AppTime > 0 {
+			gameStats.Played.AddApp(*v)
+		}
+	}
+
+	bytes, err := json.Marshal(gameStats)
+	if err != nil {
+		return err
+	}
+
+	player.GameStats = string(bytes)
+
+	// Make heatmap
 	//var roundedPrices []int
 	//var maxPrice int
 	//for _, v := range playerApps {
