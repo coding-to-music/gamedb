@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"runtime/debug"
+	"strconv"
 	"strings"
 	"time"
 
@@ -162,6 +163,8 @@ func Log(interfaces ...interface{}) {
 		switch val := v.(type) {
 		case nil:
 			continue
+		case int:
+			entry.text = strconv.Itoa(val)
 		case string:
 			entry.text = val
 		case *http.Request:
