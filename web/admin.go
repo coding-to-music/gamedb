@@ -327,7 +327,7 @@ func adminGenres() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					log.Log(err)
+					//log.Log(err)
 					continue
 				}
 				newGenres[genre.ID].totalPrice[code] += price.Final
@@ -462,7 +462,7 @@ func adminPublishers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					log.Log(err)
+					//log.Log(err)
 					continue
 				}
 				newPublishers[publisher].totalPrice[code] += price.Final
@@ -609,7 +609,7 @@ func adminDevelopers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					log.Log(err)
+					//log.Log(err)
 					continue
 				}
 				newDevelopers[developer].totalPrice[code] += price.Final
@@ -752,7 +752,7 @@ func adminTags() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					log.Log(err)
+					//log.Log(err)
 					continue
 				}
 				newTags[tagID].totalPrice[code] += price.Final
