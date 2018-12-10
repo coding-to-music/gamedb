@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"html/template"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -66,6 +67,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t := appTemplate{}
 	t.Fill(w, r, app.GetName(), "")
 	t.App = app
+	t.Description = template.HTML(app.ShortDescription)
 
 	//
 	var wg sync.WaitGroup

@@ -3,9 +3,9 @@
 <div class="container" id="app-page" data-bg="{{ .App.Background }}">
 
     <div class="jumbotron">
-        <img src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}" onError="this.onerror=null;this.src='/assets/img/no-app-image-banner.jpg';">
         <h1 class="display-4"><i class="fas fa-gamepad"></i> {{ .App.GetName }}</h1>
-        <p class="lead">
+        <p class="lead">{{ .Description }}</p>
+        <div>
             <a href="{{ .App.GetCommunityLink }}" data-toggle="tooltip" data-placement="top" title="Community Page"><i class="fas fa-users"></i></a>
             <a href="{{ .App.GetStoreLink }}" data-toggle="tooltip" data-placement="top" title="Store Page"><i class="fas fa-shopping-cart"></i></a>
             {{if ne .App.Homepage ""}}
@@ -13,7 +13,7 @@
             {{end}}
             <a href="{{ .App.GetInstallLink }}" data-toggle="tooltip" data-placement="top" title="Install"><i class="fas fa-sign-in-alt"></i></a>
             <a href="{{ .App.GetPCGamingWikiLink }}" data-toggle="tooltip" data-placement="top" title="PC Gaming Wiki"><i class="fab fa-wikipedia-w"></i></a>
-        </p>
+        </div>
     </div>
 
     <div class="card">
@@ -69,6 +69,8 @@
 
                 {{/* Info */}}
                 <div class="tab-pane show active" id="details" role="tabpanel">
+
+                    <img class="rounded" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">
 
                     <table class="table mb-0">
                         {{ if ne .App.GameName "" }}
