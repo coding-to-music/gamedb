@@ -486,16 +486,16 @@
                                                 <th scope="col">Name</th>
                                                 <th scope="col">Configs</th>
                                                 <th scope="col">Manifests</th>
-                                                <th scope="col">EncryptedManifests</th>
-                                                <th scope="col">MaxSize</th>
+                                                <th scope="col">Encrypted Manifests</th>
+                                                <th scope="col">Max Size</th>
                                                 <th scope="col">App</th>
-                                                <th scope="col">DLCApp</th>
-                                                <th scope="col">SystemDefined</th>
+                                                <th scope="col">DLC App</th>
+                                                <th scope="col">System Defined</th>
                                                 <th scope="col">Optional</th>
-                                                <th scope="col">SharedInstall</th>
-                                                <th scope="col">SharedDepotType</th>
-                                                <th scope="col">LVCache</th>
-                                                <th scope="col">AllowAddRemoveWhileRunning</th>
+                                                <th scope="col">Shared Install</th>
+                                                <th scope="col">Shared Depot Type</th>
+                                                <th scope="col">LV Cache</th>
+                                                <th scope="col">Allow Add Remove While Running</th>
                                             </tr>
                                             </thead>
                                             {{ range $key, $value := .App.GetDepots.Depots }}
@@ -616,15 +616,84 @@
                                 {{/* Launch */}}
                                 <div class="tab-pane" id="launch" role="tabpanel">
 
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Order</th>
+                                                <th scope="col">Executable</th>
+                                                <th scope="col">Arguments</th>
+                                                <th scope="col">Description</th>
+                                                <th scope="col">Type</th>
+                                                <th scope="col">OS List</th>
+                                                <th scope="col">OS Architecture</th>
+                                                <th scope="col">Owns DLCs</th>
+                                                <th scope="col">Beta Key</th>
+                                                <th scope="col">Working Dir</th>
+                                                <th scope="col">VAC Module Filename</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetLaunch }}
+                                                <tr>
+                                                    <td>{{ .Order             }}</td>
+                                                    <td>{{ .Executable        }}</td>
+                                                    <td nowrap="nowrap">{{ .Arguments         }}</td>
+                                                    <td>{{ .Description       }}</td>
+                                                    <td>{{ .Typex             }}</td>
+                                                    <td>{{ .OSList            }}</td>
+                                                    <td>{{ .OSArch            }}</td>
+                                                    <td>{{ joinInt .OwnsDLCs          }}</td>
+                                                    <td>{{ .BetaKey           }}</td>
+                                                    <td>{{ .WorkingDir        }}</td>
+                                                    <td>{{ .VACModuleFilename }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
                                 </div>
 
                                 {{/* Install */}}
                                 <div class="tab-pane" id="install" role="tabpanel">
 
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetInstall }}
+                                                <tr>
+                                                    <td>{{ $key }}</td>
+                                                    <td>{{ json $value }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
                                 </div>
 
                                 {{/* Localisation */}}
-                                <div class="tab-pane" id="localisation" role="tabpanel">¬
+                                <div class="tab-pane" id="localisation" role="tabpanel">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetLocalization }}
+                                                <tr>
+                                                    <td>{{ $key }}</td>
+                                                    <td>{{ json $value }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
 
                                 </div>
 

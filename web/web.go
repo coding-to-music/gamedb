@@ -219,11 +219,20 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
-		//"join":   func(a []string) string { return strings.Join(a, ", ") },
 		//"title":  func(a string) string { return strings.Title(a) },
+		//"slug":   func(a string) string { return slug.Make(a) },
+		//"unix":       func(t time.Time) int64 { return t.Unix() },
+		//"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
+		"join": func(a []string) string { return strings.Join(a, ", ") },
+		"joinInt": func(a []int) string {
+			var join []string
+			for _, v := range a {
+				join = append(join, strconv.Itoa(v))
+			}
+			return strings.Join(join, ", ")
+		},
 		"comma":  func(a int) string { return humanize.Comma(int64(a)) },
 		"commaf": func(a float64) string { return humanize.Commaf(a) },
-		//"slug":   func(a string) string { return slug.Make(a) },
 		"apps": func(a []int, appsMap map[int]db.App) template.HTML {
 			var apps []string
 			for _, v := range a {
@@ -262,11 +271,9 @@ func getTemplateFuncMap() map[string]interface{} {
 			}
 			return template.HTML(strings.Join(genres, " "))
 		},
-		//"unix":       func(t time.Time) int64 { return t.Unix() },
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
 		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
-		//"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
-		"max": func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
+		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"json": func(v interface{}) (string, error) {
 			b, err := json.Marshal(v)
 			log.Log(err)
