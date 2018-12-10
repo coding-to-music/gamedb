@@ -22,8 +22,12 @@ if ($('#news-page').length > 0) {
 
         const hash = window.location.hash.replace('#', '');
         if (hash) {
-            $modal.find('.modal-body').html($('tr[data-id=' + hash + ']').find('.d-none').html());
+
+            let $art = $('tr[data-id=' + hash + ']').find('.d-none').html();
+            $art = $("<div />").html($art).text(); // Decode HTML
+            $modal.find('.modal-body').html($art);
             $modal.modal('show');
+
         } else {
             $modal.modal('hide');
         }

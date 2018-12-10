@@ -40,8 +40,11 @@ if ($('#app-page').length > 0) {
         // If the hash has a news ID
         if (split.length === 2 && (split[0] === 'news' || split[0] === '#news') && split[1]) {
 
-            $modal.find('.modal-body').html($('tr[data-id=' + split[1] + ']').find('.d-none').html());
+            let $art = $('tr[data-id=' + split[1] + ']').find('.d-none').html();
+            $art = $("<div />").html($art).text(); // Decode HTML
+            $modal.find('.modal-body').html($art);
             $modal.modal('show');
+
         } else {
             $modal.modal('hide');
         }
