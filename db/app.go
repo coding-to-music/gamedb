@@ -443,7 +443,7 @@ func (app *App) SetLocalization(localization map[string]interface{}) (err error)
 		return err
 	}
 
-	app.PICSInstall = string(bytes)
+	app.PICSLocalization = string(bytes)
 
 	return nil
 }
@@ -451,7 +451,7 @@ func (app *App) SetLocalization(localization map[string]interface{}) (err error)
 func (app App) GetLocalization() (localization map[string]interface{}, err error) {
 
 	localization = map[string]interface{}{}
-	err = helpers.Unmarshal([]byte(app.PICSInstall), &localization)
+	err = helpers.Unmarshal([]byte(app.PICSLocalization), &localization)
 	return localization, err
 }
 
