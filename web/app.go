@@ -236,7 +236,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			v.Review = regex.ReplaceAllString(v.Review, "\n\n")
 
 			t.Reviews = append(t.Reviews, appReviewTemplate{
-				Review:     helpers.BBCodeCompiler.Compile(v.Review),
+				Review:     template.HTML(helpers.BBCodeCompiler.Compile(v.Review)),
 				Player:     player,
 				Date:       time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
 				VotesGood:  v.VotesUp,
@@ -284,7 +284,7 @@ func (a appAchievementTemplate) GetCompleted() float64 {
 }
 
 type appReviewTemplate struct {
-	Review     string
+	Review     template.HTML
 	Player     db.Player
 	Date       string
 	VotesGood  int
