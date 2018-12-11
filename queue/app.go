@@ -106,7 +106,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	}
 
 	// Send websocket
-	page, err := websockets.GetPage(websockets.PageApps)
+	page, err := websockets.GetPage(websockets.PageApp)
 	if err != nil {
 		return true, err
 	} else if page.HasConnections() {

@@ -15,19 +15,19 @@ import (
 type WebsocketPage string
 
 const (
-	PageChanges  WebsocketPage = "changes"
-	PageChat     WebsocketPage = "chat"
-	PageNews     WebsocketPage = "news"
-	PagePrices   WebsocketPage = "prices"
-	PageProfile  WebsocketPage = "profile"
-	PageAdmin    WebsocketPage = "admin"
-	PagePackages WebsocketPage = "packages"
-	PageApps     WebsocketPage = "apps"
+	PageChanges WebsocketPage = "changes"
+	PageChat    WebsocketPage = "chat"
+	PageNews    WebsocketPage = "news"
+	PagePrices  WebsocketPage = "prices"
+	PageAdmin   WebsocketPage = "admin"
+	PageApp     WebsocketPage = "app"
+	PagePackage WebsocketPage = "package"
+	PageProfile WebsocketPage = "profile"
 )
 
 var (
 	pages      map[WebsocketPage]Page
-	pagesSlice = []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageProfile, PageAdmin, PagePackages, PageApps}
+	pagesSlice = []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageAdmin, PageApp, PagePackage, PageProfile}
 	upgrader   = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
