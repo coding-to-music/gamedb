@@ -61,7 +61,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if app.UpdatedAt != nil && app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.PICSChangeNumber >= message.ChangeNumber {
+	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.PICSChangeNumber >= message.ChangeNumber {
 		queueLog("Skipping, updated in last day")
 		return false, nil
 	}
