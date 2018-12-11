@@ -54,8 +54,8 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	pack := db.Package{}
-	gorm.First(&pack, message.ID)
-	if gorm.Error != nil && !gorm.RecordNotFound() {
+	gorm.FirstOrInit(&pack, db.Package{ID: message.ID})
+	if gorm.Error != nil {
 		return true, gorm.Error
 	}
 

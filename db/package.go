@@ -65,6 +65,10 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 		pack.Prices = "{}"
 	}
 
+	t := time.Now()
+	pack.UpdatedAt = &t
+	pack.CreatedAt = &t
+
 	return nil
 }
 

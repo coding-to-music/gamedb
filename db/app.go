@@ -148,6 +148,10 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 		app.StoreTags = "[]"
 	}
 
+	t := time.Now()
+	app.UpdatedAt = &t
+	app.CreatedAt = &t
+
 	return nil
 }
 

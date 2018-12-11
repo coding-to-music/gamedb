@@ -55,8 +55,8 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	}
 
 	app := db.App{}
-	gorm.First(&app, message.ID)
-	if gorm.Error != nil && !gorm.RecordNotFound() {
+	gorm.FirstOrInit(&app, db.App{ID: message.ID})
+	if gorm.Error != nil {
 		return true, gorm.Error
 	}
 
