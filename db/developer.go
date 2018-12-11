@@ -12,8 +12,8 @@ import (
 
 type Developer struct {
 	ID        int        `gorm:"not null;primary_key;AUTO_INCREMENT"`
-	CreatedAt *time.Time `gorm:"not null"`
-	UpdatedAt *time.Time `gorm:"not null"`
+	CreatedAt time.Time  `gorm:"not null"`
+	UpdatedAt time.Time  `gorm:"not null"`
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`

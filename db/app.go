@@ -35,8 +35,8 @@ var (
 
 type App struct {
 	ID                     int        `gorm:"not null;column:id;primary_key"`                    //
-	CreatedAt              *time.Time `gorm:"not null;column:created_at"`                        //
-	UpdatedAt              *time.Time `gorm:"not null;column:updated_at"`                        //
+	CreatedAt              time.Time  `gorm:"not null;column:created_at;type:datetime"`          //
+	UpdatedAt              time.Time  `gorm:"not null;column:updated_at;type:datetime"`          //
 	PICSInstall            string     `gorm:"not null;column:pics_install"`                      //
 	PICSChangeNumber       int        `gorm:"not null;column:change_number"`                     //
 	PICSChangeNumberDate   time.Time  `gorm:"not null;column:change_number_date"`                //
@@ -148,12 +148,31 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 		app.StoreTags = "[]"
 	}
 
-	t := time.Now()
-	app.UpdatedAt = &t
-	app.CreatedAt = &t
+	//err := scope.SetColumn("UpdatedAt", time.Now())
+	//if err != nil {
+	//	log.Log(err)
+	//	return err
+	//}
+	//
+	//err = scope.SetColumn("CreatedAt", time.Now())
+	//if err != nil {
+	//	log.Log(err)
+	//	return err
+	//}
 
 	return nil
 }
+
+//func (app *App) BeforeUpdate(scope *gorm.Scope) error {
+//
+//	err := scope.SetColumn("UpdatedAt", time.Now())
+//	if err != nil {
+//		log.Log(err)
+//		return err
+//	}
+//
+//	return nil
+//}
 
 func (app App) GetID() int {
 	return app.ID

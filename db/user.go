@@ -5,14 +5,14 @@ import (
 )
 
 type User struct {
-	PlayerID    int64      `gorm:"not null;primary_key"`
-	CreatedAt   *time.Time `gorm:"not null"`
-	UpdatedAt   *time.Time `gorm:"not null"`
-	Email       string     `gorm:"not null;index:email"`
-	Password    string     `gorm:"not null"`
-	HideProfile int8       `gorm:"not null"`
-	ShowAlerts  int8       `gorm:"not null"`
-	CountryCode string     `gorm:"not null"`
+	PlayerID    int64     `gorm:"not null;primary_key"`
+	CreatedAt   time.Time `gorm:"not null"`
+	UpdatedAt   time.Time `gorm:"not null"`
+	Email       string    `gorm:"not null;index:email"`
+	Password    string    `gorm:"not null"`
+	HideProfile int8      `gorm:"not null"`
+	ShowAlerts  int8      `gorm:"not null"`
+	CountryCode string    `gorm:"not null"`
 }
 
 func (u User) Save() error {

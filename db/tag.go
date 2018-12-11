@@ -12,8 +12,8 @@ import (
 
 type Tag struct {
 	ID        int        `gorm:"not null;primary_key"`
-	CreatedAt *time.Time `gorm:"not null"`
-	UpdatedAt *time.Time `gorm:"not null"`
+	CreatedAt time.Time  `gorm:"not null"`
+	UpdatedAt time.Time  `gorm:"not null"`
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
@@ -102,7 +102,7 @@ func GetTagsByID(ids []int) (tags []Tag, err error) {
 
 func DeleteTags(ids []int) (err error) {
 
-	log.Info("Deleteing "+strconv.Itoa(len(ids))+" tags")
+	log.Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
 
 	if len(ids) == 0 {
 		return nil
