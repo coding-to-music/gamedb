@@ -21,21 +21,21 @@ server:
   port: 5001
   host: "localhost"
 schema:
-- name: Steam
-  path: .
-  commands:
-    install:
-      status: true
-    build:
-      status: false
-    run:
-      status: true
-  watcher:
-    paths:
-    - /
-    extensions:
-    - go
-    - yaml
-    ignored_paths:
-    - .git
-    - node_modules
+  - name: Steam
+    path: .
+    commands:
+      install:
+        status: true
+      build:
+        status: false
+      run:
+        status: true
+    watcher:
+      paths:
+        - /
+      extensions:
+        - go
+        - yaml
+      ignored_paths:
+        - .git
+        - node_modules
