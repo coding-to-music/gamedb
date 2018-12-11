@@ -24,6 +24,12 @@
             right: 1.25rem;
             height: 150px;
         }
+
+        iframe {
+            margin-bottom: -20px;
+            height: 190px;
+            width: 100%;
+        }
     }
 
     #chart {
@@ -39,14 +45,6 @@
 
         div[data-vote=false] {
             background-color: #f5c6cb;
-        }
-    }
-
-    #prices {
-        iframe {
-            margin-bottom: -20px;
-            height: 190px;
-            width: 100%;
         }
     }
 
