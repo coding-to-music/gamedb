@@ -110,7 +110,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	if err != nil {
 		return true, err
 	} else if page.HasConnections() {
-		page.Send(app.OutputForJSON(steam.CountryUS)) // todo, send one record with an array of all prices
+		page.Send(app.ID)
 	}
 
 	// Misc

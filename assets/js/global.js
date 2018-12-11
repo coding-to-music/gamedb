@@ -139,7 +139,11 @@ if (isIterable(user.toasts)) {
 function toast(success = true, body, title = '', timeout = 8, link = '') {
 
     const redirect = function () {
+        if (link === 'refresh') {
+            link = window.location.href;
+        }
         window.location.replace(link);
+
     };
 
     const options = {

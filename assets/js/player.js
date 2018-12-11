@@ -1,11 +1,14 @@
-if ($('#player-page').length > 0) {
+const $playerPage = $('#player-page');
 
+if ($playerPage.length > 0) {
+
+    // Add user ID to coop link
     if (user.isLoggedIn) {
         const $coop = $('#coop-link');
         $coop.attr('href', $coop.attr('href') + '&p=' + user.userID);
     }
 
-    //
+    // Update link
     $('[data-update-id]').on('click', function (e) {
 
         const $link = $(this);
@@ -29,6 +32,16 @@ if ($('#player-page').length > 0) {
         });
 
         return false;
+    });
+
+    // Websockets
+    websocketListener('profile', function (e) {
+
+        const data = $.parseJSON(e.data);
+        if (data.Data.toString() === $playerPage.attr('data-id')) {
+            toast(true, 'Click to refresh', 'This player has been updated', 0, 'refresh');
+        }
+
     });
 
     $('#games table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {

@@ -1,6 +1,6 @@
 {{define "player"}} {{ template "_header" . }}
 
-<div class="container" id="player-page">
+<div class="container" id="player-page" data-id="{{ .Player.PlayerID }}">
 
     <div class="jumbotron">
         <img src="{{ .Player.GetAvatar }}" alt="{{ .Player.PersonaName }}" onError="this.onerror=null;this.src='{{.Player.GetDefaultAvatar}}';">

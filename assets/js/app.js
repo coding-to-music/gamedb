@@ -1,4 +1,6 @@
-if ($('#app-page').length > 0) {
+const $appPage = $('#app-page');
+
+if ($appPage.length > 0) {
 
     const $modal = $('#news-modal');
 
@@ -49,6 +51,16 @@ if ($('#app-page').length > 0) {
             $modal.modal('hide');
         }
     }
+
+    // Websockets
+    websocketListener('app', function (e) {
+
+        const data = $.parseJSON(e.data);
+        if (data.Data.toString() === $appPage.attr('data-id')) {
+            toast(true, 'Click to refresh', 'This app has been updated', 0, 'refresh');
+        }
+
+    });
 
     // News data table
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {

@@ -1,6 +1,6 @@
 {{define "package"}} {{ template "_header" . }}
 
-<div class="container" id="package-page">
+<div class="container" id="package-page" data-id="{{ .Package.ID }}">
 
     <div class="jumbotron">
         <h1 class="display-4"><i class="fas fa-cube"></i> {{.Package.GetName}}</h1>
