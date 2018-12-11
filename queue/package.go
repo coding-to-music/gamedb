@@ -59,6 +59,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		return true, gorm.Error
 	}
 
+	// Skip if updated in last day, unless its from PICS
+	if pack.UpdatedAt != nil && pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.PICSChangeNumber >= message.ChangeNumber {
+		queueLog("Skipping, updated in last day")
+		return false, nil
+	}
+
 	var packageBeforeUpdate = pack
 
 	// Update from PICS
