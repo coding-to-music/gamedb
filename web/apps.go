@@ -326,6 +326,12 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		prices := query.GetSearchSlice("prices")
 		if len(prices) == 2 {
 
+			maxPrice, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
+			log.Log(err)
+
+			// Round up to dollar
+			maxPrice = int(math.Ceil(float64(maxPrice)/100) * 100)
+
 			low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 			log.Log(err)
 
@@ -339,8 +345,12 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				column = "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")"
 			}
 
-			gorm = gorm.Where("COALESCE("+column+", 0) >= ?", low)
-			gorm = gorm.Where("COALESCE("+column+", 0) <= ?", high)
+			if low > 0 {
+				gorm = gorm.Where("COALESCE("+column+", 0) >= ?", low)
+			}
+			if high < maxPrice {
+				gorm = gorm.Where("COALESCE("+column+", 0) <= ?", high)
+			}
 
 		}
 
@@ -348,8 +358,18 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		scores := query.GetSearchSlice("scores")
 		if len(scores) == 2 {
 
-			gorm = gorm.Where("reviews_score >= ?", scores[0])
-			gorm = gorm.Where("reviews_score <= ?", scores[1])
+			low, err := strconv.Atoi(strings.Replace(scores[0], ".00", "", 1))
+			log.Log(err)
+
+			high, err := strconv.Atoi(strings.Replace(scores[1], ".00", "", 1))
+			log.Log(err)
+
+			if low > 0 {
+				gorm = gorm.Where("reviews_score >= ?", low)
+			}
+			if high < 100 {
+				gorm = gorm.Where("reviews_score <= ?", high)
+			}
 
 		}
 
