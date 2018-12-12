@@ -24,6 +24,7 @@ import (
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
@@ -56,11 +57,19 @@ func middlewareTime(next http.Handler) http.Handler {
 	})
 }
 
+func middlewareCors() func(next http.Handler) http.Handler {
+	return cors.New(cors.Options{
+		AllowedOrigins: []string{viper.GetString("DOMAIN")}, // Use this to allow specific origin hosts
+		AllowedMethods: []string{"GET", "POST"},
+	}).Handler
+}
+
 func Serve() error {
 
 	r := chi.NewRouter()
 
 	r.Use(middlewareTime)
+	r.Use(middlewareCors())
 	r.Use(middleware.RealIP)
 	r.Use(middleware.DefaultCompress)
 	r.Use(middleware.RedirectSlashes)

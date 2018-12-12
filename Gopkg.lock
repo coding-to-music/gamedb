@@ -154,6 +154,14 @@
   version = "v3.3.3"
 
 [[projects]]
+  digest = "1:2a284c67986bb690d0af2728e4ac7fd4d04896f8f04d7a84e39c005dd36d06c6"
+  name = "github.com/go-chi/cors"
+  packages = ["."]
+  pruneopts = ""
+  revision = "dba6525398619dead495962a916728e7ee2ca322"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:ffea3fcee8cae28b474f74a40c328f415790e5677a5c4b3400061ade21df2415"
   name = "github.com/go-siris/siris"
   packages = ["core/errors"]
@@ -813,6 +821,7 @@
     "github.com/frustra/bbcode",
     "github.com/go-chi/chi",
     "github.com/go-chi/chi/middleware",
+    "github.com/go-chi/cors",
     "github.com/go-sql-driver/mysql",
     "github.com/golang/snappy",
     "github.com/google/go-github/github",
