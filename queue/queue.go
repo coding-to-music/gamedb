@@ -277,6 +277,10 @@ type SteamKitJob struct {
 	Value           int64  `json:"Value"`
 }
 
-func queueLog(interfaces ...interface{}) {
+func logInfo(interfaces ...interface{}) {
 	log.Info(append(interfaces, log.LogNameConsumers)...)
+}
+
+func logError(interfaces ...interface{}) {
+	log.Log(append(interfaces, log.LogNameConsumers)...)
 }

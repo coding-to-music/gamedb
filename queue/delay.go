@@ -47,7 +47,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error)
 	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
 
 		// Re-delay
-		queueLog("Re-delay: attemp: " + strconv.Itoa(delayMessage.Attempt))
+		logInfo("Re-delay: attemp: " + strconv.Itoa(delayMessage.Attempt))
 
 		delayMessage.IncrementAttempts()
 
@@ -57,12 +57,12 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error)
 		}
 
 		err = Produce(delayMessage.getConsumeQueue(), bytes)
-		queueLog(err)
+		logInfo(err)
 
 	} else {
 
 		// Add to original queue
-		queueLog("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
+		logInfo("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
 
 		err = Produce(delayMessage.getConsumeQueue(), []byte(delayMessage.OriginalMessage))
 	}
