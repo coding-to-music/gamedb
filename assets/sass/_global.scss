@@ -1,5 +1,5 @@
 html, body {
-    //scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -61,11 +61,6 @@ div#top.show {
     margin-bottom: 1rem;
     overflow: hidden;
 
-    h1 {
-        //white-space: nowrap;
-        //font-size: 2.5rem;
-    }
-
     .lead {
         margin: 0;
     }
@@ -73,12 +68,6 @@ div#top.show {
     img {
         position: relative;
         z-index: 100;
-    }
-
-    @media screen and (min-width: 576px) {
-        h1 {
-            font-size: 3.5rem;
-        }
     }
 }
 
