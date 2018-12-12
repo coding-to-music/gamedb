@@ -201,6 +201,12 @@ func (s rabbitConsumer) consume() {
 				requeue, err := s.Message.process(msg)
 				queueLog(err)
 
+				// Might be getting rate limited
+				if err == steam.ErrNullResponse {
+					queueLog("Null response, sleeping for 10 seconds")
+					time.Sleep(time.Second * 10)
+				}
+
 				if requeue {
 					queueLog("Requeuing")
 					err = s.requeueMessage(msg)
@@ -209,12 +215,6 @@ func (s rabbitConsumer) consume() {
 
 				err = msg.Ack(false)
 				queueLog(err)
-
-				// Might be getting rate limited
-				if err == steam.ErrNullResponse {
-					queueLog("Null response, sleeping for 10 seconds")
-					time.Sleep(time.Second * 10)
-				}
 			}
 
 			if breakFor {
