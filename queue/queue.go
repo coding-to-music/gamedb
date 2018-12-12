@@ -80,7 +80,6 @@ func Init() {
 }
 
 func RunConsumers() {
-
 	for _, v := range consumers {
 		go v.consume()
 	}
@@ -155,9 +154,6 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 
 func (s rabbitConsumer) consume() {
 
-	log.Info(log.ServiceLocal, "Consuming from: "+s.Message.getConsumeQueue().String())
-
-	var breakFor = false
 	var err error
 
 	for {
@@ -190,39 +186,42 @@ func (s rabbitConsumer) consume() {
 			return
 		}
 
-		for {
-			select {
-			case err = <-consumerCloseChannel:
-				breakFor = true
-				break
+		// In a anon function so can return at anytime
+		func(msgs <-chan amqp.Delivery, s rabbitConsumer) {
 
-			case msg := <-msgs:
+			for {
+				select {
+				case err = <-consumerCloseChannel:
+					log.Log(err)
+					return
+				case msg := <-msgs:
 
-				requeue, err := s.Message.process(msg)
-				queueLog(err)
+					requeue, err := s.Message.process(msg)
+					if err != nil {
+						logInfo(err)
+					}
 
-				// Might be getting rate limited
-				if err == steam.ErrNullResponse {
-					queueLog("Null response, sleeping for 10 seconds")
-					time.Sleep(time.Second * 10)
+					// Might be getting rate limited
+					if err == steam.ErrNullResponse {
+						logInfo("Null response, sleeping for 10 seconds")
+						time.Sleep(time.Second * 10)
+					}
+
+					if requeue {
+						logInfo("Requeuing")
+						err = s.requeueMessage(msg)
+						logInfo(err)
+					}
+
+					err = msg.Ack(false)
+					logInfo(err)
 				}
-
-				if requeue {
-					queueLog("Requeuing")
-					err = s.requeueMessage(msg)
-					queueLog(err)
-				}
-
-				err = msg.Ack(false)
-				queueLog(err)
 			}
 
-			if breakFor {
-				break
-			}
-		}
+		}(msgs, s)
 
-		//conn.Close()
+		// We only get here if the amqp connection gets closed
+
 		err = ch.Close()
 		log.Log(err)
 	}
