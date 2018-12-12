@@ -23,6 +23,9 @@ server:
 schema:
   - name: Steam
     path: .
+    args:
+      - --consumers
+      - --webserver
     commands:
       install:
         status: true

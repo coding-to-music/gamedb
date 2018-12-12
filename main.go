@@ -34,24 +34,35 @@ func init() {
 
 func main() {
 
-	// Recaptcha
-	recaptcha.SetSecret(viper.GetString("RECAPTCHA_PRIVATE"))
-
 	// Flags
+	flagWebServer := flag.Bool("webserver", false, "Web Server")
+	flagConsumers := flag.Bool("consumers", false, "Consumers")
 	flagPprof := flag.Bool("pprof", false, "PProf")
-	flagConsumers := flag.Bool("consumers", true, "Consumers")
 
 	flag.Parse()
 
-	if *flagPprof {
+	// Web server
+	if *flagWebServer {
 		go func() {
-			err := http.ListenAndServe(":"+viper.GetString("PORT"), nil)
+			log.Info("Starting web server")
+			err := web.Serve()
 			log.Log(err)
 		}()
 	}
 
 	if *flagConsumers {
-		queue.RunConsumers()
+		go func() {
+			log.Info("Starting consumers")
+			queue.RunConsumers()
+		}()
+	}
+
+	if *flagPprof {
+		go func() {
+			log.Info("Starting pprof")
+			err := http.ListenAndServe(":"+viper.GetString("PORT"), nil)
+			log.Log(err)
+		}()
 	}
 
 	// Log steam calls
@@ -69,18 +80,9 @@ func main() {
 		}
 	}()
 
-	// Web server
-	err := web.Serve()
-	if err != nil {
-
-		log.Log(err)
-
-	} else {
-
-		// Block forever for goroutines to run
-		forever := make(chan bool)
-		<-forever
-	}
+	// Block forever for goroutines to run
+	forever := make(chan bool)
+	<-forever
 }
 
 func configSetup() {
@@ -95,6 +97,9 @@ func configSetup() {
 		err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
 		log.Log(err)
 	}
+
+	// Recaptcha
+	recaptcha.SetSecret(viper.GetString("RECAPTCHA_PRIVATE"))
 
 	//
 	viper.AutomaticEnv()

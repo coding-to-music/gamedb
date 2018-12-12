@@ -19,4 +19,4 @@ COPY robots.txt ./robots.txt
 COPY browserconfig.xml ./browserconfig.xml
 RUN touch ./google-auth.json
 RUN apk update && apk add ca-certificates curl bash
-CMD ["./website"]
+CMD ["./website", "--webserver", "--consumers"]
