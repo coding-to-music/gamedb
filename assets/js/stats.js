@@ -59,7 +59,7 @@ if ($('#stats-page').length > 0) {
                         point: {
                             events: {
                                 click: function () {
-                                    window.location.href = '/games?score-low=' + this.x + '&score-high=' + (this.x + 1);
+                                    window.location.href = '/apps?score-low=' + this.x + '&score-high=' + (this.x + 1);
                                 }
                             }
                         }
@@ -96,7 +96,7 @@ if ($('#stats-page').length > 0) {
                             events: {
                                 click: function () {
                                     console.log(this);
-                                    window.location.href = '/games?types=' + (this.name.toLowerCase());
+                                    window.location.href = '/apps?types=' + (this.name.toLowerCase());
                                 }
                             }
                         }

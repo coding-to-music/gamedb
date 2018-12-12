@@ -364,7 +364,7 @@
                             </tr>
                             </thead>
                             {{ range $key, $value := .RecentGames }}
-                                <tr data-link="/games/{{ .AppID }}">
+                                <tr data-link="/apps/{{ .AppID }}">
                                     <td class="img">
                                         <img src="{{ .Icon }}" alt="{{ .Name }}" class="rounded square">
                                         <span>{{ .Name }}</span>

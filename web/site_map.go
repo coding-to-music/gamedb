@@ -19,7 +19,7 @@ var pages = []string{
 	"/donate",
 	"/experience",
 	"/free-games",
-	"/games",
+	"/apps",
 	"/genres",
 	"/info",
 	"/login",

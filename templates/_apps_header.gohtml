@@ -11,15 +11,15 @@
         <ul class="nav nav-tabs card-header-tabs" role="tablist">
 
             <li class="nav-item">
-                {{if endsWith .Path "games" }}
+                {{if startsWith .Path "/apps" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Games</span>
                 {{else}}
-                    <a class="nav-link" href="/games" role="tab"><i class="fas fa-gamepad"></i> Games</a>
+                    <a class="nav-link" href="/apps" role="tab"><i class="fas fa-gamepad"></i> Games</a>
                 {{end}}
             </li>
 
             <li class="nav-item">
-                {{if endsWith .Path "packages" }}
+                {{if startsWith .Path "/packages" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-cube"></i> Packages</span>
                 {{else}}
                     <a class="nav-link" href="/packages" role="tab"><i class="fas fa-cube"></i> Packages</a>

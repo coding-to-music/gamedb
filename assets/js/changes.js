@@ -40,7 +40,7 @@ if ($('#changes-page').length > 0) {
                             if (v.name === '') {
                                 apps.push('Unknown App');
                             } else {
-                                apps.push('<a href="/games/' + v.id + '">' + v.name + '</a>');
+                                apps.push('<a href="/apps/' + v.id + '">' + v.name + '</a>');
                             }
                         }
                     }

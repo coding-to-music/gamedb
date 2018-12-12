@@ -21,7 +21,7 @@ type Genre struct {
 }
 
 func (g Genre) GetPath() string {
-	return "/games?genres=" + strconv.Itoa(g.ID)
+	return "/apps?genres=" + strconv.Itoa(g.ID)
 }
 
 func (g Genre) GetName() string {

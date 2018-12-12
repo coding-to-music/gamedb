@@ -69,6 +69,7 @@ func Serve() error {
 	// Pages
 	r.Get("/", homeRedirectHandler)
 	r.Mount("/admin", adminRouter())
+	r.Mount("/apps", appsRouter())
 	r.Mount("/bundles", bundlesRouter())
 	r.Mount("/changes", changesRouter())
 	r.Mount("/chat", chatRouter())
@@ -236,7 +237,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"apps": func(a []int, appsMap map[int]db.App) template.HTML {
 			var apps []string
 			for _, v := range a {
-				apps = append(apps, "<a href=\"/games/"+strconv.Itoa(v)+"\">"+appsMap[v].GetName()+"</a>")
+				apps = append(apps, "<a href=\"/apps/"+strconv.Itoa(v)+"\">"+appsMap[v].GetName()+"</a>")
 			}
 			return template.HTML("Apps: " + strings.Join(apps, ", "))
 		},
@@ -255,7 +256,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var tags []string
 			for _, v := range a {
-				tags = append(tags, "<a class=\"badge badge-success\" href=\"/games?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
+				tags = append(tags, "<a class=\"badge badge-success\" href=\"/apps?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
 			}
 			return template.HTML(strings.Join(tags, " "))
 		},
@@ -267,7 +268,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var genres []string
 			for _, v := range a {
-				genres = append(genres, "<a class=\"badge badge-success\" href=\"/games?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
+				genres = append(genres, "<a class=\"badge badge-success\" href=\"/apps?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
 			}
 			return template.HTML(strings.Join(genres, " "))
 		},

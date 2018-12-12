@@ -48,7 +48,7 @@ if ($playerPage.length > 0) {
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);
-            $(row).attr('data-link', '/games/' + data[0]);
+            $(row).attr('data-link', '/apps/' + data[0]);
         },
         "columnDefs": [
             // Icon / Name

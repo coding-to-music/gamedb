@@ -9,7 +9,7 @@ import (
 )
 
 func homeRedirectHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/games", 302)
+	http.Redirect(w, r, "/apps", 302)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
