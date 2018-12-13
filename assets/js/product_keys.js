@@ -12,7 +12,7 @@ if ($('#product-keys-page').length > 0) {
 
             data.search.key = $('#key').val();
             data.search.value = $('#value').val();
-            data.search.type = $('#type').val();
+            data.search.type = $("input[name=type]:checked").val();
 
             $.ajax({
                 url: $(this).attr('data-path'),
