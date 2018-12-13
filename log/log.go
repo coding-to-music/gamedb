@@ -16,6 +16,36 @@ import (
 	"github.com/spf13/viper"
 )
 
+//noinspection GoUnusedConst
+const (
+	// Environments
+	EnvProd  Environment = "production"
+	EnvLocal Environment = "local"
+
+	// Log names
+	LogNameConsumers LogName = "consumers"
+	LogNameCron      LogName = "crons"
+	LogNameSteam     LogName = "steam-calls"
+	LogNameGameDB    LogName = "gamedb" // Default
+	LogNameRequests  LogName = "requests"
+	LogNameDatastore LogName = "datastore"
+
+	// Severities
+	SeverityDebug    Severity = "debug"
+	SeverityInfo     Severity = "info"
+	SeverityWarning  Severity = "warning"
+	SeverityError    Severity = "error" // Default
+	SeverityCritical Severity = "critical"
+
+	// Services
+	ServiceGoogle  Service = "google"  // Default
+	ServiceRollbar Service = "rollbar" //
+	ServiceLocal   Service = "local"   // Default
+
+	// Options
+	//OptionStack Option = iota
+)
+
 type LogName string
 type Environment string
 type Service string
@@ -87,35 +117,6 @@ func (e entry) toText() string {
 
 	return strings.Join(ret, " - ")
 }
-
-//noinspection GoUnusedConst
-const (
-	// Environments
-	EnvProd  Environment = "production"
-	EnvLocal Environment = "local"
-
-	// Log names
-	LogNameConsumers LogName = "consumers"
-	LogNameCron      LogName = "crons"
-	LogNameSteam     LogName = "steam-calls"
-	LogNameGameDB    LogName = "gamedb" // Default
-	LogNameRequests  LogName = "requests"
-
-	// Severities
-	SeverityDebug    Severity = "debug"
-	SeverityInfo     Severity = "info"
-	SeverityWarning  Severity = "warning"
-	SeverityError    Severity = "error" // Default
-	SeverityCritical Severity = "critical"
-
-	// Services
-	ServiceGoogle  Service = "google"  // Default
-	ServiceRollbar Service = "rollbar" //
-	ServiceLocal   Service = "local"   // Default
-
-	// Options
-	//OptionStack Option = iota
-)
 
 var (
 	env Environment
@@ -198,6 +199,11 @@ func Log(interfaces ...interface{}) {
 	// Send entry
 	for _, v := range loggingServices {
 
+		// Local
+		if v == ServiceLocal {
+			logger.Println(entry.toText())
+		}
+
 		// Google
 		if v == ServiceGoogle {
 			googleClient.Logger(string(env) + "-" + string(entry.logName)).Log(logging.Entry{
@@ -205,11 +211,6 @@ func Log(interfaces ...interface{}) {
 				Timestamp: entry.timestamp,
 				Payload:   entry.toText() + "\n" + string(debug.Stack()),
 			})
-		}
-
-		// Local
-		if v == ServiceLocal {
-			logger.Println(entry.toText())
 		}
 
 		// Rollbar

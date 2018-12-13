@@ -5,6 +5,7 @@ package db
 import (
 	"context"
 	"errors"
+	"strconv"
 	"sync"
 
 	"cloud.google.com/go/datastore"
@@ -27,9 +28,7 @@ const (
 
 var (
 	ErrorTooMany = errors.New("datastore: too many")
-)
 
-var (
 	datastoreClient *datastore.Client
 )
 
@@ -59,6 +58,8 @@ func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {
 
 func SaveKind(key *datastore.Key, data interface{}) (newKey *datastore.Key, err error) {
 
+	log.Info("Saving "+key.Name, log.LogNameDatastore, log.ServiceGoogle)
+
 	client, ctx, err := GetDSClient()
 	if err != nil {
 		return nil, err
@@ -78,7 +79,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 		return nil
 	}
 
-	// log.Info("Bulk saving "+strconv.Itoa(len(kinds))+" "+kind+"s")
+	log.Info("Bulk saving "+strconv.Itoa(len(kinds))+" "+kind+"s", log.LogNameDatastore, log.ServiceGoogle)
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -159,7 +160,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 		return nil
 	}
 
-	// log.Info("Bulk deleting "+strconv.Itoa(len(keys))+" keys")
+	log.Info("Bulk deleting "+strconv.Itoa(len(keys))+" keys", log.LogNameDatastore, log.ServiceGoogle)
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
