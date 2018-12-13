@@ -14,9 +14,6 @@ COPY package.json ./package.json
 COPY --from=build-env /go/src/github.com/gamedb/website/website ./
 COPY templates ./templates
 COPY assets ./assets
-COPY site.webmanifest ./site.webmanifest
-COPY robots.txt ./robots.txt
-COPY browserconfig.xml ./browserconfig.xml
 RUN touch ./google-auth.json
 RUN apk update && apk add ca-certificates curl bash
 CMD ["./website", "--webserver", "--consumers"]
