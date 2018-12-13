@@ -66,7 +66,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient(true)
+		gorm, err := db.GetMySQLClient()
 		if err != nil {
 			log.Log(err)
 			return
