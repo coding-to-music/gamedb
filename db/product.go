@@ -23,6 +23,14 @@ var ErrMissingCountryCode = errors.New("invalid code")
 
 //
 type PICSExtended map[string]string
+
+func (e PICSExtended) GetValue(key string) string {
+	if val, ok := e[key]; ok {
+		return val
+	}
+	return ""
+}
+
 type PICSAppCommon map[string]string
 type PICSAppUFS map[string]string
 type PICSAppConfig map[string]string

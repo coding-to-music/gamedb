@@ -437,7 +437,7 @@
                                             </tr>
                                             </thead>
                                             {{ range $key, $value := .App.GetExtended }}
-                                                <tr>
+                                                <tr data-link="/product-keys?type=app&key={{ $key }}&value={{ $value }}">
                                                     <td>{{ $key }}</td>
                                                     <td>{{ $value }}</td>
                                                 </tr>

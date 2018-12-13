@@ -41,7 +41,7 @@ func (article News) GetBody() string {
 func (article News) OutputForJSON(r *http.Request) (output []interface{}) {
 
 	var id = strconv.FormatInt(article.ArticleID, 10)
-	var path = getAppPath(article.AppID, article.AppName)
+	var path = GetAppPath(article.AppID, article.AppName)
 
 	return []interface{}{
 		id,                                    // 0

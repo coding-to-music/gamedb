@@ -92,7 +92,7 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 //}
 
 func (pack Package) GetPath() string {
-	return getPackagePath(pack.ID, pack.GetName())
+	return GetPackagePath(pack.ID, pack.GetName())
 }
 
 func (pack Package) GetID() int {
@@ -331,9 +331,9 @@ func (pack *Package) SetExtended(extended PICSExtended) (err error) {
 	return nil
 }
 
-func (pack Package) GetExtended() (extended map[string]interface{}, err error) {
+func (pack Package) GetExtended() (extended PICSExtended, err error) {
 
-	extended = make(map[string]interface{})
+	extended = PICSExtended{}
 
 	err = helpers.Unmarshal([]byte(pack.PICSExtended), &extended)
 	return extended, err
@@ -460,7 +460,7 @@ func IsValidPackageID(id int) bool {
 	return id != 0
 }
 
-func getPackagePath(id int, name string) string {
+func GetPackagePath(id int, name string) string {
 
 	path := "/packages/" + strconv.Itoa(id)
 	if name == "" {

@@ -183,7 +183,7 @@ func (app App) GetProductType() ProductType {
 }
 
 func (app App) GetPath() string {
-	return getAppPath(app.ID, app.Name)
+	return GetAppPath(app.ID, app.Name)
 }
 
 func (app App) GetType() (ret string) {
@@ -232,10 +232,6 @@ func (app App) OutputForJSONUpcoming(code steam.CountryCode) (output []interface
 	}
 }
 
-func (app App) GetDefaultIcon() string {
-	return DefaultAppIcon
-}
-
 func (app App) GetReleaseState() (ret string) {
 
 	switch app.ReleaseState {
@@ -262,11 +258,7 @@ func (app App) GetReleaseDateNice() string {
 }
 
 func (app App) GetIcon() (ret string) {
-
-	if app.Icon == "" {
-		return app.GetDefaultIcon()
-	}
-	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(app.ID) + "/" + app.Icon + ".jpg"
+	return GetAppIcon(app.ID, app.Icon)
 }
 
 func (app *App) SetPrices(prices ProductPrices) (err error) {
@@ -1130,7 +1122,7 @@ func IsValidAppID(id int) bool {
 	return id != 0
 }
 
-func getAppPath(id int, name string) string {
+func GetAppPath(id int, name string) string {
 
 	p := "/apps/" + strconv.Itoa(id)
 
@@ -1149,6 +1141,16 @@ func getAppName(id int, name string) string {
 		return "App " + strconv.Itoa(id)
 	}
 	return "Unknown App"
+}
+
+func GetAppIcon(id int, icon string) string {
+
+	if icon == "" {
+		return DefaultAppIcon
+	} else if strings.HasPrefix(icon, "/") || strings.HasPrefix(icon, "http") {
+		return icon
+	}
+	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(id) + "/" + icon + ".jpg"
 }
 
 func CountUpcomingApps() (count int, err error) {

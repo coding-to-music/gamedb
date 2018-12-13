@@ -681,7 +681,7 @@ func (p ProfileBadge) GetTimeFormatted() string {
 }
 
 func (p ProfileBadge) GetAppPath() string {
-	return getAppPath(p.AppID, p.AppName)
+	return GetAppPath(p.AppID, p.AppName)
 }
 
 func (p ProfileBadge) GetAppName() string {

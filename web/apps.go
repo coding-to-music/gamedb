@@ -35,7 +35,6 @@ func gamesRouter() http.Handler {
 func appsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", appsHandler)
-	r.Get("/extended", appsExtended)
 	r.Get("/ajax", appsAjaxHandler)
 	r.Get("/{id}", appHandler)
 	r.Get("/{id}/ajax/news", appNewsAjaxHandler)
@@ -381,7 +380,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Count
-		gorm.Count(&recordsFiltered)
+		gorm = gorm.Count(&recordsFiltered)
 		log.Log(gorm.Error)
 
 		// Order, offset, limit
@@ -425,18 +424,4 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
-}
-
-func appsExtended(w http.ResponseWriter, r *http.Request) {
-
-	// Template
-	t := appsExtendedTemplate{}
-	t.Fill(w, r, "Apps Extended", "")
-
-	err := returnTemplate(w, r, "apps_extended", t)
-	log.Log(err)
-}
-
-type appsExtendedTemplate struct {
-	GlobalTemplate
 }
