@@ -63,6 +63,14 @@
   version = "v1.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:c723ece25c1a06961b28111a2d7ef2608a97faec6704174d1c00fd0a4795d0c2"
+  name = "github.com/ahmdrz/goinsta"
+  packages = ["."]
+  pruneopts = ""
+  revision = "aa250bb4ac58404c96a82f1590ae46eb89c42229"
+
+[[projects]]
   digest = "1:b5f28f7eda54d2695765c778c951a2ace52c06afb7da1f7e0c7485baa5b02100"
   name = "github.com/beevik/etree"
   packages = ["."]
@@ -815,6 +823,7 @@
     "github.com/Jleagle/recaptcha-go",
     "github.com/Jleagle/steam-go/steam",
     "github.com/Masterminds/squirrel",
+    "github.com/ahmdrz/goinsta",
     "github.com/bwmarrin/discordgo",
     "github.com/derekstavis/go-qs",
     "github.com/dustin/go-humanize",

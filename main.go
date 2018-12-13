@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/social"
 	"github.com/gamedb/website/storage"
 	"github.com/gamedb/website/web"
 	_ "github.com/go-sql-driver/mysql"
@@ -38,8 +39,14 @@ func main() {
 	flagWebServer := flag.Bool("webserver", false, "Web Server")
 	flagConsumers := flag.Bool("consumers", false, "Consumers")
 	flagPprof := flag.Bool("pprof", false, "PProf")
+	instagram := flag.Bool("instagram", false, "Instagram")
 
 	flag.Parse()
+
+	if *instagram {
+		social.InitIG()
+		os.Exit(0)
+	}
 
 	// Web server
 	if *flagWebServer {

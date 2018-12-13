@@ -21,3 +21,7 @@
 #  version = "2.4.0"
 
 required = ["github.com/oxequa/realize"]
+
+[[constraint]]
+  name = "github.com/ahmdrz/goinsta"
+  branch = "master"
