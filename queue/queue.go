@@ -298,7 +298,7 @@ func QueuePackage(ID int) (err error) {
 		Time: time.Now().Unix(),
 	})
 
-	return Produce(QueueApps, b)
+	return Produce(QueuePackages, b)
 }
 
 type producePackagePayload struct {
