@@ -24,8 +24,8 @@ schema:
   - name: Steam
     path: .
     args:
-      - --consumers
       - --webserver
+      - --consumers
     commands:
       install:
         status: true
@@ -38,7 +38,6 @@ schema:
         - /
       extensions:
         - go
-        - yaml
       ignored_paths:
         - .git
         - node_modules
