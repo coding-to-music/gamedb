@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -100,15 +99,13 @@ func playerIDHandler(w http.ResponseWriter, r *http.Request) {
 			log.Log(err)
 		}
 
-		// Check steam
+		// Check for ID
 		id, err := helpers.GetSteam().GetID(post)
 		if err != nil {
 
-			if err != steam.ErrNoUserFound {
-				log.Log(err)
-			}
+			log.Log(err)
 
-			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Can't find user: " + post})
+			returnErrorTemplate(w, r, errorTemplate{Code: 404, Title: "Can't find user: " + post, Message: "You can use your Steam ID or login to add your profile."})
 			return
 		}
 
@@ -116,7 +113,7 @@ func playerIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/players/"+strconv.FormatInt(dbPlayer.PlayerID, 10), 302)
+	http.Redirect(w, r, db.GetPlayerPath(dbPlayer.PlayerID, dbPlayer.PersonaName), 302)
 }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {

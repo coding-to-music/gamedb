@@ -33,7 +33,7 @@ type Player struct {
 	PlayerID         int64     `datastore:"player_id"`                //
 	VanintyURL       string    `datastore:"vanity_url"`               //
 	Avatar           string    `datastore:"avatar,noindex"`           //
-	PersonaName      string    `datastore:"persona_name,noindex"`     //
+	PersonaName      string    `datastore:"persona_name"`             //
 	RealName         string    `datastore:"real_name,noindex"`        //
 	CountryCode      string    `datastore:"country_code"`             //
 	StateCode        string    `datastore:"status_code,noindex"`      //
@@ -63,7 +63,7 @@ func (p Player) GetKey() (key *datastore.Key) {
 }
 
 func (p Player) GetPath() string {
-	return getPlayerPath(p.PlayerID, p.GetName())
+	return GetPlayerPath(p.PlayerID, p.GetName())
 }
 
 func (p Player) GetName() string {
@@ -332,7 +332,7 @@ func GetPlayerMaxFriends(level int) (ret int) {
 	return ret
 }
 
-func getPlayerPath(id int64, name string) string {
+func GetPlayerPath(id int64, name string) string {
 
 	p := "/players/" + strconv.FormatInt(id, 10)
 	if name != "" {
@@ -408,15 +408,21 @@ func GetPlayerByName(name string) (player Player, err error) {
 		return player, err
 	}
 
-	q := datastore.NewQuery(KindPlayer).Filter("vanity_url =", name).Limit(1)
-
 	var players []Player
 
-	_, err = client.GetAll(ctx, q, &players)
-
+	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("vanity_url =", name).Limit(1), &players)
 	err = checkForMissingPlayerFields(err)
 	if err != nil {
 		return player, err
+	}
+
+	if len(players) == 0 {
+
+		_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("persona_name =", name).Limit(1), &players)
+		err = checkForMissingPlayerFields(err)
+		if err != nil {
+			return player, err
+		}
 	}
 
 	// Return the first one
@@ -635,7 +641,7 @@ func (p ProfileFriend) Scanned() bool {
 }
 
 func (p ProfileFriend) GetPath() string {
-	return getPlayerPath(p.SteamID, p.Name)
+	return GetPlayerPath(p.SteamID, p.Name)
 }
 
 func (p ProfileFriend) GetDefaultAvatar() string {

@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:dd029f90457e0bc0fc4a549a241327bdcac1f2a36692041a19ef02aec4c36103"
+  digest = "1:a639b30711f62030ade1432a6bcf135c23c38607d1478d3ce53829ea2a664197"
   name = "cloud.google.com/go"
   packages = [
     "compute/metadata",
@@ -19,8 +19,8 @@
     "storage",
   ]
   pruneopts = ""
-  revision = "74b12019e2aa53ec27882158f59192d7cd6d1998"
-  version = "v0.33.1"
+  revision = "0ebda48a7f143b1cce9eb37a8c1106ac762a3430"
+  version = "v0.34.0"
 
 [[projects]]
   branch = "master"
@@ -48,11 +48,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:61c439fcc2c35784deb40a4b4232ecc2a66e20d0c79e11ba6055ba10140eaeed"
+  digest = "1:def579dcf39f67f5de68c093343f616a39622b23716d6290dd5f93cd3a602994"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "547b38ba76302f016584d76d688be8182cefa933"
+  revision = "9a60496254d5142404cd6100ccf1a40f78b75db8"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -212,12 +212,12 @@
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
-  digest = "1:c5e3c78cae31c64ee8f2c4ad33f05083ccace2cd7b4d327fb9f7eb4a3528021d"
+  digest = "1:20fcf88feb1801c9244d6bc5390ad9f3403e83a81b6db6b84069caefffb475ae"
   name = "github.com/google/go-github"
   packages = ["github"]
   pruneopts = ""
-  revision = "35781f7f4db7b3d7fc3359527472838da65023c6"
-  version = "v19.1.0"
+  revision = "7c7d51f489bc54d96dfa34c497601b4a05d760c7"
+  version = "v20.0.0"
 
 [[projects]]
   digest = "1:cea4aa2038169ee558bf507d5ea02c94ca85bcca28a4c7bb99fd59b31e43a686"
@@ -268,12 +268,12 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:4e3dc86c35b65a8e7504eb3707f410f4619d0be02b2669db5ff9f5e6a3a856b1"
+  digest = "1:b57aa315d0fc4bf2aa90a85d40aeb39b8de682c19030fa9b44ca03fdda0e821b"
   name = "github.com/gosimple/slug"
   packages = ["."]
   pruneopts = ""
-  revision = "d8eda97f6ce6a447aa8ed204694bb5ce84f36b71"
-  version = "v1.4.1"
+  revision = "42ac18c34c2c6f4843fa48167317dcaa9416d1e2"
+  version = "v1.4.2"
 
 [[projects]]
   digest = "1:d14365c51dd1d34d5c79833ec91413bfbb166be978724f15701e17080dc06dec"
@@ -536,20 +536,20 @@
   version = "v1.0.3"
 
 [[projects]]
-  digest = "1:1ed7a19588d3b74fc6a45fe89f95aa980a34870342fb9c3183b19cad08b18a1e"
+  digest = "1:b98ee2c3f1469ab3b494859d3a9c9e595ec2c63660dea130a5154cfcd427b608"
   name = "github.com/spf13/viper"
   packages = ["."]
   pruneopts = ""
-  revision = "2c12c60302a5a0e62ee102ca9bc996277c2f64f5"
-  version = "v1.2.1"
+  revision = "6d33b5a963d922d182c91e8a1c88d81fd150cfd4"
+  version = "v1.3.1"
 
 [[projects]]
   branch = "master"
-  digest = "1:4837ae00a10e327fb6a0c72b6bade6af7581c6bfaf920e5e608e50e9c8eaed9c"
+  digest = "1:4658807d4ade3e68bce44a643d3aedc81cd9ec8609062866b07fe7a65758a406"
   name = "github.com/streadway/amqp"
   packages = ["."]
   pruneopts = ""
-  revision = "27835f1a64e97101d95306211f03c0620ffa295d"
+  revision = "a314942b2fd9dde7a3f70ba3f1062848ce6eb392"
 
 [[projects]]
   digest = "1:857a9ecd5cb13379ecc8f798f6e6b6b574c98b9355657d91e068275f1120aaf7"
@@ -619,7 +619,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ea539c13b066dac72a940b62f37600a20ab8e88057397c78f3197c1a48475425"
+  digest = "1:1e21bd471bcad726f573e5e41b7eafe690a1724fdebac6e633d06b58b702d88d"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -635,11 +635,11 @@
     "websocket",
   ]
   pruneopts = ""
-  revision = "351d144fa1fc0bd934e2408202be0c29f25e35a0"
+  revision = "891ebc4b82d6e74f468c533b06f983c7be918a96"
 
 [[projects]]
   branch = "master"
-  digest = "1:a00f221e88ad70a590024a29e3237595de80e2fd154b1c0822c871c9e02a6d14"
+  digest = "1:ea010cdb976f9de0c763728a76278f9109fca3299abd0dc3e8f2ccb9ff347268"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
@@ -649,7 +649,7 @@
     "jwt",
   ]
   pruneopts = ""
-  revision = "28207608b83849a028d4f12e46533a6b6894ecaf"
+  revision = "d668ce993890a79bda886613ee587a69dd5da7a6"
 
 [[projects]]
   branch = "master"
@@ -661,14 +661,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f358024b019f87eecaadcb098113a40852c94fe58ea670ef3c3e2d2c7bd93db1"
+  digest = "1:c2c4c39f961dde3f317a48713db65329863b61316edabf19b96784b2da8406ac"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "4ed8d59d0b35e1e29334a206d1b3f38b1e5dfb31"
+  revision = "4d1cda033e0619309c606fc686de3adcf599539e"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -695,7 +695,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1b6cbf40b2ddbc6d33b43aa0c9708f7250ae927574ce0bd51551ad164636f2b8"
+  digest = "1:b2d1813b3660d82969b796b55e0f686890a792a66b3229d7028090d29b6dfdab"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -713,7 +713,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "af4fc4062c262223ddc2d92f5f35a93690db383a"
+  revision = "874d9dc5b186e361475b082852f136f094555c30"
 
 [[projects]]
   digest = "1:77d3cff3a451d50be4b52db9c7766c0d8570ba47593f0c9dc72173adb208e788"
@@ -760,25 +760,30 @@
   revision = "bd91e49a0898e27abb88c339b432fa53d7497ac0"
 
 [[projects]]
-  digest = "1:1293087271e314cfa2b3decededba2ecba0ff327e7b7809e00f73f616449191c"
+  digest = "1:d141efe4aaad714e3059c340901aab3147b6253e58c85dafbcca3dd8b0e88ad6"
   name = "google.golang.org/grpc"
   packages = [
     ".",
     "balancer",
     "balancer/base",
     "balancer/roundrobin",
+    "binarylog/grpc_binarylog_v1",
     "codes",
     "connectivity",
     "credentials",
+    "credentials/internal",
     "credentials/oauth",
     "encoding",
     "encoding/proto",
     "grpclog",
     "internal",
     "internal/backoff",
+    "internal/binarylog",
     "internal/channelz",
     "internal/envconfig",
     "internal/grpcrand",
+    "internal/grpcsync",
+    "internal/syscall",
     "internal/transport",
     "keepalive",
     "metadata",
@@ -792,8 +797,8 @@
     "tap",
   ]
   pruneopts = ""
-  revision = "2e463a05d100327ca47ac218281906921038fd95"
-  version = "v1.16.0"
+  revision = "df014850f6dee74ba2fc94874043a9f3f75fbfd8"
+  version = "v1.17.0"
 
 [[projects]]
   branch = "v2"
