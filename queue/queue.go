@@ -195,7 +195,7 @@ func (s rabbitConsumer) consume() {
 
 					requeue, err := s.Message.process(msg)
 					if err != nil {
-						logInfo(err)
+						logError(err)
 					}
 
 					// Might be getting rate limited
@@ -207,11 +207,11 @@ func (s rabbitConsumer) consume() {
 					if requeue {
 						logInfo("Requeuing")
 						err = s.requeueMessage(msg)
-						logInfo(err)
+						logError(err)
 					}
 
 					err = msg.Ack(false)
-					logInfo(err)
+					logError(err)
 				}
 			}
 
@@ -279,4 +279,8 @@ func logInfo(interfaces ...interface{}) {
 
 func logError(interfaces ...interface{}) {
 	log.Log(append(interfaces, log.LogNameConsumers)...)
+}
+
+func logWarning(interfaces ...interface{}) {
+	log.Warning(append(interfaces, log.LogNameConsumers)...)
 }

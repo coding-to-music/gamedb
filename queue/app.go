@@ -93,7 +93,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	errs := app.UpdateFromRequest("")
 	for _, v := range errs {
-		logInfo(v)
+		logError(v)
 	}
 	if len(errs) > 0 {
 		return true, errs[0]
@@ -242,7 +242,7 @@ func updateAppPICS(app *db.App, message RabbitMessageProduct) (err error) {
 			}
 
 		default:
-			logInfo(v.Name + " field in app PICS ignored (Change " + strconv.Itoa(app.PICSChangeNumber) + ")")
+			logWarning(v.Name + " field in app PICS ignored (Change " + strconv.Itoa(app.PICSChangeNumber) + ")")
 		}
 	}
 

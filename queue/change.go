@@ -78,10 +78,10 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool, err erro
 
 	// Get mysql rows
 	appRows, err := db.GetAppsByID(appsSlice, []string{"id", "name"})
-	logInfo(err)
+	logError(err)
 
 	packageRows, err := db.GetPackages(packagesSlice, []string{"id", "name"})
-	logInfo(err)
+	logError(err)
 
 	// Make map
 	appRowsMap := map[int]db.App{}

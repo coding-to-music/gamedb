@@ -97,7 +97,7 @@ type entry struct {
 	timestamp time.Time
 }
 
-func (e entry) toText() string {
+func (e entry) toText(includeStack bool) string {
 
 	var ret []string
 
@@ -115,7 +115,13 @@ func (e entry) toText() string {
 		ret = append(ret, e.error)
 	}
 
-	return strings.Join(ret, " - ")
+	str := strings.Join(ret, " - ")
+
+	if includeStack {
+		str += "\n" + string(debug.Stack())
+	}
+
+	return str
 }
 
 var (
@@ -201,7 +207,7 @@ func Log(interfaces ...interface{}) {
 
 		// Local
 		if v == ServiceLocal {
-			logger.Println(entry.toText())
+			logger.Println(entry.toText(false))
 		}
 
 		// Google
@@ -209,7 +215,7 @@ func Log(interfaces ...interface{}) {
 			googleClient.Logger(string(env) + "-" + string(entry.logName)).Log(logging.Entry{
 				Severity:  entry.severity.toGoole(),
 				Timestamp: entry.timestamp,
-				Payload:   entry.toText() + "\n" + string(debug.Stack()),
+				Payload:   entry.toText(true),
 			})
 		}
 
@@ -226,6 +232,10 @@ func Info(interfaces ...interface{}) {
 
 func Debug(interfaces ...interface{}) {
 	Log(append(interfaces, SeverityDebug)...)
+}
+
+func Warning(interfaces ...interface{}) {
+	Log(append(interfaces, SeverityWarning)...)
 }
 
 func Critical(interfaces ...interface{}) {
