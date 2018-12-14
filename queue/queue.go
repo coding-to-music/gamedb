@@ -137,16 +137,20 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	defer ch.Close()
 
-	err = ch.Publish("", qu.Name, false, false, amqp.Publishing{
+	// Close read
+	if ch != nil {
+		defer func(ch *amqp.Channel) {
+			err := ch.Close()
+			log.Log(err)
+		}(ch)
+	}
+
+	return ch.Publish("", qu.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
 		Body:         data,
 	})
-	log.Log(err)
-
-	return nil
 }
 
 func (s rabbitConsumer) consume() {

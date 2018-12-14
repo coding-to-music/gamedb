@@ -111,7 +111,14 @@ func Download(path string, decode bool) (bytes []byte, err error) {
 		}
 		return bytes, err
 	}
-	defer rc.Close()
+
+	// Close read
+	if rc != nil {
+		defer func(rc *storage.Reader) {
+			err := rc.Close()
+			log.Log(err)
+		}(rc)
+	}
 
 	data, err := ioutil.ReadAll(rc)
 	if err != nil {

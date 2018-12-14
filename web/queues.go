@@ -97,7 +97,14 @@ func GetQeueus() (resp []Queue, err error) {
 	if err != nil {
 		return resp, err
 	}
-	defer response.Body.Close()
+
+	// Close read
+	if response != nil {
+		defer func(response *http.Response) {
+			err := response.Body.Close()
+			log.Log(err)
+		}(response)
+	}
 
 	// Convert to bytes
 	bytes, err := ioutil.ReadAll(response.Body)
