@@ -94,16 +94,9 @@ func main() {
 
 func configSetup() {
 
-	// Checks
-	if os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		panic("can't see environment variables")
-	}
-
 	// Google
-	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
-		log.Log(err)
-	}
+	err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "/root/google-auth.json")
+	log.Log(err)
 
 	// Recaptcha
 	recaptcha.SetSecret(viper.GetString("RECAPTCHA_PRIVATE"))
