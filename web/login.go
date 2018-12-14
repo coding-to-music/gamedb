@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 	"github.com/spf13/viper"
@@ -212,7 +213,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get player if they're new
 	if player.PersonaName == "" {
-		err = queuePlayer(r, player, db.PlayerUpdateAuto)
+		err = queue.QueuePlayer(r, player, db.PlayerUpdateAuto)
 
 		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 		log.Log(err)

@@ -9,6 +9,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/queue"
 )
 
 const (
@@ -53,7 +54,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			err = queuePlayer(r, player, db.PlayerUpdateManual)
+			err = queue.QueuePlayer(r, player, db.PlayerUpdateManual)
 			if err != nil {
 
 				err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)

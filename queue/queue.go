@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
+	"net/http"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
@@ -271,6 +274,61 @@ type SteamKitJob struct {
 	ProcessID       int    `json:"ProcessID"`
 	BoxID           int    `json:"BoxID"`
 	Value           int64  `json:"Value"`
+}
+
+func QueueApp(ID int) (err error) {
+
+	b, err := json.Marshal(produceAppPayload{
+		ID:   ID,
+		Time: time.Now().Unix(),
+	})
+
+	return Produce(QueueApps, b)
+}
+
+type produceAppPayload struct {
+	ID   int   `json:"id"`
+	Time int64 `json:"timestamp"`
+}
+
+func QueuePackage(ID int) (err error) {
+
+	b, err := json.Marshal(producePackagePayload{
+		ID:   ID,
+		Time: time.Now().Unix(),
+	})
+
+	return Produce(QueueApps, b)
+}
+
+type producePackagePayload struct {
+	ID   int   `json:"id"`
+	Time int64 `json:"timestamp"`
+}
+
+func QueuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (err error) {
+
+	err = player.ShouldUpdate(r, updateType)
+	if err == nil {
+
+		b, err := json.Marshal(producePlayerPayload{
+			ID:   player.PlayerID,
+			Time: time.Now().Unix(),
+		})
+
+		err = Produce(QueueProfiles, b)
+		if err == nil {
+
+			err = helpers.GetMemcache().SetItem(helpers.MemcachePlayerRefreshed(player.PlayerID))
+		}
+	}
+
+	return err
+}
+
+type producePlayerPayload struct {
+	ID   int64 `json:"id"`
+	Time int64 `json:"timestamp"`
 }
 
 func logInfo(interfaces ...interface{}) {

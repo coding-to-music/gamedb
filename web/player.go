@@ -56,7 +56,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Queue profile for a refresh
 	// "Profile queued for an update!"
-	err = queuePlayer(r, player, db.PlayerUpdateAuto)
+	err = queue.QueuePlayer(r, player, db.PlayerUpdateAuto)
 	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 	log.Log(err)
 
@@ -91,7 +91,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			f := db.Player{}
 			f.PlayerID = friend.SteamID
 
-			err = queuePlayer(r, f, db.PlayerUpdateAuto)
+			err = queue.QueuePlayer(r, f, db.PlayerUpdateAuto)
 			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon)
 			log.Log(err)
 		}
@@ -336,21 +336,6 @@ func (p playerRanksTemplate) GetFriendsPercent() string {
 	return p.formatPercent(p.Ranks.FriendsRank)
 }
 
-func queuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (err error) {
-
-	err = player.ShouldUpdate(r, updateType)
-	if err == nil {
-
-		err = queue.Produce(queue.QueueProfiles, []byte(strconv.FormatInt(player.PlayerID, 10)))
-		if err == nil {
-
-			err = helpers.GetMemcache().SetItem(helpers.MemcachePlayerRefreshed(player.PlayerID))
-		}
-	}
-
-	return err
-}
-
 func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerID := chi.URLParam(r, "id")
@@ -484,7 +469,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 					response = PlayersUpdateResponse{Message: "Updating player", Success: true}
 				}
 
-				err = queuePlayer(r, player, db.PlayerUpdateManual)
+				err = queue.QueuePlayer(r, player, db.PlayerUpdateManual)
 				if err != nil {
 
 					response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
