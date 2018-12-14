@@ -227,3 +227,7 @@ func Info(interfaces ...interface{}) {
 func Debug(interfaces ...interface{}) {
 	Log(append(interfaces, SeverityDebug)...)
 }
+
+func Critical(interfaces ...interface{}) {
+	Log(append(interfaces, SeverityCritical)...)
+}

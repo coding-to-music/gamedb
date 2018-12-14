@@ -125,14 +125,11 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	if producerConnection == nil {
 
 		producerConnection, err = amqp.Dial(rabbitDSN)
-		if consumerConnection == nil {
-			log.Log(errors.New("rabbit not found"))
-			return
-		}
-		producerConnection.NotifyClose(producerCloseChannel)
 		if err != nil {
+			log.Critical("Connecting to Rabbit: " + err.Error())
 			return err
 		}
+		producerConnection.NotifyClose(producerCloseChannel)
 	}
 
 	//
@@ -162,15 +159,11 @@ func (s rabbitConsumer) consume() {
 		if consumerConnection == nil {
 
 			consumerConnection, err = amqp.Dial(rabbitDSN)
-			if consumerConnection == nil {
-				log.Log(errors.New("rabbit not found"))
+			if err != nil {
+				log.Critical("Connecting to Rabbit: " + err.Error())
 				return
 			}
 			consumerConnection.NotifyClose(consumerCloseChannel)
-			if err != nil {
-				log.Log(err)
-				return
-			}
 		}
 
 		//
