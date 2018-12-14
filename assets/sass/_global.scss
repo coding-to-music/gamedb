@@ -122,6 +122,10 @@ div#top.show {
     cursor: pointer;
 }
 
+[data-link]:hover, [data-link]:hover span{
+    text-decoration: underline;
+}
+
 .list-group {
     img.avatar {
         float: left;
