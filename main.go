@@ -83,7 +83,7 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(time.Minute * 10)
-			log.Log("Goroutines running: "+strconv.Itoa(runtime.NumGoroutine()), log.SeverityInfo)
+			log.Info("Goroutines running: "+strconv.Itoa(runtime.NumGoroutine()), log.SeverityInfo)
 		}
 	}()
 
