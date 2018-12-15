@@ -1,6 +1,5 @@
-// Bootstrap
-@import "bootstrap/bootstrap";
 // Global
+@import "bootstrap/bootstrap";
 @import "global";
 @import "tables";
 @import "media-lists";
@@ -18,5 +17,6 @@
 @import "price-changes";
 @import "product";
 @import "player";
+@import "queues";
 @import "settings";
 @import "stats";

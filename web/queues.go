@@ -5,11 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"regexp"
-	"sort"
-	"strings"
 
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
@@ -19,7 +15,7 @@ import (
 func queuesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", queuesHandler)
-	r.Get("/ajax", queuesJSONHandler)
+	r.Get("/ajax.json", queuesJSONHandler)
 	return r
 }
 
@@ -38,38 +34,24 @@ type queuesTemplate struct {
 
 func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
-	queuesResp, err := GetQeueus()
+	setNoCacheHeaders(w)
+
+	overview, err := getOverview()
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the queues.", Error: err})
 		return
 	}
 
-	// Only expose what we need
-	var queues []queuesQueue
+	var samples = overview.QueueTotals.MessagesDetails.Samples
 
-	for _, v := range queuesResp {
+	var ret [][]interface{}
 
-		messages := v.Messages
-		rate := v.MessageStats.AckDetails.Rate
-
-		if rate > 0 && messages == 0 {
-			messages = 1
-		}
-
-		queues = append(queues, queuesQueue{
-			v.Name,
-			humanize.Comma(int64(messages)),
-			rate,
-		})
+	for _, v := range samples {
+		ret = append(ret, []interface{}{v.Timestamp, v.Sample})
 	}
 
-	// Sort by name, no datatable
-	sort.Slice(queues, func(i int, j int) bool {
-		return queues[i].Name > queues[j].Name
-	})
-
 	// Encode
-	bytes, err := json.Marshal(queues)
+	bytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Log(err)
 		bytes = []byte("[]")
@@ -79,17 +61,11 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	log.Log(err)
 }
 
-type queuesQueue struct {
-	Name     string
-	Messages string
-	Rate     float64
-}
-
-func GetQeueus() (resp []Queue, err error) {
+func getOverview() (resp Overview, err error) {
 
 	managementURL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT")
 
-	req, err := http.NewRequest("GET", managementURL+"/api/queues", nil)
+	req, err := http.NewRequest("GET", managementURL+"/api/overview?lengths_age=600&lengths_incr=5&msg_rates_age=600&msg_rates_incr=5", nil)
 	req.SetBasicAuth(os.Getenv("STEAM_RABBIT_USER"), os.Getenv("STEAM_RABBIT_PASS"))
 
 	client := &http.Client{}
@@ -112,10 +88,10 @@ func GetQeueus() (resp []Queue, err error) {
 		return resp, err
 	}
 
-	regex := regexp.MustCompile(`"target_ram_count":\s?(\d+)`)
-	s := regex.ReplaceAllString(string(bytes), `"target_ram_count":"$1"`)
+	//regex := regexp.MustCompile(`"target_ram_count":\s?(\d+)`)
+	//s := regex.ReplaceAllString(string(bytes), `"target_ram_count":"$1"`)
 
-	bytes = []byte(s)
+	//bytes = []byte(s)
 
 	// Unmarshal JSON
 	err = helpers.Unmarshal(bytes, &resp)
@@ -123,118 +99,202 @@ func GetQeueus() (resp []Queue, err error) {
 		return resp, err
 	}
 
-	var filtered []Queue
-	for _, v := range resp {
-		if strings.HasPrefix(v.Name, "Steam_") {
-			v.Name = strings.Replace(v.Name, "Steam_", "", 1)
-			filtered = append(filtered, v)
-		}
-	}
-
-	return filtered, nil
+	return resp, nil
 }
 
-type Queue struct {
-	MessagesDetails struct {
-		Rate float64 `json:"rate"`
-	} `json:"messages_details"`
-	Messages                      int `json:"messages"`
-	MessagesUnacknowledgedDetails struct {
-		Rate float64 `json:"rate"`
-	} `json:"messages_unacknowledged_details"`
-	MessagesUnacknowledged int `json:"messages_unacknowledged"`
-	MessagesReadyDetails   struct {
-		Rate float64 `json:"rate"`
-	} `json:"messages_ready_details"`
-	MessagesReady     int `json:"messages_ready"`
-	ReductionsDetails struct {
-		Rate float64 `json:"rate"`
-	} `json:"reductions_details"`
-	Reductions   int `json:"reductions"`
-	MessageStats struct {
-		DeliverGetDetails struct {
-			Rate float64 `json:"rate"`
-		} `json:"deliver_get_details"`
-		DeliverGet int `json:"deliver_get"`
+type Overview struct {
+	ManagementVersion string `json:"management_version"`
+	RatesMode         string `json:"rates_mode"`
+	ExchangeTypes     []struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Enabled     bool   `json:"enabled"`
+	} `json:"exchange_types"`
+	RabbitmqVersion   string `json:"rabbitmq_version"`
+	ClusterName       string `json:"cluster_name"`
+	ErlangVersion     string `json:"erlang_version"`
+	ErlangFullVersion string `json:"erlang_full_version"`
+	MessageStats      struct {
+		Ack        int `json:"ack"`
 		AckDetails struct {
-			Rate float64 `json:"rate"`
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
 		} `json:"ack_details"`
-		Ack              int `json:"ack"`
-		RedeliverDetails struct {
-			Rate float64 `json:"rate"`
-		} `json:"redeliver_details"`
-		Redeliver           int `json:"redeliver"`
-		DeliverNoAckDetails struct {
-			Rate float64 `json:"rate"`
-		} `json:"deliver_no_ack_details"`
-		DeliverNoAck   int `json:"deliver_no_ack"`
+		Confirm        int `json:"confirm"`
+		ConfirmDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"confirm_details"`
+		Deliver        int `json:"deliver"`
 		DeliverDetails struct {
-			Rate float64 `json:"rate"`
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
 		} `json:"deliver_details"`
-		Deliver         int `json:"deliver"`
-		GetNoAckDetails struct {
-			Rate float64 `json:"rate"`
-		} `json:"get_no_ack_details"`
-		GetNoAck   int `json:"get_no_ack"`
+		DeliverGet        int `json:"deliver_get"`
+		DeliverGetDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"deliver_get_details"`
+		DeliverNoAck        int `json:"deliver_no_ack"`
+		DeliverNoAckDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"deliver_no_ack_details"`
+		DiskReads        int `json:"disk_reads"`
+		DiskReadsDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"disk_reads_details"`
+		DiskWrites        int `json:"disk_writes"`
+		DiskWritesDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"disk_writes_details"`
+		Get        int `json:"get"`
 		GetDetails struct {
-			Rate float64 `json:"rate"`
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
 		} `json:"get_details"`
-		Get            int `json:"get"`
+		GetNoAck        int `json:"get_no_ack"`
+		GetNoAckDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"get_no_ack_details"`
+		Publish        int `json:"publish"`
 		PublishDetails struct {
-			Rate float64 `json:"rate"`
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
 		} `json:"publish_details"`
-		Publish int `json:"publish"`
+		Redeliver        int `json:"redeliver"`
+		RedeliverDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"redeliver_details"`
+		ReturnUnroutable        int `json:"return_unroutable"`
+		ReturnUnroutableDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"return_unroutable_details"`
 	} `json:"message_stats"`
-	Node      string `json:"node"`
-	Arguments struct {
-	} `json:"arguments"`
-	Exclusive            bool   `json:"exclusive"`
-	AutoDelete           bool   `json:"auto_delete"`
-	Durable              bool   `json:"durable"`
-	Vhost                string `json:"vhost"`
-	Name                 string `json:"name"`
-	MessageBytesPagedOut int    `json:"message_bytes_paged_out"`
-	MessagesPagedOut     int    `json:"messages_paged_out"`
-	BackingQueueStatus   struct {
-		AvgAckEgressRate  float64       `json:"avg_ack_egress_rate"`
-		AvgAckIngressRate float64       `json:"avg_ack_ingress_rate"`
-		AvgEgressRate     float64       `json:"avg_egress_rate"`
-		AvgIngressRate    float64       `json:"avg_ingress_rate"`
-		Delta             []interface{} `json:"delta"`
-		Len               int           `json:"len"`
-		Mode              string        `json:"mode"`
-		NextSeqID         int           `json:"next_seq_id"`
-		Q1                int           `json:"q1"`
-		Q2                int           `json:"q2"`
-		Q3                int           `json:"q3"`
-		Q4                int           `json:"q4"`
-		TargetRAMCount    string        `json:"target_ram_count"`
-	} `json:"backing_queue_status"`
-	HeadMessageTimestamp       interface{} `json:"head_message_timestamp"`
-	MessageBytesPersistent     int         `json:"message_bytes_persistent"`
-	MessageBytesRAM            int         `json:"message_bytes_ram"`
-	MessageBytesUnacknowledged int         `json:"message_bytes_unacknowledged"`
-	MessageBytesReady          int         `json:"message_bytes_ready"`
-	MessageBytes               int         `json:"message_bytes"`
-	MessagesPersistent         int         `json:"messages_persistent"`
-	MessagesUnacknowledgedRAM  int         `json:"messages_unacknowledged_ram"`
-	MessagesReadyRAM           int         `json:"messages_ready_ram"`
-	MessagesRAM                int         `json:"messages_ram"`
-	GarbageCollection          struct {
-		MinorGcs        int `json:"minor_gcs"`
-		FullsweepAfter  int `json:"fullsweep_after"`
-		MinHeapSize     int `json:"min_heap_size"`
-		MinBinVheapSize int `json:"min_bin_vheap_size"`
-		MaxHeapSize     int `json:"max_heap_size"`
-	} `json:"garbage_collection"`
-	State                     string        `json:"state"`
-	RecoverableSlaves         interface{}   `json:"recoverable_slaves"`
-	Consumers                 int           `json:"consumers"`
-	ExclusiveConsumerTag      interface{}   `json:"exclusive_consumer_tag"`
-	EffectivePolicyDefinition []interface{} `json:"effective_policy_definition"`
-	OperatorPolicy            interface{}   `json:"operator_policy"`
-	Policy                    interface{}   `json:"policy"`
-	ConsumerUtilisation       interface{}   `json:"consumer_utilisation"`
-	IdleSince                 string        `json:"idle_since"`
-	Memory                    int           `json:"memory"`
+	QueueTotals struct {
+		Messages        int `json:"messages"`
+		MessagesDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"messages_details"`
+		MessagesReady        int `json:"messages_ready"`
+		MessagesReadyDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"messages_ready_details"`
+		MessagesUnacknowledged        int `json:"messages_unacknowledged"`
+		MessagesUnacknowledgedDetails struct {
+			Rate    float64 `json:"rate"`
+			Samples []struct {
+				Sample    int   `json:"sample"`
+				Timestamp int64 `json:"timestamp"`
+			} `json:"samples"`
+			AvgRate float64 `json:"avg_rate"`
+			Avg     float64 `json:"avg"`
+		} `json:"messages_unacknowledged_details"`
+	} `json:"queue_totals"`
+	ObjectTotals struct {
+		Channels    int `json:"channels"`
+		Connections int `json:"connections"`
+		Consumers   int `json:"consumers"`
+		Exchanges   int `json:"exchanges"`
+		Queues      int `json:"queues"`
+	} `json:"object_totals"`
+	StatisticsDbEventQueue int    `json:"statistics_db_event_queue"`
+	Node                   string `json:"node"`
+	Listeners              []struct {
+		Node      string `json:"node"`
+		Protocol  string `json:"protocol"`
+		IPAddress string `json:"ip_address"`
+		Port      int    `json:"port"`
+		//SocketOpts struct {
+		//	Backlog     int           `json:"backlog"`
+		//	Nodelay     bool          `json:"nodelay"`
+		//	Linger      []interface{} `json:"linger"`
+		//	ExitOnClose bool          `json:"exit_on_close"`
+		//} `json:"socket_opts"`
+	} `json:"listeners"`
+	Contexts []struct {
+		SslOpts     []interface{} `json:"ssl_opts"`
+		Node        string        `json:"node"`
+		Description string        `json:"description"`
+		Path        string        `json:"path"`
+		Port        string        `json:"port"`
+		Ssl         string        `json:"ssl"`
+	} `json:"contexts"`
 }
