@@ -58,7 +58,7 @@ func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {
 
 func SaveKind(key *datastore.Key, data interface{}) (err error) {
 
-	log.Info("Saving "+key.Name, log.LogNameDatastore, log.ServiceGoogle)
+	log.Info("Saving "+key.String(), log.LogNameDatastore, log.ServiceGoogle)
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
