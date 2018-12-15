@@ -122,7 +122,7 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 	login.UserAgent = r.Header.Get("User-Agent")
 	login.IP = r.RemoteAddr
 
-	_, err = SaveKind(login.GetKey(), login)
+	err = SaveKind(login.GetKey(), login)
 	if err != nil {
 		return err
 	}

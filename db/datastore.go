@@ -56,21 +56,17 @@ func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {
 	return datastoreClient, ctx, nil
 }
 
-func SaveKind(key *datastore.Key, data interface{}) (newKey *datastore.Key, err error) {
+func SaveKind(key *datastore.Key, data interface{}) (err error) {
 
 	log.Info("Saving "+key.Name, log.LogNameDatastore, log.ServiceGoogle)
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	newKey, err = client.Put(ctx, key, data)
-	if err != nil {
-		return newKey, err
-	}
-
-	return newKey, nil
+	_, err = client.Put(ctx, key, data)
+	return err
 }
 
 func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {

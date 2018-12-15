@@ -219,7 +219,7 @@ func adminDonations() {
 		}
 
 		player.Donated = v
-		_, err = db.SaveKind(player.GetKey(), player)
+		err = db.SaveKind(player.GetKey(), player)
 		cronLog(err)
 	}
 

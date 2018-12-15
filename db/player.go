@@ -309,8 +309,7 @@ func (p *Player) Save() (err error) {
 		p.CreatedAt = time.Now()
 	}
 
-	_, err = SaveKind(p.GetKey(), p)
-	return err
+	return SaveKind(p.GetKey(), p)
 }
 
 func GetPlayerMaxFriends(level int) (ret int) {

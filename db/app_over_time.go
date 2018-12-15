@@ -27,8 +27,7 @@ func SaveAppOverTime(app App) (err error) {
 	aot.ReviewsPositive = app.ReviewsPositive
 	aot.ReviewsNegative = app.ReviewsNegative
 
-	_, err = SaveKind(aot.GetKey(), aot)
-	return err
+	return SaveKind(aot.GetKey(), aot)
 }
 
 func GetAppOverTimes(appID int64) (scores []AppOverTime, err error) {
