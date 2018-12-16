@@ -39,7 +39,7 @@ if ($('#queues-page').length > 0) {
             data: {
                 rowsURL: full + '/queues/ajax.json',
                 enablePolling: true,
-                dataRefreshRate: 5
+                dataRefreshRate: 60
             }
         });
 

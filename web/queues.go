@@ -65,7 +65,7 @@ func getOverview() (resp Overview, err error) {
 
 	managementURL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT")
 
-	req, err := http.NewRequest("GET", managementURL+"/api/overview?lengths_age=600&lengths_incr=5&msg_rates_age=600&msg_rates_incr=5", nil)
+	req, err := http.NewRequest("GET", managementURL+"/api/overview?lengths_age=3600&lengths_incr=60&msg_rates_age=3600&msg_rates_incr=60", nil)
 	req.SetBasicAuth(os.Getenv("STEAM_RABBIT_USER"), os.Getenv("STEAM_RABBIT_PASS"))
 
 	client := &http.Client{}
