@@ -106,7 +106,7 @@ func configSetup() {
 	}
 
 	// Recaptcha
-	recaptcha.SetSecret(viper.GetString("RECAPTCHA_PRIVATE"))
+	recaptcha.SetSecret(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
 
 	//
 	viper.AutomaticEnv()
