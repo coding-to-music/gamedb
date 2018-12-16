@@ -133,8 +133,8 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect
 	if err != nil {
 
-		err = helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
-		log.Log(err)
+		err2 := helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
+		log.Log(err2)
 
 		// Stop brute forces
 		time.Sleep(time.Second)
