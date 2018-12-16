@@ -125,7 +125,7 @@ func adminQueueEveryApp() {
 		}
 
 		for _, v := range apps.Apps {
-			err = queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.AppID)))
+			err = queue.QueueApp([]int{v.AppID})
 			if err != nil {
 				log.Log(err)
 				return
@@ -172,7 +172,7 @@ func adminQueueEveryPackage() {
 
 	for k := range packageIDs {
 
-		err = queue.Produce(queue.QueuePackages, []byte(strconv.Itoa(k)))
+		err = queue.QueuePackage([]int{k})
 		if err != nil {
 			log.Log(err)
 			return
@@ -255,14 +255,22 @@ func adminQueues(r *http.Request) {
 	if val := r.PostForm.Get("app-id"); val != "" {
 
 		log.Info("App ID: " + val)
-		err := queue.Produce(queue.QueueApps, []byte(val))
+
+		valInt, err := strconv.ParseInt(val, 10, 32)
+		log.Log(err)
+
+		err = queue.QueueApp([]int{int(valInt)})
 		log.Log(err)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
 		log.Info("Package ID: " + val)
-		err := queue.Produce(queue.QueuePackages, []byte(val))
+
+		valInt, err := strconv.ParseInt(val, 10, 32)
+		log.Log(err)
+
+		err = queue.QueuePackage([]int{int(valInt)})
 		log.Log(err)
 	}
 }

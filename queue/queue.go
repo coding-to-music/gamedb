@@ -276,34 +276,36 @@ type SteamKitJob struct {
 	Value           int64  `json:"Value"`
 }
 
-func QueueApp(ID int) (err error) {
+func QueueApp(IDs []int) (err error) {
 
 	b, err := json.Marshal(produceAppPayload{
-		ID:   ID,
+		ID:   IDs,
 		Time: time.Now().Unix(),
 	})
 
 	return Produce(QueueApps, b)
 }
 
+// JSON must match the Updater app
 type produceAppPayload struct {
-	ID   int   `json:"id"`
-	Time int64 `json:"timestamp"`
+	ID   []int `json:"IDs"`
+	Time int64 `json:"Time"`
 }
 
-func QueuePackage(ID int) (err error) {
+func QueuePackage(IDs []int) (err error) {
 
 	b, err := json.Marshal(producePackagePayload{
-		ID:   ID,
+		ID:   IDs,
 		Time: time.Now().Unix(),
 	})
 
 	return Produce(QueuePackages, b)
 }
 
+// JSON must match the Updater app
 type producePackagePayload struct {
-	ID   int   `json:"id"`
-	Time int64 `json:"timestamp"`
+	ID   []int `json:"IDs"`
+	Time int64 `json:"Time"`
 }
 
 func QueuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (err error) {
@@ -326,9 +328,10 @@ func QueuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (e
 	return err
 }
 
+// JSON must match the Updater app
 type producePlayerPayload struct {
-	ID   int64 `json:"id"`
-	Time int64 `json:"timestamp"`
+	ID   int64 `json:"ID"`
+	Time int64 `json:"Time"`
 }
 
 func logInfo(interfaces ...interface{}) {

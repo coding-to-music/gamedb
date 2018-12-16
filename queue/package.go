@@ -15,6 +15,7 @@ import (
 
 type RabbitMessagePackage struct {
 	PICSPackageInfo RabbitMessageProduct
+	Payload         producePackagePayload
 }
 
 func (d RabbitMessagePackage) getConsumeQueue() RabbitQueue {
