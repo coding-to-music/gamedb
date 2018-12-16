@@ -66,14 +66,16 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		log.Log(err)
 
 		// Recaptcha
-		err = recaptcha.CheckFromRequest(r)
-		if err != nil {
+		if viper.GetString("ENV") != string(log.EnvLocal) {
+			err = recaptcha.CheckFromRequest(r)
+			if err != nil {
 
-			if err == recaptcha.ErrNotChecked {
-				return ErrInvalidCaptcha
+				if err == recaptcha.ErrNotChecked {
+					return ErrInvalidCaptcha
+				}
+
+				return err
 			}
-
-			return err
 		}
 
 		// Field validation
