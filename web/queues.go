@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -42,11 +43,9 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var samples = overview.QueueTotals.MessagesDetails.Samples
-
 	var ret [][]interface{}
 
-	for _, v := range samples {
+	for _, v := range overview.QueueTotals.MessagesDetails.Samples {
 		ret = append(ret, []interface{}{v.Timestamp, v.Sample})
 	}
 
@@ -63,9 +62,10 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 func getOverview() (resp Overview, err error) {
 
-	managementURL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT")
+	URL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT")
+	URL += "/api/overview?lengths_age=3600&lengths_incr=60&msg_rates_age=3600&msg_rates_incr=60"
 
-	req, err := http.NewRequest("GET", managementURL+"/api/overview?lengths_age=3600&lengths_incr=60&msg_rates_age=3600&msg_rates_incr=60", nil)
+	req, err := http.NewRequest("GET", URL, nil)
 	req.SetBasicAuth(os.Getenv("STEAM_RABBIT_USER"), os.Getenv("STEAM_RABBIT_PASS"))
 
 	client := &http.Client{}
@@ -88,10 +88,11 @@ func getOverview() (resp Overview, err error) {
 		return resp, err
 	}
 
-	//regex := regexp.MustCompile(`"target_ram_count":\s?(\d+)`)
-	//s := regex.ReplaceAllString(string(bytes), `"target_ram_count":"$1"`)
+	// Fix JSON
+	regex := regexp.MustCompile(`"socket_opts":\[]`)
+	s := regex.ReplaceAllString(string(bytes), `"socket_opts":{}`)
 
-	//bytes = []byte(s)
+	bytes = []byte(s)
 
 	// Unmarshal JSON
 	err = helpers.Unmarshal(bytes, &resp)
@@ -278,16 +279,16 @@ type Overview struct {
 	StatisticsDbEventQueue int    `json:"statistics_db_event_queue"`
 	Node                   string `json:"node"`
 	Listeners              []struct {
-		Node      string `json:"node"`
-		Protocol  string `json:"protocol"`
-		IPAddress string `json:"ip_address"`
-		Port      int    `json:"port"`
-		//SocketOpts struct {
-		//	Backlog     int           `json:"backlog"`
-		//	Nodelay     bool          `json:"nodelay"`
-		//	Linger      []interface{} `json:"linger"`
-		//	ExitOnClose bool          `json:"exit_on_close"`
-		//} `json:"socket_opts"`
+		Node       string `json:"node"`
+		Protocol   string `json:"protocol"`
+		IPAddress  string `json:"ip_address"`
+		Port       int    `json:"port"`
+		SocketOpts struct {
+			Backlog     int           `json:"backlog"`
+			Nodelay     bool          `json:"nodelay"`
+			Linger      []interface{} `json:"linger"`
+			ExitOnClose bool          `json:"exit_on_close"`
+		} `json:"socket_opts"`
 	} `json:"listeners"`
 	Contexts []struct {
 		SslOpts     []interface{} `json:"ssl_opts"`
