@@ -111,7 +111,7 @@ func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *
 	ch, err = conn.Channel()
 	log.Log(err)
 
-	err = ch.Qos(10, 0, true)
+	err = ch.Qos(10, 0, false)
 	log.Log(err)
 
 	qu, err = ch.QueueDeclare(queue.String(), true, false, false, false, nil)
@@ -141,7 +141,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 		return err
 	}
 
-	// Close read
+	// Close channel
 	if ch != nil {
 		defer func(ch *amqp.Channel) {
 			err := ch.Close()
