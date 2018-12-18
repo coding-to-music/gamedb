@@ -98,6 +98,7 @@ func Serve() error {
 	r.Mount("/changes", changesRouter())
 	r.Mount("/chat", chatRouter())
 	r.Mount("/contact", contactRouter())
+	r.Mount("/depots", depotsRouter())
 	r.Mount("/experience", experienceRouter())
 	r.Mount("/free-games", freeGamesRouter())
 	r.Mount("/games", gamesRouter())
