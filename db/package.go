@@ -137,6 +137,17 @@ func (pack Package) GetUpdatedNice() string {
 	return pack.UpdatedAt.Format(helpers.DateYearTime)
 }
 
+func (pack Package) GetPICSUpdatedNice() string {
+
+	d := pack.PICSChangeNumberDate
+
+	// Empty dates
+	if d.IsZero() || d.Unix() == -62167219200 {
+		return "-"
+	}
+	return d.Format(helpers.DateYearTime)
+}
+
 func (pack Package) GetUpdatedUnix() int64 {
 	return pack.UpdatedAt.Unix()
 }

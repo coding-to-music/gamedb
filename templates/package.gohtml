@@ -45,47 +45,55 @@
                             {{/* Package Details */}}
                             <div class="table-responsive">
                                 <table class="table">
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
+                                        <td>{{ .Package.GetPICSUpdatedNice }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
+                                        <td>{{ .Package.GetUpdatedNice }}</td>
+                                    </tr>
                                     {{ if ne .Package.ReleaseDate "" }}
                                         <tr>
-                                            <td>ReleaseDate</td>
+                                            <th>ReleaseDate</th>
                                             <td>{{ .Package.ReleaseDate }}</td>
                                         </tr>
                                     {{ end }}
                                     <tr>
-                                        <td>Coming Soon</td>
+                                        <th>Coming Soon</th>
                                         <td>{{ .Package.GetComingSoon }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Billing Type</td>
+                                        <th>Billing Type</th>
                                         <td>{{ .Package.GetBillingType }}</td>
                                     </tr>
                                     <tr>
-                                        <td>License Type</td>
+                                        <th>License Type</th>
                                         <td>{{ .Package.GetLicenseType }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Status</td>
+                                        <th>Status</th>
                                         <td>{{ .Package.GetStatus }}</td>
                                     </tr>
                                     {{ if gt .Package.PICSChangeNumber 0 }}
                                         <tr>
-                                            <td>Change ID</td>
+                                            <th>Change ID</th>
                                             <td><a href="/changes/{{ .Package.PICSChangeNumber }}">Change {{ .Package.PICSChangeNumber }}</a></td>
                                         </tr>
                                     {{ end }}
                                     <tr>
-                                        <td>Platforms</td>
+                                        <th>Platforms</th>
                                         <td class="platforms">{{ .Package.GetPlatformImages }}</td>
                                     </tr>
                                     {{ range $key, $value := .Package.GetExtendedNice }}
                                         <tr>
-                                            <td>{{ $key }}</td>
+                                            <th>{{ $key }}</th>
                                             <td>{{ $value }}</td>
                                         </tr>
                                     {{ end }}
                                     {{ range $key, $value := .Package.GetControllerNice }}
                                         <tr>
-                                            <td>{{ $key }}</td>
+                                            <th>{{ $key }}</th>
                                             <td>{{ $value }}</td>
                                         </tr>
                                     {{ end }}
@@ -159,7 +167,7 @@
                             </tr>
                             </thead>
                             {{ range $key, $value := .Package.GetDepotIDs }}
-                                <tr>
+                                <tr data-link="/depots/{{ $value }}">
                                     <td>{{ $value }}</td>
                                 </tr>
                             {{ end }}
