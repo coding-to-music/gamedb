@@ -39,7 +39,7 @@ type App struct {
 	UpdatedAt              time.Time  `gorm:"not null;column:updated_at;type:datetime"`          //
 	PICSInstall            string     `gorm:"not null;column:pics_install"`                      //
 	PICSChangeNumber       int        `gorm:"not null;column:change_number"`                     //
-	PICSChangeNumberDate   time.Time  `gorm:"not null;column:change_number_date"`                //
+	PICSChangeNumberDate   time.Time  `gorm:"not null;column:change_number_date;type:datetime"`  //
 	PICSConfig             string     `gorm:"not null;column:config"`                            //
 	PICSCommon             string     `gorm:"not null;column:common"`                            //
 	PICSDepots             string     `gorm:"not null;column:depots"`                            //
@@ -255,6 +255,21 @@ func (app App) GetReleaseDateNice() string {
 	}
 
 	return time.Unix(app.ReleaseDateUnix, 0).Format(helpers.DateYear)
+}
+
+func (app App) GetUpdatedNice() string {
+	return app.UpdatedAt.Format(helpers.DateYearTime)
+}
+
+func (app App) GetPICSUpdatedNice() string {
+
+	d := app.PICSChangeNumberDate
+
+	// Empty dates
+	if d.IsZero() || d.Unix() == -62167219200 {
+		return "-"
+	}
+	return d.Format(helpers.DateYearTime)
 }
 
 func (app App) GetIcon() (ret string) {
