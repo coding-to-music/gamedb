@@ -12,17 +12,17 @@
         <div class="card-body">
 
             <div class="row">
-                <div class="col col-6 col-md-4">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
                     <div role="button" class="btn btn-success btn-block mb-4">Total Apps<br/>{{ comma .AppsCount}}</div>
                 </div>
-                <div class="col col-6 col-md-4">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
                     <div role="button" class="btn btn-success btn-block mb-4">Total Packages<br/>{{ comma .PackagesCount}}</div>
                 </div>
-                <div class="col col-6 col-md-4">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
                     <div role="button" class="btn btn-success btn-block mb-4">Total Ranked Players<br/>{{ comma .RanksCount}}</div>
                 </div>
                 {{ range $key, $value := .Totals }}
-                    <div class="col col-6 col-md-4">
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
                         <div role="button" class="btn btn-success btn-block mb-4">{{ .Type }}<br/>{{ .Total }}</div>
                     </div>
                 {{ end }}
