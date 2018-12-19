@@ -1,20 +1,45 @@
-// Links
-$(document).on('mouseup', '[data-link]', function (evnt) {
+const $document = $(document);
+const $body = $("body");
+
+// Data links
+let dataLinkDrag = false;
+let dataLinkX = 0;
+let dataLinkY = 0;
+
+// On document for elements that are created with JS
+$document.on('mousedown', '[data-link]', function (e) {
+    dataLinkX = e.screenX;
+    dataLinkY = e.screenY;
+    dataLinkDrag = false;
+});
+
+$document.on('mousemove', '[data-link]', function handler(e) {
+    if (!dataLinkDrag && (Math.abs(dataLinkX - e.screenX) > 5 || Math.abs(dataLinkY - e.screenY) > 5)) {
+        dataLinkDrag = true;
+    }
+});
+
+$(document).on('mouseup', '[data-link]', function (e) {
 
     const link = $(this).attr('data-link');
 
-    if (evnt.which === 3) {
+    if (dataLinkDrag) {
         return true;
     }
 
-    if (evnt.ctrlKey || evnt.shiftKey || evnt.metaKey || evnt.which === 2) {
+    // Right click
+    if (e.which === 3) {
+        return true;
+    }
+
+    // Middle click
+    if (e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2) {
         window.open(link, '_blank');
         return true;
     }
 
     window.location.href = link;
     return true;
-
 });
 
 $('.stop-prop').on('click', function (e) {
@@ -33,7 +58,7 @@ $('.navbar .dropdown').hover(
 });
 
 // Tooptips
-$("body").tooltip({
+$body.tooltip({
     selector: '[data-toggle="tooltip"]'
 });
 
