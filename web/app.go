@@ -253,6 +253,20 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Get price
 	t.Price = db.GetPriceFormatted(app, session.GetCountryCode(r))
 
+	// Make banners
+	banners := make(map[string][]string)
+	var primary []string
+
+	if app.ID == 753 {
+		primary = append(primary, "This app record is for the Steam client.")
+	}
+
+	if len(primary) > 0 {
+		banners["primary"] = primary
+	}
+
+	t.Banners = banners
+
 	err = returnTemplate(w, r, "app", t)
 	log.Log(err)
 }
@@ -270,6 +284,7 @@ type appTemplate struct {
 	Tags         []db.Tag
 	Reviews      []appReviewTemplate
 	ReviewsCount steam.ReviewsSummaryResponse
+	Banners      map[string][]string
 }
 
 type appAchievementTemplate struct {
