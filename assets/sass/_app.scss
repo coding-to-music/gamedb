@@ -12,9 +12,13 @@
         }
 
         img {
-            position: absolute;
-            right: 1.25rem;
-            height: 150px;
+            width: 100%;
+            @include media-breakpoint-up(md) {
+                width: auto;
+                position: absolute;
+                right: 1.25rem;
+                height: 150px;
+            }
         }
 
         iframe {
