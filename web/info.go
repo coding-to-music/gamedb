@@ -12,5 +12,5 @@ func infoHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Info", "")
 
 	err := returnTemplate(w, r, "info", t)
-	log.Err(err)
+	log.Err(err, r)
 }

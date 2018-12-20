@@ -12,7 +12,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfTagsUpdated)
-	log.Err(err)
+	log.Err(err, r)
 
 	// Get tags
 	tags, err := db.GetAllTags()
@@ -25,7 +25,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range tags {
 		price, err := v.GetMeanPrice(code)
-		log.Err(err)
+		log.Err(err, r)
 		prices[v.ID] = price
 	}
 
@@ -37,7 +37,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices = prices
 
 	err = returnTemplate(w, r, "tags", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type statsTagsTemplate struct {

@@ -12,7 +12,7 @@ func statsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfDevelopersUpdated)
-	log.Err(err)
+	log.Err(err, r)
 
 	// Get developers
 	developers, err := db.GetAllDevelopers()
@@ -25,7 +25,7 @@ func statsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range developers {
 		price, err := v.GetMeanPrice(code)
-		log.Err(err)
+		log.Err(err, r)
 		prices[v.ID] = price
 	}
 
@@ -37,7 +37,7 @@ func statsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices = prices
 
 	err = returnTemplate(w, r, "developers", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type statsDevelopersTemplate struct {

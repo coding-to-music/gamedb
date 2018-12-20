@@ -35,13 +35,13 @@ func upcomingAppsHandler(w http.ResponseWriter, r *http.Request) {
 	t.AjaxURL = "/upcoming/apps/ajax"
 
 	t.Apps, err = db.CountUpcomingApps()
-	log.Err(err)
+	log.Err(err, r)
 
 	t.Packages, err = db.CountUpcomingPackages()
-	log.Err(err)
+	log.Err(err, r)
 
 	err = returnTemplate(w, r, "upcoming_apps", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,13 +54,13 @@ func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
 	t.AjaxURL = "/upcoming/packages/ajax"
 
 	t.Apps, err = db.CountUpcomingApps()
-	log.Err(err)
+	log.Err(err, r)
 
 	t.Packages, err = db.CountUpcomingPackages()
-	log.Err(err)
+	log.Err(err, r)
 
 	err = returnTemplate(w, r, "upcoming_packages", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type upcomingTemplate struct {
@@ -74,7 +74,7 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Err(err)
+	log.Err(err, r)
 
 	var count int
 	var apps []db.App
@@ -82,7 +82,7 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Err(err)
+		log.Err(err, r)
 
 	} else {
 
@@ -120,7 +120,7 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Err(err)
+	log.Err(err, r)
 
 	var count int
 	var packages []db.Package
@@ -128,7 +128,7 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Err(err)
+		log.Err(err, r)
 
 	} else {
 

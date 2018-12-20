@@ -34,7 +34,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -58,7 +58,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Types = types
 
 	err := returnTemplate(w, r, "free_games", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type freeGamesTemplate struct {
@@ -95,7 +95,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Err(err)
+	log.Err(err, r)
 
 	//
 	var wg sync.WaitGroup
@@ -112,7 +112,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -168,7 +168,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return count, gorm.Error
 		})
 
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -183,7 +183,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range apps {
 
 		platforms, err := v.GetPlatformImages()
-		log.Err(err)
+		log.Err(err, r)
 
 		response.AddRow([]interface{}{
 			v.ID,

@@ -42,7 +42,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		config, err := db.GetConfig(db.ConfRanksUpdated)
-		log.Err(err)
+		log.Err(err, r)
 
 		t.Date = config.Value
 
@@ -56,7 +56,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.PlayersCount, err = db.CountPlayers()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -68,7 +68,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.RanksCount, err = db.CountRanks()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -76,7 +76,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err := returnTemplate(w, r, "ranks", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type playersTemplate struct {
@@ -96,14 +96,14 @@ func playerIDHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err != datastore.ErrNoSuchEntity {
-			log.Err(err)
+			log.Err(err, r)
 		}
 
 		// Check for ID
 		id, err := helpers.GetSteam().GetID(post)
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Title: "Can't find user: " + post, Message: "You can use your Steam ID or login to add your profile."})
 			return
@@ -120,7 +120,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Err(err)
+	log.Err(err, r)
 
 	//
 	var wg sync.WaitGroup
@@ -136,7 +136,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -155,7 +155,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			q, err = query.SetOrderOffsetDS(q, columns)
 			if err != nil {
 
-				log.Err(err)
+				log.Err(err, r)
 				return
 			}
 
@@ -163,7 +163,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			var ranks []db.PlayerRank
 			_, err := client.GetAll(ctx, q, &ranks)
-			log.Err(err)
+			log.Err(err, r)
 
 			for _, v := range ranks {
 
@@ -197,7 +197,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = db.CountRanks()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 

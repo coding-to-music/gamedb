@@ -48,7 +48,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = returnTemplate(w, r, "commits", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type commitsTemplate struct {

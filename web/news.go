@@ -15,7 +15,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "News", "All the news from all the games, all in one place.")
 
 	err := returnTemplate(w, r, "news", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type newsTemplate struct {
@@ -28,14 +28,14 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Err(err)
+	log.Err(err, r)
 
 	var articles []db.News
 
 	client, ctx, err := db.GetDSClient()
 	if err != nil {
 
-		log.Err(err)
+		log.Err(err, r)
 
 	} else {
 
@@ -44,12 +44,12 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q = q.Order("-date")
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 
 		} else {
 
 			_, err := client.GetAll(ctx, q, &articles)
-			log.Err(err)
+			log.Err(err, r)
 
 			for k, v := range articles {
 				articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)

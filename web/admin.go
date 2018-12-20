@@ -63,7 +63,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminDev()
 	case "queues":
 		err := r.ParseForm()
-		log.Err(err)
+		log.Err(err, r)
 		go adminQueues(r)
 	}
 
@@ -86,7 +86,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		db.ConfWipeMemcache,
 		db.ConfRunDevCode,
 	})
-	log.Err(err)
+	log.Err(err, r)
 
 	// Template
 	t := adminTemplate{}
@@ -95,7 +95,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Goroutines = runtime.NumGoroutine()
 
 	err = returnTemplate(w, r, "admin", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type adminTemplate struct {
@@ -242,14 +242,14 @@ func adminQueues(r *http.Request) {
 		log.Info("Player ID: " + val)
 
 		playerID, err := strconv.ParseInt(val, 10, 64)
-		log.Err(err)
+		log.Err(err, r)
 
 		player := db.Player{}
 		player.PlayerID = playerID
 
 		err = queue.QueuePlayer(r, player, db.PlayerUpdateAdmin)
 		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
@@ -257,10 +257,10 @@ func adminQueues(r *http.Request) {
 		log.Info("App ID: " + val)
 
 		valInt, err := strconv.ParseInt(val, 10, 32)
-		log.Err(err)
+		log.Err(err, r)
 
 		err = queue.QueueApp([]int{int(valInt)})
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
@@ -268,10 +268,10 @@ func adminQueues(r *http.Request) {
 		log.Info("Package ID: " + val)
 
 		valInt, err := strconv.ParseInt(val, 10, 32)
-		log.Err(err)
+		log.Err(err, r)
 
 		err = queue.QueuePackage([]int{int(valInt)})
-		log.Err(err)
+		log.Err(err, r)
 	}
 }
 
@@ -336,7 +336,7 @@ func adminGenres() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Err(err)
+					//log.Err(err, r)
 					continue
 				}
 				newGenres[genre.ID].totalPrice[code] += price.Final
@@ -471,7 +471,7 @@ func adminPublishers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Err(err)
+					//log.Err(err, r)
 					continue
 				}
 				newPublishers[publisher].totalPrice[code] += price.Final
@@ -618,7 +618,7 @@ func adminDevelopers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Err(err)
+					//log.Err(err, r)
 					continue
 				}
 				newDevelopers[developer].totalPrice[code] += price.Final
@@ -761,7 +761,7 @@ func adminTags() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Err(err)
+					//log.Err(err, r)
 					continue
 				}
 				newTags[tagID].totalPrice[code] += price.Final
@@ -1015,7 +1015,7 @@ func adminDev() {
 	//gorm, err := db.GetMySQLClient()
 	//if err != nil {
 	//
-	//	log.Err(err)
+	//	log.Err(err, r)
 	//	return
 	//}
 	//
@@ -1027,7 +1027,7 @@ func adminDev() {
 	//
 	//for _, v := range packages {
 	//	err := queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.ID)))
-	//	log.Err(err)
+	//	log.Err(err, r)
 	//}
 
 	// ######################################################
@@ -1035,13 +1035,13 @@ func adminDev() {
 	//log.Info("Running...")
 	//
 	//client, ctx, err := db.GetDSClient()
-	//log.Err(err)
+	//log.Err(err, r)
 	//
 	//q := datastore.NewQuery(db.KindNews)
 	//
 	//var articles []db.News
 	//_, err = client.GetAll(ctx, q, &articles)
-	//log.Err(err)
+	//log.Err(err, r)
 	//
 	//var articlesToDelete []*datastore.Key
 	//for _, v := range articles {
@@ -1052,7 +1052,7 @@ func adminDev() {
 	//}
 	//
 	//err = db.BulkDeleteKinds(articlesToDelete, true)
-	//log.Err(err)
+	//log.Err(err, r)
 
 	// ######################################################
 
@@ -1064,7 +1064,7 @@ func adminDev() {
 	//
 	//if err != nil {
 	//
-	//	log.Err(err)
+	//	log.Err(err, r)
 	//
 	//	if _, ok := err.(*ds.ErrFieldMismatch); ok {
 	//
@@ -1076,7 +1076,7 @@ func adminDev() {
 	//for _, v := range players {
 	//	//v.Games = ""
 	//	err := v.Save()
-	//	log.Err(err)
+	//	log.Err(err, r)
 	//}
 	//
 	//log.Info("Done")

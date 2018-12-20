@@ -105,7 +105,7 @@ func (e entry) toText(includeStack bool) string {
 	ret = append(ret, strings.ToUpper(string(e.severity)))
 
 	if e.request != nil {
-		ret = append(ret, e.request.Method, e.request.URL.Path)
+		ret = append(ret, e.request.Method+" "+e.request.URL.Path)
 	}
 
 	if e.text != "" {

@@ -37,7 +37,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.Domain = viper.GetString("DOMAIN")
 
 	err := returnTemplate(w, r, "login", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type loginTemplate struct {
@@ -63,7 +63,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Save email so they don't need to keep typing it
 		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
-		log.Err(err)
+		log.Err(err, r)
 
 		// Recaptcha
 		if viper.GetString("ENV") != string(log.EnvLocal) {
@@ -127,7 +127,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Remove form prefill on success
 		err = session.Write(w, r, "login-email", "")
-		log.Err(err)
+		log.Err(err, r)
 
 		return nil
 	}()
@@ -142,14 +142,14 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(time.Second)
 
 		err = session.SetGoodFlash(w, r, err.Error())
-		log.Err(err)
+		log.Err(err, r)
 
 		http.Redirect(w, r, "/login", 302)
 
 	} else {
 
 		err = session.SetGoodFlash(w, r, "Login successful")
-		log.Err(err)
+		log.Err(err, r)
 
 		http.Redirect(w, r, "/settings", 302)
 	}
@@ -161,7 +161,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	if loggedIn {
@@ -218,14 +218,14 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.QueuePlayer(r, player, db.PlayerUpdateAuto)
 
 		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	// Get user
 	var user db.User
 
 	gorm, err := db.GetMySQLClient()
-	log.Err(err)
+	log.Err(err, r)
 
 	gorm = gorm.First(&user, idInt)
 	log.Err(gorm.Error)
@@ -264,13 +264,13 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := getPlayerIDFromSession(r)
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)
-	log.Err(err)
+	log.Err(err, r)
 
 	err = db.CreateEvent(r, id, db.EventLogout)
-	log.Err(err)
+	log.Err(err, r)
 
 	err = session.Clear(w, r)
-	log.Err(err)
+	log.Err(err, r)
 
 	http.Redirect(w, r, "/", 303)
 }

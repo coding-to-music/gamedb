@@ -12,7 +12,7 @@ func discountsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Discounts", "")
 
 	err := returnTemplate(w, r, "discounts", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type discountsTemplate struct {

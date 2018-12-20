@@ -67,18 +67,16 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	func() {
 
 		if helpers.IsBot(r.UserAgent()) {
-			log.Info("Bots can't update apps")
 			return
 		}
 
 		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
-			log.Info("Too soon")
 			return
 		}
 
 		err = queue.QueueApp([]int{app.ID})
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 		} else {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})
 		}
@@ -96,7 +94,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var achievementsResp steam.GlobalAchievementPercentages
 
 		err := helpers.Unmarshal([]byte(app.AchievementPercentages), &achievementsResp)
-		log.Err(err)
+		log.Err(err, r)
 
 		achievementsMap := make(map[string]float64)
 		for _, v := range achievementsResp.GlobalAchievementPercentage {
@@ -106,7 +104,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var schema steam.SchemaForGame
 
 		err = helpers.Unmarshal([]byte(app.Schema), &schema)
-		log.Err(err)
+		log.Err(err, r)
 
 		// Make template struct
 		for _, v := range schema.AvailableGameStats.Achievements {
@@ -128,7 +126,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Tags, err = app.GetTags()
-		log.Err(err)
+		log.Err(err, r)
 
 	}(app)
 
@@ -143,7 +141,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp, code)
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 
 		}
@@ -158,7 +156,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Add current price
 		price, err := app.GetPrice(code)
-		log.Err(err)
+		log.Err(err, r)
 		if err == nil {
 			prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
 		}
@@ -167,7 +165,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		pricesBytes, err := json.Marshal(prices)
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 
 		}
@@ -184,7 +182,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Packages, err = db.GetPackagesAppIsIn(app.ID)
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -196,7 +194,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.DLC, err = db.GetDLC(app, []string{"id", "name"})
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -209,7 +207,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		reviewsResponse, err := app.GetReviews()
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -224,7 +222,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		players, err := db.GetPlayersByIDs(playerIDs)
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -283,7 +281,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.Banners = banners
 
 	err = returnTemplate(w, r, "app", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type appTemplate struct {
@@ -338,7 +336,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err = query.FillFromURL(r.URL.Query())
-	log.Err(err)
+	log.Err(err, r)
 
 	//
 	var wg sync.WaitGroup
@@ -354,7 +352,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -363,12 +361,12 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q = q.Order("-date")
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
 		_, err = client.GetAll(ctx, q, &articles)
-		log.Err(err)
+		log.Err(err, r)
 
 		// todo, add http to links here instead of JS
 		//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
@@ -395,13 +393,13 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		app, err := db.GetApp(idx)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
 		newsIDs, err := app.GetNewsIDs()
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 

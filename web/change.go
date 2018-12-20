@@ -53,7 +53,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		appsSlice, err := db.GetAppsByID(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -76,7 +76,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		packagesSlice, err := db.GetPackages(change.GetPackageIDs(), []string{})
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -90,7 +90,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err = returnTemplate(w, r, "change", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type changeTemplate struct {

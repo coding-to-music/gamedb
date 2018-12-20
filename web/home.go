@@ -26,7 +26,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.RanksCount, err = db.CountRanks()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -37,7 +37,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.AppsCount, err = db.CountApps()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -48,14 +48,14 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.PackagesCount, err = db.CountPackages()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
 	wg.Wait()
 
 	err := returnTemplate(w, r, "home", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type homeTemplate struct {

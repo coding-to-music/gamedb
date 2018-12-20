@@ -41,7 +41,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.RanksCount, err = db.CountRanks()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -52,7 +52,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.AppsCount, err = db.CountApps()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -63,7 +63,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.PackagesCount, err = db.CountPackages()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 
@@ -76,7 +76,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 
 		}
@@ -94,7 +94,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		for _, v := range rows {
 
 			locale, err := helpers.GetLocaleFromCountry(code)
-			log.Err(err)
+			log.Err(err, r)
 
 			final := locale.Format(v.Total)
 
@@ -113,7 +113,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err := returnTemplate(w, r, "stats", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type statsTemplate struct {
@@ -139,7 +139,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -162,10 +162,10 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	log.Err(err)
+	log.Err(err, r)
 
 	err = returnJSON(w, r, bytes)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type statsAppScore struct {
@@ -178,7 +178,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -201,10 +201,10 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	log.Err(err)
+	log.Err(err, r)
 
 	err = returnJSON(w, r, bytes)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type statsAppType struct {
@@ -217,7 +217,7 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	var ranks []db.PlayerRank
 
 	client, ctx, err := db.GetDSClient()
-	log.Err(err)
+	log.Err(err, r)
 
 	q := datastore.NewQuery(db.KindPlayerRank)
 
@@ -227,7 +227,7 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = client.GetAll(ctx, q, &ranks)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	// Tally up
@@ -261,10 +261,10 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	bytes, err := json.Marshal(ret)
-	log.Err(err)
+	log.Err(err, r)
 
 	err = returnJSON(w, r, bytes)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
@@ -272,7 +272,7 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -294,10 +294,10 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	log.Err(err)
+	log.Err(err, r)
 
 	err = returnJSON(w, r, bytes)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type statsAppReleaseDate struct {

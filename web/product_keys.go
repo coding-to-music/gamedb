@@ -35,7 +35,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := returnTemplate(w, r, "product_keys", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type productKeysTemplate struct {
@@ -51,7 +51,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Err(err)
+	log.Err(err, r)
 
 	//
 	var code = session.GetCountryCode(r)
@@ -68,7 +68,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -119,7 +119,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = db.CountApps()
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 

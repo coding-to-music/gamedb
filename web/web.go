@@ -196,7 +196,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	}
 
 	_, err = buf.WriteTo(w)
-	log.Err(err)
+	log.Err(err, r)
 
 	return nil
 }
@@ -218,7 +218,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 	w.WriteHeader(data.Code)
 
 	err := returnTemplate(w, r, "error", data)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type errorTemplate struct {
@@ -334,32 +334,32 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// User ID
 	id, err := session.Read(r, session.PlayerID)
-	log.Err(err)
+	log.Err(err, r)
 
 	if id == "" {
 		t.userID = 0
 	} else {
 		t.userID, err = strconv.Atoi(id)
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	// User name
 	t.userName, err = session.Read(r, session.PlayerName)
-	log.Err(err)
+	log.Err(err, r)
 
 	// Email
 	t.userEmail, err = session.Read(r, session.UserEmail)
-	log.Err(err)
+	log.Err(err, r)
 
 	// Level
 	level, err := session.Read(r, session.PlayerLevel)
-	log.Err(err)
+	log.Err(err, r)
 
 	if level == "" {
 		t.userLevel = 0
 	} else {
 		t.userLevel, err = strconv.Atoi(level)
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	// Country
@@ -367,20 +367,20 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.userCountry = code
 
 	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Err(err)
+	log.Err(err, r)
 
 	t.userCurrencySymbol = locale.CurrencySymbol
 
 	// Flashes
 	t.flashesGood, err = session.GetGoodFlashes(w, r)
-	log.Err(err)
+	log.Err(err, r)
 
 	t.flashesBad, err = session.GetBadFlashes(w, r)
-	log.Err(err)
+	log.Err(err, r)
 
 	// All session data, todo, remove this, security etc
 	t.session, err = session.ReadAll(r)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 func (t GlobalTemplate) GetUserJSON() string {
@@ -485,10 +485,10 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytesx, err := json.Marshal(t)
-	log.Err(err)
+	log.Err(err, r)
 
 	err = returnJSON(w, r, bytesx)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 // DataTablesQuery

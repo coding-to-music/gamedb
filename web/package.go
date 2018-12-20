@@ -55,14 +55,14 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get apps
 		appIDs, err := pack.GetAppIDs()
-		log.Err(err)
+		log.Err(err, r)
 
 		for _, v := range appIDs {
 			apps[v] = db.App{ID: v}
 		}
 
 		appRows, err := db.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
-		log.Err(err)
+		log.Err(err, r)
 
 		for _, v := range appRows {
 			apps[v.ID] = v
@@ -80,7 +80,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get prices
 		pricesResp, err := db.GetProductPrices(pack.ID, db.ProductTypePackage, code)
-		log.Err(err)
+		log.Err(err, r)
 
 		var prices [][]float64
 		for _, v := range pricesResp {
@@ -89,13 +89,13 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Add current price
 		pricesStruct, err := pack.GetPrice(code)
-		log.Err(err)
+		log.Err(err, r)
 
 		prices = append(prices, []float64{float64(time.Now().Unix()), float64(pricesStruct.Final) / 100})
 
 		// Make into a JSON string
 		pricesBytes, err := json.Marshal(prices)
-		log.Err(err)
+		log.Err(err, r)
 
 		pricesString = string(pricesBytes)
 
@@ -127,18 +127,16 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	func() {
 
 		if helpers.IsBot(r.UserAgent()) {
-			log.Info("Bots can't update packages")
 			return
 		}
 
 		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
-			log.Info("Too soon")
 			return
 		}
 
 		err = queue.QueuePackage([]int{pack.ID})
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 		} else {
 			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update"})
 		}
@@ -148,7 +146,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Price = db.GetPriceFormatted(pack, session.GetCountryCode(r))
 
 	err = returnTemplate(w, r, "package", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type packageTemplate struct {

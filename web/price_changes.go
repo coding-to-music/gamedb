@@ -25,7 +25,7 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Price Changes", "Pick up a bargain.")
 
 	err := returnTemplate(w, r, "price_changes", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type priceChangesTemplate struct {
@@ -38,7 +38,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Err(err)
+	log.Err(err, r)
 
 	//
 	var wg sync.WaitGroup
@@ -54,7 +54,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -64,13 +64,13 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q, err = query.SetOffsetDS(q)
 		if err != nil {
 
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
 		_, err = client.GetAll(ctx, q, &priceChanges)
 
-		log.Err(err)
+		log.Err(err, r)
 
 	}(r)
 

@@ -38,7 +38,7 @@ func depotHandler(w http.ResponseWriter, r *http.Request) {
 	t.Depot.ID = idx
 
 	err = returnTemplate(w, r, "depot", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type depotTemplate struct {
@@ -53,7 +53,7 @@ func depotsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Depots", "")
 
 	err := returnTemplate(w, r, "depots", t)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type depotsTemplate struct {
