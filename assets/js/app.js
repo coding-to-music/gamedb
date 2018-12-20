@@ -41,6 +41,7 @@ if ($appPage.length > 0) {
         if (hash.startsWith('#dev-')) {
             $('a.nav-link[href="#dev"]').tab('show');
             $('a.nav-link[href="' + hash + '"]').tab('show');
+            window.location.hash = hash;
         }
     });
 

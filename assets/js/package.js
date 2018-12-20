@@ -2,6 +2,16 @@ const $packagePage = $('#package-page');
 
 if ($packagePage.length > 0) {
 
+    // Link to dev tabs
+    $(document).ready(function (e) {
+        const hash = window.location.hash;
+        if (hash.startsWith('#dev-')) {
+            $('a.nav-link[href="#dev"]').tab('show');
+            $('a.nav-link[href="' + hash + '"]').tab('show');
+            window.location.hash = hash;
+        }
+    });
+
     // Websockets
     websocketListener('package', function (e) {
 
