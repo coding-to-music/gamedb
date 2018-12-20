@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -56,18 +57,32 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update news, reviews etc
-	// todo, only do this once a week?
-	errs := app.UpdateFromRequest(r.UserAgent())
-	for _, v := range errs {
-		log.Log(v)
-	}
-
 	// Template
 	t := appTemplate{}
 	t.Fill(w, r, app.GetName(), "")
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
+
+	// Update news, reviews etc
+	func() {
+
+		if helpers.IsBot(r.UserAgent()) {
+			log.Info("Bots can't update apps")
+			return
+		}
+
+		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
+			log.Info("Too soon")
+			return
+		}
+
+		err = queue.QueueApp([]int{app.ID})
+		if err != nil {
+			log.Log(err)
+		} else {
+			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})
+		}
+	}()
 
 	//
 	var wg sync.WaitGroup

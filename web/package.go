@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -120,6 +122,27 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Package = pack
 	t.Apps = apps
 	t.Prices = pricesString
+
+	// Update news, reviews etc
+	func() {
+
+		if helpers.IsBot(r.UserAgent()) {
+			log.Info("Bots can't update packages")
+			return
+		}
+
+		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
+			log.Info("Too soon")
+			return
+		}
+
+		err = queue.QueuePackage([]int{pack.ID})
+		if err != nil {
+			log.Log(err)
+		} else {
+			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update"})
+		}
+	}()
 
 	// Get price
 	t.Price = db.GetPriceFormatted(pack, session.GetCountryCode(r))
