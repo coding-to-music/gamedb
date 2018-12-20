@@ -69,12 +69,9 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	var packageBeforeUpdate = pack
 
 	// Update from PICS
-	if pack.PICSChangeNumber < message.ChangeNumber {
-
-		err = updatePackageFromPICS(&pack, message)
-		if err != nil {
-			return true, err
-		}
+	err = updatePackageFromPICS(&pack, message)
+	if err != nil {
+		return true, err
 	}
 
 	// Update from API
