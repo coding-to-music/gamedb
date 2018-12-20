@@ -45,7 +45,6 @@ type App struct {
 	PICSUFS                string     `gorm:"not null;column:pics_ufs"`                          //
 	PICSPublicOnly         bool       `gorm:"not null;column:public_only"`                       //
 	PICSSystemRequirements string     `gorm:"not null;column:pics_system_requirements"`          //
-	ScannedAt              *time.Time `gorm:"not null;column:scanned_at"`                        //
 	AchievementPercentages string     `gorm:"not null;column:achievement_percentages;type:text"` //
 	Achievements           string     `gorm:"not null;column:achievements;type:text"`            //
 	Background             string     `gorm:"not null;column:background"`                        //

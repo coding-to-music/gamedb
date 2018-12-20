@@ -125,10 +125,6 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	app.Type = strings.ToLower(app.Type)
 	app.ReleaseState = strings.ToLower(app.ReleaseState)
 
-	// Fix dates
-	t := time.Now()
-	app.ScannedAt = &t
-
 	// Save new data
 	gorm = gorm.Save(&app)
 	if gorm.Error != nil {
