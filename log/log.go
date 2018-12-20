@@ -3,7 +3,7 @@ package log
 import (
 	"context"
 	"fmt"
-	"log"
+	logg "log"
 	"net/http"
 	"os"
 	"runtime/debug"
@@ -132,7 +132,7 @@ var (
 	googleClient *logging.Client
 
 	// Local
-	logger = log.New(os.Stderr, "", log.Ltime)
+	logger = logg.New(os.Stderr, "", logg.Ltime)
 )
 
 // Called from main
@@ -155,7 +155,7 @@ func Init() {
 	rollbar.SetServerRoot("github.com/gamedb/website") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 }
 
-func Log(interfaces ...interface{}) {
+func log(interfaces ...interface{}) {
 
 	var entry = entry{
 		logName:   LogNameGameDB,
@@ -227,21 +227,21 @@ func Log(interfaces ...interface{}) {
 }
 
 func Err(interfaces ...interface{}) {
-	Log(append(interfaces, SeverityError)...)
+	log(append(interfaces, SeverityError)...)
 }
 
 func Info(interfaces ...interface{}) {
-	Log(append(interfaces, SeverityInfo)...)
+	log(append(interfaces, SeverityInfo)...)
 }
 
 func Debug(interfaces ...interface{}) {
-	Log(append(interfaces, SeverityDebug)...)
+	log(append(interfaces, SeverityDebug)...)
 }
 
 func Warning(interfaces ...interface{}) {
-	Log(append(interfaces, SeverityWarning)...)
+	log(append(interfaces, SeverityWarning)...)
 }
 
 func Critical(interfaces ...interface{}) {
-	Log(append(interfaces, SeverityCritical)...)
+	log(append(interfaces, SeverityCritical)...)
 }
