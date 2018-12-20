@@ -50,5 +50,5 @@ func siteMapHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := w.Write(sm.XMLContent())
-	log.Log(err)
+	log.Err(err)
 }

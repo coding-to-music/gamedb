@@ -14,5 +14,5 @@ func headerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Header", "")
 
 	err := returnTemplate(w, r, "_header_esi", t)
-	log.Log(err)
+	log.Err(err)
 }

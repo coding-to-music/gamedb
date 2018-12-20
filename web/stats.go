@@ -41,7 +41,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.RanksCount, err = db.CountRanks()
-		log.Log(err)
+		log.Err(err)
 
 	}()
 
@@ -52,7 +52,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.AppsCount, err = db.CountApps()
-		log.Log(err)
+		log.Err(err)
 
 	}()
 
@@ -63,7 +63,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.PackagesCount, err = db.CountPackages()
-		log.Log(err)
+		log.Err(err)
 
 	}()
 
@@ -76,7 +76,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 
 		}
@@ -89,12 +89,12 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Order("total desc")
 		gorm = gorm.Find(&rows)
 
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 		for _, v := range rows {
 
 			locale, err := helpers.GetLocaleFromCountry(code)
-			log.Log(err)
+			log.Err(err)
 
 			final := locale.Format(v.Total)
 
@@ -113,7 +113,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err := returnTemplate(w, r, "stats", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type statsTemplate struct {
@@ -139,7 +139,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Log(err)
+		log.Err(err)
 		return
 	}
 
@@ -151,7 +151,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Group("FLOOR(reviews_score)")
 	gorm = gorm.Find(&scores)
 
-	log.Log(gorm.Error)
+	log.Err(gorm.Error)
 
 	ret := make([]int, 101) // 0-100
 	for i := 0; i <= 100; i++ {
@@ -162,10 +162,10 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	log.Log(err)
+	log.Err(err)
 
 	err = returnJSON(w, r, bytes)
-	log.Log(err)
+	log.Err(err)
 }
 
 type statsAppScore struct {
@@ -178,7 +178,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Log(err)
+		log.Err(err)
 		return
 	}
 
@@ -190,7 +190,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Order("count desc")
 	gorm = gorm.Find(&types)
 
-	log.Log(gorm.Error)
+	log.Err(gorm.Error)
 
 	var ret [][]interface{}
 
@@ -201,10 +201,10 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	log.Log(err)
+	log.Err(err)
 
 	err = returnJSON(w, r, bytes)
-	log.Log(err)
+	log.Err(err)
 }
 
 type statsAppType struct {
@@ -217,7 +217,7 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	var ranks []db.PlayerRank
 
 	client, ctx, err := db.GetDSClient()
-	log.Log(err)
+	log.Err(err)
 
 	q := datastore.NewQuery(db.KindPlayerRank)
 
@@ -227,7 +227,7 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = client.GetAll(ctx, q, &ranks)
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 	}
 
 	// Tally up
@@ -261,10 +261,10 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	bytes, err := json.Marshal(ret)
-	log.Log(err)
+	log.Err(err)
 
 	err = returnJSON(w, r, bytes)
-	log.Log(err)
+	log.Err(err)
 }
 
 func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
@@ -272,7 +272,7 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Log(err)
+		log.Err(err)
 		return
 	}
 
@@ -286,7 +286,7 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Where("release_date_unix < ?", time.Now().AddDate(0, 0, 1).Unix())
 	gorm = gorm.Find(&dates)
 
-	log.Log(gorm.Error)
+	log.Err(gorm.Error)
 
 	var ret [][]int64
 	for _, v := range dates {
@@ -294,10 +294,10 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(ret)
-	log.Log(err)
+	log.Err(err)
 
 	err = returnJSON(w, r, bytes)
-	log.Log(err)
+	log.Err(err)
 }
 
 type statsAppReleaseDate struct {

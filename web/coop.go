@@ -23,7 +23,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range r.URL.Query()["p"] {
 		i, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 		}
 		playerInts = append(playerInts, i)
 	}
@@ -49,7 +49,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			player, err := db.GetPlayer(id)
 			if err != nil {
 				if err != datastore.ErrNoSuchEntity {
-					log.Log(err)
+					log.Err(err)
 					return
 				}
 			}
@@ -58,7 +58,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 
 				err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-				log.Log(err)
+				log.Err(err)
 				return
 			}
 
@@ -83,7 +83,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			var x []int
 			resp, err := player.GetAllPlayerApps("app_name", 0)
 			if err != nil {
-				log.Log(err)
+				log.Err(err)
 				return
 			}
 			for _, vv := range resp {
@@ -126,7 +126,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	games, err := db.GetAppsByID(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 	}
 
 	// Make visible tags
@@ -134,7 +134,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range games {
 
 		coopTags, err := v.GetCoopTags()
-		log.Log(err)
+		log.Err(err)
 
 		templateGames = append(templateGames, coopGameTemplate{
 			Game: v,
@@ -148,7 +148,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	t.Games = templateGames
 
 	err = returnTemplate(w, r, "coop", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type coopTemplate struct {

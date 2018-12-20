@@ -109,13 +109,13 @@ type rabbitConsumer struct {
 func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
-	log.Log(err)
+	log.Err(err)
 
 	err = ch.Qos(10, 0, false)
-	log.Log(err)
+	log.Err(err)
 
 	qu, err = ch.QueueDeclare(queue.String(), true, false, false, false, nil)
-	log.Log(err)
+	log.Err(err)
 
 	return ch, qu, err
 }
@@ -145,7 +145,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	if ch != nil {
 		defer func(ch *amqp.Channel) {
 			err := ch.Close()
-			log.Log(err)
+			log.Err(err)
 		}(ch)
 	}
 
@@ -176,13 +176,13 @@ func (s rabbitConsumer) consume() {
 		//
 		ch, qu, err := s.getQueue(consumerConnection, s.Message.getConsumeQueue())
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
 		msgs, err := ch.Consume(qu.Name, "", false, false, false, false, nil)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -192,7 +192,7 @@ func (s rabbitConsumer) consume() {
 			for {
 				select {
 				case err = <-consumerCloseChannel:
-					log.Log(err)
+					log.Err(err)
 					return
 				case msg := <-msgs:
 
@@ -223,7 +223,7 @@ func (s rabbitConsumer) consume() {
 		// We only get here if the amqp connection gets closed
 
 		err = ch.Close()
-		log.Log(err)
+		log.Err(err)
 	}
 }
 
@@ -247,7 +247,7 @@ func (s rabbitConsumer) requeueMessage(msg amqp.Delivery) error {
 	}
 
 	err = Produce(QueueDelaysData, data)
-	log.Log(err)
+	log.Err(err)
 
 	return nil
 }
@@ -339,7 +339,7 @@ func logInfo(interfaces ...interface{}) {
 }
 
 func logError(interfaces ...interface{}) {
-	log.Log(append(interfaces, log.LogNameConsumers)...)
+	log.Err(append(interfaces, log.LogNameConsumers)...)
 }
 
 func logWarning(interfaces ...interface{}) {

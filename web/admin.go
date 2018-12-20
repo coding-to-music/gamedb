@@ -63,7 +63,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminDev()
 	case "queues":
 		err := r.ParseForm()
-		log.Log(err)
+		log.Err(err)
 		go adminQueues(r)
 	}
 
@@ -86,7 +86,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		db.ConfWipeMemcache,
 		db.ConfRunDevCode,
 	})
-	log.Log(err)
+	log.Err(err)
 
 	// Template
 	t := adminTemplate{}
@@ -95,7 +95,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Goroutines = runtime.NumGoroutine()
 
 	err = returnTemplate(w, r, "admin", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type adminTemplate struct {
@@ -120,14 +120,14 @@ func adminQueueEveryApp() {
 
 		apps, _, err = helpers.GetSteam().GetAppList(1000, last)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
 		for _, v := range apps.Apps {
 			err = queue.QueueApp([]int{v.AppID})
 			if err != nil {
-				log.Log(err)
+				log.Err(err)
 				return
 			}
 			last = v.AppID
@@ -138,10 +138,10 @@ func adminQueueEveryApp() {
 
 	//
 	err = db.SetConfig(db.ConfAddedAllApps, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Log(err)
+	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
 
@@ -152,7 +152,7 @@ func adminQueueEveryPackage() {
 
 	apps, err := db.GetAppsWithPackages()
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 		return
 	}
 
@@ -161,7 +161,7 @@ func adminQueueEveryPackage() {
 
 		packages, err := v.GetPackages()
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -174,17 +174,17 @@ func adminQueueEveryPackage() {
 
 		err = queue.QueuePackage([]int{k})
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 	}
 
 	//
 	err = db.SetConfig(db.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Log(err)
+	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfAddedAllPackages + " complete"})
 
@@ -228,7 +228,7 @@ func adminDonations() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
 
@@ -242,14 +242,14 @@ func adminQueues(r *http.Request) {
 		log.Info("Player ID: " + val)
 
 		playerID, err := strconv.ParseInt(val, 10, 64)
-		log.Log(err)
+		log.Err(err)
 
 		player := db.Player{}
 		player.PlayerID = playerID
 
 		err = queue.QueuePlayer(r, player, db.PlayerUpdateAdmin)
 		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-		log.Log(err)
+		log.Err(err)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
@@ -257,10 +257,10 @@ func adminQueues(r *http.Request) {
 		log.Info("App ID: " + val)
 
 		valInt, err := strconv.ParseInt(val, 10, 32)
-		log.Log(err)
+		log.Err(err)
 
 		err = queue.QueueApp([]int{int(valInt)})
-		log.Log(err)
+		log.Err(err)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
@@ -268,10 +268,10 @@ func adminQueues(r *http.Request) {
 		log.Info("Package ID: " + val)
 
 		valInt, err := strconv.ParseInt(val, 10, 32)
-		log.Log(err)
+		log.Err(err)
 
 		err = queue.QueuePackage([]int{int(valInt)})
-		log.Log(err)
+		log.Err(err)
 	}
 }
 
@@ -336,7 +336,7 @@ func adminGenres() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Log(err)
+					//log.Err(err)
 					continue
 				}
 				newGenres[genre.ID].totalPrice[code] += price.Final
@@ -409,7 +409,7 @@ func adminGenres() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
 
@@ -471,7 +471,7 @@ func adminPublishers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Log(err)
+					//log.Err(err)
 					continue
 				}
 				newPublishers[publisher].totalPrice[code] += price.Final
@@ -550,7 +550,7 @@ func adminPublishers() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
 
@@ -618,7 +618,7 @@ func adminDevelopers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Log(err)
+					//log.Err(err)
 					continue
 				}
 				newDevelopers[developer].totalPrice[code] += price.Final
@@ -690,7 +690,7 @@ func adminDevelopers() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
 
@@ -761,7 +761,7 @@ func adminTags() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Log(err)
+					//log.Err(err)
 					continue
 				}
 				newTags[tagID].totalPrice[code] += price.Final
@@ -833,7 +833,7 @@ func adminTags() {
 	cronLog(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
 
@@ -997,13 +997,13 @@ func adminRanks() {
 func adminMemcache() {
 
 	err := helpers.GetMemcache().DeleteAll()
-	log.Log(err)
+	log.Err(err)
 
 	err = db.SetConfig(db.ConfWipeMemcache, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Log(err)
+	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfWipeMemcache + " complete"})
 
@@ -1015,7 +1015,7 @@ func adminDev() {
 	//gorm, err := db.GetMySQLClient()
 	//if err != nil {
 	//
-	//	log.Log(err)
+	//	log.Err(err)
 	//	return
 	//}
 	//
@@ -1027,7 +1027,7 @@ func adminDev() {
 	//
 	//for _, v := range packages {
 	//	err := queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.ID)))
-	//	log.Log(err)
+	//	log.Err(err)
 	//}
 
 	// ######################################################
@@ -1035,13 +1035,13 @@ func adminDev() {
 	//log.Info("Running...")
 	//
 	//client, ctx, err := db.GetDSClient()
-	//log.Log(err)
+	//log.Err(err)
 	//
 	//q := datastore.NewQuery(db.KindNews)
 	//
 	//var articles []db.News
 	//_, err = client.GetAll(ctx, q, &articles)
-	//log.Log(err)
+	//log.Err(err)
 	//
 	//var articlesToDelete []*datastore.Key
 	//for _, v := range articles {
@@ -1052,7 +1052,7 @@ func adminDev() {
 	//}
 	//
 	//err = db.BulkDeleteKinds(articlesToDelete, true)
-	//log.Log(err)
+	//log.Err(err)
 
 	// ######################################################
 
@@ -1064,7 +1064,7 @@ func adminDev() {
 	//
 	//if err != nil {
 	//
-	//	log.Log(err)
+	//	log.Err(err)
 	//
 	//	if _, ok := err.(*ds.ErrFieldMismatch); ok {
 	//
@@ -1076,16 +1076,16 @@ func adminDev() {
 	//for _, v := range players {
 	//	//v.Games = ""
 	//	err := v.Save()
-	//	log.Log(err)
+	//	log.Err(err)
 	//}
 	//
 	//log.Info("Done")
 
 	err := db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Log(err)
+	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Log(err)
+	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
 
@@ -1108,7 +1108,7 @@ func (t statsRow) GetMeanPrice() string {
 	}
 
 	bytes, err := json.Marshal(means)
-	log.Log(err)
+	log.Err(err)
 
 	return string(bytes)
 }

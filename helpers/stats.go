@@ -10,7 +10,7 @@ func GetMeanPrice(code steam.CountryCode, prices string) (string, error) {
 	means := map[steam.CountryCode]float64{}
 
 	locale, err := GetLocaleFromCountry(code)
-	log.Log(err)
+	log.Err(err)
 
 	err = Unmarshal([]byte(prices), &means)
 	if err == nil {

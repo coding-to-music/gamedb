@@ -54,10 +54,10 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		bytes, err := json.Marshal(websocketPayload{Error: "Invalid page"})
-		log.Log(err)
+		log.Err(err)
 
 		_, err = w.Write(bytes)
-		log.Log(err)
+		log.Err(err)
 		return
 	}
 
@@ -65,14 +65,14 @@ func WebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if !strings.Contains(err.Error(), "websocket: not a websocket handshake") {
-			log.Log(err)
+			log.Err(err)
 		}
 		return
 	}
 
 	err = page.setConnection(connection)
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 	}
 }
 
@@ -123,11 +123,11 @@ func (p *Page) Send(data interface{}) {
 			if strings.Contains(err.Error(), "broken pipe") {
 
 				err := v.Close()
-				log.Log(err)
+				log.Err(err)
 				delete(p.connections, k)
 
 			} else {
-				log.Log(err)
+				log.Err(err)
 			}
 		}
 	}

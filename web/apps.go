@@ -61,7 +61,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Count, err = db.CountApps()
 		t.Description = "A live database of " + template.HTML(humanize.Comma(int64(t.Count))) + " Steam games."
-		log.Log(err)
+		log.Err(err)
 
 	}()
 
@@ -73,7 +73,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Tags, err = db.GetTagsForSelect()
-		log.Log(err)
+		log.Err(err)
 
 	}()
 
@@ -85,7 +85,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Genres, err = db.GetGenresForSelect()
-		log.Log(err)
+		log.Err(err)
 
 	}()
 
@@ -97,7 +97,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Publishers, err = db.GetPublishersForSelect()
-		log.Log(err)
+		log.Err(err)
 
 		// Check if we need to fetch any more to add to the list
 		if val, ok := r.URL.Query()["publishers"]; ok {
@@ -108,7 +108,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				// Convert to int
 				publisherID, err := strconv.Atoi(v)
 				if err != nil {
-					log.Log(err)
+					log.Err(err)
 					continue
 				}
 
@@ -128,7 +128,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			publishers, err := db.GetPublishersByID(publishersToLoad, []string{"id", "name"})
-			log.Log(err)
+			log.Err(err)
 			if err == nil {
 				t.Publishers = append(t.Publishers, publishers...)
 			}
@@ -144,7 +144,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Developers, err = db.GetDevelopersForSelect()
-		log.Log(err)
+		log.Err(err)
 
 		// Check if we need to fetch any more to add to the list
 		if val, ok := r.URL.Query()["developers"]; ok {
@@ -155,7 +155,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				// Convert to int
 				developerID, err := strconv.Atoi(v)
 				if err != nil {
-					log.Log(err)
+					log.Err(err)
 					continue
 				}
 
@@ -175,7 +175,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			developers, err := db.GetDevelopersByID(developersToLoad, []string{"id", "name"})
-			log.Log(err)
+			log.Err(err)
 			if err == nil {
 				t.Developers = append(t.Developers, developers...)
 			}
@@ -190,7 +190,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		price, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
-		log.Log(err)
+		log.Err(err)
 
 		// Convert cents to dollars
 		t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
@@ -201,7 +201,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err := returnTemplate(w, r, "apps", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type appsTemplate struct {
@@ -221,7 +221,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	//
 	var code = session.GetCountryCode(r)
@@ -239,7 +239,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -261,7 +261,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, '[" + v + "]')": 1})
 			}
 			sql, data, err := or.ToSql()
-			log.Log(err)
+			log.Err(err)
 
 			gorm = gorm.Where(sql, data)
 		}
@@ -275,7 +275,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				or = append(or, squirrel.Eq{"JSON_CONTAINS(genres, JSON_OBJECT('id', " + v + "))": 1})
 			}
 			sql, data, err := or.ToSql()
-			log.Log(err)
+			log.Err(err)
 
 			gorm = gorm.Where(sql, data...)
 		}
@@ -289,7 +289,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				or = append(or, squirrel.Eq{"JSON_CONTAINS(developers, '[\"" + v + "\"]')": 1})
 			}
 			sql, data, err := or.ToSql()
-			log.Log(err)
+			log.Err(err)
 
 			gorm = gorm.Where(sql, data...)
 		}
@@ -303,7 +303,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				or = append(or, squirrel.Eq{"JSON_CONTAINS(publishers, '[\"" + v + "\"]')": 1})
 			}
 			sql, data, err := or.ToSql()
-			log.Log(err)
+			log.Err(err)
 
 			gorm = gorm.Where(sql, data...)
 		}
@@ -317,7 +317,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				or = append(or, squirrel.Eq{"JSON_CONTAINS(platforms, '[\"" + v + "\"]')": 1})
 			}
 			sql, data, err := or.ToSql()
-			log.Log(err)
+			log.Err(err)
 
 			gorm = gorm.Where(sql, data...)
 		}
@@ -327,16 +327,16 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if len(prices) == 2 {
 
 			maxPrice, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
-			log.Log(err)
+			log.Err(err)
 
 			// Round up to dollar
 			maxPrice = int(math.Ceil(float64(maxPrice)/100) * 100)
 
 			low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
-			log.Log(err)
+			log.Err(err)
 
 			high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
-			log.Log(err)
+			log.Err(err)
 
 			var column string
 			if code == steam.CountryUS {
@@ -359,10 +359,10 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if len(scores) == 2 {
 
 			low, err := strconv.Atoi(strings.Replace(scores[0], ".00", "", 1))
-			log.Log(err)
+			log.Err(err)
 
 			high, err := strconv.Atoi(strings.Replace(scores[1], ".00", "", 1))
-			log.Log(err)
+			log.Err(err)
 
 			if low > 0 {
 				gorm = gorm.Where("reviews_score >= ?", low)
@@ -381,7 +381,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count
 		gorm = gorm.Count(&recordsFiltered)
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
@@ -394,7 +394,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get rows
 		gorm = gorm.Find(&apps)
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 	}()
 
@@ -407,7 +407,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = db.CountApps()
-		log.Log(err)
+		log.Err(err)
 
 	}()
 

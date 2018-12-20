@@ -26,7 +26,7 @@ var (
 func Init() {
 	bucket = viper.GetString("GOOGLE_BUCKET")
 	_, _, err := getClient()
-	log.Log(err)
+	log.Err(err)
 }
 
 var (
@@ -86,7 +86,7 @@ func Upload(path string, data []byte, public bool, encode bool) (err error) {
 	// Make public
 	if public {
 		if err := object.ACL().Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-			log.Log(err)
+			log.Err(err)
 		}
 	}
 
@@ -116,7 +116,7 @@ func Download(path string, decode bool) (bytes []byte, err error) {
 	if rc != nil {
 		defer func(rc *storage.Reader) {
 			err := rc.Close()
-			log.Log(err)
+			log.Err(err)
 		}(rc)
 	}
 
@@ -129,7 +129,7 @@ func Download(path string, decode bool) (bytes []byte, err error) {
 	if decode {
 		bytes, err = snappy.Decode(nil, data)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			bytes = data // data is not encoded? Return as is.
 		}
 	}

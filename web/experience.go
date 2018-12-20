@@ -72,7 +72,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := returnTemplate(w, r, "experience", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 func chunk(rows []level, chunkSize int) (chunked [][]level) {

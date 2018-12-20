@@ -37,7 +37,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.Domain = viper.GetString("DOMAIN")
 
 	err := returnTemplate(w, r, "login", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type loginTemplate struct {
@@ -63,7 +63,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Save email so they don't need to keep typing it
 		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
-		log.Log(err)
+		log.Err(err)
 
 		// Recaptcha
 		if viper.GetString("ENV") != string(log.EnvLocal) {
@@ -127,7 +127,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Remove form prefill on success
 		err = session.Write(w, r, "login-email", "")
-		log.Log(err)
+		log.Err(err)
 
 		return nil
 	}()
@@ -136,20 +136,20 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		err2 := helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
-		log.Log(err2)
+		log.Err(err2)
 
 		// Stop brute forces
 		time.Sleep(time.Second)
 
 		err = session.SetGoodFlash(w, r, err.Error())
-		log.Log(err)
+		log.Err(err)
 
 		http.Redirect(w, r, "/login", 302)
 
 	} else {
 
 		err = session.SetGoodFlash(w, r, "Login successful")
-		log.Log(err)
+		log.Err(err)
 
 		http.Redirect(w, r, "/settings", 302)
 	}
@@ -161,7 +161,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 	}
 
 	if loggedIn {
@@ -218,17 +218,17 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.QueuePlayer(r, player, db.PlayerUpdateAuto)
 
 		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-		log.Log(err)
+		log.Err(err)
 	}
 
 	// Get user
 	var user db.User
 
 	gorm, err := db.GetMySQLClient()
-	log.Log(err)
+	log.Err(err)
 
 	gorm = gorm.First(&user, idInt)
-	log.Log(gorm.Error)
+	log.Err(gorm.Error)
 
 	err = login(w, r, player, user)
 	if err != nil {
@@ -264,13 +264,13 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := getPlayerIDFromSession(r)
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)
-	log.Log(err)
+	log.Err(err)
 
 	err = db.CreateEvent(r, id, db.EventLogout)
-	log.Log(err)
+	log.Err(err)
 
 	err = session.Clear(w, r)
-	log.Log(err)
+	log.Err(err)
 
 	http.Redirect(w, r, "/", 303)
 }

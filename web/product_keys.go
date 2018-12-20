@@ -35,7 +35,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := returnTemplate(w, r, "product_keys", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type productKeysTemplate struct {
@@ -51,7 +51,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	//
 	var code = session.GetCountryCode(r)
@@ -68,7 +68,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -77,7 +77,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else if productType == "package" {
 			gorm = gorm.Table("packages")
 		} else {
-			log.Log("no product type")
+			log.Err("no product type")
 			return
 		}
 
@@ -98,7 +98,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count
 		gorm = gorm.Count(&recordsFiltered)
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
@@ -107,7 +107,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get rows
 		gorm = gorm.Find(&products)
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 	}()
 
 	// Get total
@@ -119,7 +119,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = db.CountApps()
-		log.Log(err)
+		log.Err(err)
 
 	}()
 

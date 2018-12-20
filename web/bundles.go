@@ -26,14 +26,14 @@ func bundlesRouter() http.Handler {
 func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 
 	total, err := db.CountPackages()
-	log.Log(err)
+	log.Err(err)
 
 	// Template
 	t := bundlesTemplate{}
 	t.Fill(w, r, "Packages", "The last "+template.HTML(humanize.Comma(int64(total)))+" packages to be updated.")
 
 	err = returnTemplate(w, r, "bundles", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type bundlesTemplate struct {
@@ -46,7 +46,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	//
 	var code = session.GetCountryCode(r)
@@ -63,7 +63,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -80,7 +80,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Limit(100)
 		gorm = gorm.Find(&packages)
 
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 	}(r)
 
@@ -93,7 +93,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = db.CountPackages()
-		log.Log(err)
+		log.Err(err)
 
 	}()
 

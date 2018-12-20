@@ -116,7 +116,7 @@ func CountryCodeToName(code string) string {
 
 	country, err := gountriesInstance.FindCountryByAlpha(code)
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 		return code
 	}
 

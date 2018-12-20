@@ -140,10 +140,10 @@ type ProductPriceStruct struct {
 func (p ProductPriceStruct) GetInitial() string {
 
 	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
-	log.Log(err)
+	log.Err(err)
 
 	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
-	log.Log(err)
+	log.Err(err)
 
 	return locale.Format(p.Initial)
 }
@@ -151,10 +151,10 @@ func (p ProductPriceStruct) GetInitial() string {
 func (p ProductPriceStruct) GetFinal() string {
 
 	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
-	log.Log(err)
+	log.Err(err)
 
 	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
-	log.Log(err)
+	log.Err(err)
 
 	return locale.Format(p.Final)
 }
@@ -166,17 +166,17 @@ func (p ProductPriceStruct) GetDiscountPercent() string {
 func (p ProductPriceStruct) GetIndividual() string {
 
 	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
-	log.Log(err)
+	log.Err(err)
 
 	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
-	log.Log(err)
+	log.Err(err)
 
 	return locale.Format(p.Individual)
 }
 
 func (p ProductPriceStruct) GetCountryName(code steam.CountryCode) string {
 	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Log(err)
+	log.Err(err)
 	return locale.CountryName
 }
 

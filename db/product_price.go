@@ -64,7 +64,7 @@ func (p ProductPrice) GetPercentChange() float64 {
 func (p ProductPrice) OutputForJSON() (output []interface{}) {
 
 	locale, err := helpers.GetLocaleFromCountry(p.Currency)
-	log.Log(err)
+	log.Err(err)
 
 	return []interface{}{
 		p.AppID,                              // 0

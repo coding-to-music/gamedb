@@ -34,7 +34,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -45,7 +45,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Order("count DESC")
 		gorm = gorm.Find(&types)
 
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 	}()
 
@@ -58,7 +58,7 @@ func freeGamesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Types = types
 
 	err := returnTemplate(w, r, "free_games", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type freeGamesTemplate struct {
@@ -95,7 +95,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	//
 	var wg sync.WaitGroup
@@ -112,7 +112,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -141,7 +141,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm = gorm.Find(&apps)
 
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 	}(r)
 
@@ -168,7 +168,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return count, gorm.Error
 		})
 
-		log.Log(err)
+		log.Err(err)
 
 	}()
 
@@ -183,7 +183,7 @@ func freeGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range apps {
 
 		platforms, err := v.GetPlatformImages()
-		log.Log(err)
+		log.Err(err)
 
 		response.AddRow([]interface{}{
 			v.ID,

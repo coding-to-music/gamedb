@@ -190,7 +190,7 @@ func Log(interfaces ...interface{}) {
 			loggingServices = append(loggingServices, val)
 		case Option:
 		default:
-			Log("Invalid value given to Err")
+			Err("Invalid value given to Err")
 		}
 	}
 
@@ -224,6 +224,10 @@ func Log(interfaces ...interface{}) {
 			rollbar.Log(entry.severity.toRollbar(), interfaces...)
 		}
 	}
+}
+
+func Err(interfaces ...interface{}) {
+	Log(append(interfaces, SeverityError)...)
 }
 
 func Info(interfaces ...interface{}) {

@@ -27,7 +27,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
 
 	err := returnTemplate(w, r, "contact", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type contactTemplate struct {
@@ -46,7 +46,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		// Parse form
 		err = r.ParseForm()
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return err
 		}
 
@@ -56,7 +56,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 			"login-email":   r.PostForm.Get("email"),
 			"login-message": r.PostForm.Get("message"),
 		})
-		log.Log(err)
+		log.Err(err)
 
 		// Form validation
 		if r.PostForm.Get("name") == "" {
@@ -77,7 +77,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 				return errors.New("please check the captcha")
 			}
 
-			log.Log(err)
+			log.Err(err)
 			return ErrSomething
 		}
 
@@ -93,7 +93,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, err = client.Send(message)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return ErrSomething
 		}
 
@@ -103,7 +103,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 			"login-email":   "",
 			"login-message": "",
 		})
-		log.Log(err)
+		log.Err(err)
 
 		return nil
 	}()
@@ -111,11 +111,11 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect
 	if err != nil {
 		err = session.SetGoodFlash(w, r, err.Error())
-		log.Log(err)
+		log.Err(err)
 		http.Redirect(w, r, "/contact", 302)
 	} else {
 		err = session.SetGoodFlash(w, r, "Message sent!")
-		log.Log(err)
+		log.Err(err)
 		http.Redirect(w, r, "/contact", 302)
 	}
 }

@@ -37,7 +37,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == errNotLoggedIn {
 			err := session.SetBadFlash(w, r, "please login")
-			log.Log(err)
+			log.Err(err)
 			http.Redirect(w, r, "/login", 302)
 			return
 		}
@@ -58,7 +58,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if player.Donated > 0 {
 			donations, err = db.GetDonations(player.PlayerID, 10)
-			log.Log(err)
+			log.Err(err)
 		}
 
 	}(player)
@@ -72,7 +72,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := player.GetAllPlayerApps("app_name", 0)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -82,7 +82,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		bytes, err := json.Marshal(gamesSlice)
-		log.Log(err)
+		log.Err(err)
 
 		games = string(bytes)
 
@@ -97,7 +97,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		user, err = getUser(r, 0)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -125,7 +125,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Countries = countries
 
 	err = returnTemplate(w, r, "settings", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type settingsTemplate struct {
@@ -163,16 +163,16 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		if len(password) < 8 {
 			err := session.SetBadFlash(w, r, "Password must be at least 8 characters long")
-			log.Log(err)
+			log.Err(err)
 			http.Redirect(w, r, "/settings", 302)
 			return
 		}
 
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			err := session.SetBadFlash(w, r, "Something went wrong encrypting your password")
-			log.Log(err)
+			log.Err(err)
 			http.Redirect(w, r, "/settings", 302)
 			return
 		}
@@ -200,20 +200,20 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Save user
 	err = user.Save()
-	log.Log(err)
+	log.Err(err)
 	if err != nil {
 		err = session.SetBadFlash(w, r, "Something went wrong saving settings")
-		log.Log(err)
+		log.Err(err)
 	} else {
 		err = session.SetGoodFlash(w, r, "Settings saved")
-		log.Log(err)
+		log.Err(err)
 	}
 
 	// Update session
 	err = session.WriteMany(w, r, map[string]string{
 		session.UserCountry: user.CountryCode,
 	})
-	log.Log(err)
+	log.Err(err)
 
 	http.Redirect(w, r, "/settings", 302)
 }
@@ -224,7 +224,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	//
 	var wg sync.WaitGroup
@@ -240,14 +240,14 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -256,12 +256,12 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q = q.Order("-created_at")
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
 		_, err = client.GetAll(ctx, q, &events)
-		log.Log(err)
+		log.Err(err)
 
 	}(r)
 
@@ -275,12 +275,12 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		playerID, err := getPlayerIDFromSession(r)
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
 		total, err = db.CountPlayerEvents(playerID)
-		log.Log(err)
+		log.Err(err)
 
 	}(r)
 

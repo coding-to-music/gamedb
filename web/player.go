@@ -58,7 +58,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// "Profile queued for an update!"
 	err = queue.QueuePlayer(r, player, db.PlayerUpdateAuto)
 	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-	log.Log(err)
+	log.Err(err)
 
 	var wg sync.WaitGroup
 
@@ -73,7 +73,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		friends, err = player.GetFriends()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -82,7 +82,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 
 			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -93,13 +93,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			err = queue.QueuePlayer(r, f, db.PlayerUpdateAuto)
 			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon)
-			log.Log(err)
+			log.Err(err)
 		}
 
 		player.FriendsAddedAt = time.Now()
 
 		err = player.Save() // todo, switch to update query so not to overwrite other player changes
-		log.Log(err)
+		log.Err(err)
 
 	}(player)
 
@@ -114,7 +114,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		ranks, err = db.GetRank(player.PlayerID)
 		if err != nil {
 			if err != datastore.ErrNoSuchEntity {
-				log.Log(err)
+				log.Err(err)
 			}
 		}
 
@@ -129,7 +129,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		players, err = db.CountPlayers()
-		log.Log(err)
+		log.Err(err)
 
 	}(player)
 
@@ -142,7 +142,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		badges, err = player.GetBadges()
-		log.Log(err)
+		log.Err(err)
 
 	}(player)
 
@@ -156,7 +156,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		response, err := player.GetRecentGames()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -190,7 +190,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		bans, err = player.GetBans()
-		log.Log(err)
+		log.Err(err)
 
 	}(player)
 
@@ -203,7 +203,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		badgeStats, err = player.GetBadgeStats()
-		log.Log(err)
+		log.Err(err)
 
 	}(player)
 
@@ -217,7 +217,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	gameStats, err := player.GetGameStats()
 	gameStats.All.Code = code
 	gameStats.Played.Code = code
-	log.Log(err)
+	log.Err(err)
 
 	// Template
 	t := playerTemplate{}
@@ -234,7 +234,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.toasts = toasts
 
 	err = returnTemplate(w, r, "player", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type playerTemplate struct {
@@ -342,13 +342,13 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 		return
 	}
 
 	query := DataTablesQuery{}
 	err = query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	//
 	var wg sync.WaitGroup
@@ -364,7 +364,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -379,12 +379,12 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q, err = query.SetOrderOffsetDS(q, columns)
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
 		_, err = client.GetAll(ctx, q, &playerApps)
-		log.Log(err)
+		log.Err(err)
 
 	}()
 
@@ -397,7 +397,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		player, err := db.GetPlayer(playerIDInt)
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			return
 		}
 
@@ -442,7 +442,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || !db.IsValidPlayerID(idx) {
 
 		response = PlayersUpdateResponse{Message: "Invalid Player ID", Success: false, Error: err.Error()}
-		log.Log(err)
+		log.Err(err)
 
 	} else {
 
@@ -450,7 +450,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil && err != datastore.ErrNoSuchEntity {
 
 			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
-			log.Log(err)
+			log.Err(err)
 
 		} else {
 
@@ -458,7 +458,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 
 				response = PlayersUpdateResponse{Message: "Player is up to date", Success: false}
-				log.Log(err)
+				log.Err(err)
 
 			} else {
 
@@ -475,17 +475,17 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 					response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
 
 					err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-					log.Log(err)
+					log.Err(err)
 				}
 			}
 		}
 	}
 
 	bytes, err := json.Marshal(response)
-	log.Log(err)
+	log.Err(err)
 	if err == nil {
 		_, err := w.Write(bytes)
-		log.Log(err)
+		log.Err(err)
 	}
 }
 

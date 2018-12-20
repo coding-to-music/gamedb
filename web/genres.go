@@ -12,7 +12,7 @@ func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfGenresUpdated)
-	log.Log(err)
+	log.Err(err)
 
 	// Get genres
 	genres, err := db.GetAllGenres()
@@ -25,7 +25,7 @@ func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range genres {
 		price, err := v.GetMeanPrice(code)
-		log.Log(err)
+		log.Err(err)
 		prices[v.ID] = price
 	}
 
@@ -37,7 +37,7 @@ func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices = prices
 
 	err = returnTemplate(w, r, "genres", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type statsGenresTemplate struct {

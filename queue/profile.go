@@ -226,7 +226,7 @@ func updatePlayerGames(player *db.Player) error {
 
 		prices, err := v.GetPrices()
 		if err != nil {
-			log.Log(err)
+			log.Err(err)
 			continue
 		}
 
@@ -372,7 +372,7 @@ func updatePlayerBadges(player *db.Player) error {
 	// Make map of app rows
 	var appRowsMap = map[int]db.App{}
 	appRows, err := db.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
-	log.Log(err)
+	log.Err(err)
 
 	for _, v := range appRows {
 		appRowsMap[v.ID] = v

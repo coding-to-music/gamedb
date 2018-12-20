@@ -35,13 +35,13 @@ func upcomingAppsHandler(w http.ResponseWriter, r *http.Request) {
 	t.AjaxURL = "/upcoming/apps/ajax"
 
 	t.Apps, err = db.CountUpcomingApps()
-	log.Log(err)
+	log.Err(err)
 
 	t.Packages, err = db.CountUpcomingPackages()
-	log.Log(err)
+	log.Err(err)
 
 	err = returnTemplate(w, r, "upcoming_apps", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,13 +54,13 @@ func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
 	t.AjaxURL = "/upcoming/packages/ajax"
 
 	t.Apps, err = db.CountUpcomingApps()
-	log.Log(err)
+	log.Err(err)
 
 	t.Packages, err = db.CountUpcomingPackages()
-	log.Log(err)
+	log.Err(err)
 
 	err = returnTemplate(w, r, "upcoming_packages", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type upcomingTemplate struct {
@@ -74,7 +74,7 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	var count int
 	var apps []db.App
@@ -82,7 +82,7 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Log(err)
+		log.Err(err)
 
 	} else {
 
@@ -93,13 +93,13 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count before limitting
 		gorm.Count(&count)
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 		gorm = gorm.Limit(100)
 		gorm = gorm.Offset(query.Start)
 
 		gorm = gorm.Find(&apps)
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 	}
 
 	var code = session.GetCountryCode(r)
@@ -120,7 +120,7 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	var count int
 	var packages []db.Package
@@ -128,7 +128,7 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 
-		log.Log(err)
+		log.Err(err)
 
 	} else {
 
@@ -139,13 +139,13 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count before limitting
 		gorm.Count(&count)
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 
 		gorm = gorm.Limit(100)
 		gorm = gorm.Offset(query.Start)
 
 		gorm = gorm.Find(&packages)
-		log.Log(gorm.Error)
+		log.Err(gorm.Error)
 	}
 
 	var code = session.GetCountryCode(r)

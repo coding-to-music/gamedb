@@ -67,13 +67,13 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 
 	//err := scope.SetColumn("UpdatedAt", time.Now())
 	//if err != nil {
-	//	log.Log(err)
+	//	log.Err(err)
 	//	return err
 	//}
 	//
 	//err = scope.SetColumn("CreatedAt", time.Now())
 	//if err != nil {
-	//	log.Log(err)
+	//	log.Err(err)
 	//	return err
 	//}
 
@@ -84,7 +84,7 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 //
 //	err := scope.SetColumn("UpdatedAt", time.Now())
 //	if err != nil {
-//		log.Log(err)
+//		log.Err(err)
 //		return err
 //	}
 //
@@ -357,7 +357,7 @@ func (pack Package) GetExtendedNice() (ret map[string]interface{}) {
 
 	extended, err := pack.GetExtended()
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 		return ret
 	}
 
@@ -389,7 +389,7 @@ func (pack Package) GetControllerNice() (ret map[string]interface{}) {
 
 	extended, err := pack.GetController()
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 		return ret
 	}
 

@@ -32,7 +32,7 @@ func InitChat() {
 		if err != nil && i < 3 {
 			time.Sleep(time.Second)
 		} else if err != nil {
-			log.Log(err)
+			log.Err(err)
 		} else {
 			break
 		}
@@ -111,7 +111,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		channelsResponse, err := discordSession.GuildChannels(guildID)
-		log.Log(err)
+		log.Err(err)
 
 		for _, v := range channelsResponse {
 			if v.Type == discordgo.ChannelTypeGuildText {
@@ -134,7 +134,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		membersResponse, err := discordSession.GuildMembers(guildID, "", 1000)
-		log.Log(err)
+		log.Err(err)
 
 		for _, v := range membersResponse {
 			if !v.User.Bot {
@@ -148,7 +148,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	err := returnTemplate(w, r, "chat", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type chatTemplate struct {
@@ -168,7 +168,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
-	log.Log(err)
+	log.Err(err)
 
 	var messages []chatWebsocketPayload
 	for _, v := range messagesResponse {
@@ -185,8 +185,8 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, err := json.Marshal(messages)
-	log.Log(err)
+	log.Err(err)
 
 	err = returnJSON(w, r, bytes)
-	log.Log(err)
+	log.Err(err)
 }

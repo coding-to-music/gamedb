@@ -24,7 +24,7 @@ func changesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Changes", "Every time the Steam library gets updated, a change record is created. We use these to keep website information up to date.")
 
 	err := returnTemplate(w, r, "changes", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type changesTemplate struct {
@@ -37,14 +37,14 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.FillFromURL(r.URL.Query())
-	log.Log(err)
+	log.Err(err)
 
 	var changes []db.Change
 
 	client, ctx, err := db.GetDSClient()
 	if err != nil {
 
-		log.Log(err)
+		log.Err(err)
 
 	} else {
 
@@ -53,12 +53,12 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q, err = query.SetOrderOffsetDS(q, map[string]string{})
 		if err != nil {
 
-			log.Log(err)
+			log.Err(err)
 
 		} else {
 
 			_, err := client.GetAll(ctx, q, &changes)
-			log.Log(err)
+			log.Err(err)
 		}
 	}
 

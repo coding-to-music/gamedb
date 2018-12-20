@@ -18,7 +18,7 @@ func IsJSON(str string) bool {
 
 func MarshalLog(v interface{}) []byte {
 	bytes, err := json.Marshal(v)
-	log.Log(err)
+	log.Err(err)
 	return bytes
 }
 
@@ -45,7 +45,7 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 			log.Info(err.Error()+" - "+string(data)+"...")
 
 		} else {
-			log.Log(err)
+			log.Err(err)
 		}
 	}
 

@@ -35,7 +35,7 @@ var (
 // Called from main
 func InitDS() {
 	_, _, err := GetDSClient()
-	log.Log(err)
+	log.Err(err)
 }
 
 type Kind interface {
@@ -110,14 +110,14 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 			case KindProductPrice:
 				_, err = client.PutMulti(ctx, keys, kindsToProductPrices(chunk))
 			default:
-				log.Log(errors.New("missing case in BulkSaveKinds"))
+				log.Err(errors.New("missing case in BulkSaveKinds"))
 			}
 
 			if err != nil {
 				if wait {
 					errs = append(errs, err)
 				} else {
-					log.Log(err)
+					log.Err(err)
 				}
 			}
 
@@ -179,7 +179,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 				if wait {
 					errs = append(errs, err)
 				} else {
-					log.Log(err)
+					log.Err(err)
 				}
 			}
 

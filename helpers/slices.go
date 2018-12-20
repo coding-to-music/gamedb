@@ -11,7 +11,7 @@ func StringSliceToIntSlice(in []string) (ret []int) {
 
 	for _, v := range in {
 		i, err := strconv.Atoi(v)
-		log.Log(err)
+		log.Err(err)
 		if err == nil {
 			ret = append(ret, i)
 		}

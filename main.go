@@ -53,7 +53,7 @@ func main() {
 		go func() {
 			log.Info("Starting web server")
 			err := web.Serve()
-			log.Log(err)
+			log.Err(err)
 		}()
 	}
 
@@ -68,7 +68,7 @@ func main() {
 		go func() {
 			log.Info("Starting pprof")
 			err := http.ListenAndServe(":"+viper.GetString("PORT"), nil)
-			log.Log(err)
+			log.Err(err)
 		}()
 	}
 
@@ -102,7 +102,7 @@ func configSetup() {
 	// Google
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
-		log.Log(err)
+		log.Err(err)
 	}
 
 	// Recaptcha

@@ -12,7 +12,7 @@ func statsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := db.GetConfig(db.ConfPublishersUpdated)
-	log.Log(err)
+	log.Err(err)
 
 	// Get publishers
 	publishers, err := db.GetAllPublishers()
@@ -25,7 +25,7 @@ func statsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range publishers {
 		price, err := v.GetMeanPrice(code)
-		log.Log(err)
+		log.Err(err)
 		prices[v.ID] = price
 	}
 
@@ -37,7 +37,7 @@ func statsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices = prices
 
 	err = returnTemplate(w, r, "publishers", t)
-	log.Log(err)
+	log.Err(err)
 }
 
 type statsPublishersTemplate struct {

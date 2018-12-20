@@ -196,7 +196,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	}
 
 	_, err = buf.WriteTo(w)
-	log.Log(err)
+	log.Err(err)
 
 	return nil
 }
@@ -211,14 +211,14 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 		data.Code = 500
 	}
 
-	log.Log(data.Error)
+	log.Err(data.Error)
 
 	data.Fill(w, r, "Error", "Something has gone wrong!")
 
 	w.WriteHeader(data.Code)
 
 	err := returnTemplate(w, r, "error", data)
-	log.Log(err)
+	log.Err(err)
 }
 
 type errorTemplate struct {
@@ -288,7 +288,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"json": func(v interface{}) (string, error) {
 			b, err := json.Marshal(v)
-			log.Log(err)
+			log.Err(err)
 			return string(b), err
 		},
 	}
@@ -334,32 +334,32 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// User ID
 	id, err := session.Read(r, session.PlayerID)
-	log.Log(err)
+	log.Err(err)
 
 	if id == "" {
 		t.userID = 0
 	} else {
 		t.userID, err = strconv.Atoi(id)
-		log.Log(err)
+		log.Err(err)
 	}
 
 	// User name
 	t.userName, err = session.Read(r, session.PlayerName)
-	log.Log(err)
+	log.Err(err)
 
 	// Email
 	t.userEmail, err = session.Read(r, session.UserEmail)
-	log.Log(err)
+	log.Err(err)
 
 	// Level
 	level, err := session.Read(r, session.PlayerLevel)
-	log.Log(err)
+	log.Err(err)
 
 	if level == "" {
 		t.userLevel = 0
 	} else {
 		t.userLevel, err = strconv.Atoi(level)
-		log.Log(err)
+		log.Err(err)
 	}
 
 	// Country
@@ -367,20 +367,20 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.userCountry = code
 
 	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Log(err)
+	log.Err(err)
 
 	t.userCurrencySymbol = locale.CurrencySymbol
 
 	// Flashes
 	t.flashesGood, err = session.GetGoodFlashes(w, r)
-	log.Log(err)
+	log.Err(err)
 
 	t.flashesBad, err = session.GetBadFlashes(w, r)
-	log.Log(err)
+	log.Err(err)
 
 	// All session data, todo, remove this, security etc
 	t.session, err = session.ReadAll(r)
-	log.Log(err)
+	log.Err(err)
 }
 
 func (t GlobalTemplate) GetUserJSON() string {
@@ -403,7 +403,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 	}
 
 	b, err := json.Marshal(stringMap)
-	log.Log(err)
+	log.Err(err)
 
 	return string(b)
 }
@@ -412,7 +412,7 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 
 	ts := time.Now()
 	dayint, err := strconv.Atoi(ts.Format("2"))
-	log.Log(err)
+	log.Err(err)
 
 	text = "Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04:05")
 
@@ -429,7 +429,7 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 
 	startTimeInt, err := strconv.ParseInt(startTimeString, 10, 64)
 	if err != nil {
-		log.Log(err)
+		log.Err(err)
 		return text
 	}
 
@@ -485,10 +485,10 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytesx, err := json.Marshal(t)
-	log.Log(err)
+	log.Err(err)
 
 	err = returnJSON(w, r, bytesx)
-	log.Log(err)
+	log.Err(err)
 }
 
 // DataTablesQuery
