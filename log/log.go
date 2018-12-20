@@ -89,12 +89,13 @@ func (s Severity) toRollbar() (severity string) {
 }
 
 type entry struct {
-	request   *http.Request
-	text      string
-	error     string
-	logName   LogName
-	severity  Severity
-	timestamp time.Time
+	request     *http.Request
+	text        string
+	error       string
+	logName     LogName
+	severity    Severity
+	timestamp   time.Time
+	environment Environment
 }
 
 func (e entry) toText(includeStack bool) string {
@@ -125,14 +126,9 @@ func (e entry) toText(includeStack bool) string {
 }
 
 var (
-	env Environment
-
-	// Google
-	googleCtx    = context.Background()
+	env          Environment
 	googleClient *logging.Client
-
-	// Local
-	logger = logg.New(os.Stderr, "", logg.Ltime)
+	logger       = logg.New(os.Stderr, "", logg.Ltime)
 )
 
 // Called from main
@@ -143,7 +139,7 @@ func Init() {
 
 	// Setup Google
 	var err error
-	googleClient, err = logging.NewClient(googleCtx, viper.GetString("GOOGLE_PROJECT"))
+	googleClient, err = logging.NewClient(context.Background(), viper.GetString("GOOGLE_PROJECT"))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -184,6 +180,8 @@ func log(interfaces ...interface{}) {
 			entry.logName = val
 		case Severity:
 			entry.severity = val
+		case Environment:
+			entry.environment = val
 		case time.Time:
 			entry.timestamp = val
 		case Service:
@@ -195,6 +193,10 @@ func log(interfaces ...interface{}) {
 	}
 
 	if entry.text == "" && entry.error == "" {
+		return
+	}
+
+	if entry.environment != "" && entry.environment != env {
 		return
 	}
 
