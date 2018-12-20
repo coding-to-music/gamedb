@@ -3,6 +3,9 @@ package queue
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -69,12 +72,9 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	var appBeforeUpdate = app
 
-	if app.PICSChangeNumber < message.ChangeNumber {
-
-		err = updateAppPICS(&app, message)
-		if err != nil {
-			return true, err
-		}
+	err = updateAppPICS(&app, message)
+	if err != nil {
+		return true, err
 	}
 
 	err = updateAppDetails(&app)
@@ -92,12 +92,19 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 		return true, err
 	}
 
-	errs := app.UpdateFromRequest("")
-	for _, v := range errs {
-		logError(v)
+	err = updateAppNews(&app)
+	if err != nil {
+		return true, err
 	}
-	if len(errs) > 0 {
-		return true, errs[0]
+
+	err = updateAppReviews(&app)
+	if err != nil {
+		return true, err
+	}
+
+	err = updateAppSteamSpy(&app)
+	if err != nil {
+		return true, err
 	}
 
 	// Save price changes
@@ -117,6 +124,10 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	// Misc
 	app.Type = strings.ToLower(app.Type)
 	app.ReleaseState = strings.ToLower(app.ReleaseState)
+
+	// Fix dates
+	t := time.Now()
+	app.ScannedAt = &t
 
 	// Save new data
 	gorm = gorm.Save(&app)
@@ -386,6 +397,9 @@ func updateAppAchievements(app *db.App) error {
 	if ok && (err2.Code() == 403 || err2.Code() == 500) {
 		return nil
 	}
+	if err != nil {
+		return err
+	}
 
 	percentagesBytes, err := json.Marshal(percentages)
 	if err != nil {
@@ -406,6 +420,9 @@ func updateAppSchema(app *db.App) error {
 	if ok && (err2.Code() == 403) {
 		return nil
 	}
+	if err != nil {
+		return err
+	}
 
 	schemaString, err := json.Marshal(schema)
 	if err != nil {
@@ -413,6 +430,125 @@ func updateAppSchema(app *db.App) error {
 	}
 
 	app.Schema = string(schemaString)
+
+	return nil
+}
+
+func updateAppNews(app *db.App) error {
+
+	resp, _, err := helpers.GetSteam().GetNews(app.ID, 10000)
+
+	// This endpoint seems to error if the app has no news, so it's probably fine.
+	err2, ok := err.(steam.Error)
+	if ok && (err2.Code() == 403) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+
+	var kinds []db.Kind
+	for _, v := range resp.Items {
+
+		if strings.TrimSpace(v.Contents) == "" {
+			continue
+		}
+
+		ids, err := app.GetNewsIDs()
+		if err != nil {
+			return err
+		}
+
+		if helpers.SliceHasInt64(ids, v.GID) {
+			continue
+		}
+
+		kinds = append(kinds, db.CreateArticle(*app, v))
+	}
+
+	err = db.BulkSaveKinds(kinds, db.KindNews, false)
+	if err != nil {
+		return err
+	}
+
+	err = app.SetNewsIDs(resp)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func updateAppReviews(app *db.App) error {
+
+	var reviewsResp steam.ReviewsResponse
+
+	reviewsResp, _, err := helpers.GetSteam().GetReviews(app.ID)
+	if err != nil {
+		return err
+	}
+
+	reviewsBytes, err := json.Marshal(reviewsResp)
+	if err != nil {
+		return err
+	}
+
+	app.Reviews = string(reviewsBytes)
+	app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
+	app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
+	app.SetReviewScore()
+
+	// Log this app score
+	err = db.SaveAppOverTime(*app)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func updateAppSteamSpy(app *db.App) error {
+
+	query := url.Values{}
+	query.Set("request", "appdetails")
+	query.Set("appid", strconv.Itoa(app.ID))
+
+	// Create request
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", "https://steamspy.com/api.php?"+query.Encode(), nil)
+	if err != nil {
+		return err
+	}
+
+	response, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	//noinspection GoUnhandledErrorResult
+	defer response.Body.Close()
+
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+
+	// Unmarshal JSON
+	resp := db.SteamSpyApp{}
+	err = json.Unmarshal(bytes, &resp)
+	if err != nil {
+		return err
+	}
+
+	app.SSAveragePlaytimeForever = resp.AverageForever
+	app.SSAveragePlaytimeTwoWeeks = resp.Average2Weeks
+	app.SSMedianPlaytimeForever = resp.MedianForever
+	app.SSMedianPlaytimeTwoWeeks = resp.Median2Weeks
+
+	owners := resp.GetOwners()
+	app.SSOwnersLow = owners[0]
+	app.SSOwnersHigh = owners[1]
 
 	return nil
 }
