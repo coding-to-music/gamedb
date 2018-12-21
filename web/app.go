@@ -156,6 +156,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Add current price
 		price, err := app.GetPrice(code)
+		err = helpers.IgnoreErrors(err, db.ErrMissingCountryCode)
 		log.Err(err, r)
 		if err == nil {
 			prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
