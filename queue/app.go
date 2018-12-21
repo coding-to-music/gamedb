@@ -37,9 +37,9 @@ func (d RabbitMessageApp) getRetryData() RabbitMessageDelay {
 func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	// Get message payload
-	rabbitMessage := new(RabbitMessageApp)
+	rabbitMessage := RabbitMessageApp{}
 
-	err = helpers.Unmarshal(msg.Body, rabbitMessage)
+	err = helpers.Unmarshal(msg.Body, &rabbitMessage)
 	if err != nil {
 		return false, err
 	}
@@ -72,7 +72,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	var appBeforeUpdate = app
 
-	err = updateAppPICS(&app, message)
+	err = updateAppPICS(&app, rabbitMessage)
 	if err != nil {
 		return true, err
 	}
@@ -134,10 +134,12 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	return false, nil
 }
 
-func updateAppPICS(app *db.App, message RabbitMessageProduct) (err error) {
+func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
+
+	message := rabbitMessage.PICSAppInfo
 
 	if message.ChangeNumber > app.PICSChangeNumber {
-		app.PICSChangeNumberDate = time.Now()
+		app.PICSChangeNumberDate = time.Unix(rabbitMessage.Payload.Time, 0)
 	}
 
 	app.ID = message.ID

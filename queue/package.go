@@ -33,9 +33,9 @@ func (d RabbitMessagePackage) getRetryData() RabbitMessageDelay {
 func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	// Get message
-	rabbitMessage := new(RabbitMessagePackage)
+	rabbitMessage := RabbitMessagePackage{}
 
-	err = helpers.Unmarshal(msg.Body, rabbitMessage)
+	err = helpers.Unmarshal(msg.Body, &rabbitMessage)
 	if err != nil {
 		return false, err
 	}
@@ -69,7 +69,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	var packageBeforeUpdate = pack
 
 	// Update from PICS
-	err = updatePackageFromPICS(&pack, message)
+	err = updatePackageFromPICS(&pack, rabbitMessage)
 	if err != nil {
 		return true, err
 	}
@@ -121,11 +121,13 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	return false, err
 }
 
-func updatePackageFromPICS(pack *db.Package, message RabbitMessageProduct) (err error) {
+func updatePackageFromPICS(pack *db.Package, rabbitMessage RabbitMessagePackage) (err error) {
+
+	message := rabbitMessage.PICSPackageInfo
 
 	// Update with new details
 	if message.ChangeNumber > pack.PICSChangeNumber {
-		pack.PICSChangeNumberDate = time.Now()
+		pack.PICSChangeNumberDate = time.Unix(rabbitMessage.Payload.Time, 0)
 	}
 
 	pack.ID = message.ID
