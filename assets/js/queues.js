@@ -67,6 +67,7 @@ if ($('#queues-page').length > 0) {
                 text: 'Queue Size'
             },
             allowDecimals: false,
+            min: 0,
         },
         plotOptions: {
             series: {
