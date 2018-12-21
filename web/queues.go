@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
+	"sort"
 
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -45,7 +47,13 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	var ret [][]interface{}
 
-	for _, v := range overview.QueueTotals.MessagesDetails.Samples {
+	samples := overview.QueueTotals.MessagesDetails.Samples
+
+	sort.Slice(samples, func(i, j int) bool {
+		return samples[i].Timestamp < samples[j].Timestamp
+	})
+
+	for _, v := range samples {
 		ret = append(ret, []interface{}{v.Timestamp, v.Sample})
 	}
 
@@ -62,8 +70,14 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 func getOverview() (resp Overview, err error) {
 
+	values := url.Values{}
+	values.Set("lengths_age", "3600") // Queue lengths
+	values.Set("lengths_incr", "10")
+	values.Set("msg_rates_age", "3600") // Messages sent and received
+	values.Set("msg_rates_incr", "10")
+
 	URL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT")
-	URL += "/api/overview?lengths_age=3600&lengths_incr=60&msg_rates_age=3600&msg_rates_incr=60"
+	URL += "/api/overview?" + values.Encode()
 
 	req, err := http.NewRequest("GET", URL, nil)
 	req.SetBasicAuth(os.Getenv("STEAM_RABBIT_USER"), os.Getenv("STEAM_RABBIT_PASS"))

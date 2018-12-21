@@ -23,6 +23,7 @@ if ($('#stats-page').length > 0) {
             type: 'category'
         },
         yAxis: {
+            allowDecimals: false,
             title: {
                 text: ''
             }

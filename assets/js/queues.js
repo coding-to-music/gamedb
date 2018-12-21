@@ -1,8 +1,43 @@
 if ($('#queues-page').length > 0) {
 
-    Highcharts.chart('chart', {
+    let activeWindow = true;
+
+    $(window).on('focus', function () {
+        activeWindow = true;
+    });
+
+    $(window).on('blur', function () {
+        activeWindow = false;
+    });
+
+    function updateChart() {
+
+        if (!activeWindow) {
+            return;
+        }
+
+        $.ajax({
+            url: '/queues/ajax.json',
+            success: function (data, textStatus, jqXHR) {
+                chart.series[0].setData(data);
+            },
+            dataType: 'json',
+            cache: false,
+            error: function (xhr, ajaxOptions, thrownError) {
+                clearTimeout(timer);
+                $('#live-badge').addClass('badge-danger').removeClass('badge-secondary badge-success');
+                toast(false, 'Live functionality has stopped');
+            }
+        });
+    }
+
+    updateChart();
+    const timer = window.setInterval(updateChart, 10000);
+
+    const chart = Highcharts.chart('chart', {
         chart: {
-            type: 'spline'
+            type: 'area',
+            animation: false
         },
         title: {
             text: ''
@@ -21,12 +56,24 @@ if ($('#queues-page').length > 0) {
                 text: 'Time'
             },
             labels: {
-                step: 1
-            }
+                step: 1,
+                formatter: function () {
+                    return moment(this.value).format("h:mm:ss");
+                },
+            },
         },
         yAxis: {
             title: {
                 text: 'Queue Size'
+            },
+            allowDecimals: false,
+        },
+        plotOptions: {
+            series: {
+                marker: {
+                    enabled: false // Too close together
+                },
+                animation: false
             }
         },
         series: [{
@@ -34,13 +81,8 @@ if ($('#queues-page').length > 0) {
         }],
         tooltip: {
             formatter: function () {
-                return this.y + ' items in the queue';
+                return this.y + ' items in the queue at ' + moment(this.key).format("h:mm:ss");
             },
-        },
-        data: {
-            rowsURL: location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/queues/ajax.json',
-            enablePolling: true,
-            dataRefreshRate: 60
         }
     });
 }
