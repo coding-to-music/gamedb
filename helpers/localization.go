@@ -94,7 +94,7 @@ type Locale struct {
 	Enabled        bool
 }
 
-func (l Locale) Format(amount int) string {
+func (l Locale) Format(cents int) string {
 
 	ac := accounting.Accounting{
 		Symbol:         l.CurrencySymbol,
@@ -102,7 +102,7 @@ func (l Locale) Format(amount int) string {
 		Format:         "%s %v",
 		FormatNegative: "%s -%v",
 	}
-	return strings.TrimSpace(ac.FormatMoney(float64(amount) / 100))
+	return strings.TrimSpace(ac.FormatMoney(float64(cents) / 100))
 }
 
 // For player countries
