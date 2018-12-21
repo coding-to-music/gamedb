@@ -62,4 +62,5 @@ var (
 	MemcachePlayerRefreshed = func(playerID int64) memcache.Item {
 		return memcache.Item{Key: "player-refreshed-" + strconv.FormatInt(playerID, 10), Expiration: 86400 * 7, Value: []byte("x")}
 	}
+	MemcacheQueues = memcache.Item{Key: "queues", Expiration: 10}
 )

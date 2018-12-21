@@ -39,20 +39,34 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
-	overview, err := getOverview()
+	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheQueues, func() (s string, err error) {
+
+		overview, err := getOverview()
+		if err != nil {
+			return "", err
+		}
+
+		bytes, err := json.Marshal(overview.QueueTotals.MessagesDetails.Samples)
+		return string(bytes), err
+	})
+
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the queues.", Error: err})
 		return
 	}
 
-	var ret [][]interface{}
-
-	samples := overview.QueueTotals.MessagesDetails.Samples
+	var samples []Sample
+	err = helpers.Unmarshal([]byte(s), &samples)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the queues.", Error: err})
+		return
+	}
 
 	sort.Slice(samples, func(i, j int) bool {
 		return samples[i].Timestamp < samples[j].Timestamp
 	})
 
+	var ret [][]interface{}
 	for _, v := range samples {
 		ret = append(ret, []interface{}{v.Timestamp, v.Sample})
 	}
@@ -76,8 +90,7 @@ func getOverview() (resp Overview, err error) {
 	values.Set("msg_rates_age", "3600") // Messages sent and received
 	values.Set("msg_rates_incr", "10")
 
-	URL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT")
-	URL += "/api/overview?" + values.Encode()
+	URL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT") + "/api/overview?" + values.Encode()
 
 	req, err := http.NewRequest("GET", URL, nil)
 	req.SetBasicAuth(os.Getenv("STEAM_RABBIT_USER"), os.Getenv("STEAM_RABBIT_PASS"))
@@ -254,13 +267,10 @@ type Overview struct {
 	QueueTotals struct {
 		Messages        int `json:"messages"`
 		MessagesDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"messages_details"`
 		MessagesReady        int `json:"messages_ready"`
 		MessagesReadyDetails struct {
@@ -312,4 +322,9 @@ type Overview struct {
 		Port        string        `json:"port"`
 		Ssl         string        `json:"ssl"`
 	} `json:"contexts"`
+}
+
+type Sample struct {
+	Sample    int   `json:"sample"`
+	Timestamp int64 `json:"timestamp"`
 }
