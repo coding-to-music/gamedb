@@ -327,7 +327,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	t.request = r
 
-	t.Title = title
+	t.Title = title + " - Game DB"
 	t.Description = description
 	t.Env = viper.GetString("ENV")
 	t.Path = r.URL.Path

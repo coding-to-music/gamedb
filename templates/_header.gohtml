@@ -26,9 +26,28 @@
     <meta name="google" content="notranslate">
     <meta name="google-site-verification" content="brhvE2bHEwuvvoiOxeYHMQRSQECE4vAk8rMJ3iYZtSg"/>
 
-    <title>{{.Title}} - Game DB</title>
-    <meta name="Description" content="{{ .Description }}">
+    <!-- Common -->
+    <title>{{ .Title }}</title>¬
+    <meta charset="utf-8">
     <meta name="keywords" content="Game DB, Steam Authority, Steam Database, Steam Games">
+    <meta name="description" content="{{ .Description }}">
+    <!-- Schema.org -->
+    <meta itemprop="name" content="{{ .Title }}">
+    <meta itemprop="description" content="{{ .Description }}">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ .Title }}">
+    <meta name="twitter:description" content="{{ .Description }}">
+    <!-- Open Graph -->
+    <meta name="og:title" content="{{ .Title }}">
+    <meta name="og:description" content="{{ .Description }}">
+    <meta name="og:image" content="/assets/img/sa-bg-500x500.png">
+    <meta name="og:url" content="{{ .Path }}">
+    <meta name="og:locale" content="en_US">
+    <meta name="og:type" content="website">
+    <!-- Facebook -->
+    <meta name="fb:admins" content="537840742">
+    <meta name="fb:app_id" content="2539079269452708">
 
     {{if .IsFromVarnish }}
         <esi:include src="/esi/header"/>
