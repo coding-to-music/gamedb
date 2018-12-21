@@ -85,10 +85,12 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 func getOverview() (resp Overview, err error) {
 
 	values := url.Values{}
-	values.Set("lengths_age", "3600") // Queue lengths
+	values.Set("lengths_age", "3600")
 	values.Set("lengths_incr", "10")
-	values.Set("msg_rates_age", "3600") // Messages sent and received
+	values.Set("msg_rates_age", "3600")
 	values.Set("msg_rates_incr", "10")
+	values.Set("data_rates_age", "3600")
+	values.Set("data_rates_incr", "60")
 
 	URL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT") + "/api/overview?" + values.Encode()
 
