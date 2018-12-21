@@ -62,6 +62,12 @@ if ($appPage.length > 0) {
         }
     }
 
+    // Details tab image
+    $("#details img").on("error", function () {
+        $(this).attr('src', '/assets/img/no-app-image-banner.jpg');
+        $(this).hide();
+    });
+
     // Websockets
     websocketListener('app', function (e) {
 
