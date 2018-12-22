@@ -416,22 +416,22 @@
                                     <a class="nav-link" data-toggle="tab" href="#dev-common" role="tab">Common Values</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#dev-config" role="tab">Config</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#dev-ufs" role="tab">UFS</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#dev-install" role="tab">Install</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
                                 </li>
                             </ul>
 
@@ -517,12 +517,12 @@
                                                     <td>{{ .MaxSize }}</td>
                                                     <td>{{ .App }}</td>
                                                     <td>{{ .DLCApp }}</td>
-                                                    <td>{{ .SystemDefined }}</td>
-                                                    <td>{{ .Optional }}</td>
-                                                    <td>{{ .SharedInstall }}</td>
-                                                    <td>{{ .SharedDepotType }}</td>
-                                                    <td>{{ .LVCache }}</td>
-                                                    <td>{{ .AllowAddRemoveWhileRunning }}</td>
+                                                    <td>{{ if .SystemDefined }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                                    <td>{{ if .Optional }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                                    <td>{{ if .SharedInstall }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                                    <td>{{ if .SharedDepotType }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                                    <td>{{ if .LVCache }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                                    <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -549,8 +549,8 @@
                                                     <td nowrap="nowrap">{{ .Description }}</td>
                                                     <td>{{ .BuildID }}</td>
                                                     <td>{{ .TimeUpdated }}</td>
-                                                    <td>{{ .PasswordRequired }}</td>
-                                                    <td>{{ .LCSRequired }}</td>
+                                                    <td>{{ if .PasswordRequired }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                                    <td>{{ if .LCSRequired }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
                                                     <td>{{ .DefaultForSubs }}</td>
                                                     <td>{{ .UnlockForSubs }}</td>
                                                 </tr>
