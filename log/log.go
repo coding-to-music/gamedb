@@ -192,7 +192,7 @@ func log(interfaces ...interface{}) {
 		}
 	}
 
-	if entry.text == "" && entry.error == "" && entry.request == nil {
+	if entry.text == "" && entry.error == "" {
 		return
 	}
 
