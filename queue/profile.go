@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/storage"
+	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
@@ -56,10 +57,12 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	// Convert steamID3 to steamID64
-	id64, err := helpers.GetSteam().GetID(strconv.FormatInt(int64(message.SteamID.AccountID), 10))
+	id64, err := helpers.GetSteam().GetID(strconv.Itoa(message.SteamID.AccountID))
 	if err != nil {
 		return false, err
 	}
+
+	logInfo("Consuming player: " + strconv.FormatInt(id64, 10))
 
 	// Update player
 	player, err := db.GetPlayer(id64)
@@ -197,20 +200,22 @@ func updatePlayerGames(player *db.Player) error {
 
 	// Start creating PlayerApp's
 	var playerApps = map[int]*db.PlayerApp{}
+	var appPrices = map[int]map[string]int{}
+	var appPriceHour = map[int]map[string]float64{}
 	var appIDs []int
 	var playtime = 0
 	for _, v := range resp.Games {
 		playtime = playtime + v.PlaytimeForever
 		appIDs = append(appIDs, v.AppID)
 		playerApps[v.AppID] = &db.PlayerApp{
-			PlayerID:     player.PlayerID,
-			AppID:        v.AppID,
-			AppName:      v.Name,
-			AppIcon:      v.ImgIconURL,
-			AppTime:      v.PlaytimeForever,
-			AppPrices:    map[steam.CountryCode]int{},
-			AppPriceHour: map[steam.CountryCode]float64{},
+			PlayerID: player.PlayerID,
+			AppID:    v.AppID,
+			AppName:  v.Name,
+			AppIcon:  v.ImgIconURL,
+			AppTime:  v.PlaytimeForever,
 		}
+		appPrices[v.AppID] = map[string]int{}
+		appPriceHour[v.AppID] = map[string]float64{}
 	}
 
 	// Save playtime
@@ -231,17 +236,27 @@ func updatePlayerGames(player *db.Player) error {
 		}
 
 		for code, vv := range prices {
-			if vv.Final > 0 {
-				playerApps[v.ID].AppPrices[code] = vv.Final
 
-				if playerApps[v.ID].AppPrices[code] > 0 && playerApps[v.ID].AppTime > 0 {
-					playerApps[v.ID].AppPriceHour[code] = (float64(playerApps[v.ID].AppPrices[code]) / 100) / (float64(playerApps[v.ID].AppTime) / 60)
-				}
+			appPrices[v.ID][string(code)] = vv.Final
+			if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime == 0 {
+				appPriceHour[v.ID][string(code)] = -1
+			} else if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime > 0 {
+				appPriceHour[v.ID][string(code)] = (float64(appPrices[v.ID][string(code)]) / 100) / (float64(playerApps[v.ID].AppTime) / 60)
+			} else {
+				appPriceHour[v.ID][string(code)] = 0
 			}
 		}
+
+		//
+		err = mapstructure.Decode(appPrices[v.ID], &playerApps[v.ID].AppPrices)
+		log.Err(err)
+
+		//
+		err = mapstructure.Decode(appPriceHour[v.ID], &playerApps[v.ID].AppPriceHour)
+		log.Err(err)
 	}
 
-	// Convert to slice
+	// Save playerApps to Datastore
 	var appsSlice []db.Kind
 	for _, v := range playerApps {
 		appsSlice = append(appsSlice, *v)
@@ -252,13 +267,13 @@ func updatePlayerGames(player *db.Player) error {
 		return err
 	}
 
-	// Make stats
+	// Save stats to player
 	var gameStats = db.PlayerAppStatsTemplate{}
 	for _, v := range playerApps {
 
-		gameStats.All.AddApp(*v)
+		gameStats.All.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
 		if v.AppTime > 0 {
-			gameStats.Played.AddApp(*v)
+			gameStats.Played.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
 		}
 	}
 

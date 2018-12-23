@@ -27,41 +27,41 @@ indexes:
       - name: "app_name"
         direction: "desc"
 
-  - kind: "PlayerApp"
-    properties:
-      - name: "player_id"
-      - name: "app_price"
-        direction: "asc"
-
-  - kind: "PlayerApp"
-    properties:
-      - name: "player_id"
-      - name: "app_price"
-        direction: "desc"
-
-  - kind: "PlayerApp"
-    properties:
-      - name: "player_id"
-      - name: "app_time"
-        direction: "asc"
+  #  - kind: "PlayerApp"
+  #    properties:
+  #      - name: "player_id"
+  #      - name: "app_price"
+  #        direction: "asc"
+  #
+  #  - kind: "PlayerApp"
+  #    properties:
+  #      - name: "player_id"
+  #      - name: "app_price"
+  #        direction: "desc"
 
   - kind: "PlayerApp"
     properties:
       - name: "player_id"
       - name: "app_time"
-        direction: "desc"
-
-  - kind: "PlayerApp"
-    properties:
-      - name: "player_id"
-      - name: "app_price_hour"
         direction: "asc"
 
   - kind: "PlayerApp"
     properties:
       - name: "player_id"
-      - name: "app_price_hour"
+      - name: "app_time"
         direction: "desc"
+
+  #  - kind: "PlayerApp"
+  #    properties:
+  #      - name: "player_id"
+  #      - name: "app_price_hour"
+  #        direction: "asc"
+  #
+  #  - kind: "PlayerApp"
+  #    properties:
+  #      - name: "player_id"
+  #      - name: "app_price_hour"
+  #        direction: "desc"
 
   # Product Price Changes
   - kind: "ProductPrice"

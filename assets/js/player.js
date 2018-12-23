@@ -48,7 +48,7 @@ if ($playerPage.length > 0) {
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);
-            $(row).attr('data-link', '/apps/' + data[0]);
+            $(row).attr('data-link', data[7]);
         },
         "columnDefs": [
             // Icon / Name
@@ -66,7 +66,8 @@ if ($playerPage.length > 0) {
                 "targets": 1,
                 "render": function (data, type, row) {
                     return row[5];
-                }
+                },
+                "orderable": false
             },
             // Time
             {
@@ -83,7 +84,8 @@ if ($playerPage.length > 0) {
                 "targets": 3,
                 "render": function (data, type, row) {
                     return row[6];
-                }
+                },
+                "orderable": false
             }
         ]
     }));

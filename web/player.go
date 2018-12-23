@@ -416,16 +416,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	code := session.GetCountryCode(r)
 
 	for _, v := range playerApps {
-
-		response.AddRow([]interface{}{
-			v.AppID,
-			v.AppName,
-			v.GetIcon(),
-			v.AppTime,
-			v.GetTimeNice(),
-			helpers.RoundIntTo2DP(v.AppPrices[code]),
-			v.GetPriceHourFormatted(code),
-		})
+		response.AddRow(v.OutputForJSON(code))
 	}
 
 	response.output(w, r)

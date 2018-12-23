@@ -23,14 +23,6 @@ var ErrMissingCountryCode = errors.New("invalid code")
 
 //
 type PICSExtended map[string]string
-
-func (e PICSExtended) GetValue(key string) string {
-	if val, ok := e[key]; ok {
-		return val
-	}
-	return ""
-}
-
 type PICSAppCommon map[string]string
 type PICSAppUFS map[string]string
 type PICSAppConfig map[string]string
@@ -92,6 +84,14 @@ type ProductPrices map[steam.CountryCode]ProductPriceStruct
 
 func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam.PackageDetailsBody) {
 
+	if prices.Data.Price.Currency == "" {
+
+		locale, err := helpers.GetLocaleFromCountry(code)
+		log.Err(err)
+
+		prices.Data.Price.Currency = string(locale.CurrencyCode)
+	}
+
 	(*p)[code] = ProductPriceStruct{
 		Currency:        prices.Data.Price.Currency,
 		Initial:         prices.Data.Price.Initial,
@@ -102,6 +102,15 @@ func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam
 }
 
 func (p *ProductPrices) AddPriceFromApp(code steam.CountryCode, prices steam.AppDetailsBody) {
+
+	if prices.Data.PriceOverview.Currency == "" {
+
+		locale, err := helpers.GetLocaleFromCountry(code)
+		log.Err(err)
+
+		prices.Data.PriceOverview.Currency = string(locale.CurrencyCode)
+	}
+
 	(*p)[code] = ProductPriceStruct{
 		Currency:        prices.Data.PriceOverview.Currency,
 		Initial:         prices.Data.PriceOverview.Initial,
@@ -117,18 +126,7 @@ func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceStruct, er
 	return price, ErrMissingCountryCode
 }
 
-//func (p ProductPrices) ToMap() (ret map[steam.CountryCode]int) {
-//
-//	ret = map[steam.CountryCode]int{}
-//
-//	for k, v := range p {
-//		ret[k] = v.Final
-//	}
-//
-//	return ret
-//}
-
-//
+// ProductPriceStruct
 type ProductPriceStruct struct {
 	Currency        string `json:"currency"`
 	Initial         int    `json:"initial"`
@@ -184,6 +182,7 @@ func (p ProductPriceStruct) GetFlag(code steam.CountryCode) string {
 	return "/assets/img/flags/" + strings.ToLower(string(code)) + ".png"
 }
 
+//
 type ProductPriceFormattedStruct struct {
 	Initial         string `json:"initial"`
 	Final           string `json:"final"`
@@ -191,6 +190,7 @@ type ProductPriceFormattedStruct struct {
 	Individual      string `json:"individual"`
 }
 
+//
 func GetPriceFormatted(product ProductInterface, code steam.CountryCode) (ret ProductPriceFormattedStruct) {
 
 	price, err := product.GetPrice(code)

@@ -596,12 +596,23 @@ type playerAppStatsInnerTemplate struct {
 	Code      steam.CountryCode
 }
 
-func (p *playerAppStatsInnerTemplate) AddApp(app PlayerApp) {
+func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int, priceHours map[string]float64) {
+
 	p.Count++
+
 	for code := range steam.Countries {
-		p.Price[code] = p.Price[code] + app.AppPrices[code]
-		p.PriceHour[code] = p.PriceHour[code] + app.AppPriceHour[code]
-		p.Time = p.Time + app.AppTime
+
+		if p.Price == nil {
+			p.Price = map[steam.CountryCode]int{}
+		}
+
+		if p.PriceHour == nil {
+			p.PriceHour = map[steam.CountryCode]float64{}
+		}
+
+		p.Price[code] = p.Price[code] + prices[string(code)]
+		p.PriceHour[code] = p.PriceHour[code] + priceHours[string(code)]
+		p.Time = p.Time + appTime
 	}
 }
 

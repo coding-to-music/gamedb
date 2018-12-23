@@ -12,6 +12,11 @@ import (
 var gountriesInstance = gountries.New()
 var byCurrency = map[steam.CurrencyCode]Locale{}
 var byCountry = map[steam.CountryCode]Locale{}
+var accountingFormat = accounting.Accounting{
+	Precision:      2,
+	Format:         "%s %v",
+	FormatNegative: "%s -%v",
+}
 var locales = []Locale{
 	{CountryCode: steam.CountryAE, CurrencyCode: steam.CurrencyAED, CurrencySymbol: "AED", CountryName: "United Arab Emirates"},
 	{CountryCode: steam.CountryAR, CurrencyCode: steam.CurrencyARS, CurrencySymbol: "$", CountryName: "Argentina"},
@@ -96,13 +101,18 @@ type Locale struct {
 
 func (l Locale) Format(cents int) string {
 
-	ac := accounting.Accounting{
-		Symbol:         l.CurrencySymbol,
-		Precision:      2,
-		Format:         "%s %v",
-		FormatNegative: "%s -%v",
-	}
-	return strings.TrimSpace(ac.FormatMoney(float64(cents) / 100))
+	f := accountingFormat
+	f.Symbol = l.CurrencySymbol
+
+	return strings.TrimSpace(f.FormatMoney(float64(cents) / 100))
+}
+
+func (l Locale) FormatFloat(amount float64) string {
+
+	f := accountingFormat
+	f.Symbol = l.CurrencySymbol
+
+	return strings.TrimSpace(f.FormatMoney(amount))
 }
 
 // For player countries
