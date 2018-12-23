@@ -65,7 +65,7 @@ if ($playerPage.length > 0) {
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return '$' + row[5];
+                    return row[5];
                 }
             },
             // Time
@@ -82,7 +82,7 @@ if ($playerPage.length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '$' + row[6];
+                    return row[6];
                 }
             }
         ]
