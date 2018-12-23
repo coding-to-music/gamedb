@@ -89,6 +89,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Add current price
 		pricesStruct, err := pack.GetPrice(code)
+		err = helpers.IgnoreErrors(err, db.ErrMissingCountryCode)
 		log.Err(err, r)
 
 		prices = append(prices, []float64{float64(time.Now().Unix()), float64(pricesStruct.Final) / 100})
