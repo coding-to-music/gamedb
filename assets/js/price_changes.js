@@ -35,6 +35,9 @@ if ($('#price-changes-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[6];
                 },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
                 "orderable": false
             },
             // After
@@ -42,6 +45,9 @@ if ($('#price-changes-page').length > 0) {
                 "targets": 2,
                 "render": function (data, type, row) {
                     return row[7];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 "orderable": false
             },
