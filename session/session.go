@@ -23,6 +23,8 @@ var writeMutex = new(sync.Mutex)
 
 // Called from main
 func Init() {
+
+	// In Init because viper isnt setup in init
 	store = sessions.NewCookieStore(
 		[]byte(viper.GetString("SESSION_AUTHENTICATION")),
 		[]byte(viper.GetString("SESSION_ENCRYPTION")),
