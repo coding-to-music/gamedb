@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"github.com/gamedb/website/storage"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -329,8 +328,8 @@ func updatePlayerRecentGames(player *db.Player) error {
 
 	// Upload
 	if len(bytes) > maxBytesToStore {
-		storagePath := storage.PathRecentGames(player.PlayerID)
-		err = storage.Upload(storagePath, bytes, false, true)
+		storagePath := helpers.PathRecentGames(player.PlayerID)
+		err = helpers.Upload(storagePath, bytes)
 		if err != nil {
 			return err
 		}
@@ -409,8 +408,8 @@ func updatePlayerBadges(player *db.Player) error {
 
 	// Upload
 	if len(bytes) > maxBytesToStore {
-		storagePath := storage.PathBadges(player.PlayerID)
-		err = storage.Upload(storagePath, bytes, false, true)
+		storagePath := helpers.PathBadges(player.PlayerID)
+		err = helpers.Upload(storagePath, bytes)
 		if err != nil {
 			return err
 		}
@@ -478,8 +477,8 @@ func updatePlayerFriends(player *db.Player) error {
 
 	// Upload
 	if len(bytes) > maxBytesToStore {
-		storagePath := storage.PathFriends(player.PlayerID)
-		err = storage.Upload(storagePath, bytes, false, true)
+		storagePath := helpers.PathFriends(player.PlayerID)
+		err = helpers.Upload(storagePath, bytes)
 		if err != nil {
 			return err
 		}

@@ -32,6 +32,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:bf987b3a2edca77f99a56d3e9887b0820934087beb393c41d699be6133c1eef4"
+  name = "github.com/Jleagle/google-cloud-storage-go"
+  packages = ["gcs"]
+  pruneopts = ""
+  revision = "557498ea9108eb831e1cddeed8524b8ef014d9a6"
+
+[[projects]]
+  branch = "master"
   digest = "1:d1192cb3a4799048f7b6f8e75f4529c53f5e2742292ceef30a617b80a7402875"
   name = "github.com/Jleagle/memcache-go"
   packages = ["memcache"]
@@ -170,12 +178,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:ffea3fcee8cae28b474f74a40c328f415790e5677a5c4b3400061ade21df2415"
+  digest = "1:e7b34c0401a0cf9c3a7bc7980f12712290e03dcfb2bf681b38e7bf57a85d3a73"
   name = "github.com/go-siris/siris"
   packages = ["core/errors"]
   pruneopts = ""
-  revision = "d6bc3df4b216199bec985043ca6c3e5c00232fd5"
-  version = "v7.4.0"
+  revision = "bf3b6eec68567b4a1c7b4a26c9dd87815abb363c"
+  version = "v7.3.4"
 
 [[projects]]
   digest = "1:e692d16fdfbddb94e9e4886aaf6c08bdbae5cb4ac80651445de9181b371c6e46"
@@ -212,12 +220,12 @@
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
-  digest = "1:20fcf88feb1801c9244d6bc5390ad9f3403e83a81b6db6b84069caefffb475ae"
+  digest = "1:73ad2c6ea4dfacaf6fcb3cc1595b93bf2698380d95e10ead5b607abbdf8d0b7d"
   name = "github.com/google/go-github"
   packages = ["github"]
   pruneopts = ""
-  revision = "7c7d51f489bc54d96dfa34c497601b4a05d760c7"
-  version = "v20.0.0"
+  revision = "a5cb647b1fac8ba77e1cf25af2f9526658ab63e3"
+  version = "v21.0.0"
 
 [[projects]]
   digest = "1:cea4aa2038169ee558bf507d5ea02c94ca85bcca28a4c7bb99fd59b31e43a686"
@@ -228,12 +236,15 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:463579773f7f97e3a97ae6fb32abc90c03493e903a11c756a588bed06d0535e2"
+  digest = "1:55c1b46a80db2baf4d762c1d0b5cb4946e46125baa02b8959310abab15b54aee"
   name = "github.com/googleapis/gax-go"
-  packages = ["."]
+  packages = [
+    ".",
+    "v2",
+  ]
   pruneopts = ""
-  revision = "b001040cd31805261cbd978842099e326dfa857b"
-  version = "v2.0.2"
+  revision = "c8a15bac9b9fe955bd9f900272f9a306465d28cf"
+  version = "v2.0.3"
 
 [[projects]]
   digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"
@@ -415,23 +426,15 @@
   version = "v1.1.2"
 
 [[projects]]
-  digest = "1:58b4c5586232c9f9fc5ebc4870e9a24e41be9825b0b500bbeac2ebfcb24aab9e"
-  name = "github.com/oxequa/interact"
-  packages = ["."]
-  pruneopts = ""
-  revision = "f8fb5795b5d713c41dab6771ffe1fdfdfd0c3285"
-  version = "1.1.1"
-
-[[projects]]
-  digest = "1:86fb1afb7ffc9426e6494e9322d0359c9173ea3649f064a74bcc890de0f58cf4"
+  digest = "1:0405366cf1d69c37913de6d2e51bd9710843fffb1bfa3a436424ef5a34072611"
   name = "github.com/oxequa/realize"
   packages = [
     ".",
     "realize",
   ]
   pruneopts = ""
-  revision = "13ee93c5f75c240128feb4271e025f2f381ca0f5"
-  version = "v2.0.2"
+  revision = "f95d0e164962222b6e1562e1bfcfad1a6071fd11"
+  version = "v2.0"
 
 [[projects]]
   digest = "1:2e5e286a00a31322e7efca6fb9be73e9f32e6d5d664c885a7e666ee32c5e0213"
@@ -466,12 +469,12 @@
   version = "v1.0.2"
 
 [[projects]]
-  branch = "master"
-  digest = "1:47081c00d00c1dfc9a530c2556e78be391a5c24db1043efe6d406af882a169a1"
+  digest = "1:7f569d906bdd20d906b606415b7d794f798f91a62fcfb6a4daa6d50690fb7a3f"
   name = "github.com/satori/go.uuid"
   packages = ["."]
   pruneopts = ""
-  revision = "b2ce2384e17bbe0c6d34077efa39dbab3e09123b"
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:f66a8bd3128df79a2648daea552403c5c66d841c7ae844d5d22b445afbdf0878"
@@ -501,15 +504,15 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:d0431c2fd72e39ee43ea7742322abbc200c3e704c9102c5c3c2e2e667095b0ca"
+  digest = "1:32c5802989a96ee74cc4e8372efce3cab9cf6355132ad8e80cc32c18757ccd47"
   name = "github.com/spf13/afero"
   packages = [
     ".",
     "mem",
   ]
   pruneopts = ""
-  revision = "d40851caa0d747393da1ffb28f7f9d8b4eeffebd"
-  version = "v1.1.2"
+  revision = "a5d6946387efe7d64d09dcba68cdd523dc1273a3"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:ae3493c780092be9d576a1f746ab967293ec165e8473425631f06658b6212afc"
@@ -550,6 +553,22 @@
   packages = ["."]
   pruneopts = ""
   revision = "a314942b2fd9dde7a3f70ba3f1062848ce6eb392"
+
+[[projects]]
+  digest = "1:58b4c5586232c9f9fc5ebc4870e9a24e41be9825b0b500bbeac2ebfcb24aab9e"
+  name = "github.com/tockins/interact"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f8fb5795b5d713c41dab6771ffe1fdfdfd0c3285"
+  version = "1.1.1"
+
+[[projects]]
+  digest = "1:0405366cf1d69c37913de6d2e51bd9710843fffb1bfa3a436424ef5a34072611"
+  name = "github.com/tockins/realize"
+  packages = ["realize"]
+  pruneopts = ""
+  revision = "f95d0e164962222b6e1562e1bfcfad1a6071fd11"
+  version = "v2.0"
 
 [[projects]]
   digest = "1:857a9ecd5cb13379ecc8f798f6e6b6b574c98b9355657d91e068275f1120aaf7"
@@ -619,7 +638,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1e21bd471bcad726f573e5e41b7eafe690a1724fdebac6e633d06b58b702d88d"
+  digest = "1:4ab2fc83e3222b69759dfd717e01d0cf38b133aabfacc29a86057021a2f1abd9"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -635,7 +654,7 @@
     "websocket",
   ]
   pruneopts = ""
-  revision = "891ebc4b82d6e74f468c533b06f983c7be918a96"
+  revision = "927f97764cc334a6575f4b7a1584a147864d5723"
 
 [[projects]]
   branch = "master"
@@ -653,22 +672,22 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:88ecca26e54f601a8733c9a31d9f0883b915216a177673f0467f6b864fd0d90f"
+  digest = "1:814474ab808c5e04b9334d046f8a0060fc1724c2c02acfd00a7cc0008d675455"
   name = "golang.org/x/sync"
   packages = ["semaphore"]
   pruneopts = ""
-  revision = "42b317875d0fa942474b76e1b46a6060d720ae6e"
+  revision = "37e7f081c4d4c64e13b10787722085407fe5d15f"
 
 [[projects]]
   branch = "master"
-  digest = "1:c2c4c39f961dde3f317a48713db65329863b61316edabf19b96784b2da8406ac"
+  digest = "1:e6d1805ead5b8f2439808f76187f54042ed35ee26eb9ca63127259a0e612b119"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "4d1cda033e0619309c606fc686de3adcf599539e"
+  revision = "b4a75ba826a64a70990f11a225237acd6ef35c9f"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -695,7 +714,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b2d1813b3660d82969b796b55e0f686890a792a66b3229d7028090d29b6dfdab"
+  digest = "1:7873bd40db14885e3c790a4134341e998abf3d83d0872a93613f765025903026"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -713,10 +732,10 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "874d9dc5b186e361475b082852f136f094555c30"
+  revision = "65a46cafb132eff435c7d1e0f439cc73c8eebb85"
 
 [[projects]]
-  digest = "1:77d3cff3a451d50be4b52db9c7766c0d8570ba47593f0c9dc72173adb208e788"
+  digest = "1:bc09e719c4e2a15d17163f5272d9a3131c45d77542b7fdc53ff518815bc19ab3"
   name = "google.golang.org/appengine"
   packages = [
     ".",
@@ -734,12 +753,12 @@
     "urlfetch",
   ]
   pruneopts = ""
-  revision = "4a4468ece617fc8205e99368fa2200e9d1fad421"
-  version = "v1.3.0"
+  revision = "e9657d882bb81064595ca3b56cbe2546bbabf7b1"
+  version = "v1.4.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:5fc6c317675b746d0c641b29aa0aab5fcb403c0d07afdbf0de86b0d447a0502a"
+  digest = "1:8c7bf8f974d0b63a83834e83b6dd39c2b40d61d409d76172c81d67eba8fee4a8"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -757,7 +776,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "bd91e49a0898e27abb88c339b432fa53d7497ac0"
+  revision = "bd9b4fb69e2ffd37621a6caa54dcbead29b546f2"
 
 [[projects]]
   digest = "1:d141efe4aaad714e3059c340901aab3147b6253e58c85dafbcca3dd8b0e88ad6"
@@ -809,12 +828,12 @@
   revision = "d3ae77c26ac8db90639677e4831a728d33c36111"
 
 [[projects]]
-  branch = "v2"
   digest = "1:cedccf16b71e86db87a24f8d4c70b0a855872eb967cb906a66b95de56aefbd0d"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
+  version = "v2.2.2"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -824,6 +843,7 @@
     "cloud.google.com/go/logging",
     "cloud.google.com/go/storage",
     "github.com/99designs/basicauth-go",
+    "github.com/Jleagle/google-cloud-storage-go/gcs",
     "github.com/Jleagle/memcache-go/memcache",
     "github.com/Jleagle/recaptcha-go",
     "github.com/Jleagle/steam-go/steam",
@@ -837,7 +857,6 @@
     "github.com/go-chi/chi/middleware",
     "github.com/go-chi/cors",
     "github.com/go-sql-driver/mysql",
-    "github.com/golang/snappy",
     "github.com/google/go-github/github",
     "github.com/gorilla/sessions",
     "github.com/gorilla/websocket",

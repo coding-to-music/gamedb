@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/social"
-	"github.com/gamedb/website/storage"
 	"github.com/gamedb/website/web"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
@@ -28,7 +27,6 @@ func init() {
 	helpers.InitSteam()
 	helpers.InitMemcache()
 	db.InitDS()
-	storage.Init()
 	queue.Init()
 	web.Init()
 }

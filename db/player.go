@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"cloud.google.com/go/storage"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/storage"
 	"github.com/gosimple/slug"
 )
 
@@ -161,8 +161,10 @@ func (p Player) GetBadges() (badges []ProfileBadge, err error) {
 
 	var bytes []byte
 
-	if storage.IsStorageLocaion(p.Badges) {
-		bytes, err = storage.Download(storage.PathBadges(p.PlayerID), true)
+	if helpers.IsStorageLocaion(p.Badges) {
+
+		bytes, err = helpers.Download(helpers.PathBadges(p.PlayerID))
+		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
 		if err != nil {
 			return badges, err
 		}
@@ -188,8 +190,10 @@ func (p Player) GetFriends() (friends []ProfileFriend, err error) {
 
 	var bytes []byte
 
-	if storage.IsStorageLocaion(p.Friends) {
-		bytes, err = storage.Download(storage.PathFriends(p.PlayerID), true)
+	if helpers.IsStorageLocaion(p.Friends) {
+
+		bytes, err = helpers.Download(helpers.PathFriends(p.PlayerID))
+		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
 		if err != nil {
 			return friends, err
 		}
@@ -209,8 +213,10 @@ func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
 
 	var bytes []byte
 
-	if storage.IsStorageLocaion(p.GamesRecent) {
-		bytes, err = storage.Download(storage.PathRecentGames(p.PlayerID), true)
+	if helpers.IsStorageLocaion(p.GamesRecent) {
+
+		bytes, err = helpers.Download(helpers.PathRecentGames(p.PlayerID))
+		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
 		if err != nil {
 			return games, err
 		}
