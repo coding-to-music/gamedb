@@ -8,16 +8,20 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
-	"github.com/spf13/viper"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func init() {
+	recaptcha.SetSecret(config.Config.RecaptchaPrivate)
+}
 
 func loginRouter() http.Handler {
 
@@ -33,8 +37,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := loginTemplate{}
 	t.Fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
-	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
-	t.Domain = viper.GetString("DOMAIN")
+	t.RecaptchaPublic = config.Config.RecaptchaPublic
+	t.Domain = config.Config.Domain.Get()
 
 	err := returnTemplate(w, r, "login", t)
 	log.Err(err, r)
@@ -66,7 +70,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 
 		// Recaptcha
-		if viper.GetString("ENV") != string(log.EnvLocal) {
+		if config.Config.IsProd() {
 			err = recaptcha.CheckFromRequest(r)
 			if err != nil {
 
@@ -170,7 +174,8 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var url string
-	url, err = openid.RedirectURL("https://steamcommunity.com/openid", viper.GetString("DOMAIN")+"/login/callback", viper.GetString("DOMAIN")+"/")
+	var domain = config.Config.Domain.Get()
+	url, err = openid.RedirectURL("https://steamcommunity.com/openid", domain+"/login/callback", domain+"/")
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong sending you to Steam.", Error: err})
 		return
@@ -193,7 +198,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	// Get ID from OpenID
-	openID, err := openid.Verify(viper.GetString("DOMAIN")+r.URL.String(), discoveryCache, nonceStore)
+	openID, err := openid.Verify(config.Config.Domain.Get()+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return

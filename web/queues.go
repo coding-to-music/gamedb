@@ -5,14 +5,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"regexp"
 	"sort"
 
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
-	"github.com/spf13/viper"
 )
 
 func queuesRouter() http.Handler {
@@ -92,10 +91,8 @@ func getOverview() (resp Overview, err error) {
 	values.Set("data_rates_age", "3600")
 	values.Set("data_rates_incr", "60")
 
-	URL := "http://" + os.Getenv("STEAM_RABBIT_HOST") + ":" + viper.GetString("RABBIT_MANAGEMENT_PORT") + "/api/overview?" + values.Encode()
-
-	req, err := http.NewRequest("GET", URL, nil)
-	req.SetBasicAuth(os.Getenv("STEAM_RABBIT_USER"), os.Getenv("STEAM_RABBIT_PASS"))
+	req, err := http.NewRequest("GET", config.Config.RabbitAPI(values), nil)
+	req.SetBasicAuth(config.Config.RabbitUser.Get(), config.Config.RabbitPass.Get())
 
 	client := &http.Client{}
 	response, err := client.Do(req)

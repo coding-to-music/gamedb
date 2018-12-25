@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 )
 
@@ -37,8 +37,6 @@ var (
 
 	errInvalidQueue = errors.New("invalid queue")
 	errEmptyMessage = errors.New("empty message")
-
-	rabbitDSN string
 
 	consumerConnection   *amqp.Connection
 	consumerCloseChannel chan *amqp.Error
@@ -70,16 +68,6 @@ func init() {
 	for _, v := range qs {
 		consumers[v.Message.getConsumeQueue()] = v
 	}
-}
-
-func Init() {
-
-	user := viper.GetString("RABBIT_USER")
-	pass := viper.GetString("RABBIT_PASS")
-	host := viper.GetString("RABBIT_HOST")
-	port := viper.GetString("RABBIT_PORT")
-
-	rabbitDSN = "amqp://" + user + ":" + pass + "@" + host + ":" + port
 }
 
 func RunConsumers() {
@@ -127,7 +115,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	// Connect
 	if producerConnection == nil {
 
-		producerConnection, err = amqp.Dial(rabbitDSN)
+		producerConnection, err = amqp.Dial(config.Config.RabbitDSN())
 		if err != nil {
 			log.Critical("Connecting to Rabbit: " + err.Error())
 			return err
@@ -165,7 +153,7 @@ func (s rabbitConsumer) consume() {
 		// Connect
 		if consumerConnection == nil {
 
-			consumerConnection, err = amqp.Dial(rabbitDSN)
+			consumerConnection, err = amqp.Dial(config.Config.RabbitDSN())
 			if err != nil {
 				log.Critical("Connecting to Rabbit: " + err.Error())
 				return

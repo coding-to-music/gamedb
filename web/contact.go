@@ -5,13 +5,17 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
-	"github.com/spf13/viper"
 )
+
+func init() {
+	recaptcha.SetSecret(config.Config.RecaptchaPrivate)
+}
 
 func contactRouter() http.Handler {
 	r := chi.NewRouter()
@@ -24,7 +28,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
 	t.Fill(w, r, "Contact", "Get in touch with Game DB.")
-	t.RecaptchaPublic = viper.GetString("RECAPTCHA_PUBLIC")
+	t.RecaptchaPublic = config.Config.RecaptchaPublic
 
 	err := returnTemplate(w, r, "contact", t)
 	log.Err(err, r)
@@ -85,11 +89,11 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		message := mail.NewSingleEmail(
 			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
 			"Game DB Contact Form",
-			mail.NewEmail(viper.GetString("ADMIN_NAME"), viper.GetString("ADMIN_EMAIL")),
+			mail.NewEmail(config.Config.AdminName, config.Config.AdminEmail),
 			r.PostForm.Get("message"),
 			r.PostForm.Get("message"),
 		)
-		client := sendgrid.NewSendClient(viper.GetString("SENDGRID"))
+		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey)
 
 		_, err = client.Send(message)
 		if err != nil {

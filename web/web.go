@@ -17,6 +17,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -27,21 +28,11 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"github.com/spf13/viper"
 )
-
-// Called from main
-func Init() {
-
-	session.Init()
-
-	InitChat()
-	InitCommits()
-}
 
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if viper.GetString("ENV") == string(log.EnvProd) {
+		if config.Config.IsProd() {
 			log.Info(log.ServiceGoogle, log.LogNameRequests, r.Method+" "+r.URL.Path)
 		}
 		next.ServeHTTP(w, r)
@@ -59,7 +50,7 @@ func middlewareTime(next http.Handler) http.Handler {
 
 func middlewareCors() func(next http.Handler) http.Handler {
 	return cors.New(cors.Options{
-		AllowedOrigins: []string{viper.GetString("DOMAIN")}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{config.Config.Domain.Get()}, // Use this to allow specific origin hosts
 		AllowedMethods: []string{"GET", "POST"},
 	}).Handler
 }
@@ -124,7 +115,7 @@ func Serve() error {
 	// 404
 	r.NotFound(error404Handler)
 
-	return http.ListenAndServe("0.0.0.0:"+viper.GetString("PORT"), r)
+	return http.ListenAndServe(config.Config.ListenOn(), r)
 }
 
 // FileServer conveniently sets up a http.FileServer handler to serve
@@ -137,7 +128,7 @@ func fileServer(r chi.Router) {
 		log.Info("FileServer does not permit URL parameters.")
 	}
 
-	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(viper.GetString("PATH"), "assets"))))
+	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(config.Config.Path.Get(), "assets"))))
 
 	if path != "/" && path[len(path)-1] != '/' {
 		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
@@ -171,7 +162,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
 	w.WriteHeader(200)
 
-	folder := viper.GetString("PATH")
+	folder := config.Config.Path.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/templates/_header.gohtml",
 		folder+"/templates/_header_esi.gohtml",
@@ -329,7 +320,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	t.Title = title + " - Game DB"
 	t.Description = description
-	t.Env = viper.GetString("ENV")
+	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
 
 	// User ID

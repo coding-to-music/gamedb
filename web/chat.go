@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -24,7 +24,7 @@ var (
 )
 
 // Called from main
-func InitChat() {
+func init() {
 
 	// Retry connecting to Discord
 	for i := 1; i <= 3; i++ {
@@ -52,7 +52,7 @@ func connectToDiscord() error {
 	var err error
 
 	// Get client
-	discordSession, err = discordgo.New("Bot " + viper.GetString("DISCORD_BOT_TOKEN"))
+	discordSession, err = discordgo.New("Bot " + config.Config.DiscordBotToken)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ type chatTemplate struct {
 func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
-	
+
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		id = generalChannelID

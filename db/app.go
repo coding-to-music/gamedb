@@ -10,11 +10,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -526,12 +526,12 @@ func (app App) GetUFS() (ufs PICSAppUFS, err error) {
 }
 
 func (app App) GetCommunityLink() string {
-	name := viper.GetString("SHORT_NAME")
+	name := config.Config.ShortName.Get()
 	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
 }
 
 func (app App) GetStoreLink() string {
-	name := viper.GetString("SHORT_NAME")
+	name := config.Config.ShortName.Get()
 	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
 }
 

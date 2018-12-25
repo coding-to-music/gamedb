@@ -3,11 +3,10 @@ package queue
 import (
 	"time"
 
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
-	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 )
 
@@ -116,7 +115,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	// Save change to DS
-	if viper.GetString("ENV") == string(log.EnvProd) {
+	if config.Config.IsProd() {
 		err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
 		if err != nil {
 			return true, err

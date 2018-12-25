@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/gorilla/sessions"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -18,18 +18,11 @@ const (
 	UserCountry = "country"
 )
 
-var store *sessions.CookieStore
 var writeMutex = new(sync.Mutex)
-
-// Called from main
-func Init() {
-
-	// In Init because viper isnt setup in init
-	store = sessions.NewCookieStore(
-		[]byte(viper.GetString("SESSION_AUTHENTICATION")),
-		[]byte(viper.GetString("SESSION_ENCRYPTION")),
-	)
-}
+var store = sessions.NewCookieStore(
+	[]byte(config.Config.SessionAuthentication),
+	[]byte(config.Config.SessionEncryption),
+)
 
 func getSession(r *http.Request) (*sessions.Session, error) {
 
@@ -37,7 +30,7 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 
 	session, err := store.Get(r, "gamedb-session")
 
-	if viper.GetString("ENV") == string(log.EnvProd) {
+	if config.Config.IsProd() {
 		session.Options = &sessions.Options{
 			MaxAge:   86400,
 			Domain:   "gamedb.online",

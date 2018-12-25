@@ -9,29 +9,20 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/social"
 	"github.com/gamedb/website/web"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/spf13/viper"
 )
 
-// These are called so everything as access to configs (viper)
-func init() {
-	configSetup() // First
-	log.Init()    // Second
-	helpers.InitSteam()
-	helpers.InitMemcache()
-	db.InitDS()
-	queue.Init()
-	web.Init()
-}
-
 func main() {
+
+	// Set environment variables
+	err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", config.Config.GoogleAppCreds)
+	log.Err(err)
 
 	// Flags
 	flagWebServer := flag.Bool("webserver", false, "Web Server")
@@ -65,7 +56,7 @@ func main() {
 	if *flagPprof {
 		go func() {
 			log.Info("Starting pprof")
-			err := http.ListenAndServe(":"+viper.GetString("PORT"), nil)
+			err := http.ListenAndServe(config.Config.ListenOn(), nil)
 			log.Err(err)
 		}()
 	}
@@ -88,38 +79,4 @@ func main() {
 	// Block forever for goroutines to run
 	forever := make(chan bool)
 	<-forever
-}
-
-func configSetup() {
-
-	// Checks
-	if os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		panic("can't see environment variables")
-	}
-
-	// Google
-	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("STEAM_GOOGLE_APPLICATION_CREDENTIALS"))
-		log.Err(err)
-	}
-
-	// Recaptcha
-	recaptcha.SetSecret(os.Getenv("STEAM_RECAPTCHA_PRIVATE"))
-
-	//
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("STEAM")
-
-	// Rabbit
-	viper.SetDefault("RABBIT_USER", "guest")
-	viper.SetDefault("RABBIT_PASS", "guest")
-
-	// Other
-	viper.SetDefault("PORT", "8081")
-	viper.SetDefault("ENV", "local")
-	viper.SetDefault("MEMCACHE_DSN", "memcache:11211")
-	viper.SetDefault("PATH", "/root")
-	viper.SetDefault("MYSQL_DSN", "root@tcp(localhost:3306)/steam")
-	viper.SetDefault("DOMAIN", "https://gamedb.online")
-	viper.SetDefault("SHORT_NAME", "GameDB")
 }

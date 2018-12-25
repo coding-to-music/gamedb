@@ -3,8 +3,8 @@ package db
 import (
 	"errors"
 
+	"github.com/gamedb/website/config"
 	"github.com/jinzhu/gorm"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -22,7 +22,7 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 
 		if gormConnectionDebug == nil {
 
-			db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN")+options)
+			db, err := gorm.Open("mysql", config.Config.ShortName.Get()+options)
 			if err != nil {
 				return db, err
 			}
@@ -36,7 +36,7 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 
 	if gormConnection == nil {
 
-		db, err := gorm.Open("mysql", viper.GetString("MYSQL_DSN")+options)
+		db, err := gorm.Open("mysql", config.Config.ShortName.Get()+options)
 		if err != nil {
 			return db, err
 		}

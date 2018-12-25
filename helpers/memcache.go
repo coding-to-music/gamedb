@@ -5,18 +5,12 @@ import (
 
 	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/spf13/viper"
+	"github.com/gamedb/website/config"
 )
 
 var ErrCacheMiss = memcache.ErrCacheMiss
 
-var memcacheClient *memcache.Memcache
-
-// Called from main
-func InitMemcache() {
-
-	memcacheClient = memcache.New("game-db-", viper.GetString("MEMCACHE_DSN"))
-}
+var memcacheClient = memcache.New("game-db-", config.Config.MemcacheDSN.Get())
 
 func GetMemcache() *memcache.Memcache {
 	return memcacheClient

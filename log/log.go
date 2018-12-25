@@ -12,15 +12,15 @@ import (
 	"time"
 
 	"cloud.google.com/go/logging"
+	"github.com/gamedb/website/config"
 	"github.com/rollbar/rollbar-go"
-	"github.com/spf13/viper"
 )
 
 //noinspection GoUnusedConst
 const (
 	// Environments
-	EnvProd  Environment = "production"
-	EnvLocal Environment = "local"
+	EnvProd  Environment = config.EnvProd
+	EnvLocal Environment = config.EnvLocal
 
 	// Log names
 	LogNameConsumers LogName = "consumers"
@@ -126,27 +126,22 @@ func (e entry) toText(includeStack bool) string {
 }
 
 var (
-	env          Environment
 	googleClient *logging.Client
 	logger       = logg.New(os.Stderr, "", logg.Ltime)
 )
 
-// Called from main
-func Init() {
-
-	envString := viper.GetString("ENV")
-	env = Environment(envString)
+func init() {
 
 	// Setup Google
 	var err error
-	googleClient, err = logging.NewClient(context.Background(), viper.GetString("GOOGLE_PROJECT"))
+	googleClient, err = logging.NewClient(context.Background(), config.Config.GoogleProject)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	// Setup Roolbar
-	rollbar.SetToken(viper.GetString("ROLLBAR_PRIVATE"))
-	rollbar.SetEnvironment(envString)                  // defaults to "development"
+	rollbar.SetToken(config.Config.RollbarPrivateKey)
+	rollbar.SetEnvironment(config.Config.Environment.Get())  // defaults to "development"
 	rollbar.SetCodeVersion("master")                   // optional Git hash/branch/tag (required for GitHub integration)
 	rollbar.SetServerRoot("github.com/gamedb/website") // path of project (required for GitHub integration and non-project stacktrace collapsing)
 }
@@ -196,7 +191,7 @@ func log(interfaces ...interface{}) {
 		return
 	}
 
-	if entry.environment != "" && entry.environment != env {
+	if entry.environment != "" && string(entry.environment) != config.Config.Environment.Get() {
 		return
 	}
 
@@ -214,7 +209,7 @@ func log(interfaces ...interface{}) {
 
 		// Google
 		if v == ServiceGoogle {
-			googleClient.Logger(string(env) + "-" + string(entry.logName)).Log(logging.Entry{
+			googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
 				Severity:  entry.severity.toGoole(),
 				Timestamp: entry.timestamp,
 				Payload:   entry.toText(true),

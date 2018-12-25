@@ -9,8 +9,8 @@ import (
 	"sync"
 
 	"cloud.google.com/go/datastore"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -30,13 +30,9 @@ var (
 	ErrorTooMany = errors.New("datastore: too many")
 
 	datastoreClient *datastore.Client
-)
 
-// Called from main
-func InitDS() {
-	_, _, err := GetDSClient()
-	log.Err(err)
-}
+	dsClientLock = new(sync.Mutex)
+)
 
 type Kind interface {
 	GetKey() *datastore.Key
@@ -44,14 +40,18 @@ type Kind interface {
 
 func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {
 
+	dsClientLock.Lock()
+
 	ctx = context.Background()
 
 	if datastoreClient == nil {
-		datastoreClient, err = datastore.NewClient(ctx, viper.GetString("GOOGLE_PROJECT"))
+		datastoreClient, err = datastore.NewClient(ctx, config.Config.GoogleProject)
 		if err != nil {
 			return datastoreClient, ctx, err
 		}
 	}
+
+	dsClientLock.Unlock()
 
 	return datastoreClient, ctx, nil
 }

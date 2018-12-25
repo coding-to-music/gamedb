@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/Jleagle/google-cloud-storage-go/gcs"
-	"github.com/spf13/viper"
+	"github.com/gamedb/website/config"
 )
 
 var (
@@ -21,7 +21,7 @@ func IsStorageLocaion(x string) bool {
 func Upload(path string, data []byte) (err error) {
 
 	payload := gcs.UploadPayload{}
-	payload.Bucket = viper.GetString("GOOGLE_BUCKET")
+	payload.Bucket = config.Config.GoogleBucket
 	payload.Path = path
 	payload.Transformer = gcs.TransformerSnappyEncode
 	payload.Data = data
@@ -33,7 +33,7 @@ func Upload(path string, data []byte) (err error) {
 func Download(path string) (data []byte, err error) {
 
 	payload := gcs.DownloadPayload{}
-	payload.Bucket = viper.GetString("GOOGLE_BUCKET")
+	payload.Bucket = config.Config.GoogleBucket
 	payload.Path = path
 	payload.Transformer = gcs.TransformerSnappyDecode
 

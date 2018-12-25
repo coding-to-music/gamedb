@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
-	"github.com/spf13/viper"
 )
 
 func statsRouter() http.Handler {
@@ -221,7 +221,7 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	q := datastore.NewQuery(db.KindPlayerRank)
 
-	if viper.GetString("ENV") == string(log.EnvLocal) {
+	if config.Config.IsLocal() {
 		q = q.Limit(1000)
 	}
 

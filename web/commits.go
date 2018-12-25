@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/google/go-github/github"
-	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 )
 
@@ -16,11 +16,11 @@ var (
 )
 
 // Called from main
-func InitCommits() {
+func init() {
 
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{
-			AccessToken: viper.GetString("GITHUB_TOKEN")},
+			AccessToken: config.Config.GithubToken},
 	)
 
 	tc := oauth2.NewClient(githubContext, ts)

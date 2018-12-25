@@ -4,21 +4,15 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/spf13/viper"
+	"github.com/gamedb/website/config"
 )
 
-var steamClient *steam.Steam
-
-// Called from main
-func InitSteam() {
-
-	steamClient = &steam.Steam{
-		Key:        viper.GetString("API_KEY"),
-		LogChannel: GetSteamLogsChan(),
-		UserAgent:  "http://gamedb.online",
-		APIRate:    time.Millisecond * 1000,
-		StoreRate:  time.Millisecond * 1600,
-	}
+var steamClient = &steam.Steam{
+	Key:        config.Config.SteamAPIKey,
+	LogChannel: GetSteamLogsChan(),
+	UserAgent:  "http://gamedb.online",
+	APIRate:    time.Millisecond * 1000,
+	StoreRate:  time.Millisecond * 1600,
 }
 
 func GetSteam() *steam.Steam {

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/ahmdrz/goinsta"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -14,7 +14,10 @@ var (
 
 func InitIG() {
 
-	ig = goinsta.New("gamedb.online", viper.GetString("INSTAGRAM_PASSWORD"))
+	ig = goinsta.New(
+		config.Config.InstagramUsername.Get(),
+		config.Config.InstagramPassword.Get(),
+	)
 
 	err := ig.Login()
 	if err != nil {

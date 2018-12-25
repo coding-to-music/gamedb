@@ -13,6 +13,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -20,13 +21,12 @@ import (
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
-	"github.com/spf13/viper"
 )
 
 func adminRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Use(basicauth.New("Steam", map[string][]string{
-		viper.GetString("ADMIN_USER"): {viper.GetString("ADMIN_PASS")},
+		config.Config.AdminUser: {config.Config.AdminPass},
 	}))
 	r.Get("/", adminHandler)
 	r.Get("/{option}", adminHandler)
