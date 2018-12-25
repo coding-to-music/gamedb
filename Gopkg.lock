@@ -178,12 +178,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:e7b34c0401a0cf9c3a7bc7980f12712290e03dcfb2bf681b38e7bf57a85d3a73"
+  digest = "1:ffea3fcee8cae28b474f74a40c328f415790e5677a5c4b3400061ade21df2415"
   name = "github.com/go-siris/siris"
   packages = ["core/errors"]
   pruneopts = ""
-  revision = "bf3b6eec68567b4a1c7b4a26c9dd87815abb363c"
-  version = "v7.3.4"
+  revision = "d6bc3df4b216199bec985043ca6c3e5c00232fd5"
+  version = "v7.4.0"
 
 [[projects]]
   digest = "1:e692d16fdfbddb94e9e4886aaf6c08bdbae5cb4ac80651445de9181b371c6e46"
@@ -426,15 +426,23 @@
   version = "v1.1.2"
 
 [[projects]]
-  digest = "1:0405366cf1d69c37913de6d2e51bd9710843fffb1bfa3a436424ef5a34072611"
+  digest = "1:58b4c5586232c9f9fc5ebc4870e9a24e41be9825b0b500bbeac2ebfcb24aab9e"
+  name = "github.com/oxequa/interact"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f8fb5795b5d713c41dab6771ffe1fdfdfd0c3285"
+  version = "1.1.1"
+
+[[projects]]
+  digest = "1:86fb1afb7ffc9426e6494e9322d0359c9173ea3649f064a74bcc890de0f58cf4"
   name = "github.com/oxequa/realize"
   packages = [
     ".",
     "realize",
   ]
   pruneopts = ""
-  revision = "f95d0e164962222b6e1562e1bfcfad1a6071fd11"
-  version = "v2.0"
+  revision = "13ee93c5f75c240128feb4271e025f2f381ca0f5"
+  version = "v2.0.2"
 
 [[projects]]
   digest = "1:2e5e286a00a31322e7efca6fb9be73e9f32e6d5d664c885a7e666ee32c5e0213"
@@ -469,12 +477,12 @@
   version = "v1.0.2"
 
 [[projects]]
-  digest = "1:7f569d906bdd20d906b606415b7d794f798f91a62fcfb6a4daa6d50690fb7a3f"
+  branch = "master"
+  digest = "1:47081c00d00c1dfc9a530c2556e78be391a5c24db1043efe6d406af882a169a1"
   name = "github.com/satori/go.uuid"
   packages = ["."]
   pruneopts = ""
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
+  revision = "b2ce2384e17bbe0c6d34077efa39dbab3e09123b"
 
 [[projects]]
   digest = "1:f66a8bd3128df79a2648daea552403c5c66d841c7ae844d5d22b445afbdf0878"
@@ -553,22 +561,6 @@
   packages = ["."]
   pruneopts = ""
   revision = "a314942b2fd9dde7a3f70ba3f1062848ce6eb392"
-
-[[projects]]
-  digest = "1:58b4c5586232c9f9fc5ebc4870e9a24e41be9825b0b500bbeac2ebfcb24aab9e"
-  name = "github.com/tockins/interact"
-  packages = ["."]
-  pruneopts = ""
-  revision = "f8fb5795b5d713c41dab6771ffe1fdfdfd0c3285"
-  version = "1.1.1"
-
-[[projects]]
-  digest = "1:0405366cf1d69c37913de6d2e51bd9710843fffb1bfa3a436424ef5a34072611"
-  name = "github.com/tockins/realize"
-  packages = ["realize"]
-  pruneopts = ""
-  revision = "f95d0e164962222b6e1562e1bfcfad1a6071fd11"
-  version = "v2.0"
 
 [[projects]]
   digest = "1:857a9ecd5cb13379ecc8f798f6e6b6b574c98b9355657d91e068275f1120aaf7"
@@ -828,12 +820,12 @@
   revision = "d3ae77c26ac8db90639677e4831a728d33c36111"
 
 [[projects]]
+  branch = "v2"
   digest = "1:cedccf16b71e86db87a24f8d4c70b0a855872eb967cb906a66b95de56aefbd0d"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
 
 [solve-meta]
   analyzer-name = "dep"
