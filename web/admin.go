@@ -1012,10 +1012,12 @@ func adminMemcache() {
 
 func adminDev() {
 
+	var err error
+
 	//gorm, err := db.GetMySQLClient()
 	//if err != nil {
 	//
-	//	log.Err(err, r)
+	//	log.Err(err)
 	//	return
 	//}
 	//
@@ -1026,8 +1028,8 @@ func adminDev() {
 	//gorm = gorm.Find(&packages)
 	//
 	//for _, v := range packages {
-	//	err := queue.Produce(queue.QueueApps, []byte(strconv.Itoa(v.ID)))
-	//	log.Err(err, r)
+	//	err = queue.QueueApp([]int{v.ID})
+	//	log.Err(err)
 	//}
 
 	// ######################################################
@@ -1081,7 +1083,7 @@ func adminDev() {
 	//
 	//log.Info("Done")
 
-	err := db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
+	err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
