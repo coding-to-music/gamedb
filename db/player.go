@@ -257,24 +257,6 @@ const (
 	PlayerUpdateAdmin   UpdateType = "admin"
 )
 
-func (p Player) GetTimeToUpdate(updateType UpdateType) int64 {
-
-	if updateType == PlayerUpdateAdmin {
-		return -1
-	} else if updateType == PlayerUpdateFriends {
-		return p.FriendsAddedAt.Add(time.Hour * 24 * 365).Unix() - time.Now().Unix() // 1 year
-	} else if updateType == PlayerUpdateAuto {
-		return p.UpdatedAt.Add(time.Hour * 24 * 7).Unix() - time.Now().Unix() // 1 week
-	} else if updateType == PlayerUpdateManual {
-		if p.Donated == 0 {
-			return p.UpdatedAt.Add(time.Hour * 24).Unix() - time.Now().Unix() // 1 day
-		}
-		return p.UpdatedAt.Add(time.Hour * 1).Unix() - time.Now().Unix() // 1 hour
-	}
-
-	return 0
-}
-
 func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (err error) {
 
 	if !IsValidPlayerID(p.PlayerID) {
@@ -285,9 +267,24 @@ func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (err error)
 		return ErrUpdatingPlayerBot
 	}
 
-	timeLeft := p.GetTimeToUpdate(updateType)
-	if timeLeft > 0 {
-		return ErrUpdatingPlayerTooSoon
+	if updateType == PlayerUpdateFriends {
+		if p.FriendsAddedAt.Add(time.Hour * 24 * 365).Unix() < time.Now().Unix() { // 1 year
+			return ErrUpdatingPlayerTooSoon
+		}
+	} else if updateType == PlayerUpdateAuto {
+		if p.UpdatedAt.Add(time.Hour * 24 * 7).Unix() < time.Now().Unix() { // 1 week
+			return ErrUpdatingPlayerTooSoon
+		}
+	} else if updateType == PlayerUpdateManual {
+		if p.Donated == 0 {
+			if p.UpdatedAt.Add(time.Hour * 24).Unix() < time.Now().Unix() { // 1 day
+				return ErrUpdatingPlayerTooSoon
+			}
+		} else {
+			if p.UpdatedAt.Add(time.Hour * 1).Unix() < time.Now().Unix() { // 1 hour
+				return ErrUpdatingPlayerTooSoon
+			}
+		}
 	}
 
 	// Check if player is in queue
