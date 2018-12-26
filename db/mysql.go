@@ -22,7 +22,7 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 
 		if gormConnectionDebug == nil {
 
-			db, err := gorm.Open("mysql", config.Config.ShortName.Get()+options)
+			db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+options)
 			if err != nil {
 				return db, err
 			}
@@ -36,7 +36,7 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 
 	if gormConnection == nil {
 
-		db, err := gorm.Open("mysql", config.Config.ShortName.Get()+options)
+		db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+options)
 		if err != nil {
 			return db, err
 		}
