@@ -15,17 +15,14 @@ var (
 	githubClient  *github.Client
 )
 
-// Called from main
 func init() {
 
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{
-			AccessToken: config.Config.GithubToken},
-	)
-
-	tc := oauth2.NewClient(githubContext, ts)
-
-	githubClient = github.NewClient(tc)
+	githubClient = github.NewClient(oauth2.NewClient(
+		githubContext,
+		oauth2.StaticTokenSource(
+			&oauth2.Token{
+				AccessToken: config.Config.GithubToken},
+		)))
 }
 
 func commitsHandler(w http.ResponseWriter, r *http.Request) {
