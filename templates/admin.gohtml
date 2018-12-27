@@ -73,7 +73,7 @@
                         <div class="col col-xl-3">
                             <a href="/admin/wipe-memcache" role="button" class="btn btn-danger btn-block mb-4">
                                 Wipe Memcache<br/>
-                                <small data-livestamp="{{ (index .Configs "wipe-memcache").Value }}"></small>
+                                <small data-livestamp="{{ (index .Configs .GetMCConfigKey).Value }}"></small>
                             </a>
                         </div>
                         <div class="col col-xl-3">

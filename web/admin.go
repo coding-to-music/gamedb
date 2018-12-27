@@ -83,7 +83,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		db.ConfAddedAllApps,
 		db.ConfDevelopersUpdated,
 		db.ConfPublishersUpdated,
-		db.ConfWipeMemcache,
+		db.ConfWipeMemcache + "-" + config.Config.Environment.Get(),
 		db.ConfRunDevCode,
 	})
 	log.Err(err, r)
@@ -103,6 +103,10 @@ type adminTemplate struct {
 	Errors     []string
 	Configs    map[string]db.Config
 	Goroutines int
+}
+
+func (at adminTemplate) GetMCConfigKey() string {
+	return "wipe-memcache" + "-" + config.Config.Environment.Get()
 }
 
 func adminDisableConsumers() {
@@ -999,13 +1003,13 @@ func adminMemcache() {
 	err := helpers.GetMemcache().DeleteAll()
 	log.Err(err)
 
-	err = db.SetConfig(db.ConfWipeMemcache, strconv.FormatInt(time.Now().Unix(), 10))
+	err = db.SetConfig(db.ConfWipeMemcache+"-"+config.Config.Environment.Get(), strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
-	page.Send(adminWebsocket{db.ConfWipeMemcache + " complete"})
+	page.Send(adminWebsocket{db.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
 
 	log.Info("Memcache wiped")
 }
