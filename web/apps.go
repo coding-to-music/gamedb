@@ -195,6 +195,11 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		// Convert cents to dollars
 		t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
 
+		// Fallback
+		if t.ExpensiveApp == 0 {
+			t.ExpensiveApp = 500
+		}
+
 	}(r)
 
 	// Wait
