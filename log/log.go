@@ -29,6 +29,7 @@ const (
 	LogNameGameDB    LogName = "gamedb" // Default
 	LogNameRequests  LogName = "requests"
 	LogNameDatastore LogName = "datastore"
+	LogNameSQL       LogName = "sql"
 
 	// Severities
 	SeverityDebug    Severity = "debug"
