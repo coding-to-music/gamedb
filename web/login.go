@@ -38,7 +38,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t := loginTemplate{}
 	t.Fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic
-	t.Domain = config.Config.Domain.Get()
+	t.Domain = config.Config.GameDBDomain.Get()
 
 	err := returnTemplate(w, r, "login", t)
 	log.Err(err, r)
@@ -174,7 +174,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var url string
-	var domain = config.Config.Domain.Get()
+	var domain = config.Config.GameDBDomain.Get()
 	url, err = openid.RedirectURL("https://steamcommunity.com/openid", domain+"/login/callback", domain+"/")
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong sending you to Steam.", Error: err})
@@ -198,7 +198,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	// Get ID from OpenID
-	openID, err := openid.Verify(config.Config.Domain.Get()+r.URL.String(), discoveryCache, nonceStore)
+	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return

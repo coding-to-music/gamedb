@@ -37,7 +37,7 @@ func init() {
 	Config.RecaptchaPrivate = os.Getenv(prefix + "RECAPTCHA_PRIVATE")
 
 	Config.DiscordBotToken = os.Getenv(prefix + "DISCORD_BOT_TOKEN")
-	Config.Domain.Set("DOMAIN")
+	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
 	Config.GithubToken = os.Getenv(prefix + "GITHUB_TOKEN")
 	Config.GoogleBucket = os.Getenv(prefix + "GOOGLE_BUCKET")
@@ -63,12 +63,12 @@ func init() {
 
 		Config.MemcacheDSN.SetFallback("memcache:11211")
 		Config.MySQLDSN.SetFallback("root@tcp(localhost:3306)/steam")
-		Config.Domain.SetFallback("http://localhost:8081")
+		Config.GameDBDomain.SetFallback("http://localhost:8081")
 
 	} else if Config.IsProd() {
 
 		Config.GameDBDirectory.SetFallback("/root")
-		Config.Domain.SetFallback("https://gamedb.online")
+		Config.GameDBDomain.SetFallback("https://gamedb.online")
 
 	} else {
 		fmt.Println("Missing env")
@@ -98,9 +98,9 @@ type BaseConfig struct {
 	RecaptchaPublic  string
 
 	DiscordBotToken   string
-	Domain            ConfigItem
 	Environment       ConfigItem
 	GameDBDirectory   ConfigItem
+	GameDBDomain      ConfigItem
 	GameDBShortName   ConfigItem
 	GithubToken       string
 	GoogleBucket      string
