@@ -40,7 +40,6 @@ func init() {
 	Config.Domain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
 	Config.GithubToken = os.Getenv(prefix + "GITHUB_TOKEN")
-	Config.GoogleApplicationCredentials = os.Getenv(prefix + "GOOGLE_APPLICATION_CREDENTIALS")
 	Config.GoogleBucket = os.Getenv(prefix + "GOOGLE_BUCKET")
 	Config.GoogleProject = os.Getenv(prefix + "GOOGLE_PROJECT")
 	Config.MemcacheDSN.Set("MEMCACHE_DSN")
@@ -98,21 +97,20 @@ type BaseConfig struct {
 	RecaptchaPrivate string
 	RecaptchaPublic  string
 
-	DiscordBotToken              string
-	Domain                       ConfigItem
-	Environment                  ConfigItem
-	GameDBDirectory              ConfigItem
-	GameDBShortName              ConfigItem
-	GithubToken                  string
-	GoogleApplicationCredentials string
-	GoogleBucket                 string
-	GoogleProject                string
-	MemcacheDSN                  ConfigItem
-	MySQLDSN                     ConfigItem
-	RollbarPrivateKey            string
-	SendGridAPIKey               string
-	SteamAPIKey                  string
-	WebserverPort                ConfigItem
+	DiscordBotToken   string
+	Domain            ConfigItem
+	Environment       ConfigItem
+	GameDBDirectory   ConfigItem
+	GameDBShortName   ConfigItem
+	GithubToken       string
+	GoogleBucket      string
+	GoogleProject     string
+	MemcacheDSN       ConfigItem
+	MySQLDSN          ConfigItem
+	RollbarPrivateKey string
+	SendGridAPIKey    string
+	SteamAPIKey       string
+	WebserverPort     ConfigItem
 }
 
 func (c BaseConfig) RabbitDSN() string {

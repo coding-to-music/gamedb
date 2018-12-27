@@ -18,11 +18,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func init() {
-	err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", config.Config.GoogleApplicationCredentials)
-	log.Err(err)
-}
-
 func main() {
 
 	// Flags
