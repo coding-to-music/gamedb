@@ -60,8 +60,8 @@ func init() {
 
 		Config.RabbitUsername.SetFallback("guest")
 		Config.RabbitPassword.SetFallback("guest")
+		Config.MemcacheDSN.SetFallback("localhost:11211")
 
-		Config.MemcacheDSN.SetFallback("memcache:11211")
 		Config.MySQLDSN.SetFallback("root@tcp(localhost:3306)/steam")
 		Config.GameDBDomain.SetFallback("http://localhost:8081")
 
@@ -69,6 +69,7 @@ func init() {
 
 		Config.GameDBDirectory.SetFallback("/root")
 		Config.GameDBDomain.SetFallback("https://gamedb.online")
+		Config.MemcacheDSN.SetFallback("memcache:11211")
 
 	} else {
 		fmt.Println("Missing env")
