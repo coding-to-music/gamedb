@@ -55,6 +55,5 @@ type MySQLLogger struct {
 }
 
 func (ml MySQLLogger) Print(v ...interface{}) {
-	//fmt.Println(v[3])
-	log.Debug(append(v, log.LogNameSQL)...)
+	log.Debug(append(v, log.LogNameSQL, log.EnvProd)...)
 }
