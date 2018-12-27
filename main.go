@@ -20,6 +20,8 @@ import (
 
 func main() {
 
+	log.Info("Main: " + config.Config.Environment.Get())
+
 	// Flags
 	flagWebServer := flag.Bool("webserver", false, "Web Server")
 	flagConsumers := flag.Bool("consumers", false, "Consumers")
