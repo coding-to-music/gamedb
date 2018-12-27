@@ -18,11 +18,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main() {
-
-	// Set environment variables
-	err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", config.Config.GoogleAppCreds)
+func init() {
+	err := os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", config.Config.GoogleApplicationCredentials)
 	log.Err(err)
+}
+
+func main() {
 
 	// Flags
 	flagWebServer := flag.Bool("webserver", false, "Web Server")

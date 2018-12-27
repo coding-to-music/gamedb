@@ -10,7 +10,7 @@ import (
 
 func rootFileHandler(w http.ResponseWriter, r *http.Request) {
 
-	data, err := ioutil.ReadFile(config.Config.Path.Get() + "/assets/files" + r.URL.Path)
+	data, err := ioutil.ReadFile(config.Config.GameDBDirectory.Get() + "/assets/files" + r.URL.Path)
 
 	if err != nil {
 		log.Err(err, r)

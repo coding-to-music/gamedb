@@ -16,16 +16,16 @@ var Config BaseConfig
 func init() {
 
 	// Set configs from environment variables
-	Config.AdminUser = os.Getenv(prefix + "ADMIN_USER")
-	Config.AdminPass = os.Getenv(prefix + "ADMIN_PASS")
+	Config.AdminUsername = os.Getenv(prefix + "ADMIN_USER")
+	Config.AdminPassword = os.Getenv(prefix + "ADMIN_PASS")
 	Config.AdminName = os.Getenv(prefix + "ADMIN_NAME")
 	Config.AdminEmail = os.Getenv(prefix + "ADMIN_EMAIL")
 
-	Config.RabbitUser.Set("RABBIT_USER")
-	Config.RabbitPass.Set("RABBIT_PASS")
+	Config.RabbitUsername.Set("RABBIT_USER")
+	Config.RabbitPassword.Set("RABBIT_PASS")
 	Config.RabbitHost = os.Getenv(prefix + "RABBIT_HOST")
 	Config.RabbitPort = os.Getenv(prefix + "RABBIT_PORT")
-	Config.RabbitManPort = os.Getenv(prefix + "RABBIT_MANAGEMENT_PORT")
+	Config.RabbitManagmentPort = os.Getenv(prefix + "RABBIT_MANAGEMENT_PORT")
 
 	Config.SessionAuthentication = os.Getenv(prefix + "SESSION_AUTHENTICATION")
 	Config.SessionEncryption = os.Getenv(prefix + "SESSION_ENCRYPTION")
@@ -40,35 +40,35 @@ func init() {
 	Config.Domain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
 	Config.GithubToken = os.Getenv(prefix + "GITHUB_TOKEN")
-	Config.GoogleAppCreds = os.Getenv(prefix + "GOOGLE_APPLICATION_CREDENTIALS")
+	Config.GoogleApplicationCredentials = os.Getenv(prefix + "GOOGLE_APPLICATION_CREDENTIALS")
 	Config.GoogleBucket = os.Getenv(prefix + "GOOGLE_BUCKET")
 	Config.GoogleProject = os.Getenv(prefix + "GOOGLE_PROJECT")
 	Config.MemcacheDSN.Set("MEMCACHE_DSN")
 	Config.MySQLDSN.Set("MYSQL_DSN")
-	Config.Path.Set("PATH")
+	Config.GameDBDirectory.Set("PATH")
 	Config.RollbarPrivateKey = os.Getenv(prefix + "ROLLBAR_PRIVATE")
 	Config.SendGridAPIKey = os.Getenv(prefix + "SENDGRID")
-	Config.ShortName.Set("SHORT_NAME")
+	Config.GameDBShortName.Set("SHORT_NAME")
 	Config.SteamAPIKey = os.Getenv(prefix + "API_KEY")
-	Config.WebServerPort.Set("PORT")
+	Config.WebserverPort.Set("PORT")
 
 	// Fallbacks
-	Config.ShortName.SetFallback("GameDB")
+	Config.GameDBShortName.SetFallback("GameDB")
 	Config.InstagramUsername.SetFallback("gamedb.online")
 
 	if Config.IsLocal() {
 
-		Config.RabbitUser.SetFallback("guest")
-		Config.RabbitPass.SetFallback("guest")
+		Config.RabbitUsername.SetFallback("guest")
+		Config.RabbitPassword.SetFallback("guest")
 
-		Config.WebServerPort.SetFallback("8081")
+		Config.WebserverPort.SetFallback("8081")
 		Config.MemcacheDSN.SetFallback("memcache:11211")
 		Config.MySQLDSN.SetFallback("root@tcp(localhost:3306)/steam")
 		Config.Domain.SetFallback("http://localhost:8081")
 
 	} else if Config.IsProd() {
 
-		Config.Path.SetFallback("/root")
+		Config.GameDBDirectory.SetFallback("/root")
 		Config.Domain.SetFallback("https://gamedb.online")
 
 	} else {
@@ -78,48 +78,53 @@ func init() {
 }
 
 type BaseConfig struct {
-	RabbitUser            ConfigItem
-	RabbitPass            ConfigItem
-	RabbitHost            string
-	RabbitPort            string
-	RabbitManPort         string
-	WebServerPort         ConfigItem
-	ShortName             ConfigItem
-	GoogleProject         string
-	MySQLDSN              ConfigItem
-	MemcacheDSN           ConfigItem
-	SteamAPIKey           string
-	GoogleBucket          string
-	Environment           ConfigItem
-	RollbarPrivateKey     string
+	AdminEmail    string
+	AdminName     string
+	AdminPassword string
+	AdminUsername string
+
+	RabbitUsername      ConfigItem
+	RabbitPassword      ConfigItem
+	RabbitHost          string
+	RabbitPort          string
+	RabbitManagmentPort string
+
 	SessionAuthentication string
 	SessionEncryption     string
-	InstagramUsername     ConfigItem
-	InstagramPassword     ConfigItem
-	AdminUser             string
-	AdminPass             string
-	AdminName             string
-	AdminEmail            string
-	DiscordBotToken       string
-	GithubToken           string
-	RecaptchaPublic       string
-	RecaptchaPrivate      string
-	SendGridAPIKey        string
-	GoogleAppCreds        string
-	Path                  ConfigItem
-	Domain                ConfigItem
+
+	InstagramPassword ConfigItem
+	InstagramUsername ConfigItem
+
+	RecaptchaPrivate string
+	RecaptchaPublic  string
+
+	DiscordBotToken              string
+	Domain                       ConfigItem
+	Environment                  ConfigItem
+	GameDBDirectory              ConfigItem
+	GameDBShortName              ConfigItem
+	GithubToken                  string
+	GoogleApplicationCredentials string
+	GoogleBucket                 string
+	GoogleProject                string
+	MemcacheDSN                  ConfigItem
+	MySQLDSN                     ConfigItem
+	RollbarPrivateKey            string
+	SendGridAPIKey               string
+	SteamAPIKey                  string
+	WebserverPort                ConfigItem
 }
 
 func (c BaseConfig) RabbitDSN() string {
-	return "amqp://" + c.RabbitUser.Get() + ":" + c.RabbitPass.Get() + "@" + c.RabbitHost + ":" + c.RabbitPort
+	return "amqp://" + c.RabbitUsername.Get() + ":" + c.RabbitPassword.Get() + "@" + c.RabbitHost + ":" + c.RabbitPort
 }
 
 func (c BaseConfig) RabbitAPI(values url.Values) string {
-	return "http://" + c.RabbitHost + ":" + c.RabbitManPort + "/api/overview?" + values.Encode()
+	return "http://" + c.RabbitHost + ":" + c.RabbitManagmentPort + "/api/overview?" + values.Encode()
 }
 
 func (c BaseConfig) ListenOn() string {
-	return "0.0.0.0:" + c.WebServerPort.Get()
+	return "0.0.0.0:" + c.WebserverPort.Get()
 }
 
 func (c BaseConfig) IsLocal() bool {

@@ -26,7 +26,7 @@ import (
 func adminRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Use(basicauth.New("Steam", map[string][]string{
-		config.Config.AdminUser: {config.Config.AdminPass},
+		config.Config.AdminUsername: {config.Config.AdminPassword},
 	}))
 	r.Get("/", adminHandler)
 	r.Get("/{option}", adminHandler)

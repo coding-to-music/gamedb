@@ -128,7 +128,7 @@ func fileServer(r chi.Router) {
 		log.Info("FileServer does not permit URL parameters.")
 	}
 
-	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(config.Config.Path.Get(), "assets"))))
+	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(config.Config.GameDBDirectory.Get(), "assets"))))
 
 	if path != "/" && path[len(path)-1] != '/' {
 		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
@@ -162,7 +162,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
 	w.WriteHeader(200)
 
-	folder := config.Config.Path.Get()
+	folder := config.Config.GameDBDirectory.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/templates/_header.gohtml",
 		folder+"/templates/_header_esi.gohtml",

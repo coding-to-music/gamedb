@@ -92,7 +92,7 @@ func getOverview() (resp Overview, err error) {
 	values.Set("data_rates_incr", "60")
 
 	req, err := http.NewRequest("GET", config.Config.RabbitAPI(values), nil)
-	req.SetBasicAuth(config.Config.RabbitUser.Get(), config.Config.RabbitPass.Get())
+	req.SetBasicAuth(config.Config.RabbitUsername.Get(), config.Config.RabbitPassword.Get())
 
 	client := &http.Client{}
 	response, err := client.Do(req)
