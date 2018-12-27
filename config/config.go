@@ -54,13 +54,13 @@ func init() {
 	// Fallbacks
 	Config.GameDBShortName.SetFallback("GameDB")
 	Config.InstagramUsername.SetFallback("gamedb.online")
+	Config.WebserverPort.SetFallback("8081")
 
 	if Config.IsLocal() {
 
 		Config.RabbitUsername.SetFallback("guest")
 		Config.RabbitPassword.SetFallback("guest")
 
-		Config.WebserverPort.SetFallback("8081")
 		Config.MemcacheDSN.SetFallback("memcache:11211")
 		Config.MySQLDSN.SetFallback("root@tcp(localhost:3306)/steam")
 		Config.Domain.SetFallback("http://localhost:8081")
