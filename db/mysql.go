@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/log"
 	"github.com/jinzhu/gorm"
 )
 
@@ -27,6 +28,7 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 				return db, err
 			}
 			db.LogMode(true)
+			db.SetLogger(MySQLLogger{})
 
 			gormConnectionDebug = db
 		}
@@ -40,9 +42,19 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 		if err != nil {
 			return db, err
 		}
+		db.LogMode(true)
+		db.SetLogger(MySQLLogger{})
 
 		gormConnection = db
 	}
 
 	return gormConnection, nil
+}
+
+type MySQLLogger struct {
+}
+
+func (ml MySQLLogger) Print(v ...interface{}) {
+	//fmt.Println(v[3])
+	log.Debug(v...)
 }

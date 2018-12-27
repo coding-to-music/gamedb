@@ -141,9 +141,9 @@ func init() {
 
 	// Setup Roolbar
 	rollbar.SetToken(config.Config.RollbarPrivateKey)
-	rollbar.SetEnvironment(config.Config.Environment.Get())  // defaults to "development"
-	rollbar.SetCodeVersion("master")                   // optional Git hash/branch/tag (required for GitHub integration)
-	rollbar.SetServerRoot("github.com/gamedb/website") // path of project (required for GitHub integration and non-project stacktrace collapsing)
+	rollbar.SetEnvironment(config.Config.Environment.Get()) // defaults to "development"
+	rollbar.SetCodeVersion("master")                        // optional Git hash/branch/tag (required for GitHub integration)
+	rollbar.SetServerRoot("github.com/gamedb/website")      // path of project (required for GitHub integration and non-project stacktrace collapsing)
 }
 
 func log(interfaces ...interface{}) {
@@ -183,7 +183,7 @@ func log(interfaces ...interface{}) {
 			loggingServices = append(loggingServices, val)
 		case Option:
 		default:
-			Err("Invalid value given to Err")
+			//Err("Invalid value given to log: " + reflect.TypeOf(val).String())
 		}
 	}
 
