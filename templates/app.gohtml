@@ -409,30 +409,44 @@
                         <div class="card-header bg-light text-white">
 
                             <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#dev-extended" role="tab">Extended Values</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-common" role="tab">Common Values</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-config" role="tab">Config</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-ufs" role="tab">UFS</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-install" role="tab">Install</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
-                                </li>
+                                {{if gt (len .App.GetExtended) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#dev-extended" role="tab">Extended Values</a>
+                                    </li>
+                                {{ end }}
+                                {{if gt (len .App.GetCommon) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-common" role="tab">Common Values</a>
+                                    </li>
+                                {{ end }}
+                                {{if gt (len .App.GetConfig) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-config" role="tab">Config</a>
+                                    </li>
+                                {{ end }}
+                                {{if gt (len .App.GetUFS) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-ufs" role="tab">UFS</a>
+                                    </li>
+                                {{ end }}
+                                {{if gt (len .App.GetInstall) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-install" role="tab">Install</a>
+                                    </li>
+                                {{ end }}
+                                {{if gt (len .App.GetLocalization) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
+                                    </li>
+                                {{ end }}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
+                                    </li>
+                                {{if gt (len .App.GetLaunch) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
+                                    </li>
+                                {{ end }}
                             </ul>
 
                         </div>

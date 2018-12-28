@@ -183,15 +183,21 @@
                         <div class="card-header bg-light text-white">
 
                             <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#dev-extended" role="tab">Extended Values</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-common" role="tab">Common Values</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
-                                </li>
+                                {{if gt (len .Package.GetExtended) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#dev-extended" role="tab">Extended Values ({{ len .Package.GetExtended }})</a>
+                                    </li>
+                                {{ end }}
+                                {{if gt (len .Package.GetController) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-controller" role="tab">Controller Values ({{ len .Package.GetController }})</a>
+                                    </li>
+                                {{ end }}
+                                {{if gt (len .Package.GetDepotIDs) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots ({{ len .Package.GetDepotIDs }})</a>
+                                    </li>
+                                {{ end }}
                             </ul>
 
                         </div>
@@ -221,7 +227,7 @@
                                 </div>
 
                                 {{/* Controller */}}
-                                <div class="tab-pane" id="dev-common" role="tabpanel">
+                                <div class="tab-pane" id="dev-controller" role="tabpanel">
 
                                     <div class="table-responsive">
                                         <table class="table table-hover table-striped table-datatable mb-0">
