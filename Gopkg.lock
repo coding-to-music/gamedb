@@ -32,11 +32,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bf987b3a2edca77f99a56d3e9887b0820934087beb393c41d699be6133c1eef4"
+  digest = "1:2710ef31ad241800c2ead4d59505eac359cf8da29a85be13b818d3c61b9f5df7"
   name = "github.com/Jleagle/google-cloud-storage-go"
   packages = ["gcs"]
   pruneopts = ""
-  revision = "557498ea9108eb831e1cddeed8524b8ef014d9a6"
+  revision = "0633133a5c6cab99f3b2e609579f0261319c0a5c"
 
 [[projects]]
   branch = "master"
@@ -56,11 +56,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:def579dcf39f67f5de68c093343f616a39622b23716d6290dd5f93cd3a602994"
+  digest = "1:3124c464eebbfb11df74cadadcfbef62542275c2d3c2f7683df1a35291f1326c"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "9a60496254d5142404cd6100ccf1a40f78b75db8"
+  revision = "fc40188cde0631549dc64479f896fa7ec6d28851"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -594,14 +594,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e6d1805ead5b8f2439808f76187f54042ed35ee26eb9ca63127259a0e612b119"
+  digest = "1:547a861b18e173200e5bc00fbeabf72513671dab7a6de8fac6ca6fa78994a74a"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "b4a75ba826a64a70990f11a225237acd6ef35c9f"
+  revision = "c6cbdbf9e68a68b19802a5c44e537c284b9c8e1a"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
