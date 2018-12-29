@@ -8,6 +8,7 @@ import (
 
 const EnvProd = "production"
 const EnvLocal = "local"
+const EnvConsumer = "consumer"
 
 const prefix = "STEAM_"
 
@@ -51,27 +52,32 @@ func init() {
 	Config.SteamAPIKey = os.Getenv(prefix + "API_KEY")
 	Config.WebserverPort.Set("PORT")
 
-	// Fallbacks
-	Config.GameDBShortName.SetFallback("GameDB")
-	Config.InstagramUsername.SetFallback("gamedb.online")
-	Config.WebserverPort.SetFallback("8081")
+	// Defaults
+	Config.GameDBShortName.SetDefault("GameDB")
+	Config.InstagramUsername.SetDefault("gamedb.online")
+	Config.WebserverPort.SetDefault("8081")
+	Config.EnableWebserver.SetDefault("1")
+	Config.EnableConsumers.SetDefault("1")
+	Config.GameDBDomain.SetDefault("https://gamedb.online")
+	Config.MemcacheDSN.SetDefault("memcache:11211")
+	Config.GameDBDirectory.SetDefault("/root")
 
-	if Config.IsLocal() {
+	switch Config.Environment.Get() {
+	case EnvProd:
 
-		Config.RabbitUsername.SetFallback("guest")
-		Config.RabbitPassword.SetFallback("guest")
-		Config.MemcacheDSN.SetFallback("localhost:11211")
+	case EnvLocal:
 
-		Config.MySQLDSN.SetFallback("root@tcp(localhost:3306)/steam")
-		Config.GameDBDomain.SetFallback("http://localhost:8081")
+		Config.RabbitUsername.SetDefault("guest")
+		Config.RabbitPassword.SetDefault("guest")
+		Config.MemcacheDSN.SetDefault("localhost:11211")
+		Config.MySQLDSN.SetDefault("root@tcp(localhost:3306)/steam")
+		Config.GameDBDomain.SetDefault("http://localhost:8081")
 
-	} else if Config.IsProd() {
+	case EnvConsumer:
 
-		Config.GameDBDirectory.SetFallback("/root")
-		Config.GameDBDomain.SetFallback("https://gamedb.online")
-		Config.MemcacheDSN.SetFallback("memcache:11211")
+		Config.EnableWebserver.SetDefault("0")
 
-	} else {
+	default:
 		fmt.Println("Missing env")
 		os.Exit(1)
 	}
@@ -112,6 +118,8 @@ type BaseConfig struct {
 	SendGridAPIKey    string
 	SteamAPIKey       string
 	WebserverPort     ConfigItem
+	EnableWebserver   ConfigItem
+	EnableConsumers   ConfigItem
 }
 
 func (c BaseConfig) RabbitDSN() string {
@@ -136,26 +144,33 @@ func (c BaseConfig) IsProd() bool {
 
 // ConfigItem
 type ConfigItem struct {
-	Value    string
-	Fallback string
+	value        string
+	defaultValue string
 }
 
 func (ci *ConfigItem) Set(environment string) {
 	env := os.Getenv(prefix + environment)
 	if env != "" {
-		ci.Value = env
+		ci.value = env
 	} else {
-		ci.Value = os.Getenv(environment)
+		ci.value = os.Getenv(environment)
 	}
 }
 
-func (ci *ConfigItem) SetFallback(fallback string) {
-	ci.Fallback = fallback
+func (ci *ConfigItem) SetDefault(defaultValue string) {
+	ci.defaultValue = defaultValue
 }
 
 func (ci ConfigItem) Get() string {
-	if ci.Value != "" {
-		return ci.Value
+	if ci.value != "" {
+		return ci.value
 	}
-	return ci.Fallback
+	return ci.defaultValue
+}
+
+func (ci ConfigItem) GetBool() bool {
+	if ci.value != "" {
+		return ci.value == "1"
+	}
+	return ci.defaultValue == "1"
 }
