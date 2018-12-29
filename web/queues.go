@@ -45,7 +45,30 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 			return "", err
 		}
 
-		bytes, err := json.Marshal(overview.QueueTotals.MessagesDetails.Samples)
+		var response = queueJSONResponse{}
+
+		// Items
+		items := overview.QueueTotals.MessagesDetails.Samples
+		sort.Slice(items, func(i, j int) bool {
+			return items[i].Timestamp < items[j].Timestamp
+		})
+		for _, v := range items {
+			response.Items = append(response.Items, []int64{v.Timestamp, int64(v.Sample)})
+		}
+
+		// Rates
+		rates := overview.MessageStats.AckDetails.Samples
+		sort.Slice(rates, func(i, j int) bool {
+			return rates[i].Timestamp < rates[j].Timestamp
+		})
+
+		var last = rates[0].Sample
+		for _, v := range rates {
+			response.Rates = append(response.Rates, []int64{v.Timestamp, int64(v.Sample - last)})
+			last = v.Sample
+		}
+
+		bytes, err := json.Marshal(response)
 		return string(bytes), err
 	})
 
@@ -54,42 +77,24 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var samples []Sample
-	err = helpers.Unmarshal([]byte(s), &samples)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the queues.", Error: err})
-		return
-	}
-
-	sort.Slice(samples, func(i, j int) bool {
-		return samples[i].Timestamp < samples[j].Timestamp
-	})
-
-	var ret [][]interface{}
-	for _, v := range samples {
-		ret = append(ret, []interface{}{v.Timestamp, v.Sample})
-	}
-
-	// Encode
-	bytes, err := json.Marshal(ret)
-	if err != nil {
-		log.Err(err, r)
-		bytes = []byte("[]")
-	}
-
-	err = returnJSON(w, r, bytes)
+	err = returnJSON(w, r, []byte(s))
 	log.Err(err, r)
+}
+
+type queueJSONResponse struct {
+	Items [][]int64 `json:"items"`
+	Rates [][]int64 `json:"rate"`
 }
 
 func getOverview() (resp Overview, err error) {
 
 	values := url.Values{}
 	values.Set("lengths_age", "3600")
-	values.Set("lengths_incr", "10")
+	values.Set("lengths_incr", "60")
 	values.Set("msg_rates_age", "3600")
-	values.Set("msg_rates_incr", "10")
-	values.Set("data_rates_age", "3600")
-	values.Set("data_rates_incr", "60")
+	values.Set("msg_rates_incr", "60")
+	//values.Set("data_rates_age", "3600")
+	//values.Set("data_rates_incr", "60")
 
 	req, err := http.NewRequest("GET", config.Config.RabbitAPI(values), nil)
 	req.SetBasicAuth(config.Config.RabbitUsername.Get(), config.Config.RabbitPassword.Get())
@@ -144,123 +149,87 @@ type Overview struct {
 	MessageStats      struct {
 		Ack        int `json:"ack"`
 		AckDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"ack_details"`
 		Confirm        int `json:"confirm"`
 		ConfirmDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"confirm_details"`
 		Deliver        int `json:"deliver"`
 		DeliverDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"deliver_details"`
 		DeliverGet        int `json:"deliver_get"`
 		DeliverGetDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"deliver_get_details"`
 		DeliverNoAck        int `json:"deliver_no_ack"`
 		DeliverNoAckDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"deliver_no_ack_details"`
 		DiskReads        int `json:"disk_reads"`
 		DiskReadsDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"disk_reads_details"`
 		DiskWrites        int `json:"disk_writes"`
 		DiskWritesDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"disk_writes_details"`
 		Get        int `json:"get"`
 		GetDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"get_details"`
 		GetNoAck        int `json:"get_no_ack"`
 		GetNoAckDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"get_no_ack_details"`
 		Publish        int `json:"publish"`
 		PublishDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"publish_details"`
 		Redeliver        int `json:"redeliver"`
 		RedeliverDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"redeliver_details"`
 		ReturnUnroutable        int `json:"return_unroutable"`
 		ReturnUnroutableDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"return_unroutable_details"`
 	} `json:"message_stats"`
 	QueueTotals struct {
@@ -273,23 +242,17 @@ type Overview struct {
 		} `json:"messages_details"`
 		MessagesReady        int `json:"messages_ready"`
 		MessagesReadyDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"messages_ready_details"`
 		MessagesUnacknowledged        int `json:"messages_unacknowledged"`
 		MessagesUnacknowledgedDetails struct {
-			Rate    float64 `json:"rate"`
-			Samples []struct {
-				Sample    int   `json:"sample"`
-				Timestamp int64 `json:"timestamp"`
-			} `json:"samples"`
-			AvgRate float64 `json:"avg_rate"`
-			Avg     float64 `json:"avg"`
+			Rate    float64  `json:"rate"`
+			Samples []Sample `json:"samples"`
+			AvgRate float64  `json:"avg_rate"`
+			Avg     float64  `json:"avg"`
 		} `json:"messages_unacknowledged_details"`
 	} `json:"queue_totals"`
 	ObjectTotals struct {

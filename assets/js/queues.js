@@ -19,7 +19,8 @@ if ($('#queues-page').length > 0) {
         $.ajax({
             url: '/queues/ajax.json',
             success: function (data, textStatus, jqXHR) {
-                chart.series[0].setData(data);
+                chart.series[0].setData(data.items);
+                chart.series[1].setData(data.rate);
             },
             dataType: 'json',
             cache: false,
@@ -32,11 +33,10 @@ if ($('#queues-page').length > 0) {
     }
 
     updateChart();
-    const timer = window.setInterval(updateChart, 10000);
+    const timer = window.setInterval(updateChart, 10000); // 10 Seconds
 
     const chart = Highcharts.chart('chart', {
         chart: {
-            type: 'area',
             animation: false
         },
         title: {
@@ -58,17 +58,28 @@ if ($('#queues-page').length > 0) {
             labels: {
                 step: 1,
                 formatter: function () {
-                    return moment(this.value).format("h:mm:ss");
+                    return moment(this.value).format("h:mm");
                 },
             },
+            type: 'datetime',
         },
-        yAxis: {
-            title: {
-                text: 'Queue Size'
+        yAxis: [
+            {
+                title: {
+                    text: 'Queue Size'
+                },
+                allowDecimals: false,
+                min: 0,
             },
-            allowDecimals: false,
-            min: 0,
-        },
+            {
+                title: {
+                    text: 'Queue Speed'
+                },
+                allowDecimals: false,
+                min: 0,
+                opposite: true,
+            }
+        ],
         plotOptions: {
             series: {
                 marker: {
@@ -77,12 +88,27 @@ if ($('#queues-page').length > 0) {
                 animation: false
             }
         },
-        series: [{
-            color: '#28a745',
-        }],
+        series: [
+            {
+                color: '#28a745',
+                yAxis: 0,
+                name: 'size',
+                type: 'areaspline',
+            },
+            {
+                color: '#28a745',
+                yAxis: 1,
+                name: 'speed',
+                type: 'spline'
+            }
+        ],
         tooltip: {
-            formatter: function () {
-                return this.y + ' items in the queue at ' + moment(this.key).format("h:mm:ss");
+            formatter: function (x) {
+                if (this.series.name === 'size') {
+                    return this.y + ' items in the queue at ' + moment(this.key).format("h:mm");
+                } else {
+                    return this.y + ' items updated at ' + moment(this.key).format("h:mm");
+                }
             },
         }
     });
