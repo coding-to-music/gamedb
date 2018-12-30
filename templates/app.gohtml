@@ -296,8 +296,8 @@
                                 </tr>
                                 </thead>
                                 {{ range $key, $value := .Packages }}
-                                    <tr>
-                                        <td><a href="/packages/{{ .ID }}">{{.GetName}}</a></td>
+                                    <tr data-link="{{ .GetPath }}">
+                                        <td>{{ .GetName }}</td>
                                         <td>{{ .GetBillingType }}</td>
                                         <td>{{ .GetLicenseType }}</td>
                                         <td>{{ .GetStatus }}</td>
