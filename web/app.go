@@ -1,7 +1,6 @@
 package web
 
 import (
-	"encoding/json"
 	"html/template"
 	"net/http"
 	"regexp"
@@ -39,7 +38,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get app
-	app, err := db.GetApp(idx)
+	app, err := db.GetApp(idx, []string{})
 	if err != nil {
 
 		if err == db.ErrCantFindApp {
@@ -129,51 +128,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 
 	}(app)
-
-	// Get prices JSON for chart
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var code = session.GetCountryCode(r)
-
-		pricesResp, err := db.GetProductPrices(app.ID, db.ProductTypeApp, code)
-		if err != nil {
-
-			log.Err(err, r)
-			return
-
-		}
-
-		t.PricesCount = len(pricesResp)
-
-		var prices [][]float64
-
-		for _, v := range pricesResp {
-			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceAfter) / 100})
-		}
-
-		// Add current price
-		price, err := app.GetPrice(code)
-		err = helpers.IgnoreErrors(err, db.ErrMissingCountryCode)
-		log.Err(err, r)
-		if err == nil {
-			prices = append(prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
-		}
-
-		// Make into a JSON string
-		pricesBytes, err := json.Marshal(prices)
-		if err != nil {
-
-			log.Err(err, r)
-			return
-
-		}
-
-		t.Prices = string(pricesBytes)
-
-	}()
 
 	// Get packages
 	wg.Add(1)
@@ -291,8 +245,6 @@ type appTemplate struct {
 	Packages     []db.Package
 	DLC          []db.App
 	Price        db.ProductPriceFormattedStruct
-	Prices       string // Prices JSON for chart
-	PricesCount  int
 	Achievements []appAchievementTemplate
 	Schema       steam.SchemaForGame
 	Tags         []db.Tag
@@ -392,7 +344,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		app, err := db.GetApp(idx)
+		app, err := db.GetApp(idx, []string{})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -421,4 +373,8 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
+}
+
+func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+	productPricesAjaxHandler(w, r, db.ProductTypeApp)
 }

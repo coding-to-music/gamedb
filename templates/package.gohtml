@@ -145,8 +145,7 @@
                 {{/* Prices */}}
                 <div class="tab-pane" id="prices" role="tabpanel">
 
-                    <script>const prices = JSON.parse('{{ .Prices }}');</script>
-                    <div id="chart"></div>
+                    <div id="prices-chart" data-ajax="/packages/{{ .Package.ID }}/ajax/prices"></div>
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0" data-no-sort="1">
@@ -160,7 +159,7 @@
                             </tr>
                             </thead>
                             {{ range $key, $value := .Package.GetPrices }}
-                                <tr data-code="{{ $key }}">
+                                <tr data-code="{{ $key }}" data-link>
                                     <td class="img flag">
                                         <img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}" class="rounded">
                                         <span>{{ .GetCountryName $key }}</span>

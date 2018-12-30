@@ -1,7 +1,6 @@
 package web
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"sync"
@@ -26,7 +25,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get package
-	pack, err := db.GetPackage(idx)
+	pack, err := db.GetPackage(idx, []string{})
 	if err != nil {
 
 		if err == db.ErrNotFound {
@@ -70,38 +69,6 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	var pricesString string
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var code = session.GetCountryCode(r)
-
-		// Get prices
-		pricesResp, err := db.GetProductPrices(pack.ID, db.ProductTypePackage, code)
-		log.Err(err, r)
-
-		var prices [][]float64
-		for _, v := range pricesResp {
-			prices = append(prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceAfter) / 100})
-		}
-
-		// Add current price
-		pricesStruct, err := pack.GetPrice(code)
-		err = helpers.IgnoreErrors(err, db.ErrMissingCountryCode)
-		log.Err(err, r)
-
-		prices = append(prices, []float64{float64(time.Now().Unix()), float64(pricesStruct.Final) / 100})
-
-		// Make into a JSON string
-		pricesBytes, err := json.Marshal(prices)
-		log.Err(err, r)
-
-		pricesString = string(pricesBytes)
-
-	}()
-
 	// Make banners
 	banners := make(map[string][]string)
 	var primary []string
@@ -122,7 +89,6 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, pack.GetName(), "")
 	t.Package = pack
 	t.Apps = apps
-	t.Prices = pricesString
 
 	// Update news, reviews etc
 	func() {
@@ -156,5 +122,8 @@ type packageTemplate struct {
 	Apps    map[int]db.App
 	Banners map[string][]string
 	Price   db.ProductPriceFormattedStruct
-	Prices  string
+}
+
+func packagePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+	productPricesAjaxHandler(w, r, db.ProductTypePackage)
 }

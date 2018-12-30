@@ -18,6 +18,7 @@ func packagesRouter() http.Handler {
 	r.Get("/", packagesHandler)
 	r.Get("/ajax", packagesAjaxHandler)
 	r.Get("/{id}", packageHandler)
+	r.Get("/{id}/ajax/prices", packagePricesAjaxHandler)
 	r.Get("/{id}/{slug}", packageHandler)
 	return r
 }

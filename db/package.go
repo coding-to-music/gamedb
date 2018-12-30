@@ -480,14 +480,19 @@ func GetPackagePath(id int, name string) string {
 	return path + "/" + slug.Make(name)
 }
 
-func GetPackage(id int) (pack Package, err error) {
+func GetPackage(id int, columns []string) (pack Package, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
 		return pack, err
 	}
 
-	db.First(&pack, id)
+	db = db.First(&pack, id)
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
 	if db.Error != nil {
 		return pack, db.Error
 	}

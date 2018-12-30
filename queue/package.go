@@ -89,7 +89,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 			return true, err
 		}
 
-		app, err := db.GetApp(appIDs[0])
+		app, err := db.GetApp(appIDs[0], []string{})
 		if err != db.ErrCantFindApp {
 			if err != nil {
 				return true, err

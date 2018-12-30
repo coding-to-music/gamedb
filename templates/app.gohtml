@@ -25,7 +25,7 @@
                 </li>
                 {{if gt (len .App.GetPrices) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices ({{ .PricesCount }})</a>
+                        <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                     </li>
                 {{end}}
                 {{if gt (len .DLC) 0}}
@@ -144,8 +144,7 @@
                 {{/* Prices */}}
                 <div class="tab-pane" id="prices" role="tabpanel">
 
-                    <script>const prices = JSON.parse('{{ .Prices }}');</script>
-                    <div id="chart"></div>
+                    <div id="prices-chart" data-ajax="/apps/{{ .App.ID }}/ajax/prices"></div>
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0" data-no-sort="1">
@@ -158,7 +157,7 @@
                             </tr>
                             </thead>
                             {{ range $key, $value := .App.GetPrices }}
-                                <tr data-code="{{ $key }}">
+                                <tr data-code="{{ $key }}" data-link>
                                     <td class="img flag">
                                         <img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}" class="rounded">
                                         <span>{{ .GetCountryName $key }}</span>
@@ -439,9 +438,9 @@
                                         <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
                                     </li>
                                 {{ end }}
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
-                                    </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
+                                </li>
                                 {{if gt (len .App.GetLaunch) 0}}
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
