@@ -23,6 +23,10 @@ $(document).on('mouseup', '[data-link]', function (e) {
 
     const link = $(this).attr('data-link');
 
+    if (!link) {
+        return true;
+    }
+
     if (dataLinkDrag) {
         return true;
     }
