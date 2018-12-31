@@ -16,4 +16,4 @@ COPY templates ./templates
 COPY assets ./assets
 RUN touch ./google-auth.json
 RUN apk update && apk add ca-certificates curl bash
-CMD ["./website", "--webserver", "--consumers"]
+CMD ["./website"]
