@@ -66,6 +66,26 @@ $body.tooltip({
     selector: '[data-toggle="tooltip"]'
 });
 
+// JSON fields
+function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+$('.json').each(function (i, value) {
+
+    const json = $(this).text();
+
+    if (isJson(json)) {
+        const jsonObj = JSON.parse(json);
+        $(this).text(JSON.stringify(jsonObj, null, '\t'));
+    }
+});
+
 // Tabs
 (function ($, window) {
     'use strict';
