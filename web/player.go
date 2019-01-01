@@ -55,10 +55,15 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue profile for a refresh
-	// "Profile queued for an update!"
-	err = queue.QueuePlayer(r, player, db.PlayerUpdateAuto)
-	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-	log.Err(err, r)
+	// todo, "Profile queued for an update!"
+	err = player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
+		log.Err(err, r)
+	} else {
+		err = queue.QueuePlayer(player.PlayerID)
+		log.Err(err, r)
+	}
 
 	var wg sync.WaitGroup
 
@@ -78,21 +83,16 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Queue friends to be scanned
-		err = player.ShouldUpdate(r, db.PlayerUpdateFriends)
+		err = player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateFriends)
 		if err != nil {
-
-			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
 			log.Err(err, r)
-			return
+			return // GR
 		}
 
 		for _, friend := range friends {
 
-			f := db.Player{}
-			f.PlayerID = friend.SteamID
-
-			err = queue.QueuePlayer(r, f, db.PlayerUpdateAuto)
-			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon)
+			err = queue.QueuePlayer(friend.SteamID)
 			log.Err(err, r)
 		}
 
@@ -445,10 +445,16 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
-			err := player.ShouldUpdate(r, db.PlayerUpdateManual)
+			updateType := db.PlayerUpdateManual
+			if isAdmin(r) {
+				updateType = db.PlayerUpdateAdmin
+			}
+
+			err := player.ShouldUpdate(r.UserAgent(), updateType)
 			if err != nil {
 
-				response = PlayersUpdateResponse{Message: "Player is up to date", Success: false}
+				response = PlayersUpdateResponse{Message: err.Error(), Success: false}
+				err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
 				log.Err(err, r)
 
 			} else {
@@ -460,7 +466,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 					response = PlayersUpdateResponse{Message: "Updating player", Success: true}
 				}
 
-				err = queue.QueuePlayer(r, player, db.PlayerUpdateManual)
+				err = queue.QueuePlayer(player.PlayerID)
 				if err != nil {
 
 					response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}

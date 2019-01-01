@@ -4,12 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
-	"net/http"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
@@ -270,6 +268,9 @@ func QueueApp(IDs []int) (err error) {
 		ID:   IDs,
 		Time: time.Now().Unix(),
 	})
+	if err != nil {
+		return err
+	}
 
 	return Produce(QueueApps, b)
 }
@@ -286,6 +287,9 @@ func QueuePackage(IDs []int) (err error) {
 		ID:   IDs,
 		Time: time.Now().Unix(),
 	})
+	if err != nil {
+		return err
+	}
 
 	return Produce(QueuePackages, b)
 }
@@ -296,21 +300,16 @@ type producePackagePayload struct {
 	Time int64 `json:"Time"`
 }
 
-func QueuePlayer(r *http.Request, player db.Player, updateType db.UpdateType) (err error) {
+func QueuePlayer(playerID int64) (err error) {
 
-	err = player.ShouldUpdate(r, updateType)
+	b, err := json.Marshal(producePlayerPayload{
+		ID:   playerID,
+		Time: time.Now().Unix(),
+	})
+
+	err = Produce(QueueProfiles, b)
 	if err == nil {
-
-		b, err := json.Marshal(producePlayerPayload{
-			ID:   player.PlayerID,
-			Time: time.Now().Unix(),
-		})
-
-		err = Produce(QueueProfiles, b)
-		if err == nil {
-
-			err = helpers.GetMemcache().SetItem(helpers.MemcachePlayerRefreshed(player.PlayerID))
-		}
+		err = helpers.GetMemcache().SetItem(helpers.MemcachePlayerInQueue(playerID))
 	}
 
 	return err

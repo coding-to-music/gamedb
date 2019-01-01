@@ -446,7 +446,7 @@ func (t GlobalTemplate) isLocal() bool {
 }
 
 func (t GlobalTemplate) isAdmin() bool {
-	return t.request.Header.Get("Authorization") != ""
+	return isAdmin(t.request)
 }
 
 func (t GlobalTemplate) showAds() bool {
@@ -722,4 +722,8 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 type productPricesAjaxResponse struct {
 	Prices [][]float64 `json:"prices"`
 	Symbol string      `json:"symbol"`
+}
+
+func isAdmin(r *http.Request) bool {
+	return r.Header.Get("Authorization") != ""
 }

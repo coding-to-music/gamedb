@@ -218,20 +218,21 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get player if they're new
-	if player.PersonaName == "" {
-		err = queue.QueuePlayer(r, player, db.PlayerUpdateAuto)
-
-		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+	// Queue for an update
+	err = player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
+		log.Err(err, r)
+	} else {
+		err = queue.QueuePlayer(player.PlayerID)
 		log.Err(err, r)
 	}
 
 	// Get user
-	var user db.User
-
 	gorm, err := db.GetMySQLClient()
 	log.Err(err, r)
 
+	var user db.User
 	gorm = gorm.First(&user, idInt)
 	log.Err(gorm.Error)
 

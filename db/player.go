@@ -2,7 +2,6 @@ package db
 
 import (
 	"errors"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -143,7 +142,11 @@ func (p Player) GetAllPlayerApps(sort string, limit int) (apps []PlayerApp, err 
 		return apps, err
 	}
 
-	q := datastore.NewQuery(KindPlayerApp).Filter("player_id =", p.PlayerID).Order(sort)
+	q := datastore.NewQuery(KindPlayerApp).Filter("player_id =", p.PlayerID)
+
+	if sort != "" {
+		q = q.Order(sort)
+	}
 
 	if limit > 0 {
 		q.Limit(limit)
@@ -257,13 +260,17 @@ const (
 	PlayerUpdateAdmin   UpdateType = "admin"
 )
 
-func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (err error) {
+func (p Player) ShouldUpdate(userAgent string, updateType UpdateType) (err error) {
+
+	if updateType == PlayerUpdateAdmin {
+		return nil
+	}
 
 	if !IsValidPlayerID(p.PlayerID) {
 		return ErrInvalidPlayerID
 	}
 
-	if helpers.IsBot(r.UserAgent()) {
+	if helpers.IsBot(userAgent) {
 		return ErrUpdatingPlayerBot
 	}
 
@@ -288,16 +295,16 @@ func (p Player) ShouldUpdate(r *http.Request, updateType UpdateType) (err error)
 	}
 
 	// Check if player is in queue
-	var memcacheItem = helpers.MemcachePlayerRefreshed(p.PlayerID)
+	var memcacheItem = helpers.MemcachePlayerInQueue(p.PlayerID)
 
 	err = helpers.GetMemcache().Get(memcacheItem.Key, new([]byte))
 	if err == helpers.ErrCacheMiss {
 		return nil // Not in queue
 	} else if err == nil {
 		return ErrUpdatingPlayerInQueue // In queue
-	} else {
-		return err // Error
 	}
+
+	return err // Error
 }
 
 func (p *Player) Save() (err error) {

@@ -70,9 +70,9 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (requeue bool, err erro
 		return true, err
 	}
 
-	err = player.ShouldUpdate(new(http.Request), db.PlayerUpdateAdmin)
-	err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+	err = player.ShouldUpdate("", db.PlayerUpdateAdmin)
 	if err != nil {
+		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
 		return false, err
 	}
 
@@ -128,6 +128,11 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	err = player.Save()
+	if err != nil {
+		return true, err
+	}
+
+	err = helpers.GetMemcache().Delete(helpers.MemcachePlayerInQueue(player.PlayerID))
 	if err != nil {
 		return true, err
 	}

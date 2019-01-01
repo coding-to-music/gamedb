@@ -248,11 +248,7 @@ func adminQueues(r *http.Request) {
 		playerID, err := strconv.ParseInt(val, 10, 64)
 		log.Err(err, r)
 
-		player := db.Player{}
-		player.PlayerID = playerID
-
-		err = queue.QueuePlayer(r, player, db.PlayerUpdateAdmin)
-		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
+		err = queue.QueuePlayer(playerID)
 		log.Err(err, r)
 	}
 
