@@ -438,7 +438,7 @@
                                         <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
                                     </li>
                                 {{ end }}
-                                {{ if ne .App.PICSSystemRequirements "" }}
+                                {{ if and (ne .App.PICSSystemRequirements "") (ne .App.PICSSystemRequirements "{}") }}
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="tab" href="#dev-system-requirements" role="tab">System Req's</a>
                                     </li>
