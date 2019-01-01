@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"sync"
 
-	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -13,10 +12,13 @@ import (
 )
 
 const (
-	maxPlayers = 4
+	maxPlayers = 8
 )
 
 func coopHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := coopTemplate{}
+	t.Fill(w, r, "Co-op", "Find a game to play with friends.")
 
 	// Get player ints
 	var playerInts []int64
@@ -36,61 +38,51 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get players, one at a time so we can get the missing ones
-	var players []db.Player
-	var wg sync.WaitGroup
+	// Get players, queue missing ones
+	var err error
+	t.Players, err = db.GetPlayersByIDs(playerInts)
+
+	var foundPlayerIDs []int64
+	for _, v := range t.Players {
+		foundPlayerIDs = append(foundPlayerIDs, v.PlayerID)
+	}
+
 	for _, v := range playerInts {
 
-		wg.Add(1)
-		go func(id int64) {
+		// If we couldnt find player
+		if !helpers.SliceHasInt64(foundPlayerIDs, v) {
 
-			defer wg.Done()
-
-			player, err := db.GetPlayer(id)
+			err = queue.QueuePlayer(v)
 			if err != nil {
-				if err != datastore.ErrNoSuchEntity {
-					log.Err(err, r)
-					return
-				}
-			}
-
-			err = queue.QueuePlayer(r, player, db.PlayerUpdateManual)
-			if err != nil {
-
-				err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
 				log.Err(err, r)
-				return
 			}
-
-			players = append(players, player)
-
-		}(v)
+		}
 	}
-	wg.Wait()
 
 	// Make a map of all games the players have
+	var wg sync.WaitGroup
 	var allGames = map[int]int{}
-	var gamesSlices [][]int
+	var allGamesByPlayer [][]int
 
-	for i := 0; i < len(players); i++ {
-		player := players[i]
+	for _, player := range t.Players {
 
 		wg.Add(1)
 		go func(player db.Player) {
 
 			defer wg.Done()
 
-			var x []int
-			resp, err := player.GetAllPlayerApps("app_name", 0)
+			playerApps, err := player.GetAllPlayerApps("", 0)
 			if err != nil {
 				log.Err(err, r)
 				return
 			}
-			for _, vv := range resp {
-				allGames[vv.AppID] = vv.AppID
-				x = append(x, vv.AppID)
+
+			var playerAppIDs []int
+			for _, playerApp := range playerApps {
+				allGames[playerApp.AppID] = playerApp.AppID
+				playerAppIDs = append(playerAppIDs, playerApp.AppID)
 			}
-			gamesSlices = append(gamesSlices, x)
+			allGamesByPlayer = append(allGamesByPlayer, playerAppIDs)
 
 		}(player)
 	}
@@ -105,7 +97,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		var remove = false
 
 		// Loop each user
-		for _, gamesSlice := range gamesSlices {
+		for _, gamesSlice := range allGamesByPlayer {
 
 			if !helpers.SliceHasInt(gamesSlice, allGameID) {
 				remove = true
@@ -130,22 +122,16 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make visible tags
-	var templateGames []coopGameTemplate
 	for _, v := range games {
 
 		coopTags, err := v.GetCoopTags()
 		log.Err(err, r)
 
-		templateGames = append(templateGames, coopGameTemplate{
+		t.Games = append(t.Games, coopGameTemplate{
 			Game: v,
 			Tags: coopTags,
 		})
 	}
-
-	t := coopTemplate{}
-	t.Fill(w, r, "Co-op", "Find a game to play with friends.")
-	t.Players = players
-	t.Games = templateGames
 
 	err = returnTemplate(w, r, "coop", t)
 	log.Err(err, r)
