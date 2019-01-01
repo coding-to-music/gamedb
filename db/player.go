@@ -262,10 +262,6 @@ const (
 
 func (p Player) ShouldUpdate(userAgent string, updateType UpdateType) (err error) {
 
-	if updateType == PlayerUpdateAdmin {
-		return nil
-	}
-
 	if !IsValidPlayerID(p.PlayerID) {
 		return ErrInvalidPlayerID
 	}

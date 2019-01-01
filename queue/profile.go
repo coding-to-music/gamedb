@@ -51,6 +51,7 @@ func (d RabbitMessageProfile) process(msg amqp.Delivery) (requeue bool, err erro
 	if !message.SteamID.IsValid {
 		return false, errors.New("not valid account id")
 	}
+
 	if !message.SteamID.IsIndividualAccount {
 		return false, errors.New("not individual account id")
 	}
