@@ -354,10 +354,12 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	// Country
-	var code = session.GetCountryCode(r)
-	t.userCountry = code
+	t.userCountry = steam.CountryCode(r.URL.Query().Get("cc"))
+	if t.userCountry == "" {
+		t.userCountry = session.GetCountryCode(r)
+	}
 
-	locale, err := helpers.GetLocaleFromCountry(code)
+	locale, err := helpers.GetLocaleFromCountry(t.userCountry)
 	log.Err(err, r)
 
 	t.userCurrencySymbol = locale.CurrencySymbol
