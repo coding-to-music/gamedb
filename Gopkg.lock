@@ -56,11 +56,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3124c464eebbfb11df74cadadcfbef62542275c2d3c2f7683df1a35291f1326c"
+  digest = "1:7f006a4400dcb19ad1b102805cb2d4428fe7ac1778432bf12c3e17a0979fe99e"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "fc40188cde0631549dc64479f896fa7ec6d28851"
+  revision = "458e6d4f31d17a56d73653abab96b2e6f4802e47"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -534,7 +534,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:887074c37fcefc2f49b5ae9c6f9f36107341aec23185613d0e9f1ee81db7f94a"
+  digest = "1:6980cd6b0dac532550cafc9c8f1cd943576fb53f6aec1ba17f853170fdb9ab82"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -548,7 +548,7 @@
     "ssh/terminal",
   ]
   pruneopts = ""
-  revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
+  revision = "8d7daa0c54b357f3071e11eaef7efc4e19a417e2"
 
 [[projects]]
   branch = "master"
@@ -594,14 +594,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:547a861b18e173200e5bc00fbeabf72513671dab7a6de8fac6ca6fa78994a74a"
+  digest = "1:528fd80cf9b601eec370e035bfa4b32dc98bb4dbf64de45686387249dd82a7cd"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "c6cbdbf9e68a68b19802a5c44e537c284b9c8e1a"
+  revision = "82a175fd1598e8a172e58ebdf5ed262bb29129e5"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -628,7 +628,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7873bd40db14885e3c790a4134341e998abf3d83d0872a93613f765025903026"
+  digest = "1:7c913a3acdc8bcd27a6036661f91ed8ec7a94c0b8949a6716834c543e50fa967"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -646,7 +646,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = ""
-  revision = "65a46cafb132eff435c7d1e0f439cc73c8eebb85"
+  revision = "f26a60c56f148a32e87f3f4591c8ebf834b5561f"
 
 [[projects]]
   digest = "1:bc09e719c4e2a15d17163f5272d9a3131c45d77542b7fdc53ff518815bc19ab3"

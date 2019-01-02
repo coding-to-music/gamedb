@@ -270,7 +270,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 			var genres []string
 			for _, v := range a {
-				genres = append(genres, "<a class=\"badge badge-success\" href=\"/apps?genres="+strconv.Itoa(v.ID)+"\">"+v.Description+"</a>")
+				genres = append(genres, "<a class=\"badge badge-success\" href=\"/apps?genres="+v.ID+"\">"+v.Description+"</a>")
 			}
 			return template.HTML(strings.Join(genres, " "))
 		},
