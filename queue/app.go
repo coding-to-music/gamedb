@@ -13,7 +13,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/streadway/amqp"
 )
@@ -47,13 +46,13 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	message := rabbitMessage.PICSAppInfo
 
-	// Remove from memcache
-	defer func() {
-		err = helpers.GetMemcache().Delete(helpers.MemcacheAppInQueue(message.ID))
-		log.Err(err)
-	}()
-
 	logInfo("Consuming app: " + strconv.Itoa(message.ID))
+
+	// Remove from memcache
+	err = helpers.GetMemcache().Delete(helpers.MemcacheAppInQueue(message.ID))
+	if err != nil && err != helpers.ErrCacheMiss {
+		return true, err
+	}
 
 	if !db.IsValidAppID(message.ID) {
 		return false, errors.New("invalid app ID: " + strconv.Itoa(message.ID))
