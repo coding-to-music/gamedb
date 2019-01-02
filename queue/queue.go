@@ -60,7 +60,7 @@ func init() {
 		{Message: RabbitMessageChanges{}},
 		//{Message: RabbitMessageDelay{}},
 		{Message: RabbitMessagePackage{}},
-		{Message: RabbitMessageProfile{}},
+		{Message: RabbitMessagePlayer{}},
 	}
 
 	for _, v := range qs {

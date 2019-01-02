@@ -20,26 +20,26 @@ import (
 
 const maxBytesToStore = 1024 * 10
 
-type RabbitMessageProfile struct {
+type RabbitMessagePlayer struct {
 	ProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
 }
 
-func (d RabbitMessageProfile) getConsumeQueue() RabbitQueue {
+func (d RabbitMessagePlayer) getConsumeQueue() RabbitQueue {
 	return QueueProfilesData
 }
 
-func (d RabbitMessageProfile) getProduceQueue() RabbitQueue {
+func (d RabbitMessagePlayer) getProduceQueue() RabbitQueue {
 	return QueueProfiles
 }
 
-func (d RabbitMessageProfile) getRetryData() RabbitMessageDelay {
+func (d RabbitMessagePlayer) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessageProfile) process(msg amqp.Delivery) (requeue bool, err error) {
+func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	// Get message
-	rabbitMessage := new(RabbitMessageProfile)
+	rabbitMessage := new(RabbitMessagePlayer)
 
 	err = helpers.Unmarshal(msg.Body, rabbitMessage)
 	if err != nil {
