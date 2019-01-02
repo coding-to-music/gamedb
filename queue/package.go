@@ -96,13 +96,11 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		}
 
 		app, err := db.GetApp(appIDs[0], []string{})
-		if err != db.ErrRecordNotFound {
-			if err != nil {
-				return true, err
-			} else if pack.HasDefaultName() {
-				pack.PICSName = app.Name
-				pack.Icon = app.GetIcon()
-			}
+		if err != nil && err != db.ErrRecordNotFound {
+			return true, err
+		} else if err == nil && pack.HasDefaultName() {
+			pack.PICSName = app.Name
+			pack.Icon = app.GetIcon()
 		}
 	}
 
