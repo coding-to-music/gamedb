@@ -25,11 +25,6 @@ const (
 	DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
 )
 
-var (
-	ErrInvalidAppID = errors.New("invalid app id")
-	ErrCantFindApp  = errors.New("can't find app")
-)
-
 type App struct {
 	ID                     int       `gorm:"not null;column:id;primary_key"`                    //
 	CreatedAt              time.Time `gorm:"not null;column:created_at;type:datetime"`          //
@@ -773,17 +768,19 @@ func GetApp(id int, columns []string) (app App, err error) {
 	}
 
 	db = db.First(&app, id)
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-	}
-
 	if db.Error != nil {
 		return app, db.Error
 	}
 
+	if len(columns) > 0 {
+		db = db.Select(columns)
+		if db.Error != nil {
+			return app, db.Error
+		}
+	}
+
 	if app.ID == 0 {
-		return app, ErrCantFindApp
+		return app, ErrRecordNotFound
 	}
 
 	return app, nil

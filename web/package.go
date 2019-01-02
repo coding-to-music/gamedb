@@ -28,7 +28,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	pack, err := db.GetPackage(idx, []string{})
 	if err != nil {
 
-		if err == db.ErrNotFound {
+		if err == db.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this package."})
 			return
 		}

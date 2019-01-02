@@ -1,15 +1,13 @@
 package db
 
 import (
-	"errors"
-
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/jinzhu/gorm"
 )
 
 var (
-	ErrNotFound = errors.New("not found")
+	ErrRecordNotFound = gorm.ErrRecordNotFound
 
 	gormConnection      *gorm.DB
 	gormConnectionDebug *gorm.DB

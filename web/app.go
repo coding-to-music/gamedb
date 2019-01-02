@@ -41,7 +41,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	app, err := db.GetApp(idx, []string{})
 	if err != nil {
 
-		if err == db.ErrCantFindApp {
+		if err == db.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Sorry but we can not find this app."})
 			return
 		}

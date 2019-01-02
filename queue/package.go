@@ -96,7 +96,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		}
 
 		app, err := db.GetApp(appIDs[0], []string{})
-		if err != db.ErrCantFindApp {
+		if err != db.ErrRecordNotFound {
 			if err != nil {
 				return true, err
 			} else if pack.HasDefaultName() {

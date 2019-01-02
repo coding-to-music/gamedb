@@ -488,17 +488,19 @@ func GetPackage(id int, columns []string) (pack Package, err error) {
 	}
 
 	db = db.First(&pack, id)
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-	}
-
 	if db.Error != nil {
 		return pack, db.Error
 	}
 
+	if len(columns) > 0 {
+		db = db.Select(columns)
+		if db.Error != nil {
+			return pack, db.Error
+		}
+	}
+
 	if pack.ID == 0 {
-		return pack, ErrNotFound
+		return pack, ErrRecordNotFound
 	}
 
 	return pack, nil
