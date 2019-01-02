@@ -43,7 +43,6 @@ func init() {
 	Config.GithubToken = os.Getenv(prefix + "GITHUB_TOKEN")
 	Config.GoogleBucket = os.Getenv(prefix + "GOOGLE_BUCKET")
 	Config.GoogleProject = os.Getenv(prefix + "GOOGLE_PROJECT")
-	Config.MemcacheDSN.Set("MEMCACHE_DSN")
 	Config.MySQLDSN.Set("MYSQL_DSN")
 	Config.GameDBDirectory.Set("PATH")
 	Config.RollbarPrivateKey = os.Getenv(prefix + "ROLLBAR_PRIVATE")
