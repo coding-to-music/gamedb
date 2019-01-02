@@ -77,12 +77,6 @@ func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error
 		return true, err
 	}
 
-	err = player.ShouldUpdate("", db.PlayerUpdateAdmin)
-	if err != nil {
-		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
-		return false, err
-	}
-
 	player.PlayerID = id64
 	player.RealName = message.RealName
 	player.StateCode = message.StateName
