@@ -159,11 +159,13 @@ function websocketListener(page, onMessage) {
 
         socket.onopen = function (e) {
             $badge.addClass('badge-success').removeClass('badge-secondary badge-danger');
+            console.log('Websocket opened');
         };
 
         socket.onclose = function (e) {
             $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
             toast(false, 'Live functionality has stopped');
+            console.log('Websocket closed');
         };
 
         socket.onerror = function (e) {
