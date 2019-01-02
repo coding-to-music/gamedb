@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/streadway/amqp"
 )
@@ -41,6 +42,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	message := rabbitMessage.PICSPackageInfo
+
+	// Remove from memcache
+	defer func() {
+		err = helpers.GetMemcache().Delete(helpers.MemcachePackageInQueue(message.ID))
+		log.Err(err)
+	}()
 
 	logInfo("Consuming package: " + strconv.Itoa(message.ID))
 

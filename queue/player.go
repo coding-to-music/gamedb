@@ -62,6 +62,12 @@ func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error
 		return false, err
 	}
 
+	// Remove from memcache
+	defer func() {
+		err = helpers.GetMemcache().Delete(helpers.MemcachePlayerInQueue(id64))
+		log.Err(err)
+	}()
+
 	logInfo("Consuming player: " + strconv.FormatInt(id64, 10))
 
 	// Update player
@@ -129,11 +135,6 @@ func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error
 	}
 
 	err = player.Save()
-	if err != nil {
-		return true, err
-	}
-
-	err = helpers.GetMemcache().Delete(helpers.MemcachePlayerInQueue(player.PlayerID))
 	if err != nil {
 		return true, err
 	}
