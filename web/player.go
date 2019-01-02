@@ -481,7 +481,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	bytes, err := json.Marshal(response)
 	log.Err(err, r)
 	if err == nil {
-		_, err := w.Write(bytes)
+		err = returnJSON(w, r, bytes)
 		log.Err(err, r)
 	}
 }
