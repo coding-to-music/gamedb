@@ -542,8 +542,12 @@ func updateAppSteamSpy(app *db.App) error {
 		return err
 	}
 
-	//noinspection GoUnhandledErrorResult
-	defer response.Body.Close()
+	defer func(body io.ReadCloser) {
+		if body != nil {
+			err = body.Close()
+			log.Err(err)
+		}
+	}(response.Body)
 
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
