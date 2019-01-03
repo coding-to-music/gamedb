@@ -85,7 +85,7 @@ func GetPublishersForSelect() (pubs []Publisher, err error) {
 		}
 
 		var pubs []Publisher
-		db = db.Select([]string{"id", "name"}).Order("apps DESC").Limit(500).Find(&pubs)
+		db = db.Select([]string{"id", "name"}).Order("apps DESC").Limit(200).Find(&pubs)
 		if db.Error != nil {
 			return s, db.Error
 		}
