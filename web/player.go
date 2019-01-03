@@ -87,14 +87,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
 			log.Err(err, r)
-			return // GR
+			return
 		}
 
-		for _, friend := range friends {
-
-			err = queue.QueuePlayer(friend.SteamID)
-			log.Err(err, r)
-		}
+		//for _, friend := range friends {
+		//	err = queue.QueuePlayer(friend.SteamID)
+		//	log.Err(err, r)
+		//}
 
 		player.FriendsAddedAt = time.Now()
 
