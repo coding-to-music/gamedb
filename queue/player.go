@@ -425,6 +425,12 @@ func updatePlayerBadges(player *db.Player) error {
 func updatePlayerFriends(player *db.Player) error {
 
 	resp, _, err := helpers.GetSteam().GetFriendList(player.PlayerID)
+
+	// This endpoint seems to error if the player is private, so it's probably fine.
+	err2, ok := err.(steam.Error)
+	if ok && (err2.Code() == 401) {
+		return nil
+	}
 	if err != nil {
 		return err
 	}
@@ -529,6 +535,12 @@ func updatePlayerBans(player *db.Player) error {
 func updatePlayerGroups(player *db.Player) error {
 
 	resp, _, err := helpers.GetSteam().GetUserGroupList(player.PlayerID)
+
+	// This endpoint seems to error if the player is private, so it's probably fine.
+	err2, ok := err.(steam.Error)
+	if ok && (err2.Code() == 403) {
+		return nil
+	}
 	if err != nil {
 		return err
 	}
