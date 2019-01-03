@@ -184,7 +184,7 @@ func (s rabbitConsumer) consume() {
 
 					requeue, err := s.Message.process(msg)
 					if err != nil {
-						logError(err)
+						logError(err, s.Message.getConsumeQueue().String())
 					}
 
 					// Might be getting rate limited
