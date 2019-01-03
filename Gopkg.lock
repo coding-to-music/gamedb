@@ -103,6 +103,14 @@
   version = "v0.19.0"
 
 [[projects]]
+  digest = "1:27a0ba2be705618c3a7015ad9641635c1c4a552175576149d57bb9cf71cb0513"
+  name = "github.com/cenkalti/backoff"
+  packages = ["."]
+  pruneopts = ""
+  revision = "62661b46c4093e2c1f38d943e663db1a29873e80"
+  version = "v2.1.0"
+
+[[projects]]
   digest = "1:edfb1e0276869665f9b91a70843712c1094a395ef5de7e5964adda96b986ee7d"
   name = "github.com/derekstavis/go-qs"
   packages = ["."]
@@ -764,6 +772,7 @@
     "github.com/Masterminds/squirrel",
     "github.com/ahmdrz/goinsta",
     "github.com/bwmarrin/discordgo",
+    "github.com/cenkalti/backoff",
     "github.com/derekstavis/go-qs",
     "github.com/dustin/go-humanize",
     "github.com/frustra/bbcode",

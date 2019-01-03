@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -11,8 +12,10 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/streadway/amqp"
 )
@@ -520,7 +523,21 @@ func updateAppSteamSpy(app *db.App) error {
 		return err
 	}
 
-	response, err := client.Do(req)
+	var response *http.Response
+
+	// Retrying as this call can fail
+	operation := func() (err error) {
+
+		response, err = client.Do(req)
+		log.Err(err)
+		return err
+	}
+
+	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second * 1
+	policy.MaxElapsedTime = time.Second * 10
+
+	err = backoff.Retry(operation, policy)
 	if err != nil {
 		return err
 	}
