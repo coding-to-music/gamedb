@@ -1,15 +1,15 @@
 if ($('#settings-page').length > 0) {
 
     // Password
-    $('input:password').pwstrength({
-        ui: {
-            showPopover: true,
-            showErrors: true,
-        },
-        common: {
-            usernameField: '#email'
-        }
-    });
+    // $('input:password').pwstrength({
+    //     ui: {
+    //         showPopover: true,
+    //         showErrors: true,
+    //     },
+    //     common: {
+    //         usernameField: '#email'
+    //     }
+    // });
 
     // Browser alert permissions
     // const $checkbox = $('#browser-alerts');

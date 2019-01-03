@@ -3,17 +3,20 @@ table.table {
         th {
             color: $dark;
             white-space: nowrap;
+
             a {
                 color: $dark;
                 text-decoration: underline;
             }
         }
     }
+
     td {
         div.progress {
             height: 24px;
         }
     }
+
     td.platforms {
         font-size: 22px;
         line-height: 48px;
@@ -21,17 +24,21 @@ table.table {
         i, svg {
             margin-right: 5px;
         }
+
         i:last-child, svg:last-child {
             margin-right: 0;
         }
+
         span.space {
             display: none;
         }
     }
+
     td.platforms.platforms-align span.space {
         display: inline-block;
         width: .875em;
     }
+
     td.img {
         padding: 0 .75rem 0 .75rem; // Remove top/bottom padding
         font-size: 0; // Remove white space
@@ -40,13 +47,16 @@ table.table {
             height: 32px;
             position: absolute;
         }
+
         img.square {
             width: 32px;
         }
+
         div.avatar2 {
             margin-top: 9px;
             position: absolute;
         }
+
         span {
             display: inline-block;
             margin: .75rem 0 .75rem 42px;
@@ -54,11 +64,22 @@ table.table {
             font-size: 1rem;
         }
     }
+
     td.flag {
         span {
             margin-left: 52px;
         }
     }
+}
+
+// This is to override the external style sheet
+table.dataTable {
+    clear: both;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    max-width: none !important;
+    border-collapse: collapse !important;
+    border-spacing: 0;
 }
 
 table.dataTable thead .sorting:before,

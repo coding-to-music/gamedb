@@ -118,6 +118,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := settingsTemplate{}
 	t.Fill(w, r, "Settings", "")
+	t.addAssetPasswordStrength()
 	t.Player = player
 	t.User = user
 	t.Donations = donations

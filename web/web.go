@@ -287,11 +287,15 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
+	// These variables can be used in templates and cached
 	Title       string        // Page title
 	Description template.HTML // Page description
 	Path        string        // URL path
 	Env         string        // Environment
+	CSSFiles    []string
+	JSFiles     []string
 
+	// These variables can't!
 	// Session
 	userName           string
 	userEmail          string
@@ -457,6 +461,31 @@ func (t GlobalTemplate) showAds() bool {
 
 func (t *GlobalTemplate) addToast(toast Toast) {
 	t.toasts = append(t.toasts, toast)
+}
+
+func (t *GlobalTemplate) addAssetChosen() {
+	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js")
+	t.CSSFiles = append(t.CSSFiles, "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css")
+}
+
+func (t *GlobalTemplate) addAssetJSON2HTML() {
+	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.2.0/json2html.min.js")
+	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/jquery.json2html/1.2.0/jquery.json2html.min.js")
+}
+
+func (t *GlobalTemplate) addAssetHighCharts() {
+	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/highcharts.js")
+	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/data.js")
+	//t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/heatmap.js")
+}
+
+func (t *GlobalTemplate) addAssetSlider() {
+	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.js")
+	t.CSSFiles = append(t.CSSFiles, "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css")
+}
+
+func (t *GlobalTemplate) addAssetPasswordStrength() {
+	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.1/pwstrength-bootstrap.min.js")
 }
 
 // DataTablesAjaxResponse

@@ -49,6 +49,8 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 	t := appsTemplate{}
 	t.Fill(w, r, "Apps", "") // Description gets set later
 	t.Types = db.GetTypesForSelect()
+	t.addAssetChosen()
+	t.addAssetSlider()
 
 	//
 	var wg sync.WaitGroup

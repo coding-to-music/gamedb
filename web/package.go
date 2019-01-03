@@ -87,6 +87,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := packageTemplate{}
 	t.Fill(w, r, pack.GetName(), "")
+	t.addAssetHighCharts()
 	t.Package = pack
 	t.Apps = apps
 

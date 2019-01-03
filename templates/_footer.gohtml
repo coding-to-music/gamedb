@@ -3,7 +3,7 @@
     <footer>
         <div class="container">
             <small class="text-muted text-center small-print">
-                {{ .GetFooterText }}. Game DB is still in beta, please expect major bugs.<br />
+                {{ .GetFooterText }}. Game DB is still in beta, please expect major bugs.<br/>
                 Game DB is not affiliated with Steam. All copyrights reserved to their respective owners. <a href="/info#terms">Terms</a>.
             </small>
         </div>
@@ -12,14 +12,36 @@
         <div id="top" class="rounded">
             <i class="fas fa-level-up-alt"></i>
         </div>
-
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="/assets/compiled.min.js?rel=38aa5495f4"></script>
-    <script src="https://cdn.chitika.net/getads.js" async></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.js" integrity="sha256-K0KkaRh1fs/UYfKcnzBK9G/X7HgzuaeVI1hJPS8Sxs4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha256-yNbKY1y6h2rbVcQtf0b8lq4a+xpktyFc3pSYoGAY1qQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/livestamp/1.1.2/livestamp.min.js" integrity="sha256-8r65KJgULBDiZhwDydfWrEkx3yyV/grGsGzaekobngI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.js"></script>
+    {{ range $key, $value := .JSFiles }}
+        <script src="{{ $value }}"></script>
+    {{ end }}
+    <script src="/assets/compiled.min.js?rel=e6795d03b7"></script>
+
+    <script async src="https://cdn.chitika.net/getads.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-125104-31');
+
+        if (user.userID > 0) {
+            gtag('set', {'user_id': user.userID});
+        }
+    </script>
 
     </body>
     </html>

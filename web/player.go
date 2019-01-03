@@ -221,6 +221,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := playerTemplate{}
 	t.Fill(w, r, player.PersonaName, "")
+	t.addAssetHighCharts()
 	t.Player = player
 	t.Friends = friends
 	t.Apps = []db.PlayerApp{}
