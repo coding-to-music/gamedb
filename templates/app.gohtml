@@ -701,7 +701,7 @@
                                             {{ range $key, $value := .App.GetInstall }}
                                                 <tr>
                                                     <td>{{ $key }}</td>
-                                                    <td>{{ json $value }}</td>
+                                                    <td class="json">{{ json $value }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
