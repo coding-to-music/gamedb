@@ -3,6 +3,7 @@ package websockets
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -15,19 +16,20 @@ import (
 type WebsocketPage string
 
 const (
-	PageChanges WebsocketPage = "changes"
-	PageChat    WebsocketPage = "chat"
-	PageNews    WebsocketPage = "news"
-	PagePrices  WebsocketPage = "prices"
-	PageAdmin   WebsocketPage = "admin"
-	PageApp     WebsocketPage = "app"
-	PagePackage WebsocketPage = "package"
-	PageProfile WebsocketPage = "profile"
+	PageChanges  WebsocketPage = "changes"
+	PageChat     WebsocketPage = "chat"
+	PageNews     WebsocketPage = "news"
+	PagePrices   WebsocketPage = "prices"
+	PageAdmin    WebsocketPage = "admin"
+	PageApp      WebsocketPage = "app"
+	PagePackage  WebsocketPage = "package"
+	PagePackages WebsocketPage = "packages"
+	PageProfile  WebsocketPage = "profile"
 )
 
 var (
 	pages      map[WebsocketPage]Page
-	pagesSlice = []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageAdmin, PageApp, PagePackage, PageProfile}
+	pagesSlice = []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageAdmin, PageApp, PagePackage, PagePackages, PageProfile}
 	upgrader   = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
