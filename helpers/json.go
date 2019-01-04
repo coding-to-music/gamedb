@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
-	"strings"
 
 	"github.com/gamedb/website/log"
 )
@@ -34,19 +33,15 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 	}
 
 	err = json.Unmarshal(data, v)
-	if err != nil {
 
-		if strings.Contains(err.Error(), "cannot unmarshal") {
-
-			if len(data) > 1000 {
-				data = data[0:1000]
-			}
-
-			log.Info(err.Error()+" - "+string(data)+"...")
-
-		} else {
-			log.Err(err)
+	switch err.(type) {
+	case *json.SyntaxError, *json.InvalidUnmarshalError, *json.UnmarshalTypeError:
+		if len(data) > 1000 {
+			data = data[0:1000]
 		}
+		log.Info(err.Error() + ": " + string(data) + "...")
+	default:
+		log.Err(err)
 	}
 
 	return err
