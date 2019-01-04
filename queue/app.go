@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
+	"github.com/gocolly/colly"
 	"github.com/streadway/amqp"
 )
 
@@ -112,6 +113,11 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	}
 
 	err = updateAppSteamSpy(&app)
+	if err != nil {
+		return true, err
+	}
+
+	err = updateBundles(&app)
 	if err != nil {
 		return true, err
 	}
@@ -556,7 +562,7 @@ func updateAppSteamSpy(app *db.App) error {
 
 	// Unmarshal JSON
 	resp := db.SteamSpyApp{}
-	err = json.Unmarshal(bytes, &resp)
+	err = helpers.Unmarshal(bytes, &resp)
 	if err != nil {
 		return err
 	}
@@ -569,6 +575,35 @@ func updateAppSteamSpy(app *db.App) error {
 	owners := resp.GetOwners()
 	app.SSOwnersLow = owners[0]
 	app.SSOwnersHigh = owners[1]
+
+	return nil
+}
+
+func updateBundles(app *db.App) error {
+
+	var IDStrings []string
+
+	c := colly.NewCollector(
+		colly.AllowedDomains("store.steampowered.com"),
+	)
+
+	c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
+		IDStrings = append(IDStrings, e.Attr("value"))
+	})
+
+	err := c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
+	if err != nil {
+		return err
+	}
+
+	var IDInts = helpers.StringSliceToIntSlice(IDStrings)
+
+	b, err := json.Marshal(IDInts)
+	if err != nil {
+		return err
+	}
+
+	app.BundleIDs = string(b)
 
 	return nil
 }

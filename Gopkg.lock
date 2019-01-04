@@ -71,12 +71,52 @@
   version = "v1.0"
 
 [[projects]]
+  digest = "1:439bfb51db599cd80766736b93b3d10e9314361197ada0b1209a51627a00ccd5"
+  name = "github.com/PuerkitoBio/goquery"
+  packages = ["."]
+  pruneopts = ""
+  revision = "2d2796f41742ece03e8086188fa4db16a3a0b458"
+  version = "v1.5.0"
+
+[[projects]]
   branch = "master"
   digest = "1:c723ece25c1a06961b28111a2d7ef2608a97faec6704174d1c00fd0a4795d0c2"
   name = "github.com/ahmdrz/goinsta"
   packages = ["."]
   pruneopts = ""
   revision = "aa250bb4ac58404c96a82f1590ae46eb89c42229"
+
+[[projects]]
+  digest = "1:e3726ad6f38f710e84c8dcd0e830014de6eaeea81f28d91ae898afecc078479a"
+  name = "github.com/andybalholm/cascadia"
+  packages = ["."]
+  pruneopts = ""
+  revision = "901648c87902174f774fac311d7f176f8647bdaa"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:0b3216a5a45720bda5483e27d7242b4d26c74176c75d23dafff7e43c5abbe8e4"
+  name = "github.com/antchfx/htmlquery"
+  packages = ["."]
+  pruneopts = ""
+  revision = "db5c1236cbb43c58add1164a8b20d844683e537f"
+
+[[projects]]
+  branch = "master"
+  digest = "1:4fa9a984402f16a3fcb2c3380c696c6045ef3807dcf456a079a201882021b1fd"
+  name = "github.com/antchfx/xmlquery"
+  packages = ["."]
+  pruneopts = ""
+  revision = "355641961c927f5151e1e0ac437a5f8613f5be8b"
+
+[[projects]]
+  branch = "master"
+  digest = "1:378081390d63dd2c2447a3028e4a8334f02a041606e70f719afe74ea813746b1"
+  name = "github.com/antchfx/xpath"
+  packages = ["."]
+  pruneopts = ""
+  revision = "4bbdf6db12aa76808d7b25445919943ed27fdcc0"
 
 [[projects]]
   digest = "1:b5f28f7eda54d2695765c778c951a2ace52c06afb7da1f7e0c7485baa5b02100"
@@ -200,6 +240,35 @@
   pruneopts = ""
   revision = "72cd26f257d44c1114970e19afddcd812016007e"
   version = "v1.4.1"
+
+[[projects]]
+  digest = "1:9ab1b1c637d7c8f49e39d8538a650d7eb2137b076790cff69d160823b505964c"
+  name = "github.com/gobwas/glob"
+  packages = [
+    ".",
+    "compiler",
+    "match",
+    "syntax",
+    "syntax/ast",
+    "syntax/lexer",
+    "util/runes",
+    "util/strings",
+  ]
+  pruneopts = ""
+  revision = "5ccd90ef52e1e632236f7326478d4faa74f99438"
+  version = "v0.2.3"
+
+[[projects]]
+  digest = "1:80c5a91ff5613384d720bcc7af9b21d79779f79cc2f49aa3041f6373a8fd3515"
+  name = "github.com/gocolly/colly"
+  packages = [
+    ".",
+    "debug",
+    "storage",
+  ]
+  pruneopts = ""
+  revision = "a3a4941b2de28593f1ccbec83222c29103dfad5e"
+  version = "v1.1.0"
 
 [[projects]]
   digest = "1:3dd078fda7500c341bc26cfbc6c6a34614f295a2457149fc1045cab767cbcf18"
@@ -327,6 +396,14 @@
   revision = "8ec929ed50c3ac25ce77ba4486e1f277c552c591"
 
 [[projects]]
+  digest = "1:717859f53ed0a55fab7284704ecaac4b0d292f4caca5ceaa2afd512be49189ea"
+  name = "github.com/kennygrant/sanitize"
+  packages = ["."]
+  pruneopts = ""
+  revision = "06ec0d0dbcd497d01e5189b16f5263f712e61a8e"
+  version = "v1.2.4"
+
+[[projects]]
   digest = "1:6a874e3ddfb9db2b42bd8c85b6875407c702fa868eed20634ff489bc896ccfd3"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
@@ -451,6 +528,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:d1d064197983378d52b9cb2329f58b050ead44fc541aed670587e0131033f9da"
+  name = "github.com/saintfish/chardet"
+  packages = ["."]
+  pruneopts = ""
+  revision = "3af4cd4741ca4f3eb0c407c034571a6fb0ea529c"
+
+[[projects]]
+  branch = "master"
   digest = "1:47081c00d00c1dfc9a530c2556e78be391a5c24db1043efe6d406af882a169a1"
   name = "github.com/satori/go.uuid"
   packages = ["."]
@@ -491,6 +576,14 @@
   packages = ["."]
   pruneopts = ""
   revision = "a314942b2fd9dde7a3f70ba3f1062848ce6eb392"
+
+[[projects]]
+  branch = "master"
+  digest = "1:26a3895530593d2f453fbd7aee1c98fd2f160aba678272e2d7d8c4e428b8ceda"
+  name = "github.com/temoto/robotstxt"
+  packages = ["."]
+  pruneopts = ""
+  revision = "97ee4a9ee6ea01ed0bbf0325dd789f74cac6cb94"
 
 [[projects]]
   digest = "1:857a9ecd5cb13379ecc8f798f6e6b6b574c98b9355657d91e068275f1120aaf7"
@@ -567,6 +660,7 @@
     "context/ctxhttp",
     "html",
     "html/atom",
+    "html/charset",
     "http/httpguts",
     "http2",
     "http2/hpack",
@@ -617,12 +711,24 @@
   packages = [
     "collate",
     "collate/build",
+    "encoding",
+    "encoding/charmap",
+    "encoding/htmlindex",
+    "encoding/internal",
+    "encoding/internal/identifier",
+    "encoding/japanese",
+    "encoding/korean",
+    "encoding/simplifiedchinese",
+    "encoding/traditionalchinese",
+    "encoding/unicode",
     "internal/colltab",
     "internal/gen",
     "internal/tag",
     "internal/triegen",
     "internal/ucd",
+    "internal/utf8internal",
     "language",
+    "runes",
     "secure/bidirule",
     "transform",
     "unicode/bidi",
@@ -780,6 +886,7 @@
     "github.com/go-chi/chi/middleware",
     "github.com/go-chi/cors",
     "github.com/go-sql-driver/mysql",
+    "github.com/gocolly/colly",
     "github.com/google/go-github/github",
     "github.com/gorilla/sessions",
     "github.com/gorilla/websocket",

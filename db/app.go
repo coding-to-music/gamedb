@@ -44,6 +44,7 @@ type App struct {
 	AchievementPercentages string    `gorm:"not null;column:achievement_percentages;type:text"` //
 	Achievements           string    `gorm:"not null;column:achievements;type:text"`            //
 	Background             string    `gorm:"not null;column:background"`                        //
+	BundleIDs              string    `gorm:"not null;column:bundle_ids"`                        //
 	Categories             string    `gorm:"not null;column:categories;type:json"`              //
 	ClientIcon             string    `gorm:"not null;column:client_icon"`                       //
 	ComingSoon             bool      `gorm:"not null;column:coming_soon"`                       //
@@ -62,7 +63,7 @@ type App struct {
 	MetacriticURL          string    `gorm:"not null;column:metacritic_url"`                    //
 	Movies                 string    `gorm:"not null;column:movies;type:text"`                  //
 	Name                   string    `gorm:"not null;column:name"`                              //
-	Packages               string    `gorm:"not null;column:packages;type:json"`                //
+	Packages               string    `gorm:"not null;column:packages;type:json"`                // []int
 	Platforms              string    `gorm:"not null;column:platforms;type:json"`               //
 	Publishers             string    `gorm:"not null;column:publishers;type:json"`              //
 	ReleaseDate            string    `gorm:"not null;column:release_date"`                      //
