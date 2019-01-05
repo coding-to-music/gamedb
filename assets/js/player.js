@@ -138,7 +138,7 @@ if ($playerPage.length > 0) {
             },
             tooltip: {
                 formatter: function () {
-                    return this.point.value + ' apps cost ' + keyToLabel(this.point.value);
+                    return this.point.value.toLocaleString() + ' apps cost ' + keyToLabel(this.point.value);
                 }
             },
             series: [{

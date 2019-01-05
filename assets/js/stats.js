@@ -51,7 +51,7 @@ if ($('#stats-page').length > 0) {
                 },
                 tooltip: {
                     formatter: function () {
-                        return this.y + ' apps have ' + this.x + '/100';
+                        return this.y.toLocaleString() + ' apps have ' + this.x + '/100';
                     },
                 },
                 plotOptions: {
@@ -87,7 +87,7 @@ if ($('#stats-page').length > 0) {
                 },
                 tooltip: {
                     formatter: function () {
-                        return this.y + ' ' + this.key + ' apps';
+                        return this.y.toLocaleString() + ' ' + this.key + ' apps';
                     },
                 },
                 plotOptions: {
@@ -128,7 +128,7 @@ if ($('#stats-page').length > 0) {
                 },
                 tooltip: {
                     formatter: function () {
-                        return this.y + ' ' + this.key + ' players';
+                        return this.y.toLocaleString() + ' ' + this.key + ' players';
                     },
                 },
                 series: [{
@@ -159,7 +159,7 @@ if ($('#stats-page').length > 0) {
                 },
                 tooltip: {
                     formatter: function () {
-                        return this.y + ' apps released on ' + moment(this.key).format("DD MMM YYYY");
+                        return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("DD MMM YYYY");
                     },
                 },
                 series: [{

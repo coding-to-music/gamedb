@@ -105,9 +105,9 @@ if ($('#queues-page').length > 0) {
         tooltip: {
             formatter: function (x) {
                 if (this.series.name === 'size') {
-                    return this.y + ' items in the queue at ' + moment(this.key).format("h:mm");
+                    return this.y.toLocaleString() + ' items in the queue at ' + moment(this.key).format("h:mm");
                 } else {
-                    return this.y + ' items updated at ' + moment(this.key).format("h:mm");
+                    return this.y.toLocaleString() + ' items updated at ' + moment(this.key).format("h:mm");
                 }
             },
         }
