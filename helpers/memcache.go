@@ -6,11 +6,17 @@ import (
 	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/log"
 )
 
 var ErrCacheMiss = memcache.ErrCacheMiss
 
 var memcacheClient = memcache.New("game-db-", config.Config.MemcacheDSN.Get())
+
+// DEBUG
+func init() {
+	log.Debug("xxx" + config.Config.MemcacheDSN.Get() + "xxx")
+}
 
 func GetMemcache() *memcache.Memcache {
 	return memcacheClient
