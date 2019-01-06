@@ -39,8 +39,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == datastore.ErrNoSuchEntity {
 
+			err = queue.QueuePlayer(player.PlayerID)
+			log.Err(err, r)
+
 			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now."}
 			data.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+
 			returnErrorTemplate(w, r, data)
 		} else {
 			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player.", Error: err})
