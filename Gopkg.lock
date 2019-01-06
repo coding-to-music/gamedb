@@ -48,6 +48,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:2400e429a24c89557647efb92c07cfe0a982837f616043d66c3be5236230bae0"
+  name = "github.com/Jleagle/rabbit-go"
+  packages = ["rabbit"]
+  pruneopts = ""
+  revision = "0ce81585f7cb896fc6e3cad462010b65aefef597"
+
+[[projects]]
+  branch = "master"
   digest = "1:48b8ecf22465c696a891a5dd001f67352a2221ad46fc63285b7e1d0adaddb20a"
   name = "github.com/Jleagle/recaptcha-go"
   packages = ["."]
@@ -56,11 +64,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7f006a4400dcb19ad1b102805cb2d4428fe7ac1778432bf12c3e17a0979fe99e"
+  digest = "1:81b2378cdf431f1b1833840713284e46ba9f24d8a994b254f18e20b578d7a48b"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "458e6d4f31d17a56d73653abab96b2e6f4802e47"
+  revision = "827bdbbb944b2856d9cb646d007f1a0306fb0419"
 
 [[projects]]
   digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
@@ -143,12 +151,12 @@
   version = "v0.19.0"
 
 [[projects]]
-  digest = "1:27a0ba2be705618c3a7015ad9641635c1c4a552175576149d57bb9cf71cb0513"
+  digest = "1:59df7ab87ddca233bb586ff32c6feba12bf787260f6694dc45ceecea9d3e1a7e"
   name = "github.com/cenkalti/backoff"
   packages = ["."]
   pruneopts = ""
-  revision = "62661b46c4093e2c1f38d943e663db1a29873e80"
-  version = "v2.1.0"
+  revision = "1e4cf3da559842a91afcb6ea6141451e6c30c618"
+  version = "v2.1.1"
 
 [[projects]]
   digest = "1:edfb1e0276869665f9b91a70843712c1094a395ef5de7e5964adda96b986ee7d"
@@ -562,12 +570,12 @@
   version = "v3.4.1"
 
 [[projects]]
-  digest = "1:9d57e200ef5ccc4217fe0a34287308bac652435e7c6513f6263e0493d2245c56"
+  digest = "1:9a3c631555e0351fdc4e696577bb63afd90c399d782a8462dba9d100d7021db3"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = ""
-  revision = "bcd833dfe83d3cebad139e4a29ed79cb2318bf95"
-  version = "v1.2.0"
+  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
+  version = "v1.3.0"
 
 [[projects]]
   branch = "master"
@@ -635,7 +643,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6980cd6b0dac532550cafc9c8f1cd943576fb53f6aec1ba17f853170fdb9ab82"
+  digest = "1:59b49c47c11a48f1054529207f65907c014ecf5f9a7c0d9c0f1616dec7b062ed"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -649,7 +657,7 @@
     "ssh/terminal",
   ]
   pruneopts = ""
-  revision = "8d7daa0c54b357f3071e11eaef7efc4e19a417e2"
+  revision = "ff983b9c42bc9fbf91556e191cc8efb585c16908"
 
 [[projects]]
   branch = "master"
@@ -696,14 +704,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:528fd80cf9b601eec370e035bfa4b32dc98bb4dbf64de45686387249dd82a7cd"
+  digest = "1:1790bdba70a251611d2c92eea82b02b66a37d76a153d705a1ecb19c93588dc6a"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "82a175fd1598e8a172e58ebdf5ed262bb29129e5"
+  revision = "badf5585203e739f88c2c6cd34188a6f54b5d619"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -873,6 +881,7 @@
     "github.com/99designs/basicauth-go",
     "github.com/Jleagle/google-cloud-storage-go/gcs",
     "github.com/Jleagle/memcache-go/memcache",
+    "github.com/Jleagle/rabbit-go/rabbit",
     "github.com/Jleagle/recaptcha-go",
     "github.com/Jleagle/steam-go/steam",
     "github.com/Masterminds/squirrel",
