@@ -20,6 +20,8 @@ import (
 
 func playerHandler(w http.ResponseWriter, r *http.Request) {
 
+	t := playerTemplate{}
+
 	id := chi.URLParam(r, "id")
 	var toasts []Toast
 
@@ -67,6 +69,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err = queue.QueuePlayer(player.PlayerID)
 		log.Err(err, r)
+		t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 	}
 
 	var wg sync.WaitGroup
@@ -223,7 +226,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	// Template
-	t := playerTemplate{}
 	t.Fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
 	t.Player = player
