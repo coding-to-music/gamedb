@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/Jleagle/rabbit-go/rabbit"
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
@@ -44,7 +46,20 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		payload.MsgRatesAge = 3600
 		payload.MsgRatesIncr = 60
 
-		overview, err := helpers.GetRabbit().GetOverview(payload)
+		overview := rabbit.Overview{}
+
+		// Retrying as this call can fail
+		operation := func() (err error) {
+			overview, err = helpers.GetRabbit().GetOverview(payload)
+			log.Err(err)
+			return err
+		}
+
+		policy := backoff.NewExponentialBackOff()
+		policy.InitialInterval = time.Second / 2
+		policy.MaxElapsedTime = time.Second * 5
+
+		err = backoff.Retry(operation, policy)
 		if err != nil {
 			return "", err
 		}
