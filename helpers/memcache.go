@@ -44,17 +44,6 @@ var (
 		return memcache.Item{Key: "config-item-" + key, Expiration: 0}
 	}
 
-	// Queues
-	//MemcachePlayerInQueue = func(playerID int64) memcache.Item {
-	//	return memcache.Item{Key: "player-in-queue-" + strconv.FormatInt(playerID, 10), Expiration: 86400 * 7, Value: []byte("x")}
-	//}
-	//MemcacheAppInQueue = func(appID int) memcache.Item {
-	//	return memcache.Item{Key: "app-in-queue-" + strconv.Itoa(appID), Expiration: 86400 * 7, Value: []byte("x")}
-	//}
-	//MemcachePackageInQueue = func(packageID int) memcache.Item {
-	//	return memcache.Item{Key: "package-in-queue-" + strconv.Itoa(packageID), Expiration: 86400 * 7, Value: []byte("x")}
-	//}
-
 	// Other
 	MemcacheMostExpensiveApp = func(code steam.CountryCode) memcache.Item {
 		return memcache.Item{Key: "most-expensive-app-" + string(code), Expiration: 86400 * 7}

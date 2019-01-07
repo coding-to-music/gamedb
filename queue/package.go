@@ -44,12 +44,6 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 
 	logInfo("Consuming package: " + strconv.Itoa(message.ID))
 
-	// Remove from memcache
-	//err = helpers.GetMemcache().Delete(helpers.MemcachePackageInQueue(message.ID))
-	//if err != nil && err != helpers.ErrCacheMiss {
-	//	return true, err
-	//}
-
 	if !db.IsValidPackageID(message.ID) {
 		return false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
 	}

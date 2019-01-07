@@ -306,12 +306,7 @@ func QueuePlayer(playerID int64) (err error) {
 		Time: time.Now().Unix(),
 	})
 
-	err = Produce(QueueProfiles, b)
-	//if err == nil {
-	//	err = helpers.GetMemcache().SetItem(helpers.MemcachePlayerInQueue(playerID))
-	//}
-
-	return err
+	return Produce(QueueProfiles, b)
 }
 
 // JSON must match the Updater app

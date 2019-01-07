@@ -52,12 +52,6 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 
 	logInfo("Consuming app: " + strconv.Itoa(message.ID))
 
-	// Remove from memcache
-	//err = helpers.GetMemcache().Delete(helpers.MemcacheAppInQueue(message.ID))
-	//if err != nil && err != helpers.ErrCacheMiss {
-	//	return true, err
-	//}
-
 	if !db.IsValidAppID(message.ID) {
 		return false, errors.New("invalid app ID: " + strconv.Itoa(message.ID))
 	}

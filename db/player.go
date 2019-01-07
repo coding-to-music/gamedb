@@ -290,17 +290,7 @@ func (p Player) ShouldUpdate(userAgent string, updateType UpdateType) (err error
 		}
 	}
 
-	// Check if player is in queue
-	//var memcacheItem = helpers.MemcachePlayerInQueue(p.PlayerID)
-	//
-	//err = helpers.GetMemcache().Get(memcacheItem.Key, new([]byte))
-	//if err == helpers.ErrCacheMiss {
-	//	return nil // Not in queue
-	//} else if err == nil {
-	//	return ErrUpdatingPlayerInQueue // In queue
-	//}
-
-	return err // Error
+	return err
 }
 
 func (p *Player) Save() (err error) {
