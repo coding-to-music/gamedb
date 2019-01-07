@@ -485,7 +485,7 @@ func (t *GlobalTemplate) addAssetSlider() {
 }
 
 func (t *GlobalTemplate) addAssetPasswordStrength() {
-	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.1/pwstrength-bootstrap.min.js")
+	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.2/pwstrength-bootstrap.min.js")
 }
 
 // DataTablesAjaxResponse
