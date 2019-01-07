@@ -51,7 +51,6 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		// Retrying as this call can fail
 		operation := func() (err error) {
 			overview, err = helpers.GetRabbit().GetOverview(payload)
-			log.Err(err)
 			return err
 		}
 

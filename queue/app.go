@@ -535,7 +535,6 @@ func updateAppSteamSpy(app *db.App) error {
 	operation := func() (err error) {
 
 		response, err = client.Do(req)
-		log.Err(err)
 		return err
 	}
 
