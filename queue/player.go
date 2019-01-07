@@ -65,10 +65,10 @@ func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error
 	logInfo("Consuming player: " + strconv.FormatInt(id64, 10))
 
 	// Remove from memcache
-	err = helpers.GetMemcache().Delete(helpers.MemcachePlayerInQueue(id64))
-	if err != nil && err != helpers.ErrCacheMiss {
-		return true, err
-	}
+	//err = helpers.GetMemcache().Delete(helpers.MemcachePlayerInQueue(id64))
+	//if err != nil && err != helpers.ErrCacheMiss {
+	//	return true, err
+	//}
 
 	// Update player
 	player, err := db.GetPlayer(id64)

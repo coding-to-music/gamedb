@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
 )
@@ -308,9 +307,9 @@ func QueuePlayer(playerID int64) (err error) {
 	})
 
 	err = Produce(QueueProfiles, b)
-	if err == nil {
-		err = helpers.GetMemcache().SetItem(helpers.MemcachePlayerInQueue(playerID))
-	}
+	//if err == nil {
+	//	err = helpers.GetMemcache().SetItem(helpers.MemcachePlayerInQueue(playerID))
+	//}
 
 	return err
 }
