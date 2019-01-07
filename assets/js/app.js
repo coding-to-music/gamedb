@@ -45,6 +45,11 @@ if ($appPage.length > 0) {
         }
     });
 
+    // Detials image click
+    $('#details img').on('click', function () {
+        $('.card-header-tabs a[href="#media"]').tab('show');
+    });
+
     function showArt() {
 
         const split = window.location.hash.split(',');
