@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	`fmt`
 	"net/http"
 	"runtime"
 	"sort"
@@ -1019,6 +1020,42 @@ func adminMemcache() {
 func adminDev() {
 
 	var err error
+
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var apps []db.App
+
+	gorm = gorm.Select([]string{"id"})
+	gorm = gorm.Limit(10000)
+	gorm = gorm.Find(&apps)
+
+	for _, v := range apps {
+
+		go func(v db.App) {
+
+			players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
+
+			err2, ok := err.(steam.Error)
+			if ok && (err2.Code() == 404) {
+				fmt.Println("-")
+				return
+			}
+
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			fmt.Println(players)
+
+		}(v)
+	}
+
+	// ######################################################
 
 	//gorm, err := db.GetMySQLClient()
 	//if err != nil {
