@@ -14,6 +14,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
+	`github.com/dustin/go-humanize`
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -1033,9 +1034,16 @@ func adminDev() {
 	gorm = gorm.Limit(10000)
 	gorm = gorm.Find(&apps)
 
+	fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
+
+	var wg = sync.WaitGroup{}
+	var count int
 	for _, v := range apps {
 
+		wg.Add(1)
 		go func(v db.App) {
+
+			defer wg.Done()
 
 			players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
 
@@ -1050,10 +1058,17 @@ func adminDev() {
 				return
 			}
 
-			fmt.Println(players)
+			if players > 0 {
+				fmt.Println(players)
+				count++
+			}
 
 		}(v)
 	}
+
+	wg.Wait()
+
+	fmt.Println(strconv.Itoa(count) + " apps with players")
 
 	// ######################################################
 
