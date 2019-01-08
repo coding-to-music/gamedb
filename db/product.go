@@ -37,6 +37,7 @@ type PICSAppConfigLaunchItem struct {
 	OwnsDLCs          []string `json:"ownsdlc"`
 	BetaKey           string   `json:"betakey"`
 	WorkingDir        string   `json:"workingdir"`
+	VRMode            string   `json:"vrmode"`
 	VACModuleFilename string   `json:"vacmodulefilename"`
 }
 type PicsDepots struct {

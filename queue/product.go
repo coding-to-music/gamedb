@@ -264,6 +264,8 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 			launchItem.VACModuleFilename = v.Value.(string)
 		case "workingdir":
 			launchItem.WorkingDir = v.Value.(string)
+		case "vrmode":
+			launchItem.VRMode = v.Value.(string)
 		case "ownsdlc":
 			DLCSlice := strings.Split(v.Value.(string), ",")
 			for _, v := range DLCSlice {
