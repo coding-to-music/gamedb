@@ -20,9 +20,9 @@ var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
 
-	ErrUpdatingPlayerTooSoon = errors.New("updating too soon")
-	ErrUpdatingPlayerBot     = errors.New("bots can't update")
-	ErrUpdatingPlayerInQueue = errors.New("player is already in the queue")
+	//ErrUpdatingPlayerTooSoon = errors.New("updating too soon")
+	//ErrUpdatingPlayerBot     = errors.New("bots can't update")
+	//ErrUpdatingPlayerInQueue = errors.New("player is already in the queue")
 )
 
 type Player struct {
@@ -260,37 +260,37 @@ const (
 	PlayerUpdateAdmin   UpdateType = "admin"
 )
 
-func (p Player) ShouldUpdate(userAgent string, updateType UpdateType) (err error) {
+func (p Player) ShouldUpdate(userAgent string, updateType UpdateType) bool {
 
 	if !IsValidPlayerID(p.PlayerID) {
-		return ErrInvalidPlayerID
+		return false
 	}
 
 	if helpers.IsBot(userAgent) {
-		return ErrUpdatingPlayerBot
+		return false
 	}
 
 	if updateType == PlayerUpdateFriends {
 		if p.FriendsAddedAt.Add(time.Hour * 24 * 365).Unix() < time.Now().Unix() { // 1 year
-			return ErrUpdatingPlayerTooSoon
+			return false
 		}
 	} else if updateType == PlayerUpdateAuto {
 		if p.UpdatedAt.Add(time.Hour * 24 * 7).Unix() < time.Now().Unix() { // 1 week
-			return ErrUpdatingPlayerTooSoon
+			return false
 		}
 	} else if updateType == PlayerUpdateManual {
 		if p.Donated == 0 {
 			if p.UpdatedAt.Add(time.Hour * 24).Unix() < time.Now().Unix() { // 1 day
-				return ErrUpdatingPlayerTooSoon
+				return false
 			}
 		} else {
 			if p.UpdatedAt.Add(time.Hour * 1).Unix() < time.Now().Unix() { // 1 hour
-				return ErrUpdatingPlayerTooSoon
+				return false
 			}
 		}
 	}
 
-	return err
+	return true
 }
 
 func (p *Player) Save() (err error) {

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"time"
 
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
@@ -61,12 +60,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue profile for a refresh
-	// todo, "Profile queued for an update!"
-	err = player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto)
-	if err != nil {
-		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
-		log.Err(err, r)
-	} else {
+	if player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto) {
 		err = queue.QueuePlayer(player.PlayerID)
 		log.Err(err, r)
 		t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
@@ -90,10 +84,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Queue friends to be scanned
-		err = player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateFriends)
-		if err != nil {
-			err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
-			log.Err(err, r)
+		if !player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateFriends) {
 			return
 		}
 

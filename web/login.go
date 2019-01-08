@@ -219,11 +219,8 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue for an update
-	err = player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto)
-	if err != nil {
-		err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
-		log.Err(err, r)
-	} else {
+	if player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto) {
+
 		err = queue.QueuePlayer(player.PlayerID)
 		log.Err(err, r)
 	}
