@@ -94,13 +94,16 @@ type rabbitConsumer struct {
 func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
-	log.Err(err)
+	if err != nil {
+		return
+	}
 
 	err = ch.Qos(10, 0, false)
-	log.Err(err)
+	if err != nil {
+		return
+	}
 
 	qu, err = ch.QueueDeclare(queue.String(), true, false, false, false, nil)
-	log.Err(err)
 
 	return ch, qu, err
 }
