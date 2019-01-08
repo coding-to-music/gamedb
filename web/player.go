@@ -92,11 +92,11 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		//	err = queue.QueuePlayer(friend.SteamID)
 		//	log.Err(err, r)
 		//}
-
-		player.FriendsAddedAt = time.Now()
-
-		err = player.Save() // todo, switch to update query so not to overwrite other player changes
-		log.Err(err, r)
+		//
+		//player.FriendsAddedAt = time.Now()
+		//
+		//err = player.Save() // todo, switch to update query so not to overwrite other player changes
+		//log.Err(err, r)
 
 	}(player)
 
