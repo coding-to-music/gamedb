@@ -21,6 +21,7 @@ func (rq RabbitQueue) String() string {
 const (
 	QueueApps         RabbitQueue = "Steam_Apps"          // Only takes IDs
 	QueueAppsData     RabbitQueue = "Steam_Apps_Data"     //
+	QueueBundlesData  RabbitQueue = "Steam_Bundles_Data"  //
 	QueueChangesData  RabbitQueue = "Steam_Changes_Data"  //
 	QueueDelaysData   RabbitQueue = "Steam_Delays_Data"   //
 	QueuePackages     RabbitQueue = "Steam_Packages"      // Only takes IDs
@@ -316,6 +317,15 @@ func QueuePlayer(playerID int64) (err error) {
 type producePlayerPayload struct {
 	ID   int64 `json:"ID"`
 	Time int64 `json:"Time"`
+}
+
+func QueueBundle(bundleID int) (err error) {
+
+	b, err := json.Marshal(RabbitMessageBundle{
+		BundleID: bundleID,
+	})
+
+	return Produce(QueueBundlesData, b)
 }
 
 func logInfo(interfaces ...interface{}) {

@@ -15,14 +15,16 @@ import (
 type WebsocketPage string
 
 const (
+	PageAdmin    WebsocketPage = "admin"
+	PageApp      WebsocketPage = "app"
+	PageBundle   WebsocketPage = "bundle"
+	PageBundles  WebsocketPage = "bundles"
 	PageChanges  WebsocketPage = "changes"
 	PageChat     WebsocketPage = "chat"
 	PageNews     WebsocketPage = "news"
-	PagePrices   WebsocketPage = "prices"
-	PageAdmin    WebsocketPage = "admin"
-	PageApp      WebsocketPage = "app"
 	PagePackage  WebsocketPage = "package"
 	PagePackages WebsocketPage = "packages"
+	PagePrices   WebsocketPage = "prices"
 	PageProfile  WebsocketPage = "profile"
 )
 
