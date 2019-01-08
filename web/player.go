@@ -422,57 +422,52 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	var response PlayersUpdateResponse
+	message, err, success := func(r *http.Request) (string, error, bool) {
 
-	playerID := chi.URLParam(r, "id")
+		var message string
 
-	idx, err := strconv.ParseInt(playerID, 10, 64)
-	if err != nil || !db.IsValidPlayerID(idx) {
+		idx, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+		if err != nil {
+			return "Invalid Player ID", err, false
+		}
 
-		response = PlayersUpdateResponse{Message: "Invalid Player ID", Success: false, Error: err.Error()}
-		log.Err(err, r)
-
-	} else {
+		if !db.IsValidPlayerID(idx) {
+			return "Invalid Player ID", err, false
+		}
 
 		player, err := db.GetPlayer(idx)
-		if err != nil && err != datastore.ErrNoSuchEntity {
-
-			response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
-			log.Err(err, r)
-
+		if err == nil {
+			message = "Updating player!"
+		} else if err == datastore.ErrNoSuchEntity {
+			message = "Looking for new player!"
 		} else {
-
-			updateType := db.PlayerUpdateManual
-			if isAdmin(r) {
-				updateType = db.PlayerUpdateAdmin
-			}
-
-			err := player.ShouldUpdate(r.UserAgent(), updateType)
-			if err != nil {
-
-				response = PlayersUpdateResponse{Message: err.Error(), Success: false}
-				err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue, db.ErrUpdatingPlayerBot)
-				log.Err(err, r)
-
-			} else {
-
-				// All good
-				if err != nil && err == datastore.ErrNoSuchEntity {
-					response = PlayersUpdateResponse{Message: "Looking for new player!", Success: true, Error: err.Error()}
-				} else {
-					response = PlayersUpdateResponse{Message: "Updating player", Success: true}
-				}
-
-				err = queue.QueuePlayer(player.PlayerID)
-				if err != nil {
-
-					response = PlayersUpdateResponse{Message: "Something has gone wrong", Success: false, Error: err.Error()}
-
-					err = helpers.IgnoreErrors(err, db.ErrUpdatingPlayerBot, db.ErrUpdatingPlayerTooSoon, db.ErrUpdatingPlayerInQueue)
-					log.Err(err, r)
-				}
-			}
+			log.Err(err, r)
+			return "Error looking for player", err, false
 		}
+
+		updateType := db.PlayerUpdateManual
+		if isAdmin(r) {
+			message = "Admin update!"
+			updateType = db.PlayerUpdateAdmin
+		}
+
+		if !player.ShouldUpdate(r.UserAgent(), updateType) {
+			return "Player can't be updated yet", nil, false
+		}
+
+		err = queue.QueuePlayer(player.PlayerID)
+		if err != nil {
+			log.Err(err, r)
+			return "Something has gone wrong", err, false
+		}
+
+		return message, err, true
+	}(r)
+
+	var response = PlayersUpdateResponse{
+		Success: success,
+		Toast:   message,
+		Log:     err,
 	}
 
 	bytes, err := json.Marshal(response)
@@ -484,7 +479,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type PlayersUpdateResponse struct {
-	Message string `json:"message"` // Browser notification
-	Error   string `json:"error"`   // Console log
 	Success bool   `json:"success"` // Red or green
+	Toast   string `json:"toast"`   // Browser notification
+	Log     error  `json:"log"`     // Console log
 }

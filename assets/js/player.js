@@ -19,12 +19,12 @@ if ($playerPage.length > 0) {
             url: '/players/' + $(this).attr('data-update-id') + '/ajax/update',
             success: function (data, textStatus, jqXHR) {
 
-                toast(data.success, data.message);
+                toast(data.success, data.toast);
 
                 $('i', $link).removeClass('fa-spin');
 
-                if (data.error) {
-                    console.log(data.error);
+                if (data.log) {
+                    console.log(data.log);
                 }
             },
             dataType: 'json',
