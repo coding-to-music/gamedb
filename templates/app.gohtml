@@ -89,7 +89,10 @@
                         {{ end }}
                         <tr>
                             <th scope="row" nowrap="nowrap" width="1%">Review Score</th>
-                            <td>{{ .App.ReviewsScore }}%</td>
+                            <td>
+                                {{ .App.ReviewsScore }}%
+                                <small>({{ comma .App.ReviewsPositive }}<i class="fas fa-angle-up"></i> {{ comma .App.ReviewsNegative }}<i class="fas fa-angle-down"></i>)</small>
+                            </td>
                         </tr>
                         <tr>
                             <th scope="row" nowrap="nowrap" width="1%">Price</th>
