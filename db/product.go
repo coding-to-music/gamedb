@@ -27,17 +27,17 @@ type PICSAppCommon map[string]string
 type PICSAppUFS map[string]string
 type PICSAppConfig map[string]string
 type PICSAppConfigLaunchItem struct {
-	Order             int    `json:"order"`
-	Executable        string `json:"executable"`
-	Arguments         string `json:"arguments"`
-	Description       string `json:"description"`
-	Typex             string `json:"type"`
-	OSList            string `json:"oslist"`
-	OSArch            string `json:"osarch"`
-	OwnsDLCs          []int  `json:"ownsdlc"`
-	BetaKey           string `json:"betakey"`
-	WorkingDir        string `json:"workingdir"`
-	VACModuleFilename string `json:"vacmodulefilename"`
+	Order             int      `json:"order"`
+	Executable        string   `json:"executable"`
+	Arguments         string   `json:"arguments"`
+	Description       string   `json:"description"`
+	Typex             string   `json:"type"`
+	OSList            string   `json:"oslist"`
+	OSArch            string   `json:"osarch"`
+	OwnsDLCs          []string `json:"ownsdlc"`
+	BetaKey           string   `json:"betakey"`
+	WorkingDir        string   `json:"workingdir"`
+	VACModuleFilename string   `json:"vacmodulefilename"`
 }
 type PicsDepots struct {
 	Depots   []PICSAppDepotItem

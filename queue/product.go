@@ -267,13 +267,11 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 		case "ownsdlc":
 			DLCSlice := strings.Split(v.Value.(string), ",")
 			for _, v := range DLCSlice {
-				DLC, err := strconv.Atoi(strings.TrimSpace(v))
-				logError(err)
-				if err == nil {
-					launchItem.OwnsDLCs = append(launchItem.OwnsDLCs, DLC)
+				var trimmed = strings.TrimSpace(v)
+				if trimmed != "" {
+					launchItem.OwnsDLCs = append(launchItem.OwnsDLCs, trimmed)
 				}
 			}
-
 		case "config":
 			v.getAppLaunchItem(launchItem)
 		default:
