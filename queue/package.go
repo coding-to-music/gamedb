@@ -104,16 +104,18 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		return true, err
 	}
 
-	// Send websocket
-	page, err := websockets.GetPage(websockets.PagePackage)
-	if err == nil && page.HasConnections() {
-		page.Send(pack.ID)
-	}
-
 	// Save new data
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
 		return true, gorm.Error
+	}
+
+	// Send websocket
+	page, err := websockets.GetPage(websockets.PagePackage)
+	if err != nil {
+		return true, err
+	} else if page.HasConnections() {
+		page.Send(pack.ID)
 	}
 
 	return false, err

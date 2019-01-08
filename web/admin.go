@@ -245,8 +245,6 @@ func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("player-id"); val != "" {
 
-		log.Info("Player ID: " + val)
-
 		playerID, err := strconv.ParseInt(val, 10, 64)
 		log.Err(err, r)
 
@@ -256,8 +254,6 @@ func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
-		log.Info("App ID: " + val)
-
 		valInt, err := strconv.ParseInt(val, 10, 32)
 		log.Err(err, r)
 
@@ -266,8 +262,6 @@ func adminQueues(r *http.Request) {
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
-
-		log.Info("Package ID: " + val)
 
 		valInt, err := strconv.ParseInt(val, 10, 32)
 		log.Err(err, r)

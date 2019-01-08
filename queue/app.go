@@ -71,7 +71,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	// Skip if updated in last day, unless its from PICS
 	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.PICSChangeNumber >= message.ChangeNumber {
 		logInfo("Skipping, updated in last day")
-		return false, nil
+		//return false, nil
 	}
 
 	var appBeforeUpdate = app
@@ -122,14 +122,6 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 		return true, err
 	}
 
-	// Send websocket
-	page, err := websockets.GetPage(websockets.PageApp)
-	if err != nil {
-		return true, err
-	} else if page.HasConnections() {
-		page.Send(app.ID)
-	}
-
 	// Misc
 	app.Type = strings.ToLower(app.Type)
 	app.ReleaseState = strings.ToLower(app.ReleaseState)
@@ -138,6 +130,14 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	gorm = gorm.Save(&app)
 	if gorm.Error != nil {
 		return true, gorm.Error
+	}
+
+	// Send websocket
+	page, err := websockets.GetPage(websockets.PageApp)
+	if err != nil {
+		return true, err
+	} else if page.HasConnections() {
+		page.Send(app.ID)
 	}
 
 	return false, nil

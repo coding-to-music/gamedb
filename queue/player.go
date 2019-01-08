@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -125,6 +126,14 @@ func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error
 	err = player.Save()
 	if err != nil {
 		return true, err
+	}
+
+	// Send websocket
+	page, err := websockets.GetPage(websockets.PageProfile)
+	if err != nil {
+		return true, err
+	} else if page.HasConnections() {
+		page.Send(strconv.FormatInt(player.PlayerID, 10))
 	}
 
 	return false, err
