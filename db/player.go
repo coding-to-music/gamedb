@@ -270,27 +270,30 @@ func (p Player) ShouldUpdate(userAgent string, updateType UpdateType) bool {
 		return false
 	}
 
-	if updateType == PlayerUpdateFriends {
+	switch updateType {
+	case PlayerUpdateAdmin:
+		return true
+	case PlayerUpdateFriends:
 		if p.FriendsAddedAt.Add(time.Hour * 24 * 365).Unix() < time.Now().Unix() { // 1 year
-			return false
+			return true
 		}
-	} else if updateType == PlayerUpdateAuto {
+	case PlayerUpdateAuto:
 		if p.UpdatedAt.Add(time.Hour * 24 * 7).Unix() < time.Now().Unix() { // 1 week
-			return false
+			return true
 		}
-	} else if updateType == PlayerUpdateManual {
+	case PlayerUpdateManual:
 		if p.Donated == 0 {
 			if p.UpdatedAt.Add(time.Hour * 24).Unix() < time.Now().Unix() { // 1 day
-				return false
+				return true
 			}
 		} else {
 			if p.UpdatedAt.Add(time.Hour * 1).Unix() < time.Now().Unix() { // 1 hour
-				return false
+				return true
 			}
 		}
 	}
 
-	return true
+	return false
 }
 
 func (p *Player) Save() (err error) {
