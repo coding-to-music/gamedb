@@ -373,27 +373,32 @@
 
                     {{if gt (len .App.GetScreenshots) 0}}
 
-                        <div id="mediaCarousel" class="carousel slide" data-ride="carousel">
-                            <ol class="carousel-indicators">
-                                {{ range $key, $value := .App.GetScreenshots }}
-                                    <li data-target="#mediaCarousel" data-slide-to="{{ $key }}" class="{{if eq $key 0}}active{{end}}"></li>
-                                {{ end }}
-                            </ol>
-                            <div class="carousel-inner">
-                                {{ range $key, $value := .App.GetScreenshots }}
-                                    <div class="carousel-item {{if eq $key 0}}active{{end}}">
-                                        <img class="d-block w-100" src="{{ .PathFull }}" alt="Media">
-                                    </div>
-                                {{ end }}
-                            </div>
-                            <a class="carousel-control-prev" href="#mediaCarousel" role="button" data-slide="prev">
-                                <span class="carousel-control-prev-icon"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#mediaCarousel" role="button" data-slide="next">
-                                <span class="carousel-control-next-icon"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
+                        <div id="carousel1">
+                            {{ range $key, $value := .App.GetScreenshots }}
+                                <div>
+                                    <img src="{{ .PathFull }}" alt="Media {{ $key }}">
+                                </div>
+                            {{ end }}
+                            {{ range $key, $value := .App.GetMovies }}
+                                <div>
+                                    <video controls autoplay preload="metadata">
+                                        <source src="{{ .Webm.Max }}" type="video/webm">
+                                        Sorry, your browser doesn't support embedded videos.
+                                    </video>
+                                </div>
+                            {{ end }}
+                        </div>
+
+                        <div id="carousel2">
+                            {{ range $key, $value := .App.GetScreenshots }}
+                                <div class="thumb"><img src="{{ .PathThumbnail }}" alt="Thumbnail {{ $key }}"></div>
+                            {{ end }}
+                            {{ range $key, $value := .App.GetMovies }}
+                                <div class="thumb">
+                                    <img src="{{ .Thumbnail }}" alt="{{ .Name }}">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            {{ end }}
                         </div>
 
                     {{ else }}
@@ -668,6 +673,7 @@
                                                 <th scope="col">Beta Key</th>
                                                 <th scope="col">Working Dir</th>
                                                 <th scope="col">VAC Module Filename</th>
+                                                <th scope="col">VR Mode</th>
                                             </tr>
                                             </thead>
                                             {{ range $key, $value := .App.GetLaunch }}
@@ -683,6 +689,7 @@
                                                     <td>{{ .BetaKey }}</td>
                                                     <td>{{ .WorkingDir }}</td>
                                                     <td>{{ .VACModuleFilename }}</td>
+                                                    <td>{{ .VRMode }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>

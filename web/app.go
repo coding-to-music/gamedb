@@ -59,6 +59,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := appTemplate{}
 	t.Fill(w, r, app.GetName(), "")
+	t.addAssetCarousel()
 	t.addAssetHighCharts()
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)

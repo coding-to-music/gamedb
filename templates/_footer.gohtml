@@ -20,14 +20,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha256-yNbKY1y6h2rbVcQtf0b8lq4a+xpktyFc3pSYoGAY1qQ=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/livestamp/1.1.2/livestamp.min.js" integrity="sha256-8r65KJgULBDiZhwDydfWrEkx3yyV/grGsGzaekobngI=" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.js"></script>
-    {{ range $key, $value := .JSFiles }}
-        <script src="{{ $value }}"></script>
+    {{ range .JSFiles }}
+        <script src="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous"></script>
     {{ end }}
-    <script src="/assets/compiled.min.js?rel=d7d40ccef3"></script>
-
-    <script async src="https://cdn.chitika.net/getads.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.js"></script>
+    <script src="/assets/compiled.min.js?rel=a475f1c6ea"></script>
+    <script src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
 
@@ -42,6 +40,7 @@
             gtag('set', {'user_id': user.userID});
         }
     </script>
+    <script async src="https://cdn.chitika.net/getads.js"></script>
 
     </body>
     </html>

@@ -292,8 +292,8 @@ type GlobalTemplate struct {
 	Description template.HTML // Page description
 	Path        string        // URL path
 	Env         string        // Environment
-	CSSFiles    []string
-	JSFiles     []string
+	CSSFiles    []Asset
+	JSFiles     []Asset
 
 	// These variables can't!
 	// Session
@@ -464,28 +464,39 @@ func (t *GlobalTemplate) addToast(toast Toast) {
 }
 
 func (t *GlobalTemplate) addAssetChosen() {
-	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js")
-	t.CSSFiles = append(t.CSSFiles, "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css")
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js", Integrity: "sha256-c4gVE6fn+JRKMRvqjoDp+tlG4laudNYrXI1GncbfAYY="})
+	t.CSSFiles = append(t.CSSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css", Integrity: "sha256-EH/CzgoJbNED+gZgymswsIOrM9XhIbdSJ6Hwro09WE4="})
 }
 
 func (t *GlobalTemplate) addAssetJSON2HTML() {
-	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.2.0/json2html.min.js")
-	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/jquery.json2html/1.2.0/jquery.json2html.min.js")
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.2.0/json2html.min.js", Integrity: "sha256-5iWhgkOOkWSQMxoIXqSKvZQHOTJ1wYDBqhMTFm5DkDw="})
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/jquery.json2html/1.2.0/jquery.json2html.min.js", Integrity: "sha256-NVPR5gsJCl/e6xUJ3Wv2+4Tui2vhZY6KBhx0RY0DNcs="})
 }
 
 func (t *GlobalTemplate) addAssetHighCharts() {
-	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/highcharts.js")
-	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/data.js")
-	//t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/heatmap.js")
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/highcharts.js", Integrity: "sha256-j3WPKr23emLOeDVvf5mbfGs5xE+GERqV1vCz+Wx6n74="})
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/data.js", Integrity: "sha256-CYgititANzm6qnx8M/4TpaGqfa8xFOIbHfWbtvKAg4w="})
+	//t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/heatmap.js", Integrity: "sha256-HgUQ2+RnyQrmj1venzdV9Q6/ahkZ8h4HYoXNbGu7dpo="})
 }
 
 func (t *GlobalTemplate) addAssetSlider() {
-	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.js")
-	t.CSSFiles = append(t.CSSFiles, "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css")
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.js", Integrity: "sha256-V76+FCDgnqVqafUQ74coiR7qA3Gd6ZlVuFgdwcGCGlc="})
+	t.CSSFiles = append(t.CSSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css", Integrity: "sha256-MyPOSprr9/vRwXTYc0saw86ylzGM2HVRKWUfHIFta74="})
+}
+
+func (t *GlobalTemplate) addAssetCarousel() {
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js", Integrity: "sha256-NXRS8qVcmZ3dOv3LziwznUHPegFhPZ1F/4inU7uC8h0="})
+	t.CSSFiles = append(t.CSSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css", Integrity: "sha256-UK1EiopXIL+KVhfbFa8xrmAWPeBjMVdvYMYkTAEv/HI="})
+	t.CSSFiles = append(t.CSSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css", Integrity: "sha256-4hqlsNP9KM6+2eA8VUT0kk4RsMRTeS7QGHIM+MZ5sLY="})
 }
 
 func (t *GlobalTemplate) addAssetPasswordStrength() {
-	t.JSFiles = append(t.JSFiles, "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.2/pwstrength-bootstrap.min.js")
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.2/pwstrength-bootstrap.min.js", Integrity: "sha256-BPKP4P2AbrV7hf80SHJAJkIvjt7X7MKFEPpA99uU6uQ="})
+}
+
+type Asset struct {
+	URL       string
+	Integrity string
 }
 
 // DataTablesAjaxResponse

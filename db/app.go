@@ -554,6 +554,12 @@ func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err e
 	return screenshots, err
 }
 
+func (app App) GetMovies() (movies []steam.AppDetailsMovie, err error) {
+
+	err = helpers.Unmarshal([]byte(app.Movies), &movies)
+	return movies, err
+}
+
 func (app App) GetCoopTags() (string, error) {
 
 	tags, err := app.GetTagIDs()

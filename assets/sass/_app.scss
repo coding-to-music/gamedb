@@ -45,9 +45,49 @@
     }
 
     #media {
-        .carousel-indicators {
-            li {
-                cursor: pointer;
+        font-size: 0; // Remove white space inbetween images
+
+        #carousel1 {
+            //height: 500px;
+            margin-bottom: 1px;
+            overflow: hidden;
+
+            img, video {
+                width: 100%;
+                //height: 500px;
+            }
+        }
+
+        #carousel2 {
+            height: 60px;
+
+            div.slick-slide {
+                div.thumb {
+                    position: relative;
+
+                    img {
+                        height: 60px;
+                        width: 80px;
+                        margin-right: 1px;
+                        cursor: pointer;
+                        color: #3498db;
+                    }
+
+                    i {
+                        position: absolute;
+                        bottom: 5px;
+                        left: 5px;
+                        font-size: 16px;
+                        color: #28a745;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            div.slick-current {
+                img {
+                    border: solid 2px #28a745;
+                }
             }
         }
     }

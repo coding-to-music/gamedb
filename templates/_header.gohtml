@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha256-R91pD48xW+oHbpJYGn5xR0Q7tMhH4xOrWn1QqMRINtA=" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css" integrity="sha256-MyPOSprr9/vRwXTYc0saw86ylzGM2HVRKWUfHIFta74=" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    {{ range $key, $value := .CSSFiles }}
-        <link rel="stylesheet" href="{{ $value }}">
+    {{ range .CSSFiles }}
+        <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=de8442451f">
+    <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=2e807af36d">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
