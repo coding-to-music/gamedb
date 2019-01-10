@@ -381,7 +381,7 @@
                             {{ end }}
                             {{ range $key, $value := .App.GetMovies }}
                                 <div>
-                                    <video controls autoplay preload="metadata">
+                                    <video controls preload="metadata">
                                         <source src="{{ .PathFull }}" type="video/webm">
                                         Sorry, your browser doesn't support embedded videos.
                                     </video>
