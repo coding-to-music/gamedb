@@ -350,7 +350,7 @@ func updateAppDetails(app *db.App) error {
 			if response.Data.Platforms.Windows {
 				platforms = append(platforms, "windows")
 			}
-			if response.Data.Platforms.Windows {
+			if response.Data.Platforms.Mac {
 				platforms = append(platforms, "macos")
 			}
 
