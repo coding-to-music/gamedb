@@ -137,35 +137,6 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 		app.StoreTags = "[]"
 	}
 
-	//err := scope.SetColumn("UpdatedAt", time.Now())
-	//if err != nil {
-	//	log.Log(err)
-	//	return err
-	//}
-	//
-	//err = scope.SetColumn("CreatedAt", time.Now())
-	//if err != nil {
-	//	log.Log(err)
-	//	return err
-	//}
-
-	return nil
-}
-
-func (app *App) BeforeUpdate(scope *gorm.Scope) error {
-
-	//Temp
-	if app.AchievementPercentages == "[]" {
-		err := scope.SetColumn("AchievementPercentages", "{}")
-		log.Err(err)
-	}
-
-	//err := scope.SetColumn("UpdatedAt", time.Now())
-	//if err != nil {
-	//	log.Log(err)
-	//	return err
-	//}
-
 	return nil
 }
 
