@@ -14,43 +14,43 @@ import (
 )
 
 type Package struct {
-	ID                   int       `gorm:"not null;column:id;primary_key"`           //
-	CreatedAt            time.Time `gorm:"not null;column:created_at;type:datetime"` //
-	UpdatedAt            time.Time `gorm:"not null;column:updated_at;type:datetime"` //
-	PICSName             string    `gorm:"not null;column:name"`                     //
-	PICSChangeNumber     int       `gorm:"not null;column:change_id"`                //
-	PICSChangeNumberDate time.Time `gorm:"not null;column:change_number_date"`       //
-	PICSBillingType      int8      `gorm:"not null;column:billing_type"`             //
-	PICSLicenseType      int8      `gorm:"not null;column:license_type"`             //
-	PICSStatus           int8      `gorm:"not null;column:status"`                   //
-	PICSExtended         string    `gorm:"not null;column:extended"`                 // JSON (TEXT)
-	PICSAppIDs           string    `gorm:"not null;column:apps"`                     // JSON
-	PICSAppItems         string    `gorm:"not null;column:app_items"`                // JSON (TEXT)
-	PICSDepotIDs         string    `gorm:"not null;column:depot_ids"`                // JSON
-	AppsCount            int       `gorm:"not null;column:apps_count"`               //
-	ImagePage            string    `gorm:"not null;column:image_page"`               //
-	ImageHeader          string    `gorm:"not null;column:image_header"`             //
-	ImageLogo            string    `gorm:"not null;column:image_logo"`               //
-	PurchaseText         string    `gorm:"not null;column:purchase_text"`            //
-	Controller           string    `gorm:"not null;column:controller"`               // JSON (TEXT)
-	ComingSoon           bool      `gorm:"not null;column:coming_soon"`              //
-	ReleaseDate          string    `gorm:"not null;column:release_date"`             //
-	ReleaseDateUnix      int64     `gorm:"not null;column:release_date_unix"`        //
-	Platforms            string    `gorm:"not null;column:platforms"`                // JSON
-	Prices               string    `gorm:"not null;column:prices"`                   // JSON
-	Icon                 string    `gorm:"not null;column:icon"`                     //
+	AppIDs           string    `gorm:"not null;column:apps"`                     // JSON
+	AppItems         string    `gorm:"not null;column:app_items"`                // JSON (TEXT)
+	AppsCount        int       `gorm:"not null;column:apps_count"`               //
+	BillingType      int8      `gorm:"not null;column:billing_type"`             //
+	ChangeNumber     int       `gorm:"not null;column:change_id"`                //
+	ChangeNumberDate time.Time `gorm:"not null;column:change_number_date"`       //
+	ComingSoon       bool      `gorm:"not null;column:coming_soon"`              //
+	Controller       string    `gorm:"not null;column:controller"`               // JSON (TEXT)
+	CreatedAt        time.Time `gorm:"not null;column:created_at;type:datetime"` //
+	DepotIDs         string    `gorm:"not null;column:depot_ids"`                // JSON
+	Extended         string    `gorm:"not null;column:extended"`                 // JSON (TEXT)
+	Icon             string    `gorm:"not null;column:icon"`                     //
+	ID               int       `gorm:"not null;column:id;primary_key"`           //
+	ImageHeader      string    `gorm:"not null;column:image_header"`             //
+	ImageLogo        string    `gorm:"not null;column:image_logo"`               //
+	ImagePage        string    `gorm:"not null;column:image_page"`               //
+	LicenseType      int8      `gorm:"not null;column:license_type"`             //
+	Name             string    `gorm:"not null;column:name"`                     //
+	Platforms        string    `gorm:"not null;column:platforms"`                // JSON
+	Prices           string    `gorm:"not null;column:prices"`                   // JSON
+	PurchaseText     string    `gorm:"not null;column:purchase_text"`            //
+	ReleaseDate      string    `gorm:"not null;column:release_date"`             //
+	ReleaseDateUnix  int64     `gorm:"not null;column:release_date_unix"`        //
+	Status           int8      `gorm:"not null;column:status"`                   //
+	UpdatedAt        time.Time `gorm:"not null;column:updated_at;type:datetime"` //
 }
 
 func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 
-	if pack.PICSAppIDs == "" {
-		pack.PICSAppIDs = "[]"
+	if pack.AppIDs == "" {
+		pack.AppIDs = "[]"
 	}
-	if pack.PICSExtended == "" {
-		pack.PICSExtended = "{}"
+	if pack.Extended == "" {
+		pack.Extended = "{}"
 	}
-	if pack.PICSAppItems == "" {
-		pack.PICSAppItems = "{}"
+	if pack.AppItems == "" {
+		pack.AppItems = "{}"
 	}
 	if pack.Controller == "" {
 		pack.Controller = "{}"
@@ -58,8 +58,8 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 	if pack.Platforms == "" {
 		pack.Platforms = "[]"
 	}
-	if pack.PICSDepotIDs == "" {
-		pack.PICSDepotIDs = "[]"
+	if pack.DepotIDs == "" {
+		pack.DepotIDs = "[]"
 	}
 	if pack.Prices == "" {
 		pack.Prices = "{}"
@@ -114,15 +114,15 @@ func (pack Package) GetName() (name string) {
 
 	var IDString = strconv.FormatInt(int64(pack.ID), 10)
 
-	if (pack.PICSName == "") || (pack.PICSName == IDString) {
+	if (pack.Name == "") || (pack.Name == IDString) {
 		return "Package " + IDString
 	}
 
-	return pack.PICSName
+	return pack.Name
 }
 
 func (pack Package) HasDefaultName() bool {
-	return pack.PICSName == strconv.FormatInt(int64(pack.ID), 10)
+	return pack.Name == strconv.FormatInt(int64(pack.ID), 10)
 }
 
 func (pack Package) GetCreatedNice() string {
@@ -139,7 +139,7 @@ func (pack Package) GetUpdatedNice() string {
 
 func (pack Package) GetPICSUpdatedNice() string {
 
-	d := pack.PICSChangeNumberDate
+	d := pack.ChangeNumberDate
 
 	// Empty dates
 	if d.IsZero() || d.Unix() == -62167219200 {
@@ -163,7 +163,7 @@ func (pack Package) GetReleaseDateNice() string {
 
 func (pack Package) GetBillingType() string {
 
-	switch pack.PICSBillingType {
+	switch pack.BillingType {
 	case 0:
 		return "No Cost"
 	case 1:
@@ -203,7 +203,7 @@ func (pack Package) GetBillingType() string {
 
 func (pack Package) GetLicenseType() string {
 
-	switch pack.PICSLicenseType {
+	switch pack.LicenseType {
 	case 0:
 		return "No License"
 	case 1:
@@ -223,7 +223,7 @@ func (pack Package) GetLicenseType() string {
 
 func (pack Package) GetStatus() string {
 
-	switch pack.PICSStatus {
+	switch pack.Status {
 	case 0:
 		return "Available"
 	case 2:
@@ -255,7 +255,7 @@ func (pack Package) GetAppsCountString() string {
 
 func (pack Package) GetAppIDs() (apps []int, err error) {
 
-	err = helpers.Unmarshal([]byte(pack.PICSAppIDs), &apps)
+	err = helpers.Unmarshal([]byte(pack.AppIDs), &apps)
 	return apps, err
 }
 
@@ -266,7 +266,7 @@ func (pack *Package) SetAppIDs(apps []int) (err error) {
 		return err
 	}
 
-	pack.PICSAppIDs = string(bytes)
+	pack.AppIDs = string(bytes)
 	pack.AppsCount = len(apps)
 
 	return err
@@ -279,14 +279,14 @@ func (pack *Package) SetDepotIDs(depots []int) (err error) {
 		return err
 	}
 
-	pack.PICSDepotIDs = string(bytes)
+	pack.DepotIDs = string(bytes)
 
 	return err
 }
 
 func (pack Package) GetDepotIDs() (depots []int, err error) {
 
-	err = helpers.Unmarshal([]byte(pack.PICSDepotIDs), &depots)
+	err = helpers.Unmarshal([]byte(pack.DepotIDs), &depots)
 	return depots, err
 }
 
@@ -297,7 +297,7 @@ func (pack *Package) SetAppItems(items map[string]string) (err error) {
 		return err
 	}
 
-	pack.PICSAppItems = string(bytes)
+	pack.AppItems = string(bytes)
 
 	return nil
 }
@@ -337,7 +337,7 @@ func (pack *Package) SetExtended(extended PICSExtended) (err error) {
 		return err
 	}
 
-	pack.PICSExtended = string(bytes)
+	pack.Extended = string(bytes)
 
 	return nil
 }
@@ -346,7 +346,7 @@ func (pack Package) GetExtended() (extended PICSExtended, err error) {
 
 	extended = PICSExtended{}
 
-	err = helpers.Unmarshal([]byte(pack.PICSExtended), &extended)
+	err = helpers.Unmarshal([]byte(pack.Extended), &extended)
 	return extended, err
 }
 
@@ -441,8 +441,8 @@ func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{})
 		pack.GetComingSoon(),
 		pack.AppsCount,
 		GetPriceFormatted(pack, code).Final,
-		pack.PICSChangeNumberDate.Unix(),
-		pack.PICSChangeNumberDate.Format(helpers.DateYearTime),
+		pack.ChangeNumberDate.Unix(),
+		pack.ChangeNumberDate.Format(helpers.DateYearTime),
 		pack.GetIcon(),
 	}
 }

@@ -61,7 +61,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.PICSChangeNumber >= message.ChangeNumber {
+	if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.ChangeNumber >= message.ChangeNumber {
 		logInfo("Skipping, updated in last day")
 		return false, nil
 	}
@@ -93,7 +93,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 		if err != nil && err != db.ErrRecordNotFound {
 			return true, err
 		} else if err == nil && pack.HasDefaultName() {
-			pack.PICSName = app.Name
+			pack.Name = app.Name
 			pack.Icon = app.GetIcon()
 		}
 	}
@@ -126,13 +126,13 @@ func updatePackageFromPICS(pack *db.Package, rabbitMessage RabbitMessagePackage)
 	message := rabbitMessage.PICSPackageInfo
 
 	// Update with new details
-	if message.ChangeNumber > pack.PICSChangeNumber {
-		pack.PICSChangeNumberDate = time.Unix(rabbitMessage.Payload.Time, 0)
+	if message.ChangeNumber > pack.ChangeNumber {
+		pack.ChangeNumberDate = time.Unix(rabbitMessage.Payload.Time, 0)
 	}
 
 	pack.ID = message.ID
-	pack.PICSChangeNumber = message.ChangeNumber
-	pack.PICSName = message.KeyValues.Name
+	pack.ChangeNumber = message.ChangeNumber
+	pack.Name = message.KeyValues.Name
 
 	for _, v := range message.KeyValues.Children {
 
@@ -141,19 +141,19 @@ func updatePackageFromPICS(pack *db.Package, rabbitMessage RabbitMessagePackage)
 
 			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
-			pack.PICSBillingType = int8(i64)
+			pack.BillingType = int8(i64)
 
 		case "licensetype":
 
 			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
-			pack.PICSLicenseType = int8(i64)
+			pack.LicenseType = int8(i64)
 
 		case "status":
 
 			var i64 int64
 			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
-			pack.PICSStatus = int8(i64)
+			pack.Status = int8(i64)
 
 		case "packageid":
 			// Empty
@@ -180,7 +180,7 @@ func updatePackageFromPICS(pack *db.Package, rabbitMessage RabbitMessagePackage)
 			err = pack.SetExtended(v.GetExtended())
 
 		default:
-			err = errors.New(v.Name + " field in package PICS ignored (Change " + strconv.Itoa(pack.PICSChangeNumber) + ")")
+			err = errors.New(v.Name + " field in package PICS ignored (Change " + strconv.Itoa(pack.ChangeNumber) + ")")
 		}
 
 		if err != nil {
@@ -239,7 +239,7 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 			pack.ReleaseDate = response.Data.ReleaseDate.Date
 			pack.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
-			pack.PICSName = response.Data.Name
+			pack.Name = response.Data.Name
 		}
 	}
 

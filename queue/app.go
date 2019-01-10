@@ -69,7 +69,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.PICSChangeNumber >= message.ChangeNumber {
+	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.ChangeNumber {
 		logInfo("Skipping, updated in last day")
 		//return false, nil
 	}
@@ -147,12 +147,12 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 
 	message := rabbitMessage.PICSAppInfo
 
-	if message.ChangeNumber > app.PICSChangeNumber {
-		app.PICSChangeNumberDate = time.Unix(rabbitMessage.Payload.Time, 0)
+	if message.ChangeNumber > app.ChangeNumber {
+		app.ChangeNumberDate = time.Unix(rabbitMessage.Payload.Time, 0)
 	}
 
 	app.ID = message.ID
-	app.PICSChangeNumber = message.ChangeNumber
+	app.ChangeNumber = message.ChangeNumber
 
 	for _, v := range message.KeyValues.Children {
 
@@ -217,7 +217,7 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 		case "public_only":
 
 			if v.Value.(string) == "1" {
-				app.PICSPublicOnly = true
+				app.PublicOnly = true
 			}
 
 		case "ufs":
@@ -261,7 +261,7 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 			}
 
 		default:
-			logWarning(v.Name + " field in app PICS ignored (Change " + strconv.Itoa(app.PICSChangeNumber) + ")")
+			logWarning(v.Name + " field in app PICS ignored (Change " + strconv.Itoa(app.ChangeNumber) + ")")
 		}
 	}
 

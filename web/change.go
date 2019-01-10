@@ -70,7 +70,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		for _, v := range change.Packages {
-			t.Packages[v.ID] = db.Package{ID: v.ID, PICSName: v.Name}
+			t.Packages[v.ID] = db.Package{ID: v.ID, Name: v.Name}
 		}
 
 		packagesSlice, err := db.GetPackages(change.GetPackageIDs(), []string{})
