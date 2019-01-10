@@ -86,12 +86,12 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 		return true, err
 	}
 
-	err = updateAppAchievements(&app)
+	schema, err := updateAppSchema(&app)
 	if err != nil {
 		return true, err
 	}
 
-	err = updateAppSchema(&app)
+	err = updateAppAchievements(&app, schema)
 	if err != nil {
 		return true, err
 	}
@@ -285,34 +285,54 @@ func updateAppDetails(app *db.App) error {
 		if code == steam.CountryUS {
 
 			// Screenshots
-			screenshotsString, err := json.Marshal(response.Data.Screenshots)
+			var images []db.AppImage
+			for _, v := range response.Data.Screenshots {
+				images = append(images, db.AppImage{
+					PathFull:      v.PathFull,
+					PathThumbnail: v.PathThumbnail,
+				})
+			}
+
+			b, err := json.Marshal(images)
 			if err != nil {
 				return err
 			}
+
+			app.Screenshots = string(b)
 
 			// Movies
-			moviesString, err := json.Marshal(response.Data.Movies)
+			var videos []db.AppVideo
+			for _, v := range response.Data.Movies {
+				videos = append(videos, db.AppVideo{
+					PathFull:      v.Webm.Max,
+					PathThumbnail: v.Thumbnail,
+					Title:         v.Name,
+				})
+			}
+
+			b, err = json.Marshal(videos)
 			if err != nil {
 				return err
 			}
 
-			// Achievements
-			achievementsString, err := json.Marshal(response.Data.Achievements)
-			if err != nil {
-				return err
-			}
+			app.Movies = string(b)
 
 			// DLC
-			dlcString, err := json.Marshal(response.Data.DLC)
+			b, err = json.Marshal(response.Data.DLC)
 			if err != nil {
 				return err
 			}
 
+			app.DLC = string(b)
+			app.DLCCount = len(response.Data.DLC)
+
 			// Packages
-			packagesString, err := json.Marshal(response.Data.Packages)
+			b, err = json.Marshal(response.Data.Packages)
 			if err != nil {
 				return err
 			}
+
+			app.Packages = string(b)
 
 			// Publishers
 			publishersString, err := json.Marshal(response.Data.Publishers)
@@ -320,11 +340,15 @@ func updateAppDetails(app *db.App) error {
 				return err
 			}
 
+			app.Publishers = string(publishersString)
+
 			// Developers
 			developersString, err := json.Marshal(response.Data.Developers)
 			if err != nil {
 				return err
 			}
+
+			app.Developers = string(developersString)
 
 			// Categories
 			var categories []int8
@@ -337,10 +361,15 @@ func updateAppDetails(app *db.App) error {
 				return err
 			}
 
+			app.Categories = string(categoriesString)
+
+			// Genres
 			genresString, err := json.Marshal(response.Data.Genres)
 			if err != nil {
 				return err
 			}
+
+			app.Genres = string(genresString)
 
 			// Platforms
 			var platforms []string
@@ -354,31 +383,23 @@ func updateAppDetails(app *db.App) error {
 				platforms = append(platforms, "macos")
 			}
 
+			// Platforms
 			platformsString, err := json.Marshal(platforms)
 			if err != nil {
 				return err
 			}
 
+			app.Platforms = string(platformsString)
+
 			// Other
 			app.Name = response.Data.Name
 			app.Type = response.Data.Type
 			app.IsFree = response.Data.IsFree
-			app.DLC = string(dlcString)
-			app.DLCCount = len(response.Data.DLC)
 			app.ShortDescription = response.Data.ShortDescription
 			app.HeaderImage = response.Data.HeaderImage
-			app.Developers = string(developersString)
-			app.Publishers = string(publishersString)
-			app.Packages = string(packagesString)
 			app.MetacriticScore = response.Data.Metacritic.Score
 			app.MetacriticURL = response.Data.Metacritic.URL
-			app.Categories = string(categoriesString)
-			app.Genres = string(genresString)
-			app.Screenshots = string(screenshotsString)
-			app.Movies = string(moviesString)
-			app.Achievements = string(achievementsString)
 			app.Background = response.Data.Background
-			app.Platforms = string(platformsString)
 			app.GameID = response.Data.Fullgame.AppID
 			app.GameName = response.Data.Fullgame.Name
 			app.ReleaseDate = response.Data.ReleaseDate.Date
@@ -390,9 +411,9 @@ func updateAppDetails(app *db.App) error {
 	return app.SetPrices(prices)
 }
 
-func updateAppAchievements(app *db.App) error {
+func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
 
-	percentages, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
+	resp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 
 	// This endpoint seems to error if the app has no achievement data, so it's probably fine.
 	err2, ok := err.(steam.Error)
@@ -403,37 +424,63 @@ func updateAppAchievements(app *db.App) error {
 		return err
 	}
 
-	percentagesBytes, err := json.Marshal(percentages)
+	var achievementsMap = make(map[string]float64)
+	for _, v := range resp.GlobalAchievementPercentage {
+		achievementsMap[v.Name] = v.Percent
+	}
+
+	// Make template struct
+	var achievements []db.AppAchievement
+	for _, v := range schema.AvailableGameStats.Achievements {
+		achievements = append(achievements, db.AppAchievement{
+			Name:        v.Name,
+			Icon:        v.Icon,
+			Description: v.Description,
+			Completed:   helpers.RoundFloatTo2DP(achievementsMap[v.Name]),
+		})
+	}
+
+	b, err := json.Marshal(achievements)
 	if err != nil {
 		return err
 	}
 
-	app.AchievementPercentages = string(percentagesBytes)
+	app.Achievements = string(b)
 
 	return nil
 }
 
-func updateAppSchema(app *db.App) error {
+func updateAppSchema(app *db.App) (schema steam.SchemaForGame, err error) {
 
-	schema, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
+	resp, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
 
 	// This endpoint seems to error if the app has no schema, so it's probably fine.
 	err2, ok := err.(steam.Error)
 	if ok && (err2.Code() == 403) {
-		return nil
+		return schema, nil
 	}
 	if err != nil {
-		return err
+		return schema, err
 	}
 
-	schemaString, err := json.Marshal(schema)
+	var stats []db.AppStat
+	for _, v := range resp.AvailableGameStats.Stats {
+		stats = append(stats, db.AppStat{
+			Name:        v.Name,
+			Default:     v.DefaultValue,
+			DisplayName: v.DisplayName,
+		})
+	}
+
+	b, err := json.Marshal(stats)
 	if err != nil {
-		return err
+		return schema, err
 	}
 
-	app.Schema = string(schemaString)
+	app.Stats = string(b)
+	app.Version = resp.Version
 
-	return nil
+	return resp, nil
 }
 
 func updateAppNews(app *db.App) error {

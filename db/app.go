@@ -12,7 +12,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
@@ -26,76 +25,74 @@ const (
 )
 
 type App struct {
-	ID                     int       `gorm:"not null;column:id;primary_key"`                    //
-	CreatedAt              time.Time `gorm:"not null;column:created_at;type:datetime"`          //
-	UpdatedAt              time.Time `gorm:"not null;column:updated_at;type:datetime"`          //
-	PICSInstall            string    `gorm:"not null;column:pics_install"`                      //
-	PICSChangeNumber       int       `gorm:"not null;column:change_number"`                     //
-	PICSChangeNumberDate   time.Time `gorm:"not null;column:change_number_date;type:datetime"`  //
-	PICSConfig             string    `gorm:"not null;column:config"`                            //
-	PICSCommon             string    `gorm:"not null;column:common"`                            //
-	PICSDepots             string    `gorm:"not null;column:depots"`                            //
-	PICSExtended           string    `gorm:"not null;column:extended"`                          //
-	PICSLaunch             string    `gorm:"not null;column:pics_launch"`                       //
-	PICSLocalization       string    `gorm:"not null;column:pics_localization"`                 //
-	PICSUFS                string    `gorm:"not null;column:pics_ufs"`                          //
-	PICSPublicOnly         bool      `gorm:"not null;column:public_only"`                       //
-	PICSSystemRequirements string    `gorm:"not null;column:pics_system_requirements"`          //
-	AchievementPercentages string    `gorm:"not null;column:achievement_percentages;type:text"` //
-	Achievements           string    `gorm:"not null;column:achievements;type:text"`            //
-	Background             string    `gorm:"not null;column:background"`                        //
-	BundleIDs              string    `gorm:"not null;column:bundle_ids"`                        //
-	Categories             string    `gorm:"not null;column:categories;type:json"`              //
-	ClientIcon             string    `gorm:"not null;column:client_icon"`                       //
-	ComingSoon             bool      `gorm:"not null;column:coming_soon"`                       //
-	Developers             string    `gorm:"not null;column:developers;type:json"`              //
-	DLC                    string    `gorm:"not null;column:dlc;type:json"`                     //
-	DLCCount               int       `gorm:"not null;column:dlc_count"`                         //
-	GameID                 int       `gorm:"not null;column:game_id"`                           //
-	GameName               string    `gorm:"not null;column:game_name"`                         //
-	Genres                 string    `gorm:"not null;column:genres;type:json"`                  //
-	HeaderImage            string    `gorm:"not null;column:image_header"`                      //
-	Homepage               string    `gorm:"not null;column:homepage"`                          //
-	Icon                   string    `gorm:"not null;column:icon"`                              //
-	IsFree                 bool      `gorm:"not null;column:is_free;type:tinyint(1)"`           //
-	Logo                   string    `gorm:"not null;column:logo"`                              //
-	MetacriticScore        int8      `gorm:"not null;column:metacritic_score"`                  //
-	MetacriticURL          string    `gorm:"not null;column:metacritic_url"`                    //
-	Movies                 string    `gorm:"not null;column:movies;type:text"`                  //
-	Name                   string    `gorm:"not null;column:name"`                              //
-	Packages               string    `gorm:"not null;column:packages;type:json"`                // []int
-	Platforms              string    `gorm:"not null;column:platforms;type:json"`               //
-	Publishers             string    `gorm:"not null;column:publishers;type:json"`              //
-	ReleaseDate            string    `gorm:"not null;column:release_date"`                      //
-	ReleaseDateUnix        int64     `gorm:"not null;column:release_date_unix"`                 //
-	ReleaseState           string    `gorm:"not null;column:release_state"`                     //
-	Schema                 string    `gorm:"not null;column:schema;type:text"`                  //
-	Screenshots            string    `gorm:"not null;column:screenshots;type:text"`             //
-	ShortDescription       string    `gorm:"not null;column:description_short"`                 //
-	StoreTags              string    `gorm:"not null;column:tags;type:json"`                    //
-	Type                   string    `gorm:"not null;column:type"`                              //
-	Reviews                string    `gorm:"not null;column:reviews"`                           //
-	ReviewsScore           float64   `gorm:"not null;column:reviews_score"`                     //
-	ReviewsPositive        int       `gorm:"not null;column:reviews_positive"`                  //
-	ReviewsNegative        int       `gorm:"not null;column:reviews_negative"`                  //
-	Prices                 string    `gorm:"not null;column:prices"`                            //
-	NewsIDs                string    `gorm:"not null;column:news_ids"`                          //
+	ID                     int       `gorm:"not null;column:id;primary_key"`                   //
+	CreatedAt              time.Time `gorm:"not null;column:created_at;type:datetime"`         //
+	UpdatedAt              time.Time `gorm:"not null;column:updated_at;type:datetime"`         //
+	PICSChangeNumber       int       `gorm:"not null;column:change_number"`                    //
+	PICSChangeNumberDate   time.Time `gorm:"not null;column:change_number_date;type:datetime"` //
+	PICSCommon             string    `gorm:"not null;column:common"`                           //
+	PICSConfig             string    `gorm:"not null;column:config"`                           //
+	PICSDepots             string    `gorm:"not null;column:depots"`                           //
+	PICSExtended           string    `gorm:"not null;column:extended"`                         //
+	PICSInstall            string    `gorm:"not null;column:install"`                          //
+	PICSLaunch             string    `gorm:"not null;column:launch"`                           //
+	PICSLocalization       string    `gorm:"not null;column:localization"`                     //
+	PICSPublicOnly         bool      `gorm:"not null;column:public_only"`                      //
+	PICSSystemRequirements string    `gorm:"not null;column:system_requirements"`              //
+	PICSUFS                string    `gorm:"not null;column:ufs"`                              //
+	Achievements           string    `gorm:"not null;column:achievements;type:text"`           // []AppAchievement
+	Background             string    `gorm:"not null;column:background"`                       //
+	BundleIDs              string    `gorm:"not null;column:bundle_ids"`                       //
+	Categories             string    `gorm:"not null;column:categories;type:json"`             //
+	ClientIcon             string    `gorm:"not null;column:client_icon"`                      //
+	ComingSoon             bool      `gorm:"not null;column:coming_soon"`                      //
+	Developers             string    `gorm:"not null;column:developers;type:json"`             //
+	DLC                    string    `gorm:"not null;column:dlc;type:json"`                    //
+	DLCCount               int       `gorm:"not null;column:dlc_count"`                        //
+	GameID                 int       `gorm:"not null;column:game_id"`                          //
+	GameName               string    `gorm:"not null;column:game_name"`                        //
+	Genres                 string    `gorm:"not null;column:genres;type:json"`                 //
+	HeaderImage            string    `gorm:"not null;column:image_header"`                     //
+	Homepage               string    `gorm:"not null;column:homepage"`                         //
+	Icon                   string    `gorm:"not null;column:icon"`                             //
+	IsFree                 bool      `gorm:"not null;column:is_free;type:tinyint(1)"`          //
+	Logo                   string    `gorm:"not null;column:logo"`                             //
+	MetacriticScore        int8      `gorm:"not null;column:metacritic_score"`                 //
+	MetacriticURL          string    `gorm:"not null;column:metacritic_url"`                   //
+	Movies                 string    `gorm:"not null;column:movies;type:text"`                 // []AppVideo
+	Name                   string    `gorm:"not null;column:name"`                             //
+	NewsIDs                string    `gorm:"not null;column:news_ids"`                         //
+	Packages               string    `gorm:"not null;column:packages;type:json"`               // []int
+	Platforms              string    `gorm:"not null;column:platforms;type:json"`              //
+	Prices                 string    `gorm:"not null;column:prices"`                           //
+	Publishers             string    `gorm:"not null;column:publishers;type:json"`             //
+	ReleaseDate            string    `gorm:"not null;column:release_date"`                     //
+	ReleaseDateUnix        int64     `gorm:"not null;column:release_date_unix"`                //
+	ReleaseState           string    `gorm:"not null;column:release_state"`                    //
+	Reviews                string    `gorm:"not null;column:reviews"`                          //
+	ReviewsNegative        int       `gorm:"not null;column:reviews_negative"`                 //
+	ReviewsPositive        int       `gorm:"not null;column:reviews_positive"`                 //
+	ReviewsScore           float64   `gorm:"not null;column:reviews_score"`                    //
+	Screenshots            string    `gorm:"not null;column:screenshots;type:text"`            // []AppImage
+	ShortDescription       string    `gorm:"not null;column:description_short"`                //
+	Stats                  string    `gorm:"not null;column:stats;type:text"`                  // []AppStat
+	SteamSpy               string    `gorm:"not null;column:steam_spy"`                        // AppSteamSpy
+	StoreTags              string    `gorm:"not null;column:tags;type:json"`                   //
+	Type                   string    `gorm:"not null;column:type"`                             //
+	Version                string    `gorm:"not null;column:version"`                          //
 
-	SSAveragePlaytimeTwoWeeks int `gorm:"not null;column:ss_average_2weeks"`  //
-	SSAveragePlaytimeForever  int `gorm:"not null;column:ss_average_forever"` //
-	SSMedianPlaytimeForever   int `gorm:"not null;column:ss_median_forever"`  //
-	SSMedianPlaytimeTwoWeeks  int `gorm:"not null;column:ss_median_2weeks"`   //
-	SSOwnersLow               int `gorm:"not null;column:ss_owners_low"`      //
-	SSOwnersHigh              int `gorm:"not null;column:ss_owners_high"`     //
+	SSAveragePlaytimeTwoWeeks int `gorm:"not null;column:ss_average_2weeks"`
+	SSAveragePlaytimeForever  int `gorm:"not null;column:ss_average_forever"`
+	SSMedianPlaytimeForever   int `gorm:"not null;column:ss_median_forever"`
+	SSMedianPlaytimeTwoWeeks  int `gorm:"not null;column:ss_median_2weeks"`
+	SSOwnersLow               int `gorm:"not null;column:ss_owners_low"`
+	SSOwnersHigh              int `gorm:"not null;column:ss_owners_high"`
 }
 
 func (app *App) BeforeCreate(scope *gorm.Scope) error {
 
-	if app.AchievementPercentages == "" {
-		app.AchievementPercentages = "{}"
-	}
 	if app.Achievements == "" {
-		app.Achievements = "{}"
+		app.Achievements = "[]"
 	}
 	if app.Categories == "" {
 		app.Categories = "[]"
@@ -130,8 +127,8 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 	if app.Publishers == "" {
 		app.Publishers = "[]"
 	}
-	if app.Schema == "" {
-		app.Schema = "{}"
+	if app.Stats == "" {
+		app.Stats = "[]"
 	}
 	if app.Screenshots == "" {
 		app.Screenshots = "[]"
@@ -589,10 +586,16 @@ func (app App) GetCoopTags() (string, error) {
 	return strings.Join(coopTags, ", "), nil
 }
 
-func (app App) GetAchievements() (achievements steam.AppDetailsAchievements, err error) {
+func (app App) GetAchievements() (achievements []AppAchievement, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Achievements), &achievements)
 	return achievements, err
+}
+
+func (app App) GetStats() (stats []AppStat, err error) {
+
+	err = helpers.Unmarshal([]byte(app.Stats), &stats)
+	return stats, err
 }
 
 func (app App) GetPlatforms() (platforms []string, err error) {
@@ -1019,4 +1022,40 @@ func CountUpcomingApps() (count int, err error) {
 
 		return count, db.Error
 	})
+}
+
+type AppImage struct {
+	PathFull      string `json:"f"`
+	PathThumbnail string `json:"t"`
+}
+
+type AppVideo struct {
+	PathFull      string `json:"f"`
+	PathThumbnail string `json:"s"`
+	Title         string `json:"t"`
+}
+
+type AppAchievement struct {
+	Name        string  `json:"n"`
+	Icon        string  `json:"i"`
+	Description string  `json:"d"`
+	Completed   float64 `json:"c"`
+}
+
+type AppStat struct {
+	Name        string `json:"n"`
+	Default     int    `json:"d"`
+	DisplayName string `json:"o"`
+}
+
+type AppSteamSpy struct {
+	SSAveragePlaytimeTwoWeeks int `json:"aw"`
+	SSAveragePlaytimeForever  int `json:"af"`
+	SSMedianPlaytimeTwoWeeks  int `json:"mw"`
+	SSMedianPlaytimeForever   int `json:"mf"`
+	SSOwnersLow               int `json:"ol"`
+	SSOwnersHigh              int `json:"oh"`
+}
+
+type AppReview struct {
 }

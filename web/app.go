@@ -92,30 +92,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var achievementsResp steam.GlobalAchievementPercentages
+		var achievements []db.AppAchievement
 
-		err := helpers.Unmarshal([]byte(app.AchievementPercentages), &achievementsResp)
+		err := helpers.Unmarshal([]byte(app.Achievements), &achievements)
 		log.Err(err, r)
-
-		achievementsMap := make(map[string]float64)
-		for _, v := range achievementsResp.GlobalAchievementPercentage {
-			achievementsMap[v.Name] = v.Percent
-		}
-
-		var schema steam.SchemaForGame
-
-		err = helpers.Unmarshal([]byte(app.Schema), &schema)
-		log.Err(err, r)
-
-		// Make template struct
-		for _, v := range schema.AvailableGameStats.Achievements {
-			t.Achievements = append(t.Achievements, appAchievementTemplate{
-				v.Icon,
-				v.DisplayName,
-				v.Description,
-				achievementsMap[v.Name],
-			})
-		}
 
 	}(app)
 
@@ -247,23 +227,10 @@ type appTemplate struct {
 	Packages     []db.Package
 	DLC          []db.App
 	Price        db.ProductPriceFormattedStruct
-	Achievements []appAchievementTemplate
-	Schema       steam.SchemaForGame
 	Tags         []db.Tag
 	Reviews      []appReviewTemplate
 	ReviewsCount steam.ReviewsSummaryResponse
 	Banners      map[string][]string
-}
-
-type appAchievementTemplate struct {
-	Icon        string
-	Name        string
-	Description string
-	Completed   float64
-}
-
-func (a appAchievementTemplate) GetCompleted() float64 {
-	return helpers.RoundFloatTo2DP(a.Completed)
 }
 
 type appReviewTemplate struct {
