@@ -280,12 +280,12 @@ func updatePlayerGames(player *db.Player) error {
 		}
 	}
 
-	bytes, err := json.Marshal(gameStats)
+	b, err := json.Marshal(gameStats)
 	if err != nil {
 		return err
 	}
 
-	player.GameStats = string(bytes)
+	player.GameStats = string(b)
 
 	// Make heatmap
 	//var roundedPrices []int
@@ -307,12 +307,12 @@ func updatePlayerGames(player *db.Player) error {
 	//	ret[(v / 5)] = []int{0, ret[(v / 5)][1] + 1}
 	//}
 	//
-	//bytes, err = json.Marshal(ret)
+	//b, err = json.Marshal(ret)
 	//if err != nil {
 	//	return err
 	//}
 	//
-	//player.GameHeatMap = string(bytes)
+	//player.GameHeatMap = string(b)
 
 	return nil
 }
@@ -325,21 +325,21 @@ func updatePlayerRecentGames(player *db.Player) error {
 	}
 
 	// Encode to JSON bytes
-	bytes, err := json.Marshal(recentResponse.Games)
+	b, err := json.Marshal(recentResponse.Games)
 	if err != nil {
 		return err
 	}
 
 	// Upload
-	if len(bytes) > maxBytesToStore {
+	if len(b) > maxBytesToStore {
 		storagePath := helpers.PathRecentGames(player.PlayerID)
-		err = helpers.Upload(storagePath, bytes)
+		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
 		}
 		player.GamesRecent = storagePath
 	} else {
-		player.GamesRecent = string(bytes)
+		player.GamesRecent = string(b)
 	}
 
 	return nil
@@ -364,12 +364,12 @@ func updatePlayerBadges(player *db.Player) error {
 		PercentOfLevel:             response.GetPercentOfLevel(),
 	}
 
-	bytes, err := json.Marshal(stats)
+	b, err := json.Marshal(stats)
 	if err != nil {
 		return err
 	}
 
-	player.BadgeStats = string(bytes)
+	player.BadgeStats = string(b)
 
 	// Start badges slice
 	var badgeSlice []db.ProfileBadge
@@ -405,21 +405,21 @@ func updatePlayerBadges(player *db.Player) error {
 	}
 
 	// Encode to JSON bytes
-	bytes, err = json.Marshal(badgeSlice)
+	b, err = json.Marshal(badgeSlice)
 	if err != nil {
 		return err
 	}
 
 	// Upload
-	if len(bytes) > maxBytesToStore {
+	if len(b) > maxBytesToStore {
 		storagePath := helpers.PathBadges(player.PlayerID)
-		err = helpers.Upload(storagePath, bytes)
+		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
 		}
 		player.Badges = storagePath
 	} else {
-		player.Badges = string(bytes)
+		player.Badges = string(b)
 	}
 
 	return nil
@@ -480,21 +480,21 @@ func updatePlayerFriends(player *db.Player) error {
 	}
 
 	// Encode to JSON bytes
-	bytes, err := json.Marshal(friends)
+	b, err := json.Marshal(friends)
 	if err != nil {
 		return err
 	}
 
 	// Upload
-	if len(bytes) > maxBytesToStore {
+	if len(b) > maxBytesToStore {
 		storagePath := helpers.PathFriends(player.PlayerID)
-		err = helpers.Upload(storagePath, bytes)
+		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
 		}
 		player.Friends = storagePath
 	} else {
-		player.Friends = string(bytes)
+		player.Friends = string(b)
 	}
 
 	return nil
@@ -525,12 +525,12 @@ func updatePlayerBans(player *db.Player) error {
 	player.NumberOfVACBans = bans.NumberOfVACBans
 
 	// Encode to JSON bytes
-	bytes, err := json.Marshal(bans)
+	b, err := json.Marshal(bans)
 	if err != nil {
 		return err
 	}
 
-	player.Bans = string(bytes)
+	player.Bans = string(b)
 
 	return nil
 }

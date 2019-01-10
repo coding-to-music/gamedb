@@ -208,10 +208,12 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 		if code == steam.CountryUS {
 
 			// Controller
-			controllerString, err := json.Marshal(response.Data.Controller)
+			b, err := json.Marshal(response.Data.Controller)
 			if err != nil {
 				return err
 			}
+
+			pack.Controller = string(b)
 
 			// Platforms
 			var platforms []string
@@ -225,17 +227,17 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 				platforms = append(platforms, "macos")
 			}
 
-			platformsString, err := json.Marshal(platforms)
+			b, err = json.Marshal(platforms)
 			if err != nil {
 				return err
 			}
+
+			pack.Platforms = string(b)
 
 			//
 			pack.ImageHeader = response.Data.HeaderImage
 			pack.ImageLogo = response.Data.SmallLogo
 			pack.ImageHeader = response.Data.HeaderImage
-			pack.Platforms = string(platformsString)
-			pack.Controller = string(controllerString)
 			pack.ReleaseDate = response.Data.ReleaseDate.Date
 			pack.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon

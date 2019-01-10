@@ -172,11 +172,11 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 			var common = db.PICSAppCommon{}
 			for _, vv := range v.Children {
 				if vv.Value == nil {
-					bytes, err := json.Marshal(vv.ToNestedMaps())
+					b, err := json.Marshal(vv.ToNestedMaps())
 					if err != nil {
 						return err
 					}
-					common[vv.Name] = string(bytes)
+					common[vv.Name] = string(b)
 				} else {
 					common[vv.Name] = vv.Value.(string)
 				}
@@ -225,11 +225,11 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 			var common = db.PICSAppUFS{}
 			for _, vv := range v.Children {
 				if vv.Value == nil {
-					bytes, err := json.Marshal(vv.ToNestedMaps())
+					b, err := json.Marshal(vv.ToNestedMaps())
 					if err != nil {
 						return err
 					}
-					common[vv.Name] = string(bytes)
+					common[vv.Name] = string(b)
 				} else {
 					common[vv.Name] = vv.Value.(string)
 				}
@@ -335,20 +335,20 @@ func updateAppDetails(app *db.App) error {
 			app.Packages = string(b)
 
 			// Publishers
-			publishersString, err := json.Marshal(response.Data.Publishers)
+			b, err = json.Marshal(response.Data.Publishers)
 			if err != nil {
 				return err
 			}
 
-			app.Publishers = string(publishersString)
+			app.Publishers = string(b)
 
 			// Developers
-			developersString, err := json.Marshal(response.Data.Developers)
+			b, err = json.Marshal(response.Data.Developers)
 			if err != nil {
 				return err
 			}
 
-			app.Developers = string(developersString)
+			app.Developers = string(b)
 
 			// Categories
 			var categories []int8
@@ -356,20 +356,20 @@ func updateAppDetails(app *db.App) error {
 				categories = append(categories, v.ID)
 			}
 
-			categoriesString, err := json.Marshal(categories)
+			b, err = json.Marshal(categories)
 			if err != nil {
 				return err
 			}
 
-			app.Categories = string(categoriesString)
+			app.Categories = string(b)
 
 			// Genres
-			genresString, err := json.Marshal(response.Data.Genres)
+			b, err = json.Marshal(response.Data.Genres)
 			if err != nil {
 				return err
 			}
 
-			app.Genres = string(genresString)
+			app.Genres = string(b)
 
 			// Platforms
 			var platforms []string
@@ -384,12 +384,12 @@ func updateAppDetails(app *db.App) error {
 			}
 
 			// Platforms
-			platformsString, err := json.Marshal(platforms)
+			b, err = json.Marshal(platforms)
 			if err != nil {
 				return err
 			}
 
-			app.Platforms = string(platformsString)
+			app.Platforms = string(b)
 
 			// Other
 			app.Name = response.Data.Name
@@ -537,12 +537,12 @@ func updateAppReviews(app *db.App) error {
 		return err
 	}
 
-	reviewsBytes, err := json.Marshal(reviewsResp)
+	b, err := json.Marshal(reviewsResp)
 	if err != nil {
 		return err
 	}
 
-	app.Reviews = string(reviewsBytes)
+	app.Reviews = string(b)
 	app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
 	app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
 	app.SetReviewScore()

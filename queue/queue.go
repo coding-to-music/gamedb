@@ -247,12 +247,12 @@ func (s rabbitConsumer) requeueMessage(msg amqp.Delivery) error {
 
 	delayeMessage.IncrementAttempts()
 
-	data, err := json.Marshal(delayeMessage)
+	b, err := json.Marshal(delayeMessage)
 	if err != nil {
 		return err
 	}
 
-	err = Produce(QueueDelaysData, data)
+	err = Produce(QueueDelaysData, b)
 	log.Err(err)
 
 	return nil

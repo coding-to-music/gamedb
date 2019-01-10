@@ -51,12 +51,12 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error)
 
 		delayMessage.IncrementAttempts()
 
-		bytes, err := json.Marshal(delayMessage)
+		b, err := json.Marshal(delayMessage)
 		if err != nil {
 			return false, err
 		}
 
-		err = Produce(delayMessage.getConsumeQueue(), bytes)
+		err = Produce(delayMessage.getConsumeQueue(), b)
 		logError(err)
 
 	} else {

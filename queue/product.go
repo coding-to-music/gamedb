@@ -64,9 +64,9 @@ func (i RabbitMessageProductKeyValues) GetExtended() (extended db.PICSExtended) 
 	extended = db.PICSExtended{}
 	for _, v := range i.Children {
 		if v.Value == nil {
-			bytes, err := json.Marshal(v.ToNestedMaps())
+			b, err := json.Marshal(v.ToNestedMaps())
 			logError(err)
-			extended[v.Name] = string(bytes)
+			extended[v.Name] = string(b)
 		} else {
 			extended[v.Name] = v.Value.(string)
 		}
@@ -81,9 +81,9 @@ func (i RabbitMessageProductKeyValues) GetAppConfig() (config db.PICSAppConfig, 
 		if v.Name == "launch" {
 			launch = v.GetAppLaunch()
 		} else if v.Value == nil {
-			bytes, err := json.Marshal(v.ToNestedMaps())
+			b, err := json.Marshal(v.ToNestedMaps())
 			logError(err)
-			config[v.Name] = string(bytes)
+			config[v.Name] = string(b)
 		} else {
 			config[v.Name] = v.Value.(string)
 		}
@@ -109,9 +109,9 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 			if v.Children == nil {
 				depots.Extra[v.Name] = v.Value.(string)
 			} else {
-				bytes, err := json.Marshal(v.ToNestedMaps())
+				b, err := json.Marshal(v.ToNestedMaps())
 				logError(err)
-				depots.Extra[v.Name] = string(bytes)
+				depots.Extra[v.Name] = string(b)
 			}
 
 			continue
@@ -130,9 +130,9 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
 			case "manifests":
 				depot.Manifests = vv.GetChildrenAsMap()
 			case "encryptedmanifests":
-				manifests, err := json.Marshal(vv.ToNestedMaps())
+				b, err := json.Marshal(vv.ToNestedMaps())
 				logError(err)
-				depot.EncryptedManifests = string(manifests)
+				depot.EncryptedManifests = string(b)
 			case "maxsize":
 				maxSize, err := strconv.ParseInt(vv.Value.(string), 10, 64)
 				logError(err)
