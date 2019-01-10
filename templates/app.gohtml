@@ -106,6 +106,10 @@
                             <th scope="row" nowrap="nowrap" width="1%">Release State</th>
                             <td>{{ .App.GetReleaseState }}</td>
                         </tr>
+                        <tr>
+                            <th scope="row" nowrap="nowrap" width="1%">Version</th>
+                            <td>{{ .App.Version }}</td>
+                        </tr>
                         {{ if gt .App.PICSChangeNumber 0 }}
                             <tr>
                                 <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
