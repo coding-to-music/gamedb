@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
@@ -92,6 +93,22 @@ type rabbitConsumer struct {
 	EndTime   time.Time // Time to retry from delay queue
 }
 
+func (s rabbitConsumer) makeAConnection() (conn *amqp.Connection, err error) {
+
+	operation := func() (err error) {
+
+		conn, err = amqp.Dial(config.Config.RabbitDSN())
+		return err
+	}
+
+	policy := backoff.NewExponentialBackOff()
+	policy.MaxElapsedTime = 0
+
+	err = backoff.Retry(operation, policy)
+
+	return conn, err
+}
+
 func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
@@ -116,7 +133,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	// Connect
 	if producerConnection == nil {
 
-		producerConnection, err = amqp.Dial(config.Config.RabbitDSN())
+		producerConnection, err = s.makeAConnection()
 		if err != nil {
 			log.Critical("Connecting to Rabbit: " + err.Error())
 			return err
@@ -154,7 +171,7 @@ func (s rabbitConsumer) consume() {
 		// Connect
 		if consumerConnection == nil {
 
-			consumerConnection, err = amqp.Dial(config.Config.RabbitDSN())
+			consumerConnection, err = s.makeAConnection()
 			if err != nil {
 				log.Critical("Connecting to Rabbit: " + err.Error())
 				return
@@ -181,7 +198,7 @@ func (s rabbitConsumer) consume() {
 			for {
 				select {
 				case err = <-consumerCloseChannel:
-					log.Err(err)
+					log.Critical(err)
 					return
 				case msg := <-msgs:
 
