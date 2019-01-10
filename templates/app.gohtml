@@ -382,7 +382,7 @@
                             {{ range $key, $value := .App.GetMovies }}
                                 <div>
                                     <video controls autoplay preload="metadata">
-                                        <source src="{{ .Webm.Max }}" type="video/webm">
+                                        <source src="{{ .PathFull }}" type="video/webm">
                                         Sorry, your browser doesn't support embedded videos.
                                     </video>
                                 </div>
@@ -395,7 +395,7 @@
                             {{ end }}
                             {{ range $key, $value := .App.GetMovies }}
                                 <div class="thumb">
-                                    <img src="{{ .Thumbnail }}" alt="{{ .Name }}">
+                                    <img src="{{ .PathThumbnail }}" alt="{{ .Title }}">
                                     <i class="fas fa-play"></i>
                                 </div>
                             {{ end }}
@@ -761,8 +761,8 @@
                                             {{ range $key, $value := .App.GetStats }}
                                                 <tr>
                                                     <td>{{ .Name }}</td>
-                                                    <td>{{ .Display }}</td>
                                                     <td>{{ .Default }}</td>
+                                                    <td>{{ .DisplayName }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>

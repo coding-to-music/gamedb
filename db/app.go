@@ -515,14 +515,13 @@ func (app App) GetMetacriticLink() template.URL {
 	return template.URL("http://www.metacritic.com/game/" + app.MetacriticURL)
 }
 
-// Used in template
-func (app App) GetScreenshots() (screenshots []steam.AppDetailsScreenshot, err error) {
+func (app App) GetScreenshots() (screenshots []AppImage, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Screenshots), &screenshots)
 	return screenshots, err
 }
 
-func (app App) GetMovies() (movies []steam.AppDetailsMovie, err error) {
+func (app App) GetMovies() (movies []AppVideo, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Movies), &movies)
 	return movies, err
