@@ -496,16 +496,16 @@ func updateAppNews(app *db.App) error {
 		return err
 	}
 
+	ids, err := app.GetNewsIDs()
+	if err != nil {
+		return err
+	}
+
 	var kinds []db.Kind
 	for _, v := range resp.Items {
 
 		if strings.TrimSpace(v.Contents) == "" {
 			continue
-		}
-
-		ids, err := app.GetNewsIDs()
-		if err != nil {
-			return err
 		}
 
 		if helpers.SliceHasInt64(ids, v.GID) {
