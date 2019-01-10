@@ -446,6 +446,11 @@
                                         <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
                                     </li>
                                 {{ end }}
+                                {{ if gt (len .App.GetStats) 0}}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
+                                    </li>
+                                {{ end }}
                                 {{ if and (ne .App.PICSSystemRequirements "") (ne .App.PICSSystemRequirements "{}") }}
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="tab" href="#dev-system-requirements" role="tab">System Req's</a>
@@ -734,6 +739,30 @@
                                                 <tr>
                                                     <td>{{ $key }}</td>
                                                     <td>{{ json $value }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                {{/* Stats */}}
+                                <div class="tab-pane" id="dev-stats" role="tabpanel">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Name</th>
+                                                <th scope="col">Default</th>
+                                                <th scope="col">Display</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetStats }}
+                                                <tr>
+                                                    <td>{{ .Name }}</td>
+                                                    <td>{{ .Display }}</td>
+                                                    <td>{{ .Default }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
