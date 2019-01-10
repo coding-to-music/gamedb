@@ -65,10 +65,10 @@
                                         <th>Status</th>
                                         <td>{{ .Package.GetStatus }}</td>
                                     </tr>
-                                    {{ if gt .Package.PICSChangeNumber 0 }}
+                                    {{ if gt .Package.ChangeNumber 0 }}
                                         <tr>
                                             <th>Latest Change ID</th>
-                                            <td><a href="/changes/{{ .Package.PICSChangeNumber }}">Change {{ .Package.PICSChangeNumber }}</a></td>
+                                            <td><a href="/changes/{{ .Package.ChangeNumber }}">Change {{ .Package.ChangeNumber }}</a></td>
                                         </tr>
                                     {{ end }}
                                     <tr>
