@@ -48,9 +48,9 @@
                         <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .App.GetNewsIDs }})</a>
                     </li>
                 {{end}}
-                {{if gt .ReviewsCount.TotalReviews 0}}
+                {{if gt .App.GetReviews.GetTotal 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .ReviewsCount.TotalReviews }})</a>
+                        <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .App.GetReviews.GetTotal }})</a>
                     </li>
                 {{end}}
                 {{if gt (len .App.GetScreenshots) 0}}
@@ -68,7 +68,7 @@
             <div class="tab-content" id="tab-content">
 
                 {{/* Details */}}
-                <div class="tab-pane active cursor-pointer" id="details" role="tabpanel">
+                <div class="tab-pane active" id="details" role="tabpanel">
 
                     {{ range $k, $v := .Banners }}
                         <div class="alert alert-{{ $k }}" role="alert">
@@ -91,7 +91,7 @@
                             <th scope="row" nowrap="nowrap" width="1%">Review Score</th>
                             <td>
                                 {{ .App.ReviewsScore }}%
-                                <small>({{ comma .App.ReviewsPositive }}<i class="fas fa-angle-up"></i> {{ comma .App.ReviewsNegative }}<i class="fas fa-angle-down"></i>)</small>
+                                <small>({{ comma .App.GetReviews.Positive }}<i class="fas fa-angle-up"></i> {{ comma .App.GetReviews.Negative }}<i class="fas fa-angle-down"></i>)</small>
                             </td>
                         </tr>
                         <tr>
@@ -325,7 +325,7 @@
                 {{/* Reviews */}}
                 <div class="tab-pane" id="reviews" role="tabpanel">
 
-                    {{if gt .ReviewsCount.TotalReviews 0}}
+                    {{if gt .App.GetReviews.GetTotal 0}}
 
                         <table class="table">
                             <tbody>
@@ -337,11 +337,11 @@
                                 <th scope="row" width="20%">Positive / Negative</th>
                                 <td>
                                     <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .ReviewsCount.TotalPositive }} ({{ printf "%.2f" .ReviewsCount.GetPositivePercent }}%)" style="width: {{ .ReviewsCount.GetPositivePercent }}%">
-                                            {{ comma .ReviewsCount.TotalPositive }} ({{ printf "%.0f" .ReviewsCount.GetPositivePercent }}%)
+                                        <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .App.GetReviews.Positive }} ({{ printf "%.2f" .App.GetReviews.GetPositivePercent }}%)" style="width: {{ .App.GetReviews.GetPositivePercent }}%">
+                                            {{ comma .App.GetReviews.Positive }} ({{ printf "%.0f" .App.GetReviews.GetPositivePercent }}%)
                                         </div>
-                                        <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .ReviewsCount.TotalNegative }} ({{ printf "%.2f" .ReviewsCount.GetNegativePercent }}%)" style="width: {{ .ReviewsCount.GetNegativePercent }}%">
-                                            {{ comma .ReviewsCount.TotalNegative }} ({{ printf "%.0f" .ReviewsCount.GetNegativePercent }}%)
+                                        <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .App.GetReviews.Negative }} ({{ printf "%.2f" .App.GetReviews.GetNegativePercent }}%)" style="width: {{ .App.GetReviews.GetNegativePercent }}%">
+                                            {{ comma .App.GetReviews.Negative }} ({{ printf "%.0f" .App.GetReviews.GetNegativePercent }}%)
                                         </div>
                                     </div>
                                 </td>
@@ -349,7 +349,7 @@
                             </tbody>
                         </table>
 
-                        {{ range $key, $value := .Reviews }}
+                        {{ range $key, $value := .App.GetReviews.Reviews }}
 
                             <div class="card mt-4">
                                 <div class="card-header" data-vote="{{ .Vote }}">
@@ -357,9 +357,9 @@
                                         {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>
                                         {{ .VotesFunny }} <i class="fas fa-grin-squint-tears" data-toggle="tooltip" data-placement="top" title="Funny Review"></i>
                                     </div>
-                                    By <a href="{{.Player.GetPath}}">{{.Player.GetName}}</a> on {{ .Date }}
+                                    By <a href="{{.PlayerPath}}">{{.PlayerName}}</a> on {{ .Created }}
                                 </div>
-                                <div class="card-body">{{.Review}}</div>
+                                <div class="card-body">{{ .Review }}</div>
                             </div>
 
                         {{ end }}

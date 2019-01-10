@@ -3,10 +3,13 @@ package queue
 import (
 	"encoding/json"
 	"errors"
+	"html/template"
 	"io"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -71,7 +74,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	// Skip if updated in last day, unless its from PICS
 	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.ChangeNumber {
 		logInfo("Skipping, updated in last day")
-		//return false, nil
+		return false, nil
 	}
 
 	var appBeforeUpdate = app
@@ -530,25 +533,85 @@ func updateAppNews(app *db.App) error {
 
 func updateAppReviews(app *db.App) error {
 
-	var reviewsResp steam.ReviewsResponse
-
-	reviewsResp, _, err := helpers.GetSteam().GetReviews(app.ID)
+	resp, _, err := helpers.GetSteam().GetReviews(app.ID)
 	if err != nil {
 		return err
 	}
 
-	b, err := json.Marshal(reviewsResp)
+	//
+	reviews := db.AppReviewSummary{}
+	reviews.Positive = resp.QuerySummary.TotalPositive
+	reviews.Negative = resp.QuerySummary.TotalNegative
+
+	// Make slice of playerIDs
+	var playersSlice []int64
+	for _, v := range resp.Reviews {
+		playersSlice = append(playersSlice, v.Author.SteamID)
+	}
+
+	// Get players from Datastore
+	players, err := db.GetPlayersByIDs(playersSlice)
+	if err != nil {
+		return err
+	}
+
+	// Make map of players
+	var playersMap = map[int64]db.Player{}
+	for _, v := range players {
+		playersMap[v.PlayerID] = v
+	}
+
+	// Make template slice
+	for _, v := range resp.Reviews {
+
+		var player db.Player
+		if val, ok := playersMap[v.Author.SteamID]; ok {
+			player = val
+		} else {
+			player = db.Player{}
+			player.PlayerID = v.Author.SteamID
+			player.PersonaName = "Unknown"
+		}
+
+		// Remove extra new lines
+		regex := regexp.MustCompile("[\n]{3,}") // After comma
+		v.Review = regex.ReplaceAllString(v.Review, "\n\n")
+
+		reviews.Reviews = append(reviews.Reviews, db.AppReview{
+			Review:     template.HTML(helpers.BBCodeCompiler.Compile(v.Review)),
+			PlayerPath: player.GetPath(),
+			PlayerName: player.PersonaName,
+			Created:    time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
+			VotesGood:  v.VotesUp,
+			VotesFunny: v.VotesFunny,
+			Vote:       v.VotedUp,
+		})
+	}
+
+	// Set score
+	if reviews.Positive == 0 && reviews.Negative == 0 {
+
+		app.ReviewsScore = 0
+
+	} else {
+
+		total := float64(reviews.Positive + reviews.Negative)
+		average := float64(reviews.Positive) / total
+		score := average - (average-0.5)*math.Pow(2, -math.Log10(total + 1))
+
+		app.ReviewsScore = helpers.RoundFloatTo2DP(score * 100)
+	}
+
+	// Save to App
+	b, err := json.Marshal(reviews)
 	if err != nil {
 		return err
 	}
 
 	app.Reviews = string(b)
-	app.ReviewsPositive = reviewsResp.QuerySummary.TotalPositive
-	app.ReviewsNegative = reviewsResp.QuerySummary.TotalNegative
-	app.SetReviewScore()
 
 	// Log this app score
-	err = db.SaveAppOverTime(*app)
+	err = db.SaveAppOverTime(*app, reviews)
 	if err != nil {
 		return err
 	}

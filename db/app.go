@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"html/template"
-	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -66,9 +65,7 @@ type App struct {
 	ReleaseDate        string    `gorm:"not null;column:release_date"`                     //
 	ReleaseDateUnix    int64     `gorm:"not null;column:release_date_unix"`                //
 	ReleaseState       string    `gorm:"not null;column:release_state"`                    //
-	Reviews            string    `gorm:"not null;column:reviews"`                          //
-	ReviewsNegative    int       `gorm:"not null;column:reviews_negative"`                 //
-	ReviewsPositive    int       `gorm:"not null;column:reviews_positive"`                 //
+	Reviews            string    `gorm:"not null;column:reviews"`                          // AppReviewSummary
 	ReviewsScore       float64   `gorm:"not null;column:reviews_score"`                    //
 	Screenshots        string    `gorm:"not null;column:screenshots;type:text"`            // []AppImage
 	ShortDescription   string    `gorm:"not null;column:description_short"`                //
@@ -299,22 +296,6 @@ func (app *App) SetNewsIDs(news steam.News) (err error) {
 
 	app.NewsIDs = string(bytes)
 	return nil
-}
-
-func (app *App) SetReviewScore() {
-
-	if app.ReviewsPositive == 0 && app.ReviewsNegative == 0 {
-
-		app.ReviewsScore = 0
-
-	} else {
-
-		total := float64(app.ReviewsPositive + app.ReviewsNegative)
-		average := float64(app.ReviewsPositive) / total
-		score := average - (average-0.5)*math.Pow(2, -math.Log10(total + 1))
-
-		app.ReviewsScore = helpers.RoundFloatTo2DP(score * 100)
-	}
 }
 
 func (app *App) SetExtended(extended PICSExtended) (err error) {
@@ -618,7 +599,7 @@ func (app App) GetPackages() (packages []int, err error) {
 	return packages, err
 }
 
-func (app App) GetReviews() (reviews steam.ReviewsResponse, err error) {
+func (app App) GetReviews() (reviews AppReviewSummary, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Reviews), &reviews)
 	return reviews, err
@@ -1027,5 +1008,33 @@ type AppSteamSpy struct {
 	SSOwnersHigh              int `json:"oh"`
 }
 
+type AppReviewSummary struct {
+	Positive int
+	Negative int
+	Reviews  []AppReview
+}
+
+func (r AppReviewSummary) GetTotal() int {
+	return r.Negative + r.Positive
+}
+
+func (r AppReviewSummary) GetPositivePercent() float64 {
+	return float64(r.Positive) / float64(r.GetTotal()) * 100
+}
+
+func (r AppReviewSummary) GetNegativePercent() float64 {
+	return float64(r.Negative) / float64(r.GetTotal()) * 100
+}
+
 type AppReview struct {
+	Review     template.HTML `json:"r"`
+	Vote       bool          `json:"v"`
+	VotesGood  int           `json:"g"`
+	VotesFunny int           `json:"f"`
+	Created    string        `json:"c"`
+	PlayerPath string        `json:"p"`
+	PlayerName string        `json:"n"`
+}
+
+type AppGenre struct {
 }

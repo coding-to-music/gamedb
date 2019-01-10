@@ -3,13 +3,11 @@ package web
 import (
 	"html/template"
 	"net/http"
-	"regexp"
 	"strconv"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -135,68 +133,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Get reviews
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		reviewsResponse, err := app.GetReviews()
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
-		t.ReviewsCount = reviewsResponse.QuerySummary
-
-		// Make slice of playerIDs
-		var playerIDs []int64
-		for _, v := range reviewsResponse.Reviews {
-			playerIDs = append(playerIDs, v.Author.SteamID)
-		}
-
-		players, err := db.GetPlayersByIDs(playerIDs)
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
-		// Make map of players
-		var playersMap = map[int64]db.Player{}
-		for _, v := range players {
-			playersMap[v.PlayerID] = v
-		}
-
-		// Make template slice
-		for _, v := range reviewsResponse.Reviews {
-
-			var player db.Player
-			if val, ok := playersMap[v.Author.SteamID]; ok {
-				player = val
-			} else {
-				player = db.Player{}
-				player.PlayerID = v.Author.SteamID
-				player.PersonaName = "Unknown"
-			}
-
-			// Remove extra new lines
-			regex := regexp.MustCompile("[\n]{3,}") // After comma
-			v.Review = regex.ReplaceAllString(v.Review, "\n\n")
-
-			t.Reviews = append(t.Reviews, appReviewTemplate{
-				Review:     template.HTML(helpers.BBCodeCompiler.Compile(v.Review)),
-				Player:     player,
-				Date:       time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
-				VotesGood:  v.VotesUp,
-				VotesFunny: v.VotesFunny,
-				Vote:       v.VotedUp,
-			})
-		}
-
-	}()
-
 	// Wait
 	wg.Wait()
 
@@ -223,23 +159,12 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 type appTemplate struct {
 	GlobalTemplate
-	App          db.App
-	Packages     []db.Package
-	DLC          []db.App
-	Price        db.ProductPriceFormattedStruct
-	Tags         []db.Tag
-	Reviews      []appReviewTemplate
-	ReviewsCount steam.ReviewsSummaryResponse
-	Banners      map[string][]string
-}
-
-type appReviewTemplate struct {
-	Review     template.HTML
-	Player     db.Player
-	Date       string
-	VotesGood  int
-	VotesFunny int
-	Vote       bool
+	App      db.App
+	Packages []db.Package
+	DLC      []db.App
+	Price    db.ProductPriceFormattedStruct
+	Tags     []db.Tag
+	Banners  map[string][]string
 }
 
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
