@@ -30,7 +30,7 @@ const (
 
 var (
 	pages      map[WebsocketPage]Page
-	pagesSlice = []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageAdmin, PageApp, PagePackage, PagePackages, PageProfile}
+	pagesSlice = []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageAdmin, PageApp, PagePackage, PagePackages, PageProfile, PageBundle, PageBundles}
 	upgrader   = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
