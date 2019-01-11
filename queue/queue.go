@@ -62,6 +62,7 @@ func init() {
 		//{Message: RabbitMessageDelay{}},
 		{Message: RabbitMessagePackage{}},
 		{Message: RabbitMessagePlayer{}},
+		{Message: RabbitMessageBundle{}},
 	}
 
 	for _, v := range qs {
@@ -129,7 +130,7 @@ func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *
 
 func (s rabbitConsumer) produce(data []byte) (err error) {
 
-	log.Info("Producing to: " + s.Message.getProduceQueue().String())
+	//log.Info("Producing to: " + s.Message.getProduceQueue().String())
 
 	// Connect
 	if producerConnection == nil {

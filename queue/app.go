@@ -684,14 +684,14 @@ func updateAppSteamSpy(app *db.App) error {
 
 func updateBundles(app *db.App) error {
 
-	var IDStrings []string
+	var bundleIDs []string
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
 	)
 
 	c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
-		IDStrings = append(IDStrings, e.Attr("value"))
+		bundleIDs = append(bundleIDs, e.Attr("value"))
 	})
 
 	err := c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
@@ -699,7 +699,14 @@ func updateBundles(app *db.App) error {
 		return err
 	}
 
-	var IDInts = helpers.StringSliceToIntSlice(IDStrings)
+	var IDInts = helpers.StringSliceToIntSlice(bundleIDs)
+
+	for _, v := range IDInts {
+		err := QueueBundle(v)
+		if err != nil {
+			return err
+		}
+	}
 
 	b, err := json.Marshal(IDInts)
 	if err != nil {

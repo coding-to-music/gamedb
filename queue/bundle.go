@@ -1,17 +1,21 @@
 package queue
 
 import (
+	"encoding/json"
 	"strconv"
+	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
+	"github.com/gocolly/colly"
 	"github.com/streadway/amqp"
 )
 
 type RabbitMessageBundle struct {
 	BundleID int
+	AppID    int // The app that triggered a bundle update
 }
 
 func (d RabbitMessageBundle) getConsumeQueue() RabbitQueue {
@@ -50,6 +54,16 @@ func (d RabbitMessageBundle) process(msg amqp.Delivery) (requeue bool, err error
 		return true, gorm.Error
 	}
 
+	appIDs, err := bundle.GetAppIDs()
+	if err != nil {
+		return true, err
+	}
+
+	if helpers.SliceHasInt(appIDs, message.AppID) {
+		logInfo("Skipping, bundle already has app")
+		return false, nil
+	}
+
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
 		return true, err
@@ -79,7 +93,52 @@ func (d RabbitMessageBundle) process(msg amqp.Delivery) (requeue bool, err error
 	return false, nil
 }
 
-func updateBundle(bundle *db.Bundle) error {
+func updateBundle(bundle *db.Bundle) (err error) {
+
+	var apps []string
+
+	c := colly.NewCollector(
+		colly.AllowedDomains("store.steampowered.com"),
+	)
+
+	// Title
+	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {
+		bundle.Name = e.Text
+	})
+
+	// Discount
+	c.OnHTML(".game_purchase_discount .bundle_base_discount", func(e *colly.HTMLElement) {
+		bundle.Discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
+	})
+
+	// Bigger discount
+	c.OnHTML(".game_purchase_discount .discount_pct", func(e *colly.HTMLElement) {
+		bundle.Discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
+	})
+
+	// Apps
+	c.OnHTML("[data-ds-appid]", func(e *colly.HTMLElement) {
+		apps = append(apps, e.Attr("data-ds-appid"))
+	})
+
+	//
+	err = c.Visit("https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID))
+	if err != nil {
+		return err
+	}
+
+	if len(apps) == 0 {
+		return nil
+	}
+
+	var IDInts = helpers.StringSliceToIntSlice(apps)
+
+	b, err := json.Marshal(IDInts)
+	if err != nil {
+		return err
+	}
+
+	bundle.AppIDs = string(b)
 
 	return nil
 }
