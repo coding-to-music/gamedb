@@ -2,6 +2,9 @@ package queue
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -96,6 +99,7 @@ func (d RabbitMessageBundle) process(msg amqp.Delivery) (requeue bool, err error
 func updateBundle(bundle *db.Bundle) (err error) {
 
 	var apps []string
+	var packages []string
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
@@ -118,7 +122,12 @@ func updateBundle(bundle *db.Bundle) (err error) {
 
 	// Apps
 	c.OnHTML("[data-ds-appid]", func(e *colly.HTMLElement) {
-		apps = append(apps, e.Attr("data-ds-appid"))
+		apps = append(apps, strings.Split(e.Attr("data-ds-appid"), ",")...)
+	})
+
+	// Packages
+	c.OnHTML("[data-ds-packageid]", func(e *colly.HTMLElement) {
+		packages = append(packages, strings.Split(e.Attr("data-ds-packageid"), ",")...)
 	})
 
 	//
@@ -127,18 +136,25 @@ func updateBundle(bundle *db.Bundle) (err error) {
 		return err
 	}
 
-	if len(apps) == 0 {
+	if len(apps) == 0 && len(packages) == 0 {
 		return nil
 	}
 
-	var IDInts = helpers.StringSliceToIntSlice(apps)
-
-	b, err := json.Marshal(IDInts)
+	// Apps
+	b, err := json.Marshal(helpers.StringSliceToIntSlice(apps))
 	if err != nil {
 		return err
 	}
 
 	bundle.AppIDs = string(b)
+
+	// Packages
+	b, err = json.Marshal(helpers.StringSliceToIntSlice(packages))
+	if err != nil {
+		return err
+	}
+
+	bundle.PackageIDs = string(b)
 
 	return nil
 }
