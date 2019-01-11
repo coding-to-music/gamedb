@@ -269,6 +269,15 @@ func adminQueues(r *http.Request) {
 		err = queue.QueuePackage([]int{int(valInt)})
 		log.Err(err, r)
 	}
+
+	if val := r.PostForm.Get("bundle-id"); val != "" {
+
+		valInt, err := strconv.ParseInt(val, 10, 32)
+		log.Err(err, r)
+
+		err = queue.QueueBundle(int(valInt))
+		log.Err(err, r)
+	}
 }
 
 func adminGenres() {
