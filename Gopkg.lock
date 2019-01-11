@@ -586,6 +586,30 @@
   revision = "a314942b2fd9dde7a3f70ba3f1062848ce6eb392"
 
 [[projects]]
+  digest = "1:a0a7e05d58aacdb34a2ebe8e063c85b5b064bebd746328a96853b462980ae7e4"
+  name = "github.com/tdewolff/minify"
+  packages = [
+    ".",
+    "html",
+  ]
+  pruneopts = ""
+  revision = "c86dd764169e70ab04e3b0d5fd5e478657a6c83d"
+  version = "v2.3.6"
+
+[[projects]]
+  digest = "1:0293325c4b11b7448bf03ab266e96ec4de60de1c5d4a7ec99cbd206982291603"
+  name = "github.com/tdewolff/parse"
+  packages = [
+    ".",
+    "buffer",
+    "html",
+    "strconv",
+  ]
+  pruneopts = ""
+  revision = "1b0354dccc7aceb4528eb638fbfec60d20338a29"
+  version = "v2.3.4"
+
+[[projects]]
   branch = "master"
   digest = "1:26a3895530593d2f453fbd7aee1c98fd2f160aba678272e2d7d8c4e428b8ceda"
   name = "github.com/temoto/robotstxt"
@@ -912,6 +936,8 @@
     "github.com/sendgrid/sendgrid-go",
     "github.com/sendgrid/sendgrid-go/helpers/mail",
     "github.com/streadway/amqp",
+    "github.com/tdewolff/minify",
+    "github.com/tdewolff/minify/html",
     "github.com/yohcop/openid-go",
     "golang.org/x/crypto/bcrypt",
     "golang.org/x/oauth2",

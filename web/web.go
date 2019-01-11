@@ -28,6 +28,8 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
+	"github.com/tdewolff/minify"
+	"github.com/tdewolff/minify/html"
 )
 
 func middlewareLog(next http.Handler) http.Handler {
@@ -186,10 +188,34 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		return err
 	}
 
-	_, err = buf.WriteTo(w)
-	log.Err(err, r)
+	if config.Config.IsProd() {
 
-	return nil
+		m := minify.New()
+		m.Add("text/html", &html.Minifier{
+			KeepConditionalComments: false,
+			KeepDefaultAttrVals:     true,
+			KeepDocumentTags:        true,
+			KeepEndTags:             true,
+			KeepWhitespace:          false,
+		})
+
+		buf2 := &bytes.Buffer{}
+		err = m.Minify("text/html", buf2, buf)
+		if err != nil {
+			log.Err(err)
+			return err
+		}
+
+		_, err = buf2.WriteTo(w)
+
+	} else {
+
+		_, err = buf.WriteTo(w)
+
+	}
+
+	log.Err(err)
+	return err
 }
 
 func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTemplate) {
