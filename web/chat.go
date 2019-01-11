@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
@@ -26,16 +26,51 @@ var (
 // Called from main
 func init() {
 
-	// Retry connecting to Discord
-	for i := 1; i <= 3; i++ {
-		err := connectToDiscord()
-		if err != nil && i < 3 {
-			time.Sleep(time.Second)
-		} else if err != nil {
-			log.Err(err)
-		} else {
-			break
+	// Retrying as this call can fail
+	operation := func() (err error) {
+
+		// Get client
+		discordSession, err = discordgo.New("Bot " + config.Config.DiscordBotToken)
+		if err != nil {
+			return err
 		}
+
+		// Add websocket listener
+		discordSession.AddHandler(discordMessageHandler)
+
+		// Open connection
+		return discordSession.Open()
+	}
+
+	policy := backoff.NewExponentialBackOff()
+
+	err := backoff.Retry(operation, policy)
+	if err != nil {
+		log.Critical(err)
+	}
+}
+
+func discordMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+	if m.Author.Bot {
+		return
+	}
+
+	page, err := websockets.GetPage(websockets.PageChat)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	if page.HasConnections() {
+
+		page.Send(chatWebsocketPayload{
+			AuthorID:     m.Author.ID,
+			AuthorUser:   m.Author.Username,
+			AuthorAvatar: m.Author.Avatar,
+			Content:      m.Content,
+			Channel:      m.ChannelID,
+		})
 	}
 }
 
@@ -47,47 +82,11 @@ func chatRouter() http.Handler {
 	return r
 }
 
-func connectToDiscord() error {
-
-	var err error
-
-	// Get client
-	discordSession, err = discordgo.New("Bot " + config.Config.DiscordBotToken)
-	if err != nil {
-		return err
-	}
-
-	// Add websocket listener
-	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-		if !m.Author.Bot {
-
-			page, err := websockets.GetPage(websockets.PageChat)
-			if err == nil && page.HasConnections() {
-
-				page.Send(chatWebsocketPayload{
-					AuthorID:     m.Author.ID,
-					AuthorUser:   m.Author.Username,
-					AuthorAvatar: m.Author.Avatar,
-					Content:      m.Content,
-					Channel:      m.ChannelID,
-				})
-			}
-		}
-	})
-
-	// Open connection
-	return discordSession.Open()
-}
-
-type chatWebsocketPayload struct {
-	AuthorID     string `json:"author_id"`
-	AuthorUser   string `json:"author_user"`
-	AuthorAvatar string `json:"author_avatar"`
-	Content      string `json:"content"`
-	Channel      string `json:"channel"`
-}
-
 func chatHandler(w http.ResponseWriter, r *http.Request) {
+
+	if discordSession == nil {
+		// todo
+	}
 
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
@@ -163,6 +162,10 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
+	if discordSession == nil {
+		// todo
+	}
+
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		id = generalChannelID
@@ -190,4 +193,12 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = returnJSON(w, r, bytes)
 	log.Err(err, r)
+}
+
+type chatWebsocketPayload struct {
+	AuthorID     string `json:"author_id"`
+	AuthorUser   string `json:"author_user"`
+	AuthorAvatar string `json:"author_avatar"`
+	Content      string `json:"content"`
+	Channel      string `json:"channel"`
 }
