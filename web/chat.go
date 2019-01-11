@@ -85,7 +85,8 @@ func chatRouter() http.Handler {
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 	if discordSession == nil {
-		// todo
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Could not connect to Discord."})
+		return
 	}
 
 	// Get ID from URL
@@ -163,7 +164,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	if discordSession == nil {
-		// todo
+		return
 	}
 
 	id := chi.URLParam(r, "id")
