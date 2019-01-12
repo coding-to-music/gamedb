@@ -50,6 +50,7 @@ func init() {
 	}
 }
 
+//noinspection GoUnusedParameter
 func discordMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Author.Bot {
