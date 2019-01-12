@@ -63,6 +63,9 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 	policy := backoff.NewExponentialBackOff()
 
 	err = backoff.Retry(operation, policy)
+	if err != nil {
+		log.Critical(err)
+	}
 
 	return conn, err
 }
