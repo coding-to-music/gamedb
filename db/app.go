@@ -77,13 +77,6 @@ type App struct {
 	UFS                string    `gorm:"not null;column:ufs"`                              //
 	UpdatedAt          time.Time `gorm:"not null;column:updated_at;type:datetime"`         //
 	Version            string    `gorm:"not null;column:version"`                          //
-
-	SSAveragePlaytimeTwoWeeks int `gorm:"not null;column:ss_average_2weeks"`
-	SSAveragePlaytimeForever  int `gorm:"not null;column:ss_average_forever"`
-	SSMedianPlaytimeForever   int `gorm:"not null;column:ss_median_forever"`
-	SSMedianPlaytimeTwoWeeks  int `gorm:"not null;column:ss_median_2weeks"`
-	SSOwnersLow               int `gorm:"not null;column:ss_owners_low"`
-	SSOwnersHigh              int `gorm:"not null;column:ss_owners_high"`
 }
 
 func (app *App) BeforeCreate(scope *gorm.Scope) error {
@@ -132,6 +125,9 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 	}
 	if app.StoreTags == "" {
 		app.StoreTags = "[]"
+	}
+	if app.SteamSpy == "" {
+		app.SteamSpy = "{}"
 	}
 
 	return nil
@@ -508,6 +504,12 @@ func (app App) GetMovies() (movies []AppVideo, err error) {
 	return movies, err
 }
 
+func (app App) GetSteamSpy() (ss AppSteamSpy, err error) {
+
+	err = helpers.Unmarshal([]byte(app.SteamSpy), &ss)
+	return ss, err
+}
+
 func (app App) GetCoopTags() (string, error) {
 
 	tags, err := app.GetTagIDs()
@@ -649,7 +651,7 @@ func (app App) GetName() (name string) {
 	return getAppName(app.ID, app.Name)
 }
 
-type SteamSpyApp struct {
+type SteamSpyAppResponse struct {
 	Appid     int    `json:"appid"`
 	Name      string `json:"name"`
 	Developer string `json:"developer"`
@@ -672,7 +674,7 @@ type SteamSpyApp struct {
 	//Tags           map[string]int `json:"tags"` // Can be an empty slice
 }
 
-func (a SteamSpyApp) GetOwners() (ret []int) {
+func (a SteamSpyAppResponse) GetOwners() (ret []int) {
 
 	owners := strings.Replace(a.Owners, ",", "", -1)
 	owners = strings.Replace(owners, " ", "", -1)

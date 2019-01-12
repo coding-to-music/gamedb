@@ -664,20 +664,29 @@ func updateAppSteamSpy(app *db.App) error {
 	}
 
 	// Unmarshal JSON
-	resp := db.SteamSpyApp{}
+	resp := db.SteamSpyAppResponse{}
 	err = helpers.Unmarshal(bytes, &resp)
 	if err != nil {
 		return err
 	}
 
-	app.SSAveragePlaytimeForever = resp.AverageForever
-	app.SSAveragePlaytimeTwoWeeks = resp.Average2Weeks
-	app.SSMedianPlaytimeForever = resp.MedianForever
-	app.SSMedianPlaytimeTwoWeeks = resp.Median2Weeks
-
 	owners := resp.GetOwners()
-	app.SSOwnersLow = owners[0]
-	app.SSOwnersHigh = owners[1]
+
+	ss := db.AppSteamSpy{
+		SSAveragePlaytimeTwoWeeks: resp.Average2Weeks,
+		SSAveragePlaytimeForever:  resp.AverageForever,
+		SSMedianPlaytimeTwoWeeks:  resp.Median2Weeks,
+		SSMedianPlaytimeForever:   resp.MedianForever,
+		SSOwnersLow:               owners[0],
+		SSOwnersHigh:              owners[1],
+	}
+
+	b, err := json.Marshal(ss)
+	if err != nil {
+		return err
+	}
+
+	app.SteamSpy = string(b)
 
 	return nil
 }
