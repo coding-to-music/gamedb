@@ -121,6 +121,11 @@ func updateBundle(bundle *db.Bundle) (err error) {
 		bundle.Name = e.Text
 	})
 
+	// Image
+	c.OnHTML("img.package_header", func(e *colly.HTMLElement) {
+		bundle.Image = e.Attr("src")
+	})
+
 	// Discount
 	c.OnHTML(".game_purchase_discount .bundle_base_discount", func(e *colly.HTMLElement) {
 		bundle.Discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
