@@ -105,6 +105,17 @@ func updateBundle(bundle *db.Bundle) (err error) {
 		colly.AllowedDomains("store.steampowered.com"),
 	)
 
+	// Set cookies
+	cookieURL, _ := url.Parse("https://store.steampowered.com")
+
+	cookieJar, err := cookiejar.New(nil)
+	cookieJar.SetCookies(cookieURL, []*http.Cookie{
+		{Name: "birthtime", Value: "536457601", Path: "/", Domain: "store.steampowered.com"},
+		{Name: "lastagecheckage", Value: "1-January-1987", Path: "/", Domain: "store.steampowered.com"},
+	})
+
+	c.SetCookieJar(cookieJar)
+
 	// Title
 	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {
 		bundle.Name = e.Text
