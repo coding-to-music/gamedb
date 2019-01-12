@@ -18,6 +18,7 @@ type Bundle struct {
 	Discount   int
 	AppIDs     string
 	PackageIDs string
+	Image      string
 }
 
 func (bundle *Bundle) BeforeCreate(scope *gorm.Scope) error {
@@ -34,6 +35,14 @@ func (bundle *Bundle) BeforeCreate(scope *gorm.Scope) error {
 
 func (bundle Bundle) GetPath() string {
 	return "/bundles/" + strconv.Itoa(bundle.ID) + "/" + slug.Make(bundle.Name)
+}
+
+func (bundle Bundle) GetStoreLink() string {
+	return "https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID)
+}
+
+func (bundle Bundle) GetUpdatedNice() string {
+	return bundle.UpdatedAt.Format(helpers.DateYearTime)
 }
 
 func (bundle Bundle) GetAppIDs() (ids []int, err error) {
