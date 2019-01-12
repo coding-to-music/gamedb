@@ -1,6 +1,9 @@
 package db
 
 import (
+	"net/url"
+
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/jinzhu/gorm"
@@ -15,38 +18,53 @@ var (
 
 func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 
-	var options = "?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
+	// Retrying as this call can fail
+	operation := func() (err error) {
 
-	if len(debug) > 0 {
+		options := url.Values{}
+		options.Set("parseTime", "true")
+		options.Set("charset", "utf8mb4")
+		options.Set("collation", "utf8mb4_unicode_ci")
 
-		if gormConnectionDebug == nil {
+		if len(debug) > 0 {
 
-			db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+options)
+			if gormConnectionDebug == nil {
+
+				db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+"?"+options.Encode())
+				if err != nil {
+					return err
+				}
+				db.LogMode(true)
+				db.SetLogger(MySQLLogger{})
+
+				gormConnectionDebug = db
+			}
+
+			conn = gormConnectionDebug
+			return nil
+		}
+
+		if gormConnection == nil {
+
+			db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+"?"+options.Encode())
 			if err != nil {
-				return db, err
+				return err
 			}
 			db.LogMode(true)
 			db.SetLogger(MySQLLogger{})
 
-			gormConnectionDebug = db
+			gormConnection = db
 		}
 
-		return gormConnectionDebug, nil
+		conn = gormConnection
+		return nil
 	}
 
-	if gormConnection == nil {
+	policy := backoff.NewExponentialBackOff()
 
-		db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+options)
-		if err != nil {
-			return db, err
-		}
-		db.LogMode(true)
-		db.SetLogger(MySQLLogger{})
+	err = backoff.Retry(operation, policy)
 
-		gormConnection = db
-	}
-
-	return gormConnection, nil
+	return conn, err
 }
 
 type MySQLLogger struct {
