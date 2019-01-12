@@ -1,10 +1,12 @@
 package db
 
 import (
-	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
+	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
 
@@ -30,10 +32,21 @@ func (bundle *Bundle) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
+func (bundle Bundle) GetPath() string {
+	return "/bundles/" + strconv.Itoa(bundle.ID) + "/" + slug.Make(bundle.Name)
+}
+
 func (bundle Bundle) GetAppIDs() (ids []int, err error) {
 
 	err = helpers.Unmarshal([]byte(bundle.AppIDs), &ids)
 	return ids, err
+}
+
+func (bundle Bundle) AppsCount() int {
+
+	apps, err := bundle.GetAppIDs()
+	log.Err(err)
+	return len(apps)
 }
 
 func (bundle Bundle) GetPackageIDs() (ids []int, err error) {
@@ -42,24 +55,62 @@ func (bundle Bundle) GetPackageIDs() (ids []int, err error) {
 	return ids, err
 }
 
-func (bundle *Bundle) SetAppIDs(ids []int) (err error) {
+func (bundle Bundle) PackagesCount() int {
 
-	bytes, err := json.Marshal(ids)
-	if err != nil {
-		return err
-	}
-
-	bundle.AppIDs = string(bytes)
-	return nil
+	packages, err := bundle.GetPackageIDs()
+	log.Err(err)
+	return len(packages)
 }
 
-func (bundle *Bundle) SetPackageIDs(ids []int) (err error) {
+func (bundle Bundle) OutputForJSON() (output []interface{}) {
 
-	bytes, err := json.Marshal(ids)
+	return []interface{}{
+		bundle.ID,
+		bundle.Name,
+		bundle.GetPath(),
+		strconv.FormatInt(bundle.UpdatedAt.Unix(), 10),
+		bundle.Discount,
+		bundle.AppsCount(),
+		bundle.PackagesCount(),
+	}
+}
+
+func GetBundle(id int, columns []string) (bundle Bundle, err error) {
+
+	db, err := GetMySQLClient()
 	if err != nil {
-		return err
+		return bundle, err
 	}
 
-	bundle.PackageIDs = string(bytes)
-	return nil
+	db = db.First(&bundle, id)
+	if db.Error != nil {
+		return bundle, db.Error
+	}
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+		if db.Error != nil {
+			return bundle, db.Error
+		}
+	}
+
+	if bundle.ID == 0 {
+		return bundle, ErrRecordNotFound
+	}
+
+	return bundle, nil
+}
+
+func CountBundles() (count int, err error) {
+
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheBundlesCount, func() (count int, err error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		db.Model(&Bundle{}).Count(&count)
+		return count, db.Error
+	})
 }

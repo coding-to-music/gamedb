@@ -9,7 +9,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
-	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
 
@@ -18,19 +17,19 @@ func bundlesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", bundlesHandler)
 	r.Get("/ajax", bundlesAjaxHandler)
-	//r.Get("/{id}", bundleHandler)
-	//r.Get("/{id}/{slug}", vHandler)
+	r.Get("/{id}", bundleHandler)
+	r.Get("/{id}/{slug}", bundleHandler)
 	return r
 }
 
 func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 
-	total, err := db.CountPackages()
+	total, err := db.CountBundles()
 	log.Err(err, r)
 
 	// Template
 	t := bundlesTemplate{}
-	t.Fill(w, r, "Packages", "The last "+template.HTML(humanize.Comma(int64(total)))+" packages to be updated.")
+	t.Fill(w, r, "Bundles", "The last "+template.HTML(humanize.Comma(int64(total)))+" bundles to be updated.")
 
 	err = returnTemplate(w, r, "bundles", t)
 	log.Err(err, r)
@@ -49,11 +48,10 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	//
-	var code = session.GetCountryCode(r)
 	var wg sync.WaitGroup
 
 	// Get apps
-	var packages []db.Package
+	var bundles []db.Bundle
 
 	wg.Add(1)
 	go func(r *http.Request) {
@@ -67,18 +65,19 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		gorm = gorm.Model(&db.Package{})
-		gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon", "icon"})
+		gorm = gorm.Model(&db.Bundle{})
+		gorm = gorm.Select([]string{"id", "name", "updated_at", "discount", "app_ids", "package_ids"})
 
-		gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
+		gorm = query.SetOrderOffsetGorm(gorm, "", map[string]string{
 			"0": "name",
-			"2": "apps_count",
-			"3": "price",
-			"4": "change_number_date",
+			"1": "discount",
+			"2": "JSON_LENGTH(app_ids)",
+			"3": "JSON_LENGTH(package_ids)",
+			"4": "updated_at",
 		})
 
 		gorm = gorm.Limit(100)
-		gorm = gorm.Find(&packages)
+		gorm = gorm.Find(&bundles)
 
 		log.Err(gorm.Error)
 
@@ -92,7 +91,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = db.CountPackages()
+		count, err = db.CountBundles()
 		log.Err(err, r)
 
 	}()
@@ -105,8 +104,8 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsFiltered = strconv.Itoa(count)
 	response.Draw = query.Draw
 
-	for _, v := range packages {
-		response.AddRow(v.OutputForJSON(code))
+	for _, v := range bundles {
+		response.AddRow(v.OutputForJSON())
 	}
 
 	response.output(w, r)

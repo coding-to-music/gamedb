@@ -20,6 +20,7 @@ var (
 	// Counts
 	MemcacheAppsCount             = memcache.Item{Key: "apps-count", Expiration: 86400}
 	MemcachePackagesCount         = memcache.Item{Key: "packages-count", Expiration: 86400}
+	MemcacheBundlesCount          = memcache.Item{Key: "bundles-count", Expiration: 86400}
 	MemcacheUpcomingAppsCount     = memcache.Item{Key: "upcoming-apps-count", Expiration: 86400}
 	MemcacheUpcomingPackagesCount = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
 	MemcacheFreeAppsCount         = memcache.Item{Key: "free-apps-count", Expiration: 86400}
