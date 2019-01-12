@@ -104,6 +104,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var wg sync.WaitGroup
+	var discordErr error
 
 	// Get channels
 	wg.Add(1)
@@ -111,8 +112,10 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		channelsResponse, err := discordSession.GuildChannels(guildID)
-		log.Err(err, r)
+		var channelsResponse []*discordgo.Channel
+
+		channelsResponse, discordErr = discordSession.GuildChannels(guildID)
+		log.Err(discordErr, r)
 
 		for _, v := range channelsResponse {
 			if v.Type == discordgo.ChannelTypeGuildText {
@@ -134,8 +137,10 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		membersResponse, err := discordSession.GuildMembers(guildID, "", 1000)
-		log.Err(err, r)
+		var membersResponse []*discordgo.Member
+
+		membersResponse, discordErr = discordSession.GuildMembers(guildID, "", 1000)
+		log.Err(discordErr, r)
 
 		for _, v := range membersResponse {
 			if !v.User.Bot {
@@ -147,6 +152,11 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Wait
 	wg.Wait()
+
+	if discordErr != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Could not connect to Discord."})
+		return
+	}
 
 	err := returnTemplate(w, r, "chat", t)
 	log.Err(err, r)
