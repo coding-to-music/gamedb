@@ -42,6 +42,8 @@ func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {
 
 	dsClientLock.Lock()
 
+	defer dsClientLock.Unlock()
+
 	ctx = context.Background()
 
 	if datastoreClient == nil {
@@ -50,8 +52,6 @@ func GetDSClient() (ret *datastore.Client, ctx context.Context, err error) {
 			return datastoreClient, ctx, err
 		}
 	}
-
-	dsClientLock.Unlock()
 
 	return datastoreClient, ctx, nil
 }

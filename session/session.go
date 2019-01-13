@@ -28,6 +28,8 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 
 	writeMutex.Lock()
 
+	defer writeMutex.Unlock()
+
 	session, err := store.Get(r, "gamedb-session")
 
 	if config.Config.IsProd() {
@@ -44,8 +46,6 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 			Path:   "/",
 		}
 	}
-
-	writeMutex.Unlock()
 
 	return session, err
 }
