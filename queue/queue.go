@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -12,6 +13,9 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
 )
+
+var consumeLock = new(sync.Mutex)
+var produceLock = new(sync.Mutex)
 
 type RabbitQueue string
 
@@ -135,9 +139,11 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	//log.Info("Producing to: " + s.Message.getProduceQueue().String())
 
 	// Connect
+	produceLock.Lock()
 	if producerConnection == nil {
 
 		producerConnection, err = s.makeAConnection()
+		produceLock.Unlock()
 		if err != nil {
 			log.Critical("Connecting to Rabbit: " + err.Error())
 			return err
@@ -173,9 +179,11 @@ func (s rabbitConsumer) consume() {
 	for {
 
 		// Connect
+		consumeLock.Lock()
 		if consumerConnection == nil {
 
 			consumerConnection, err = s.makeAConnection()
+			consumeLock.Unlock()
 			if err != nil {
 				log.Critical("Connecting to Rabbit: " + err.Error())
 				return
