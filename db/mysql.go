@@ -2,6 +2,7 @@ package db
 
 import (
 	"net/url"
+	"sync"
 
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
@@ -14,9 +15,14 @@ var (
 
 	gormConnection      *gorm.DB
 	gormConnectionDebug *gorm.DB
+
+	SQLMutex = new(sync.Mutex)
 )
 
 func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
+
+	SQLMutex.Lock()
+	defer SQLMutex.Unlock()
 
 	// Retrying as this call can fail
 	operation := func() (err error) {
