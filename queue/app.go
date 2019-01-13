@@ -705,7 +705,9 @@ func updateBundles(app *db.App) error {
 
 	err := c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
 	if err != nil {
-		return err
+		if !strings.Contains(err.Error(), "because its not in AllowedDomains") {
+			return err
+		}
 	}
 
 	var IDInts = helpers.StringSliceToIntSlice(bundleIDs)
