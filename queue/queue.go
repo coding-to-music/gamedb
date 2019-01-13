@@ -139,18 +139,27 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	//log.Info("Producing to: " + s.Message.getProduceQueue().String())
 
 	// Connect
-	produceLock.Lock()
-	if producerConnection == nil {
+	err = func() error {
 
-		producerConnection, err = s.makeAConnection()
-		if err != nil {
-			log.Critical("Connecting to Rabbit: " + err.Error())
-			produceLock.Unlock()
-			return err
+		produceLock.Lock()
+		defer produceLock.Unlock()
+
+		if producerConnection == nil {
+
+			producerConnection, err = s.makeAConnection()
+			if err != nil {
+				log.Critical("Connecting to Rabbit: " + err.Error())
+				return err
+			}
+			producerConnection.NotifyClose(producerCloseChannel)
 		}
-		producerConnection.NotifyClose(producerCloseChannel)
+
+		return nil
+	}()
+
+	if err != nil {
+		return err
 	}
-	produceLock.Unlock()
 
 	//
 	ch, qu, err := s.getQueue(producerConnection, s.Message.getProduceQueue())
@@ -180,18 +189,28 @@ func (s rabbitConsumer) consume() {
 	for {
 
 		// Connect
-		consumeLock.Lock()
-		if consumerConnection == nil {
+		err = func() error {
 
-			consumerConnection, err = s.makeAConnection()
-			if err != nil {
-				log.Critical("Connecting to Rabbit: " + err.Error())
-				consumeLock.Unlock()
-				return
+			consumeLock.Lock()
+			defer consumeLock.Unlock()
+
+			if consumerConnection == nil {
+
+				consumerConnection, err = s.makeAConnection()
+				if err != nil {
+					log.Critical("Connecting to Rabbit: " + err.Error())
+					return err
+				}
+				consumerConnection.NotifyClose(consumerCloseChannel)
 			}
-			consumerConnection.NotifyClose(consumerCloseChannel)
+
+			return nil
+		}()
+
+		if err != nil {
+			log.Err(err)
+			return
 		}
-		consumeLock.Unlock()
 
 		//
 		ch, qu, err := s.getQueue(consumerConnection, s.Message.getConsumeQueue())
