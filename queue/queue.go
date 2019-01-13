@@ -98,6 +98,8 @@ func (s rabbitConsumer) makeAConnection() (conn *amqp.Connection, err error) {
 
 	operation := func() (err error) {
 
+		log.Info("Connecting to Rabbit")
+
 		conn, err = amqp.Dial(config.Config.RabbitDSN())
 		log.Err(err) // Logging here as no max elasped time
 		return err
