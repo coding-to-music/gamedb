@@ -143,13 +143,14 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	if producerConnection == nil {
 
 		producerConnection, err = s.makeAConnection()
-		produceLock.Unlock()
 		if err != nil {
 			log.Critical("Connecting to Rabbit: " + err.Error())
+			produceLock.Unlock()
 			return err
 		}
 		producerConnection.NotifyClose(producerCloseChannel)
 	}
+	produceLock.Unlock()
 
 	//
 	ch, qu, err := s.getQueue(producerConnection, s.Message.getProduceQueue())
@@ -183,13 +184,14 @@ func (s rabbitConsumer) consume() {
 		if consumerConnection == nil {
 
 			consumerConnection, err = s.makeAConnection()
-			consumeLock.Unlock()
 			if err != nil {
 				log.Critical("Connecting to Rabbit: " + err.Error())
+				consumeLock.Unlock()
 				return
 			}
 			consumerConnection.NotifyClose(consumerCloseChannel)
 		}
+		consumeLock.Unlock()
 
 		//
 		ch, qu, err := s.getQueue(consumerConnection, s.Message.getConsumeQueue())
