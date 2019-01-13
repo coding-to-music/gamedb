@@ -21,8 +21,6 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 	// Retrying as this call can fail
 	operation := func() (err error) {
 
-		log.Info("Connecting to MySQL")
-
 		options := url.Values{}
 		options.Set("parseTime", "true")
 		options.Set("charset", "utf8mb4")
@@ -31,6 +29,8 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 		if len(debug) > 0 {
 
 			if gormConnectionDebug == nil {
+
+				log.Info("Connecting to MySQL")
 
 				db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+"?"+options.Encode())
 				if err != nil {
@@ -47,6 +47,8 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 		}
 
 		if gormConnection == nil {
+
+			log.Info("Connecting to MySQL")
 
 			db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+"?"+options.Encode())
 			if err != nil {
