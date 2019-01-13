@@ -469,6 +469,10 @@ func (t GlobalTemplate) IsFromVarnish() bool {
 	return t.request.Header.Get("X-From-Varnish") == "true"
 }
 
+func (t GlobalTemplate) IsStatsPage() bool {
+	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
+}
+
 func (t GlobalTemplate) isLoggedIn() bool {
 	return t.userID > 0
 }
