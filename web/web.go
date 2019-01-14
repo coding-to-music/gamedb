@@ -767,7 +767,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	response.Symbol = locale.CurrencySymbol
 
 	for _, v := range pricesResp {
-		response.Prices = append(response.Prices, []float64{float64(v.CreatedAt.Unix()), float64(v.PriceAfter) / 100})
+		response.Prices = append(response.Prices, []float64{float64(v.CreatedAt.Unix()*1000), float64(v.PriceAfter) / 100})
 	}
 
 	// Add current price
@@ -778,7 +778,12 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 		return
 	}
 
-	response.Prices = append(response.Prices, []float64{float64(time.Now().Unix()), float64(price.Final) / 100})
+	response.Prices = append(response.Prices, []float64{float64(time.Now().Unix())*1000, float64(price.Final) / 100})
+
+	// Sort prices for Highcharts
+	sort.Slice(response.Prices, func(i, j int) bool {
+		return response.Prices[i][0] < response.Prices[j][0]
+	})
 
 	// Return
 	pricesBytes, err := json.Marshal(response)
