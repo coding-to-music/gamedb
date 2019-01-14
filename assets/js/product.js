@@ -12,8 +12,8 @@ if ($priceChart.length > 0) {
         }
 
         // Update rows
-        $('tr[data-code]').removeClass('font-weight-bold');
-        $('tr[data-code=' + code + ']').addClass('font-weight-bold');
+        $('tr[data-code]').removeClass('font-weight-bold').attr('data-link', '');
+        $('tr[data-code=' + code + ']').addClass('font-weight-bold').removeAttr('data-link');
 
         // Show loading screen
         chart.showLoading();
@@ -35,7 +35,11 @@ if ($priceChart.length > 0) {
         });
     }
 
-    $('#prices table tr').on('click', function (e) {
+    $('#prices table tbody tr').on('click', function (e) {
+
+        if ($(this).hasClass('font-weight-bold')) {
+            return // Already selected
+        }
 
         upateChart($(this).attr('data-code'));
 
