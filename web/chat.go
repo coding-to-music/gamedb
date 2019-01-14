@@ -29,8 +29,6 @@ func init() {
 	// Retrying as this call can fail
 	operation := func() (err error) {
 
-		log.Info("Connecting to Discord")
-
 		// Get client
 		discordSession, err = discordgo.New("Bot " + config.Config.DiscordBotToken)
 		if err != nil {
