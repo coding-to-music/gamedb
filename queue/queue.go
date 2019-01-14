@@ -246,6 +246,12 @@ func (s rabbitConsumer) consume() {
 						time.Sleep(time.Second * 10)
 					}
 
+					// No point in retrying if Steam has issues
+					if err == steam.ErrNullResponse {
+						logInfo("HTML response, sleeping for 10 seconds")
+						time.Sleep(time.Second * 10)
+					}
+
 					if requeue {
 						logInfo("Requeuing")
 						err = s.requeueMessage(msg)
