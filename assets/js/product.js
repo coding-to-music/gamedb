@@ -59,7 +59,13 @@ if ($priceChart.length > 0) {
             title: {
                 text: 'Date'
             },
-            type: 'datetime'
+            type: 'datetime',
+            labels: {
+                step: 1,
+                formatter: function () {
+                    return moment(this.value).format("Do MMM YY");
+                },
+            },
         },
         yAxis: {
             title: {
