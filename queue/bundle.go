@@ -16,6 +16,15 @@ import (
 	"github.com/streadway/amqp"
 )
 
+func QueueBundle(bundleID int) (err error) {
+
+	b, err := json.Marshal(RabbitMessageBundle{
+		BundleID: bundleID,
+	})
+
+	return Produce(QueueBundlesData, b)
+}
+
 type RabbitMessageBundle struct {
 	BundleID int
 	AppID    int // The app that triggered a bundle update

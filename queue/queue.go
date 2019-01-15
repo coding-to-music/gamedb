@@ -313,75 +313,13 @@ func (s *rabbitConsumer) IncrementAttempts() {
 	s.EndTime = s.StartTime.Add(time.Second * time.Duration(rounded))
 }
 
+//
 type SteamKitJob struct {
 	SequentialCount int    `json:"SequentialCount"`
 	StartTime       string `json:"StartTime"`
 	ProcessID       int    `json:"ProcessID"`
 	BoxID           int    `json:"BoxID"`
 	Value           int64  `json:"Value"`
-}
-
-func QueueApp(IDs []int) (err error) {
-
-	b, err := json.Marshal(produceAppPayload{
-		ID:   IDs,
-		Time: time.Now().Unix(),
-	})
-	if err != nil {
-		return err
-	}
-
-	return Produce(QueueApps, b)
-}
-
-// JSON must match the Updater app
-type produceAppPayload struct {
-	ID   []int `json:"IDs"`
-	Time int64 `json:"Time"`
-}
-
-func QueuePackage(IDs []int) (err error) {
-
-	b, err := json.Marshal(producePackagePayload{
-		ID:   IDs,
-		Time: time.Now().Unix(),
-	})
-	if err != nil {
-		return err
-	}
-
-	return Produce(QueuePackages, b)
-}
-
-// JSON must match the Updater app
-type producePackagePayload struct {
-	ID   []int `json:"IDs"`
-	Time int64 `json:"Time"`
-}
-
-func QueuePlayer(playerID int64) (err error) {
-
-	b, err := json.Marshal(producePlayerPayload{
-		ID:   playerID,
-		Time: time.Now().Unix(),
-	})
-
-	return Produce(QueueProfiles, b)
-}
-
-// JSON must match the Updater app
-type producePlayerPayload struct {
-	ID   int64 `json:"ID"`
-	Time int64 `json:"Time"`
-}
-
-func QueueBundle(bundleID int) (err error) {
-
-	b, err := json.Marshal(RabbitMessageBundle{
-		BundleID: bundleID,
-	})
-
-	return Produce(QueueBundlesData, b)
 }
 
 func logInfo(interfaces ...interface{}) {

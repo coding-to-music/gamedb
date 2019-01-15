@@ -13,6 +13,25 @@ import (
 	"github.com/streadway/amqp"
 )
 
+func QueuePackage(IDs []int) (err error) {
+
+	b, err := json.Marshal(producePackagePayload{
+		ID:   IDs,
+		Time: time.Now().Unix(),
+	})
+	if err != nil {
+		return err
+	}
+
+	return Produce(QueuePackages, b)
+}
+
+// JSON must match the Updater app
+type producePackagePayload struct {
+	ID   []int `json:"IDs"`
+	Time int64 `json:"Time"`
+}
+
 type RabbitMessagePackage struct {
 	PICSPackageInfo RabbitMessageProduct
 	Payload         producePackagePayload

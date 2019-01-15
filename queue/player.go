@@ -21,6 +21,22 @@ import (
 
 const maxBytesToStore = 1024 * 10
 
+func QueuePlayer(playerID int64) (err error) {
+
+	b, err := json.Marshal(producePlayerPayload{
+		ID:   playerID,
+		Time: time.Now().Unix(),
+	})
+
+	return Produce(QueueProfiles, b)
+}
+
+// JSON must match the Updater app
+type producePlayerPayload struct {
+	ID   int64 `json:"ID"`
+	Time int64 `json:"Time"`
+}
+
 type RabbitMessagePlayer struct {
 	ProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
 }
