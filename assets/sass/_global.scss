@@ -9,15 +9,11 @@ body {
 }
 
 body::-webkit-scrollbar {
-    width: 20px;
-}
-
-body::-webkit-scrollbar-track {
-    background-color: #1b2738;
+    width: 12px;
 }
 
 body::-webkit-scrollbar-thumb {
-    background-color: #28a745;
+    background-color: #19692c;
 }
 
 div#top {
