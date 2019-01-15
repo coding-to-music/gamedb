@@ -65,25 +65,36 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 		var response = queueJSONResponse{}
 
+		// Defaults so the response get marshaled correctly
+		response.Items = make([][]int64, 0)
+		response.Rates = make([][]int64, 0)
+
 		// Items
 		items := overview.QueueTotals.MessagesDetails.Samples
-		sort.Slice(items, func(i, j int) bool {
-			return items[i].Timestamp < items[j].Timestamp
-		})
-		for _, v := range items {
-			response.Items = append(response.Items, []int64{v.Timestamp, int64(v.Sample)})
+		if len(items) > 0 {
+
+			sort.Slice(items, func(i, j int) bool {
+				return items[i].Timestamp < items[j].Timestamp
+			})
+
+			for _, v := range items {
+				response.Items = append(response.Items, []int64{v.Timestamp, int64(v.Sample)})
+			}
 		}
 
 		// Rates
 		rates := overview.MessageStats.AckDetails.Samples
-		sort.Slice(rates, func(i, j int) bool {
-			return rates[i].Timestamp < rates[j].Timestamp
-		})
+		if len(rates) > 0 {
 
-		var last = rates[0].Sample
-		for _, v := range rates {
-			response.Rates = append(response.Rates, []int64{v.Timestamp, int64(v.Sample - last)})
-			last = v.Sample
+			sort.Slice(rates, func(i, j int) bool {
+				return rates[i].Timestamp < rates[j].Timestamp
+			})
+
+			var last = rates[0].Sample
+			for _, v := range rates {
+				response.Rates = append(response.Rates, []int64{v.Timestamp, int64(v.Sample - last)})
+				last = v.Sample
+			}
 		}
 
 		bytes, err := json.Marshal(response)
