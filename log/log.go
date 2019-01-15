@@ -13,6 +13,7 @@ import (
 
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/website/config"
+	"github.com/logrusorgru/aurora"
 	"github.com/rollbar/rollbar-go"
 )
 
@@ -205,7 +206,21 @@ func log(interfaces ...interface{}) {
 
 		// Local
 		if v == ServiceLocal {
-			logger.Println(entry.toText(false))
+
+			switch entry.severity {
+			case SeverityCritical:
+				logger.Println(aurora.Red(aurora.Bold(entry.toText(false))))
+			case SeverityError:
+				logger.Println(aurora.Red(entry.toText(false)))
+			case SeverityWarning:
+				logger.Println(aurora.Brown(entry.toText(false)))
+			case SeverityInfo:
+				logger.Println(entry.toText(false))
+			case SeverityDebug:
+				logger.Println(aurora.Green(entry.toText(false)))
+			default:
+				logger.Println(entry.toText(false))
+			}
 		}
 
 		// Google
