@@ -96,7 +96,7 @@ if ($('#queues-page').length > 0) {
                 type: 'areaspline',
             },
             {
-                color: '#28a745',
+                color: '#007bff',
                 yAxis: 1,
                 name: 'speed',
                 type: 'spline'
