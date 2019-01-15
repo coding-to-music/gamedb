@@ -8,7 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
@@ -19,35 +19,8 @@ const (
 	generalChannelID = "407493777058693121"
 )
 
-var (
-	discordSession *discordgo.Session
-)
-
-// Called from main
-func init() {
-
-	// Retrying as this call can fail
-	operation := func() (err error) {
-
-		// Get client
-		discordSession, err = discordgo.New("Bot " + config.Config.DiscordBotToken)
-		if err != nil {
-			return err
-		}
-
-		// Add websocket listener
-		discordSession.AddHandler(discordMessageHandler)
-
-		// Open connection
-		return discordSession.Open()
-	}
-
-	policy := backoff.NewExponentialBackOff()
-
-	err := backoff.Retry(operation, policy)
-	if err != nil {
-		log.Critical(err)
-	}
+func getDiscord() (*discordgo.Session, error) {
+	return helpers.GetDiscord(discordMessageHandler)
 }
 
 //noinspection GoUnusedParameter
@@ -85,11 +58,6 @@ func chatRouter() http.Handler {
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 
-	if discordSession == nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Could not connect to Discord."})
-		return
-	}
-
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -115,8 +83,24 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		var channelsResponse []*discordgo.Channel
 
-		channelsResponse, discordErr = discordSession.GuildChannels(guildID)
-		log.Err(discordErr, r)
+		operation := func() (err error) {
+
+			discord, err := getDiscord()
+			if err != nil {
+				return err
+			}
+
+			channelsResponse, err = discord.GuildChannels(guildID)
+			return err
+		}
+
+		policy := backoff.NewExponentialBackOff()
+
+		err := backoff.Retry(operation, policy)
+		if err != nil {
+			discordErr = err
+			log.Critical(err, r)
+		}
 
 		for _, v := range channelsResponse {
 			if v.Type == discordgo.ChannelTypeGuildText {
@@ -140,8 +124,24 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		var membersResponse []*discordgo.Member
 
-		membersResponse, discordErr = discordSession.GuildMembers(guildID, "", 1000)
-		log.Err(discordErr, r)
+		operation := func() (err error) {
+
+			discord, err := getDiscord()
+			if err != nil {
+				return err
+			}
+
+			membersResponse, err = discord.GuildMembers(guildID, "", 1000)
+			return err
+		}
+
+		policy := backoff.NewExponentialBackOff()
+
+		err := backoff.Retry(operation, policy)
+		if err != nil {
+			discordErr = err
+			log.Critical(err, r)
+		}
 
 		for _, v := range membersResponse {
 			if !v.User.Bot {
@@ -174,17 +174,31 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 
-	if discordSession == nil {
-		return
-	}
-
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		id = generalChannelID
 	}
 
-	messagesResponse, err := discordSession.ChannelMessages(id, 50, "", "", "")
-	log.Err(err, r)
+	var messagesResponse []*discordgo.Message
+
+	operation := func() (err error) {
+
+		discord, err := getDiscord()
+		if err != nil {
+			return err
+		}
+
+		messagesResponse, err = discord.ChannelMessages(id, 50, "", "", "")
+		return err
+	}
+
+	policy := backoff.NewExponentialBackOff()
+
+	err := backoff.Retry(operation, policy)
+	if err != nil {
+		log.Critical(err, r)
+		return
+	}
 
 	var messages []chatWebsocketPayload
 	for _, v := range messagesResponse {
