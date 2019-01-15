@@ -178,7 +178,10 @@ if ($('#apps-page').length > 0) {
             {
                 "targets": 4,
                 "render": function (data, type, row) {
-                    return '<span data-livestamp="' + row[7] + '"></span>';
+                    if (isNumeric(row[7])) {
+                        return '<span data-livestamp="' + row[7] + '"></span>';
+                    }
+                    return row[7];
                 }
             }
         ]

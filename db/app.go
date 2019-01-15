@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"html/template"
 	"strconv"
 	"strings"
@@ -164,6 +165,15 @@ func (app App) GetDaysToRelease() string {
 
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
+	var cnds string
+	cnd := app.ChangeNumberDate.Unix()
+	if cnd == -62167219200 {
+		cnds = "Unknown"
+		fmt.Println("x")
+	} else {
+		cnds = strconv.FormatInt(app.ChangeNumberDate.Unix(), 10)
+	}
+
 	return []interface{}{
 		app.ID,
 		app.GetName(),
@@ -172,7 +182,7 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.GetType(),
 		app.ReviewsScore,
 		GetPriceFormatted(app, code).Final,
-		app.ChangeNumberDate.Unix(),
+		cnds,
 	}
 }
 
