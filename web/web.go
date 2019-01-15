@@ -473,6 +473,10 @@ func (t GlobalTemplate) IsStatsPage() bool {
 	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
 }
 
+func (t GlobalTemplate) IsMorePage() bool {
+	return helpers.SliceHasString([]string{"experience", "changes", "queues", "info"}, strings.TrimPrefix(t.Path, "/"))
+}
+
 func (t GlobalTemplate) isLoggedIn() bool {
 	return t.userID > 0
 }
