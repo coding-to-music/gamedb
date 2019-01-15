@@ -164,7 +164,7 @@
                             </tr>
                             </thead>
                             {{ range $key, $value := .App.GetPrices }}
-                                <tr data-code="{{ $key }}" data-link>
+                                <tr data-code="{{ $key }}">
                                     <td class="img flag">
                                         <img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}" class="rounded">
                                         <span>{{ .GetCountryName $key }}</span>

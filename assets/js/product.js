@@ -1,8 +1,10 @@
 const $priceChart = $('#app-page #prices-chart, #package-page #prices-chart');
 
-if ($priceChart.length > 0) {
+if ($priceChart.length > 0 && prices) {
 
-    let chart, request;
+    let chart, request, prices;
+
+    prices = true;
 
     function upateChart(code) {
 
@@ -11,34 +13,43 @@ if ($priceChart.length > 0) {
             request.abort();
         }
 
-        // Update rows
-        $('tr[data-code]').removeClass('font-weight-bold').attr('data-link', '');
-        $('tr[data-code=' + code + ']').addClass('font-weight-bold').removeAttr('data-link');
+        if (prices) {
 
-        // Show loading screen
-        chart.showLoading();
+            // Update rows
+            $('tr[data-code]').removeClass('font-weight-bold').attr('data-link', '');
+            $('tr[data-code=' + code + ']').addClass('font-weight-bold').removeAttr('data-link');
 
-        request = $.ajax({
-            type: "GET",
-            data: {
-                code: code
-            },
-            url: $priceChart.attr('data-ajax'),
-            success: function (data, textStatus, jqXHR) {
+            // Show loading screen
+            chart.showLoading();
 
-                chart.series[0].setData(data.prices);
-                chart.yAxis[0].update({title: {text: 'Price (' + data.symbol + ')'}});
-                chart.hideLoading();
-            },
-            dataType: 'json',
-            cache: true
-        });
+            request = $.ajax({
+                type: "GET",
+                data: {
+                    code: code
+                },
+                url: $priceChart.attr('data-ajax'),
+                success: function (data, textStatus, jqXHR) {
+
+                    chart.series[0].setData(data.prices);
+                    chart.yAxis[0].update({title: {text: 'Price (' + data.symbol + ')'}});
+                    chart.hideLoading();
+
+                    if (data.prices.length < 2) {
+                        prices = false;
+                        $priceChart.hide();
+                        $('tr[data-code]').removeAttr('data-link');
+                    }
+                },
+                dataType: 'json',
+                cache: true
+            });
+        }
     }
 
     $('#prices table tbody tr').on('click', function (e) {
 
         if ($(this).hasClass('font-weight-bold')) {
-            return // Already selected
+            return
         }
 
         upateChart($(this).attr('data-code'));
@@ -85,7 +96,6 @@ if ($priceChart.length > 0) {
             {
                 type: 'line',
                 name: 'Price',
-                data: prices,
                 step: 'right',
                 color: '#28a745'
             }
