@@ -63,7 +63,7 @@ func init() {
 	qs := []rabbitConsumer{
 		{Message: RabbitMessageApp{}},
 		{Message: RabbitMessageChanges{}},
-		//{Message: RabbitMessageDelay{}},
+		{Message: RabbitMessageDelay{}},
 		{Message: RabbitMessagePackage{}},
 		{Message: RabbitMessagePlayer{}},
 		{Message: RabbitMessageBundle{}},
@@ -231,7 +231,7 @@ func (s rabbitConsumer) consume() {
 			for {
 				select {
 				case err = <-consumerCloseChannel:
-					log.Critical(err)
+					log.Warning(err)
 					return
 				case msg := <-msgs:
 
