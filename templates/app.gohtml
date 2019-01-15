@@ -688,7 +688,7 @@
                                             {{ range $key, $value := .App.GetLaunch }}
                                                 <tr>
                                                     <td>{{ .Order }}</td>
-                                                    <td>{{ .Executable }}</td>
+                                                    <td nowrap="nowrap">{{ .Executable }}</td>
                                                     <td nowrap="nowrap">{{ .Arguments }}</td>
                                                     <td>{{ .Description }}</td>
                                                     <td>{{ .Typex }}</td>
