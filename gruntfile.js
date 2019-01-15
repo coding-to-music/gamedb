@@ -30,9 +30,8 @@ module.exports = function (grunt) {
         concat: {
             js: {
                 src: [
-                    'assets/js/third-party/moment.js', // Put above livestamp
-                    'assets/js/third-party/highcharts.min.js', // Put above heatmap
                     'assets/js/third-party/*.js',
+                    'assets/js/_helpers.js',
                     'assets/js/tabs.js',
                     'assets/js/tables.js',
                     'assets/js/*.js'
