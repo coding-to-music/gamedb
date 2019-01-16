@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
@@ -38,7 +39,8 @@ func (bundle Bundle) GetPath() string {
 }
 
 func (bundle Bundle) GetStoreLink() string {
-	return "https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID)
+	name := config.Config.GameDBShortName.Get()
+	return "https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID) + "?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
 }
 
 func (bundle Bundle) GetUpdatedNice() string {
