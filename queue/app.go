@@ -722,13 +722,24 @@ func updateBundles(app *db.App) error {
 		bundleIDs = append(bundleIDs, e.Attr("value"))
 	})
 
-	err := c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
-	if err != nil {
-		if !strings.Contains(err.Error(), "because its not in AllowedDomains") {
-			return err
+	// Retry call
+	operation := func() (err error) {
+
+		err = c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
+		if err != nil && !strings.Contains(err.Error(), "because its not in AllowedDomains") {
+			return backoff.Permanent(err)
 		}
+		return err
 	}
 
+	policy := backoff.NewExponentialBackOff()
+
+	err := backoff.Retry(operation, policy)
+	if err != nil {
+		return err
+	}
+
+	//
 	var IDInts = helpers.StringSliceToIntSlice(bundleIDs)
 
 	for _, v := range IDInts {

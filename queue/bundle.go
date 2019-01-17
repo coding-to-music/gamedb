@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
@@ -155,12 +156,19 @@ func updateBundle(bundle *db.Bundle) (err error) {
 		packages = append(packages, strings.Split(e.Attr("data-ds-packageid"), ",")...)
 	})
 
-	//
-	err = c.Visit("https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID))
+	// Retry call
+	operation := func() (err error) {
+		return c.Visit("https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID))
+	}
+
+	policy := backoff.NewExponentialBackOff()
+
+	err = backoff.Retry(operation, policy)
 	if err != nil {
 		return err
 	}
 
+	//
 	if len(apps) == 0 && len(packages) == 0 {
 		return nil
 	}
