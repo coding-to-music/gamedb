@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
@@ -113,6 +114,7 @@ func updateBundle(bundle *db.Bundle) (err error) {
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
+		colly.AllowURLRevisit(), // This is for retrys
 	)
 
 	// Set cookies
@@ -163,7 +165,7 @@ func updateBundle(bundle *db.Bundle) (err error) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.Retry(operation, policy)
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
 	if err != nil {
 		return err
 	}

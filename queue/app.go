@@ -665,7 +665,7 @@ func updateAppSteamSpy(app *db.App) error {
 	policy.InitialInterval = time.Second * 1
 	policy.MaxElapsedTime = time.Second * 10
 
-	err = backoff.Retry(operation, policy)
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
 	if err != nil {
 		return err
 	}
@@ -716,6 +716,7 @@ func updateBundles(app *db.App) error {
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
+		colly.AllowURLRevisit(), // This is for retrys
 	)
 
 	c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
@@ -734,7 +735,7 @@ func updateBundles(app *db.App) error {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.Retry(operation, policy)
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
 	if err != nil {
 		return err
 	}

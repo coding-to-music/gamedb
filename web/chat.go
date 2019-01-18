@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff"
@@ -96,7 +97,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err := backoff.Retry(operation, policy)
+		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
 			discordErr = err
 			log.Critical(err, r)
@@ -137,7 +138,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err := backoff.Retry(operation, policy)
+		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
 			discordErr = err
 			log.Critical(err, r)
@@ -194,7 +195,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.Retry(operation, policy)
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
 		log.Critical(err, r)
 		return

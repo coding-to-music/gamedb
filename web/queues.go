@@ -58,7 +58,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		policy.InitialInterval = time.Second / 2
 		policy.MaxElapsedTime = time.Second * 5
 
-		err = backoff.Retry(operation, policy)
+		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
 			return "", err
 		}

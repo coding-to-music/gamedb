@@ -112,7 +112,7 @@ func (s rabbitConsumer) makeAConnection() (conn *amqp.Connection, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.MaxElapsedTime = 0
 
-	err = backoff.Retry(operation, policy)
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
 
 	return conn, err
 }

@@ -3,6 +3,7 @@ package db
 import (
 	"net/url"
 	"sync"
+	"time"
 
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
@@ -72,7 +73,7 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.Retry(operation, policy)
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
 		log.Critical(err)
 	}
