@@ -109,6 +109,26 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(app)
 
+	// Bundles
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		gorm = gorm.Where("JSON_CONTAINS(app_ids, '[" + strconv.Itoa(app.ID) + "]')")
+		gorm = gorm.Find(&t.Bundles)
+		if gorm.Error != nil {
+			log.Err(gorm.Error, r)
+			return
+		}
+	}()
+
 	// Get packages
 	wg.Add(1)
 	go func() {
@@ -161,6 +181,7 @@ type appTemplate struct {
 	GlobalTemplate
 	App      db.App
 	Packages []db.Package
+	Bundles  []db.Bundle
 	DLC      []db.App
 	Price    db.ProductPriceFormattedStruct
 	Tags     []db.Tag
