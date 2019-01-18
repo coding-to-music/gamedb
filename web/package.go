@@ -54,20 +54,49 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get apps
 		appIDs, err := pack.GetAppIDs()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
 
 		for _, v := range appIDs {
 			apps[v] = db.App{ID: v}
 		}
 
 		appRows, err := db.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
 
 		for _, v := range appRows {
 			apps[v.ID] = v
 		}
 
 	}()
+
+	var bundles []db.Bundle
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		gorm = gorm.Where("JSON_CONTAINS(package_ids, '[" + strconv.Itoa(pack.ID) + "]')")
+		gorm = gorm.Find(&bundles)
+		if gorm.Error != nil {
+			log.Err(gorm.Error, r)
+			return
+		}
+	}()
+
+	// Wait
+	wg.Wait()
 
 	// Make banners
 	banners := make(map[string][]string)
@@ -81,15 +110,13 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		banners["primary"] = primary
 	}
 
-	// Wait
-	wg.Wait()
-
 	// Template
 	t := packageTemplate{}
 	t.Fill(w, r, pack.GetName(), "")
 	t.addAssetHighCharts()
 	t.Package = pack
 	t.Apps = apps
+	t.Bundles = bundles
 
 	// Update news, reviews etc
 	func() {
@@ -121,6 +148,7 @@ type packageTemplate struct {
 	GlobalTemplate
 	Package db.Package
 	Apps    map[int]db.App
+	Bundles []db.Bundle
 	Banners map[string][]string
 	Price   db.ProductPriceFormattedStruct
 }

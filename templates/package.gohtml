@@ -17,6 +17,9 @@
                     <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{ len .Package.GetAppIDs }})</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles ({{ len .Bundles }})</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                 </li>
                 <li class="nav-item">
@@ -135,6 +138,37 @@
                                     <td>{{ .GetType }}</td>
                                     <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
                                     <td>{{ comma (len .GetDLC) }}</td>
+                                </tr>
+                            {{ end }}
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="tab-pane" id="bundles" role="tabpanel">
+
+                    {{/* Bundles */}}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" data-sort="asc">Name</th>
+                                <th scope="col">Discount</th>
+                                <th scope="col">Apps</th>
+                                <th scope="col">Packages</th>
+                                <th scope="col">Updated At</th>
+                            </tr>
+                            </thead>
+                            {{ range $key, $value := .Bundles }}
+                                <tr data-link="{{.GetPath}}">
+                                    <td data-app-id="{{ .ID }}" class="img">
+                                        <img class="rounded square" src="/assets/img/no-app-image-square.jpg" alt="{{.Name}}">
+                                        <span>{{.Name}}</span>
+                                    </td>
+                                    <td>{{ .Discount }}%</td>
+                                    <td>{{ .AppsCount }}</td>
+                                    <td>{{ .PackagesCount }}</td>
+                                    <td>{{ .GetUpdatedNice }}</td>
                                 </tr>
                             {{ end }}
                         </table>
