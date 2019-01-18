@@ -1,5 +1,5 @@
 #bundle-page {
-    div.center {
-        //text-align: center;
+    table.dataTable {
+        @extend .mt-3; // Overwrites external css
     }
 }
