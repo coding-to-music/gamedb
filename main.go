@@ -3,6 +3,7 @@ package main
 import (
 	"runtime"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gamedb/website/config"
@@ -47,6 +48,7 @@ func main() {
 	}()
 
 	// Block forever for goroutines to run
-	forever := make(chan bool)
-	<-forever
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	wg.Wait()
 }
