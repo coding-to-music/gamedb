@@ -2,7 +2,7 @@
 
     <div class="card-header">
 
-        <h5 class="float-right" style="margin-bottom: 0;">
+        <h5 class="float-right mb-0">
             <span class="badge badge-secondary cursor-pointer" id="live-badge">Live</span>
         </h5>
 
@@ -13,14 +13,6 @@
                     <span class="nav-link active" role="tab">Price Changes</span>
                 {{else}}
                     <a class="nav-link" href="/price-changes" role="tab">Price Changes</a>
-                {{end}}
-            </li>
-
-            <li class="nav-item">
-                {{if startsWith .Path "/free-games" }}
-                    <span class="nav-link active" role="tab">Free Games</span>
-                {{else}}
-                    <a class="nav-link" href="/free-games" role="tab">Free Games</a>
                 {{end}}
             </li>
 

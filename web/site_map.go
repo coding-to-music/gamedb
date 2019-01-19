@@ -18,7 +18,6 @@ var pages = []string{
 	"/discounts",
 	"/donate",
 	"/experience",
-	"/free-games",
 	"/apps",
 	"/genres",
 	"/info",

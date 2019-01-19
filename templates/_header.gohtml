@@ -56,6 +56,7 @@
     <meta name="fb:app_id" content="2539079269452708">
 
     {{if .IsFromVarnish }}
+        <!--suppress XmlUnboundNsPrefix -->
         <esi:include src="/esi/header"/>
     {{else}}
         {{ template "_header_esi" . }}
@@ -95,15 +96,6 @@
                 <li class="nav-item {{if startsWith .Path "/price-changes" }}active{{end}}">
                     <a class="nav-link" href="/price-changes">Price Changes</a>
                 </li>
-
-                {{/*<li class="nav-item dropdown">*/}}
-                    {{/*<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Deals</a>*/}}
-                    {{/*<div class="dropdown-menu">*/}}
-                        {{/*<a class="dropdown-item" href="/price-changes">Price Changes</a>*/}}
-                        {{/*<a class="dropdown-item" href="/free-games">Free Games</a>*/}}
-                        {{/*<a class="dropdown-item" href="/discounts">Discounts</a>*/}}
-                    {{/*</div>*/}}
-                {{/*</li>*/}}
 
                 <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Stats</a>
