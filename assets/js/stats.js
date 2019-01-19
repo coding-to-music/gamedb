@@ -159,7 +159,7 @@ if ($('#stats-page').length > 0) {
                 },
                 tooltip: {
                     formatter: function () {
-                        return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("DD MMM YYYY");
+                        return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
                     },
                 },
                 series: [{
