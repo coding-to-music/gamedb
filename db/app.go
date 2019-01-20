@@ -85,6 +85,9 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 	if app.Achievements == "" {
 		app.Achievements = "[]"
 	}
+	if app.BundleIDs == "" {
+		app.BundleIDs = "[]"
+	}
 	if app.Categories == "" {
 		app.Categories = "[]"
 	}
@@ -666,7 +669,7 @@ type SteamSpyAppResponse struct {
 	Name      string `json:"name"`
 	Developer string `json:"developer"`
 	Publisher string `json:"publisher"`
-	//ScoreRank      int    `json:"score_rank"` // Can be empty string
+	// ScoreRank      int    `json:"score_rank"` // Can be empty string
 	Positive       int    `json:"positive"`
 	Negative       int    `json:"negative"`
 	Userscore      int    `json:"userscore"`
@@ -681,7 +684,7 @@ type SteamSpyAppResponse struct {
 	Languages      string `json:"languages"`
 	Genre          string `json:"genre"`
 	Ccu            int    `json:"ccu"`
-	//Tags           map[string]int `json:"tags"` // Can be an empty slice
+	// Tags           map[string]int `json:"tags"` // Can be an empty slice
 }
 
 func (a SteamSpyAppResponse) GetOwners() (ret []int) {
