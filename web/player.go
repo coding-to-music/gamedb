@@ -88,15 +88,15 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		//for _, friend := range friends {
-		//	err = queue.QueuePlayer(friend.SteamID)
-		//	log.Err(err, r)
-		//}
+		// for _, friend := range friends {
+		// 	err = queue.QueuePlayer(friend.SteamID)
+		// 	log.Err(err, r)
+		// }
 		//
-		//player.FriendsAddedAt = time.Now()
+		// player.FriendsAddedAt = time.Now()
 		//
-		//err = player.Save() // todo, switch to update query so not to overwrite other player changes
-		//log.Err(err, r)
+		// err = player.Save() // todo, switch to update query so not to overwrite other player changes
+		// log.Err(err, r)
 
 	}(player)
 

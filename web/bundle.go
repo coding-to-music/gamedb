@@ -24,10 +24,10 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//if !db.IsValidAppID(idx) {
-	//	returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid bundle ID: " + id})
-	//	return
-	//}
+	// if !db.IsValidAppID(idx) {
+	// 	returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid bundle ID: " + id})
+	// 	return
+	// }
 
 	// Get bundle
 	bundle, err := db.GetBundle(idx, []string{})

@@ -347,7 +347,7 @@ func adminGenres() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Err(err, r)
+					// log.Err(err, r)
 					continue
 				}
 				newGenres[genreID].totalPrice[code] += price.Final
@@ -482,7 +482,7 @@ func adminPublishers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Err(err, r)
+					// log.Err(err, r)
 					continue
 				}
 				newPublishers[publisher].totalPrice[code] += price.Final
@@ -629,7 +629,7 @@ func adminDevelopers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Err(err, r)
+					// log.Err(err, r)
 					continue
 				}
 				newDevelopers[developer].totalPrice[code] += price.Final
@@ -749,7 +749,7 @@ func adminTags() {
 		}
 
 		if len(appTags) == 0 {
-			//appTags = []int{}
+			// appTags = []int{}
 		}
 
 		// For each tag in an app
@@ -772,7 +772,7 @@ func adminTags() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					//log.Err(err, r)
+					// log.Err(err, r)
 					continue
 				}
 				newTags[tagID].totalPrice[code] += price.Final
@@ -1025,53 +1025,53 @@ func adminDev() {
 
 	var err error
 
-	//gorm, err := db.GetMySQLClient()
-	//if err != nil {
-	//	log.Err(err)
-	//	return
-	//}
+	// gorm, err := db.GetMySQLClient()
+	// if err != nil {
+	// 	log.Err(err)
+	// 	return
+	// }
 	//
-	//var apps []db.App
+	// var apps []db.App
 	//
-	//gorm = gorm.Select([]string{"id"})
-	//gorm = gorm.Limit(10000)
-	//gorm = gorm.Find(&apps)
+	// gorm = gorm.Select([]string{"id"})
+	// gorm = gorm.Limit(10000)
+	// gorm = gorm.Find(&apps)
 	//
-	//fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
+	// fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
 	//
-	//var wg = sync.WaitGroup{}
-	//var count int
-	//for _, v := range apps {
+	// var wg = sync.WaitGroup{}
+	// var count int
+	// for _, v := range apps {
 	//
-	//	wg.Add(1)
-	//	go func(v db.App) {
+	// 	wg.Add(1)
+	// 	go func(v db.App) {
 	//
-	//		defer wg.Done()
+	// 		defer wg.Done()
 	//
-	//		players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
+	// 		players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
 	//
-	//		err2, ok := err.(steam.Error)
-	//		if ok && (err2.Code() == 404) {
-	//			fmt.Println("-")
-	//			return
-	//		}
+	// 		err2, ok := err.(steam.Error)
+	// 		if ok && (err2.Code() == 404) {
+	// 			fmt.Println("-")
+	// 			return
+	// 		}
 	//
-	//		if err != nil {
-	//			fmt.Println(err)
-	//			return
-	//		}
+	// 		if err != nil {
+	// 			fmt.Println(err)
+	// 			return
+	// 		}
 	//
-	//		if players > 0 {
-	//			fmt.Println(players)
-	//			count++
-	//		}
+	// 		if players > 0 {
+	// 			fmt.Println(players)
+	// 			count++
+	// 		}
 	//
-	//	}(v)
-	//}
+	// 	}(v)
+	// }
 	//
-	//wg.Wait()
+	// wg.Wait()
 	//
-	//fmt.Println(strconv.Itoa(count) + " apps with players")
+	// fmt.Println(strconv.Itoa(count) + " apps with players")
 
 	// ######################################################
 
@@ -1097,54 +1097,54 @@ func adminDev() {
 
 	// ######################################################
 
-	//log.Info("Running...")
+	// log.Info("Running...")
 	//
-	//client, ctx, err := db.GetDSClient()
-	//log.Err(err, r)
+	// client, ctx, err := db.GetDSClient()
+	// log.Err(err, r)
 	//
-	//q := datastore.NewQuery(db.KindNews)
+	// q := datastore.NewQuery(db.KindNews)
 	//
-	//var articles []db.News
-	//_, err = client.GetAll(ctx, q, &articles)
-	//log.Err(err, r)
+	// var articles []db.News
+	// _, err = client.GetAll(ctx, q, &articles)
+	// log.Err(err, r)
 	//
-	//var articlesToDelete []*datastore.Key
-	//for _, v := range articles {
-	//	if strings.TrimSpace(v.Contents) == "" {
-	//		articlesToDelete = append(articlesToDelete, v.GetKey())
-	//		fmt.Println(v.ArticleID)
-	//	}
-	//}
+	// var articlesToDelete []*datastore.Key
+	// for _, v := range articles {
+	// 	if strings.TrimSpace(v.Contents) == "" {
+	// 		articlesToDelete = append(articlesToDelete, v.GetKey())
+	// 		fmt.Println(v.ArticleID)
+	// 	}
+	// }
 	//
-	//err = db.BulkDeleteKinds(articlesToDelete, true)
-	//log.Err(err, r)
+	// err = db.BulkDeleteKinds(articlesToDelete, true)
+	// log.Err(err, r)
 
 	// ######################################################
 
-	//log.Info("Dev")
+	// log.Info("Dev")
 	//
-	//players, err := db.GetAllPlayers("__key__", 0)
+	// players, err := db.GetAllPlayers("__key__", 0)
 	//
-	//log.Info("Got players")
+	// log.Info("Got players")
 	//
-	//if err != nil {
+	// if err != nil {
 	//
-	//	log.Err(err, r)
+	// 	log.Err(err, r)
 	//
-	//	if _, ok := err.(*ds.ErrFieldMismatch); ok {
+	// 	if _, ok := err.(*ds.ErrFieldMismatch); ok {
 	//
-	//	} else {
-	//		return
-	//	}
-	//}
+	// 	} else {
+	// 		return
+	// 	}
+	// }
 	//
-	//for _, v := range players {
-	//	//v.Games = ""
-	//	err := v.Save()
-	//	log.Err(err, r)
-	//}
+	// for _, v := range players {
+	// 	//v.Games = ""
+	// 	err := v.Save()
+	// 	log.Err(err, r)
+	// }
 	//
-	//log.Info("Done")
+	// log.Info("Done")
 
 	err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)

@@ -247,10 +247,10 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
-		//"title":  func(a string) string { return strings.Title(a) },
-		//"slug":   func(a string) string { return slug.Make(a) },
-		//"unix":       func(t time.Time) int64 { return t.Unix() },
-		//"contains":   func(a string, b string) bool { return strings.Contains(a, b) },
+		// "title":  func(a string) string { return strings.Title(a) },
+		// "slug":   func(a string) string { return slug.Make(a) },
+		// "unix":       func(t time.Time) int64 { return t.Unix() },
+		// "contains":   func(a string, b string) bool { return strings.Contains(a, b) },
 		"join": func(a []string) string { return strings.Join(a, ", ") },
 		"joinInt": func(a []int) string {
 			var join []string
@@ -509,7 +509,7 @@ func (t *GlobalTemplate) addAssetJSON2HTML() {
 func (t *GlobalTemplate) addAssetHighCharts() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/highcharts.js", Integrity: "sha256-j3WPKr23emLOeDVvf5mbfGs5xE+GERqV1vCz+Wx6n74="})
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/data.js", Integrity: "sha256-CYgititANzm6qnx8M/4TpaGqfa8xFOIbHfWbtvKAg4w="})
-	//t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/heatmap.js", Integrity: "sha256-HgUQ2+RnyQrmj1venzdV9Q6/ahkZ8h4HYoXNbGu7dpo="})
+	// t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/heatmap.js", Integrity: "sha256-HgUQ2+RnyQrmj1venzdV9Q6/ahkZ8h4HYoXNbGu7dpo="})
 }
 
 func (t *GlobalTemplate) addAssetSlider() {
@@ -770,7 +770,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	response.Symbol = locale.CurrencySymbol
 
 	for _, v := range pricesResp {
-		response.Prices = append(response.Prices, []float64{float64(v.CreatedAt.Unix()*1000), float64(v.PriceAfter) / 100})
+		response.Prices = append(response.Prices, []float64{float64(v.CreatedAt.Unix() * 1000), float64(v.PriceAfter) / 100})
 	}
 
 	// Add current price
@@ -781,7 +781,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 		return
 	}
 
-	response.Prices = append(response.Prices, []float64{float64(time.Now().Unix())*1000, float64(price.Final) / 100})
+	response.Prices = append(response.Prices, []float64{float64(time.Now().Unix()) * 1000, float64(price.Final) / 100})
 
 	// Sort prices for Highcharts
 	sort.Slice(response.Prices, func(i, j int) bool {

@@ -237,13 +237,13 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 
 		// todo, add http to links here instead of JS
-		//var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
-		//var conv bbConvert.HTMLConverter
-		//conv.ImplementDefaults()
+		// var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
+		// var conv bbConvert.HTMLConverter
+		// conv.ImplementDefaults()
 		// Fix broken links
-		//v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
+		// v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
 		// Convert BBCdoe to HTML
-		//v.Contents = conv.Convert(v.Contents)
+		// v.Contents = conv.Convert(v.Contents)
 
 		for k, v := range articles {
 			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)

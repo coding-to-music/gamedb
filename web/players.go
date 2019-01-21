@@ -159,7 +159,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			//q = q.Filter(column+" >", 0)
+			// q = q.Filter(column+" >", 0)
 
 			var ranks []db.PlayerRank
 			_, err := client.GetAll(ctx, q, &ranks)
