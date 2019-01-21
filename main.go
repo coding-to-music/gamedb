@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"runtime"
 	"strconv"
 	"sync"
@@ -16,6 +17,8 @@ import (
 
 func main() {
 
+	rand.Seed(time.Now().UnixNano())
+
 	// Web server
 	if config.Config.EnableWebserver.GetBool() {
 		go func() {
@@ -25,6 +28,7 @@ func main() {
 		}()
 	}
 
+	// Consumers
 	if config.Config.EnableConsumers.GetBool() {
 		go func() {
 			log.Info("Starting consumers")
