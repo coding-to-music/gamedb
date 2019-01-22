@@ -11,15 +11,15 @@ import (
 
 type RabbitMessageDelay struct {
 	rabbitConsumer
-	OriginalQueue   RabbitQueue
+	OriginalQueue   QueueName
 	OriginalMessage string
 }
 
-func (d RabbitMessageDelay) getConsumeQueue() RabbitQueue {
+func (d RabbitMessageDelay) getConsumeQueue() QueueName {
 	return QueueDelaysData
 }
 
-func (d RabbitMessageDelay) getProduceQueue() RabbitQueue {
+func (d RabbitMessageDelay) getProduceQueue() QueueName {
 	return ""
 }
 

@@ -17,27 +17,21 @@ import (
 var consumeLock = new(sync.Mutex)
 var produceLock = new(sync.Mutex)
 
-type RabbitQueue string
-
-func (rq RabbitQueue) String() string {
-	return string(rq)
-}
+type QueueName string
 
 const (
-	QueueApps         RabbitQueue = "Steam_Apps"          // Only takes IDs
-	QueueAppsData     RabbitQueue = "Steam_Apps_Data"     //
-	QueueBundlesData  RabbitQueue = "Steam_Bundles_Data"  //
-	QueueChangesData  RabbitQueue = "Steam_Changes_Data"  //
-	QueueDelaysData   RabbitQueue = "Steam_Delays_Data"   //
-	QueuePackages     RabbitQueue = "Steam_Packages"      // Only takes IDs
-	QueuePackagesData RabbitQueue = "Steam_Packages_Data" //
-	QueueProfiles     RabbitQueue = "Steam_Profiles"      // Only takes IDs
-	QueueProfilesData RabbitQueue = "Steam_Profiles_Data" //
+	QueueApps         QueueName = "Steam_Apps"          // Only takes IDs
+	QueueAppsData               = "Steam_Apps_Data"     //
+	QueueBundlesData            = "Steam_Bundles_Data"  //
+	QueueChangesData            = "Steam_Changes_Data"  //
+	QueueDelaysData             = "Steam_Delays_Data"   //
+	QueuePackages               = "Steam_Packages"      // Only takes IDs
+	QueuePackagesData           = "Steam_Packages_Data" //
+	QueueProfiles               = "Steam_Profiles"      // Only takes IDs
+	QueueProfilesData           = "Steam_Profiles_Data" //
 )
 
 var (
-	consumers = map[RabbitQueue]rabbitConsumer{}
-
 	errInvalidQueue = errors.New("invalid queue")
 	errEmptyMessage = errors.New("empty message")
 
@@ -49,38 +43,33 @@ var (
 )
 
 type queueInterface interface {
-	getProduceQueue() RabbitQueue
-	getConsumeQueue() RabbitQueue
-	getRetryData() RabbitMessageDelay
 	process(msg amqp.Delivery) (requeue bool, err error)
+}
+
+type BaseMessage struct {
+	FirstSeen time.Time
+	Attempt   int
+	Message   interface{}
 }
 
 func init() {
 
 	consumerCloseChannel = make(chan *amqp.Error)
 	producerCloseChannel = make(chan *amqp.Error)
-
-	qs := []rabbitConsumer{
-		{Message: RabbitMessageApp{}},
-		{Message: RabbitMessageChanges{}},
-		{Message: RabbitMessageDelay{}},
-		{Message: RabbitMessagePackage{}},
-		{Message: RabbitMessagePlayer{}},
-		{Message: RabbitMessageBundle{}},
-	}
-
-	for _, v := range qs {
-		consumers[v.Message.getConsumeQueue()] = v
-	}
 }
 
 func RunConsumers() {
+
+	consumers := []queueInterface{
+		AppQueue{},
+	}
+
 	for _, v := range consumers {
 		go v.consume()
 	}
 }
 
-func Produce(queue RabbitQueue, data []byte) (err error) {
+func Produce(queue QueueName, data []byte) (err error) {
 
 	for _, v := range consumers {
 		if queue == v.Message.getProduceQueue() {
@@ -89,13 +78,6 @@ func Produce(queue RabbitQueue, data []byte) (err error) {
 	}
 
 	return errInvalidQueue
-}
-
-type rabbitConsumer struct {
-	Message   queueInterface
-	Attempt   int
-	StartTime time.Time // Time first placed in delay queue
-	EndTime   time.Time // Time to retry from delay queue
 }
 
 func (s rabbitConsumer) makeAConnection() (conn *amqp.Connection, err error) {
@@ -117,7 +99,7 @@ func (s rabbitConsumer) makeAConnection() (conn *amqp.Connection, err error) {
 	return conn, err
 }
 
-func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *amqp.Channel, qu amqp.Queue, err error) {
+func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue QueueName) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
 	if err != nil {
