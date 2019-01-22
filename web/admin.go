@@ -318,26 +318,20 @@ func adminGenres() {
 		}
 
 		if len(appGenres) == 0 {
-			appGenres = []steam.AppDetailsGenre{{ID: "0", Description: ""}}
+			appGenres = []db.AppGenre{{ID: 0, Name: ""}}
 		}
 
 		// For each genre in an app
 		for _, genre := range appGenres {
 
-			genreID, err := strconv.Atoi(genre.ID)
-			if err != nil {
-				cronLogErr(err)
-				continue
-			}
+			delete(genresToDelete, genre.ID)
 
-			delete(genresToDelete, genreID)
-
-			if _, ok := newGenres[genreID]; ok {
-				newGenres[genreID].count++
-				newGenres[genreID].totalScore += app.ReviewsScore
+			if _, ok := newGenres[genre.ID]; ok {
+				newGenres[genre.ID].count++
+				newGenres[genre.ID].totalScore += app.ReviewsScore
 			} else {
-				newGenres[genreID] = &statsRow{
-					name:       strings.TrimSpace(genre.Description),
+				newGenres[genre.ID] = &statsRow{
+					name:       strings.TrimSpace(genre.Name),
 					count:      1,
 					totalScore: app.ReviewsScore,
 					totalPrice: map[steam.CountryCode]int{},
@@ -350,7 +344,7 @@ func adminGenres() {
 					// cronLogErr(err, r)
 					continue
 				}
-				newGenres[genreID].totalPrice[code] += price.Final
+				newGenres[genre.ID].totalPrice[code] += price.Final
 			}
 		}
 	}
