@@ -201,7 +201,7 @@ func adminDonations() {
 
 	donations, err := db.GetDonations(0, 0)
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
@@ -220,25 +220,25 @@ func adminDonations() {
 	for k, v := range counts {
 		player, err := db.GetPlayer(k)
 		if err != nil {
-			cronLog(err)
+			cronLogErr(err)
 			continue
 		}
 
 		player.Donated = v
 		err = db.SaveKind(player.GetKey(), player)
-		cronLog(err)
+		cronLogErr(err)
 	}
 
 	//
 	err = db.SetConfig(db.ConfDonationsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLog(err)
+	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
 	page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
 
-	cronLog("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
+	cronLogInfo("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
 
 func adminQueues(r *http.Request) {
@@ -282,18 +282,18 @@ func adminQueues(r *http.Request) {
 
 func adminGenres() {
 
-	cronLog(log.ServiceLocal, "Genres updating")
+	cronLogInfo(log.ServiceLocal, "Genres updating")
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
 	// Get current genres, to delete old ones
 	currentGenres, err := db.GetAllGenres()
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
@@ -304,16 +304,16 @@ func adminGenres() {
 
 	// Get apps from mysql
 	appsWithGenres, err := db.GetAppsWithGenres()
-	cronLog(err)
+	cronLogErr(err)
 
-	cronLog("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
+	cronLogInfo("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
 
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
 
 		appGenres, err := app.GetGenres()
 		if err != nil {
-			cronLog(err)
+			cronLogErr(err)
 			continue
 		}
 
@@ -326,7 +326,7 @@ func adminGenres() {
 
 			genreID, err := strconv.Atoi(genre.ID)
 			if err != nil {
-				log.Err(err)
+				cronLogErr(err)
 				continue
 			}
 
@@ -347,7 +347,7 @@ func adminGenres() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					// log.Err(err, r)
+					// cronLogErr(err, r)
 					continue
 				}
 				newGenres[genreID].totalPrice[code] += price.Final
@@ -371,7 +371,7 @@ func adminGenres() {
 		}
 
 		err := db.DeleteGenres(genresToDeleteSlice)
-		cronLog(err)
+		cronLogErr(err)
 
 		limit--
 
@@ -396,7 +396,7 @@ func adminGenres() {
 			var genre db.Genre
 
 			gorm = gorm.Unscoped().FirstOrInit(&genre, db.Genre{ID: genreID})
-			cronLog(gorm.Error)
+			cronLogErr(gorm.Error)
 
 			genre.Name = v.name
 			genre.Apps = v.count
@@ -405,7 +405,7 @@ func adminGenres() {
 			genre.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&genre)
-			cronLog(gorm.Error)
+			cronLogErr(gorm.Error)
 
 			limit--
 
@@ -417,24 +417,24 @@ func adminGenres() {
 
 	//
 	err = db.SetConfig(db.ConfGenresUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLog(err)
+	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
+	cronLogErr(err)
 
 	page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
 
-	cronLog("Genres updated")
+	cronLogInfo("Genres updated")
 }
 
 func adminPublishers() {
 
-	cronLog(log.ServiceLocal, "Publishers updating")
+	cronLogInfo(log.ServiceLocal, "Publishers updating")
 
 	// Get current publishers, to delete old ones
 	currentPublishers, err := db.GetAllPublishers()
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
@@ -445,16 +445,16 @@ func adminPublishers() {
 
 	// Get apps from mysql
 	appsWithPublishers, err := db.GetAppsWithPublishers()
-	cronLog(err)
+	cronLogErr(err)
 
-	cronLog("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
+	cronLogInfo("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
 
 	newPublishers := make(map[string]*statsRow)
 	for _, app := range appsWithPublishers {
 
 		appPublishers, err := app.GetPublishers()
 		if err != nil {
-			cronLog(err)
+			cronLogErr(err)
 			continue
 		}
 
@@ -482,7 +482,7 @@ func adminPublishers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					// log.Err(err, r)
+					// cronLogErr(err, r)
 					continue
 				}
 				newPublishers[publisher].totalPrice[code] += price.Final
@@ -506,7 +506,7 @@ func adminPublishers() {
 		}
 
 		err := db.DeletePublishers(pubsToDeleteSlice)
-		cronLog(err)
+		cronLogErr(err)
 
 		limit--
 
@@ -514,7 +514,7 @@ func adminPublishers() {
 
 	gorm, err := db.GetMySQLClient(true)
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
@@ -537,7 +537,7 @@ func adminPublishers() {
 			var publisher db.Publisher
 
 			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: strings.TrimSpace(publisherName)})
-			cronLog(gorm.Error)
+			cronLogErr(gorm.Error)
 
 			publisher.Name = v.name
 			publisher.Apps = v.count
@@ -546,7 +546,7 @@ func adminPublishers() {
 			publisher.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&publisher)
-			cronLog(gorm.Error)
+			cronLogErr(gorm.Error)
 
 			limit--
 
@@ -558,30 +558,30 @@ func adminPublishers() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfPublishersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLog(err)
+	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
+	cronLogErr(err)
 
 	page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
 
-	cronLog("Publishers updated")
+	cronLogInfo("Publishers updated")
 }
 
 func adminDevelopers() {
 
-	cronLog(log.ServiceLocal, "Developers updating")
+	cronLogInfo(log.ServiceLocal, "Developers updating")
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
 	// Get current developers, to delete old ones
 	currentDevelopers, err := db.GetAllPublishers()
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
@@ -592,16 +592,16 @@ func adminDevelopers() {
 
 	// Get apps from mysql
 	appsWithDevelopers, err := db.GetAppsWithDevelopers()
-	cronLog(err)
+	cronLogErr(err)
 
-	cronLog("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
+	cronLogErr("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
 	newDevelopers := make(map[string]*statsRow)
 	for _, app := range appsWithDevelopers {
 
 		appDevelopers, err := app.GetDevelopers()
 		if err != nil {
-			cronLog(err)
+			cronLogErr(err)
 			continue
 		}
 
@@ -629,7 +629,7 @@ func adminDevelopers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					// log.Err(err, r)
+					// cronLogErr(err, r)
 					continue
 				}
 				newDevelopers[developer].totalPrice[code] += price.Final
@@ -653,7 +653,7 @@ func adminDevelopers() {
 		}
 
 		err := db.DeleteDevelopers(devsToDeleteSlice)
-		cronLog(err)
+		cronLogErr(err)
 
 		limit--
 
@@ -678,7 +678,7 @@ func adminDevelopers() {
 			var developer db.Developer
 
 			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: strings.TrimSpace(developerName)})
-			cronLog(gorm.Error)
+			cronLogErr(gorm.Error)
 
 			developer.Name = v.name
 			developer.Apps = v.count
@@ -687,7 +687,7 @@ func adminDevelopers() {
 			developer.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&developer)
-			cronLog(gorm.Error)
+			cronLogErr(gorm.Error)
 
 			limit--
 
@@ -698,28 +698,28 @@ func adminDevelopers() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLog(err)
+	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
+	cronLogErr(err)
 
 	page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
 
-	cronLog("Developers updated")
+	cronLogInfo("Developers updated")
 }
 
 func adminTags() {
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
 	// Get current tags, to delete old ones
 	tags, err := db.GetAllTags()
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
@@ -730,21 +730,21 @@ func adminTags() {
 
 	// Get tags from Steam
 	tagsResp, _, err := helpers.GetSteam().GetTags()
-	cronLog(err)
+	cronLogErr(err)
 
 	steamTagMap := tagsResp.GetMap()
 
 	appsWithTags, err := db.GetAppsWithTags()
-	cronLog(err)
+	cronLogErr(err)
 
-	cronLog("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
+	cronLogErr("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
 
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
 
 		appTags, err := app.GetTagIDs()
 		if err != nil {
-			cronLog(err)
+			cronLogErr(err)
 			continue
 		}
 
@@ -772,7 +772,7 @@ func adminTags() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					// log.Err(err, r)
+					// cronLogErr(err, r)
 					continue
 				}
 				newTags[tagID].totalPrice[code] += price.Final
@@ -796,7 +796,7 @@ func adminTags() {
 		}
 
 		err := db.DeleteTags(tagsToDeleteSlice)
-		cronLog(err)
+		cronLogErr(err)
 
 		limit--
 
@@ -821,7 +821,7 @@ func adminTags() {
 			var tag db.Tag
 
 			gorm = gorm.Unscoped().FirstOrInit(&tag, db.Tag{ID: tagID})
-			cronLog(gorm.Error)
+			cronLogErr(gorm.Error)
 
 			tag.Name = v.name
 			tag.Apps = v.count
@@ -830,7 +830,7 @@ func adminTags() {
 			tag.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&tag)
-			cronLog(gorm.Error)
+			cronLogErr(gorm.Error)
 
 			limit--
 
@@ -841,14 +841,14 @@ func adminTags() {
 	wg.Wait()
 
 	err = db.SetConfig(db.ConfTagsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLog(err)
+	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
+	cronLogErr(err)
 
 	page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
 
-	cronLog("Tags updated")
+	cronLogInfo("Tags updated")
 }
 
 func adminStatsLogger(tableName string, count int, total int, rowName string) {
@@ -858,13 +858,13 @@ func adminStatsLogger(tableName string, count int, total int, rowName string) {
 
 func adminRanks() {
 
-	cronLog("Ranks updated started")
+	cronLogErr("Ranks updated started")
 
 	timeStart := time.Now().Unix()
 
 	oldKeys, err := db.GetRankKeys()
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
@@ -882,7 +882,7 @@ func adminRanks() {
 
 			players, err = db.GetAllPlayers(column, db.PlayersToRank)
 			if err != nil {
-				cronLog(err)
+				cronLogErr(err)
 				return
 			}
 
@@ -979,7 +979,7 @@ func adminRanks() {
 	// Update ranks
 	err = db.BulkSaveKinds(kinds, db.KindPlayerRank, false)
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
@@ -991,18 +991,18 @@ func adminRanks() {
 
 	err = db.BulkDeleteKinds(keysToDelete, false)
 	if err != nil {
-		cronLog(err)
+		cronLogErr(err)
 		return
 	}
 
 	// Update config
 	err = db.SetConfig(db.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLog(err)
+	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
 
-	cronLog("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
+	cronLogInfo("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
 }
 
 func adminMemcache() {
@@ -1186,6 +1186,10 @@ type adminWebsocket struct {
 	Message string `json:"message"`
 }
 
-func cronLog(interfaces ...interface{}) {
-	log.Info(append(interfaces, log.LogNameCron)...)
+func cronLogErr(interfaces ...interface{}) {
+	log.Err(append(interfaces, log.LogNameCron, log.LogNameGameDB)...)
+}
+
+func cronLogInfo(interfaces ...interface{}) {
+	log.Info(append(interfaces, log.LogNameCron, log.LogNameGameDB)...)
 }
