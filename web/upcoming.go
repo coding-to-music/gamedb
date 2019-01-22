@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
@@ -34,10 +35,10 @@ func upcomingAppsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Upcoming Apps", "The apps you have to look forward to!")
 	t.AjaxURL = "/upcoming/apps/ajax"
 
-	t.Apps, err = db.CountUpcomingApps()
+	t.Apps, err = countUpcomingApps()
 	log.Err(err, r)
 
-	t.Packages, err = db.CountUpcomingPackages()
+	t.Packages, err = countUpcomingPackages()
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "upcoming_apps", t)
@@ -53,10 +54,10 @@ func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Fill(w, r, "Upcoming Packages", "The packages you have to look forward to!")
 	t.AjaxURL = "/upcoming/packages/ajax"
 
-	t.Apps, err = db.CountUpcomingApps()
+	t.Apps, err = countUpcomingApps()
 	log.Err(err, r)
 
-	t.Packages, err = db.CountUpcomingPackages()
+	t.Packages, err = countUpcomingPackages()
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "upcoming_packages", t)
@@ -160,4 +161,38 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
+}
+
+func countUpcomingPackages() (count int, err error) {
+
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheUpcomingPackagesCount, func() (count int, err error) {
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		gorm = gorm.Model(db.Package{})
+		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
+		gorm = gorm.Count(&count)
+
+		return count, gorm.Error
+	})
+}
+
+func countUpcomingApps() (count int, err error) {
+
+	return helpers.GetMemcache().GetSetInt(helpers.MemcacheUpcomingAppsCount, func() (count int, err error) {
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		gorm = gorm.Model(db.App{})
+		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
+		gorm = gorm.Count(&count)
+
+		return count, gorm.Error
+	})
 }

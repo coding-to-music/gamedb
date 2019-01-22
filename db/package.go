@@ -1,14 +1,12 @@
 package db
 
 import (
-	"encoding/json"
 	"html/template"
 	"strconv"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
@@ -65,31 +63,8 @@ func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
 		pack.Prices = "{}"
 	}
 
-	//err := scope.SetColumn("UpdatedAt", time.Now())
-	//if err != nil {
-	//	log.Err(err)
-	//	return err
-	//}
-	//
-	//err = scope.SetColumn("CreatedAt", time.Now())
-	//if err != nil {
-	//	log.Err(err)
-	//	return err
-	//}
-
 	return nil
 }
-
-//func (pack *Package) BeforeUpdate(scope *gorm.Scope) error {
-//
-//	err := scope.SetColumn("UpdatedAt", time.Now())
-//	if err != nil {
-//		log.Err(err)
-//		return err
-//	}
-//
-//	return nil
-//}
 
 func (pack Package) GetPath() string {
 	return GetPackagePath(pack.ID, pack.GetName())
@@ -259,59 +234,10 @@ func (pack Package) GetAppIDs() (apps []int, err error) {
 	return apps, err
 }
 
-func (pack *Package) SetAppIDs(apps []int) (err error) {
-
-	bytes, err := json.Marshal(apps)
-	if err != nil {
-		return err
-	}
-
-	pack.AppIDs = string(bytes)
-	pack.AppsCount = len(apps)
-
-	return err
-}
-
-func (pack *Package) SetDepotIDs(depots []int) (err error) {
-
-	bytes, err := json.Marshal(depots)
-	if err != nil {
-		return err
-	}
-
-	pack.DepotIDs = string(bytes)
-
-	return err
-}
-
 func (pack Package) GetDepotIDs() (depots []int, err error) {
 
 	err = helpers.Unmarshal([]byte(pack.DepotIDs), &depots)
 	return depots, err
-}
-
-func (pack *Package) SetAppItems(items map[string]string) (err error) {
-
-	bytes, err := json.Marshal(items)
-	if err != nil {
-		return err
-	}
-
-	pack.AppItems = string(bytes)
-
-	return nil
-}
-
-func (pack *Package) SetPrices(prices ProductPrices) (err error) {
-
-	bytes, err := json.Marshal(prices)
-	if err != nil {
-		return err
-	}
-
-	pack.Prices = string(bytes)
-
-	return nil
 }
 
 func (pack Package) GetPrices() (prices ProductPrices, err error) {
@@ -330,18 +256,6 @@ func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceStruct, 
 	return prices.Get(code)
 }
 
-func (pack *Package) SetExtended(extended PICSExtended) (err error) {
-
-	bytes, err := json.Marshal(extended)
-	if err != nil {
-		return err
-	}
-
-	pack.Extended = string(bytes)
-
-	return nil
-}
-
 func (pack Package) GetExtended() (extended PICSExtended, err error) {
 
 	extended = PICSExtended{}
@@ -350,60 +264,12 @@ func (pack Package) GetExtended() (extended PICSExtended, err error) {
 	return extended, err
 }
 
-// Used in temmplate
-func (pack Package) GetExtendedNice() (ret map[string]interface{}) {
-
-	ret = make(map[string]interface{})
-
-	extended, err := pack.GetExtended()
-	if err != nil {
-		log.Err(err)
-		return ret
-	}
-
-	for k, v := range extended {
-
-		if val, ok := PackageExtendedKeys[k]; ok {
-			ret[val] = v
-		} else {
-			log.Info("Need to add " + k + " to extended map")
-			ret[k] = v
-		}
-	}
-
-	return ret
-}
-
 func (pack Package) GetController() (controller map[string]interface{}, err error) {
 
 	controller = make(map[string]interface{})
 
 	err = helpers.Unmarshal([]byte(pack.Controller), &controller)
 	return controller, err
-}
-
-// Used in temmplate
-func (pack Package) GetControllerNice() (ret map[string]interface{}) {
-
-	ret = map[string]interface{}{}
-
-	extended, err := pack.GetController()
-	if err != nil {
-		log.Err(err)
-		return ret
-	}
-
-	for k, v := range extended {
-
-		if val, ok := PackageControllerKeys[k]; ok {
-			ret[val] = v
-		} else {
-			log.Info("Need to add " + k + " to controller map")
-			ret[k] = v
-		}
-	}
-
-	return ret
 }
 
 func (pack Package) GetPlatforms() (platforms []string, err error) {
@@ -554,137 +420,4 @@ func CountPackages() (count int, err error) {
 		db.Model(&Package{}).Count(&count)
 		return count, db.Error
 	})
-}
-
-func CountUpcomingPackages() (count int, err error) {
-
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheUpcomingPackagesCount, func() (count int, err error) {
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		db = db.Model(new(Package))
-		db = db.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
-		db = db.Count(&count)
-
-		return count, db.Error
-	})
-}
-
-var PackageExtendedKeys = PICSExtended{
-	"allowcrossregiontradingandgifting":     "Allow Cross Region Trading & Gifting",
-	"allowpurchasefromretrictedcountries":   "Allow Purchase From Restricted Countries",
-	"allowpurchasefromrestrictedcountries":  "Allow Purchase From Restricted Countries",
-	"allowpurchaseinrestrictedcountries":    "Allow Purchase In Restricted Countries",
-	"allowpurchaserestrictedcountries":      "Allow Purchase Restricted Countries",
-	"allowrunincountries":                   "Allow Run Inc Cuntries",
-	"alwayscountasowned":                    "Always Count As Owned",
-	"alwayscountsasowned":                   "Always Counts As Owned",
-	"alwayscountsasunowned":                 "Always Counts As Unowned",
-	"appid":                                 "App ID",
-	"appidownedrequired":                    "App ID Owned Required",
-	"billingagreementtype":                  "Billing Agreement Type",
-	"blah":                                  "Blah",
-	"canbegrantedfromexternal":              "Can Be Granted From External",
-	"cantownapptopurchase":                  "Cant Own App To Purchase",
-	"complimentarypackagegrant":             "Complimentary Package Grant",
-	"complimentarypackagegrants":            "Complimentary Package Grants",
-	"curatorconnect":                        "Curator Connect",
-	"devcomp":                               "Devcomp",
-	"disallowedpaymentmethods":              "Disallowed Payment Methods",
-	"dontallowrunincountries":               "Dont Allow Run In Countries",
-	"dontgrantifappidowned":                 "Dont Grant If App ID Owned",
-	"enforceintraeeaactivationrestrictions": "Enforce Intraeeaactivation Restrictions",
-	"excludefromsharing":                    "Exclude From Sharing",
-	"exfgls":                                "Exclude From Game Library Sharing",
-	"expirytime":                            "Expiry Time",
-	"extended":                              "Extended",
-	"fakechange":                            "Fake Change",
-	"foo":                                   "Foo",
-	"freeondemand":                          "Free On Demand",
-	"freeweekend":                           "Free Weekend",
-	"full_gamepad":                          "Full Gamepad",
-	"giftsaredeletable":                     "Gifts Are Deletable",
-	"giftsaremarketable":                    "Gifts Are Marketable",
-	"giftsaretradable":                      "Gifts Are Tradable",
-	"grantexpirationdays":                   "Grant Expiration Days",
-	"grantguestpasspackage":                 "Grant Guest Pass Package",
-	"grantpassescount":                      "Grant Passes Count",
-	"hardwarepromotype":                     "Hardware Promo Type",
-	"ignorepurchasedateforrefunds":          "Ignore Purchase Date For Refunds",
-	"initialperiod":                         "Initial Period",
-	"initialtimeunit":                       "Initial Time Unit",
-	"iploginrestriction":                    "IP Login Restriction",
-	"languages":                             "Languages",
-	"launcheula":                            "Launch EULA",
-	"legacygamekeyappid":                    "Legacy Game Key App ID",
-	"lowviolenceinrestrictedcountries":      "Low Violence In Restricted Countries",
-	"martinotest":                           "Martino Test",
-	"mustownapptopurchase":                  "Must Own App To Purchase",
-	"onactivateguestpassmsg":                "On Activate Guest Pass Message",
-	"onexpiredmsg":                          "On Expired Message",
-	"ongrantguestpassmsg":                   "On Grant Guest Pass Message",
-	"onlyallowincountries":                  "Only Allow In Countries",
-	"onlyallowrestrictedcountries":          "Only Allow Restricted Countries",
-	"onlyallowrunincountries":               "Only Allow Run In Countries",
-	"onpurchasegrantguestpasspackage":       "On Purchase Grant Guest Pass Package",
-	"onpurchasegrantguestpasspackage0":      "On Purchase Grant Guest Pass Package 0",
-	"onpurchasegrantguestpasspackage1":      "On Purchase Grant Guest Pass Package 1",
-	"onpurchasegrantguestpasspackage2":      "On Purchase Grant Guest Pass Package 2",
-	"onpurchasegrantguestpasspackage3":      "On Purchase Grant Guest Pass Package 3",
-	"onpurchasegrantguestpasspackage4":      "On Purchase Grant Guest Pass Package 4",
-	"onpurchasegrantguestpasspackage5":      "On Purchase Grant Guest Pass Package 5",
-	"onpurchasegrantguestpasspackage6":      "On Purchase Grant Guest Pass Package 6",
-	"onpurchasegrantguestpasspackage7":      "On Purchase Grant Guest Pass Package 7",
-	"onpurchasegrantguestpasspackage8":      "On Purchase Grant Guest Pass Package 8",
-	"onpurchasegrantguestpasspackage9":      "On Purchase Grant Guest Pass Package 9",
-	"onpurchasegrantguestpasspackage10":     "On Purchase Grant Guest Pass Package 10",
-	"onpurchasegrantguestpasspackage11":     "On Purchase Grant Guest Pass Package 11",
-	"onpurchasegrantguestpasspackage12":     "On Purchase Grant Guest Pass Package 12",
-	"onpurchasegrantguestpasspackage13":     "On Purchase Grant Guest Pass Package 13",
-	"onpurchasegrantguestpasspackage14":     "On Purchase Grant Guest Pass Package 14",
-	"onpurchasegrantguestpasspackage15":     "On Purchase Grant Guest Pass Package 15",
-	"onpurchasegrantguestpasspackage16":     "On Purchase Grant Guest Pass Package 16",
-	"onpurchasegrantguestpasspackage17":     "On Purchase Grant Guest Pass Package 17",
-	"onpurchasegrantguestpasspackage18":     "On Purchase Grant Guest Pass Package 18",
-	"onpurchasegrantguestpasspackage19":     "On Purchase Grant Guest Pass Package 19",
-	"onpurchasegrantguestpasspackage20":     "On Purchase Grant Guest Pass Package 20",
-	"onpurchasegrantguestpasspackage21":     "On Purchase Grant Guest Pass Package 21",
-	"onpurchasegrantguestpasspackage22":     "On Purchase Grant Guest Pass Package 22",
-	"onquitguestpassmsg":                    "On Quit Guest Pass Message",
-	"overridetaxtype":                       "Override Tax Type",
-	"permitrunincountries":                  "Permit Run In Countries",
-	"prohibitrunincountries":                "Prohibit Run In Countries",
-	"purchaserestrictedcountries":           "Purchase Restricted Countries",
-	"purchaseretrictedcountries":            "Purchase Restricted Countries",
-	"recurringoptions":                      "Recurring Options",
-	"recurringpackageoption":                "Recurring Package Option",
-	"releaseoverride":                       "Release Override",
-	"releasestatecountries":                 "Release State Countries",
-	"releasestateoverride":                  "Release State Override",
-	"releasestateoverridecountries":         "Release State Override Countries",
-	"relesestateoverride":                   "Release State Override",
-	"renewalperiod":                         "Renewal Period",
-	"renewaltimeunit":                       "Renewal Time Unit",
-	"requiredps3apploginforpurchase":        "Required PS3 App Login For Purchase",
-	"requirespreapproval":                   "Requires Preapproval",
-	"restrictedcountries":                   "Restricted Countries",
-	"runrestrictedcountries":                "Run Restricted Countries",
-	"shippableitem":                         "Shippable Item",
-	"skipownsallappsinpackagecheck":         "Skip Owns All Apps In Package Check",
-	"starttime":                             "Start Time",
-	"state":                                 "State",
-	"test":                                  "Test",
-	"testchange":                            "Test Change",
-	"trading_card_drops":                    "Trading Card Drops",
-	"violencerestrictedcountries":           "Violence Restricted Countries",
-	"violencerestrictedterritorycodes":      "Violence Restricted Territory Codes",
-	"virtualitemreward":                     "Virtual Item Reward",
-}
-
-var PackageControllerKeys = map[string]string{
-	"full_gamepad":                         "Full Gamepad",
-	"allowpurchasefromrestrictedcountries": "Allow Purchase From Restricted Countries",
 }

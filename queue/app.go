@@ -193,48 +193,50 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 
 			var common = db.PICSAppCommon{}
 			for _, vv := range v.Children {
-				if vv.Value == nil {
-					b, err := json.Marshal(vv.ToNestedMaps())
-					if err != nil {
-						return err
-					}
-					common[vv.Name] = string(b)
-				} else {
-					common[vv.Name] = vv.Value.(string)
-				}
+				common[vv.Name] = vv.String()
 			}
-			err = app.SetCommon(common)
+
+			b, err := json.Marshal(common)
 			if err != nil {
 				return err
 			}
+
+			app.Common = string(b)
 
 		case "extended":
 
-			err = app.SetExtended(v.GetExtended())
+			b, err := json.Marshal(v.GetExtended())
 			if err != nil {
 				return err
 			}
+
+			app.Extended = string(b)
 
 		case "config":
 
 			config, launch := v.GetAppConfig()
 
-			err = app.SetConfig(config)
+			b, err := json.Marshal(config)
+			if err != nil {
+				return err
+			}
+			app.Config = string(b)
+
+			b, err = json.Marshal(launch)
 			if err != nil {
 				return err
 			}
 
-			err = app.SetLaunch(launch)
-			if err != nil {
-				return err
-			}
+			app.Launch = string(b)
 
 		case "depots":
 
-			err = app.SetDepots(v.GetAppDepots())
+			b, err := json.Marshal(v.GetAppDepots())
 			if err != nil {
 				return err
 			}
+
+			app.Depots = string(b)
 
 		case "public_only":
 
@@ -244,43 +246,44 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 
 		case "ufs":
 
-			var common = db.PICSAppUFS{}
+			var ufs = db.PICSAppUFS{}
 			for _, vv := range v.Children {
-				if vv.Value == nil {
-					b, err := json.Marshal(vv.ToNestedMaps())
-					if err != nil {
-						return err
-					}
-					common[vv.Name] = string(b)
-				} else {
-					common[vv.Name] = vv.Value.(string)
-				}
+				ufs[vv.Name] = vv.String()
 			}
-			err = app.SetUFS(common)
+
+			b, err := json.Marshal(ufs)
 			if err != nil {
 				return err
 			}
+
+			app.UFS = string(b)
 
 		case "install":
 
-			err = app.SetInstall(v.ToNestedMaps())
+			b, err := json.Marshal(v.ToNestedMaps())
 			if err != nil {
 				return err
 			}
+
+			app.Install = string(b)
 
 		case "localization":
 
-			err = app.SetLocalization(v.ToNestedMaps())
+			b, err := json.Marshal(v.ToNestedMaps())
 			if err != nil {
 				return err
 			}
+
+			app.Localization = string(b)
 
 		case "sysreqs":
 
-			err = app.SetSystemRequirements(v.ToNestedMaps())
+			b, err := json.Marshal(v.ToNestedMaps())
 			if err != nil {
 				return err
 			}
+
+			app.SystemRequirements = string(b)
 
 		default:
 			logWarning(v.Name + " field in app PICS ignored (Change " + strconv.Itoa(app.ChangeNumber) + ")")
@@ -444,7 +447,14 @@ func updateAppDetails(app *db.App) error {
 		}
 	}
 
-	return app.SetPrices(prices)
+	b, err := json.Marshal(prices)
+	if err != nil {
+		return err
+	}
+
+	app.Prices = string(b)
+
+	return nil
 }
 
 func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
@@ -556,11 +566,22 @@ func updateAppNews(app *db.App) error {
 		return err
 	}
 
-	err = app.SetNewsIDs(resp)
+	// Update app column
+	currentIDs, err := app.GetNewsIDs()
 	if err != nil {
 		return err
 	}
 
+	for _, v := range resp.Items {
+		currentIDs = append(currentIDs, v.GID)
+	}
+
+	b, err := json.Marshal(helpers.Unique64(currentIDs))
+	if err != nil {
+		return err
+	}
+
+	app.NewsIDs = string(b)
 	return nil
 }
 
@@ -644,12 +665,14 @@ func updateAppReviews(app *db.App) error {
 	app.Reviews = string(b)
 
 	// Log this app score
-	err = db.SaveAppOverTime(*app, reviews)
-	if err != nil {
-		return err
-	}
+	aot := new(db.AppOverTime)
+	aot.AppID = app.ID
+	aot.CreatedAt = time.Now()
+	aot.Score = app.ReviewsScore
+	aot.ReviewsPositive = reviews.Positive
+	aot.ReviewsNegative = reviews.Negative
 
-	return nil
+	return db.SaveKind(aot.GetKey(), aot)
 }
 
 func updateAppSteamSpy(app *db.App) error {

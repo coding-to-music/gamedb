@@ -27,6 +27,20 @@ type RabbitMessageProductKeyValues struct {
 	Children []RabbitMessageProductKeyValues `json:"Children"`
 }
 
+func (i RabbitMessageProductKeyValues) String() string {
+
+	if i.Value == nil {
+		b, err := json.Marshal(i.ToNestedMaps())
+		if err != nil {
+			log.Err(err)
+			return ""
+		}
+		return string(b)
+	} else {
+		return i.Value.(string)
+	}
+}
+
 func (i RabbitMessageProductKeyValues) GetChildrenAsSlice() (ret []string) {
 	for _, v := range i.Children {
 		ret = append(ret, v.Value.(string))

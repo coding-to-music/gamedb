@@ -136,7 +136,7 @@ func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue RabbitQueue) (ch *
 
 func (s rabbitConsumer) produce(data []byte) (err error) {
 
-	//log.Info("Producing to: " + s.Message.getProduceQueue().String())
+	// log.Info("Producing to: " + s.Message.getProduceQueue().String())
 
 	// Connect
 	err = func() error {

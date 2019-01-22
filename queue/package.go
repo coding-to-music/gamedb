@@ -178,11 +178,26 @@ func updatePackageFromPICS(pack *db.Package, rabbitMessage RabbitMessagePackage)
 			// Empty
 		case "appids":
 
-			err = pack.SetAppIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
+			apps := helpers.StringSliceToIntSlice(v.GetChildrenAsSlice())
+
+			var b []byte
+			b, err = json.Marshal(apps)
+
+			if err == nil {
+				pack.AppIDs = string(b)
+				pack.AppsCount = len(apps)
+			}
 
 		case "depotids":
 
-			err = pack.SetDepotIDs(helpers.StringSliceToIntSlice(v.GetChildrenAsSlice()))
+			depots := helpers.StringSliceToIntSlice(v.GetChildrenAsSlice())
+
+			var b []byte
+			b, err = json.Marshal(depots)
+
+			if err == nil {
+				pack.DepotIDs = string(b)
+			}
 
 		case "appitems":
 
@@ -192,11 +207,22 @@ func updatePackageFromPICS(pack *db.Package, rabbitMessage RabbitMessagePackage)
 					appItems[vv.Name] = vv.Children[0].Value.(string)
 				}
 			}
-			err = pack.SetAppItems(appItems)
+
+			var b []byte
+			b, err = json.Marshal(appItems)
+
+			if err == nil {
+				pack.AppItems = string(b)
+			}
 
 		case "extended":
 
-			err = pack.SetExtended(v.GetExtended())
+			var b []byte
+			b, err = json.Marshal(v.GetExtended())
+
+			if err == nil {
+				pack.Extended = string(b)
+			}
 
 		default:
 			err = errors.New(v.Name + " field in package PICS ignored (Change " + strconv.Itoa(pack.ChangeNumber) + ")")
@@ -264,5 +290,12 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 		}
 	}
 
-	return pack.SetPrices(prices)
+	b, err := json.Marshal(prices)
+	if err != nil {
+		return err
+	}
+
+	pack.Prices = string(b)
+
+	return nil
 }

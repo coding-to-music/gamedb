@@ -304,31 +304,31 @@ func updatePlayerGames(player *db.Player) error {
 	player.GameStats = string(b)
 
 	// Make heatmap
-	//var roundedPrices []int
-	//var maxPrice int
-	//for _, v := range playerApps {
+	// var roundedPrices []int
+	// var maxPrice int
+	// for _, v := range playerApps {
 	//
-	//	var roundedPrice = int(math.Floor(float64(v.AppPrice)/500) * 5) // Round down to nearest 5
+	// 	var roundedPrice = int(math.Floor(float64(v.AppPrice)/500) * 5) // Round down to nearest 5
 	//
-	//	roundedPrices = append(roundedPrices, roundedPrice)
+	// 	roundedPrices = append(roundedPrices, roundedPrice)
 	//
-	//	maxPrice = int(math.Max(float64(roundedPrice), float64(maxPrice)))
-	//}
+	// 	maxPrice = int(math.Max(float64(roundedPrice), float64(maxPrice)))
+	// }
 	//
-	//ret := make([][]int, (maxPrice/5)+1)
-	//for i := 0; i <= maxPrice/5; i++ {
-	//	ret[i] = []int{0, 0}
-	//}
-	//for _, v := range roundedPrices {
-	//	ret[(v / 5)] = []int{0, ret[(v / 5)][1] + 1}
-	//}
+	// ret := make([][]int, (maxPrice/5)+1)
+	// for i := 0; i <= maxPrice/5; i++ {
+	// 	ret[i] = []int{0, 0}
+	// }
+	// for _, v := range roundedPrices {
+	// 	ret[(v / 5)] = []int{0, ret[(v / 5)][1] + 1}
+	// }
 	//
-	//b, err = json.Marshal(ret)
-	//if err != nil {
-	//	return err
-	//}
+	// b, err = json.Marshal(ret)
+	// if err != nil {
+	// 	return err
+	// }
 	//
-	//player.GameHeatMap = string(b)
+	// player.GameHeatMap = string(b)
 
 	return nil
 }

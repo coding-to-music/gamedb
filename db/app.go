@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -12,6 +11,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
@@ -248,21 +248,10 @@ func (app App) GetIcon() (ret string) {
 	return GetAppIcon(app.ID, app.Icon)
 }
 
-func (app *App) SetPrices(prices ProductPrices) (err error) {
-
-	bytes, err := json.Marshal(prices)
-	if err != nil {
-		return err
-	}
-
-	app.Prices = string(bytes)
-
-	return nil
-}
-
 func (app App) GetPrices() (prices ProductPrices, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Prices), &prices)
+	log.Err(err)
 	return prices, err
 }
 
@@ -286,57 +275,13 @@ func (app App) GetNewsIDs() (ids []int64, err error) {
 	return ids, err
 }
 
-// Adds to current news IDs
-func (app *App) SetNewsIDs(news steam.News) (err error) {
-
-	ids, err := app.GetNewsIDs()
-	if err != nil {
-		return err
-	}
-
-	for _, v := range news.Items {
-		ids = append(ids, v.GID)
-	}
-
-	bytes, err := json.Marshal(helpers.Unique64(ids))
-	if err != nil {
-		return err
-	}
-
-	app.NewsIDs = string(bytes)
-	return nil
-}
-
-func (app *App) SetExtended(extended PICSExtended) (err error) {
-
-	bytes, err := json.Marshal(extended)
-	if err != nil {
-		return err
-	}
-
-	app.Extended = string(bytes)
-
-	return nil
-}
-
 func (app App) GetExtended() (extended PICSExtended, err error) {
 
 	extended = PICSExtended{}
 
 	err = helpers.Unmarshal([]byte(app.Extended), &extended)
+	log.Err(err)
 	return extended, err
-}
-
-func (app *App) SetCommon(common PICSAppCommon) (err error) {
-
-	bytes, err := json.Marshal(common)
-	if err != nil {
-		return err
-	}
-
-	app.Common = string(bytes)
-
-	return nil
 }
 
 func (app App) GetCommon() (common PICSAppCommon, err error) {
@@ -344,19 +289,8 @@ func (app App) GetCommon() (common PICSAppCommon, err error) {
 	common = PICSAppCommon{}
 
 	err = helpers.Unmarshal([]byte(app.Common), &common)
+	log.Err(err)
 	return common, err
-}
-
-func (app *App) SetConfig(config PICSAppConfig) (err error) {
-
-	bytes, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	app.Config = string(bytes)
-
-	return nil
 }
 
 func (app App) GetConfig() (config PICSAppConfig, err error) {
@@ -364,118 +298,57 @@ func (app App) GetConfig() (config PICSAppConfig, err error) {
 	config = PICSAppConfig{}
 
 	err = helpers.Unmarshal([]byte(app.Config), &config)
+	log.Err(err)
 	return config, err
-}
-
-func (app *App) SetDepots(depots PicsDepots) (err error) {
-
-	bytes, err := json.Marshal(depots)
-	if err != nil {
-		return err
-	}
-
-	app.Depots = string(bytes)
-
-	return nil
 }
 
 func (app App) GetDepots() (depots PicsDepots, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Depots), &depots)
+	log.Err(err)
 	return depots, err
-}
-
-func (app *App) SetLaunch(items []PICSAppConfigLaunchItem) (err error) {
-
-	bytes, err := json.Marshal(items)
-	if err != nil {
-		return err
-	}
-
-	app.Launch = string(bytes)
-
-	return nil
 }
 
 func (app App) GetLaunch() (items []PICSAppConfigLaunchItem, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Launch), &items)
+	log.Err(err)
 	return items, err
-}
-
-func (app *App) SetInstall(install map[string]interface{}) (err error) {
-
-	bytes, err := json.Marshal(install)
-	if err != nil {
-		return err
-	}
-
-	app.Install = string(bytes)
-
-	return nil
 }
 
 func (app App) GetInstall() (install map[string]interface{}, err error) {
 
 	install = map[string]interface{}{}
+
 	err = helpers.Unmarshal([]byte(app.Install), &install)
+	log.Err(err)
 	return install, err
-}
-
-func (app *App) SetLocalization(localization map[string]interface{}) (err error) {
-
-	bytes, err := json.Marshal(localization)
-	if err != nil {
-		return err
-	}
-
-	app.Localization = string(bytes)
-
-	return nil
 }
 
 func (app App) GetLocalization() (localization map[string]interface{}, err error) {
 
 	localization = map[string]interface{}{}
+
 	err = helpers.Unmarshal([]byte(app.Localization), &localization)
+	log.Err(err)
 	return localization, err
-}
-
-func (app *App) SetSystemRequirements(systemRequirements map[string]interface{}) (err error) {
-
-	bytes, err := json.Marshal(systemRequirements)
-	if err != nil {
-		return err
-	}
-
-	app.SystemRequirements = string(bytes)
-
-	return nil
 }
 
 func (app App) GetSystemRequirements() (systemRequirements map[string]interface{}, err error) {
 
 	systemRequirements = map[string]interface{}{}
+
 	err = helpers.Unmarshal([]byte(app.SystemRequirements), &systemRequirements)
+	log.Err(err)
 	return systemRequirements, err
-}
-
-func (app *App) SetUFS(ufs PICSAppUFS) (err error) {
-
-	bytes, err := json.Marshal(ufs)
-	if err != nil {
-		return err
-	}
-
-	app.UFS = string(bytes)
-
-	return nil
 }
 
 func (app App) GetUFS() (ufs PICSAppUFS, err error) {
 
 	ufs = PICSAppUFS{}
+
 	err = helpers.Unmarshal([]byte(app.UFS), &ufs)
+	log.Err(err)
 	return ufs, err
 }
 
@@ -508,18 +381,21 @@ func (app App) GetMetacriticLink() template.URL {
 func (app App) GetScreenshots() (screenshots []AppImage, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Screenshots), &screenshots)
+	log.Err(err)
 	return screenshots, err
 }
 
 func (app App) GetMovies() (movies []AppVideo, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Movies), &movies)
+	log.Err(err)
 	return movies, err
 }
 
 func (app App) GetSteamSpy() (ss AppSteamSpy, err error) {
 
 	err = helpers.Unmarshal([]byte(app.SteamSpy), &ss)
+	log.Err(err)
 	return ss, err
 }
 
@@ -555,18 +431,21 @@ func (app App) GetCoopTags() (string, error) {
 func (app App) GetAchievements() (achievements []AppAchievement, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Achievements), &achievements)
+	log.Err(err)
 	return achievements, err
 }
 
 func (app App) GetStats() (stats []AppStat, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Stats), &stats)
+	log.Err(err)
 	return stats, err
 }
 
 func (app App) GetPlatforms() (platforms []string, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Platforms), &platforms)
+	log.Err(err)
 	return platforms, err
 }
 
@@ -605,36 +484,42 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 func (app App) GetDLC() (dlcs []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.DLC), &dlcs)
+	log.Err(err)
 	return dlcs, err
 }
 
 func (app App) GetPackages() (packages []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Packages), &packages)
+	log.Err(err)
 	return packages, err
 }
 
 func (app App) GetReviews() (reviews AppReviewSummary, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Reviews), &reviews)
+	log.Err(err)
 	return reviews, err
 }
 
-func (app App) GetGenres() (genres []steam.AppDetailsGenre, err error) {
+func (app App) GetGenres() (genres []AppGenre, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Genres), &genres)
+	log.Err(err)
 	return genres, err
 }
 
 func (app App) GetCategories() (categories []string, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Categories), &categories)
+	log.Err(err)
 	return categories, err
 }
 
 func (app App) GetTagIDs() (tags []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.StoreTags), &tags)
+	log.Err(err)
 	return tags, err
 }
 
@@ -651,12 +536,14 @@ func (app App) GetTags() (tags []Tag, err error) {
 func (app App) GetDevelopers() (developers []string, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Developers), &developers)
+	log.Err(err)
 	return developers, err
 }
 
 func (app App) GetPublishers() (publishers []string, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Publishers), &publishers)
+	log.Err(err)
 	return publishers, err
 }
 
@@ -971,23 +858,6 @@ func GetAppIcon(id int, icon string) string {
 		return icon
 	}
 	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(id) + "/" + icon + ".jpg"
-}
-
-func CountUpcomingApps() (count int, err error) {
-
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheUpcomingAppsCount, func() (count int, err error) {
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		db = db.Model(new(App))
-		db = db.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
-		db = db.Count(&count)
-
-		return count, db.Error
-	})
 }
 
 type AppImage struct {

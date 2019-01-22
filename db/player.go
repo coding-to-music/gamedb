@@ -20,9 +20,9 @@ var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
 
-	//ErrUpdatingPlayerTooSoon = errors.New("updating too soon")
-	//ErrUpdatingPlayerBot     = errors.New("bots can't update")
-	//ErrUpdatingPlayerInQueue = errors.New("player is already in the queue")
+	// ErrUpdatingPlayerTooSoon = errors.New("updating too soon")
+	// ErrUpdatingPlayerBot     = errors.New("bots can't update")
+	// ErrUpdatingPlayerInQueue = errors.New("player is already in the queue")
 )
 
 type Player struct {
