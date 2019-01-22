@@ -182,12 +182,12 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 		case "appid":
 
 			// No need for this
-			//var i64 int64
-			//i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
-			//if err != nil {
-			//	return err
-			//}
-			//app.ID = int(i64)
+			// var i64 int64
+			// i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
+			// if err != nil {
+			// 	return err
+			// }
+			// app.ID = int(i64)
 
 		case "common":
 
@@ -386,7 +386,21 @@ func updateAppDetails(app *db.App) error {
 			app.Categories = string(b)
 
 			// Genres
-			b, err = json.Marshal(response.Data.Genres)
+			var genres []db.AppGenre
+			for _, v := range response.Data.Genres {
+
+				id, err := strconv.Atoi(v.ID)
+				if err != nil {
+					return err
+				}
+
+				genres = append(genres, db.AppGenre{
+					ID:   id,
+					Name: v.Description,
+				})
+			}
+
+			b, err = json.Marshal(genres)
 			if err != nil {
 				return err
 			}

@@ -43,7 +43,7 @@ type App struct {
 	Extended           string    `gorm:"not null;column:extended"`                         //
 	GameID             int       `gorm:"not null;column:game_id"`                          //
 	GameName           string    `gorm:"not null;column:game_name"`                        //
-	Genres             string    `gorm:"not null;column:genres;type:json"`                 //
+	Genres             string    `gorm:"not null;column:genres;type:json"`                 // []AppGenre
 	HeaderImage        string    `gorm:"not null;column:image_header"`                     //
 	Homepage           string    `gorm:"not null;column:homepage"`                         //
 	Icon               string    `gorm:"not null;column:icon"`                             //
@@ -1052,4 +1052,6 @@ type AppReview struct {
 }
 
 type AppGenre struct {
+	ID   int
+	Name string
 }
