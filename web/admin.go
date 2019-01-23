@@ -59,6 +59,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminRanks()
 	case "wipe-memcache":
 		go adminMemcache()
+	case "delete-bin-logs":
+		go adminDeleteBinLogs(r)
 	case "disable-consumers":
 		go adminDisableConsumers()
 	case "run-dev-code":
@@ -96,6 +98,23 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Configs = configs
 	t.Goroutines = runtime.NumGoroutine()
 
+	//
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't connect to mysql", Error: err})
+		return
+	}
+
+	gorm.Raw("show binary logs").Scan(&t.BinLogs)
+
+	var total uint64
+	for k, v := range t.BinLogs {
+		total = total + v.Bytes
+		t.BinLogs[k].Total = total
+	}
+
+	gorm.Raw("SELECT * FROM information_schema.processlist where command != 'sleep'").Scan(&t.Queries)
+
 	err = returnTemplate(w, r, "admin", t)
 	log.Err(err, r)
 }
@@ -105,6 +124,26 @@ type adminTemplate struct {
 	Errors     []string
 	Configs    map[string]db.Config
 	Goroutines int
+	Queries    []adminQuery
+	BinLogs    []adminBinLog
+}
+
+type adminQuery struct {
+	ID       int    `gorm:"column:ID"`
+	User     string `gorm:"column:USER"`
+	Host     string `gorm:"column:HOST"`
+	Database string `gorm:"column:DB"`
+	Command  string `gorm:"column:COMMAND"`
+	Seconds  int64  `gorm:"column:TIME"`
+	State    string `gorm:"column:STATE"`
+	Info     string `gorm:"column:INFO"`
+}
+
+type adminBinLog struct {
+	Name      string `gorm:"column:Log_name"`
+	Bytes     uint64 `gorm:"column:File_size"`
+	Encrypted string `gorm:"column:Encrypted"`
+	Total     uint64
 }
 
 func (at adminTemplate) GetMCConfigKey() string {
@@ -1013,6 +1052,21 @@ func adminMemcache() {
 	page.Send(adminWebsocket{db.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
 
 	log.Info("Memcache wiped")
+}
+
+func adminDeleteBinLogs(r *http.Request) {
+
+	name := r.URL.Query().Get("name")
+	if name != "" {
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		gorm.Exec("PURGE BINARY LOGS TO '?';", name)
+	}
 }
 
 func adminDev() {

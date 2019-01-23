@@ -259,8 +259,10 @@ func getTemplateFuncMap() map[string]interface{} {
 			}
 			return strings.Join(join, ", ")
 		},
-		"comma":  func(a int) string { return humanize.Comma(int64(a)) },
-		"commaf": func(a float64) string { return humanize.Commaf(a) },
+		"comma":   func(a int) string { return humanize.Comma(int64(a)) },
+		"commaf":  func(a float64) string { return humanize.Commaf(a) },
+		"bytes":   func(a uint64) string { return humanize.Bytes(a) },
+		"seconds": func(a int64) string { return humanize.RelTime(time.Now(), time.Now().Add(time.Second*time.Duration(a)), "", "") },
 		"apps": func(a []int, appsMap map[int]db.App) template.HTML {
 			var apps []string
 			for _, v := range a {

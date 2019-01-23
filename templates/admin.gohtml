@@ -20,9 +20,9 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#queues" role="tab">Queues</a>
                 </li>
-                {{/*<li class="nav-item">*/}}
-                {{/*<a class="nav-link" data-toggle="tab" href="#logs" role="tab">Logs</a>*/}}
-                {{/*</li>*/}}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#mysql" role="tab">MySQL</a>
+                </li>
             </ul>
 
         </div>
@@ -136,11 +136,62 @@
                     </form>
 
                 </div>
-                <div class="tab-pane" id="logs" role="tabpanel">
+                <div class="tab-pane" id="mysql" role="tabpanel">
 
-                    <pre><code>{{ range $key, $value := .Errors }}{{$value}}{{ end }}</code></pre>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-3" data-sort="[[0, 'asc']]" id="bin-logs">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Bin Logs</th>
+                                <th scope="col">Bytes</th>
+                                <th scope="col">Total Bytes</th>
+                                <th scope="col">Delete Upto</th>
+                            </tr>
+                            </thead>
+                            <tbody class="tags-list">
+                            {{ range $key, $value := .BinLogs }}
+                                <tr>
+                                    <td>{{ .Name }}</td>
+                                    <td>{{ bytes .Bytes }}</td>
+                                    <td>{{ bytes .Total }}</td>
+                                    <td><a href="/admin/delete-bin-logs?name={{ .Name }}"><i class="fas fa-backspace"></i></a></td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-sort="[[0, 'asc']]">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">User</th>
+                                <th scope="col">Host</th>
+                                <th scope="col">Cmd</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">State</th>
+                                <th scope="col">Info</th>
+                            </tr>
+                            </thead>
+                            <tbody class="tags-list">
+                            {{ range $key, $value := .Queries }}
+                                <tr>
+                                    <td>{{ .ID }}</td>
+                                    <td>{{ .User }}</td>
+                                    <td>{{ .Host }}</td>
+                                    <td>{{ .Command }}</td>
+                                    <td>{{ seconds .Seconds }}</td>
+                                    <td>{{ .State }}</td>
+                                    <td>{{ .Info }}</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div>
+
             </div>
 
         </div>
