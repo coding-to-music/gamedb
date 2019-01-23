@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
 )
 
@@ -24,19 +25,22 @@ type RabbitMessageApp struct {
 type AppQueue struct {
 }
 
-func (d AppQueue) process(msg amqp.Delivery) (requeue bool, err error) {
+func (d AppQueue) process(msg amqp.Delivery) (requeue bool) {
+
+	var err error
 
 	// Get message payload
 	rabbitMessage := RabbitMessageApp{}
 
 	err = helpers.Unmarshal(msg.Body, &rabbitMessage)
 	if err != nil {
-		return false, err
+		log.Err(err)
+		return false
 	}
 
 	message := rabbitMessage.PICSAppInfo
 
 	logInfo("Consuming app: " + strconv.Itoa(message.ID))
 
-	return false, nil
+	return false
 }

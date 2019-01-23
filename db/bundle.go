@@ -22,7 +22,7 @@ type Bundle struct {
 	Image      string
 }
 
-func (bundle *Bundle) BeforeCreate(scope *gorm.Scope) error {
+func (bundle *Bundle) BeforeSave(scope *gorm.Scope) error {
 
 	if bundle.AppIDs == "" {
 		bundle.AppIDs = "[]"

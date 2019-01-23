@@ -2,7 +2,6 @@ package db
 
 import (
 	"errors"
-	"fmt"
 	"html/template"
 	"strconv"
 	"strings"
@@ -80,7 +79,7 @@ type App struct {
 	Version            string    `gorm:"not null;column:version"`                          //
 }
 
-func (app *App) BeforeCreate(scope *gorm.Scope) error {
+func (app *App) BeforeSave(scope *gorm.Scope) error {
 
 	if app.Achievements == "" {
 		app.Achievements = "[]"
@@ -172,7 +171,6 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 	cnd := app.ChangeNumberDate.Unix()
 	if cnd == -62167219200 {
 		cnds = "Unknown"
-		fmt.Println("x")
 	} else {
 		cnds = strconv.FormatInt(app.ChangeNumberDate.Unix(), 10)
 	}
