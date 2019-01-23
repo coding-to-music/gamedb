@@ -10,7 +10,9 @@
 
         <div class="card-body">
 
-            <img class="rounded" src="{{ .Bundle.Image }}" alt="{{ .Bundle.Name }}">
+            {{ if ne .Bundle.Image ""}}
+                <img class="rounded" src="{{ .Bundle.Image }}" alt="{{ .Bundle.Name }}">
+            {{ end }}
 
             <table class="table mt-3">
                 <tr>
