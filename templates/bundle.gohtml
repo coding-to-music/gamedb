@@ -44,7 +44,10 @@
                         </thead>
                         {{ range $key, $value := .Packages }}
                             <tr data-link="{{ .GetPath }}">
-                                <td>{{ .GetName }}</td>
+                                <td class="img">
+                                    <img class="rounded square" src="/assets/img/no-app-image-square.jpg" alt="{{ .GetName }}">
+                                    <span>{{ .GetName }}</span>
+                                </td>
                                 <td>{{ .GetBillingType }}</td>
                                 <td>{{ .GetLicenseType }}</td>
                                 <td>{{ .GetStatus }}</td>
