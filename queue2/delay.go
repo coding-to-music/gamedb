@@ -9,39 +9,31 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitMessageDelay struct {
-	rabbitConsumer
+type DelayMessage struct {
+	BaseMessage
 	OriginalQueue   QueueName
 	OriginalMessage string
 }
 
-func (d RabbitMessageDelay) getConsumeQueue() QueueName {
-	return QueueDelaysData
+type DelayQueue struct {
+	BaseQueue
 }
 
-func (d RabbitMessageDelay) getProduceQueue() QueueName {
-	return ""
-}
-
-func (d RabbitMessageDelay) getRetryData() RabbitMessageDelay {
-	return RabbitMessageDelay{}
-}
-
-func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error) {
+func (q DelayQueue) process(msg amqp.Delivery) (requeue bool) {
 
 	if len(msg.Body) == 0 {
-		return false, errEmptyMessage
+		return false
 	}
 
 	delayMessage := RabbitMessageDelay{}
 
 	err = helpers.Unmarshal(msg.Body, &delayMessage)
 	if err != nil {
-		return false, err
+		return false
 	}
 
 	if len(delayMessage.OriginalMessage) == 0 {
-		return false, errEmptyMessage
+		return false
 	}
 
 	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
@@ -53,7 +45,7 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error)
 
 		b, err := json.Marshal(delayMessage)
 		if err != nil {
-			return false, err
+			return false
 		}
 
 		err = Produce(delayMessage.getConsumeQueue(), b)
@@ -68,8 +60,8 @@ func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool, err error)
 	}
 
 	if err != nil {
-		return true, err
+		return true
 	}
 
-	return false, nil
+	return false
 }

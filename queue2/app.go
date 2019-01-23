@@ -8,29 +8,27 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitMessageApp struct {
-	//
-	BaseMessage
-
-	// Returned from PICS
-	PICSAppInfo RabbitMessageProduct
-
-	// JSON must match the Updater app
+type AppMessage struct {
+	// This is what we sent to updater
 	Payload struct {
 		ID   []int `json:"IDs"`
 		Time int64 `json:"Time"`
 	}
+	PICSAppInfo RabbitMessageProduct
 }
 
 type AppQueue struct {
+	BaseQueue
 }
 
-func (d AppQueue) process(msg amqp.Delivery) (requeue bool) {
+func (q AppQueue) process(msg amqp.Delivery) (requeue bool) {
 
 	var err error
 
 	// Get message payload
-	rabbitMessage := RabbitMessageApp{}
+	rabbitMessage := BaseMessage{
+		Message: AppMessage{},
+	}
 
 	err = helpers.Unmarshal(msg.Body, &rabbitMessage)
 	if err != nil {

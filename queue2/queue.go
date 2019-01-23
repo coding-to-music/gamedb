@@ -14,57 +14,52 @@ import (
 	"github.com/streadway/amqp"
 )
 
-var consumeLock = new(sync.Mutex)
-var produceLock = new(sync.Mutex)
-
 type QueueName string
 
 const (
-	QueueApps         QueueName = "Steam_Apps"          // Only takes IDs
-	QueueAppsData               = "Steam_Apps_Data"     //
-	QueueBundlesData            = "Steam_Bundles_Data"  //
-	QueueChangesData            = "Steam_Changes_Data"  //
-	QueueDelaysData             = "Steam_Delays_Data"   //
-	QueuePackages               = "Steam_Packages"      // Only takes IDs
-	QueuePackagesData           = "Steam_Packages_Data" //
-	QueueProfiles               = "Steam_Profiles"      // Only takes IDs
-	QueueProfilesData           = "Steam_Profiles_Data" //
+	// C#
+	QueueApps     QueueName = "Steam_Apps"
+	QueuePackages QueueName = "Steam_Packages"
+	QueueProfiles QueueName = "Steam_Profiles"
+
+	// Go
+	QueueAppsData     QueueName = "Steam_Apps_Data"
+	QueueBundlesData  QueueName = "Steam_Bundles_Data"
+	QueueChangesData  QueueName = "Steam_Changes_Data"
+	QueueDelaysData   QueueName = "Steam_Delays_Data"
+	QueuePackagesData QueueName = "Steam_Packages_Data"
+	QueueProfilesData QueueName = "Steam_Profiles_Data"
 )
 
 var (
+	consumeLock = new(sync.Mutex)
+	produceLock = new(sync.Mutex)
+
 	errInvalidQueue = errors.New("invalid queue")
 	errEmptyMessage = errors.New("empty message")
 
-	consumerConnection   *amqp.Connection
-	consumerCloseChannel chan *amqp.Error
-
-	producerConnection   *amqp.Connection
-	producerCloseChannel chan *amqp.Error
-)
-
-type queueInterface interface {
-	process(msg amqp.Delivery) (requeue bool, err error)
-}
-
-type BaseMessage struct {
-	FirstSeen time.Time
-	Attempt   int
-	Message   interface{}
-}
-
-func init() {
+	consumerConnection *amqp.Connection
+	producerConnection *amqp.Connection
 
 	consumerCloseChannel = make(chan *amqp.Error)
 	producerCloseChannel = make(chan *amqp.Error)
+
+	consumers = map[QueueName]queueInterface{
+		QueueAppsData:   AppQueue{},
+		QueueDelaysData: DelayQueue{},
+	}
+)
+
+type queueInterface interface {
+	// getQueueName() QueueName
+	setQueueName(QueueName)
+	process(msg amqp.Delivery) (requeue bool)
+	consume()
 }
 
 func RunConsumers() {
-
-	consumers := []queueInterface{
-		AppQueue{},
-	}
-
-	for _, v := range consumers {
+	for k, v := range consumers {
+		v.setQueueName(k)
 		go v.consume()
 	}
 }
@@ -80,7 +75,22 @@ func Produce(queue QueueName, data []byte) (err error) {
 	return errInvalidQueue
 }
 
-func (s rabbitConsumer) makeAConnection() (conn *amqp.Connection, err error) {
+type BaseMessage struct {
+	FirstSeen   time.Time
+	Attempt     int
+	NextAttempt time.Time
+	Message     interface{}
+}
+
+type BaseQueue struct {
+	Name QueueName
+}
+
+func (q BaseQueue) setQueueName(name QueueName) {
+	q.Name = name
+}
+
+func (q BaseQueue) makeAConnection() (conn *amqp.Connection, err error) {
 
 	operation := func() (err error) {
 
@@ -99,7 +109,7 @@ func (s rabbitConsumer) makeAConnection() (conn *amqp.Connection, err error) {
 	return conn, err
 }
 
-func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue QueueName) (ch *amqp.Channel, qu amqp.Queue, err error) {
+func (q BaseQueue) getQueue(conn *amqp.Connection, queue QueueName) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
 	if err != nil {
@@ -111,14 +121,14 @@ func (s rabbitConsumer) getQueue(conn *amqp.Connection, queue QueueName) (ch *am
 		return
 	}
 
-	qu, err = ch.QueueDeclare(queue.String(), true, false, false, false, nil)
+	qu, err = ch.QueueDeclare(string(q.Name), true, false, false, false, nil)
 
 	return ch, qu, err
 }
 
-func (s rabbitConsumer) produce(data []byte) (err error) {
+func (q BaseQueue) produce(data []byte) (err error) {
 
-	// log.Info("Producing to: " + s.Message.getProduceQueue().String())
+	// log.Info("Producing to: " + q.Message.getProduceQueue().String())
 
 	// Connect
 	err = func() error {
@@ -128,7 +138,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 
 		if producerConnection == nil {
 
-			producerConnection, err = s.makeAConnection()
+			producerConnection, err = q.makeAConnection()
 			if err != nil {
 				log.Critical("Connecting to Rabbit: " + err.Error())
 				return err
@@ -144,7 +154,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	}
 
 	//
-	ch, qu, err := s.getQueue(producerConnection, s.Message.getProduceQueue())
+	ch, qu, err := q.getQueue(producerConnection, q.Message.getProduceQueue())
 	if err != nil {
 		return err
 	}
@@ -164,7 +174,7 @@ func (s rabbitConsumer) produce(data []byte) (err error) {
 	})
 }
 
-func (s rabbitConsumer) consume() {
+func (q BaseQueue) consume() {
 
 	var err error
 
@@ -178,7 +188,7 @@ func (s rabbitConsumer) consume() {
 
 			if consumerConnection == nil {
 
-				consumerConnection, err = s.makeAConnection()
+				consumerConnection, err = q.makeAConnection()
 				if err != nil {
 					log.Critical("Connecting to Rabbit: " + err.Error())
 					return err
@@ -195,7 +205,7 @@ func (s rabbitConsumer) consume() {
 		}
 
 		//
-		ch, qu, err := s.getQueue(consumerConnection, s.Message.getConsumeQueue())
+		ch, qu, err := q.getQueue(consumerConnection, q.Name)
 		if err != nil {
 			log.Err(err)
 			return
@@ -208,7 +218,7 @@ func (s rabbitConsumer) consume() {
 		}
 
 		// In a anon function so can return at anytime
-		func(msgs <-chan amqp.Delivery, s rabbitConsumer) {
+		func(msgs <-chan amqp.Delivery, q BaseQueue) {
 
 			for {
 				select {
@@ -217,9 +227,9 @@ func (s rabbitConsumer) consume() {
 					return
 				case msg := <-msgs:
 
-					requeue, err := s.Message.process(msg)
+					requeue, err := q.Message.process(msg)
 					if err != nil {
-						logError(err, s.Message.getConsumeQueue().String())
+						logError(err, q.Name)
 					}
 
 					// Might be getting rate limited
@@ -245,7 +255,7 @@ func (s rabbitConsumer) consume() {
 				}
 			}
 
-		}(msgs, s)
+		}(msgs, q)
 
 		// We only get here if the amqp connection gets closed
 
@@ -254,15 +264,15 @@ func (s rabbitConsumer) consume() {
 	}
 }
 
-func (s rabbitConsumer) requeueMessage(msg amqp.Delivery) error {
+func (q BaseQueue) requeueMessage(msg amqp.Delivery) error {
 
 	delayeMessage := rabbitConsumer{
-		Attempt:   s.Attempt,
-		StartTime: s.StartTime,
-		EndTime:   s.EndTime,
+		Attempt:   q.Attempt,
+		StartTime: q.StartTime,
+		EndTime:   q.EndTime,
 		Message: RabbitMessageDelay{
 			OriginalMessage: string(msg.Body),
-			OriginalQueue:   s.Message.getConsumeQueue(),
+			OriginalQueue:   q.Message.getConsumeQueue(),
 		},
 	}
 
@@ -279,20 +289,20 @@ func (s rabbitConsumer) requeueMessage(msg amqp.Delivery) error {
 	return nil
 }
 
-func (s *rabbitConsumer) IncrementAttempts() {
+func (q *BaseQueue) IncrementAttempts() {
 
 	// Increment attemp
-	s.Attempt++
+	q.Attempt++
 
 	// Update end time
 	var min float64 = 1
 	var max float64 = 600
 
-	var seconds = math.Pow(1.3, float64(s.Attempt))
+	var seconds = math.Pow(1.3, float64(q.Attempt))
 	var minmaxed = math.Min(min+seconds, max)
 	var rounded = math.Round(minmaxed)
 
-	s.EndTime = s.StartTime.Add(time.Second * time.Duration(rounded))
+	q.EndTime = q.StartTime.Add(time.Second * time.Duration(rounded))
 }
 
 //
