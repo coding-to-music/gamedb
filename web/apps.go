@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/Masterminds/squirrel"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
@@ -264,70 +263,69 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		tags := query.GetSearchSlice("tags")
 		if len(tags) > 0 {
 
-			var or squirrel.Or
+			var or []string
+			var vals []interface{}
 			for _, v := range tags {
-				or = append(or, squirrel.Eq{"JSON_CONTAINS(tags, '[" + v + "]')": 1})
+				or = append(or, "JSON_CONTAINS(tags, ?) = 1")
+				vals = append(vals, "["+v+"]")
 			}
-			sql, data, err := or.ToSql()
-			log.Err(err, r)
 
-			gorm = gorm.Where(sql, data)
+			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
 		}
 
 		// Genres
 		genres := query.GetSearchSlice("genres")
 		if len(genres) > 0 {
 
-			var or squirrel.Or
+			var or []string
+			var vals []interface{}
 			for _, v := range genres {
-				or = append(or, squirrel.Eq{"JSON_CONTAINS(genres, JSON_OBJECT('id', " + v + "))": 1})
+				or = append(or, "JSON_CONTAINS(genres, ?) = 1")
+				vals = append(vals, "["+v+"]")
 			}
-			sql, data, err := or.ToSql()
-			log.Err(err, r)
 
-			gorm = gorm.Where(sql, data...)
+			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
 		}
 
 		// Developers
 		developers := query.GetSearchSlice("developers")
 		if len(developers) > 0 {
 
-			var or squirrel.Or
+			var or []string
+			var vals []interface{}
 			for _, v := range developers {
-				or = append(or, squirrel.Eq{"JSON_CONTAINS(developers, '[\"" + v + "\"]')": 1})
+				or = append(or, "JSON_CONTAINS(developers, ?) = 1")
+				vals = append(vals, "["+v+"]")
 			}
-			sql, data, err := or.ToSql()
-			log.Err(err, r)
 
-			gorm = gorm.Where(sql, data...)
+			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
 		}
 
 		// Publishers
 		publishers := query.GetSearchSlice("publishers")
 		if len(publishers) > 0 {
 
-			var or squirrel.Or
+			var or []string
+			var vals []interface{}
 			for _, v := range publishers {
-				or = append(or, squirrel.Eq{"JSON_CONTAINS(publishers, '[\"" + v + "\"]')": 1})
+				or = append(or, "JSON_CONTAINS(publishers, ?) = 1")
+				vals = append(vals, "["+v+"]")
 			}
-			sql, data, err := or.ToSql()
-			log.Err(err, r)
 
-			gorm = gorm.Where(sql, data...)
+			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
 		}
 
-		// Platforms
+		// Platforms / Operating System
 		platforms := query.GetSearchSlice("platforms")
 		if len(platforms) > 0 {
 
-			var or squirrel.Or
+			var or []string
+			var vals []interface{}
 			for _, v := range platforms {
-				or = append(or, squirrel.Eq{"JSON_CONTAINS(platforms, '[\"" + v + "\"]')": 1})
+				or = append(or, "JSON_CONTAINS(platforms, ?) = 1")
+				vals = append(vals, "[\""+v+"\"]")
 			}
-			sql, data, err := or.ToSql()
-			log.Err(err, r)
-
-			gorm = gorm.Where(sql, data...)
+			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
 		}
 
 		// Price range
