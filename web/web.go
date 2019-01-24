@@ -7,7 +7,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -111,7 +110,7 @@ func Serve() error {
 	r.Get("/site.webmanifest", rootFileHandler)
 
 	// File server
-	fileServer(r)
+	fileServer(r, "/assets", http.Dir("assets"))
 
 	// 404
 	r.NotFound(error404Handler)
@@ -121,15 +120,18 @@ func Serve() error {
 
 // FileServer conveniently sets up a http.FileServer handler to serve
 // static files from a http.FileSystem.
-func fileServer(r chi.Router) {
-
-	path := "/assets"
+func fileServer(r chi.Router, path string, root http.FileSystem) {
 
 	if strings.ContainsAny(path, "{}*") {
-		log.Info("FileServer does not permit URL parameters.")
+		log.Info("Invalid URL " + path)
+		return
+	}
+	if strings.Contains(path, "..") {
+		log.Info("Invalid URL " + path)
+		return
 	}
 
-	fs := http.StripPrefix(path, http.FileServer(http.Dir(filepath.Join(config.Config.GameDBDirectory.Get(), "assets"))))
+	fs := http.StripPrefix(path, http.FileServer(root))
 
 	if path != "/" && path[len(path)-1] != '/' {
 		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
