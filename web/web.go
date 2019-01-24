@@ -386,6 +386,13 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// Country
 	t.userCountry = steam.CountryCode(r.URL.Query().Get("cc"))
+
+	// Check if valid country
+	if _, ok := steam.Countries[t.userCountry]; !ok {
+		t.userCountry = session.GetCountryCode(r)
+	}
+
+	// Default country to session
 	if t.userCountry == "" {
 		t.userCountry = session.GetCountryCode(r)
 	}
