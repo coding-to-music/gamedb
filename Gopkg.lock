@@ -71,14 +71,6 @@
   revision = "66d6939dc0c1eb0b2227a61ffd494990172d275f"
 
 [[projects]]
-  digest = "1:015ef9a11d36760d2075aa92839fd545cde0ef2ffe13ddaf849f2270eb292f1c"
-  name = "github.com/Masterminds/squirrel"
-  packages = ["."]
-  pruneopts = ""
-  revision = "a6b93000bd219143c56c16e6cb1c4b91da3f224b"
-  version = "v1.0"
-
-[[projects]]
   digest = "1:439bfb51db599cd80766736b93b3d10e9314361197ada0b1209a51627a00ccd5"
   name = "github.com/PuerkitoBio/goquery"
   packages = ["."]
@@ -442,22 +434,6 @@
   pruneopts = ""
   revision = "7fd9f68ece0bcb1a905fac8f1549f0083f71c51b"
   version = "v0.2.8"
-
-[[projects]]
-  branch = "master"
-  digest = "1:0fe2dd9762093b9d72e4c9eeb4f0832fb6582428cee2c62b074e1c9aa68564d8"
-  name = "github.com/lann/builder"
-  packages = ["."]
-  pruneopts = ""
-  revision = "47ae307949d02aa1f1069fdafc00ca08e1dbabac"
-
-[[projects]]
-  branch = "master"
-  digest = "1:bfb195bbfe4edff0d8a078dd59d7567aae6f3c0d1a2cdf855fdcdd23c9b3bd8d"
-  name = "github.com/lann/ps"
-  packages = ["."]
-  pruneopts = ""
-  revision = "62de8c46ede02a7675c4c79c84883eb164cb71e3"
 
 [[projects]]
   digest = "1:08e17d002d5a07e714f43a1a2df726ff1fee2bc53f8193513e75ae5d407b46d8"
@@ -916,7 +892,6 @@
     "github.com/Jleagle/rabbit-go/rabbit",
     "github.com/Jleagle/recaptcha-go",
     "github.com/Jleagle/steam-go/steam",
-    "github.com/Masterminds/squirrel",
     "github.com/ahmdrz/goinsta",
     "github.com/bwmarrin/discordgo",
     "github.com/cenkalti/backoff",
