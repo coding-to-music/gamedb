@@ -1,0 +1,30 @@
+#info-page {
+    .social-link {
+        float: left;
+
+        i {
+            font-size: 5rem;
+        }
+
+        i.facebook {
+            color: #3b5998;
+        }
+
+        i.github {
+            color: #4078c0;
+        }
+
+        i.twitter {
+            color: #38A1F3;
+        }
+
+        i.steam {
+            color: #00adee;
+        }
+
+        i.discord {
+            color: #7289da;
+            margin-top: 5px;
+        }
+    }
+}
