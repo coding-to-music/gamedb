@@ -44,7 +44,6 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 					return err
 				}
 				db.LogMode(true)
-				db.SetLogger(MySQLLogger{})
 
 				gormConnectionDebug = db
 			}
