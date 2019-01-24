@@ -17,7 +17,7 @@ var (
 	gormConnection      *gorm.DB
 	gormConnectionDebug *gorm.DB
 
-	SQLMutex = new(sync.Mutex)
+	SQLMutex sync.Mutex
 )
 
 func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {

@@ -14,8 +14,8 @@ import (
 	"github.com/streadway/amqp"
 )
 
-var consumeLock = new(sync.Mutex)
-var produceLock = new(sync.Mutex)
+var consumeLock sync.Mutex
+var produceLock sync.Mutex
 
 type RabbitQueue string
 

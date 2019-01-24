@@ -18,7 +18,7 @@ const (
 	UserCountry = "country"
 )
 
-var writeMutex = new(sync.Mutex)
+var writeMutex sync.Mutex
 var store = sessions.NewCookieStore(
 	[]byte(config.Config.SessionAuthentication),
 	[]byte(config.Config.SessionEncryption),

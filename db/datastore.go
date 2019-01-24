@@ -31,7 +31,7 @@ var (
 
 	datastoreClient *datastore.Client
 
-	dsClientLock = new(sync.Mutex)
+	dsClientLock sync.Mutex
 )
 
 type Kind interface {

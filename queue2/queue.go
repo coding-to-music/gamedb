@@ -32,8 +32,8 @@ const (
 )
 
 var (
-	consumeLock = new(sync.Mutex)
-	produceLock = new(sync.Mutex)
+	consumeLock sync.Mutex
+	produceLock sync.Mutex
 
 	errInvalidQueue = errors.New("invalid queue")
 	errEmptyMessage = errors.New("empty message")
