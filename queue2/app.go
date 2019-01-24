@@ -21,9 +21,12 @@ type AppQueue struct {
 	BaseQueue
 }
 
-func (q AppQueue) process(msg amqp.Delivery) (requeue bool) {
+func (q AppQueue) process(msg amqp.Delivery, queue QueueName) (requeue bool) {
 
 	var err error
+	var payload = BaseMessage{
+		Message: AppMessage{},
+	}
 
 	// Get message payload
 	rabbitMessage := BaseMessage{

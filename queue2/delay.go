@@ -19,7 +19,7 @@ type DelayQueue struct {
 	BaseQueue
 }
 
-func (q DelayQueue) process(msg amqp.Delivery) (requeue bool) {
+func (q DelayQueue) process(msg amqp.Delivery, queue QueueName) (requeue bool) {
 
 	if len(msg.Body) == 0 {
 		return false
