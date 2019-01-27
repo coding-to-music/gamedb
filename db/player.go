@@ -544,7 +544,9 @@ func checkGetMultiPlayerErrors(err error) error {
 
 func CountPlayers() (count int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheCountPlayers, func() (count int, err error) {
+	var item = helpers.MemcacheCountPlayers
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (count interface{}, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
@@ -555,6 +557,8 @@ func CountPlayers() (count int, err error) {
 		count, err = client.Count(ctx, q)
 		return count, err
 	})
+
+	return count, err
 }
 
 func checkForMissingPlayerFields(err error) error {

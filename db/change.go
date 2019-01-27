@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"strconv"
 	"time"
 
@@ -70,7 +69,9 @@ func (change Change) OutputForJSON() (output []interface{}) {
 
 func GetChange(id int64) (change Change, err error) {
 
-	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheChangeRow(id), func() (s string, err error) {
+	var item = helpers.MemcacheChangeRow(id)
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &change, func() (s interface{}, err error) {
 
 		client, context, err := GetDSClient()
 		if err != nil {
@@ -94,18 +95,15 @@ func GetChange(id int64) (change Change, err error) {
 			}
 		}
 
-		if err != nil {
-			return s, err
-		}
-
-		bytes, err := json.Marshal(change)
-		return string(bytes), err
+		return change, err
 	})
 
-	if err != nil {
-		return change, err
-	}
-
-	err = helpers.Unmarshal([]byte(s), &change)
 	return change, err
+
+	// if err != nil {
+	// 	return change, err
+	// }
+	//
+	// err = helpers.Unmarshal([]byte(s), &change)
+	// return change, err
 }

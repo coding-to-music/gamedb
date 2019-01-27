@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"strconv"
 	"time"
 
@@ -53,7 +52,9 @@ func GetAllGenres() (genres []Genre, err error) {
 
 func GetGenresForSelect() (genres []Genre, err error) {
 
-	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheGenreKeyNames, func() (s string, err error) {
+	var item = helpers.MemcacheGenreKeyNames
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &genres, func() (s interface{}, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -62,19 +63,9 @@ func GetGenresForSelect() (genres []Genre, err error) {
 
 		var genres []Genre
 		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&genres)
-		if db.Error != nil {
-			return s, db.Error
-		}
-
-		bytes, err := json.Marshal(genres)
-		return string(bytes), err
+		return genres, db.Error
 	})
 
-	if err != nil {
-		return genres, err
-	}
-
-	err = helpers.Unmarshal([]byte(s), &genres)
 	return genres, err
 }
 

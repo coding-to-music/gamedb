@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"strconv"
 	"time"
 
@@ -59,7 +58,9 @@ func GetAllTags() (tags []Tag, err error) {
 
 func GetTagsForSelect() (tags []Tag, err error) {
 
-	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheTagKeyNames, func() (s string, err error) {
+	var item = helpers.MemcacheTagKeyNames
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &tags, func() (s interface{}, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -68,19 +69,9 @@ func GetTagsForSelect() (tags []Tag, err error) {
 
 		var tags []Tag
 		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&tags)
-		if db.Error != nil {
-			return s, db.Error
-		}
-
-		bytes, err := json.Marshal(tags)
-		return string(bytes), err
+		return tags, db.Error
 	})
 
-	if err != nil {
-		return tags, err
-	}
-
-	err = helpers.Unmarshal([]byte(s), &tags)
 	return tags, err
 }
 

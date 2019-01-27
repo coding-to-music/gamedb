@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/gamedb/website/helpers"
@@ -55,7 +54,9 @@ func SetConfig(id string, value string) (err error) {
 
 func GetConfig(id string) (config Config, err error) {
 
-	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheConfigRow(id), func() (s string, err error) {
+	var item = helpers.MemcacheConfigRow(id)
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &config, func() (s interface{}, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -63,20 +64,11 @@ func GetConfig(id string) (config Config, err error) {
 		}
 
 		var config Config
-		db.Where("id = ?", id).First(&config)
-		if db.Error != nil {
-			return s, db.Error
-		}
+		db = db.Where("id = ?", id).First(&config)
 
-		bytes, err := json.Marshal(config)
-		return string(bytes), err
+		return config, db.Error
 	})
 
-	if err != nil {
-		return config, err
-	}
-
-	err = helpers.Unmarshal([]byte(s), &config)
 	return config, err
 }
 

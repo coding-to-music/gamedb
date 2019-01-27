@@ -114,14 +114,20 @@ func GetBundle(id int, columns []string) (bundle Bundle, err error) {
 
 func CountBundles() (count int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheBundlesCount, func() (count int, err error) {
+	var item = helpers.MemcacheBundlesCount
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
 			return count, err
 		}
 
+		var count int
 		db.Model(&Bundle{}).Count(&count)
+
 		return count, db.Error
 	})
+
+	return count, err
 }

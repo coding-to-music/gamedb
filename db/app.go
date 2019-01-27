@@ -789,21 +789,29 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheAppsCount, func() (count int, err error) {
+	var item = helpers.MemcacheAppsCount
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
 			return count, err
 		}
 
+		var count int
 		db.Model(&App{}).Count(&count)
+
 		return count, db.Error
 	})
+
+	return count, err
 }
 
 func GetMostExpensiveApp(code steam.CountryCode) (price int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheMostExpensiveApp(code), func() (count int, err error) {
+	var item = helpers.MemcacheMostExpensiveApp(code)
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &price, func() (count interface{}, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -821,6 +829,8 @@ func GetMostExpensiveApp(code steam.CountryCode) (price int, err error) {
 
 		return countSlice[0], nil
 	})
+
+	return price, err
 }
 
 func IsValidAppID(id int) bool {

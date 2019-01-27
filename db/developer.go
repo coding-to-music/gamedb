@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"sort"
 	"strconv"
 	"time"
@@ -77,7 +76,9 @@ func GetAllDevelopers() (developers []Developer, err error) {
 
 func GetDevelopersForSelect() (devs []Developer, err error) {
 
-	s, err := helpers.GetMemcache().GetSetString(helpers.MemcacheDeveloperKeyNames, func() (s string, err error) {
+	var item = helpers.MemcacheDeveloperKeyNames
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &devs, func() (s interface{}, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -94,15 +95,9 @@ func GetDevelopersForSelect() (devs []Developer, err error) {
 			return devs[i].Name < devs[j].Name
 		})
 
-		bytes, err := json.Marshal(devs)
-		return string(bytes), err
+		return devs, err
 	})
 
-	if err != nil {
-		return devs, err
-	}
-
-	err = helpers.Unmarshal([]byte(s), &devs)
 	return devs, err
 }
 

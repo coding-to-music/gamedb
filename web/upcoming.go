@@ -165,7 +165,9 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func countUpcomingPackages() (count int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheUpcomingPackagesCount, func() (count int, err error) {
+	var item = helpers.MemcacheUpcomingPackagesCount
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (count interface{}, err error) {
 
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
@@ -178,11 +180,15 @@ func countUpcomingPackages() (count int, err error) {
 
 		return count, gorm.Error
 	})
+
+	return count, err
 }
 
 func countUpcomingApps() (count int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheUpcomingAppsCount, func() (count int, err error) {
+	var item = helpers.MemcacheUpcomingAppsCount
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (count interface{}, err error) {
 
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
@@ -195,4 +201,6 @@ func countUpcomingApps() (count int, err error) {
 
 		return count, gorm.Error
 	})
+
+	return count, err
 }

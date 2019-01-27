@@ -201,7 +201,7 @@ func updatePlayerSummary(player *db.Player) error {
 	player.PersonaName = summary.PersonaName
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
 	player.LastLogOff = time.Unix(summary.LastLogOff, 0)
-	player.PrimaryClanID = summary.PrimaryClanID
+	player.PrimaryClanID = int(summary.PrimaryClanID)
 
 	return err
 }
@@ -461,10 +461,10 @@ func updatePlayerFriends(player *db.Player) error {
 	var friendsSlice []int64
 	for _, v := range resp.Friends {
 
-		friendsSlice = append(friendsSlice, v.SteamID)
+		friendsSlice = append(friendsSlice, int64(v.SteamID))
 
-		friendsMap[v.SteamID] = &db.ProfileFriend{
-			SteamID:     v.SteamID,
+		friendsMap[int64(v.SteamID)] = &db.ProfileFriend{
+			SteamID:     int64(v.SteamID),
 			FriendSince: v.FriendSince,
 		}
 	}

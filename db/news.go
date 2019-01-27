@@ -59,7 +59,7 @@ func (article News) OutputForJSON(r *http.Request) (output []interface{}) {
 
 func CreateArticle(app App, resp steam.NewsArticle) (news News) {
 
-	news.ArticleID = resp.GID
+	news.ArticleID = int64(resp.GID)
 	news.Title = resp.Title
 	news.URL = resp.URL
 	news.IsExternal = resp.IsExternalURL

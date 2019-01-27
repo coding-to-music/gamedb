@@ -100,7 +100,9 @@ func (event Event) OutputForJSON(ip string) (output []interface{}) {
 
 func CountPlayerEvents(playerID int64) (count int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcachePlayerEventsCount(playerID), func() (count int, err error) {
+	var item = helpers.MemcachePlayerEventsCount(playerID)
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (count interface{}, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
@@ -111,6 +113,8 @@ func CountPlayerEvents(playerID int64) (count int, err error) {
 		count, err = client.Count(ctx, q)
 		return count, err
 	})
+
+	return count, err
 }
 
 func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) {

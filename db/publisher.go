@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"sort"
 	"strconv"
 	"time"
@@ -77,7 +76,9 @@ func GetAllPublishers() (publishers []Publisher, err error) {
 
 func GetPublishersForSelect() (pubs []Publisher, err error) {
 
-	s, err := helpers.GetMemcache().GetSetString(helpers.MemcachePublisherKeyNames, func() (s string, err error) {
+	var item = helpers.MemcachePublisherKeyNames
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &pubs, func() (s interface{}, err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -94,15 +95,9 @@ func GetPublishersForSelect() (pubs []Publisher, err error) {
 			return pubs[i].Name < pubs[j].Name
 		})
 
-		bytes, err := json.Marshal(pubs)
-		return string(bytes), err
+		return pubs, err
 	})
 
-	if err != nil {
-		return pubs, err
-	}
-
-	err = helpers.Unmarshal([]byte(s), &pubs)
 	return pubs, err
 }
 

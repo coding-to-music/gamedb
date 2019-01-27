@@ -127,7 +127,9 @@ func GetRankKeys() (keysMap map[int64]*datastore.Key, err error) {
 
 func CountRanks() (count int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcacheRanksCount, func() (count int, err error) {
+	var item = helpers.MemcacheRanksCount
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (count interface{}, err error) {
 
 		client, ctx, err := GetDSClient()
 		if err != nil {
@@ -138,6 +140,8 @@ func CountRanks() (count int, err error) {
 		count, err = client.Count(ctx, q)
 		return count, err
 	})
+
+	return count, err
 }
 
 func NewRankFromPlayer(player Player) (rank *PlayerRank) {

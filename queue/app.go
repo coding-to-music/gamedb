@@ -392,13 +392,8 @@ func updateAppDetails(app *db.App) error {
 			var genres []db.AppGenre
 			for _, v := range response.Data.Genres {
 
-				id, err := strconv.Atoi(v.ID)
-				if err != nil {
-					return err
-				}
-
 				genres = append(genres, db.AppGenre{
-					ID:   id,
+					ID:   int(v.ID),
 					Name: v.Description,
 				})
 			}
@@ -439,7 +434,7 @@ func updateAppDetails(app *db.App) error {
 			app.MetacriticScore = response.Data.Metacritic.Score
 			app.MetacriticURL = response.Data.Metacritic.URL
 			app.Background = response.Data.Background
-			app.GameID = response.Data.Fullgame.AppID
+			app.GameID = int(response.Data.Fullgame.AppID)
 			app.GameName = response.Data.Fullgame.Name
 			app.ReleaseDate = response.Data.ReleaseDate.Date
 			app.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
@@ -554,7 +549,7 @@ func updateAppNews(app *db.App) error {
 			continue
 		}
 
-		if helpers.SliceHasInt64(ids, v.GID) {
+		if helpers.SliceHasInt64(ids, int64(v.GID)) {
 			continue
 		}
 
@@ -573,7 +568,7 @@ func updateAppNews(app *db.App) error {
 	}
 
 	for _, v := range resp.Items {
-		currentIDs = append(currentIDs, v.GID)
+		currentIDs = append(currentIDs, int64(v.GID))
 	}
 
 	b, err := json.Marshal(helpers.Unique64(currentIDs))
@@ -600,7 +595,7 @@ func updateAppReviews(app *db.App) error {
 	// Make slice of playerIDs
 	var playersSlice []int64
 	for _, v := range resp.Reviews {
-		playersSlice = append(playersSlice, v.Author.SteamID)
+		playersSlice = append(playersSlice, int64(v.Author.SteamID))
 	}
 
 	// Get players from Datastore
@@ -619,11 +614,11 @@ func updateAppReviews(app *db.App) error {
 	for _, v := range resp.Reviews {
 
 		var player db.Player
-		if val, ok := playersMap[v.Author.SteamID]; ok {
+		if val, ok := playersMap[int64(v.Author.SteamID)]; ok {
 			player = val
 		} else {
 			player = db.Player{}
-			player.PlayerID = v.Author.SteamID
+			player.PlayerID = int64(v.Author.SteamID)
 			player.PersonaName = "Unknown"
 		}
 

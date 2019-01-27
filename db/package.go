@@ -410,14 +410,19 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 func CountPackages() (count int, err error) {
 
-	return helpers.GetMemcache().GetSetInt(helpers.MemcachePackagesCount, func() (count int, err error) {
+	var item = helpers.MemcachePackagesCount
+
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
 			return count, err
 		}
 
+		var count int
 		db.Model(&Package{}).Count(&count)
 		return count, db.Error
 	})
+
+	return count, err
 }
