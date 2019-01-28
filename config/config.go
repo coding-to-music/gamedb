@@ -37,6 +37,11 @@ func init() {
 	Config.RecaptchaPublic = os.Getenv(prefix + "RECAPTCHA_PUBLIC")
 	Config.RecaptchaPrivate = os.Getenv(prefix + "RECAPTCHA_PRIVATE")
 
+	Config.TwitterAccessToken = os.Getenv(prefix + "TWITTER_ACCESS_TOKEN")
+	Config.TwitterAccessTokenSecret = os.Getenv(prefix + "TWITTER_ACCESS_TOKEN_SECRET")
+	Config.TwitterConsumerKey = os.Getenv(prefix + "TWITTER_CONSUMER_KEY")
+	Config.TwitterConsumerSecret = os.Getenv(prefix + "TWITTER_CONSUMER_SECRET")
+
 	Config.DiscordBotToken = os.Getenv(prefix + "DISCORD_BOT_TOKEN")
 	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
@@ -102,6 +107,11 @@ type BaseConfig struct {
 
 	RecaptchaPrivate string
 	RecaptchaPublic  string
+
+	TwitterAccessToken       string
+	TwitterAccessTokenSecret string
+	TwitterConsumerKey       string
+	TwitterConsumerSecret    string
 
 	DiscordBotToken   string
 	Environment       ConfigItem

@@ -175,6 +175,30 @@
   version = "0.3.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:0e15a45be39b82ede52b143327347fa8f631742a62a6acc307fd9b1b68b9e342"
+  name = "github.com/dghubble/go-twitter"
+  packages = ["twitter"]
+  pruneopts = ""
+  revision = "7fd79e2bcc65f2e35ee1ada816481ab3e0c64d2a"
+
+[[projects]]
+  digest = "1:0c84a14670588593c554c4178389a3c723fccc6cc7e95b4fd0de6dcdadfd677b"
+  name = "github.com/dghubble/oauth1"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f0fe2bff8fbf301b33359ca431e4afc90390aab0"
+  version = "v0.5.0"
+
+[[projects]]
+  digest = "1:fbf696b8af25bb4a791792b90cab2cfea212fac0ac0307ef72c298c5ebc1638b"
+  name = "github.com/dghubble/sling"
+  packages = ["."]
+  pruneopts = ""
+  revision = "e2624bf29a7de45ab0802b09aea94ca0a7815c5f"
+  version = "v1.2.0"
+
+[[projects]]
   digest = "1:6098222470fe0172157ce9bbef5d2200df4edde17ee649c5d6e48330e4afa4c6"
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
@@ -917,6 +941,8 @@
     "github.com/bwmarrin/discordgo",
     "github.com/cenkalti/backoff",
     "github.com/derekstavis/go-qs",
+    "github.com/dghubble/go-twitter/twitter",
+    "github.com/dghubble/oauth1",
     "github.com/dustin/go-humanize",
     "github.com/frustra/bbcode",
     "github.com/go-chi/chi",

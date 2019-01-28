@@ -331,5 +331,12 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 		}
 	}
 
+	// twitter := helpers.GetTwitter()
+	//
+	// _, _, err = twitter.Statuses.Update("Game name is free!", nil)
+	// if err != nil {
+	// 	log.Critical(err)
+	// }
+
 	return db.BulkSaveKinds(kinds, db.KindProductPrice, true)
 }
