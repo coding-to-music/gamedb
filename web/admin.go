@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"runtime"
 	"sort"
@@ -13,6 +14,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -1073,75 +1075,75 @@ func adminDev() {
 
 	var err error
 
-	// gorm, err := db.GetMySQLClient()
-	// if err != nil {
-	// 	log.Err(err)
-	// 	return
-	// }
-	//
-	// var apps []db.App
-	//
-	// gorm = gorm.Select([]string{"id"})
-	// gorm = gorm.Limit(10000)
-	// gorm = gorm.Find(&apps)
-	//
-	// fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
-	//
-	// var wg = sync.WaitGroup{}
-	// var count int
-	// for _, v := range apps {
-	//
-	// 	wg.Add(1)
-	// 	go func(v db.App) {
-	//
-	// 		defer wg.Done()
-	//
-	// 		players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
-	//
-	// 		err2, ok := err.(steam.Error)
-	// 		if ok && (err2.Code() == 404) {
-	// 			fmt.Println("-")
-	// 			return
-	// 		}
-	//
-	// 		if err != nil {
-	// 			fmt.Println(err)
-	// 			return
-	// 		}
-	//
-	// 		if players > 0 {
-	// 			fmt.Println(players)
-	// 			count++
-	// 		}
-	//
-	// 	}(v)
-	// }
-	//
-	// wg.Wait()
-	//
-	// fmt.Println(strconv.Itoa(count) + " apps with players")
-
-	// ######################################################
-
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-
 		log.Err(err)
 		return
 	}
 
-	var packages []db.App
+	var apps []db.App
 
 	gorm = gorm.Select([]string{"id"})
-	gorm = gorm.Where("achievements LIKE ?", "{%")
-	gorm = gorm.Limit(1000)
-	gorm = gorm.Order("reviews_score desc")
-	gorm = gorm.Find(&packages)
+	gorm = gorm.Limit(20)
+	gorm = gorm.Find(&apps)
 
-	for _, v := range packages {
-		err = queue.QueueApp([]int{v.ID})
-		log.Err(err)
+	fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
+
+	var wg = sync.WaitGroup{}
+	var count int
+	for _, v := range apps {
+
+		wg.Add(1)
+		go func(v db.App) {
+
+			defer wg.Done()
+
+			players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
+
+			err2, ok := err.(steam.Error)
+			if ok && (err2.Code() == 404) {
+				fmt.Println("-")
+				return
+			}
+
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			if players > 0 {
+				fmt.Println(players)
+				count++
+			}
+
+		}(v)
 	}
+
+	wg.Wait()
+
+	fmt.Println(strconv.Itoa(count) + " apps with players")
+
+	// ######################################################
+
+	// gorm, err := db.GetMySQLClient()
+	// if err != nil {
+	//
+	// 	log.Err(err)
+	// 	return
+	// }
+	//
+	// var packages []db.App
+	//
+	// gorm = gorm.Select([]string{"id"})
+	// gorm = gorm.Where("achievements LIKE ?", "{%")
+	// gorm = gorm.Limit(1000)
+	// gorm = gorm.Order("reviews_score desc")
+	// gorm = gorm.Find(&packages)
+	//
+	// for _, v := range packages {
+	// 	err = queue.QueueApp([]int{v.ID})
+	// 	log.Err(err)
+	// }
 
 	// ######################################################
 
