@@ -64,19 +64,19 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:85dc705d8d6f8dc2736178388a5095e0d2d0c4fd466231b12314015855c51027"
+  digest = "1:23a1939d53ee64db4167b6642b7f8db661e317e7d0b227ab9baa0d9fc5578c8d"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "4ab814b89ff2d30dc44e139a3439e470163f1b19"
+  revision = "984ee96600b49d7853c2bfc28991aa4a3884fc38"
 
 [[projects]]
   branch = "master"
-  digest = "1:27f77b2faa0c93fcb61f98249cd5f533f65b429837094109efbdf5284ff49b13"
+  digest = "1:dde3cdec4dc95df6ccb9c88020ee8350af864dc2f8c43fb96fc5e1706b33cece"
   name = "github.com/Jleagle/unmarshal-go"
   packages = ["ctypes"]
   pruneopts = ""
-  revision = "4239706b54bf38b2c8e829af6044a230f0867bd6"
+  revision = "4096ba8f46e733c8478b0e56ecc0163e266d8f26"
 
 [[projects]]
   digest = "1:439bfb51db599cd80766736b93b3d10e9314361197ada0b1209a51627a00ccd5"
@@ -409,6 +409,14 @@
   revision = "8ec929ed50c3ac25ce77ba4486e1f277c552c591"
 
 [[projects]]
+  digest = "1:d26c006cbf54ca5c040463d5678013169e2bd91fb62c2f960ae283a1723d4278"
+  name = "github.com/juju/ratelimit"
+  packages = ["."]
+  pruneopts = ""
+  revision = "59fac5042749a5afb9af70e813da1dd5474f0167"
+  version = "1.0.1"
+
+[[projects]]
   digest = "1:717859f53ed0a55fab7284704ecaac4b0d292f4caca5ceaa2afd512be49189ea"
   name = "github.com/kennygrant/sanitize"
   packages = ["."]
@@ -425,15 +433,15 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:2c74bfcb8ce870158ca6f30e7aabbaab962965a8db0f5bc142eaf4638859ee4b"
+  digest = "1:4beb546223497fdc767dd15f2f48e271598817cecda2beaf2ad7bf43282d5bf7"
   name = "github.com/labstack/echo"
   packages = [
     ".",
     "middleware",
   ]
   pruneopts = ""
-  revision = "739700bf4ef7f1dca5b111dec55114fc66207aaa"
-  version = "v3.3.9"
+  revision = "38772c686c76b501f94bd6cd5b77f5842e93b559"
+  version = "v3.3.10"
 
 [[projects]]
   digest = "1:44f403f58ba6ffcc60f0946169d02879dc79a4bf5a84d4215f5f7c6a5865f74b"
@@ -664,7 +672,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:278d561dd1f1743e1b8995f202f56314e33364b395b95514d7df91df48b267da"
+  digest = "1:237f78dc98975fe36424378555dd59d7b974759b5396ea315502d1837f1c1eda"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -678,7 +686,7 @@
     "ssh/terminal",
   ]
   pruneopts = ""
-  revision = "057139ce5d2bdbe6fe73c53679e24e9cf007f637"
+  revision = "c7b33c32a30bae9ba07d37eb4d86f1f8b0f644fb"
 
 [[projects]]
   branch = "master"
@@ -815,7 +823,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:baff43911c807a47a72cd60978fb967d696bfa243ba10f9eef5025ca4bc298ba"
+  digest = "1:96ad251f71dd69e0f15071720f9970f599f075b28fa96ebd8a547dcd04435856"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -833,7 +841,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "7cdc0b958d7541690c155bb01fa9a219bbf35296"
+  revision = "8ac453e89fca495c0d17f98932642f392e2a11f3"
 
 [[projects]]
   digest = "1:39d4d828b87d58d114fdc211f0638f32dcae84019fe17d6b48f9b697f4b60213"
