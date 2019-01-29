@@ -192,7 +192,15 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 		case "common":
 
 			var common = db.PICSAppCommon{}
+			var tags []int
+
 			for _, vv := range v.Children {
+
+				if vv.Name == "store_tags" {
+					stringTags := vv.GetChildrenAsSlice()
+					tags = helpers.StringSliceToIntSlice(stringTags)
+				}
+
 				common[vv.Name] = vv.String()
 			}
 
@@ -200,8 +208,13 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 			if err != nil {
 				return err
 			}
-
 			app.Common = string(b)
+
+			b, err = json.Marshal(tags)
+			if err != nil {
+				return err
+			}
+			app.Tags = string(b)
 
 		case "extended":
 
@@ -226,7 +239,6 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 			if err != nil {
 				return err
 			}
-
 			app.Launch = string(b)
 
 		case "depots":
