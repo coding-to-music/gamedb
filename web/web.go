@@ -249,18 +249,7 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
-		// "title":  func(a string) string { return strings.Title(a) },
-		// "slug":   func(a string) string { return slug.Make(a) },
-		// "unix":       func(t time.Time) int64 { return t.Unix() },
-		// "contains":   func(a string, b string) bool { return strings.Contains(a, b) },
-		"join": func(a []string) string { return strings.Join(a, ", ") },
-		"joinInt": func(a []int) string {
-			var join []string
-			for _, v := range a {
-				join = append(join, strconv.Itoa(v))
-			}
-			return strings.Join(join, ", ")
-		},
+		"join":       func(a []string) string { return strings.Join(a, ", ") },
 		"comma":      func(a int) string { return humanize.Comma(int64(a)) },
 		"commaf":     func(a float64) string { return humanize.Commaf(a) },
 		"bytes":      func(a uint64) string { return humanize.Bytes(a) },
