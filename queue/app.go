@@ -394,11 +394,25 @@ func updateAppDetails(app *db.App) error {
 			app.Publishers = string(b)
 
 			// Developers
-			b, err = json.Marshal(response.Data.Developers)
+			gorm, err = db.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
+			var developerIDs []int
+			for _, v := range response.Data.Developers {
+				var developer db.Developer
+				gorm = gorm.Unscoped().FirstOrCreate(&developer, db.Developer{Name: strings.TrimSpace(v)})
+				if gorm.Error != nil {
+					return gorm.Error
+				}
+				developerIDs = append(developerIDs, developer.ID)
+			}
+
+			b, err = json.Marshal(developerIDs)
+			if err != nil {
+				return err
+			}
 			app.Developers = string(b)
 
 			// Categories
