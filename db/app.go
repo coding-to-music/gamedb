@@ -36,13 +36,13 @@ type App struct {
 	Config             string    `gorm:"not null;column:config"`                           //
 	CreatedAt          time.Time `gorm:"not null;column:created_at;type:datetime"`         //
 	Depots             string    `gorm:"not null;column:depots"`                           //
-	Developers         string    `gorm:"not null;column:developers;type:json"`             //
+	Developers         string    `gorm:"not null;column:developers;type:json"`             // []int
 	DLC                string    `gorm:"not null;column:dlc;type:json"`                    //
 	DLCCount           int       `gorm:"not null;column:dlc_count"`                        //
 	Extended           string    `gorm:"not null;column:extended"`                         //
 	GameID             int       `gorm:"not null;column:game_id"`                          //
 	GameName           string    `gorm:"not null;column:game_name"`                        //
-	Genres             string    `gorm:"not null;column:genres;type:json"`                 // []AppGenre
+	Genres             string    `gorm:"not null;column:genres;type:json"`                 // []int
 	HeaderImage        string    `gorm:"not null;column:image_header"`                     //
 	Homepage           string    `gorm:"not null;column:homepage"`                         //
 	Icon               string    `gorm:"not null;column:icon"`                             //
@@ -61,7 +61,7 @@ type App struct {
 	Platforms          string    `gorm:"not null;column:platforms;type:json"`              //
 	Prices             string    `gorm:"not null;column:prices"`                           //
 	PublicOnly         bool      `gorm:"not null;column:public_only"`                      //
-	Publishers         string    `gorm:"not null;column:publishers;type:json"`             //
+	Publishers         string    `gorm:"not null;column:publishers;type:json"`             // []int
 	ReleaseDate        string    `gorm:"not null;column:release_date"`                     //
 	ReleaseDateUnix    int64     `gorm:"not null;column:release_date_unix"`                //
 	ReleaseState       string    `gorm:"not null;column:release_state"`                    //
@@ -71,8 +71,8 @@ type App struct {
 	ShortDescription   string    `gorm:"not null;column:description_short"`                //
 	Stats              string    `gorm:"not null;column:stats;type:text"`                  // []AppStat
 	SteamSpy           string    `gorm:"not null;column:steam_spy"`                        // AppSteamSpy
-	StoreTags          string    `gorm:"not null;column:tags;type:json"`                   //
 	SystemRequirements string    `gorm:"not null;column:system_requirements"`              //
+	Tags               string    `gorm:"not null;column:tags;type:json"`                   // []int
 	Type               string    `gorm:"not null;column:type"`                             //
 	UFS                string    `gorm:"not null;column:ufs"`                              //
 	UpdatedAt          time.Time `gorm:"not null;column:updated_at;type:datetime"`         //
@@ -126,8 +126,8 @@ func (app *App) BeforeSave(scope *gorm.Scope) error {
 	if app.Screenshots == "" {
 		app.Screenshots = "[]"
 	}
-	if app.StoreTags == "" {
-		app.StoreTags = "[]"
+	if app.Tags == "" {
+		app.Tags = "[]"
 	}
 	if app.SteamSpy == "" {
 		app.SteamSpy = "{}"
@@ -529,7 +529,7 @@ func (app App) GetCategoryIDs() (categories []int, err error) {
 
 func (app App) GetTagIDs() (tags []int, err error) {
 
-	err = helpers.Unmarshal([]byte(app.StoreTags), &tags)
+	err = helpers.Unmarshal([]byte(app.Tags), &tags)
 	if err != nil {
 		log.Err(err)
 		return
