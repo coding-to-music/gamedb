@@ -17,6 +17,7 @@ type ProductInterface interface {
 	GetIcon() string
 	GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error)
 	GetPrices() (prices ProductPrices, err error)
+	GetPath() string
 }
 
 var ErrMissingCountryCode = errors.New("invalid code")

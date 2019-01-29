@@ -110,7 +110,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 			case KindProductPrice:
 				_, err = client.PutMulti(ctx, keys, kindsToProductPrices(chunk))
 			default:
-				log.Err(errors.New("missing case in BulkSaveKinds"))
+				log.Critical(errors.New("missing case in BulkSaveKinds"))
 			}
 
 			if err != nil {

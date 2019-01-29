@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 )
 
@@ -329,14 +330,18 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 		if oldPrice != newPrice {
 			kinds = append(kinds, db.CreateProductPrice(after, code, oldPrice, newPrice))
 		}
-	}
 
-	// twitter := helpers.GetTwitter()
-	//
-	// _, _, err = twitter.Statuses.Update("Game name is free!", nil)
-	// if err != nil {
-	// 	log.Critical(err)
-	// }
+		// Tweet free US products
+		if code == steam.CountryUS && oldPrice > 0 && newPrice == 0 {
+
+			twitter := helpers.GetTwitter()
+
+			_, _, err = twitter.Statuses.Update(before.GetName()+" is now free! gamedb.online"+before.GetPath()+" #freegame #steam #gamedb", nil)
+			if err != nil {
+				log.Critical(err)
+			}
+		}
+	}
 
 	return db.BulkSaveKinds(kinds, db.KindProductPrice, true)
 }

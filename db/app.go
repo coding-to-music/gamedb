@@ -500,14 +500,27 @@ func (app App) GetReviews() (reviews AppReviewSummary, err error) {
 	return reviews, err
 }
 
-func (app App) GetGenres() (genres []AppGenre, err error) {
+func (app App) GetGenreIDs() (genres []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Genres), &genres)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+		return genres, nil
+	}
 	return genres, err
 }
 
-func (app App) GetCategories() (categories []string, err error) {
+func (app App) GetGenres() (genres []Genre, err error) {
+
+	ids, err := app.GetGenreIDs()
+	if err != nil {
+		return genres, err
+	}
+
+	return GetGenresByID(ids)
+}
+
+func (app App) GetCategoryIDs() (categories []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Categories), &categories)
 	log.Err(err)
@@ -517,7 +530,10 @@ func (app App) GetCategories() (categories []string, err error) {
 func (app App) GetTagIDs() (tags []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.StoreTags), &tags)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+		return
+	}
 	return tags, err
 }
 
@@ -531,14 +547,14 @@ func (app App) GetTags() (tags []Tag, err error) {
 	return GetTagsByID(ids)
 }
 
-func (app App) GetDevelopers() (developers []string, err error) {
+func (app App) GetDeveloperIDs() (developers []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Developers), &developers)
 	log.Err(err)
 	return developers, err
 }
 
-func (app App) GetPublishers() (publishers []string, err error) {
+func (app App) GetPublisherIDs() (publishers []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Publishers), &publishers)
 	log.Err(err)
@@ -670,16 +686,15 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) { // todo,
 	return apps, nil
 }
 
-// todo, these methods could all be one?
-func GetAppsWithTags() (apps []App, err error) {
+func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []App, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err
 	}
 
-	db = db.Select([]string{"tags", "prices", "reviews_score"})
-	db = db.Where("JSON_DEPTH(tags) = 2")
+	db = db.Select(columns)
+	db = db.Where("JSON_DEPTH(" + column + ") = " + strconv.Itoa(depth))
 	db = db.Order("id asc")
 
 	db = db.Find(&apps)
@@ -688,78 +703,7 @@ func GetAppsWithTags() (apps []App, err error) {
 	}
 
 	return apps, nil
-}
 
-func GetAppsWithPackages() (apps []App, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	db = db.Select([]string{"packages"})
-	db = db.Where("JSON_DEPTH(packages) = 2")
-
-	db = db.Find(&apps)
-	if db.Error != nil {
-		return apps, db.Error
-	}
-
-	return apps, nil
-}
-
-func GetAppsWithDevelopers() (apps []App, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	db = db.Select([]string{"developers", "prices", "reviews_score"})
-	db = db.Where("JSON_DEPTH(developers) = 2")
-
-	db = db.Find(&apps)
-	if db.Error != nil {
-		return apps, db.Error
-	}
-
-	return apps, nil
-}
-
-func GetAppsWithPublishers() (apps []App, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	db = db.Select([]string{"publishers", "prices", "reviews_score"})
-	db = db.Where("JSON_DEPTH(publishers) = 2")
-
-	db = db.Find(&apps)
-	if db.Error != nil {
-		return apps, db.Error
-	}
-
-	return apps, nil
-}
-
-func GetAppsWithGenres() (apps []App, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	db = db.Select([]string{"genres", "prices", "reviews_score"})
-	db = db.Where("JSON_DEPTH(genres) = 3")
-
-	db = db.Find(&apps)
-	if db.Error != nil {
-		return apps, db.Error
-	}
-
-	return apps, nil
 }
 
 func GetDLC(app App, columns []string) (apps []App, err error) {

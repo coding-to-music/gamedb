@@ -261,48 +261,10 @@ func getTemplateFuncMap() map[string]interface{} {
 			}
 			return strings.Join(join, ", ")
 		},
-		"comma":   func(a int) string { return humanize.Comma(int64(a)) },
-		"commaf":  func(a float64) string { return humanize.Commaf(a) },
-		"bytes":   func(a uint64) string { return humanize.Bytes(a) },
-		"seconds": func(a int64) string { return humanize.RelTime(time.Now(), time.Now().Add(time.Second*time.Duration(a)), "", "") },
-		"apps": func(a []int, appsMap map[int]db.App) template.HTML {
-			var apps []string
-			for _, v := range a {
-				apps = append(apps, "<a href=\"/apps/"+strconv.Itoa(v)+"\">"+appsMap[v].GetName()+"</a>")
-			}
-			return template.HTML("Apps: " + strings.Join(apps, ", "))
-		},
-		"packages": func(a []int, packagesMap map[int]db.Package) template.HTML {
-			var packages []string
-			for _, v := range a {
-				packages = append(packages, "<a href=\"/packages/"+strconv.Itoa(v)+"\">"+packagesMap[v].GetName()+"</a>")
-			}
-			return template.HTML("Packages: " + strings.Join(packages, ", "))
-		},
-		"tags": func(a []db.Tag) template.HTML {
-
-			sort.Slice(a, func(i, j int) bool {
-				return a[i].Name < a[j].Name
-			})
-
-			var tags []string
-			for _, v := range a {
-				tags = append(tags, "<a class=\"badge badge-success\" href=\"/apps?tags="+strconv.Itoa(v.ID)+"\">"+v.GetName()+"</a>")
-			}
-			return template.HTML(strings.Join(tags, " "))
-		},
-		"genres": func(a []steam.AppDetailsGenre) template.HTML {
-
-			sort.Slice(a, func(i, j int) bool {
-				return a[i].Description < a[j].Description
-			})
-
-			var genres []string
-			for _, v := range a {
-				genres = append(genres, "<a class=\"badge badge-success\" href=\"/apps?genres="+strconv.Itoa(int(v.ID))+"\">"+v.Description+"</a>")
-			}
-			return template.HTML(strings.Join(genres, " "))
-		},
+		"comma":      func(a int) string { return humanize.Comma(int64(a)) },
+		"commaf":     func(a float64) string { return humanize.Commaf(a) },
+		"bytes":      func(a uint64) string { return humanize.Bytes(a) },
+		"seconds":    func(a int64) string { return humanize.RelTime(time.Now(), time.Now().Add(time.Second*time.Duration(a)), "", "") },
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
 		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },

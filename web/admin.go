@@ -22,7 +22,6 @@ import (
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
-	"github.com/gosimple/slug"
 )
 
 func adminRouter() http.Handler {
@@ -197,7 +196,7 @@ func adminQueueEveryApp() {
 
 func adminQueueEveryPackage() {
 
-	apps, err := db.GetAppsWithPackages()
+	apps, err := db.GetAppsWithColumnDepth("packages", 2, []string{"packages"})
 	if err != nil {
 		log.Err(err)
 		return
@@ -325,12 +324,6 @@ func adminGenres() {
 
 	cronLogInfo(log.ServiceLocal, "Genres updating")
 
-	gorm, err := db.GetMySQLClient()
-	if err != nil {
-		cronLogErr(err)
-		return
-	}
-
 	// Get current genres, to delete old ones
 	currentGenres, err := db.GetAllGenres()
 	if err != nil {
@@ -338,13 +331,18 @@ func adminGenres() {
 		return
 	}
 
-	genresToDelete := map[int]int{}
+	genresToDelete := map[int]bool{}
 	for _, v := range currentGenres {
-		genresToDelete[v.ID] = v.ID
+		genresToDelete[v.ID] = true
+	}
+
+	var genreNameMap = map[int]string{}
+	for _, v := range currentGenres {
+		genreNameMap[v.ID] = strings.TrimSpace(v.GetName())
 	}
 
 	// Get apps from mysql
-	appsWithGenres, err := db.GetAppsWithGenres()
+	appsWithGenres, err := db.GetAppsWithColumnDepth("genres", 3, []string{"genres", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogInfo("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
@@ -352,27 +350,34 @@ func adminGenres() {
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
 
-		appGenres, err := app.GetGenres()
+		appGenreIDs, err := app.GetGenreIDs()
 		if err != nil {
 			cronLogErr(err)
 			continue
 		}
 
-		if len(appGenres) == 0 {
-			appGenres = []db.AppGenre{{ID: 0, Name: ""}}
+		if len(appGenreIDs) == 0 {
+			// appGenreIDs = []db.AppGenre{{ID: 0, Name: ""}}
 		}
 
 		// For each genre in an app
-		for _, genre := range appGenres {
+		for _, genreID := range appGenreIDs {
 
-			delete(genresToDelete, genre.ID)
+			delete(genresToDelete, genreID)
 
-			if _, ok := newGenres[genre.ID]; ok {
-				newGenres[genre.ID].count++
-				newGenres[genre.ID].totalScore += app.ReviewsScore
+			var genreName string
+			if val, ok := genreNameMap[genreID]; ok {
+				genreName = val
 			} else {
-				newGenres[genre.ID] = &statsRow{
-					name:       strings.TrimSpace(genre.Name),
+				genreName = "Unknown"
+			}
+
+			if _, ok := newGenres[genreID]; ok {
+				newGenres[genreID].count++
+				newGenres[genreID].totalScore += app.ReviewsScore
+			} else {
+				newGenres[genreID] = &statsRow{
+					name:       strings.TrimSpace(genreName),
 					count:      1,
 					totalScore: app.ReviewsScore,
 					totalPrice: map[steam.CountryCode]int{},
@@ -385,7 +390,7 @@ func adminGenres() {
 					// cronLogErr(err, r)
 					continue
 				}
-				newGenres[genre.ID].totalPrice[code] += price.Final
+				newGenres[genreID].totalPrice[code] += price.Final
 			}
 		}
 	}
@@ -401,8 +406,8 @@ func adminGenres() {
 		defer wg.Done()
 
 		var genresToDeleteSlice []int
-		for _, v := range genresToDelete {
-			genresToDeleteSlice = append(genresToDeleteSlice, v)
+		for genreID := range genresToDelete {
+			genresToDeleteSlice = append(genresToDeleteSlice, genreID)
 		}
 
 		err := db.DeleteGenres(genresToDeleteSlice)
@@ -411,6 +416,14 @@ func adminGenres() {
 		limit--
 
 	}()
+
+	wg.Wait()
+
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		cronLogErr(err)
+		return
+	}
 
 	// Update current genres
 	var count = 1
@@ -467,47 +480,59 @@ func adminPublishers() {
 	cronLogInfo(log.ServiceLocal, "Publishers updating")
 
 	// Get current publishers, to delete old ones
-	currentPublishers, err := db.GetAllPublishers()
+	allPublishers, err := db.GetAllPublishers()
 	if err != nil {
 		cronLogErr(err)
 		return
 	}
 
-	publishersToDelete := map[string]int{}
-	for _, publisherRow := range currentPublishers {
-		publishersToDelete[slug.Make(publisherRow.Name)] = publisherRow.ID
+	publishersToDelete := map[int]bool{}
+	for _, publisherRow := range allPublishers {
+		publishersToDelete[publisherRow.ID] = true
+	}
+
+	var publisherNameMap = map[int]string{}
+	for _, v := range allPublishers {
+		publisherNameMap[v.ID] = strings.TrimSpace(v.GetName())
 	}
 
 	// Get apps from mysql
-	appsWithPublishers, err := db.GetAppsWithPublishers()
+	appsWithPublishers, err := db.GetAppsWithColumnDepth("publishers", 2, []string{"publishers", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogInfo("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
 
-	newPublishers := make(map[string]*statsRow)
+	newPublishers := make(map[int]*statsRow)
 	for _, app := range appsWithPublishers {
 
-		appPublishers, err := app.GetPublishers()
+		appPublishers, err := app.GetPublisherIDs()
 		if err != nil {
 			cronLogErr(err)
 			continue
 		}
 
 		if len(appPublishers) == 0 {
-			appPublishers = []string{""}
+			// appPublishers = []string{""}
 		}
 
 		// For each publisher in an app
-		for _, publisher := range appPublishers {
+		for _, appPublisherID := range appPublishers {
 
-			delete(publishersToDelete, publisher)
+			delete(publishersToDelete, appPublisherID)
 
-			if _, ok := newPublishers[publisher]; ok {
-				newPublishers[publisher].count++
-				newPublishers[publisher].totalScore += app.ReviewsScore
+			var publisherName string
+			if val, ok := publisherNameMap[appPublisherID]; ok {
+				publisherName = val
 			} else {
-				newPublishers[publisher] = &statsRow{
-					name:       strings.TrimSpace(publisher),
+				publisherName = "Unknown"
+			}
+
+			if _, ok := newPublishers[appPublisherID]; ok {
+				newPublishers[appPublisherID].count++
+				newPublishers[appPublisherID].totalScore += app.ReviewsScore
+			} else {
+				newPublishers[appPublisherID] = &statsRow{
+					name:       publisherName,
 					count:      1,
 					totalPrice: map[steam.CountryCode]int{},
 					totalScore: app.ReviewsScore,
@@ -517,10 +542,9 @@ func adminPublishers() {
 			for code := range steam.Countries {
 				price, err := app.GetPrice(code)
 				if err != nil {
-					// cronLogErr(err, r)
 					continue
 				}
-				newPublishers[publisher].totalPrice[code] += price.Final
+				newPublishers[appPublisherID].totalPrice[code] += price.Final
 			}
 		}
 	}
@@ -536,16 +560,17 @@ func adminPublishers() {
 		defer wg.Done()
 
 		var pubsToDeleteSlice []int
-		for _, v := range publishersToDelete {
-			pubsToDeleteSlice = append(pubsToDeleteSlice, v)
+		for publisherID := range publishersToDelete {
+			pubsToDeleteSlice = append(pubsToDeleteSlice, publisherID)
 		}
 
 		err := db.DeletePublishers(pubsToDeleteSlice)
 		cronLogErr(err)
 
 		limit--
-
 	}()
+
+	wg.Wait()
 
 	gorm, err := db.GetMySQLClient(true)
 	if err != nil {
@@ -561,17 +586,17 @@ func adminPublishers() {
 			wg.Wait()
 		}
 
-		adminStatsLogger("publisher", count, len(newPublishers), k)
+		adminStatsLogger("publisher", count, len(newPublishers), v.name)
 
 		limit++
 		wg.Add(1)
-		go func(publisherName string, v *statsRow) {
+		go func(publisherID int, v *statsRow) {
 
 			defer wg.Done()
 
 			var publisher db.Publisher
 
-			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{Name: strings.TrimSpace(publisherName)})
+			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{ID: publisherID})
 			cronLogErr(gorm.Error)
 
 			publisher.Name = v.name
@@ -607,54 +632,60 @@ func adminDevelopers() {
 
 	cronLogInfo(log.ServiceLocal, "Developers updating")
 
-	gorm, err := db.GetMySQLClient()
-	if err != nil {
-		cronLogErr(err)
-		return
-	}
-
 	// Get current developers, to delete old ones
-	currentDevelopers, err := db.GetAllPublishers()
+	allDevelopers, err := db.GetAllPublishers()
 	if err != nil {
 		cronLogErr(err)
 		return
 	}
 
-	developersToDelete := map[string]int{}
-	for _, v := range currentDevelopers {
-		developersToDelete[v.Name] = v.ID
+	developersToDelete := map[int]bool{}
+	for _, v := range allDevelopers {
+		developersToDelete[v.ID] = true
+	}
+
+	var developersNameMap = map[int]string{}
+	for _, v := range allDevelopers {
+		developersNameMap[v.ID] = strings.TrimSpace(v.GetName())
 	}
 
 	// Get apps from mysql
-	appsWithDevelopers, err := db.GetAppsWithDevelopers()
+	appsWithDevelopers, err := db.GetAppsWithColumnDepth("developers", 2, []string{"developers", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogErr("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
-	newDevelopers := make(map[string]*statsRow)
+	newDevelopers := make(map[int]*statsRow)
 	for _, app := range appsWithDevelopers {
 
-		appDevelopers, err := app.GetDevelopers()
+		appDevelopers, err := app.GetDeveloperIDs()
 		if err != nil {
 			cronLogErr(err)
 			continue
 		}
 
 		if len(appDevelopers) == 0 {
-			appDevelopers = []string{""}
+			// appDevelopers = []string{""}
 		}
 
 		// For each developer in an app
-		for _, developer := range appDevelopers {
+		for _, appDeveloperID := range appDevelopers {
 
-			delete(developersToDelete, developer)
+			delete(developersToDelete, appDeveloperID)
 
-			if _, ok := newDevelopers[developer]; ok {
-				newDevelopers[developer].count++
-				newDevelopers[developer].totalScore += app.ReviewsScore
+			var developersName string
+			if val, ok := developersNameMap[appDeveloperID]; ok {
+				developersName = val
 			} else {
-				newDevelopers[developer] = &statsRow{
-					name:       strings.TrimSpace(developer),
+				developersName = "Unknown"
+			}
+
+			if _, ok := newDevelopers[appDeveloperID]; ok {
+				newDevelopers[appDeveloperID].count++
+				newDevelopers[appDeveloperID].totalScore += app.ReviewsScore
+			} else {
+				newDevelopers[appDeveloperID] = &statsRow{
+					name:       developersName,
 					count:      1,
 					totalPrice: map[steam.CountryCode]int{},
 					totalScore: app.ReviewsScore,
@@ -667,7 +698,7 @@ func adminDevelopers() {
 					// cronLogErr(err, r)
 					continue
 				}
-				newDevelopers[developer].totalPrice[code] += price.Final
+				newDevelopers[appDeveloperID].totalPrice[code] += price.Final
 			}
 		}
 	}
@@ -683,8 +714,8 @@ func adminDevelopers() {
 		defer wg.Done()
 
 		var devsToDeleteSlice []int
-		for _, v := range developersToDelete {
-			devsToDeleteSlice = append(devsToDeleteSlice, v)
+		for k := range developersToDelete {
+			devsToDeleteSlice = append(devsToDeleteSlice, k)
 		}
 
 		err := db.DeleteDevelopers(devsToDeleteSlice)
@@ -694,6 +725,14 @@ func adminDevelopers() {
 
 	}()
 
+	wg.Wait()
+
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		cronLogErr(err)
+		return
+	}
+
 	// Update current developers
 	var count = 1
 	for k, v := range newDevelopers {
@@ -702,17 +741,17 @@ func adminDevelopers() {
 			wg.Wait()
 		}
 
-		adminStatsLogger("developer", count, len(newDevelopers), k)
+		adminStatsLogger("developer", count, len(newDevelopers), v.name)
 
 		limit++
 		wg.Add(1)
-		go func(developerName string, v *statsRow) {
+		go func(developerInt int, v *statsRow) {
 
 			defer wg.Done()
 
 			var developer db.Developer
 
-			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{Name: strings.TrimSpace(developerName)})
+			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{ID: developerInt})
 			cronLogErr(gorm.Error)
 
 			developer.Name = v.name
@@ -745,12 +784,6 @@ func adminDevelopers() {
 
 func adminTags() {
 
-	gorm, err := db.GetMySQLClient()
-	if err != nil {
-		cronLogErr(err)
-		return
-	}
-
 	// Get current tags, to delete old ones
 	tags, err := db.GetAllTags()
 	if err != nil {
@@ -769,7 +802,7 @@ func adminTags() {
 
 	steamTagMap := tagsResp.GetMap()
 
-	appsWithTags, err := db.GetAppsWithTags()
+	appsWithTags, err := db.GetAppsWithColumnDepth("tags", 2, []string{"tags", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogErr("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
@@ -837,6 +870,14 @@ func adminTags() {
 
 	}()
 
+	wg.Wait()
+
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		cronLogErr(err)
+		return
+	}
+
 	// Update current tags
 	var count = 1
 	for k, v := range newTags {
@@ -845,7 +886,7 @@ func adminTags() {
 			wg.Wait()
 		}
 
-		adminStatsLogger("tag", count, len(newTags), strconv.Itoa(k))
+		adminStatsLogger("tag", count, len(newTags), v.name)
 
 		limit++
 		wg.Add(1)

@@ -127,16 +127,24 @@
                                 <td class="platforms">{{ .App.GetPlatformImages }}</td>
                             </tr>
                         {{ end }}
-                        {{ if gt (len .App.GetGenres) 0 }}
+                        {{ if gt (len .Genres) 0 }}
                             <tr>
                                 <th scope="row" nowrap="nowrap" width="1%">Genres</th>
-                                <td>{{ genres .App.GetGenres }}</td>
+                                <td>
+                                    {{ range $key, $value := .Genres }}
+                                        <a class="badge badge-success" href="/apps?genres={{ .ID }}">{{ .GetName }}</a>
+                                    {{ end }}
+                                </td>
                             </tr>
                         {{ end }}
                         {{ if gt (len .Tags) 0 }}
                             <tr>
                                 <th scope="row" nowrap="nowrap" width="1%">Tags</th>
-                                <td>{{ tags .Tags }}</td>
+                                <td>
+                                    {{ range $key, $value := .Tags }}
+                                        <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
+                                    {{ end }}
+                                </td>
                             </tr>
                         {{ end }}
                         <tr>

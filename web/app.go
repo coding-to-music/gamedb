@@ -109,6 +109,18 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(app)
 
+	// Genres
+	wg.Add(1)
+	go func(app db.App) {
+
+		defer wg.Done()
+
+		var err error
+		t.Genres, err = app.GetGenres()
+		log.Err(err, r)
+
+	}(app)
+
 	// Bundles
 	wg.Add(1)
 	go func() {
@@ -180,11 +192,12 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 type appTemplate struct {
 	GlobalTemplate
 	App      db.App
+	Price    db.ProductPriceFormattedStruct
 	Packages []db.Package
 	Bundles  []db.Bundle
 	DLC      []db.App
-	Price    db.ProductPriceFormattedStruct
 	Tags     []db.Tag
+	Genres   []db.Genre
 	Banners  map[string][]string
 }
 

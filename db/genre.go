@@ -69,6 +69,22 @@ func GetGenresForSelect() (genres []Genre, err error) {
 	return genres, err
 }
 
+func GetGenresByID(ids []int) (genres []Genre, err error) {
+
+	if len(ids) == 0 {
+		return genres, err
+	}
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return genres, err
+	}
+
+	db = db.Limit(100).Where("id IN (?)", ids).Order("name ASC").Find(&genres)
+
+	return genres, db.Error
+}
+
 func DeleteGenres(ids []int) (err error) {
 
 	if len(ids) == 0 {
