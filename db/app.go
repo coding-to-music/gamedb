@@ -486,19 +486,19 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 	}
 
 	if helpers.SliceHasString(platforms, platformWindows) {
-		ret = ret + `<i class="fab fa-windows" data-toggle="tooltip" data-placement="top" title="Windows"></i>`
+		ret = ret + `<a href="/apps?platforms=windows"><i class="fab fa-windows" data-toggle="tooltip" data-placement="top" title="Windows"></i></a>`
 	} else {
 		ret = ret + `<span class="space"></span>`
 	}
 
 	if helpers.SliceHasString(platforms, platformMac) {
-		ret = ret + `<i class="fab fa-apple" data-toggle="tooltip" data-placement="top" title="Mac"></i>`
+		ret = ret + `<a href="/apps?platforms=macos"><i class="fab fa-apple" data-toggle="tooltip" data-placement="top" title="Mac"></i></a>`
 	} else {
 		ret = ret + `<span class="space"></span>`
 	}
 
 	if helpers.SliceHasString(platforms, platformLinux) {
-		ret = ret + `<i class="fab fa-linux" data-toggle="tooltip" data-placement="top" title="Linux"></i>`
+		ret = ret + `<a href="/apps?platforms=linux"><i class="fab fa-linux" data-toggle="tooltip" data-placement="top" title="Linux"></i></a>`
 	} else {
 		ret = ret + `<span class="space"></span>`
 	}

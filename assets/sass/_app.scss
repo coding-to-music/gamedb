@@ -1,16 +1,5 @@
 #app-page {
     #details {
-        p.platforms {
-            i, svg {
-                margin-right: 3px;
-                font-size: 20px;
-            }
-
-            i:last-child, svg:last-child {
-                margin-right: 0;
-            }
-        }
-
         img {
             width: 100%;
             @include media-breakpoint-up(md) {
