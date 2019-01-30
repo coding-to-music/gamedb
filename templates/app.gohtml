@@ -96,7 +96,9 @@
                             <th scope="row" nowrap="nowrap" width="1%">Review Score</th>
                             <td>
                                 {{ .App.ReviewsScore }}%
-                                <small>({{ comma .App.GetReviews.Positive }}<i class="fas fa-angle-up"></i> {{ comma .App.GetReviews.Negative }}<i class="fas fa-angle-down"></i>)</small>
+                                <small>({{ comma .App.GetReviews.Positive }}<i class="fas fa-angle-up"></i>
+                                    {{ comma .App.GetReviews.Negative }}<i class="fas fa-angle-down"></i>)
+                                </small>
                             </td>
                         </tr>
                         <tr>
@@ -109,12 +111,14 @@
                         </tr>
                         <tr>
                             <th scope="row" nowrap="nowrap" width="1%">Release State</th>
-                            <td>{{ .App.GetReleaseState }}</td>
+                            <td>{{ .App.GetReleaseDateNice }} ({{ .App.GetReleaseState }})</td>
                         </tr>
-                        <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">Version</th>
-                            <td>{{ .App.Version }}</td>
-                        </tr>
+                        {{ if ne .App.Version "" }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">Version</th>
+                                <td>{{ .App.Version }}</td>
+                            </tr>
+                        {{ end }}
                         {{ if gt .App.ChangeNumber 0 }}
                             <tr>
                                 <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
