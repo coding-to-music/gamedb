@@ -54,6 +54,13 @@ func main() {
 		}
 	}()
 
+	// Instagram
+	if config.Config.IsProd() {
+		go func() {
+			helpers.RunInstagram()
+		}()
+	}
+
 	// Block forever for goroutines to run
 	wg := sync.WaitGroup{}
 	wg.Add(1)

@@ -556,6 +556,14 @@
   revision = "cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c"
 
 [[projects]]
+  digest = "1:6ab228f39a195cb1dab3564a0f27dc24a52bb3a19fa58dd2967f1e7b2482d82b"
+  name = "github.com/robfig/cron"
+  packages = ["."]
+  pruneopts = ""
+  revision = "b41be1df696709bb6395fe435af20370037c0b4c"
+  version = "v1.1"
+
+[[projects]]
   digest = "1:75f4f546e19477e82dc2c07e36011b10ccdf7284df08fc9cb4209ee8a9dfddb8"
   name = "github.com/rollbar/rollbar-go"
   packages = ["."]
@@ -962,6 +970,7 @@
     "github.com/mitchellh/mapstructure",
     "github.com/oxequa/realize",
     "github.com/pariz/gountries",
+    "github.com/robfig/cron",
     "github.com/rollbar/rollbar-go",
     "github.com/satori/go.uuid",
     "github.com/sendgrid/sendgrid-go",
