@@ -1,4 +1,6 @@
-if ($('#experience-page').length > 0) {
+const $xpPage = $('#experience-page');
+
+if ($xpPage.length > 0) {
 
     const $from = $('#from');
     const $to = $('#to');
@@ -26,7 +28,7 @@ if ($('#experience-page').length > 0) {
         }
     }
 
-    $("#experience-page").on("click", "[data-level]", function () {
+    $xpPage.on("click", "[data-level]", function () {
 
         const level = $(this).attr('data-level');
 

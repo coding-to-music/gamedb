@@ -46,8 +46,14 @@ if ($appPage.length > 0) {
     });
 
     // Detials image click
-    $('#details img').on('click', function () {
+    const $detailsImage = $('#details img');
+
+    $detailsImage.on('click', function () {
         $('.card-header-tabs a[href="#media"]').tab('show');
+    });
+    $detailsImage.on("error", function () {
+        $(this).attr('src', '/assets/img/no-app-image-banner.jpg');
+        $(this).hide();
     });
 
     function showArt() {
@@ -66,12 +72,6 @@ if ($appPage.length > 0) {
             $modal.modal('hide');
         }
     }
-
-    // Details tab image
-    $("#details img").on("error", function () {
-        $(this).attr('src', '/assets/img/no-app-image-banner.jpg');
-        $(this).hide();
-    });
 
     // Media carousel
     const $carousel1 = $('#carousel1');
