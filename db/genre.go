@@ -69,7 +69,7 @@ func GetGenresForSelect() (genres []Genre, err error) {
 	return genres, err
 }
 
-func GetGenresByID(ids []int) (genres []Genre, err error) {
+func GetGenresByID(ids []int, columns []string) (genres []Genre, err error) {
 
 	if len(ids) == 0 {
 		return genres, err
@@ -80,7 +80,14 @@ func GetGenresByID(ids []int) (genres []Genre, err error) {
 		return genres, err
 	}
 
-	db = db.Limit(100).Where("id IN (?)", ids).Order("name ASC").Find(&genres)
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	db = db.Where("id IN (?)", ids)
+	db = db.Order("name ASC")
+	db = db.Limit(100)
+	db = db.Find(&genres)
 
 	return genres, db.Error
 }

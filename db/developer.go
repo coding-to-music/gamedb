@@ -39,7 +39,7 @@ func (d Developer) GetMeanScore() string {
 func GetDevelopersByID(ids []int, columns []string) (developers []Developer, err error) {
 
 	if len(ids) == 0 {
-		return developers, nil
+		return developers, err
 	}
 
 	db, err := GetMySQLClient()
@@ -51,12 +51,12 @@ func GetDevelopersByID(ids []int, columns []string) (developers []Developer, err
 		db = db.Select(columns)
 	}
 
-	db.Where("id IN (?)", ids).Find(&developers)
-	if db.Error != nil {
-		return developers, db.Error
-	}
+	db = db.Where("id IN (?)", ids)
+	db = db.Order("name ASC")
+	db = db.Limit(100)
+	db = db.Find(&developers)
 
-	return developers, nil
+	return developers, db.Error
 }
 
 func GetAllDevelopers() (developers []Developer, err error) {

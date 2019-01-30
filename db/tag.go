@@ -75,7 +75,7 @@ func GetTagsForSelect() (tags []Tag, err error) {
 	return tags, err
 }
 
-func GetTagsByID(ids []int) (tags []Tag, err error) {
+func GetTagsByID(ids []int, columns []string) (tags []Tag, err error) {
 
 	if len(ids) == 0 {
 		return tags, err
@@ -86,7 +86,14 @@ func GetTagsByID(ids []int) (tags []Tag, err error) {
 		return tags, err
 	}
 
-	db = db.Limit(100).Where("id IN (?)", ids).Order("name ASC").Find(&tags)
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	db = db.Where("id IN (?)", ids)
+	db = db.Order("name ASC")
+	db = db.Limit(100)
+	db = db.Find(&tags)
 
 	return tags, db.Error
 }

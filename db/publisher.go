@@ -39,7 +39,7 @@ func (p Publisher) GetMeanScore() string {
 func GetPublishersByID(ids []int, columns []string) (publishers []Publisher, err error) {
 
 	if len(ids) == 0 {
-		return publishers, nil
+		return publishers, err
 	}
 
 	db, err := GetMySQLClient()
@@ -51,12 +51,12 @@ func GetPublishersByID(ids []int, columns []string) (publishers []Publisher, err
 		db = db.Select(columns)
 	}
 
-	db.Where("id IN (?)", ids).Find(&publishers)
-	if db.Error != nil {
-		return publishers, db.Error
-	}
+	db = db.Where("id IN (?)", ids)
+	db = db.Order("name ASC")
+	db = db.Limit(100)
+	db = db.Find(&publishers)
 
-	return publishers, nil
+	return publishers, db.Error
 }
 
 func GetAllPublishers() (publishers []Publisher, err error) {
