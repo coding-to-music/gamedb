@@ -197,7 +197,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 			KeepDefaultAttrVals:     true,
 			KeepDocumentTags:        true,
 			KeepEndTags:             true,
-			KeepWhitespace:          false,
+			KeepWhitespace:          true,
 		})
 
 		buf2 := &bytes.Buffer{}
