@@ -19,6 +19,9 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
+	// Try to stop memcache failing on first calls..
+	helpers.GetMemcache()
+
 	// Web server
 	if config.Config.EnableWebserver.GetBool() {
 		go func() {
