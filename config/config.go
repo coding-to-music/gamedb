@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strconv"
 )
 
 const EnvProd = "production"
@@ -178,8 +179,6 @@ func (ci ConfigItem) Get() string {
 }
 
 func (ci ConfigItem) GetBool() bool {
-	if ci.value != "" {
-		return ci.value == "1"
-	}
-	return ci.defaultValue == "1"
+	b, _ := strconv.ParseBool(ci.Get())
+	return b
 }
