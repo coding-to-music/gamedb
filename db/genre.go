@@ -54,14 +54,15 @@ func GetGenresForSelect() (genres []Genre, err error) {
 
 	var item = helpers.MemcacheGenreKeyNames
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &genres, func() (s interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &genres, func() (interface{}, error) {
+
+		var genres []Genre
 
 		db, err := GetMySQLClient()
 		if err != nil {
-			return s, err
+			return genres, err
 		}
 
-		var genres []Genre
 		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&genres)
 		return genres, db.Error
 	})

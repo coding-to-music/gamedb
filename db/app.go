@@ -764,12 +764,13 @@ func CountApps() (count int, err error) {
 
 	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
+		var count int
+
 		db, err := GetMySQLClient()
 		if err != nil {
 			return count, err
 		}
 
-		var count int
 		db.Model(&App{}).Count(&count)
 
 		return count, db.Error
@@ -782,7 +783,9 @@ func GetMostExpensiveApp(code steam.CountryCode) (price int, err error) {
 
 	var item = helpers.MemcacheMostExpensiveApp(code)
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &price, func() (count interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &price, func() (interface{}, error) {
+
+		var count int
 
 		db, err := GetMySQLClient()
 		if err != nil {

@@ -71,14 +71,15 @@ func GetChange(id int64) (change Change, err error) {
 
 	var item = helpers.MemcacheChangeRow(id)
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &change, func() (s interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &change, func() (interface{}, error) {
+
+		var change Change
 
 		client, context, err := GetDSClient()
 		if err != nil {
-			return s, err
+			return change, err
 		}
 
-		var change Change
 		err = client.Get(context, datastore.NameKey(KindChange, strconv.FormatInt(id, 10), nil), &change)
 		if err != nil {
 			if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
@@ -99,11 +100,4 @@ func GetChange(id int64) (change Change, err error) {
 	})
 
 	return change, err
-
-	// if err != nil {
-	// 	return change, err
-	// }
-	//
-	// err = helpers.Unmarshal([]byte(s), &change)
-	// return change, err
 }

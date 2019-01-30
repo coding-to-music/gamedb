@@ -414,12 +414,13 @@ func CountPackages() (count int, err error) {
 
 	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
+		var count int
+
 		db, err := GetMySQLClient()
 		if err != nil {
 			return count, err
 		}
 
-		var count int
 		db.Model(&Package{}).Count(&count)
 		return count, db.Error
 	})

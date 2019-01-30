@@ -41,7 +41,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	var item = helpers.MemcacheQueues
 	var jsonString string
 
-	err := helpers.GetMemcache().GetSet(item.Key, item.Expiration, &jsonString, func() (s interface{}, err error) {
+	err := helpers.GetMemcache().GetSet(item.Key, item.Expiration, &jsonString, func() (interface{}, error) {
 
 		payload := rabbit.Payload{}
 		payload.LengthsAge = 3600
@@ -61,7 +61,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		policy.InitialInterval = time.Second / 2
 		policy.MaxElapsedTime = time.Second * 5
 
-		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
 			return "", err
 		}

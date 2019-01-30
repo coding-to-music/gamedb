@@ -78,17 +78,18 @@ func GetPublishersForSelect() (pubs []Publisher, err error) {
 
 	var item = helpers.MemcachePublisherKeyNames
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &pubs, func() (s interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &pubs, func() (interface{}, error) {
+
+		var pubs []Publisher
 
 		db, err := GetMySQLClient()
 		if err != nil {
-			return s, err
+			return pubs, err
 		}
 
-		var pubs []Publisher
 		db = db.Select([]string{"id", "name"}).Order("apps DESC").Limit(200).Find(&pubs)
 		if db.Error != nil {
-			return s, db.Error
+			return pubs, db.Error
 		}
 
 		sort.Slice(pubs, func(i, j int) bool {

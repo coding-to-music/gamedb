@@ -78,17 +78,18 @@ func GetDevelopersForSelect() (devs []Developer, err error) {
 
 	var item = helpers.MemcacheDeveloperKeyNames
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &devs, func() (s interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &devs, func() (interface{}, error) {
+
+		var devs []Developer
 
 		db, err := GetMySQLClient()
 		if err != nil {
-			return s, err
+			return devs, err
 		}
 
-		var devs []Developer
 		db = db.Select([]string{"id", "name"}).Order("apps DESC").Limit(200).Find(&devs)
 		if db.Error != nil {
-			return s, db.Error
+			return devs, db.Error
 		}
 
 		sort.Slice(devs, func(i, j int) bool {

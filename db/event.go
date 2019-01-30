@@ -102,7 +102,9 @@ func CountPlayerEvents(playerID int64) (count int, err error) {
 
 	var item = helpers.MemcachePlayerEventsCount(playerID)
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (count interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		var count int
 
 		client, ctx, err := GetDSClient()
 		if err != nil {

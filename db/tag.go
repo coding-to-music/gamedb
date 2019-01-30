@@ -60,14 +60,15 @@ func GetTagsForSelect() (tags []Tag, err error) {
 
 	var item = helpers.MemcacheTagKeyNames
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &tags, func() (s interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+
+		var tags []Tag
 
 		db, err := GetMySQLClient()
 		if err != nil {
-			return s, err
+			return tags, err
 		}
 
-		var tags []Tag
 		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&tags)
 		return tags, db.Error
 	})

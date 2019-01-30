@@ -56,14 +56,15 @@ func GetConfig(id string) (config Config, err error) {
 
 	var item = helpers.MemcacheConfigRow(id)
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &config, func() (s interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &config, func() (interface{}, error) {
+
+		var config Config
 
 		db, err := GetMySQLClient()
 		if err != nil {
-			return s, err
+			return config, err
 		}
 
-		var config Config
 		db = db.Where("id = ?", id).First(&config)
 
 		return config, db.Error

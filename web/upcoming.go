@@ -167,7 +167,9 @@ func countUpcomingPackages() (count int, err error) {
 
 	var item = helpers.MemcacheUpcomingPackagesCount
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (count interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		var count int
 
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
@@ -188,7 +190,9 @@ func countUpcomingApps() (count int, err error) {
 
 	var item = helpers.MemcacheUpcomingAppsCount
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (count interface{}, err error) {
+	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		var count int
 
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
