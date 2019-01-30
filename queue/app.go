@@ -600,6 +600,7 @@ func updateAppNews(app *db.App) error {
 		}
 
 		kinds = append(kinds, db.CreateArticle(*app, v))
+		ids = append(ids, int64(v.GID))
 	}
 
 	err = db.BulkSaveKinds(kinds, db.KindNews, false)
@@ -608,16 +609,7 @@ func updateAppNews(app *db.App) error {
 	}
 
 	// Update app column
-	currentIDs, err := app.GetNewsIDs()
-	if err != nil {
-		return err
-	}
-
-	for _, v := range resp.Items {
-		currentIDs = append(currentIDs, int64(v.GID))
-	}
-
-	b, err := json.Marshal(helpers.Unique64(currentIDs))
+	b, err := json.Marshal(helpers.Unique64(ids))
 	if err != nil {
 		return err
 	}
