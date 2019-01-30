@@ -16,6 +16,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -91,7 +92,7 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.ChangeNumber {
+	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.ChangeNumber && !config.Config.IsLocal() {
 		logInfo("Skipping, updated in last day")
 		return false, nil
 	}
@@ -227,9 +228,9 @@ func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
 
 		case "config":
 
-			config, launch := v.GetAppConfig()
+			c, launch := v.GetAppConfig()
 
-			b, err := json.Marshal(config)
+			b, err := json.Marshal(c)
 			if err != nil {
 				return err
 			}
@@ -429,20 +430,25 @@ func updateAppDetails(app *db.App) error {
 			app.Categories = string(b)
 
 			// Genres
-			var genres []db.AppGenre
-			for _, v := range response.Data.Genres {
-
-				genres = append(genres, db.AppGenre{
-					ID:   int(v.ID),
-					Name: v.Description,
-				})
-			}
-
-			b, err = json.Marshal(genres)
+			gorm, err = db.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
+			var genreIDs []int
+			for _, v := range response.Data.Genres {
+				var genre db.Genre
+				gorm = gorm.Unscoped().Assign(db.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, db.Genre{ID: int(v.ID)})
+				if gorm.Error != nil {
+					return gorm.Error
+				}
+				genreIDs = append(genreIDs, genre.ID)
+			}
+
+			b, err = json.Marshal(genreIDs)
+			if err != nil {
+				return err
+			}
 			app.Genres = string(b)
 
 			// Platforms
