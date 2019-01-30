@@ -41,7 +41,7 @@ type PICSAppConfigLaunchItem struct {
 	VRMode            string   `json:"vrmode"`
 	VACModuleFilename string   `json:"vacmodulefilename"`
 }
-type PicsDepots struct {
+type PICSDepots struct {
 	Depots   []PICSAppDepotItem
 	Branches []PICSAppDepotBranches
 	Extra    map[string]string

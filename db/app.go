@@ -26,20 +26,20 @@ const (
 type App struct {
 	Achievements       string    `gorm:"not null;column:achievements;type:text"`           // []AppAchievement
 	Background         string    `gorm:"not null;column:background"`                       //
-	BundleIDs          string    `gorm:"not null;column:bundle_ids"`                       //
-	Categories         string    `gorm:"not null;column:categories;type:json"`             //
+	BundleIDs          string    `gorm:"not null;column:bundle_ids"`                       // []int
+	Categories         string    `gorm:"not null;column:categories;type:json"`             // []int8
 	ChangeNumber       int       `gorm:"not null;column:change_number"`                    //
 	ChangeNumberDate   time.Time `gorm:"not null;column:change_number_date;type:datetime"` //
 	ClientIcon         string    `gorm:"not null;column:client_icon"`                      //
 	ComingSoon         bool      `gorm:"not null;column:coming_soon"`                      //
-	Common             string    `gorm:"not null;column:common"`                           //
-	Config             string    `gorm:"not null;column:config"`                           //
+	Common             string    `gorm:"not null;column:common"`                           // PICSAppCommon
+	Config             string    `gorm:"not null;column:config"`                           // PICSAppConfig
 	CreatedAt          time.Time `gorm:"not null;column:created_at;type:datetime"`         //
-	Depots             string    `gorm:"not null;column:depots"`                           //
+	Depots             string    `gorm:"not null;column:depots"`                           // PICSDepots
 	Developers         string    `gorm:"not null;column:developers;type:json"`             // []int
-	DLC                string    `gorm:"not null;column:dlc;type:json"`                    //
+	DLC                string    `gorm:"not null;column:dlc;type:json"`                    // []int
 	DLCCount           int       `gorm:"not null;column:dlc_count"`                        //
-	Extended           string    `gorm:"not null;column:extended"`                         //
+	Extended           string    `gorm:"not null;column:extended"`                         // PICSExtended
 	GameID             int       `gorm:"not null;column:game_id"`                          //
 	GameName           string    `gorm:"not null;column:game_name"`                        //
 	Genres             string    `gorm:"not null;column:genres;type:json"`                 // []int
@@ -47,19 +47,19 @@ type App struct {
 	Homepage           string    `gorm:"not null;column:homepage"`                         //
 	Icon               string    `gorm:"not null;column:icon"`                             //
 	ID                 int       `gorm:"not null;column:id;primary_key"`                   //
-	Install            string    `gorm:"not null;column:install"`                          //
+	Install            string    `gorm:"not null;column:install"`                          // map[string]interface{}
 	IsFree             bool      `gorm:"not null;column:is_free;type:tinyint(1)"`          //
-	Launch             string    `gorm:"not null;column:launch"`                           //
-	Localization       string    `gorm:"not null;column:localization"`                     //
+	Launch             string    `gorm:"not null;column:launch"`                           // []db.PICSAppConfigLaunchItem
+	Localization       string    `gorm:"not null;column:localization"`                     // map[string]interface{}
 	Logo               string    `gorm:"not null;column:logo"`                             //
 	MetacriticScore    int8      `gorm:"not null;column:metacritic_score"`                 //
 	MetacriticURL      string    `gorm:"not null;column:metacritic_url"`                   //
 	Movies             string    `gorm:"not null;column:movies;type:text"`                 // []AppVideo
 	Name               string    `gorm:"not null;column:name"`                             //
-	NewsIDs            string    `gorm:"not null;column:news_ids"`                         //
+	NewsIDs            string    `gorm:"not null;column:news_ids"`                         // []int64
 	Packages           string    `gorm:"not null;column:packages;type:json"`               // []int
-	Platforms          string    `gorm:"not null;column:platforms;type:json"`              //
-	Prices             string    `gorm:"not null;column:prices"`                           //
+	Platforms          string    `gorm:"not null;column:platforms;type:json"`              // []string
+	Prices             string    `gorm:"not null;column:prices"`                           // ProductPrices
 	PublicOnly         bool      `gorm:"not null;column:public_only"`                      //
 	Publishers         string    `gorm:"not null;column:publishers;type:json"`             // []int
 	ReleaseDate        string    `gorm:"not null;column:release_date"`                     //
@@ -71,10 +71,10 @@ type App struct {
 	ShortDescription   string    `gorm:"not null;column:description_short"`                //
 	Stats              string    `gorm:"not null;column:stats;type:text"`                  // []AppStat
 	SteamSpy           string    `gorm:"not null;column:steam_spy"`                        // AppSteamSpy
-	SystemRequirements string    `gorm:"not null;column:system_requirements"`              //
+	SystemRequirements string    `gorm:"not null;column:system_requirements"`              // map[string]interface{}
 	Tags               string    `gorm:"not null;column:tags;type:json"`                   // []int
 	Type               string    `gorm:"not null;column:type"`                             //
-	UFS                string    `gorm:"not null;column:ufs"`                              //
+	UFS                string    `gorm:"not null;column:ufs"`                              // PICSAppUFS
 	UpdatedAt          time.Time `gorm:"not null;column:updated_at;type:datetime"`         //
 	Version            string    `gorm:"not null;column:version"`                          //
 }
@@ -90,6 +90,15 @@ func (app *App) BeforeSave(scope *gorm.Scope) error {
 	if app.Categories == "" {
 		app.Categories = "[]"
 	}
+	if app.Common == "" {
+		app.Common = "{}"
+	}
+	if app.Config == "" {
+		app.Config = "{}"
+	}
+	if app.Depots == "" {
+		app.Depots = "{}"
+	}
 	if app.Developers == "" {
 		app.Developers = "[]"
 	}
@@ -99,17 +108,23 @@ func (app *App) BeforeSave(scope *gorm.Scope) error {
 	if app.Extended == "" {
 		app.Extended = "{}"
 	}
-	if app.SystemRequirements == "" {
-		app.SystemRequirements = "{}"
-	}
-	if app.Prices == "" {
-		app.Prices = "{}"
-	}
 	if app.Genres == "" {
 		app.Genres = "[]"
 	}
+	if app.Install == "" {
+		app.Install = "{}"
+	}
+	if app.Launch == "" {
+		app.Launch = "[]"
+	}
+	if app.Localization == "" {
+		app.Localization = "{}"
+	}
 	if app.Movies == "" {
 		app.Movies = "[]"
+	}
+	if app.NewsIDs == "" {
+		app.NewsIDs = "[]"
 	}
 	if app.Packages == "" {
 		app.Packages = "[]"
@@ -117,8 +132,14 @@ func (app *App) BeforeSave(scope *gorm.Scope) error {
 	if app.Platforms == "" {
 		app.Platforms = "[]"
 	}
+	if app.Prices == "" {
+		app.Prices = "{}"
+	}
 	if app.Publishers == "" {
 		app.Publishers = "[]"
+	}
+	if app.Reviews == "" {
+		app.Reviews = "{}"
 	}
 	if app.Stats == "" {
 		app.Stats = "[]"
@@ -126,11 +147,17 @@ func (app *App) BeforeSave(scope *gorm.Scope) error {
 	if app.Screenshots == "" {
 		app.Screenshots = "[]"
 	}
+	if app.SteamSpy == "" {
+		app.SteamSpy = "{}"
+	}
+	if app.SystemRequirements == "" {
+		app.SystemRequirements = "{}"
+	}
 	if app.Tags == "" {
 		app.Tags = "[]"
 	}
-	if app.SteamSpy == "" {
-		app.SteamSpy = "{}"
+	if app.UFS == "" {
+		app.UFS = "{}"
 	}
 
 	return nil
@@ -300,7 +327,7 @@ func (app App) GetConfig() (config PICSAppConfig, err error) {
 	return config, err
 }
 
-func (app App) GetDepots() (depots PicsDepots, err error) {
+func (app App) GetDepots() (depots PICSDepots, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Depots), &depots)
 	log.Err(err)
@@ -517,7 +544,7 @@ func (app App) GetGenres() (genres []Genre, err error) {
 		return genres, err
 	}
 
-	return GetGenresByID(ids)
+	return GetGenresByID(ids, []string{"id", "name"})
 }
 
 func (app App) GetCategoryIDs() (categories []int, err error) {
@@ -544,7 +571,7 @@ func (app App) GetTags() (tags []Tag, err error) {
 		return tags, err
 	}
 
-	return GetTagsByID(ids)
+	return GetTagsByID(ids, []string{"id", "name"})
 }
 
 func (app App) GetDeveloperIDs() (developers []int, err error) {
@@ -871,9 +898,4 @@ type AppReview struct {
 	Created    string        `json:"c"`
 	PlayerPath string        `json:"p"`
 	PlayerName string        `json:"n"`
-}
-
-type AppGenre struct {
-	ID   int
-	Name string
 }

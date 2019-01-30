@@ -106,7 +106,7 @@ func (i RabbitMessageProductKeyValues) GetAppConfig() (config db.PICSAppConfig, 
 	return config, launch
 }
 
-func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PicsDepots) {
+func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PICSDepots) {
 
 	depots.Extra = map[string]string{}
 
