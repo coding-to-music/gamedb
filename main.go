@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/social"
 	"github.com/gamedb/website/web"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -41,6 +42,7 @@ func main() {
 
 	// Log steam calls
 	go func() {
+		log.Info("Logging Steam calls")
 		for v := range helpers.GetSteamLogsChan() {
 			log.Info(log.ServiceGoogle, v.String(), log.LogNameSteam)
 		}
@@ -48,6 +50,7 @@ func main() {
 
 	// Log number of goroutines
 	go func() {
+		log.Info("Logging goroutines")
 		for {
 			time.Sleep(time.Minute * 10)
 			log.Info("Goroutines running: "+strconv.Itoa(runtime.NumGoroutine()), log.SeverityInfo, log.ServiceGoogle)
@@ -57,7 +60,8 @@ func main() {
 	// Instagram
 	if config.Config.IsProd() {
 		go func() {
-			helpers.RunInstagram()
+			log.Info("Starting Instagram")
+			social.RunInstagram()
 		}()
 	}
 

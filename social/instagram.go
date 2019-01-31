@@ -1,47 +1,115 @@
 package social
 
 import (
+	"math/rand"
 	"net/http"
+	"strconv"
 
 	"github.com/ahmdrz/goinsta"
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/robfig/cron"
 )
 
 var (
-	ig *goinsta.Instagram
+	instagram *goinsta.Instagram
 )
 
-func InitIG() {
+func RunInstagram() {
 
-	ig = goinsta.New(
-		config.Config.InstagramUsername.Get(),
-		config.Config.InstagramPassword.Get(),
-	)
+	c := cron.New()
+	err := c.AddFunc("0 0 12 * * *", uploadInstagram)
 
-	err := ig.Login()
 	if err != nil {
-		log.Err(err)
+		log.Critical(err)
+		return
 	}
 
-	log.Info("Logged into Instagram: " + ig.Account.Username)
+	c.Start()
+}
 
-	resp, err := http.Get("https://vignette.wikia.nocookie.net/cswikia/images/0/01/De_cache-overview.jpg")
+func getInstagram() (*goinsta.Instagram, error) {
+
+	if instagram == nil {
+
+		client := goinsta.New(
+			config.Config.InstagramUsername.Get(),
+			config.Config.InstagramPassword.Get(),
+		)
+
+		err := client.Login()
+		if err != nil {
+			return client, err
+		}
+
+		instagram = client
+	}
+
+	return instagram, nil
+}
+
+func uploadInstagram() {
+
+	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		log.Err(err)
+		return
 	}
+
+	gorm = gorm.Select([]string{"id", "name", "screenshots", "reviews_score"})
+	gorm = gorm.Where("JSON_DEPTH(screenshots) = ?", 3)
+	gorm = gorm.Where("name != ?", "")
+	gorm = gorm.Where("type = ?", "game")
+	gorm = gorm.Where("reviews_score >= ?", 90)
+	gorm = gorm.Order("RAND()")
+	gorm = gorm.Limit(1)
+
+	var apps []db.App
+	gorm = gorm.Find(&apps)
+	if gorm.Error != nil {
+		log.Err(gorm.Error)
+		return
+	}
+
+	if len(apps) == 0 {
+		log.Err("no apps found for instagram")
+		return
+	}
+
+	var app = apps[0]
+
+	screenshots, err := app.GetScreenshots()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var url = screenshots[rand.Intn(len(screenshots))].PathFull
+	if url == "" {
+		uploadInstagram()
+		return
+	}
+
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
 	//noinspection GoUnhandledErrorResult
 	defer resp.Body.Close()
 
-	_, err = ig.UploadPhoto(resp.Body, "", 0, 0)
+	ig, err := getInstagram()
 	if err != nil {
 		log.Err(err)
+		return
 	}
 
-	log.Info("IG uploaded")
-
-}
-
-func post() {
-
+	_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+", ID: "+strconv.Itoa(app.ID)+") #steamgames", 0, 0)
+	if err != nil {
+		log.Err(err)
+		return
+	}
 }

@@ -7,8 +7,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/social"
 )
 
 type RabbitMessageProduct struct {
@@ -334,9 +334,9 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 		// Tweet free US products
 		if code == steam.CountryUS && oldPrice > 0 && newPrice == 0 {
 
-			twitter := helpers.GetTwitter()
+			twitter := social.GetTwitter()
 
-			_, _, err = twitter.Statuses.Update(before.GetName()+" is now free! gamedb.online"+before.GetPath()+" #freegame #steam #gamedb", nil)
+			_, _, err = twitter.Statuses.Update(before.GetName()+" is now free! gamedb.online"+before.GetPath()+" #freegame #steam", nil)
 			if err != nil {
 				log.Critical(err)
 			}
