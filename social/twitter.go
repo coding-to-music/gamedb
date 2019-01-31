@@ -1,4 +1,4 @@
-package helpers
+package social
 
 import (
 	"github.com/dghubble/go-twitter/twitter"
