@@ -520,7 +520,7 @@ func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
 	var achievements []db.AppAchievement
 	for _, v := range schema.AvailableGameStats.Achievements {
 		achievements = append(achievements, db.AppAchievement{
-			Name:        v.Name,
+			Name:        v.DisplayName,
 			Icon:        v.Icon,
 			Description: v.Description,
 			Completed:   helpers.RoundFloatTo2DP(achievementsMap[v.Name]),
