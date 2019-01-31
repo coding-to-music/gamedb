@@ -340,8 +340,19 @@ func updatePlayerRecentGames(player *db.Player) error {
 		return err
 	}
 
-	// Encode to JSON bytes
-	b, err := json.Marshal(recentResponse.Games)
+	var games []db.ProfileRecentGame
+	for _, v := range recentResponse.Games {
+		games = append(games, db.ProfileRecentGame{
+			AppID:           v.AppID,
+			Name:            v.Name,
+			PlayTime2Weeks:  v.PlayTime2Weeks,
+			PlayTimeForever: v.PlayTimeForever,
+			ImgIconURL:      v.ImgIconURL,
+			ImgLogoURL:      v.ImgLogoURL,
+		})
+	}
+
+	b, err := json.Marshal(games)
 	if err != nil {
 		return err
 	}
@@ -530,15 +541,23 @@ func updatePlayerLevel(player *db.Player) error {
 
 func updatePlayerBans(player *db.Player) error {
 
-	bans, _, err := helpers.GetSteam().GetPlayerBans(player.PlayerID)
+	response, _, err := helpers.GetSteam().GetPlayerBans(player.PlayerID)
 	if err == steam.ErrNoUserFound {
 		return nil
 	} else if err != nil {
 		return err
 	}
 
-	player.NumberOfGameBans = bans.NumberOfGameBans
-	player.NumberOfVACBans = bans.NumberOfVACBans
+	player.NumberOfGameBans = response.NumberOfGameBans
+	player.NumberOfVACBans = response.NumberOfVACBans
+
+	var bans db.PlayerBans
+	bans.CommunityBanned = response.CommunityBanned
+	bans.VACBanned = response.VACBanned
+	bans.NumberOfVACBans = response.NumberOfVACBans
+	bans.DaysSinceLastBan = response.DaysSinceLastBan
+	bans.NumberOfGameBans = response.NumberOfGameBans
+	bans.EconomyBan = response.EconomyBan
 
 	// Encode to JSON bytes
 	b, err := json.Marshal(bans)

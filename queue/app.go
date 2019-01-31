@@ -609,7 +609,23 @@ func updateAppNews(app *db.App) error {
 			continue
 		}
 
-		kinds = append(kinds, db.CreateArticle(*app, v))
+		news := db.News{}
+		news.ArticleID = int64(v.GID)
+		news.Title = v.Title
+		news.URL = v.URL
+		news.IsExternal = v.IsExternalURL
+		news.Author = v.Author
+		news.Contents = v.Contents
+		news.FeedLabel = v.Feedlabel
+		news.Date = time.Unix(int64(v.Date), 0)
+		news.FeedName = v.Feedname
+		news.FeedType = int8(v.FeedType)
+
+		news.AppID = v.AppID
+		news.AppName = app.Name
+		news.AppIcon = app.Icon
+
+		kinds = append(kinds, news)
 		ids = append(ids, int64(v.GID))
 	}
 

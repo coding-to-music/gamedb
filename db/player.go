@@ -37,24 +37,24 @@ type Player struct {
 	CountryCode      string    `datastore:"country_code"`             //
 	StateCode        string    `datastore:"status_code,noindex"`      //
 	Level            int       `datastore:"level"`                    //
-	GamesRecent      string    `datastore:"games_recent,noindex"`     // JSON
+	GamesRecent      string    `datastore:"games_recent,noindex"`     // []ProfileRecentGame
 	GamesCount       int       `datastore:"games_count"`              //
-	GameStats        string    `datastore:"game_stats,noindex"`       // JSON
-	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // JSON
-	Badges           string    `datastore:"badges,noindex"`           // JSON
+	GameStats        string    `datastore:"game_stats,noindex"`       // PlayerAppStatsTemplate
+	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // struct
+	Badges           string    `datastore:"badges,noindex"`           // []ProfileBadge
 	BadgesCount      int       `datastore:"badges_count"`             //
-	BadgeStats       string    `datastore:"badge_stats,noindex"`      // JSON
+	BadgeStats       string    `datastore:"badge_stats,noindex"`      // ProfileBadgeStats
 	PlayTime         int       `datastore:"play_time"`                //
 	TimeCreated      time.Time `datastore:"time_created"`             //
 	LastLogOff       time.Time `datastore:"time_logged_off,noindex"`  //
 	PrimaryClanID    int       `datastore:"primary_clan_id,noindex"`  //
-	Friends          string    `datastore:"friends,noindex"`          // JSON
+	Friends          string    `datastore:"friends,noindex"`          // []ProfileFriend
 	FriendsCount     int       `datastore:"friends_count"`            //
 	Donated          int       `datastore:"donated"`                  //
-	Bans             string    `datastore:"bans,noindex"`             // JSON
+	Bans             string    `datastore:"bans,noindex"`             // PlayerBans
 	NumberOfVACBans  int       `datastore:"bans_cav"`                 //
 	NumberOfGameBans int       `datastore:"bans_game"`                //
-	Groups           []int     `datastore:"groups,noindex"`           //
+	Groups           []int     `datastore:"groups,noindex"`           // []int
 }
 
 func (p Player) GetKey() (key *datastore.Key) {
@@ -156,6 +156,12 @@ func (p Player) GetAllPlayerApps(sort string, limit int) (apps []PlayerApp, err 
 	return apps, err
 }
 
+func (p Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
+
+	err = helpers.Unmarshal([]byte(p.BadgeStats), &stats)
+	return stats, err
+}
+
 func (p Player) GetBadges() (badges []ProfileBadge, err error) {
 
 	if p.Badges == "" || p.Badges == "null" {
@@ -177,12 +183,6 @@ func (p Player) GetBadges() (badges []ProfileBadge, err error) {
 
 	err = helpers.Unmarshal(bytes, &badges)
 	return badges, err
-}
-
-func (p Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
-
-	err = helpers.Unmarshal([]byte(p.BadgeStats), &stats)
-	return stats, err
 }
 
 func (p Player) GetFriends() (friends []ProfileFriend, err error) {
@@ -208,9 +208,9 @@ func (p Player) GetFriends() (friends []ProfileFriend, err error) {
 	return friends, err
 }
 
-func (p Player) GetRecentGames() (games []steam.RecentlyPlayedGame, err error) {
+func (p Player) GetRecentGames() (games []ProfileRecentGame, err error) {
 
-	if p.GamesRecent == "" {
+	if p.GamesRecent == "" || p.GamesRecent == "null" {
 		return
 	}
 
@@ -726,4 +726,24 @@ type ProfileBadgeStats struct {
 	PlayerXPNeededToLevelUp    int
 	PlayerXPNeededCurrentLevel int
 	PercentOfLevel             int
+}
+
+// ProfileRecentGame
+type ProfileRecentGame struct {
+	AppID           int    `json:"i"`
+	Name            string `json:"n"`
+	PlayTime2Weeks  int    `json:"p"`
+	PlayTimeForever int    `json:"f"`
+	ImgIconURL      string `json:"c"`
+	ImgLogoURL      string `json:"l"`
+}
+
+// PlayerBans
+type PlayerBans struct {
+	CommunityBanned  bool   `json:"community_banned"`
+	VACBanned        bool   `json:"vac_banned"`
+	NumberOfVACBans  int    `json:"number_of_vac_bans"`
+	DaysSinceLastBan int    `json:"days_since_last_ban"`
+	NumberOfGameBans int    `json:"number_of_game_bans"`
+	EconomyBan       string `json:"economy_ban"`
 }

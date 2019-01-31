@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 )
 
@@ -55,24 +54,4 @@ func (article News) OutputForJSON(r *http.Request) (output []interface{}) {
 		article.AppIcon,                       // 8
 		path + "#news," + id,                  // 9
 	}
-}
-
-func CreateArticle(app App, resp steam.NewsArticle) (news News) {
-
-	news.ArticleID = int64(resp.GID)
-	news.Title = resp.Title
-	news.URL = resp.URL
-	news.IsExternal = resp.IsExternalURL
-	news.Author = resp.Author
-	news.Contents = resp.Contents
-	news.FeedLabel = resp.Feedlabel
-	news.Date = time.Unix(int64(resp.Date), 0)
-	news.FeedName = resp.Feedname
-	news.FeedType = int8(resp.FeedType)
-
-	news.AppID = resp.AppID
-	news.AppName = app.Name
-	news.AppIcon = app.Icon
-
-	return news
 }
