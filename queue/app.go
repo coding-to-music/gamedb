@@ -525,6 +525,16 @@ func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
 			Description: v.Description,
 			Completed:   helpers.RoundFloatTo2DP(achievementsMap[v.Name]),
 		})
+
+		delete(achievementsMap, v.Name)
+	}
+
+	// Add achievements that are in global but missing in schema
+	for k, v := range achievementsMap {
+		achievements = append(achievements, db.AppAchievement{
+			Name:      k,
+			Completed: helpers.RoundFloatTo2DP(v),
+		})
 	}
 
 	b, err := json.Marshal(achievements)
