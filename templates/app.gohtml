@@ -246,7 +246,7 @@
                                 {{ range $key, $value := .App.GetAchievements }}
                                     <tr>
                                         <td class="img" nowrap="nowrap">
-                                            <img src="{{ .Icon }}" class="rounded square" alt="{{ .Name }}">
+                                            <img src="{{ .GetIcon }}" class="rounded square" alt="{{ .Name }}">
                                             <span>{{ .Name }}</span>
                                         </td>
                                         <td>{{ .Description }}</td>

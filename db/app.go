@@ -721,7 +721,7 @@ func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []
 	}
 
 	db = db.Select(columns)
-	db = db.Where("JSON_DEPTH(" + column + ") = " + strconv.Itoa(depth))
+	db = db.Where("JSON_DEPTH("+column+") = ?", depth)
 	db = db.Order("id asc")
 
 	db = db.Find(&apps)
@@ -858,6 +858,13 @@ type AppAchievement struct {
 	Icon        string  `json:"i"`
 	Description string  `json:"d"`
 	Completed   float64 `json:"c"`
+}
+
+func (a AppAchievement) GetIcon() string {
+	if a.Icon == "" {
+		return DefaultAppIcon
+	}
+	return a.Icon
 }
 
 type AppStat struct {
