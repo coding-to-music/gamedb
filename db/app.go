@@ -453,11 +453,12 @@ func (app App) GetCoopTags() (string, error) {
 	return strings.Join(coopTags, ", "), nil
 }
 
-func (app App) GetAchievements() (achievements []AppAchievement, err error) {
+// Template
+func (app App) GetAchievements() (achievements []AppAchievement) {
 
-	err = helpers.Unmarshal([]byte(app.Achievements), &achievements)
+	err := helpers.Unmarshal([]byte(app.Achievements), &achievements)
 	log.Err(err)
-	return achievements, err
+	return achievements
 }
 
 func (app App) GetStats() (stats []AppStat, err error) {
