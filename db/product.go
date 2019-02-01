@@ -26,6 +26,7 @@ var ErrMissingCountryCode = errors.New("invalid code")
 type PICSExtended map[string]string
 type PICSAppCommon map[string]string
 type PICSAppUFS map[string]string
+type PICSController map[string]bool
 type PICSAppConfig map[string]string
 type PICSAppConfigLaunchItem struct {
 	Order             int      `json:"order"`

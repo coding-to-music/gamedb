@@ -12,31 +12,31 @@ import (
 )
 
 type Package struct {
-	AppIDs           string    `gorm:"not null;column:apps"`                     // JSON
-	AppItems         string    `gorm:"not null;column:app_items"`                // JSON (TEXT)
-	AppsCount        int       `gorm:"not null;column:apps_count"`               //
-	BillingType      int8      `gorm:"not null;column:billing_type"`             //
-	ChangeNumber     int       `gorm:"not null;column:change_id"`                //
-	ChangeNumberDate time.Time `gorm:"not null;column:change_number_date"`       //
-	ComingSoon       bool      `gorm:"not null;column:coming_soon"`              //
-	Controller       string    `gorm:"not null;column:controller"`               // JSON (TEXT)
-	CreatedAt        time.Time `gorm:"not null;column:created_at;type:datetime"` //
-	DepotIDs         string    `gorm:"not null;column:depot_ids"`                // JSON
-	Extended         string    `gorm:"not null;column:extended"`                 // JSON (TEXT)
-	Icon             string    `gorm:"not null;column:icon"`                     //
-	ID               int       `gorm:"not null;column:id;primary_key"`           //
-	ImageHeader      string    `gorm:"not null;column:image_header"`             //
-	ImageLogo        string    `gorm:"not null;column:image_logo"`               //
-	ImagePage        string    `gorm:"not null;column:image_page"`               //
-	LicenseType      int8      `gorm:"not null;column:license_type"`             //
-	Name             string    `gorm:"not null;column:name"`                     //
-	Platforms        string    `gorm:"not null;column:platforms"`                // JSON
-	Prices           string    `gorm:"not null;column:prices"`                   // JSON
-	PurchaseText     string    `gorm:"not null;column:purchase_text"`            //
-	ReleaseDate      string    `gorm:"not null;column:release_date"`             //
-	ReleaseDateUnix  int64     `gorm:"not null;column:release_date_unix"`        //
-	Status           int8      `gorm:"not null;column:status"`                   //
-	UpdatedAt        time.Time `gorm:"not null;column:updated_at;type:datetime"` //
+	AppIDs           string    `gorm:"not null;column:apps"`                             // []string
+	AppItems         string    `gorm:"not null;column:app_items"`                        // map[string]string
+	AppsCount        int       `gorm:"not null;column:apps_count"`                       //
+	BillingType      int8      `gorm:"not null;column:billing_type"`                     //
+	ChangeNumber     int       `gorm:"not null;column:change_id"`                        //
+	ChangeNumberDate time.Time `gorm:"not null;column:change_number_date;type:datetime"` //
+	ComingSoon       bool      `gorm:"not null;column:coming_soon"`                      //
+	Controller       string    `gorm:"not null;column:controller"`                       // JSON (TEXT)
+	CreatedAt        time.Time `gorm:"not null;column:created_at;type:datetime"`         //
+	DepotIDs         string    `gorm:"not null;column:depot_ids"`                        // []string
+	Extended         string    `gorm:"not null;column:extended"`                         // PICSExtended
+	Icon             string    `gorm:"not null;column:icon"`                             //
+	ID               int       `gorm:"not null;column:id;PRIMARY_KEY"`                   //
+	ImageHeader      string    `gorm:"not null;column:image_header"`                     //
+	ImageLogo        string    `gorm:"not null;column:image_logo"`                       //
+	ImagePage        string    `gorm:"not null;column:image_page"`                       //
+	LicenseType      int8      `gorm:"not null;column:license_type"`                     //
+	Name             string    `gorm:"not null;column:name"`                             //
+	Platforms        string    `gorm:"not null;column:platforms"`                        // []string
+	Prices           string    `gorm:"not null;column:prices"`                           // ProductPrices
+	PurchaseText     string    `gorm:"not null;column:purchase_text"`                    //
+	ReleaseDate      string    `gorm:"not null;column:release_date"`                     //
+	ReleaseDateUnix  int64     `gorm:"not null;column:release_date_unix"`                //
+	Status           int8      `gorm:"not null;column:status"`                           //
+	UpdatedAt        time.Time `gorm:"not null;column:updated_at;type:datetime"`         //
 }
 
 func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
@@ -52,20 +52,20 @@ func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 	if pack.AppIDs == "" {
 		pack.AppIDs = "[]"
 	}
-	if pack.Extended == "" {
-		pack.Extended = "{}"
-	}
 	if pack.AppItems == "" {
 		pack.AppItems = "{}"
 	}
 	if pack.Controller == "" {
 		pack.Controller = "{}"
 	}
-	if pack.Platforms == "" {
-		pack.Platforms = "[]"
-	}
 	if pack.DepotIDs == "" {
 		pack.DepotIDs = "[]"
+	}
+	if pack.Extended == "" {
+		pack.Extended = "{}"
+	}
+	if pack.Platforms == "" {
+		pack.Platforms = "[]"
 	}
 	if pack.Prices == "" {
 		pack.Prices = "{}"
