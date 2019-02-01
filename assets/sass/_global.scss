@@ -89,6 +89,11 @@ li.nav-item {
     }
 }
 
+// Toasts
+body #toast-container > div {
+    box-shadow: none;
+}
+
 // Top ads
 #ad-top {
     text-align: center;
