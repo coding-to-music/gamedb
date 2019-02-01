@@ -43,7 +43,11 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 				if err != nil {
 					return err
 				}
-				db.LogMode(true)
+				db = db.LogMode(true)
+				db = db.Set("gorm:association_autoupdate", false)
+				db = db.Set("gorm:association_autocreate", false)
+				db = db.Set("gorm:association_save_reference", false)
+				db = db.Set("gorm:save_associations", false)
 
 				gormConnectionDebug = db
 			}
@@ -60,8 +64,12 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 			if err != nil {
 				return err
 			}
-			db.LogMode(true)
 			db.SetLogger(MySQLLogger{})
+			db = db.LogMode(true)
+			db = db.Set("gorm:association_autoupdate", false)
+			db = db.Set("gorm:association_autocreate", false)
+			db = db.Set("gorm:association_save_reference", false)
+			db = db.Set("gorm:save_associations", false)
 
 			gormConnection = db
 		}

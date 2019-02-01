@@ -79,14 +79,20 @@ type App struct {
 	Version            string    `gorm:"not null;column:version"`                          //
 }
 
-func (app *App) BeforeSave(scope *gorm.Scope) error {
+func (app *App) BeforeCreate(scope *gorm.Scope) error {
+	return app.UpdateJSON(scope)
+}
 
-	log.Info("App BeforeSave: " + app.BundleIDs)
+func (app *App) BeforeSave(scope *gorm.Scope) error {
+	return app.UpdateJSON(scope)
+}
+
+func (app *App) UpdateJSON(scope *gorm.Scope) error {
 
 	if app.Achievements == "" {
 		app.Achievements = "[]"
 	}
-	if app.BundleIDs == "" {
+	if app.BundleIDs == "" || app.BundleIDs == "null" {
 		app.BundleIDs = "[]"
 	}
 	if app.Categories == "" {

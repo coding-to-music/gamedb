@@ -39,7 +39,15 @@ type Package struct {
 	UpdatedAt        time.Time `gorm:"not null;column:updated_at;type:datetime"` //
 }
 
+func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
+	return pack.UpdateJSON(scope)
+}
+
 func (pack *Package) BeforeSave(scope *gorm.Scope) error {
+	return pack.UpdateJSON(scope)
+}
+
+func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 
 	if pack.AppIDs == "" {
 		pack.AppIDs = "[]"
