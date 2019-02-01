@@ -593,6 +593,15 @@ func (app App) GetName() (name string) {
 	return getAppName(app.ID, app.Name)
 }
 
+func (app App) GetFirstScreenshot() string {
+
+	ss, err := app.GetScreenshots()
+	if err != nil || len(ss) == 0 {
+		return ""
+	}
+	return ss[0].PathFull
+}
+
 type SteamSpyAppResponse struct {
 	Appid     int    `json:"appid"`
 	Name      string `json:"name"`

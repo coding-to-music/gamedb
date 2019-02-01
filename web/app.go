@@ -57,6 +57,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := appTemplate{}
 	t.Fill(w, r, app.GetName(), "")
+	t.MetaImage = app.GetFirstScreenshot()
 	t.addAssetCarousel()
 	t.addAssetHighCharts()
 	t.App = app

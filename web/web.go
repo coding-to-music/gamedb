@@ -274,6 +274,7 @@ type GlobalTemplate struct {
 	Env         string        // Environment
 	CSSFiles    []Asset
 	JSFiles     []Asset
+	MetaImage   string
 
 	// These variables can't!
 	// Session
@@ -390,6 +391,14 @@ func (t GlobalTemplate) GetUserJSON() string {
 	log.Err(err)
 
 	return string(b)
+}
+func (t GlobalTemplate) GetMetaImage() (text string) {
+
+	if t.MetaImage == "" {
+		return "/assets/img/sa-bg-500x500.png"
+	}
+
+	return t.MetaImage
 }
 
 func (t GlobalTemplate) GetFooterText() (text string) {

@@ -44,10 +44,12 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ .Title }}">
     <meta name="twitter:description" content="{{ .Description }}">
+    <meta name="twitter:site" content="@game_db_online"/>
+    <meta name="twitter:image" content="{{ .GetMetaImage }}"/>
     <!-- Open Graph -->
     <meta name="og:title" content="{{ .Title }}">
     <meta name="og:description" content="{{ .Description }}">
-    <meta name="og:image" content="/assets/img/sa-bg-500x500.png">
+    <meta name="og:image" content="{{ .GetMetaImage }}">
     <meta name="og:url" content="{{ .Path }}">
     <meta name="og:locale" content="en_US">
     <meta name="og:type" content="website">
