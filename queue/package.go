@@ -245,6 +245,7 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 
 		// Get package details
 		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
+
 		if err != nil && err != steam.ErrPackageNotFound {
 			return err
 		}
@@ -254,11 +255,15 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 		if code == steam.CountryUS {
 
 			// Controller
-			b, err := json.Marshal(response.Data.Controller)
+			var controller = db.PICSController{}
+			for k, v := range response.Data.Controller {
+				controller[k] = v
+			}
+
+			b, err := json.Marshal(controller)
 			if err != nil {
 				return err
 			}
-
 			pack.Controller = string(b)
 
 			// Platforms
