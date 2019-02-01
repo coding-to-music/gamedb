@@ -338,7 +338,9 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 
 			_, _, err = twitter.Statuses.Update(before.GetName()+" is now free! gamedb.online"+before.GetPath()+" #freegame #steam", nil)
 			if err != nil {
-				log.Critical(err)
+				if !strings.Contains(err.Error(), "Status is a duplicate") {
+					log.Critical(err)
+				}
 			}
 		}
 	}
