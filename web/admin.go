@@ -572,7 +572,7 @@ func adminPublishers() {
 
 	wg.Wait()
 
-	gorm, err := db.GetMySQLClient(true)
+	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		cronLogErr(err)
 		return
