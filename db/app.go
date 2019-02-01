@@ -81,6 +81,8 @@ type App struct {
 
 func (app *App) BeforeSave(scope *gorm.Scope) error {
 
+	log.Info("App BeforeSave: " + app.BundleIDs)
+
 	if app.Achievements == "" {
 		app.Achievements = "[]"
 	}
