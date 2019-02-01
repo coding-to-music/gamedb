@@ -15,6 +15,7 @@ type Package struct {
 	AppIDs           string    `gorm:"not null;column:apps"`                             // []string
 	AppItems         string    `gorm:"not null;column:app_items"`                        // map[string]string
 	AppsCount        int       `gorm:"not null;column:apps_count"`                       //
+	BundleIDs        string    `gorm:"not null;column:bundle_ids"`                       // []int
 	BillingType      int8      `gorm:"not null;column:billing_type"`                     //
 	ChangeNumber     int       `gorm:"not null;column:change_id"`                        //
 	ChangeNumberDate time.Time `gorm:"not null;column:change_number_date;type:datetime"` //
@@ -54,6 +55,9 @@ func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 	}
 	if pack.AppItems == "" {
 		pack.AppItems = "{}"
+	}
+	if pack.BundleIDs == "" || pack.BundleIDs == "null" {
+		pack.BundleIDs = "[]"
 	}
 	if pack.Controller == "" {
 		pack.Controller = "{}"
