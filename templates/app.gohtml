@@ -30,37 +30,37 @@
                 {{end}}
                 {{if gt (len .DLC) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC ({{len .DLC}})</a>
+                        <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC</a>
                     </li>
                 {{end}}
                 {{if gt (len .Packages) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ len .Packages }})</a>
+                        <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages</a>
                     </li>
                 {{end}}
                 {{if gt (len .Bundles) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles ({{ len .Bundles }})</a>
+                        <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
                     </li>
                 {{end}}
                 {{if gt (len .App.GetAchievements) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ len .App.GetAchievements }})</a>
+                        <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
                     </li>
                 {{end}}
                 {{if gt (len .App.GetNewsIDs) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ len .App.GetNewsIDs }})</a>
+                        <a class="nav-link" data-toggle="tab" href="#news" role="tab">News</a>
                     </li>
                 {{end}}
                 {{if gt .App.GetReviews.GetTotal 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews ({{ comma .App.GetReviews.GetTotal }})</a>
+                        <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
                     </li>
                 {{end}}
                 {{if gt (len .App.GetScreenshots) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ len .App.GetScreenshots }})</a>
+                        <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media</a>
                     </li>
                 {{end}}
                 <li class="nav-item">
