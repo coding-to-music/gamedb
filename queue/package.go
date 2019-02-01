@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
@@ -80,7 +81,7 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.ChangeNumber >= message.ChangeNumber {
+	if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.ChangeNumber >= message.ChangeNumber && !config.Config.IsLocal() {
 		logInfo("Skipping, updated in last day")
 		return false, nil
 	}
