@@ -122,6 +122,17 @@ if ($appPage.length > 0) {
         }
     });
 
+    $(document).on('keydown', function (e) {
+        if ($('a.active[href="#media"]').length > 0) {
+            if (e.keyCode === 37) {
+                $carousel1.slick('slickPrev');
+            }
+            if (e.keyCode === 39) {
+                $carousel1.slick('slickNext');
+            }
+        }
+    });
+
     function resetVideos() {
         $('video').each(function (index) {
             $(this)[0].pause();
