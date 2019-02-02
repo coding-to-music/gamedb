@@ -50,14 +50,14 @@ func (d RabbitMessagePackage) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err error) {
+func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool) {
 
 	// Get message
 	rabbitMessage := RabbitMessagePackage{}
 
-	err = helpers.Unmarshal(msg.Body, &rabbitMessage)
+	err := helpers.Unmarshal(msg.Body, &rabbitMessage)
 	if err != nil {
-		return false, err
+		return handleError(err, false)
 	}
 
 	message := rabbitMessage.PICSPackageInfo
@@ -65,25 +65,25 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	logInfo("Consuming package: " + strconv.Itoa(message.ID))
 
 	if !db.IsValidPackageID(message.ID) {
-		return false, errors.New("invalid package ID: " + strconv.Itoa(message.ID))
+		return handleError(errors.New("invalid package ID: "+strconv.Itoa(message.ID)), false)
 	}
 
 	// Load current package
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	pack := db.Package{}
 	gorm = gorm.FirstOrInit(&pack, db.Package{ID: message.ID})
 	if gorm.Error != nil {
-		return true, gorm.Error
+		return handleError(gorm.Error, true)
 	}
 
 	// Skip if updated in last day, unless its from PICS
 	if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.ChangeNumber >= message.ChangeNumber && !config.Config.IsLocal() {
 		logInfo("Skipping, updated in last day")
-		return false, nil
+		return false
 	}
 
 	var packageBeforeUpdate = pack
@@ -91,14 +91,14 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	// Update from PICS
 	err = updatePackageFromPICS(&pack, rabbitMessage)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	// Update from API
 	err = updatePackageFromStore(&pack)
 	err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	// Set package name to app name
@@ -106,12 +106,12 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 
 		appIDs, err := pack.GetAppIDs()
 		if err != nil {
-			return true, err
+			return handleError(err, true)
 		}
 
 		app, err := db.GetApp(appIDs[0], []string{})
 		if err != nil && err != db.ErrRecordNotFound {
-			return true, err
+			return handleError(err, true)
 		} else if err == nil && pack.HasDefaultName() {
 			pack.Name = app.Name
 			pack.Icon = app.GetIcon()
@@ -121,24 +121,26 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool, err erro
 	// Save price changes
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	// Save new data
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
-		return true, gorm.Error
+		return handleError(gorm.Error, true)
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PagePackage)
 	if err != nil {
-		return true, err
-	} else if page.HasConnections() {
+		return handleError(err, true)
+	}
+
+	if page.HasConnections() {
 		page.Send(pack.ID)
 	}
 
-	return false, err
+	return false
 }
 
 func updatePackageFromPICS(pack *db.Package, rabbitMessage RabbitMessagePackage) (err error) {

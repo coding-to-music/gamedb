@@ -26,14 +26,14 @@ func (d RabbitMessageChanges) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool, err error) {
+func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool) {
 
 	// Get change
 	message := new(RabbitMessageChanges)
 
-	err = helpers.Unmarshal(msg.Body, message)
+	err := helpers.Unmarshal(msg.Body, message)
 	if err != nil {
-		return false, err
+		return handleError(err, false)
 	}
 
 	// Group products by change id
@@ -118,13 +118,17 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool, err erro
 	if config.Config.IsProd() {
 		err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
 		if err != nil {
-			return true, err
+			return handleError(err, true)
 		}
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageChanges)
-	if err == nil && page.HasConnections() {
+	if err != nil {
+		return handleError(err, true)
+	}
+
+	if page.HasConnections() {
 
 		// Make websocket
 		var ws [][]interface{}
@@ -136,7 +140,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool, err erro
 		page.Send(ws)
 	}
 
-	return false, nil
+	return false
 }
 
 type RabbitMessageChangesPICS struct {

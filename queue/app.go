@@ -61,14 +61,14 @@ func (d RabbitMessageApp) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
+func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool) {
 
 	// Get message payload
 	rabbitMessage := RabbitMessageApp{}
 
-	err = helpers.Unmarshal(msg.Body, &rabbitMessage)
+	err := helpers.Unmarshal(msg.Body, &rabbitMessage)
 	if err != nil {
-		return false, err
+		return handleError(err, false)
 	}
 
 	message := rabbitMessage.PICSAppInfo
@@ -76,73 +76,73 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	logInfo("Consuming app: " + strconv.Itoa(message.ID))
 
 	if !db.IsValidAppID(message.ID) {
-		return false, errors.New("invalid app ID: " + strconv.Itoa(message.ID))
+		return handleError(errors.New("invalid app ID: "+strconv.Itoa(message.ID)), false)
 	}
 
 	// Load current app
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	app := db.App{}
 	gorm = gorm.FirstOrInit(&app, db.App{ID: message.ID})
 	if gorm.Error != nil {
-		return true, gorm.Error
+		return handleError(err, true)
 	}
 
 	// Skip if updated in last day, unless its from PICS
 	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.ChangeNumber && !config.Config.IsLocal() {
 		logInfo("Skipping, updated in last day")
-		return false, nil
+		return false
 	}
 
 	var appBeforeUpdate = app
 
 	err = updateAppPICS(&app, rabbitMessage)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updateAppDetails(&app)
 	if err != nil && err != steam.ErrAppNotFound {
-		return true, err
+		return handleError(err, true)
 	}
 
 	schema, err := updateAppSchema(&app)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updateAppAchievements(&app, schema)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updateAppNews(&app)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updateAppReviews(&app)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updateAppSteamSpy(&app)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updateBundles(&app)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	// Save price changes
 	err = savePriceChanges(appBeforeUpdate, app)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	// Misc
@@ -152,18 +152,20 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool, err error) {
 	// Save new data
 	gorm = gorm.Save(&app)
 	if gorm.Error != nil {
-		return true, gorm.Error
+		return handleError(gorm.Error, true)
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageApp)
 	if err != nil {
-		return true, err
-	} else if page.HasConnections() {
+		return handleError(err, true)
+	}
+
+	if page.HasConnections() {
 		page.Send(app.ID)
 	}
 
-	return false, nil
+	return false
 }
 
 func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {

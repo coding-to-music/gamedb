@@ -44,14 +44,14 @@ func (d RabbitMessageBundle) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessageBundle) process(msg amqp.Delivery) (requeue bool, err error) {
+func (d RabbitMessageBundle) process(msg amqp.Delivery) (requeue bool) {
 
 	// Get message payload
 	message := RabbitMessageBundle{}
 
-	err = helpers.Unmarshal(msg.Body, &message)
+	err := helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		return false, err
+		return handleError(err, false)
 	}
 
 	logInfo("Consuming bundle: " + strconv.Itoa(message.BundleID))
@@ -59,52 +59,54 @@ func (d RabbitMessageBundle) process(msg amqp.Delivery) (requeue bool, err error
 	// Load current bundle
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	bundle := db.Bundle{}
 	gorm = gorm.FirstOrInit(&bundle, db.Bundle{ID: message.BundleID})
 	if gorm.Error != nil {
-		return true, gorm.Error
+		return handleError(gorm.Error, true)
 	}
 
 	appIDs, err := bundle.GetAppIDs()
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	if helpers.SliceHasInt(appIDs, message.AppID) {
 		logInfo("Skipping, bundle already has app")
-		return false, nil
+		return false
 	}
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
-		return true, err
+		return handleError(err, true)
 	}
 
 	// Save new data
 	gorm = gorm.Save(&bundle)
 	if gorm.Error != nil {
-		return true, gorm.Error
+		return handleError(gorm.Error, true)
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageBundle)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	} else if page.HasConnections() {
 		page.Send(bundle.ID)
 	}
 
 	page, err = websockets.GetPage(websockets.PageBundles)
 	if err != nil {
-		return true, err
-	} else if page.HasConnections() {
+		return handleError(err, true)
+	}
+
+	if page.HasConnections() {
 		page.Send(bundle.ID)
 	}
 
-	return false, nil
+	return false
 }
 
 func updateBundle(bundle *db.Bundle) (err error) {

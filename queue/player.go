@@ -53,30 +53,30 @@ func (d RabbitMessagePlayer) getRetryData() RabbitMessageDelay {
 	return RabbitMessageDelay{}
 }
 
-func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error) {
+func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool) {
 
 	// Get message
 	rabbitMessage := new(RabbitMessagePlayer)
 
-	err = helpers.Unmarshal(msg.Body, rabbitMessage)
+	err := helpers.Unmarshal(msg.Body, rabbitMessage)
 	if err != nil {
-		return false, err
+		return handleError(err, false)
 	}
 
 	var message = rabbitMessage.ProfileInfo
 
 	if !message.SteamID.IsValid {
-		return false, errors.New("not valid account id")
+		return handleError(errors.New("not valid account id"), false)
 	}
 
 	if !message.SteamID.IsIndividualAccount {
-		return false, errors.New("not individual account id")
+		return handleError(errors.New("not individual account id"), false)
 	}
 
 	// Convert steamID3 to steamID64
 	id64, err := helpers.GetSteam().GetID(strconv.Itoa(message.SteamID.AccountID))
 	if err != nil {
-		return false, err
+		return handleError(err, false)
 	}
 
 	logInfo("Consuming player: " + strconv.FormatInt(id64, 10))
@@ -85,7 +85,7 @@ func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error
 	player, err := db.GetPlayer(id64)
 	err = helpers.IgnoreErrors(err, datastore.ErrNoSuchEntity)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	player.PlayerID = id64
@@ -96,63 +96,65 @@ func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool, err error
 	// Get summary
 	err = updatePlayerSummary(&player)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updatePlayerGames(&player)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updatePlayerRecentGames(&player)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updatePlayerBadges(&player)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updatePlayerFriends(&player)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updatePlayerLevel(&player)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updatePlayerBans(&player)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = updatePlayerGroups(&player)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = db.CreateEvent(new(http.Request), player.PlayerID, db.EventRefresh)
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	err = player.Save()
 	if err != nil {
-		return true, err
+		return handleError(err, true)
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageProfile)
 	if err != nil {
-		return true, err
-	} else if page.HasConnections() {
+		return handleError(err, true)
+	}
+
+	if page.HasConnections() {
 		page.Send(strconv.FormatInt(player.PlayerID, 10))
 	}
 
-	return false, err
+	return false
 }
 
 type RabbitMessageProfilePICS struct {

@@ -52,7 +52,7 @@ type queueInterface interface {
 	getProduceQueue() RabbitQueue
 	getConsumeQueue() RabbitQueue
 	getRetryData() RabbitMessageDelay
-	process(msg amqp.Delivery) (requeue bool, err error)
+	process(msg amqp.Delivery) (requeue bool)
 }
 
 func init() {
@@ -235,30 +235,18 @@ func (s rabbitConsumer) consume() {
 					return
 				case msg := <-msgs:
 
-					requeue, err := s.Message.process(msg)
-					if err != nil {
-						logError(err, s.Message.getConsumeQueue().String())
-					}
-
-					// Might be getting rate limited
-					if err == steam.ErrNullResponse {
-						logInfo("Null response, sleeping for 10 seconds")
-						time.Sleep(time.Second * 10)
-					}
-
-					// No point in retrying if Steam has issues
-					if err == steam.ErrNullResponse {
-						logInfo("HTML response, sleeping for 10 seconds")
-						time.Sleep(time.Second * 10)
-					}
+					requeue := s.Message.process(msg)
 
 					if requeue {
 						logInfo("Requeuing")
 						err = s.requeueMessage(msg)
-						logError(err)
+						if err == nil {
+							err = msg.Ack(false)
+						}
+					} else {
+						err = msg.Ack(false)
 					}
 
-					err = msg.Ack(false)
 					logError(err)
 				}
 			}
@@ -311,6 +299,25 @@ func (s *rabbitConsumer) IncrementAttempts() {
 	var rounded = math.Round(minmaxed)
 
 	s.EndTime = s.StartTime.Add(time.Second * time.Duration(rounded))
+}
+
+func handleError(err error, requeue bool) bool {
+
+	logError(err)
+
+	// Might be getting rate limited
+	if err == steam.ErrNullResponse {
+		logInfo("Null response, sleeping for 10 seconds")
+		time.Sleep(time.Second * 10)
+	}
+
+	// No point in retrying if Steam has issues
+	if err == steam.ErrNullResponse {
+		logInfo("HTML response, sleeping for 10 seconds")
+		time.Sleep(time.Second * 10)
+	}
+
+	return requeue
 }
 
 //
