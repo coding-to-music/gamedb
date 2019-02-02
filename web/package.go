@@ -139,6 +139,8 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get price
 	t.Price = db.GetPriceFormatted(pack, session.GetCountryCode(r))
+	t.Prices, err = t.Package.GetPrices()
+	log.Err(err)
 
 	err = returnTemplate(w, r, "package", t)
 	log.Err(err, r)
@@ -151,6 +153,7 @@ type packageTemplate struct {
 	Bundles []db.Bundle
 	Banners map[string][]string
 	Price   db.ProductPriceFormattedStruct
+	Prices  db.ProductPrices
 }
 
 func packagePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {

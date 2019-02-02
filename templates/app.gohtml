@@ -23,7 +23,7 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
-                {{if gt (len .App.GetPrices) 0}}
+                {{if gt (len .Prices) 0}}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                     </li>
@@ -43,22 +43,22 @@
                         <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
                     </li>
                 {{end}}
-                {{if gt (len .App.GetAchievements) 0}}
+                {{if gt (len .Achievements) 0}}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
                     </li>
                 {{end}}
-                {{if gt (len .App.GetNewsIDs) 0}}
+                {{if gt (len .NewsIDs) 0}}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#news" role="tab">News</a>
                     </li>
                 {{end}}
-                {{if gt .App.GetReviews.GetTotal 0}}
+                {{if gt .Reviews.GetTotal 0}}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
                     </li>
                 {{end}}
-                {{if gt (len .App.GetScreenshots) 0}}
+                {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media</a>
                     </li>
@@ -96,8 +96,8 @@
                             <th scope="row" nowrap="nowrap" width="1%">Review Score</th>
                             <td>
                                 {{ .App.ReviewsScore }}%
-                                <small>({{ comma .App.GetReviews.Positive }}<i class="fas fa-angle-up"></i>
-                                    {{ comma .App.GetReviews.Negative }}<i class="fas fa-angle-down"></i>)
+                                <small>({{ comma .Reviews.Positive }}<i class="fas fa-angle-up"></i>
+                                    {{ comma .Reviews.Negative }}<i class="fas fa-angle-down"></i>)
                                 </small>
                             </td>
                         </tr>
@@ -180,7 +180,7 @@
                                 <th scope="col" nowrap="nowrap">Discount %</th>
                             </tr>
                             </thead>
-                            {{ range $key, $value := .App.GetPrices }}
+                            {{ range $key, $value := .Prices }}
                                 <tr data-code="{{ $key }}">
                                     <td class="img flag">
                                         <img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}" class="rounded">
@@ -232,7 +232,7 @@
                 {{/* App Achievements */}}
                 <div class="tab-pane" id="achievements" role="tabpanel">
 
-                    {{if gt (len .App.GetAchievements) 0}}
+                    {{if gt (len .Achievements) 0}}
 
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-datatable mb-0">
@@ -243,7 +243,7 @@
                                     <th scope="col" data-sort="desc">Completed</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .App.GetAchievements }}
+                                {{ range $key, $value := .Achievements }}
                                     <tr>
                                         <td class="img" nowrap="nowrap">
                                             <img src="{{ .GetIcon }}" class="rounded square" alt="{{ .Name }}">
@@ -268,7 +268,7 @@
                 {{/* News */}}
                 <div class="tab-pane" id="news" role="tabpanel">
 
-                    {{if gt (len .App.GetNewsIDs) 0}}
+                    {{if gt (len .NewsIDs) 0}}
 
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/apps/{{ .App.ID }}/ajax/news">
@@ -373,7 +373,7 @@
                 {{/* Reviews */}}
                 <div class="tab-pane" id="reviews" role="tabpanel">
 
-                    {{if gt .App.GetReviews.GetTotal 0}}
+                    {{if gt .Reviews.GetTotal 0}}
 
                         <table class="table">
                             <tbody>
@@ -385,11 +385,11 @@
                                 <th scope="row" width="20%">Positive / Negative</th>
                                 <td>
                                     <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .App.GetReviews.Positive }} ({{ printf "%.2f" .App.GetReviews.GetPositivePercent }}%)" style="width: {{ .App.GetReviews.GetPositivePercent }}%">
-                                            {{ comma .App.GetReviews.Positive }} ({{ printf "%.0f" .App.GetReviews.GetPositivePercent }}%)
+                                        <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .Reviews.Positive }} ({{ printf "%.2f" .Reviews.GetPositivePercent }}%)" style="width: {{ .Reviews.GetPositivePercent }}%">
+                                            {{ comma .Reviews.Positive }} ({{ printf "%.0f" .Reviews.GetPositivePercent }}%)
                                         </div>
-                                        <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .App.GetReviews.Negative }} ({{ printf "%.2f" .App.GetReviews.GetNegativePercent }}%)" style="width: {{ .App.GetReviews.GetNegativePercent }}%">
-                                            {{ comma .App.GetReviews.Negative }} ({{ printf "%.0f" .App.GetReviews.GetNegativePercent }}%)
+                                        <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .Reviews.Negative }} ({{ printf "%.2f" .Reviews.GetNegativePercent }}%)" style="width: {{ .Reviews.GetNegativePercent }}%">
+                                            {{ comma .Reviews.Negative }} ({{ printf "%.0f" .Reviews.GetNegativePercent }}%)
                                         </div>
                                     </div>
                                 </td>
@@ -397,7 +397,7 @@
                             </tbody>
                         </table>
 
-                        {{ range $key, $value := .App.GetReviews.Reviews }}
+                        {{ range $key, $value := .Reviews.Reviews }}
 
                             <div class="card mt-4">
                                 <div class="card-header" data-vote="{{ .Vote }}">
@@ -423,15 +423,15 @@
                 {{/* Media */}}
                 <div class="tab-pane" id="media" role="tabpanel">
 
-                    {{if gt (len .App.GetScreenshots) 0}}
+                    {{if gt (len .Screenshots) 0}}
 
                         <div id="carousel1">
-                            {{ range $key, $value := .App.GetScreenshots }}
+                            {{ range $key, $value := .Screenshots }}
                                 <div>
                                     <img src="{{ .PathFull }}" alt="Media {{ $key }}">
                                 </div>
                             {{ end }}
-                            {{ range $key, $value := .App.GetMovies }}
+                            {{ range $key, $value := .Movies }}
                                 <div>
                                     <video controls preload="metadata">
                                         <source src="{{ .PathFull }}" type="video/webm">
@@ -442,10 +442,10 @@
                         </div>
 
                         <div id="carousel2">
-                            {{ range $key, $value := .App.GetScreenshots }}
+                            {{ range $key, $value := .Screenshots }}
                                 <div class="thumb"><img src="{{ .PathThumbnail }}" alt="Thumbnail {{ $key }}"></div>
                             {{ end }}
-                            {{ range $key, $value := .App.GetMovies }}
+                            {{ range $key, $value := .Movies }}
                                 <div class="thumb">
                                     <img src="{{ .PathThumbnail }}" alt="{{ .Title }}">
                                     <i class="fas fa-play"></i>

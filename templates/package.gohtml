@@ -13,15 +13,21 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
-                </li>
+                {{if gt (len .Apps) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps</a>
+                    </li>
+                {{ end }}
+                {{if gt (len .Bundles) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
+                    </li>
+                {{ end }}
+                {{if gt (len .Prices) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
+                    </li>
+                {{ end }}
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
                 </li>
@@ -192,7 +198,7 @@
                                 <th scope="col">Individual</th>
                             </tr>
                             </thead>
-                            {{ range $key, $value := .Package.GetPrices }}
+                            {{ range $key, $value := .Prices }}
                                 <tr data-code="{{ $key }}">
                                     <td class="img flag">
                                         <img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}" class="rounded">

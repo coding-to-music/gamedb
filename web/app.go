@@ -186,20 +186,39 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Banners = banners
 
+	// Functions that get called multiple times in the template
+	t.Achievements = t.App.GetAchievements()
+	t.NewsIDs, err = t.App.GetNewsIDs()
+	log.Err(err)
+	t.Prices, err = t.App.GetPrices()
+	log.Err(err)
+	t.Screenshots, err = t.App.GetScreenshots()
+	log.Err(err)
+	t.Movies, err = t.App.GetMovies()
+	log.Err(err)
+	t.Reviews, err = t.App.GetReviews()
+	log.Err(err)
+
 	err = returnTemplate(w, r, "app", t)
 	log.Err(err, r)
 }
 
 type appTemplate struct {
 	GlobalTemplate
-	App      db.App
-	Price    db.ProductPriceFormattedStruct
-	Packages []db.Package
-	Bundles  []db.Bundle
-	DLC      []db.App
-	Tags     []db.Tag
-	Genres   []db.Genre
-	Banners  map[string][]string
+	Achievements []db.AppAchievement
+	App          db.App
+	Banners      map[string][]string
+	Bundles      []db.Bundle
+	DLC          []db.App
+	Genres       []db.Genre
+	Movies       []db.AppVideo
+	NewsIDs      []int64
+	Packages     []db.Package
+	Price        db.ProductPriceFormattedStruct
+	Prices       db.ProductPrices
+	Reviews      db.AppReviewSummary
+	Screenshots  []db.AppImage
+	Tags         []db.Tag
 }
 
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
