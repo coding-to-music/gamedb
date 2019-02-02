@@ -113,18 +113,6 @@
                             <th scope="row" nowrap="nowrap" width="1%">Release State</th>
                             <td>{{ .App.GetReleaseDateNice }} ({{ .App.GetReleaseState }})</td>
                         </tr>
-                        {{ if ne .App.Version "" }}
-                            <tr>
-                                <th scope="row" nowrap="nowrap" width="1%">Version</th>
-                                <td>{{ .App.Version }}</td>
-                            </tr>
-                        {{ end }}
-                        {{ if gt .App.ChangeNumber 0 }}
-                            <tr>
-                                <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
-                                <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
-                            </tr>
-                        {{ end }}
                         {{ if gt (len .App.GetPlatforms) 0 }}
                             <tr>
                                 <th scope="row" nowrap="nowrap" width="1%">Platforms</th>
@@ -468,9 +456,12 @@
                         <div class="card-header bg-light text-white">
 
                             <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
+                                </li>
                                 {{if gt (len .App.GetExtended) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="tab" href="#dev-extended" role="tab">Extended Values</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-extended" role="tab">Extended Values</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetCommon) 0}}
@@ -522,8 +513,32 @@
                         <div class="card-body">
                             <div class="tab-content" id="tab-content-dev">
 
+                                {{/* Details */}}
+                                <div class="tab-pane show active" id="dev-details" role="tabpanel">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" width="1%">Version</th>
+                                                <td>{{ .App.Version }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
+                                                <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </div>
+
                                 {{/* Extended */}}
-                                <div class="tab-pane show active" id="dev-extended" role="tabpanel">
+                                <div class="tab-pane" id="dev-extended" role="tabpanel">
 
                                     <div class="table-responsive">
                                         <table class="table table-hover table-striped table-datatable mb-0">
