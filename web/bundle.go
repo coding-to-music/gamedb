@@ -64,12 +64,12 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 		appIDs, err := bundle.GetAppIDs()
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
 		t.Apps, err = db.GetAppsByID(appIDs, []string{})
-		log.Err(err)
+		log.Err(err, r)
 
 	}(bundle)
 
@@ -81,12 +81,12 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 		appIDs, err := bundle.GetPackageIDs()
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
 		t.Packages, err = db.GetPackages(appIDs, []string{})
-		log.Err(err)
+		log.Err(err, r)
 
 	}()
 

@@ -94,13 +94,13 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count before limitting
 		gorm.Count(&count)
-		log.Err(gorm.Error)
+		log.Err(gorm.Error, r)
 
 		gorm = gorm.Limit(100)
 		gorm = gorm.Offset(query.Start)
 
 		gorm = gorm.Find(&apps)
-		log.Err(gorm.Error)
+		log.Err(gorm.Error, r)
 	}
 
 	var code = session.GetCountryCode(r)
@@ -140,13 +140,13 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count before limitting
 		gorm.Count(&count)
-		log.Err(gorm.Error)
+		log.Err(gorm.Error, r)
 
 		gorm = gorm.Limit(100)
 		gorm = gorm.Offset(query.Start)
 
 		gorm = gorm.Find(&packages)
-		log.Err(gorm.Error)
+		log.Err(gorm.Error, r)
 	}
 
 	var code = session.GetCountryCode(r)

@@ -98,7 +98,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count
 		gorm = gorm.Count(&recordsFiltered)
-		log.Err(gorm.Error)
+		log.Err(gorm.Error, r)
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
@@ -107,7 +107,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get rows
 		gorm = gorm.Find(&products)
-		log.Err(gorm.Error)
+		log.Err(gorm.Error, r)
 	}()
 
 	// Get total
