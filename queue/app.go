@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -716,6 +717,11 @@ func updateAppReviews(app *db.App) error {
 
 		app.ReviewsScore = helpers.RoundFloatTo2DP(score * 100)
 	}
+
+	// Sort by upvotes
+	sort.Slice(reviews.Reviews, func(i, j int) bool {
+		return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
+	})
 
 	// Save to App
 	b, err := json.Marshal(reviews)
