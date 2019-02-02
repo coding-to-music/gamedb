@@ -460,7 +460,7 @@ func updatePlayerFriends(player *db.Player) error {
 
 	// This endpoint seems to error if the player is private, so it's probably fine.
 	err2, ok := err.(steam.Error)
-	if ok && (err2.Code() == 401) {
+	if ok && (err2.Code == 401) {
 		return nil
 	}
 	if err != nil {
@@ -578,7 +578,7 @@ func updatePlayerGroups(player *db.Player) error {
 
 	// This endpoint seems to error if the player is private, so it's probably fine.
 	err2, ok := err.(steam.Error)
-	if ok && (err2.Code() == 403) {
+	if ok && (err2.Code == 403) {
 		return nil
 	}
 	if err != nil {

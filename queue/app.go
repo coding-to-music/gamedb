@@ -506,7 +506,7 @@ func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
 
 	// This endpoint seems to error if the app has no achievement data, so it's probably fine.
 	err2, ok := err.(steam.Error)
-	if ok && (err2.Code() == 403 || err2.Code() == 500) {
+	if ok && (err2.Code == 403 || err2.Code == 500) {
 		return nil
 	}
 	if err != nil {
@@ -555,7 +555,7 @@ func updateAppSchema(app *db.App) (schema steam.SchemaForGame, err error) {
 
 	// This endpoint seems to error if the app has no schema, so it's probably fine.
 	err2, ok := err.(steam.Error)
-	if ok && (err2.Code() == 403) {
+	if ok && (err2.Code == 403) {
 		return schema, nil
 	}
 	if err != nil {
@@ -588,7 +588,7 @@ func updateAppNews(app *db.App) error {
 
 	// This endpoint seems to error if the app has no news, so it's probably fine.
 	err2, ok := err.(steam.Error)
-	if ok && (err2.Code() == 403) {
+	if ok && (err2.Code == 403) {
 		return nil
 	}
 	if err != nil {

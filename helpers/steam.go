@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/log"
 )
 
 var steamClient *steam.Steam
@@ -16,7 +17,7 @@ func GetSteam() *steam.Steam {
 		steamClient = new(steam.Steam)
 		steamClient.SetKey(config.Config.SteamAPIKey)
 		steamClient.SetUserAgent("http://gamedb.online")
-		steamClient.SetLogChannel(GetSteamLogsChan())
+		steamClient.SetLogger(steamLogger{})
 		steamClient.SetAPIRateLimit(time.Millisecond*1000, 10)
 		steamClient.SetStoreRateLimit(time.Millisecond*1600, 10)
 
@@ -25,13 +26,10 @@ func GetSteam() *steam.Steam {
 	return steamClient
 }
 
-var steamLogs chan steam.Log
+type steamLogger struct {
+}
 
-func GetSteamLogsChan() chan steam.Log {
+func (l steamLogger) Write(i steam.Log) {
 
-	if steamLogs == nil {
-		steamLogs = make(chan steam.Log)
-	}
-
-	return steamLogs
+	log.Info(i.String(), log.ServiceGoogle, log.LogNameSteam)
 }

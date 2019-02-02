@@ -1142,7 +1142,7 @@ func adminDev() {
 			players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
 
 			err2, ok := err.(steam.Error)
-			if ok && (err2.Code() == 404) {
+			if ok && (err2.Code == 404) {
 				fmt.Println("-")
 				return
 			}

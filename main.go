@@ -40,14 +40,6 @@ func main() {
 		}()
 	}
 
-	// Log steam calls
-	go func() {
-		log.Info("Logging Steam calls")
-		for v := range helpers.GetSteamLogsChan() {
-			log.Info(log.ServiceGoogle, v.String(), log.LogNameSteam)
-		}
-	}()
-
 	// Log number of goroutines
 	go func() {
 		log.Info("Logging goroutines")
