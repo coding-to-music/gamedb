@@ -168,7 +168,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		if len(demoIDs) > 0 {
 
-			gorm, err := db.GetMySQLClient(true)
+			gorm, err := db.GetMySQLClient()
 			if err != nil {
 				log.Err(err, r)
 				return
