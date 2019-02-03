@@ -9,7 +9,9 @@ if ($playerPage.length > 0) {
     }
 
     // Update link
-    $('[data-update-id]').on('click', function (e) {
+    $('a[data-update-id]').on('click', function (e) {
+
+        e.preventDefault();
 
         const $link = $(this);
 
@@ -30,8 +32,6 @@ if ($playerPage.length > 0) {
             dataType: 'json',
             cache: false
         });
-
-        return false;
     });
 
     // Websockets

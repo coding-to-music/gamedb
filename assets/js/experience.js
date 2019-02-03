@@ -28,7 +28,7 @@ if ($xpPage.length > 0) {
         }
     }
 
-    $xpPage.on("click", "[data-level]", function () {
+    $xpPage.on("click", "tr[data-level]", function (e) {
 
         const level = $(this).attr('data-level');
 
@@ -38,8 +38,6 @@ if ($xpPage.length > 0) {
 
         scrollTo = 'tr[data-level=' + level + ']';
         scroll();
-
-        return false;
     });
 
     // Calculator
@@ -77,7 +75,6 @@ if ($xpPage.length > 0) {
     $('#calculate').click(function (e) {
         e.preventDefault();
         update();
-        return false;
     });
 
     $(document).ready(scroll);
