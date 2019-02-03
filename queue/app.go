@@ -474,6 +474,19 @@ func updateAppDetails(app *db.App) error {
 
 			app.Platforms = string(b)
 
+			// Demos
+			var demos []int
+			for _, v := range response.Data.Demos {
+				demos = append(demos, int(v.AppID))
+			}
+
+			b, err = json.Marshal(demos)
+			if err != nil {
+				return err
+			}
+
+			app.DemoIDs = string(b)
+
 			// Other
 			app.Name = response.Data.Name
 			app.Type = response.Data.Type

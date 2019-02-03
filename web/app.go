@@ -154,6 +154,36 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
+	// Get demos
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		demoIDs, err := app.GetDemoIDs()
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		var demos []db.App
+		gorm = gorm.Where("demos IN ?", demoIDs)
+		gorm = gorm.Find(&demos)
+		if gorm.Error != nil {
+			log.Err(gorm.Error, r)
+			return
+		}
+
+		t.Demos = demos
+
+	}()
+
 	// Get DLC
 	wg.Add(1)
 	go func() {
@@ -209,6 +239,7 @@ type appTemplate struct {
 	App          db.App
 	Banners      map[string][]string
 	Bundles      []db.Bundle
+	Demos        []db.App
 	DLC          []db.App
 	Genres       []db.Genre
 	Movies       []db.AppVideo

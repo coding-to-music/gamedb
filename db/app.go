@@ -37,6 +37,7 @@ type App struct {
 	CreatedAt          time.Time `gorm:"not null;column:created_at;type:datetime"`         //
 	Depots             string    `gorm:"not null;column:depots"`                           // PICSDepots
 	Developers         string    `gorm:"not null;column:developers;type:json"`             // []int
+	DemoIDs            string    `gorm:"not null;column:demo_ids;type:json"`               // []int
 	DLC                string    `gorm:"not null;column:dlc;type:json"`                    // []int
 	DLCCount           int       `gorm:"not null;column:dlc_count"`                        //
 	Extended           string    `gorm:"not null;column:extended"`                         // PICSExtended
@@ -109,6 +110,9 @@ func (app *App) UpdateJSON(scope *gorm.Scope) error {
 	}
 	if app.Developers == "" {
 		app.Developers = "[]"
+	}
+	if app.DemoIDs == "" {
+		app.DemoIDs = "[]"
 	}
 	if app.DLC == "" {
 		app.DLC = "[]"
@@ -474,6 +478,13 @@ func (app App) GetStats() (stats []AppStat, err error) {
 	err = helpers.Unmarshal([]byte(app.Stats), &stats)
 	log.Err(err)
 	return stats, err
+}
+
+func (app App) GetDemoIDs() (demos []int, err error) {
+
+	err = helpers.Unmarshal([]byte(app.DemoIDs), &demos)
+	log.Err(err)
+	return demos, err
 }
 
 func (app App) GetPlatforms() (platforms []string, err error) {
