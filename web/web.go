@@ -444,7 +444,7 @@ func (t GlobalTemplate) IsStatsPage() bool {
 }
 
 func (t GlobalTemplate) IsMorePage() bool {
-	return helpers.SliceHasString([]string{"experience", "changes", "queues", "info"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString([]string{"contact", "experience", "changes", "queues", "info"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) isLoggedIn() bool {
