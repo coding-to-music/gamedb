@@ -119,6 +119,16 @@
                                 <td class="platforms">{{ .App.GetPlatformImages }}</td>
                             </tr>
                         {{ end }}
+                        {{ if gt (len .Demos) 0 }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">Genres</th>
+                                <td>
+                                    {{ range $key, $value := .Demos }}
+                                        <a class="badge badge-success" href="{{ .GetPath }}">{{ .GetName }}</a>
+                                    {{ end }}
+                                </td>
+                            </tr>
+                        {{ end }}
                         {{ if gt (len .Genres) 0 }}
                             <tr>
                                 <th scope="row" nowrap="nowrap" width="1%">Genres</th>

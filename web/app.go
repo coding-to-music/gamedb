@@ -166,21 +166,24 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		gorm, err := db.GetMySQLClient()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
+		if len(demoIDs) > 0 {
 
-		var demos []db.App
-		gorm = gorm.Where("demos IN ?", demoIDs)
-		gorm = gorm.Find(&demos)
-		if gorm.Error != nil {
-			log.Err(gorm.Error, r)
-			return
-		}
+			gorm, err := db.GetMySQLClient(true)
+			if err != nil {
+				log.Err(err, r)
+				return
+			}
 
-		t.Demos = demos
+			var demos []db.App
+			gorm = gorm.Where("id IN (?)", demoIDs)
+			gorm = gorm.Find(&demos)
+			if gorm.Error != nil {
+				log.Err(gorm.Error, r)
+				return
+			}
+
+			t.Demos = demos
+		}
 
 	}()
 
