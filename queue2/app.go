@@ -1,8 +1,6 @@
 package queue
 
 import (
-	"strconv"
-
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
@@ -28,20 +26,13 @@ func (q AppQueue) process(msg amqp.Delivery, queue QueueName) (requeue bool) {
 		Message: AppMessage{},
 	}
 
-	// Get message payload
-	rabbitMessage := BaseMessage{
-		Message: AppMessage{},
-	}
-
-	err = helpers.Unmarshal(msg.Body, &rabbitMessage)
+	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		log.Err(err)
 		return false
 	}
 
-	message := rabbitMessage.PICSAppInfo
-
-	logInfo("Consuming app: " + strconv.Itoa(message.ID))
+	logInfo("Consuming app")
 
 	return false
 }

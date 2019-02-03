@@ -3,11 +3,9 @@ package queue
 import (
 	"encoding/json"
 	"errors"
-	"math"
 	"sync"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
@@ -51,26 +49,53 @@ var (
 )
 
 type BaseMessage struct {
+	Message interface{}
+
+	// Retry info
 	FirstSeen   time.Time
 	Attempt     int
 	NextAttempt time.Time
-	Message     interface{}
+
+	// Limits
+	MaxAttempts int
+	MaxTime     time.Duration
 }
 
-func (q *BaseMessage) IncrementAttempts() {
+func (q *BaseMessage) init() {
 
-	// Increment attemp
+	if q.FirstSeen.IsZero() {
+		q.FirstSeen = time.Now()
+	}
+
+}
+
+func (q BaseMessage) requeueMessage(msg amqp.Delivery) error {
+
 	q.Attempt++
 
+	m := DelayMessage{}
+	m.OriginalMessage = msg.Body
+	m.OriginalQueue = q.Name
+
 	// Update end time
-	var min float64 = 1
-	var max float64 = 600
+	// var min float64 = 1
+	// var max float64 = 600
 
-	var seconds = math.Pow(1.3, float64(q.Attempt))
-	var minmaxed = math.Min(min+seconds, max)
-	var rounded = math.Round(minmaxed)
+	// var seconds = math.Pow(1.3, float64(q.Attempt))
+	// var minmaxed = math.Min(min+seconds, max)
+	// var rounded = math.Round(minmaxed)
 
-	q.EndTime = q.StartTime.Add(time.Second * time.Duration(rounded))
+	// q.EndTime = q.StartTime.Add(time.Second * time.Duration(rounded))
+
+	b, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+
+	err = produce(QueueDelaysData, b)
+	log.Err(err)
+
+	return nil
 }
 
 type queueInterface interface {
@@ -86,31 +111,6 @@ type BaseQueue struct {
 
 func (q BaseQueue) setQueueName(name QueueName) {
 	q.Name = name
-}
-
-func (q BaseQueue) requeueMessage(msg amqp.Delivery) error {
-
-	delayeMessage := rabbitConsumer{
-		Attempt:   q.Attempt,
-		StartTime: q.StartTime,
-		EndTime:   q.EndTime,
-		Message: RabbitMessageDelay{
-			OriginalMessage: string(msg.Body),
-			OriginalQueue:   q.Message.getConsumeQueue(),
-		},
-	}
-
-	delayeMessage.IncrementAttempts()
-
-	b, err := json.Marshal(delayeMessage)
-	if err != nil {
-		return err
-	}
-
-	err = Produce(QueueDelaysData, b)
-	log.Err(err)
-
-	return nil
 }
 
 func (q BaseQueue) consume() {
@@ -168,18 +168,6 @@ func (q BaseQueue) consume() {
 
 					requeue := q.process(msg, q.Name)
 
-					// Might be getting rate limited
-					if err == steam.ErrNullResponse {
-						logInfo("Null response, sleeping for 10 seconds")
-						time.Sleep(time.Second * 10)
-					}
-
-					// No point in retrying if Steam has issues
-					if err == steam.ErrNullResponse {
-						logInfo("HTML response, sleeping for 10 seconds")
-						time.Sleep(time.Second * 10)
-					}
-
 					if requeue {
 						logInfo("Requeuing")
 						err = q.requeueMessage(msg)
@@ -207,7 +195,7 @@ func RunConsumers() {
 	}
 }
 
-func Produce(queue QueueName, data []byte) (err error) {
+func produce(queue QueueName, data []byte) (err error) {
 
 	// log.Info("Producing to: " + q.Message.getProduceQueue().String())s
 

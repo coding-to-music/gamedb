@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
 )
 
 type DelayMessage struct {
 	BaseMessage
 	OriginalQueue   QueueName
-	OriginalMessage string
+	OriginalMessage []byte
 }
 
 type DelayQueue struct {
@@ -21,9 +22,17 @@ type DelayQueue struct {
 
 func (q DelayQueue) process(msg amqp.Delivery, queue QueueName) (requeue bool) {
 
-	if len(msg.Body) == 0 {
+	var err error
+	var payload = BaseMessage{
+		Message: DelayMessage{},
+	}
+
+	err = helpers.Unmarshal(msg.Body, &payload)
+	if err != nil {
+		log.Err(err)
 		return false
 	}
+
 
 	delayMessage := RabbitMessageDelay{}
 
@@ -48,7 +57,7 @@ func (q DelayQueue) process(msg amqp.Delivery, queue QueueName) (requeue bool) {
 			return false
 		}
 
-		err = Produce(delayMessage.getConsumeQueue(), b)
+		err = produce(delayMessage.getConsumeQueue(), b)
 		logError(err)
 
 	} else {
@@ -56,7 +65,7 @@ func (q DelayQueue) process(msg amqp.Delivery, queue QueueName) (requeue bool) {
 		// Add to original queue
 		logInfo("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
 
-		err = Produce(delayMessage.getConsumeQueue(), []byte(delayMessage.OriginalMessage))
+		err = produce(delayMessage.getConsumeQueue(), []byte(delayMessage.OriginalMessage))
 	}
 
 	if err != nil {
