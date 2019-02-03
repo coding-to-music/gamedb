@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
@@ -20,8 +21,10 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	// Try to stop memcache failing on first calls..
+	// Preload connections
 	helpers.GetMemcache()
+	_, err := db.GetMySQLClient()
+	log.Critical(err)
 
 	// Web server
 	if config.Config.EnableWebserver.GetBool() {
