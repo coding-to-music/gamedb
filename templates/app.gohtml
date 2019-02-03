@@ -121,7 +121,7 @@
                         {{ end }}
                         {{ if gt (len .Demos) 0 }}
                             <tr>
-                                <th scope="row" nowrap="nowrap" width="1%">Genres</th>
+                                <th scope="row" nowrap="nowrap" width="1%">Demos</th>
                                 <td>
                                     {{ range $key, $value := .Demos }}
                                         <a class="badge badge-success" href="{{ .GetPath }}">{{ .GetName }}</a>
