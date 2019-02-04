@@ -1,4 +1,4 @@
-package queue
+package queue2
 
 import (
 	"encoding/json"
@@ -16,17 +16,17 @@ type QueueName string
 
 const (
 	// C#
-	QueueApps     QueueName = "Steam_Apps"
-	QueuePackages QueueName = "Steam_Packages"
-	QueueProfiles QueueName = "Steam_Profiles"
+	QueueAppsCS     QueueName = "GameDB_Apps_CS"
+	QueuePackagesCS QueueName = "GameDB_Packages_CS"
+	QueueProfilesCS QueueName = "GameDB_Profiles_CS"
 
 	// Go
-	QueueAppsData     QueueName = "Steam_Apps_Data"
-	QueueBundlesData  QueueName = "Steam_Bundles_Data"
-	QueueChangesData  QueueName = "Steam_Changes_Data"
-	QueueDelaysData   QueueName = "Steam_Delays_Data"
-	QueuePackagesData QueueName = "Steam_Packages_Data"
-	QueueProfilesData QueueName = "Steam_Profiles_Data"
+	QueueAppsGo     QueueName = "GameDB_Apps_Go"
+	QueueBundlesGo  QueueName = "GameDB_Bundles_Go"
+	QueueChangesGo  QueueName = "GameDB_Changes_Go"
+	QueueDelaysGo   QueueName = "GameDB_Delays_Go"
+	QueuePackagesGo QueueName = "GameDB_Packages_Go"
+	QueueProfilesGo QueueName = "GameDB_Profiles_Go"
 )
 
 var (
@@ -42,26 +42,27 @@ var (
 	consumerCloseChannel = make(chan *amqp.Error)
 	producerCloseChannel = make(chan *amqp.Error)
 
-	queues = map[QueueName]queueInterface{
-		QueueAppsData:   AppQueue{},
-		QueueDelaysData: DelayQueue{},
+	queues = map[QueueName]baseQueue{
+		QueueAppsGo:   baseQueue{queue: &AppQueue{}},
+		QueueDelaysGo: baseQueue{queue: &DelayQueue{}},
 	}
 )
 
-type BaseMessage struct {
-	Message interface{}
+type baseMessage struct {
+	Message   interface{}
+	FirstSeen time.Time
+	Attempt   int
 
 	// Retry info
-	FirstSeen   time.Time
-	Attempt     int
 	NextAttempt time.Time
+	Queue       string
 
 	// Limits
 	MaxAttempts int
 	MaxTime     time.Duration
 }
 
-func (q *BaseMessage) init() {
+func (q *baseMessage) init() {
 
 	if q.FirstSeen.IsZero() {
 		q.FirstSeen = time.Now()
@@ -69,13 +70,17 @@ func (q *BaseMessage) init() {
 
 }
 
-func (q BaseMessage) requeueMessage(msg amqp.Delivery) error {
+func (q baseMessage) ack(msg amqp.Delivery) {
+
+	err := msg.Ack(false)
+	log.Err(err)
+}
+
+func (q baseMessage) ackRetry(msg amqp.Delivery, queue QueueName) {
+
+	logInfo("Requeuing")
 
 	q.Attempt++
-
-	m := DelayMessage{}
-	m.OriginalMessage = msg.Body
-	m.OriginalQueue = q.Name
 
 	// Update end time
 	// var min float64 = 1
@@ -87,33 +92,32 @@ func (q BaseMessage) requeueMessage(msg amqp.Delivery) error {
 
 	// q.EndTime = q.StartTime.Add(time.Second * time.Duration(rounded))
 
-	b, err := json.Marshal(m)
-	if err != nil {
-		return err
-	}
-
-	err = produce(QueueDelaysData, b)
+	err := produce(QueueDelaysGo, q)
 	log.Err(err)
 
-	return nil
+	if err == nil {
+		err = msg.Ack(false)
+		log.Err(err)
+	}
 }
 
 type queueInterface interface {
 	setQueueName(QueueName)
-	process(msg amqp.Delivery, queue QueueName) (requeue bool)
+	process(msg amqp.Delivery)
 	consume()
 }
 
-type BaseQueue struct {
-	queueInterface
-	Name QueueName
+type baseQueue struct {
+	queue     queueInterface
+	name      QueueName
+	batchSize int // Not in use yet
 }
 
-func (q BaseQueue) setQueueName(name QueueName) {
-	q.Name = name
+func (q *baseQueue) setQueueName(name QueueName) {
+	q.name = name
 }
 
-func (q BaseQueue) consume() {
+func (q baseQueue) consume() {
 
 	var err error
 
@@ -144,7 +148,7 @@ func (q BaseQueue) consume() {
 		}
 
 		//
-		ch, qu, err := getQueue(consumerConnection, q.Name)
+		ch, qu, err := getQueue(consumerConnection, q.name)
 		if err != nil {
 			log.Err(err)
 			return
@@ -157,7 +161,7 @@ func (q BaseQueue) consume() {
 		}
 
 		// In a anon function so can return at anytime
-		func(msgs <-chan amqp.Delivery, q BaseQueue) {
+		func(msgs <-chan amqp.Delivery, q baseQueue) {
 
 			for {
 				select {
@@ -165,17 +169,7 @@ func (q BaseQueue) consume() {
 					log.Warning(err)
 					return
 				case msg := <-msgs:
-
-					requeue := q.process(msg, q.Name)
-
-					if requeue {
-						logInfo("Requeuing")
-						err = q.requeueMessage(msg)
-						logError(err)
-					}
-
-					err = msg.Ack(false)
-					logError(err)
+					q.queue.process(msg)
 				}
 			}
 
@@ -195,7 +189,12 @@ func RunConsumers() {
 	}
 }
 
-func produce(queue QueueName, data []byte) (err error) {
+func produce(queue QueueName, msg baseMessage) (err error) {
+
+	b, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
 
 	// log.Info("Producing to: " + q.Message.getProduceQueue().String())s
 
@@ -239,7 +238,7 @@ func produce(queue QueueName, data []byte) (err error) {
 	return ch.Publish("", qu.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
-		Body:         data,
+		Body:         b,
 	})
 }
 

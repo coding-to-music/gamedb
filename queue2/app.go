@@ -1,38 +1,57 @@
-package queue
+package queue2
 
 import (
+	"errors"
+	"time"
+
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
 )
 
-type AppMessage struct {
-	// This is what we sent to updater
-	Payload struct {
-		ID   []int `json:"IDs"`
-		Time int64 `json:"Time"`
-	}
-	PICSAppInfo RabbitMessageProduct
+func ProduceApps(IDs []int) (err error) {
+
+	return produce(QueueAppsGo, baseMessage{
+		Message: appMessage{
+			AppIDs: IDs,
+			Time:   time.Now().Unix(),
+		},
+		FirstSeen: time.Now(),
+		Attempt:   1,
+	})
+}
+
+type appMessage struct {
+	AppIDs      []int `json:"IDs"`
+	Time        int64 `json:"Time"`
+	PICSAppInfo int
 }
 
 type AppQueue struct {
-	BaseQueue
+	baseQueue
 }
 
-func (q AppQueue) process(msg amqp.Delivery, queue QueueName) (requeue bool) {
+func (q AppQueue) process(msg amqp.Delivery) {
 
 	var err error
-	var payload = BaseMessage{
-		Message: AppMessage{},
+	var payload = baseMessage{
+		Message: appMessage{},
 	}
 
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		log.Err(err)
-		return false
+		payload.ack(msg)
+		return
 	}
 
 	logInfo("Consuming app")
+	logInfo(payload.Attempt)
 
-	return false
+	err = errors.New("test error")
+	if err != nil {
+		log.Err(err)
+		payload.ackRetry(msg, q.name)
+		return
+	}
 }

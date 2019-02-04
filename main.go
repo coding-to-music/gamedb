@@ -40,6 +40,10 @@ func main() {
 		go func() {
 			log.Info("Starting consumers")
 			queue.RunConsumers()
+
+			// queue2.RunConsumers()
+			// err = queue2.ProduceApps([]int{440})
+			// log.Err(err)
 		}()
 	}
 
