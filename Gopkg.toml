@@ -20,12 +20,4 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
-required = ["github.com/oxequa/realize"]
-
-[[constraint]]
-  name = "github.com/ahmdrz/goinsta"
-  branch = "master"
-
-[[constraint]]
-  name = "github.com/satori/go.uuid"
-  branch = "master"
+required = ["github.com/oxequa/realize", "github.com/zackslash/goviz"]

@@ -95,6 +95,25 @@
   revision = "06a3f22b4d37a5aa1601dc333b3c8ee64caef85a"
 
 [[projects]]
+  branch = "master"
+  digest = "1:a74730e052a45a3fab1d310fdef2ec17ae3d6af16228421e238320846f2aaec8"
+  name = "github.com/alecthomas/template"
+  packages = [
+    ".",
+    "parse",
+  ]
+  pruneopts = ""
+  revision = "a0175ee3bccc567396460bf5acd36800cb10c49c"
+
+[[projects]]
+  branch = "master"
+  digest = "1:8483994d21404c8a1d489f6be756e25bfccd3b45d65821f25695577791a08e68"
+  name = "github.com/alecthomas/units"
+  packages = ["."]
+  pruneopts = ""
+  revision = "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
+
+[[projects]]
   digest = "1:e3726ad6f38f710e84c8dcd0e830014de6eaeea81f28d91ae898afecc078479a"
   name = "github.com/andybalholm/cascadia"
   packages = ["."]
@@ -679,6 +698,19 @@
   revision = "cfc72ed89575fe6b1b7b880d537ba0c5e37f7391"
 
 [[projects]]
+  branch = "master"
+  digest = "1:f3a373e1da8c904ab7d6db84ccbcc085087f2355516ddf9c363caef08d9f8156"
+  name = "github.com/zackslash/goviz"
+  packages = [
+    ".",
+    "dotwriter",
+    "goimport",
+    "metrics",
+  ]
+  pruneopts = ""
+  revision = "e144da170d52f496451f1784699818fa11d5c7e1"
+
+[[projects]]
   digest = "1:b1bb9332f6cb7821a730e1681819b2813340eba5e873f05381815a7c6807d172"
   name = "go.opencensus.io"
   packages = [
@@ -917,6 +949,14 @@
   version = "v1.18.0"
 
 [[projects]]
+  digest = "1:15d017551627c8bb091bde628215b2861bed128855343fdd570c62d08871f6e1"
+  name = "gopkg.in/alecthomas/kingpin.v2"
+  packages = ["."]
+  pruneopts = ""
+  revision = "947dcec5ba9c011838740e680966fd7087a71d0d"
+  version = "v2.2.6"
+
+[[projects]]
   branch = "v2"
   digest = "1:eaef15d38dc2b0f15ecce8d3aff44bd0301ce7e6574e935446e6a7d629546669"
   name = "gopkg.in/urfave/cli.v2"
@@ -979,6 +1019,7 @@
     "github.com/tdewolff/minify",
     "github.com/tdewolff/minify/html",
     "github.com/yohcop/openid-go",
+    "github.com/zackslash/goviz",
     "golang.org/x/crypto/bcrypt",
     "golang.org/x/oauth2",
   ]
