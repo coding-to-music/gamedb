@@ -52,6 +52,8 @@ func getInstagram() (*goinsta.Instagram, error) {
 
 func uploadInstagram() {
 
+	log.Info("Running IG")
+
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		log.Err(err)
