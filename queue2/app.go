@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
 )
 
@@ -16,8 +15,10 @@ func ProduceApps(IDs []int) (err error) {
 			AppIDs: IDs,
 			Time:   time.Now().Unix(),
 		},
-		FirstSeen: time.Now(),
-		Attempt:   1,
+		FirstSeen:     time.Now(),
+		Attempt:       1,
+		OriginalQueue: QueueAppsGo,
+		MaxAttempts:   2,
 	})
 }
 
@@ -40,7 +41,7 @@ func (q AppQueue) process(msg amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
-		log.Err(err)
+		logError(err)
 		payload.ack(msg)
 		return
 	}
@@ -50,8 +51,8 @@ func (q AppQueue) process(msg amqp.Delivery) {
 
 	err = errors.New("test error")
 	if err != nil {
-		log.Err(err)
-		payload.ackRetry(msg, q.name)
+		logError(err)
+		payload.delay(msg)
 		return
 	}
 }

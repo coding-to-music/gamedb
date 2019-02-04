@@ -11,7 +11,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/queue2"
 	"github.com/gamedb/website/social"
 	"github.com/gamedb/website/web"
 	_ "github.com/go-sql-driver/mysql"
@@ -39,9 +39,9 @@ func main() {
 	if config.Config.EnableConsumers.GetBool() {
 		go func() {
 			log.Info("Starting consumers")
-			queue.RunConsumers()
+			// queue.RunConsumers()
 
-			// queue2.RunConsumers()
+			queue2.RunConsumers()
 			// err = queue2.ProduceApps([]int{440})
 			// log.Err(err)
 		}()

@@ -3,6 +3,7 @@ package queue2
 import (
 	"encoding/json"
 	"errors"
+	"math"
 	"sync"
 	"time"
 
@@ -49,55 +50,56 @@ var (
 )
 
 type baseMessage struct {
-	Message   interface{}
-	FirstSeen time.Time
-	Attempt   int
+	Message interface{}
 
 	// Retry info
-	NextAttempt time.Time
-	Queue       string
+	FirstSeen     time.Time
+	Attempt       int
+	NextAttempt   time.Time
+	OriginalQueue QueueName
 
 	// Limits
 	MaxAttempts int
 	MaxTime     time.Duration
 }
 
-func (q *baseMessage) init() {
+func (payload *baseMessage) init() {
 
-	if q.FirstSeen.IsZero() {
-		q.FirstSeen = time.Now()
+	if payload.FirstSeen.IsZero() {
+		payload.FirstSeen = time.Now()
 	}
 
 }
 
-func (q baseMessage) ack(msg amqp.Delivery) {
+// Remove from queue
+func (payload baseMessage) ack(msg amqp.Delivery) {
 
 	err := msg.Ack(false)
-	log.Err(err)
+	logError(err)
 }
 
-func (q baseMessage) ackRetry(msg amqp.Delivery, queue QueueName) {
+// Send to delay queue
+func (payload baseMessage) delay(msg amqp.Delivery) {
 
-	logInfo("Requeuing")
+	logInfo("Adding to delay queue")
 
-	q.Attempt++
+	payload.Attempt++
 
-	// Update end time
 	// var min float64 = 1
 	// var max float64 = 600
 
-	// var seconds = math.Pow(1.3, float64(q.Attempt))
+	var seconds = math.Pow(1.3, float64(payload.Attempt))
 	// var minmaxed = math.Min(min+seconds, max)
 	// var rounded = math.Round(minmaxed)
 
-	// q.EndTime = q.StartTime.Add(time.Second * time.Duration(rounded))
+	payload.NextAttempt = payload.FirstSeen.Add(time.Second * time.Duration(int64(seconds)))
 
-	err := produce(QueueDelaysGo, q)
-	log.Err(err)
+	err := produce(QueueDelaysGo, payload)
+	logError(err)
 
 	if err == nil {
 		err = msg.Ack(false)
-		log.Err(err)
+		logError(err)
 	}
 }
 
@@ -143,20 +145,20 @@ func (q baseQueue) consume() {
 		}()
 
 		if err != nil {
-			log.Err(err)
+			logError(err)
 			return
 		}
 
 		//
 		ch, qu, err := getQueue(consumerConnection, q.name)
 		if err != nil {
-			log.Err(err)
+			logError(err)
 			return
 		}
 
 		msgs, err := ch.Consume(qu.Name, "", false, false, false, false, nil)
 		if err != nil {
-			log.Err(err)
+			logError(err)
 			return
 		}
 
@@ -178,7 +180,7 @@ func (q baseQueue) consume() {
 		// We only get here if the amqp connection gets closed
 
 		err = ch.Close()
-		log.Err(err)
+		logError(err)
 	}
 }
 
@@ -231,7 +233,7 @@ func produce(queue QueueName, msg baseMessage) (err error) {
 	if ch != nil {
 		defer func(ch *amqp.Channel) {
 			err := ch.Close()
-			log.Err(err)
+			logError(err)
 		}(ch)
 	}
 
@@ -249,7 +251,7 @@ func makeAConnection() (conn *amqp.Connection, err error) {
 		log.Info("Connecting to Rabbit")
 
 		conn, err = amqp.Dial(config.Config.RabbitDSN())
-		log.Err(err) // Logging here as no max elasped time
+		logError(err) // Logging here as no max elasped time
 		return err
 	}
 
