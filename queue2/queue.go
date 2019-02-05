@@ -17,17 +17,17 @@ type QueueName string
 
 const (
 	// C#
-	QueueAppsCS     QueueName = "GameDB_Apps_CS"
-	QueuePackagesCS QueueName = "GameDB_Packages_CS"
-	QueueProfilesCS QueueName = "GameDB_Profiles_CS"
+	QueueCSApps     QueueName = "GameDB_CS_Apps"
+	QueueCSPackages QueueName = "GameDB_CS_Packages"
+	QueueCSProfiles QueueName = "GameDB_CS_Profiles"
 
 	// Go
-	QueueAppsGo     QueueName = "GameDB_Apps_Go"
-	QueueBundlesGo  QueueName = "GameDB_Bundles_Go"
-	QueueChangesGo  QueueName = "GameDB_Changes_Go"
-	QueueDelaysGo   QueueName = "GameDB_Delays_Go"
-	QueuePackagesGo QueueName = "GameDB_Packages_Go"
-	QueueProfilesGo QueueName = "GameDB_Profiles_Go"
+	QueueGoApps     QueueName = "GameDB_Go_Apps"
+	QueueGoBundles  QueueName = "GameDB_Go_Bundles"
+	QueueGoChanges  QueueName = "GameDB_Go_Changes"
+	QueueGoDelays   QueueName = "GameDB_Go_Delays"
+	QueueGoPackages QueueName = "GameDB_Go_Packages"
+	QueueGoProfiles QueueName = "GameDB_Go_Profiles"
 )
 
 var (
@@ -44,8 +44,8 @@ var (
 	producerCloseChannel = make(chan *amqp.Error)
 
 	queues = map[QueueName]baseQueue{
-		QueueAppsGo:   baseQueue{queue: &AppQueue{}},
-		QueueDelaysGo: baseQueue{queue: &DelayQueue{}},
+		QueueGoApps:   baseQueue{queue: &AppQueue{}},
+		QueueGoDelays: baseQueue{queue: &DelayQueue{}},
 	}
 )
 
@@ -94,7 +94,7 @@ func (payload baseMessage) delay(msg amqp.Delivery) {
 
 	payload.NextAttempt = payload.FirstSeen.Add(time.Second * time.Duration(int64(seconds)))
 
-	err := produce(QueueDelaysGo, payload)
+	err := produce(QueueGoDelays, payload)
 	logError(err)
 
 	if err == nil {

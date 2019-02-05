@@ -51,7 +51,7 @@ func (q DelayQueue) process(msg amqp.Delivery) {
 	} else {
 
 		logInfo("Delaying for " + payload.NextAttempt.Sub(time.Now()).String())
-		queue = QueueDelaysGo
+		queue = QueueGoDelays
 	}
 
 	err = produce(queue, payload)

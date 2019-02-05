@@ -2,6 +2,7 @@ package queue2
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/gamedb/website/helpers"
@@ -10,7 +11,7 @@ import (
 
 func ProduceApps(IDs []int) (err error) {
 
-	return produce(QueueAppsGo, baseMessage{
+	return produce(QueueGoApps, baseMessage{
 		Message: appMessage{
 			AppIDs: IDs,
 			Time:   time.Now().Unix(),
