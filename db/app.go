@@ -612,11 +612,11 @@ func (app App) GetName() (name string) {
 	return getAppName(app.ID, app.Name)
 }
 
-func (app App) GetFirstScreenshot() string {
+func (app App) GetMetaImage() string {
 
 	ss, err := app.GetScreenshots()
 	if err != nil || len(ss) == 0 {
-		return ""
+		return app.GetHeaderImage()
 	}
 	return ss[0].PathFull
 }

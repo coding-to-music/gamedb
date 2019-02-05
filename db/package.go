@@ -310,6 +310,19 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 	return ret, nil
 }
 
+func (pack Package) GetMetaImage() string {
+
+	if pack.ImageHeader != "" {
+		return pack.ImageHeader
+	}
+
+	if pack.ImageLogo != "" {
+		return pack.ImageLogo
+	}
+
+	return ""
+}
+
 func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
 	return []interface{}{

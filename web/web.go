@@ -395,7 +395,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 func (t GlobalTemplate) GetMetaImage() (text string) {
 
 	if t.MetaImage == "" {
-		return "/assets/img/sa-bg-500x500.png"
+		return "https://gamedb.online/assets/img/sa-bg-500x500.png"
 	}
 
 	return t.MetaImage
