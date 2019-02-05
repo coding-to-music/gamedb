@@ -40,7 +40,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == datastore.ErrNoSuchEntity {
 
-			err = queue.QueuePlayer(player.PlayerID)
+			err = queue.ProducePlayer(player.PlayerID)
 			log.Err(err, r)
 
 			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now."}
@@ -61,7 +61,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Queue profile for a refresh
 	if player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto) {
-		err = queue.QueuePlayer(player.PlayerID)
+		err = queue.ProducePlayer(player.PlayerID)
 		log.Err(err, r)
 		t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 	}
@@ -455,7 +455,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", nil, false
 		}
 
-		err = queue.QueuePlayer(player.PlayerID)
+		err = queue.ProducePlayer(player.PlayerID)
 		if err != nil {
 			log.Err(err, r)
 			return "Something has gone wrong", err, false

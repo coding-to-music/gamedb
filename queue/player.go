@@ -13,148 +13,161 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
-const maxBytesToStore = 1024 * 10
-
-func QueuePlayer(playerID int64) (err error) {
-
-	b, err := json.Marshal(producePlayerPayload{
-		ID:   playerID,
-		Time: time.Now().Unix(),
-	})
-
-	return Produce(QueueProfiles, b)
+type playerMessage struct {
+	ID              int64                    `json:"id"`
+	PICSProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
 }
 
-// JSON must match the Updater app
-type producePlayerPayload struct {
-	ID   int64 `json:"ID"`
-	Time int64 `json:"Time"`
+type playerQueue struct {
+	baseQueue
 }
 
-type RabbitMessagePlayer struct {
-	ProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
-}
+func (q playerQueue) processMessage(msg amqp.Delivery) {
 
-func (d RabbitMessagePlayer) getConsumeQueue() RabbitQueue {
-	return QueueProfilesData
-}
+	var err error
+	var payload = baseMessage{
+		Message: playerMessage{},
+	}
 
-func (d RabbitMessagePlayer) getProduceQueue() RabbitQueue {
-	return QueueProfiles
-}
-
-func (d RabbitMessagePlayer) getRetryData() RabbitMessageDelay {
-	return RabbitMessageDelay{}
-}
-
-func (d RabbitMessagePlayer) process(msg amqp.Delivery) (requeue bool) {
-
-	// Get message
-	rabbitMessage := new(RabbitMessagePlayer)
-
-	err := helpers.Unmarshal(msg.Body, rabbitMessage)
+	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
-		return handleError(err, false)
+		logError(err)
+		payload.stop(msg)
+		return
 	}
 
-	var message = rabbitMessage.ProfileInfo
-
-	if !message.SteamID.IsValid {
-		return handleError(errors.New("not valid account id"), false)
+	message, ok := payload.Message.(playerMessage)
+	if !ok {
+		logError(errors.New("can not type assert playerMessage"))
+		payload.stop(msg)
+		return
 	}
 
-	if !message.SteamID.IsIndividualAccount {
-		return handleError(errors.New("not individual account id"), false)
+	logInfo("Consuming player " + strconv.FormatInt(message.ID, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
+
+	if !message.PICSProfileInfo.SteamID.IsValid {
+		logError(errors.New("not valid account id"))
+		payload.stop(msg)
+		return
+	}
+
+	if !message.PICSProfileInfo.SteamID.IsIndividualAccount {
+		logError(errors.New("not individual account id"))
+		payload.stop(msg)
+		return
 	}
 
 	// Convert steamID3 to steamID64
-	id64, err := helpers.GetSteam().GetID(strconv.Itoa(message.SteamID.AccountID))
+	id64, err := helpers.GetSteam().GetID(strconv.Itoa(message.PICSProfileInfo.SteamID.AccountID))
 	if err != nil {
-		return handleError(err, false)
+		logError(err)
+		payload.stop(msg)
+		return
 	}
-
-	logInfo("Consuming player: " + strconv.FormatInt(id64, 10))
 
 	// Update player
 	player, err := db.GetPlayer(id64)
 	err = helpers.IgnoreErrors(err, datastore.ErrNoSuchEntity)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	player.PlayerID = id64
-	player.RealName = message.RealName
-	player.StateCode = message.StateName
-	player.CountryCode = message.CountryName
+	player.RealName = message.PICSProfileInfo.RealName
+	player.StateCode = message.PICSProfileInfo.StateName
+	player.CountryCode = message.PICSProfileInfo.CountryName
 
 	// Get summary
 	err = updatePlayerSummary(&player)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updatePlayerGames(&player)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updatePlayerRecentGames(&player)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updatePlayerBadges(&player)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updatePlayerFriends(&player)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updatePlayerLevel(&player)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updatePlayerBans(&player)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updatePlayerGroups(&player)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = db.CreateEvent(new(http.Request), player.PlayerID, db.EventRefresh)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = player.Save()
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageProfile)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	if page.HasConnections() {
 		page.Send(strconv.FormatInt(player.PlayerID, 10))
 	}
 
-	return false
+	payload.stop(msg)
 }
 
 type RabbitMessageProfilePICS struct {
@@ -185,7 +198,7 @@ type RabbitMessageProfilePICS struct {
 	CountryName string      `json:"CountryName"`
 	Headline    string      `json:"Headline"`
 	Summary     string      `json:"Summary"`
-	JobID       SteamKitJob `json:"JobID"`
+	JobID       steamKitJob `json:"JobID"`
 }
 
 func updatePlayerSummary(player *db.Player) error {
@@ -252,7 +265,7 @@ func updatePlayerGames(player *db.Player) error {
 
 		prices, err := v.GetPrices()
 		if err != nil {
-			log.Err(err)
+			logError(err)
 			continue
 		}
 
@@ -270,11 +283,11 @@ func updatePlayerGames(player *db.Player) error {
 
 		//
 		err = mapstructure.Decode(appPrices[v.ID], &playerApps[v.ID].AppPrices)
-		log.Err(err)
+		logError(err)
 
 		//
 		err = mapstructure.Decode(appPriceHour[v.ID], &playerApps[v.ID].AppPriceHour)
-		log.Err(err)
+		logError(err)
 	}
 
 	// Save playerApps to Datastore
@@ -419,7 +432,7 @@ func updatePlayerBadges(player *db.Player) error {
 	// Make map of app rows
 	var appRowsMap = map[int]db.App{}
 	appRows, err := db.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
-	log.Err(err)
+	logError(err)
 
 	for _, v := range appRows {
 		appRowsMap[v.ID] = v

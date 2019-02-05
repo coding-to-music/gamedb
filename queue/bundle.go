@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -18,95 +19,104 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func QueueBundle(bundleID int) (err error) {
-
-	b, err := json.Marshal(RabbitMessageBundle{
-		BundleID: bundleID,
-	})
-
-	return Produce(QueueBundlesData, b)
+type bundleMessage struct {
+	ID    int `json:"id"`
+	AppID int `json:"app_id"`
 }
 
-type RabbitMessageBundle struct {
-	BundleID int
-	AppID    int // The app that triggered a bundle update
+type bundleQueue struct {
+	baseQueue
 }
 
-func (d RabbitMessageBundle) getConsumeQueue() RabbitQueue {
-	return QueueBundlesData
-}
+func (q bundleQueue) processMessage(msg amqp.Delivery) {
 
-func (d RabbitMessageBundle) getProduceQueue() RabbitQueue {
-	return QueueBundlesData
-}
-
-func (d RabbitMessageBundle) getRetryData() RabbitMessageDelay {
-	return RabbitMessageDelay{}
-}
-
-func (d RabbitMessageBundle) process(msg amqp.Delivery) (requeue bool) {
-
-	// Get message payload
-	message := RabbitMessageBundle{}
-
-	err := helpers.Unmarshal(msg.Body, &message)
-	if err != nil {
-		return handleError(err, false)
+	var err error
+	var payload = baseMessage{
+		Message: bundleMessage{},
 	}
 
-	logInfo("Consuming bundle: " + strconv.Itoa(message.BundleID))
+	err = helpers.Unmarshal(msg.Body, &payload)
+	if err != nil {
+		logError(err)
+		payload.stop(msg)
+		return
+	}
+
+	message, ok := payload.Message.(bundleMessage)
+	if !ok {
+		logError(errors.New("can not type assert bundleMessage"))
+		payload.stop(msg)
+		return
+	}
+
+	logInfo("Consuming bundle " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
 
 	// Load current bundle
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	bundle := db.Bundle{}
-	gorm = gorm.FirstOrInit(&bundle, db.Bundle{ID: message.BundleID})
+	gorm = gorm.FirstOrInit(&bundle, db.Bundle{ID: message.ID})
 	if gorm.Error != nil {
-		return handleError(gorm.Error, true)
+		logError(gorm.Error)
+		payload.retry(msg)
+		return
 	}
 
 	appIDs, err := bundle.GetAppIDs()
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
-	if helpers.SliceHasInt(appIDs, message.AppID) {
+	if message.AppID > 0 && helpers.SliceHasInt(appIDs, message.AppID) {
 		logInfo("Skipping, bundle already has app")
-		return false
+		payload.stop(msg)
+		return
 	}
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	// Save new data
 	gorm = gorm.Save(&bundle)
 	if gorm.Error != nil {
-		return handleError(gorm.Error, true)
+		logError(gorm.Error)
+		payload.retry(msg)
+		return
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageBundle)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	} else if page.HasConnections() {
 		page.Send(bundle.ID)
 	}
 
 	page, err = websockets.GetPage(websockets.PageBundles)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	if page.HasConnections() {
 		page.Send(bundle.ID)
 	}
 
-	return false
+	payload.stop(msg)
 }
 
 func updateBundle(bundle *db.Bundle) (err error) {

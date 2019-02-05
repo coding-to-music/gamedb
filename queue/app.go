@@ -20,130 +20,136 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	"github.com/streadway/amqp"
 )
 
-func QueueApp(IDs []int) (err error) {
+type appMessage struct {
+	ID          int `json:"id"`
+	PICSAppInfo rabbitMessageProduct
+}
 
-	b, err := json.Marshal(produceAppPayload{
-		ID:   IDs,
-		Time: time.Now().Unix(),
-	})
-	if err != nil {
-		return err
+type appQueue struct {
+	baseQueue
+}
+
+func (q appQueue) processMessage(msg amqp.Delivery) {
+
+	var err error
+	var payload = baseMessage{
+		Message: appMessage{},
 	}
 
-	return Produce(QueueApps, b)
-}
-
-// JSON must match the Updater app
-type produceAppPayload struct {
-	ID   []int `json:"IDs"`
-	Time int64 `json:"Time"`
-}
-
-type RabbitMessageApp struct {
-	PICSAppInfo RabbitMessageProduct
-	Payload     produceAppPayload
-}
-
-func (d RabbitMessageApp) getConsumeQueue() RabbitQueue {
-	return QueueAppsData
-}
-
-func (d RabbitMessageApp) getProduceQueue() RabbitQueue {
-	return QueueApps
-}
-
-func (d RabbitMessageApp) getRetryData() RabbitMessageDelay {
-	return RabbitMessageDelay{}
-}
-
-func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool) {
-
-	// Get message payload
-	rabbitMessage := RabbitMessageApp{}
-
-	err := helpers.Unmarshal(msg.Body, &rabbitMessage)
+	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
-		return handleError(err, false)
+		logError(err)
+		payload.stop(msg)
+		return
 	}
 
-	message := rabbitMessage.PICSAppInfo
+	message, ok := payload.Message.(appMessage)
+	if !ok {
+		logError(errors.New("can not type assert appMessage"))
+		payload.stop(msg)
+		return
+	}
 
-	logInfo("Consuming app: " + strconv.Itoa(message.ID))
+	logInfo("Consuming app " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
 
 	if !db.IsValidAppID(message.ID) {
-		return handleError(errors.New("invalid app ID: "+strconv.Itoa(message.ID)), false)
+		logError(errors.New("invalid app ID: " + strconv.Itoa(message.ID)))
+		payload.stop(msg)
+		return
 	}
 
 	// Load current app
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	app := db.App{}
 	gorm = gorm.FirstOrInit(&app, db.App{ID: message.ID})
 	if gorm.Error != nil {
-		return handleError(err, true)
+		logError(gorm.Error)
+		payload.retry(msg)
+		return
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.ChangeNumber && !config.Config.IsLocal() {
+	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.PICSAppInfo.ChangeNumber && !config.Config.IsLocal() {
 		logInfo("Skipping, updated in last day")
-		return false
+		payload.stop(msg)
+		return
 	}
 
 	var appBeforeUpdate = app
 
-	err = updateAppPICS(&app, rabbitMessage)
+	err = updateAppPICS(&app, payload, message)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updateAppDetails(&app)
 	if err != nil && err != steam.ErrAppNotFound {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	schema, err := updateAppSchema(&app)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updateAppAchievements(&app, schema)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updateAppNews(&app)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updateAppReviews(&app)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updateAppSteamSpy(&app)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	err = updateBundles(&app)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	// Save price changes
 	err = savePriceChanges(appBeforeUpdate, app)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	// Misc
@@ -153,34 +159,37 @@ func (d RabbitMessageApp) process(msg amqp.Delivery) (requeue bool) {
 	// Save new data
 	gorm = gorm.Save(&app)
 	if gorm.Error != nil {
-		return handleError(gorm.Error, true)
+		logError(gorm.Error)
+		payload.retry(msg)
+		return
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageApp)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	if page.HasConnections() {
 		page.Send(app.ID)
 	}
 
-	return false
+	payload.stop(msg)
 }
 
-func updateAppPICS(app *db.App, rabbitMessage RabbitMessageApp) (err error) {
+func updateAppPICS(app *db.App, payload baseMessage, message appMessage) (err error) {
 
-	message := rabbitMessage.PICSAppInfo
-
-	if message.ChangeNumber > app.ChangeNumber {
-		app.ChangeNumberDate = time.Unix(rabbitMessage.Payload.Time, 0)
+	if app.ChangeNumber > message.PICSAppInfo.ChangeNumber {
+		return nil
 	}
 
 	app.ID = message.ID
-	app.ChangeNumber = message.ChangeNumber
+	app.ChangeNumber = message.PICSAppInfo.ChangeNumber
+	app.ChangeNumberDate = payload.FirstSeen
 
-	for _, v := range message.KeyValues.Children {
+	for _, v := range message.PICSAppInfo.KeyValues.Children {
 
 		switch v.Name {
 		case "appid":
@@ -790,7 +799,7 @@ func updateAppSteamSpy(app *db.App) error {
 	defer func(body io.ReadCloser) {
 		if body != nil {
 			err = body.Close()
-			log.Err(err)
+			logError(err)
 		}
 	}(response.Body)
 
@@ -861,7 +870,7 @@ func updateBundles(app *db.App) error {
 	var IDInts = helpers.StringSliceToIntSlice(bundleIDs)
 
 	for _, v := range IDInts {
-		err := QueueBundle(v)
+		err := ProduceBundle(v, app.ID)
 		if err != nil {
 			return err
 		}

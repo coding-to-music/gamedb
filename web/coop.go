@@ -52,7 +52,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		// If we couldnt find player
 		if !helpers.SliceHasInt64(foundPlayerIDs, v) {
 
-			err = queue.QueuePlayer(v)
+			err = queue.ProducePlayer(v)
 			if err != nil {
 				log.Err(err, r)
 			}

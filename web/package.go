@@ -130,7 +130,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.QueuePackage([]int{pack.ID})
+		err = queue.ProducePackage(pack.ID)
 		if err != nil {
 			log.Err(err, r)
 		} else {

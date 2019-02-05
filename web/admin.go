@@ -171,7 +171,7 @@ func adminQueueEveryApp() {
 		}
 
 		for _, v := range apps.Apps {
-			err = queue.QueueApp([]int{v.AppID})
+			err = queue.ProduceApp(v.AppID)
 			if err != nil {
 				log.Err(err)
 				return
@@ -218,7 +218,7 @@ func adminQueueEveryPackage() {
 
 	for k := range packageIDs {
 
-		err = queue.QueuePackage([]int{k})
+		err = queue.ProducePackage(k)
 		if err != nil {
 			log.Err(err)
 			return
@@ -288,34 +288,34 @@ func adminQueues(r *http.Request) {
 		playerID, err := strconv.ParseInt(val, 10, 64)
 		log.Err(err, r)
 
-		err = queue.QueuePlayer(playerID)
+		err = queue.ProducePlayer(playerID)
 		log.Err(err, r)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
-		valInt, err := strconv.ParseInt(val, 10, 32)
+		appID, err := strconv.Atoi(val)
 		log.Err(err, r)
 
-		err = queue.QueueApp([]int{int(valInt)})
+		err = queue.ProduceApp(appID)
 		log.Err(err, r)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
-		valInt, err := strconv.ParseInt(val, 10, 32)
+		packageID, err := strconv.Atoi(val)
 		log.Err(err, r)
 
-		err = queue.QueuePackage([]int{int(valInt)})
+		err = queue.ProducePackage(packageID)
 		log.Err(err, r)
 	}
 
 	if val := r.PostForm.Get("bundle-id"); val != "" {
 
-		valInt, err := strconv.ParseInt(val, 10, 32)
+		bundleID, err := strconv.Atoi(val)
 		log.Err(err, r)
 
-		err = queue.QueueBundle(int(valInt))
+		err = queue.ProduceBundle(bundleID, 0)
 		log.Err(err, r)
 	}
 }

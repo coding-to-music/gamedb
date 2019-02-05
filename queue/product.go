@@ -7,33 +7,32 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/social"
 )
 
-type RabbitMessageProduct struct {
+type rabbitMessageProduct struct {
 	ID           int                           `json:"ID"`
 	ChangeNumber int                           `json:"ChangeNumber"`
 	MissingToken bool                          `json:"MissingToken"`
 	SHAHash      string                        `json:"SHAHash"`
-	KeyValues    RabbitMessageProductKeyValues `json:"KeyValues"`
+	KeyValues    rabbitMessageProductKeyValues `json:"KeyValues"`
 	OnlyPublic   bool                          `json:"OnlyPublic"`
 	UseHTTP      bool                          `json:"UseHttp"`
 	HTTPURI      interface{}                   `json:"HttpUri"`
 }
 
-type RabbitMessageProductKeyValues struct {
+type rabbitMessageProductKeyValues struct {
 	Name     string                          `json:"Name"`
 	Value    interface{}                     `json:"Value"`
-	Children []RabbitMessageProductKeyValues `json:"Children"`
+	Children []rabbitMessageProductKeyValues `json:"Children"`
 }
 
-func (i RabbitMessageProductKeyValues) String() string {
+func (i rabbitMessageProductKeyValues) String() string {
 
 	if i.Value == nil {
 		b, err := json.Marshal(i.ToNestedMaps())
 		if err != nil {
-			log.Err(err)
+			logError(err)
 			return ""
 		}
 		return string(b)
@@ -42,14 +41,14 @@ func (i RabbitMessageProductKeyValues) String() string {
 	}
 }
 
-func (i RabbitMessageProductKeyValues) GetChildrenAsSlice() (ret []string) {
+func (i rabbitMessageProductKeyValues) GetChildrenAsSlice() (ret []string) {
 	for _, v := range i.Children {
 		ret = append(ret, v.Value.(string))
 	}
 	return ret
 }
 
-func (i RabbitMessageProductKeyValues) GetChildrenAsMap() (ret map[string]string) {
+func (i rabbitMessageProductKeyValues) GetChildrenAsMap() (ret map[string]string) {
 	ret = map[string]string{}
 	for _, v := range i.Children {
 		ret[v.Name] = v.Value.(string)
@@ -58,7 +57,7 @@ func (i RabbitMessageProductKeyValues) GetChildrenAsMap() (ret map[string]string
 }
 
 // Turns it into nested maps
-func (i RabbitMessageProductKeyValues) ToNestedMaps() (ret map[string]interface{}) {
+func (i rabbitMessageProductKeyValues) ToNestedMaps() (ret map[string]interface{}) {
 
 	m := map[string]interface{}{}
 
@@ -74,7 +73,7 @@ func (i RabbitMessageProductKeyValues) ToNestedMaps() (ret map[string]interface{
 	return m
 }
 
-func (i RabbitMessageProductKeyValues) GetExtended() (extended db.PICSExtended) {
+func (i rabbitMessageProductKeyValues) GetExtended() (extended db.PICSExtended) {
 
 	extended = db.PICSExtended{}
 	for _, v := range i.Children {
@@ -89,7 +88,7 @@ func (i RabbitMessageProductKeyValues) GetExtended() (extended db.PICSExtended) 
 	return extended
 }
 
-func (i RabbitMessageProductKeyValues) GetAppConfig() (config db.PICSAppConfig, launch []db.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) GetAppConfig() (config db.PICSAppConfig, launch []db.PICSAppConfigLaunchItem) {
 
 	config = db.PICSAppConfig{}
 	for _, v := range i.Children {
@@ -107,7 +106,7 @@ func (i RabbitMessageProductKeyValues) GetAppConfig() (config db.PICSAppConfig, 
 	return config, launch
 }
 
-func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PICSDepots) {
+func (i rabbitMessageProductKeyValues) GetAppDepots() (depots db.PICSDepots) {
 
 	depots.Extra = map[string]string{}
 
@@ -185,7 +184,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PICSDepots) {
 					depot.AllowAddRemoveWhileRunning = true
 				}
 			default:
-				logWarning(log.SeverityWarning, "GetAppDepots missing case: "+vv.Name)
+				logWarning("GetAppDepots missing case: " + vv.Name)
 			}
 		}
 
@@ -195,7 +194,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepots() (depots db.PICSDepots) {
 	return depots
 }
 
-func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICSAppDepotBranches) {
+func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICSAppDepotBranches) {
 
 	for _, v := range i.Children {
 
@@ -228,7 +227,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICS
 					branch.LCSRequired = true
 				}
 			default:
-				logWarning(log.SeverityWarning, "GetAppDepotBranches missing case: "+vv.Name)
+				logWarning("GetAppDepotBranches missing case: " + vv.Name)
 			}
 		}
 
@@ -238,7 +237,7 @@ func (i RabbitMessageProductKeyValues) GetAppDepotBranches() (branches []db.PICS
 	return branches
 }
 
-func (i RabbitMessageProductKeyValues) GetAppLaunch() (items []db.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []db.PICSAppConfigLaunchItem) {
 
 	for _, v := range i.Children {
 
@@ -256,7 +255,7 @@ func (i RabbitMessageProductKeyValues) GetAppLaunch() (items []db.PICSAppConfigL
 	return items
 }
 
-func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppConfigLaunchItem) {
 
 	for _, v := range i.Children {
 
@@ -292,12 +291,11 @@ func (i RabbitMessageProductKeyValues) getAppLaunchItem(launchItem *db.PICSAppCo
 		case "config":
 			v.getAppLaunchItem(launchItem)
 		default:
-			logWarning(log.SeverityWarning, "getAppLaunchItem missing case: "+v.Name)
+			logWarning("getAppLaunchItem missing case: " + v.Name)
 		}
 	}
 }
 
-// Save prices
 func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (err error) {
 
 	var prices db.ProductPrices
@@ -339,7 +337,7 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 			_, _, err = twitter.Statuses.Update(before.GetName()+" is now free! gamedb.online"+before.GetPath()+" #freegame #steam", nil)
 			if err != nil {
 				if !strings.Contains(err.Error(), "Status is a duplicate") {
-					log.Critical(err)
+					logCritical(err)
 				}
 			}
 		}

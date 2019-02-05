@@ -14,91 +14,87 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func QueuePackage(IDs []int) (err error) {
+type packageMessage struct {
+	ID              int                  `json:"id"`
+	PICSPackageInfo rabbitMessageProduct `json:"pics_package_info"`
+}
 
-	b, err := json.Marshal(producePackagePayload{
-		ID:   IDs,
-		Time: time.Now().Unix(),
-	})
-	if err != nil {
-		return err
+type packageQueue struct {
+	baseQueue
+}
+
+func (q packageQueue) processMessage(msg amqp.Delivery) {
+
+	var err error
+	var payload = baseMessage{
+		Message: packageMessage{},
 	}
 
-	return Produce(QueuePackages, b)
-}
-
-// JSON must match the Updater app
-type producePackagePayload struct {
-	ID   []int `json:"IDs"`
-	Time int64 `json:"Time"`
-}
-
-type RabbitMessagePackage struct {
-	PICSPackageInfo RabbitMessageProduct
-	Payload         producePackagePayload
-}
-
-func (d RabbitMessagePackage) getConsumeQueue() RabbitQueue {
-	return QueuePackagesData
-}
-
-func (d RabbitMessagePackage) getProduceQueue() RabbitQueue {
-	return QueuePackages
-}
-
-func (d RabbitMessagePackage) getRetryData() RabbitMessageDelay {
-	return RabbitMessageDelay{}
-}
-
-func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool) {
-
-	// Get message
-	rabbitMessage := RabbitMessagePackage{}
-
-	err := helpers.Unmarshal(msg.Body, &rabbitMessage)
+	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
-		return handleError(err, false)
+		logError(err)
+		payload.stop(msg)
+		return
 	}
 
-	message := rabbitMessage.PICSPackageInfo
+	message, ok := payload.Message.(packageMessage)
+	if !ok {
+		logError(errors.New("can not type assert packageMessage"))
+		payload.stop(msg)
+		return
+	}
 
-	logInfo("Consuming package: " + strconv.Itoa(message.ID))
+	logInfo("Consuming package " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
 
 	if !db.IsValidPackageID(message.ID) {
-		return handleError(errors.New("invalid package ID: "+strconv.Itoa(message.ID)), false)
+		logError(errors.New("invalid package ID: " + strconv.Itoa(message.ID)))
+		payload.stop(msg)
+		return
 	}
 
 	// Load current package
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	pack := db.Package{}
 	gorm = gorm.FirstOrInit(&pack, db.Package{ID: message.ID})
 	if gorm.Error != nil {
-		return handleError(gorm.Error, true)
+		logError(gorm.Error)
+		payload.retry(msg)
+		return
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.ChangeNumber >= message.ChangeNumber && !config.Config.IsLocal() {
+	if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.ChangeNumber >= message.PICSPackageInfo.ChangeNumber {
+
 		logInfo("Skipping, updated in last day")
-		return false
+		if !config.Config.IsLocal() {
+			payload.stop(msg)
+			return
+		}
 	}
 
 	var packageBeforeUpdate = pack
 
 	// Update from PICS
-	err = updatePackageFromPICS(&pack, rabbitMessage)
+	err = updatePackageFromPICS(&pack, payload, message)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	// Update from API
 	err = updatePackageFromStore(&pack)
 	err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	// Set package name to app name
@@ -106,12 +102,16 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool) {
 
 		appIDs, err := pack.GetAppIDs()
 		if err != nil {
-			return handleError(err, true)
+			logError(err)
+			payload.retry(msg)
+			return
 		}
 
 		app, err := db.GetApp(appIDs[0], []string{})
 		if err != nil && err != db.ErrRecordNotFound {
-			return handleError(err, true)
+			logError(err)
+			payload.retry(msg)
+			return
 		} else if err == nil && pack.HasDefaultName() {
 			pack.Name = app.Name
 			pack.Icon = app.GetIcon()
@@ -121,42 +121,46 @@ func (d RabbitMessagePackage) process(msg amqp.Delivery) (requeue bool) {
 	// Save price changes
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	// Save new data
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
-		return handleError(gorm.Error, true)
+		logError(gorm.Error)
+		payload.retry(msg)
+		return
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PagePackage)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	if page.HasConnections() {
 		page.Send(pack.ID)
 	}
 
-	return false
+	payload.stop(msg)
 }
 
-func updatePackageFromPICS(pack *db.Package, rabbitMessage RabbitMessagePackage) (err error) {
+func updatePackageFromPICS(pack *db.Package, payload baseMessage, message packageMessage) (err error) {
 
-	message := rabbitMessage.PICSPackageInfo
-
-	// Update with new details
-	if message.ChangeNumber > pack.ChangeNumber {
-		pack.ChangeNumberDate = time.Unix(rabbitMessage.Payload.Time, 0)
+	if pack.ChangeNumber > message.PICSPackageInfo.ChangeNumber {
+		return nil
 	}
 
 	pack.ID = message.ID
-	pack.ChangeNumber = message.ChangeNumber
-	pack.Name = message.KeyValues.Name
+	pack.Name = message.PICSPackageInfo.KeyValues.Name
+	pack.ChangeNumber = message.PICSPackageInfo.ChangeNumber
+	pack.ChangeNumberDate = payload.FirstSeen
 
-	for _, v := range message.KeyValues.Children {
+	for _, v := range message.PICSPackageInfo.KeyValues.Children {
 
 		switch v.Name {
 		case "billingtype":

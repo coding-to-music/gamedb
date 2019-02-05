@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"encoding/json"
 	"strconv"
 	"time"
 
@@ -9,67 +8,60 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitMessageDelay struct {
-	rabbitConsumer
-	OriginalQueue   RabbitQueue
-	OriginalMessage string
+type delayQueue struct {
+	baseQueue
 }
 
-func (d RabbitMessageDelay) getConsumeQueue() RabbitQueue {
-	return QueueDelaysData
-}
+func (q delayQueue) processMessage(msg amqp.Delivery) {
 
-func (d RabbitMessageDelay) getProduceQueue() RabbitQueue {
-	return ""
-}
+	time.Sleep(time.Second / 10)
 
-func (d RabbitMessageDelay) getRetryData() RabbitMessageDelay {
-	return RabbitMessageDelay{}
-}
+	var err error
+	var payload = baseMessage{}
 
-func (d RabbitMessageDelay) process(msg amqp.Delivery) (requeue bool) {
-
-	if len(msg.Body) == 0 {
-		return handleError(errEmptyMessage, false)
-	}
-
-	delayMessage := RabbitMessageDelay{}
-
-	err := helpers.Unmarshal(msg.Body, &delayMessage)
+	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
-		return handleError(err, false)
-	}
-
-	if len(delayMessage.OriginalMessage) == 0 {
-		return handleError(errEmptyMessage, false)
-	}
-
-	if delayMessage.EndTime.UnixNano() > time.Now().UnixNano() {
-
-		// Re-delay
-		logInfo("Re-delay: attemp: " + strconv.Itoa(delayMessage.Attempt))
-
-		delayMessage.IncrementAttempts()
-
-		b, err := json.Marshal(delayMessage)
-		if err != nil {
-			return handleError(err, false)
-		}
-
-		err = Produce(delayMessage.getConsumeQueue(), b)
 		logError(err)
+		return
+	}
+
+	// Limits
+	if payload.MaxTime > 0 && payload.FirstSeen.Add(payload.MaxTime).Unix() < time.Now().Unix() {
+
+		logInfo("Message removed from delay queue (Over " + payload.MaxTime.String() + "): " + string(msg.Body))
+		payload.stop(msg)
+		return
+	}
+
+	if payload.MaxAttempts > 0 && payload.Attempt > payload.MaxAttempts {
+
+		logInfo("Message removed from delay queue (" + strconv.Itoa(payload.Attempt) + "/" + strconv.Itoa(payload.MaxAttempts) + " attempts): " + string(msg.Body))
+		payload.stop(msg)
+		return
+	}
+
+	//
+	var queue queueName
+
+	if payload.getNextAttempt().Unix() <= time.Now().Unix() {
+
+		logInfo("Sending back")
+		queue = payload.OriginalQueue
 
 	} else {
 
-		// Add to original queue
-		logInfo("Re-trying after attempt: " + strconv.Itoa(delayMessage.Attempt))
-
-		err = Produce(delayMessage.getConsumeQueue(), []byte(delayMessage.OriginalMessage))
+		// logInfo("Sending back in " + payload.NextAttempt.Sub(time.Now()).String())
+		queue = queueGoDelays
 	}
 
+	err = produce(payload, queue)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		return
 	}
 
-	return false
+	if err == nil {
+		err = msg.Ack(false)
+		logError(err)
+	}
 }

@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"errors"
+	"strconv"
 	"time"
 
 	"github.com/gamedb/website/config"
@@ -10,31 +12,37 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitMessageChanges struct {
+type changeMessage struct {
+	ID          int                      `json:"id"`
 	PICSChanges RabbitMessageChangesPICS `json:"PICSChanges"`
 }
 
-func (d RabbitMessageChanges) getConsumeQueue() RabbitQueue {
-	return QueueChangesData
+type changeQueue struct {
+	baseQueue
 }
 
-func (d RabbitMessageChanges) getProduceQueue() RabbitQueue {
-	return ""
-}
+func (q changeQueue) processMessage(msg amqp.Delivery) {
 
-func (d RabbitMessageChanges) getRetryData() RabbitMessageDelay {
-	return RabbitMessageDelay{}
-}
-
-func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool) {
-
-	// Get change
-	message := new(RabbitMessageChanges)
-
-	err := helpers.Unmarshal(msg.Body, message)
-	if err != nil {
-		return handleError(err, false)
+	var err error
+	var payload = baseMessage{
+		Message: changeMessage{},
 	}
+
+	err = helpers.Unmarshal(msg.Body, &payload)
+	if err != nil {
+		logError(err)
+		payload.stop(msg)
+		return
+	}
+
+	message, ok := payload.Message.(changeMessage)
+	if !ok {
+		logError(errors.New("can not type assert changeMessage"))
+		payload.stop(msg)
+		return
+	}
+
+	logInfo("Consuming change " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
 
 	// Group products by change id
 	changes := map[int]*db.Change{}
@@ -118,14 +126,18 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool) {
 	if config.Config.IsProd() {
 		err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
 		if err != nil {
-			return handleError(err, true)
+			logError(err)
+			payload.retry(msg)
+			return
 		}
 	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageChanges)
 	if err != nil {
-		return handleError(err, true)
+		logError(err)
+		payload.retry(msg)
+		return
 	}
 
 	if page.HasConnections() {
@@ -140,7 +152,7 @@ func (d RabbitMessageChanges) process(msg amqp.Delivery) (requeue bool) {
 		page.Send(ws)
 	}
 
-	return false
+	payload.stop(msg)
 }
 
 type RabbitMessageChangesPICS struct {
@@ -157,5 +169,5 @@ type RabbitMessageChangesPICS struct {
 		ChangeNumber int  `json:"ChangeNumber"`
 		NeedsToken   bool `json:"NeedsToken"`
 	} `json:"AppChanges"`
-	JobID SteamKitJob `json:"JobID"`
+	JobID steamKitJob `json:"JobID"`
 }

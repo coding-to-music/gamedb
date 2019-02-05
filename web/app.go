@@ -74,7 +74,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.QueueApp([]int{app.ID})
+		err = queue.ProduceApp(app.ID)
 		if err != nil {
 			log.Err(err, r)
 		} else {
