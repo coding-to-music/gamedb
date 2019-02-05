@@ -193,6 +193,16 @@ func RunConsumers() {
 
 func produce(queue QueueName, msg baseMessage) (err error) {
 
+	if msg.OriginalQueue == "" {
+		msg.OriginalQueue = queue
+	}
+	if msg.FirstSeen.IsZero() {
+		msg.FirstSeen = time.Now()
+	}
+	if msg.Attempt == 0 {
+		msg.Attempt = 1
+	}
+
 	b, err := json.Marshal(msg)
 	if err != nil {
 		return err
