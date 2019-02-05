@@ -80,14 +80,14 @@ func (payload baseMessage) getNextAttempt() time.Time {
 }
 
 // Remove from queue
-func (payload baseMessage) stop(msg amqp.Delivery) {
+func (payload baseMessage) ack(msg amqp.Delivery) {
 
 	err := msg.Ack(false)
 	logError(err)
 }
 
 // Send to delay queue
-func (payload baseMessage) retry(msg amqp.Delivery) {
+func (payload baseMessage) ackRetry(msg amqp.Delivery) {
 
 	logInfo("Adding to delay queue")
 

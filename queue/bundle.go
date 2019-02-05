@@ -38,14 +38,14 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		logError(err)
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
 	message, ok := payload.Message.(bundleMessage)
 	if !ok {
 		logError(errors.New("can not type assert bundleMessage"))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -55,7 +55,7 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -63,27 +63,27 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 	gorm = gorm.FirstOrInit(&bundle, db.Bundle{ID: message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	appIDs, err := bundle.GetAppIDs()
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	if message.AppID > 0 && helpers.SliceHasInt(appIDs, message.AppID) {
 		logInfo("Skipping, bundle already has app")
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -91,7 +91,7 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 	gorm = gorm.Save(&bundle)
 	if gorm.Error != nil {
 		logError(gorm.Error)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -99,7 +99,7 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 	page, err := websockets.GetPage(websockets.PageBundle)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	} else if page.HasConnections() {
 		page.Send(bundle.ID)
@@ -108,7 +108,7 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 	page, err = websockets.GetPage(websockets.PageBundles)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -116,7 +116,7 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 		page.Send(bundle.ID)
 	}
 
-	payload.stop(msg)
+	payload.ack(msg)
 }
 
 func updateBundle(bundle *db.Bundle) (err error) {

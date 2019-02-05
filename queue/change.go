@@ -31,14 +31,14 @@ func (q changeQueue) processMessage(msg amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		logError(err)
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
 	message, ok := payload.Message.(changeMessage)
 	if !ok {
 		logError(errors.New("can not type assert changeMessage"))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -127,7 +127,7 @@ func (q changeQueue) processMessage(msg amqp.Delivery) {
 		err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
 		if err != nil {
 			logError(err)
-			payload.retry(msg)
+			payload.ackRetry(msg)
 			return
 		}
 	}
@@ -136,7 +136,7 @@ func (q changeQueue) processMessage(msg amqp.Delivery) {
 	page, err := websockets.GetPage(websockets.PageChanges)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -152,7 +152,7 @@ func (q changeQueue) processMessage(msg amqp.Delivery) {
 		page.Send(ws)
 	}
 
-	payload.stop(msg)
+	payload.ack(msg)
 }
 
 type RabbitMessageChangesPICS struct {

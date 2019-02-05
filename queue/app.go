@@ -44,14 +44,14 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		logError(err)
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
 	message, ok := payload.Message.(appMessage)
 	if !ok {
 		logError(errors.New("can not type assert appMessage"))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -59,7 +59,7 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 
 	if !db.IsValidAppID(message.ID) {
 		logError(errors.New("invalid app ID: " + strconv.Itoa(message.ID)))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -67,7 +67,7 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -75,14 +75,14 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 	gorm = gorm.FirstOrInit(&app, db.App{ID: message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	// Skip if updated in last day, unless its from PICS
 	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.PICSAppInfo.ChangeNumber && !config.Config.IsLocal() {
 		logInfo("Skipping, updated in last day")
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -91,56 +91,56 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 	err = updateAppPICS(&app, payload, message)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppDetails(&app)
 	if err != nil && err != steam.ErrAppNotFound {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	schema, err := updateAppSchema(&app)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppAchievements(&app, schema)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppNews(&app)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppReviews(&app)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppSteamSpy(&app)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateBundles(&app)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -148,7 +148,7 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 	err = savePriceChanges(appBeforeUpdate, app)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -160,7 +160,7 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 	gorm = gorm.Save(&app)
 	if gorm.Error != nil {
 		logError(gorm.Error)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -168,7 +168,7 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 	page, err := websockets.GetPage(websockets.PageApp)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -176,7 +176,7 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 		page.Send(app.ID)
 	}
 
-	payload.stop(msg)
+	payload.ack(msg)
 }
 
 func updateAppPICS(app *db.App, payload baseMessage, message appMessage) (err error) {

@@ -33,14 +33,14 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		logError(err)
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
 	message, ok := payload.Message.(packageMessage)
 	if !ok {
 		logError(errors.New("can not type assert packageMessage"))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -48,7 +48,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 
 	if !db.IsValidPackageID(message.ID) {
 		logError(errors.New("invalid package ID: " + strconv.Itoa(message.ID)))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -56,7 +56,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -64,7 +64,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	gorm = gorm.FirstOrInit(&pack, db.Package{ID: message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -73,7 +73,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 
 		logInfo("Skipping, updated in last day")
 		if !config.Config.IsLocal() {
-			payload.stop(msg)
+			payload.ack(msg)
 			return
 		}
 	}
@@ -84,7 +84,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	err = updatePackageFromPICS(&pack, payload, message)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -93,7 +93,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -103,14 +103,14 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 		appIDs, err := pack.GetAppIDs()
 		if err != nil {
 			logError(err)
-			payload.retry(msg)
+			payload.ackRetry(msg)
 			return
 		}
 
 		app, err := db.GetApp(appIDs[0], []string{})
 		if err != nil && err != db.ErrRecordNotFound {
 			logError(err)
-			payload.retry(msg)
+			payload.ackRetry(msg)
 			return
 		} else if err == nil && pack.HasDefaultName() {
 			pack.Name = app.Name
@@ -122,7 +122,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -130,7 +130,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
 		logError(gorm.Error)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -138,7 +138,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	page, err := websockets.GetPage(websockets.PagePackage)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -146,7 +146,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 		page.Send(pack.ID)
 	}
 
-	payload.stop(msg)
+	payload.ack(msg)
 }
 
 func updatePackageFromPICS(pack *db.Package, payload baseMessage, message packageMessage) (err error) {

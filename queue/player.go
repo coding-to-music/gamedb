@@ -37,14 +37,14 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		logError(err)
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
 	message, ok := payload.Message.(playerMessage)
 	if !ok {
 		logError(errors.New("can not type assert playerMessage"))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -52,13 +52,13 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 
 	if !message.PICSProfileInfo.SteamID.IsValid {
 		logError(errors.New("not valid account id"))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
 	if !message.PICSProfileInfo.SteamID.IsIndividualAccount {
 		logError(errors.New("not individual account id"))
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 	id64, err := helpers.GetSteam().GetID(strconv.Itoa(message.PICSProfileInfo.SteamID.AccountID))
 	if err != nil {
 		logError(err)
-		payload.stop(msg)
+		payload.ack(msg)
 		return
 	}
 
@@ -75,7 +75,7 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 	err = helpers.IgnoreErrors(err, datastore.ErrNoSuchEntity)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -88,70 +88,70 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 	err = updatePlayerSummary(&player)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updatePlayerGames(&player)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updatePlayerRecentGames(&player)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updatePlayerBadges(&player)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updatePlayerFriends(&player)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updatePlayerLevel(&player)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updatePlayerBans(&player)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = updatePlayerGroups(&player)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = db.CreateEvent(new(http.Request), player.PlayerID, db.EventRefresh)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
 	err = player.Save()
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -159,7 +159,7 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 	page, err := websockets.GetPage(websockets.PageProfile)
 	if err != nil {
 		logError(err)
-		payload.retry(msg)
+		payload.ackRetry(msg)
 		return
 	}
 
@@ -167,7 +167,7 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 		page.Send(strconv.FormatInt(player.PlayerID, 10))
 	}
 
-	payload.stop(msg)
+	payload.ack(msg)
 }
 
 type RabbitMessageProfilePICS struct {
