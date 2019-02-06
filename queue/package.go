@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
+	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
@@ -37,9 +38,10 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	message, ok := payload.Message.(packageMessage)
-	if !ok {
-		logError(errors.New("can not type assert packageMessage"))
+	var message packageMessage
+	err = mapstructure.Decode(payload.Message, &message)
+	if err != nil {
+		logError(err)
 		payload.ack(msg)
 		return
 	}

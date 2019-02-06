@@ -22,6 +22,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
+	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
@@ -48,9 +49,10 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	message, ok := payload.Message.(appMessage)
-	if !ok {
-		logError(errors.New("can not type assert appMessage"))
+	var message appMessage
+	err = mapstructure.Decode(payload.Message, &message)
+	if err != nil {
+		logError(err)
 		payload.ack(msg)
 		return
 	}

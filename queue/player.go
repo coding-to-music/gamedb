@@ -41,9 +41,10 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	message, ok := payload.Message.(playerMessage)
-	if !ok {
-		logError(errors.New("can not type assert playerMessage"))
+	var message playerMessage
+	err = mapstructure.Decode(payload.Message, &message)
+	if err != nil {
+		logError(err)
 		payload.ack(msg)
 		return
 	}

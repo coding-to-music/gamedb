@@ -2,7 +2,6 @@ package queue
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -16,6 +15,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
+	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
@@ -42,9 +42,10 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	message, ok := payload.Message.(bundleMessage)
-	if !ok {
-		logError(errors.New("can not type assert bundleMessage"))
+	var message bundleMessage
+	err = mapstructure.Decode(payload.Message, &message)
+	if err != nil {
+		logError(err)
 		payload.ack(msg)
 		return
 	}
