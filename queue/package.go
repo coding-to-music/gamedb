@@ -18,7 +18,7 @@ import (
 
 type packageMessage struct {
 	ID              int                  `json:"id"`
-	PICSPackageInfo rabbitMessageProduct `json:"pics_package_info"`
+	PICSPackageInfo rabbitMessageProduct `` // Leave JSON key name as default
 }
 
 type packageQueue struct {

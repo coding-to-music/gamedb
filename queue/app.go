@@ -26,8 +26,8 @@ import (
 )
 
 type appMessage struct {
-	ID          int `json:"id"`
-	PICSAppInfo rabbitMessageProduct
+	ID          int                  `json:"id"`
+	PICSAppInfo rabbitMessageProduct `` // Leave JSON key name as default
 }
 
 type appQueue struct {

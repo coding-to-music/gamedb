@@ -20,7 +20,7 @@ import (
 
 type playerMessage struct {
 	ID              int64                    `json:"id"`
-	PICSProfileInfo RabbitMessageProfilePICS `json:"ProfileInfo"`
+	PICSProfileInfo RabbitMessageProfilePICS `` // Leave JSON key name as default
 }
 
 type playerQueue struct {
