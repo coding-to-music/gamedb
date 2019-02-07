@@ -363,7 +363,7 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.flashesBad, err = session.GetBadFlashes(w, r)
 	log.Err(err, r)
 
-	// All session data, todo, remove this, security etc
+	// All session data
 	t.session, err = session.ReadAll(r)
 	log.Err(err, r)
 }

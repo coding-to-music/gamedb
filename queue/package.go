@@ -75,7 +75,7 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 	// Skip if updated in last day, unless its from PICS
 	if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && pack.ChangeNumber >= message.PICSPackageInfo.ChangeNumber {
 
-		logInfo("Skipping, updated in last day")
+		logInfo("Skipping package, updated in last day")
 		if !config.Config.IsLocal() {
 			payload.ack(msg)
 			return
@@ -292,7 +292,6 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 			if err != nil {
 				return err
 			}
-
 			pack.Platforms = string(b)
 
 			//

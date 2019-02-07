@@ -17,8 +17,8 @@ type PlayerApp struct {
 	AppName      string                 `datastore:"app_name"`
 	AppIcon      string                 `datastore:"app_icon,noindex"`
 	AppTime      int                    `datastore:"app_time"`
-	AppPrices    CountryCodeIntStruct   `datastore:"app_price,flatten"`      // JSON
-	AppPriceHour CountryCodeFloatStruct `datastore:"app_price_hour,flatten"` // JSON
+	AppPrices    CountryCodeIntStruct   `datastore:"app_price,flatten"`
+	AppPriceHour CountryCodeFloatStruct `datastore:"app_price_hour,flatten"`
 }
 
 func (p PlayerApp) GetKey() (key *datastore.Key) {
@@ -32,7 +32,7 @@ func (p PlayerApp) GetPath() string {
 func (p PlayerApp) GetIcon() string {
 
 	if p.AppIcon == "" {
-		return "/assets/img/no-player-image.jpg" // todo, fix to right image
+		return "/assets/img/no-player-image.jpg"
 	}
 	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(p.AppID) + "/" + p.AppIcon + ".jpg"
 }
@@ -108,6 +108,7 @@ func ParsePlayerAppKey(key datastore.Key) (playerID int64, appID int, err error)
 	return
 }
 
+// These are here because datastore needs a struct to flatten from
 type CountryCodeIntStruct struct {
 	AE *int
 	AR *int
