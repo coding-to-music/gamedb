@@ -17,7 +17,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
@@ -82,10 +81,12 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() && app.ChangeNumber >= message.PICSAppInfo.ChangeNumber && !config.Config.IsLocal() {
-		logInfo("Skipping, updated in last day")
-		payload.ack(msg)
-		return
+	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
+		if app.ChangeNumber >= message.PICSAppInfo.ChangeNumber {
+			logInfo("Skipping app, updated in last day")
+			payload.ack(msg)
+			return
+		}
 	}
 
 	var appBeforeUpdate = app

@@ -54,16 +54,10 @@ var (
 )
 
 type baseMessage struct {
-	Message interface{} `json:"message"`
-
-	// Retry info
-	FirstSeen     time.Time `json:"first_seen"`
-	Attempt       int       `json:"attempt"`
-	OriginalQueue queueName `json:"original_queue"`
-
-	// Limits
-	MaxAttempts int           `json:"max_attempts"`
-	MaxTime     time.Duration `json:"max_time"`
+	Message       interface{} `json:"message"`
+	FirstSeen     time.Time   `json:"first_seen"`
+	Attempt       int         `json:"attempt"`
+	OriginalQueue queueName   `json:"original_queue"`
 }
 
 func (payload baseMessage) getNextAttempt() time.Time {
@@ -113,9 +107,11 @@ type queueInterface interface {
 }
 
 type baseQueue struct {
-	queue     queueInterface
-	name      queueName
-	batchSize int // Not in use yet
+	queue       queueInterface
+	name        queueName
+	batchSize   int // Not in use yet
+	maxAttempts int
+	maxTime     time.Duration
 }
 
 func (q *baseQueue) setQueueName(name queueName) {
