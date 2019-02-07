@@ -59,6 +59,9 @@ func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 	if pack.BundleIDs == "" || pack.BundleIDs == "null" {
 		pack.BundleIDs = "[]"
 	}
+	if pack.ChangeNumberDate.IsZero() {
+		pack.ChangeNumberDate = time.Now()
+	}
 	if pack.Controller == "" {
 		pack.Controller = "{}"
 	}

@@ -99,6 +99,9 @@ func (app *App) UpdateJSON(scope *gorm.Scope) error {
 	if app.Categories == "" {
 		app.Categories = "[]"
 	}
+	if app.ChangeNumberDate.IsZero() {
+		app.ChangeNumberDate = time.Now()
+	}
 	if app.Common == "" {
 		app.Common = "{}"
 	}
