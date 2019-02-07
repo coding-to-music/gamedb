@@ -91,7 +91,7 @@ func (p PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{}) 
 	}
 }
 
-func ParsePlayerAppKey(key datastore.Key) (playerID int64, appID int, err error) {
+func ParsePlayerAppKey(key *datastore.Key) (playerID int64, appID int, err error) {
 
 	parts := strings.Split(key.Name, "-")
 

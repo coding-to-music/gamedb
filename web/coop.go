@@ -63,7 +63,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make a map of all games the players have
 	var wg sync.WaitGroup
-	var allGames = map[int]int{}
+	var allGames = map[int]bool{}
 	var allGamesByPlayer [][]int
 
 	for _, player := range t.Players {
@@ -73,16 +73,16 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 			defer wg.Done()
 
-			playerApps, err := player.GetAllPlayerApps("", 0)
+			playerApps, err := player.GetAppIDs()
 			if err != nil {
 				log.Err(err, r)
 				return
 			}
 
 			var playerAppIDs []int
-			for _, playerApp := range playerApps {
-				allGames[playerApp.AppID] = playerApp.AppID
-				playerAppIDs = append(playerAppIDs, playerApp.AppID)
+			for _, v := range playerApps {
+				allGames[v] = true
+				playerAppIDs = append(playerAppIDs, v)
 			}
 			allGamesByPlayer = append(allGamesByPlayer, playerAppIDs)
 
@@ -114,8 +114,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Convert to slice
 	var gamesSlice []int
-	for _, v := range allGames {
-		gamesSlice = append(gamesSlice, v)
+	for k := range allGames {
+		gamesSlice = append(gamesSlice, k)
 	}
 
 	games, err := db.GetAppsByID(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})

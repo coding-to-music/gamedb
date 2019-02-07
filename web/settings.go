@@ -70,7 +70,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		resp, err := player.GetAllPlayerApps("app_name", 0)
+		resp, err := player.GetAppIDs()
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -78,7 +78,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var gamesSlice []int
 		for _, v := range resp {
-			gamesSlice = append(gamesSlice, v.AppID)
+			gamesSlice = append(gamesSlice, v)
 		}
 
 		bytes, err := json.Marshal(gamesSlice)

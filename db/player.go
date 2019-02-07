@@ -131,29 +131,32 @@ func (p Player) GetCountry() string {
 	return helpers.CountryCodeToName(p.CountryCode)
 }
 
-func (p Player) GetAllPlayerApps(sort string, limit int) (apps []PlayerApp, err error) { // todo, only return keys!! (Use ParsePlayerAppKey func)
+func (p Player) GetAppIDs() (appIDs []int, err error) {
 
 	if p.GamesCount == 0 {
-		return apps, err
+		return
 	}
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
-		return apps, err
+		return
 	}
 
-	q := datastore.NewQuery(KindPlayerApp).Filter("player_id =", p.PlayerID)
-
-	if sort != "" {
-		q = q.Order(sort)
+	var playerApps []PlayerApp
+	q := datastore.NewQuery(KindPlayerApp).Filter("player_id =", p.PlayerID).KeysOnly()
+	keys, err := client.GetAll(ctx, q, &playerApps)
+	if err != nil {
+		return
 	}
 
-	if limit > 0 {
-		q.Limit(limit)
+	for _, v := range keys {
+		_, appID, err := ParsePlayerAppKey(v)
+		if err != nil {
+			appIDs = append(appIDs, appID)
+		}
 	}
 
-	_, err = client.GetAll(ctx, q, &apps)
-	return apps, err
+	return appIDs, nil
 }
 
 func (p Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
