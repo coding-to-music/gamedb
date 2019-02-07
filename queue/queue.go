@@ -3,10 +3,12 @@ package queue
 import (
 	"encoding/json"
 	"math"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/cenkalti/backoff"
+	"github.com/davidscholberg/go-durationfmt"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
@@ -83,11 +85,16 @@ func (payload baseMessage) ack(msg amqp.Delivery) {
 // Send to delay queue
 func (payload baseMessage) ackRetry(msg amqp.Delivery) {
 
-	logInfo("Adding to delay queue")
-
 	payload.Attempt++
 
-	err := produce(payload, queueGoDelays)
+	durStr, err := durationfmt.Format(payload.getNextAttempt().Sub(payload.FirstSeen), "%mm %ss")
+	if err != nil {
+		logError(err)
+	}
+
+	logInfo("Adding to delay queue for " + durStr + "(attempt " + strconv.Itoa(payload.Attempt) + ")")
+
+	err = produce(payload, queueGoDelays)
 	if err != nil {
 		logError(err)
 		return
