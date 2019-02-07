@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -294,10 +295,42 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 			}
 			pack.Platforms = string(b)
 
+			// Images
+			var wg sync.WaitGroup
+
+			wg.Add(1)
+			go func() {
+				code := helpers.GetResponseCode(response.Data.HeaderImage)
+				pack.ImageHeader = ""
+				if code == 200 {
+					pack.ImageHeader = response.Data.HeaderImage
+				}
+				wg.Done()
+			}()
+
+			wg.Add(1)
+			go func() {
+				code := helpers.GetResponseCode(response.Data.SmallLogo)
+				pack.ImageLogo = ""
+				if code == 200 {
+					pack.ImageLogo = response.Data.SmallLogo
+				}
+				wg.Done()
+			}()
+
+			wg.Add(1)
+			go func() {
+				code := helpers.GetResponseCode(response.Data.PageImage)
+				pack.ImagePage = ""
+				if code == 200 {
+					pack.ImagePage = response.Data.PageImage
+				}
+				wg.Done()
+			}()
+
+			wg.Wait()
+
 			//
-			pack.ImageHeader = response.Data.HeaderImage
-			pack.ImageLogo = response.Data.SmallLogo
-			pack.ImageHeader = response.Data.HeaderImage
 			pack.ReleaseDate = response.Data.ReleaseDate.Date
 			pack.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
