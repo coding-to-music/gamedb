@@ -87,7 +87,7 @@ if ($priceChart.length > 0 && prices) {
             {
                 type: 'line',
                 name: 'Price',
-                step: 'right',
+                step: 'left',
                 color: '#28a745'
             }
         ],
