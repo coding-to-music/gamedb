@@ -276,9 +276,9 @@ func (pack Package) GetExtended() (extended PICSExtended, err error) {
 	return extended, err
 }
 
-func (pack Package) GetController() (controller map[string]interface{}, err error) {
+func (pack Package) GetController() (controller PICSController, err error) {
 
-	controller = make(map[string]interface{})
+	controller = PICSController{}
 
 	err = helpers.Unmarshal([]byte(pack.Controller), &controller)
 	return controller, err

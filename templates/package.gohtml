@@ -28,9 +28,11 @@
                         <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                     </li>
                 {{ end }}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
-                </li>
+                {{ if .ShowDev }}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
+                    </li>
+                {{ end }}
             </ul>
         </div>
         <div class="card-body">
@@ -222,19 +224,19 @@
                         <div class="card-header bg-light text-white">
 
                             <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                                {{if gt (len .Package.GetExtended) 0}}
+                                {{if gt (len .Extended) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="tab" href="#dev-extended" role="tab">Extended Values ({{ len .Package.GetExtended }})</a>
+                                        <a class="nav-link active" data-toggle="tab" href="#dev-extended" role="tab">Extended Values ({{ len .Extended }})</a>
                                     </li>
                                 {{ end }}
-                                {{if gt (len .Package.GetController) 0}}
+                                {{if gt (len .Controller) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-controller" role="tab">Controller Values ({{ len .Package.GetController }})</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-controller" role="tab">Controller Values ({{ len .Controller }})</a>
                                     </li>
                                 {{ end }}
-                                {{if gt (len .Package.GetDepotIDs) 0}}
+                                {{if gt (len .DepotIDs) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots ({{ len .Package.GetDepotIDs }})</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots ({{ len .DepotIDs }})</a>
                                     </li>
                                 {{ end }}
                             </ul>
@@ -254,7 +256,7 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .Package.GetExtended }}
+                                            {{ range $key, $value := .Extended }}
                                                 <tr data-link="/product-keys?type=package&key={{ $key }}&value={{ $value }}">
                                                     <td>{{ $key }}</td>
                                                     <td>{{ $value }}</td>
@@ -276,7 +278,7 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .Package.GetController }}
+                                            {{ range $key, $value := .Controller }}
                                                 <tr>
                                                     <td>{{ $key }}</td>
                                                     <td>{{ $value }}</td>
@@ -297,7 +299,7 @@
                                                 <th scope="col" data-sort="asc">ID</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .Package.GetDepotIDs }}
+                                            {{ range $key, $value := .DepotIDs }}
                                                 <tr data-link="/depots/{{ $value }}">
                                                     <td>{{ $value }}</td>
                                                 </tr>

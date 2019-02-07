@@ -140,7 +140,17 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get price
 	t.Price = db.GetPriceFormatted(pack, session.GetCountryCode(r))
+
 	t.Prices, err = t.Package.GetPrices()
+	log.Err(err)
+
+	t.Extended, err = pack.GetExtended()
+	log.Err(err)
+
+	t.Controller, err = pack.GetController()
+	log.Err(err)
+
+	t.DepotIDs, err = pack.GetDepotIDs()
 	log.Err(err)
 
 	err = returnTemplate(w, r, "package", t)
@@ -149,12 +159,20 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 type packageTemplate struct {
 	GlobalTemplate
-	Package db.Package
-	Apps    map[int]db.App
-	Bundles []db.Bundle
-	Banners map[string][]string
-	Price   db.ProductPriceFormattedStruct
-	Prices  db.ProductPrices
+	Apps       map[int]db.App
+	Bundles    []db.Bundle
+	Banners    map[string][]string
+	Controller db.PICSController
+	DepotIDs   []int
+	Extended   db.PICSExtended
+	Package    db.Package
+	Price      db.ProductPriceFormattedStruct
+	Prices     db.ProductPrices
+}
+
+func (p packageTemplate) ShowDev() bool {
+
+	return len(p.Extended) > 0 || len(p.Controller) > 0 || len(p.DepotIDs) > 0
 }
 
 func packagePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
