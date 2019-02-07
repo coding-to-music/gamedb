@@ -46,7 +46,9 @@ func (q packageQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	logInfo("Consuming package " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	if payload.Attempt > 1 {
+		logInfo("Consuming package " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	}
 
 	if !db.IsValidPackageID(message.ID) {
 		logError(errors.New("invalid package ID: " + strconv.Itoa(message.ID)))

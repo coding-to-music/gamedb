@@ -49,7 +49,9 @@ func (q playerQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	logInfo("Consuming player " + strconv.FormatInt(message.ID, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
+	if payload.Attempt > 1 {
+		logInfo("Consuming player " + strconv.FormatInt(message.ID, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
+	}
 
 	if !message.PICSProfileInfo.SteamID.IsValid {
 		logError(errors.New("not valid account id"))

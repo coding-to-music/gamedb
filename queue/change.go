@@ -43,7 +43,9 @@ func (q changeQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	logInfo("Consuming change " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	if payload.Attempt > 1 {
+		logInfo("Consuming change " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	}
 
 	// Group products by change id
 	changes := map[int]*db.Change{}

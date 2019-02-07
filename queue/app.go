@@ -56,7 +56,9 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	logInfo("Consuming app " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	if payload.Attempt > 1 {
+		logInfo("Consuming app " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	}
 
 	if !db.IsValidAppID(message.ID) {
 		logError(errors.New("invalid app ID: " + strconv.Itoa(message.ID)))

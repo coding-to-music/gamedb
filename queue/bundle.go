@@ -50,7 +50,9 @@ func (q bundleQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
-	logInfo("Consuming bundle " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	if payload.Attempt > 1 {
+		logInfo("Consuming bundle " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	}
 
 	// Load current bundle
 	gorm, err := db.GetMySQLClient()
