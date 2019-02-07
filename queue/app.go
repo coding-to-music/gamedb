@@ -93,11 +93,13 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 
 	var appBeforeUpdate = app
 
-	err = updateAppPICS(&app, payload, message)
-	if err != nil {
-		logError(err)
-		payload.ackRetry(msg)
-		return
+	if message.PICSAppInfo.ID > 0 {
+		err = updateAppPICS(&app, payload, message)
+		if err != nil {
+			logError(err)
+			payload.ackRetry(msg)
+			return
+		}
 	}
 
 	err = updateAppDetails(&app)
