@@ -224,9 +224,12 @@
                         <div class="card-header bg-light text-white">
 
                             <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
+                                </li>
                                 {{if gt (len .Extended) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="tab" href="#dev-extended" role="tab">Extended Values ({{ len .Extended }})</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-extended" role="tab">Extended Values ({{ len .Extended }})</a>
                                     </li>
                                 {{ end }}
                                 {{if gt (len .Controller) 0}}
@@ -245,8 +248,13 @@
                         <div class="card-body">
                             <div class="tab-content" id="tab-content-dev">
 
+                                {{/* Details */}}
+                                <div class="tab-pane show active" id="dev-details" role="tabpanel">
+
+                                </div>
+
                                 {{/* Extended */}}
-                                <div class="tab-pane show active" id="dev-extended" role="tabpanel">
+                                <div class="tab-pane" id="dev-extended" role="tabpanel">
 
                                     <div class="table-responsive">
                                         <table class="table table-hover table-striped table-datatable mb-0">
