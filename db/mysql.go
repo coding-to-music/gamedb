@@ -28,54 +28,20 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 	// Retrying as this call can fail
 	operation := func() (err error) {
 
-		options := url.Values{}
-		options.Set("parseTime", "true")
-		options.Set("charset", "utf8mb4")
-		options.Set("collation", "utf8mb4_unicode_ci")
-
-		if len(debug) > 0 {
-
+		if len(debug) == 0 {
+			if gormConnection == nil {
+				gormConnection, err = getMySQLConnection()
+				gormConnection.SetLogger(mySQLLogger{})
+			}
+			conn = gormConnection
+		} else {
 			if gormConnectionDebug == nil {
-
-				log.Info("Connecting to MySQL")
-
-				db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+"?"+options.Encode())
-				if err != nil {
-					return err
-				}
-				db = db.LogMode(true)
-				db = db.Set("gorm:association_autoupdate", false)
-				db = db.Set("gorm:association_autocreate", false)
-				db = db.Set("gorm:association_save_reference", false)
-				db = db.Set("gorm:save_associations", false)
-
-				gormConnectionDebug = db
+				gormConnectionDebug, err = getMySQLConnection()
+				gormConnectionDebug.SetLogger(mySQLLoggerDebug{})
 			}
-
 			conn = gormConnectionDebug
-			return nil
 		}
-
-		if gormConnection == nil {
-
-			log.Info("Connecting to MySQL")
-
-			db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+"?"+options.Encode())
-			if err != nil {
-				return err
-			}
-			db.SetLogger(MySQLLogger{})
-			db = db.LogMode(true)
-			db = db.Set("gorm:association_autoupdate", false)
-			db = db.Set("gorm:association_autocreate", false)
-			db = db.Set("gorm:association_save_reference", false)
-			db = db.Set("gorm:save_associations", false)
-
-			gormConnection = db
-		}
-
-		conn = gormConnection
-		return nil
+		return err
 	}
 
 	policy := backoff.NewExponentialBackOff()
@@ -88,9 +54,38 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 	return conn, err
 }
 
-type MySQLLogger struct {
+func getMySQLConnection() (*gorm.DB, error) {
+
+	log.Info("Connecting to MySQL")
+
+	options := url.Values{}
+	options.Set("parseTime", "true")
+	options.Set("charset", "utf8mb4")
+	options.Set("collation", "utf8mb4_unicode_ci")
+
+	db, err := gorm.Open("mysql", config.Config.MySQLDSN.Get()+"?"+options.Encode())
+	if err != nil {
+		return db, err
+	}
+	db = db.LogMode(true)
+	db = db.Set("gorm:association_autoupdate", false)
+	db = db.Set("gorm:association_autocreate", false)
+	db = db.Set("gorm:association_save_reference", false)
+	db = db.Set("gorm:save_associations", false)
+
+	return db, err
 }
 
-func (ml MySQLLogger) Print(v ...interface{}) {
+type mySQLLogger struct {
+}
+
+func (logger mySQLLogger) Print(v ...interface{}) {
 	log.Debug(append(v, log.LogNameSQL, log.EnvProd)...)
+}
+
+type mySQLLoggerDebug struct {
+}
+
+func (logger mySQLLoggerDebug) Print(v ...interface{}) {
+	// log.Debug(append(v, log.LogNameSQL, log.EnvLocal)...)
 }
