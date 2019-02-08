@@ -21,7 +21,10 @@
                     <a class="nav-link" data-toggle="tab" href="#queues" role="tab">Queues</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#mysql" role="tab">MySQL</a>
+                    <a class="nav-link" data-toggle="tab" href="#binlogs" role="tab">Bin Logs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#running" role="tab">Running Queries</a>
                 </li>
             </ul>
 
@@ -136,13 +139,13 @@
                     </form>
 
                 </div>
-                <div class="tab-pane" id="mysql" role="tabpanel">
+                <div class="tab-pane" id="binlogs" role="tabpanel">
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-3" data-sort="[[0, 'asc']]" id="bin-logs">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col">Bin Logs</th>
+                                <th scope="col">Name</th>
                                 <th scope="col">Bytes</th>
                                 <th scope="col">Total Bytes</th>
                                 <th scope="col">Delete Upto</th>
@@ -160,6 +163,9 @@
                             </tbody>
                         </table>
                     </div>
+
+                </div>
+                <div class="tab-pane" id="running" role="tabpanel">
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0" data-sort="[[0, 'asc']]">
