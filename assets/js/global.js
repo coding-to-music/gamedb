@@ -138,7 +138,7 @@ function websocketListener(page, onMessage) {
 
     } else {
 
-        const socket = new WebSocket(((location.protocol === 'https:') ? "wss://" : "ws://") + location.host + "/websocket/" + page);
+        const socket = new WebSocket((location.protocol === 'https:' ? "wss://gamedb.online" : "ws://" + location.host) + "/websocket/" + page);
         const $badge = $('#live-badge');
 
         socket.onopen = function (e) {
