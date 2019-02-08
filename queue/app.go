@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -500,18 +501,40 @@ func updateAppDetails(app *db.App) error {
 			if err != nil {
 				return err
 			}
-
 			app.DemoIDs = string(b)
+
+			// Images
+			var wg sync.WaitGroup
+
+			wg.Add(1)
+			go func() {
+				code := helpers.GetResponseCode(response.Data.Background)
+				app.Background = ""
+				if code == 200 {
+					app.Background = response.Data.Background
+				}
+				wg.Done()
+			}()
+
+			wg.Add(1)
+			go func() {
+				code := helpers.GetResponseCode(response.Data.HeaderImage)
+				app.HeaderImage = ""
+				if code == 200 {
+					app.HeaderImage = response.Data.HeaderImage
+				}
+				wg.Done()
+			}()
+
+			wg.Wait()
 
 			// Other
 			app.Name = response.Data.Name
 			app.Type = response.Data.Type
 			app.IsFree = response.Data.IsFree
 			app.ShortDescription = response.Data.ShortDescription
-			app.HeaderImage = response.Data.HeaderImage
 			app.MetacriticScore = response.Data.Metacritic.Score
 			app.MetacriticURL = response.Data.Metacritic.URL
-			app.Background = response.Data.Background
 			app.GameID = int(response.Data.Fullgame.AppID)
 			app.GameName = response.Data.Fullgame.Name
 			app.ReleaseDate = response.Data.ReleaseDate.Date
