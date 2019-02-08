@@ -722,7 +722,7 @@ func GetApp(id int, columns []string) (app App, err error) {
 	return app, nil
 }
 
-func GetAppsByID(ids []int, columns []string) (apps []App, err error) { // todo, chunk ids into multple queries async
+func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 
 	if len(ids) == 0 {
 		return apps, nil

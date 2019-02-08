@@ -95,7 +95,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		//
 		// player.FriendsAddedAt = time.Now()
 		//
-		// err = player.Save() // todo, switch to update query so not to overwrite other player changes
+		// err = player.Save() // switch to update query so not to overwrite other player changes
 		// log.Err(err, r)
 
 	}(player)
