@@ -330,11 +330,11 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 		}
 
 		// Tweet free US products
-		if code == steam.CountryUS && oldPrice > 0 && newPrice == 0 {
+		if code == steam.CountryUS && before.GetProductType() == db.ProductTypeApp && oldPrice > 0 && newPrice == 0 {
 
 			twitter := social.GetTwitter()
 
-			_, _, err = twitter.Statuses.Update(before.GetName()+" is now free! gamedb.online"+before.GetPath()+" #freegame #steam", nil)
+			_, _, err = twitter.Statuses.Update("Free game! gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam", nil)
 			if err != nil {
 				if !strings.Contains(err.Error(), "Status is a duplicate") {
 					logCritical(err)
