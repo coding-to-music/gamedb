@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const EnvProd = "production"
@@ -159,6 +160,7 @@ type ConfigItem struct {
 }
 
 func (ci *ConfigItem) Set(environment string) {
+	environment = strings.TrimPrefix(environment, prefix)
 	env := os.Getenv(prefix + environment)
 	if env != "" {
 		ci.value = env
