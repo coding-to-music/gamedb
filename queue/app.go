@@ -131,6 +131,13 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
+	err = updateAppPlayerCount(&app)
+	if err != nil {
+		logError(err)
+		payload.ackRetry(msg)
+		return
+	}
+
 	err = updateAppReviews(&app)
 	if err != nil {
 		logError(err)
@@ -696,6 +703,25 @@ func updateAppNews(app *db.App) error {
 	}
 
 	app.NewsIDs = string(b)
+	return nil
+}
+
+func updateAppPlayerCount(app *db.App) error {
+
+	resp, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(app.ID)
+
+	err2, ok := err.(steam.Error)
+	if ok && (err2.Code == 404) {
+		err = nil
+	}
+	if err != nil {
+		return err
+	}
+
+	if resp > app.PlayerCount {
+		app.PlayerCount = resp
+	}
+
 	return nil
 }
 

@@ -60,6 +60,7 @@ type App struct {
 	NewsIDs            string    `gorm:"not null;column:news_ids"`                         // []int64
 	Packages           string    `gorm:"not null;column:packages;type:json"`               // []int
 	Platforms          string    `gorm:"not null;column:platforms;type:json"`              // []string
+	PlayerCount        int       `gorm:"not null;column:player_count"`                     //
 	Prices             string    `gorm:"not null;column:prices"`                           // ProductPrices
 	PublicOnly         bool      `gorm:"not null;column:public_only"`                      //
 	Publishers         string    `gorm:"not null;column:publishers;type:json"`             // []int
