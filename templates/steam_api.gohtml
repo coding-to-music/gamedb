@@ -1,0 +1,100 @@
+{{define "steam_api"}} {{ template "_header" . }}
+
+<!--suppress HtmlFormInputWithoutLabel -->
+<div class="container" id="steam-api-page">
+
+    <div class="jumbotron">
+        <h1><i class="fas fa-cloud-download-alt"></i> Steam API</h1>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <form id="key-form">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="key">API Key</label>
+                        <input type="text" class="form-control" id="key" name="key">
+                        <small class="form-text text-muted">Your API key only gets stored in your browser.</small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="format">Format</label>
+                        <select class="form-control" id="format" name="format">
+                            <option value="json">JSON</option>
+                            <option value="vdf">VDF</option>
+                            <option value="xml">XML</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Save</button>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body" id="services">
+
+            {{ range $key, $value := .Interfaces }}
+
+                <h4>{{ $value.Name }}</h4>
+
+                {{ range $ke2y, $value2 := .Methods }}
+
+                    <form action="https://api.steampowered.com/{{ $value.Name }}/{{ .Name }}/v{{ .Version }}" target="_blank" method="{{ .HTTPmethod }}">
+                        <div class="card mb-4">
+                            <div class="card-header">{{ .Name }} <span class="badge badge-success">V{{ .Version }}</span></div>
+                            <div class="card-body">
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">{{ .HTTPmethod }}</span>
+                                    </div>
+                                    <input type="text" class="form-control endpoint" value="https://api.steampowered.com/{{ $value.Name }}/{{ .Name }}/v{{ .Version }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-success" type="submit">Go</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {{ if gt (len .Parameters) 0 }}
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <td scope="col" class="font-weight-bold">Value</td>
+                                        <td scope="col" class="font-weight-bold">Name</td>
+                                        <td scope="col" class="font-weight-bold">Type</td>
+                                        <td scope="col" class="font-weight-bold">Required</td>
+                                        <td scope="col" class="font-weight-bold">Description</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {{ range $ke2y, $value2 := .Parameters }}
+                                        <tr>
+                                            <td><input type="text" name="{{ .Name }}"></td>
+                                            <td>{{ .Name }}</td>
+                                            <td>{{ .Type }}</td>
+                                            <td>{{ if .Optional }}<i class="fas fa-times"></i>{{ else }}<i class="fas fa-check"></i>{{ end }}</td>
+                                            <td>{{ .Description }}</td>
+                                        </tr>
+                                    {{ end }}
+                                    </tbody>
+                                </table>
+                            {{ end }}
+                        </div>
+
+                        <input type="hidden" name="method-key">
+                        <input type="hidden" name="method-format">
+                    </form>
+
+                {{ end }}
+
+            {{ end }}
+
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" . }} {{end}}

@@ -82,6 +82,7 @@ func Serve() error {
 	r.Get("/news", newsHandler)
 	r.Get("/news/ajax", newsAjaxHandler)
 	r.Get("/publishers", statsPublishersHandler)
+	r.Get("/steam-api", steamAPIHandler)
 	r.Get("/tags", statsTagsHandler)
 	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
 	r.Mount("/admin", adminRouter())

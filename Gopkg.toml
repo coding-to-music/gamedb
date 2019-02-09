@@ -21,3 +21,8 @@
 #  version = "2.4.0"
 
 required = ["github.com/oxequa/realize", "github.com/zackslash/goviz"]
+
+# Just here because someone broke colly
+[[constraint]]
+  name = "github.com/gocolly/colly"
+  branch = "master"
