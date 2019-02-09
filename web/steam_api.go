@@ -16,7 +16,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := steamAPITemplate{}
-	t.Fill(w, r, "Steam API", "")
+	t.Fill(w, r, "Steam API", "All of the public Steam API calls")
 	t.Interfaces = resp.Interfaces
 
 	err = returnTemplate(w, r, "steam_api", t)
