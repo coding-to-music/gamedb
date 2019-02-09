@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"os"
 	"runtime"
 	"strconv"
 	"sync"
@@ -20,6 +21,11 @@ import (
 func main() {
 
 	rand.Seed(time.Now().UnixNano())
+
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		log.Err("GOOGLE_APPLICATION_CREDENTIALS not found")
+		os.Exit(1)
+	}
 
 	// Preload connections
 	helpers.GetMemcache()
