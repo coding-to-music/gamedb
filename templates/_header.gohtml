@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=77327d31b6">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=2da7f9b8b3">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -82,6 +82,14 @@
 
                 <li class="nav-item {{if startsWith .Path "/apps" }}active{{end}}">
                     <a class="nav-link" href="/apps?types=game">Games</a>
+                </li>
+
+                <li class="nav-item dropdown dropdown-mini d-none d-lg-block">
+                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"></a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/packages">Packages</a>
+                        <a class="dropdown-item" href="/bundles">Bundles</a>
+                    </div>
                 </li>
 
                 <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
