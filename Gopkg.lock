@@ -64,11 +64,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a8aecc29a4bddfbc204bd32c2837a9942a924a427767c65850b586b890f1c797"
+  digest = "1:44021405ec239ca124cfab8438f511bdd7e6723ad77f551868bbc84d828b4c5b"
   name = "github.com/Jleagle/steam-go"
   packages = ["steam"]
   pruneopts = ""
-  revision = "9919cc96c26b765a32a19a453ac4123ef05e87ff"
+  revision = "c84e20a0e8937375a712e78599c555b901d05a96"
 
 [[projects]]
   branch = "master"
