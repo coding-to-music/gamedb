@@ -403,7 +403,10 @@ func adminGenres() {
 	wg.Add(1)
 	go func() {
 
-		defer wg.Done()
+		defer func() {
+			limit--
+			wg.Done()
+		}()
 
 		var genresToDeleteSlice []int
 		for genreID := range genresToDelete {
@@ -412,8 +415,6 @@ func adminGenres() {
 
 		err := db.DeleteGenres(genresToDeleteSlice)
 		cronLogErr(err)
-
-		limit--
 
 	}()
 
@@ -439,7 +440,10 @@ func adminGenres() {
 		wg.Add(1)
 		go func(genreID int, v *statsRow) {
 
-			defer wg.Done()
+			defer func() {
+				limit--
+				wg.Done()
+			}()
 
 			var genre db.Genre
 
@@ -454,8 +458,6 @@ func adminGenres() {
 
 			gorm = gorm.Unscoped().Save(&genre)
 			cronLogErr(gorm.Error)
-
-			limit--
 
 		}(k, v)
 
@@ -557,7 +559,10 @@ func adminPublishers() {
 	wg.Add(1)
 	go func() {
 
-		defer wg.Done()
+		defer func() {
+			limit--
+			wg.Done()
+		}()
 
 		var pubsToDeleteSlice []int
 		for publisherID := range publishersToDelete {
@@ -567,7 +572,6 @@ func adminPublishers() {
 		err := db.DeletePublishers(pubsToDeleteSlice)
 		cronLogErr(err)
 
-		limit--
 	}()
 
 	wg.Wait()
@@ -592,7 +596,10 @@ func adminPublishers() {
 		wg.Add(1)
 		go func(publisherID int, v *statsRow) {
 
-			defer wg.Done()
+			defer func() {
+				limit--
+				wg.Done()
+			}()
 
 			var publisher db.Publisher
 
@@ -607,8 +614,6 @@ func adminPublishers() {
 
 			gorm = gorm.Unscoped().Save(&publisher)
 			cronLogErr(gorm.Error)
-
-			limit--
 
 		}(k, v)
 
@@ -711,7 +716,10 @@ func adminDevelopers() {
 	wg.Add(1)
 	go func() {
 
-		defer wg.Done()
+		defer func() {
+			limit--
+			wg.Done()
+		}()
 
 		var devsToDeleteSlice []int
 		for k := range developersToDelete {
@@ -720,8 +728,6 @@ func adminDevelopers() {
 
 		err := db.DeleteDevelopers(devsToDeleteSlice)
 		cronLogErr(err)
-
-		limit--
 
 	}()
 
@@ -747,7 +753,10 @@ func adminDevelopers() {
 		wg.Add(1)
 		go func(developerInt int, v *statsRow) {
 
-			defer wg.Done()
+			defer func() {
+				limit--
+				wg.Done()
+			}()
 
 			var developer db.Developer
 
@@ -762,8 +771,6 @@ func adminDevelopers() {
 
 			gorm = gorm.Unscoped().Save(&developer)
 			cronLogErr(gorm.Error)
-
-			limit--
 
 		}(k, v)
 
@@ -856,7 +863,10 @@ func adminTags() {
 	wg.Add(1)
 	go func() {
 
-		defer wg.Done()
+		defer func() {
+			limit--
+			wg.Done()
+		}()
 
 		var tagsToDeleteSlice []int
 		for _, v := range tagsToDelete {
@@ -865,8 +875,6 @@ func adminTags() {
 
 		err := db.DeleteTags(tagsToDeleteSlice)
 		cronLogErr(err)
-
-		limit--
 
 	}()
 
@@ -892,7 +900,10 @@ func adminTags() {
 		wg.Add(1)
 		go func(tagID int, v *statsRow) {
 
-			defer wg.Done()
+			defer func() {
+				limit--
+				wg.Done()
+			}()
 
 			var tag db.Tag
 
@@ -907,8 +918,6 @@ func adminTags() {
 
 			gorm = gorm.Unscoped().Save(&tag)
 			cronLogErr(gorm.Error)
-
-			limit--
 
 		}(k, v)
 
