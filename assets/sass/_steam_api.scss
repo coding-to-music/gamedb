@@ -1,8 +1,14 @@
 #steam-api-page {
-    #services {
+    .interface {
         table {
             input {
                 width: 100%;
+            }
+        }
+
+        form:last-child {
+            .card {
+                margin-bottom: 0 !important;
             }
         }
     }

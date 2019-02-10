@@ -33,12 +33,12 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body" id="services">
 
-            {{ range $key, $value := .Interfaces }}
+    {{ range $key, $value := .Interfaces }}
 
-                <h4>{{ $value.Name }}</h4>
+        <div class="card mb-4">
+            <h4 class="card-header">{{ $value.Name }}</h4>
+            <div class="card-body interface">
 
                 {{ range $ke2y, $value2 := .Methods }}
 
@@ -91,10 +91,11 @@
 
                 {{ end }}
 
-            {{ end }}
-
+            </div>
         </div>
-    </div>
+
+    {{ end }}
+
 
 </div>
 
