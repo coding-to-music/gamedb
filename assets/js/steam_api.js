@@ -18,16 +18,17 @@ if ($steamApiPage.length > 0) {
 
     function setMethodSettings() {
 
-        const key = $('input[name=key]').val();
+        const key = $('#key-form input[name=key]').val();
+        const format = $('#key-form select[name=format]').val();
 
         if (key) {
             $steamApiPage.find('table').show();
-        }else{
+        } else {
             $steamApiPage.find('table').hide();
         }
 
-        $('input[name=method-key]').val(key);
-        $('input[name=method-format]').val($('select[name=format]').val());
+        $('div.interface input[name=key]').val(key);
+        $('div.interface input[name=format]').val(format);
     }
 
     $form.deserialize(localStorage.getItem('settings'));

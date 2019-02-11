@@ -1,14 +1,17 @@
 #steam-api-page {
+
+    .card {
+        .card-header {
+            a {
+                color: #212529;
+            }
+        }
+    }
+
     .interface {
         table {
             input {
                 width: 100%;
-            }
-        }
-
-        form:last-child {
-            .card {
-                margin-bottom: 0 !important;
             }
         }
     }

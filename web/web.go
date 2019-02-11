@@ -250,6 +250,7 @@ type errorTemplate struct {
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
 		"join":       func(a []string) string { return strings.Join(a, ", ") },
+		"lower":      func(a string) string { return strings.ToLower(a) },
 		"comma":      func(a int) string { return humanize.Comma(int64(a)) },
 		"commaf":     func(a float64) string { return humanize.Commaf(a) },
 		"bytes":      func(a uint64) string { return humanize.Bytes(a) },

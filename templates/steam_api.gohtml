@@ -9,14 +9,14 @@
         <small>Thank to <a target="_blank" href="https://github.com/SteamDatabase/SteamTracking/tree/master/API">SteamTracking</a> for the private ones.</small>
     </div>
 
-    <div class="card mb-4">
+    <div class="card">
         <div class="card-body">
 
             <form id="key-form">
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="key">API Key</label>
-                        <input type="text" class="form-control" id="key" name="key">
+                        <input type="text" class="form-control" id="key" name="key" placeholder="Enter an API key to API ">
                         <small class="form-text text-muted">Your API key only gets stored in your browser.</small>
                     </div>
                     <div class="form-group col-md-6">
@@ -34,11 +34,10 @@
         </div>
     </div>
 
-
     {{ range $interfaceName, $interfaceMethods := .Interfaces }}
 
-        <div class="card mb-4">
-            <h4 class="card-header">{{ $interfaceName }}</h4>
+        <div class="card mt-3" id="{{ lower $interfaceName }}">
+            <h4 class="card-header"><a href="#{{ lower $interfaceName }}">{{ $interfaceName }}</a></h4>
             <div class="card-body interface">
 
                 {{ range $methodName, $versions := $interfaceMethods }}
@@ -46,15 +45,15 @@
                         {{ range $httpMethod, $params := $httpMethods }}
 
                             <form action="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}" target="_blank" method="{{ $httpMethod }}">
-                                <div class="card mb-4">
-                                    <div class="card-header">{{ $methodName }} <span class="badge badge-success">V{{ $version }}</span></div>
-                                    <div class="card-body">
 
+                                <div class="card mb-4" id="{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">
+                                    <div class="card-header"><a href="#{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">{{ $methodName }}</a> <span class="badge badge-success">V{{ $version }}</span></div>
+                                    <div class="card-body">
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">{{ $httpMethod }}</span>
                                             </div>
-                                            <input type="text" class="form-control endpoint" value="https://api.steampowered.com/{{ $interfaceMethods.Name }}/{{ $methodName }}/v{{ $version }}">
+                                            <input type="text" class="form-control endpoint" value="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}">
                                             <div class="input-group-append">
                                                 <button class="btn btn-success" type="submit">Go</button>
                                             </div>
@@ -88,8 +87,9 @@
                                     {{ end }}
                                 </div>
 
-                                <input type="hidden" name="method-key">
-                                <input type="hidden" name="method-format">
+                                <input type="hidden" name="key">
+                                <input type="hidden" name="format">
+
                             </form>
 
                         {{ end }}
