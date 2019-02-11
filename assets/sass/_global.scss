@@ -93,6 +93,11 @@ li.nav-item {
 
     .social {
         float: right;
+        height: 20px;
+
+        > div > span {
+            vertical-align: unset !important;
+        }
     }
 
     img {
