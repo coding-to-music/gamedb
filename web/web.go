@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/go-durationfmt"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
@@ -408,7 +409,7 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 	dayint, err := strconv.Atoi(ts.Format("2"))
 	log.Err(err)
 
-	text = "Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04:05")
+	text = "Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04")
 
 	// Get cashed
 	if t.IsCacheHit() {
@@ -427,9 +428,13 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 		return text
 	}
 
-	d := time.Duration(time.Now().UnixNano() - startTimeInt)
+	durStr, err := durationfmt.Format(time.Duration(time.Now().UnixNano()-startTimeInt), "%ims")
+	if err != nil {
+		log.Err(err)
+		return text
+	}
 
-	return text + " in " + d.String()
+	return text + " in " + durStr
 }
 
 func (t GlobalTemplate) IsCacheHit() bool {

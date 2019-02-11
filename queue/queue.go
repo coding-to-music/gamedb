@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/go-durationfmt"
 	"github.com/cenkalti/backoff"
-	"github.com/davidscholberg/go-durationfmt"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"

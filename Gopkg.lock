@@ -32,6 +32,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:3fc3edbf3e3fc1183089d668305c39ad49042a10c8e2a12933dd3c8e2875a84f"
+  name = "github.com/Jleagle/go-durationfmt"
+  packages = ["."]
+  pruneopts = ""
+  revision = "9ec7f71890a4d9cbcc9e9db1bd0552dab1105ac6"
+
+[[projects]]
+  branch = "master"
   digest = "1:2710ef31ad241800c2ead4d59505eac359cf8da29a85be13b818d3c61b9f5df7"
   name = "github.com/Jleagle/google-cloud-storage-go"
   packages = ["gcs"]
@@ -988,6 +996,7 @@
     "cloud.google.com/go/logging",
     "cloud.google.com/go/storage",
     "github.com/99designs/basicauth-go",
+    "github.com/Jleagle/go-durationfmt",
     "github.com/Jleagle/google-cloud-storage-go/gcs",
     "github.com/Jleagle/memcache-go/memcache",
     "github.com/Jleagle/rabbit-go/rabbit",
