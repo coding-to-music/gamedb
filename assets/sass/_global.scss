@@ -60,7 +60,11 @@ div#top.show {
     }
 
     .dropdown-mini {
-        margin-left: -10px;
+        margin-left: -5px;
+
+        .dropdown-toggle {
+            padding-left: 0;
+        }
     }
 
     #header-flag {
