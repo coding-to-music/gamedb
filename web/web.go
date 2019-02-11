@@ -71,7 +71,6 @@ func Serve() error {
 	r.Get("/", homeRedirectHandler)
 	r.Get("/commits", commitsHandler)
 	r.Get("/coop", coopHandler)
-	r.Get("/discounts", discountsHandler)
 	r.Get("/developers", statsDevelopersHandler)
 	r.Get("/donate", donateHandler)
 	r.Get("/esi/header", headerHandler)
