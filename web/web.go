@@ -167,13 +167,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	folder := config.Config.GameDBDirectory.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
-		folder+"/templates/_header.gohtml",
-		folder+"/templates/_header_esi.gohtml",
-		folder+"/templates/_footer.gohtml",
-		folder+"/templates/_stats_header.gohtml",
-		folder+"/templates/_deals_header.gohtml",
 		folder+"/templates/_apps_header.gohtml",
 		folder+"/templates/_flashes.gohtml",
+		folder+"/templates/_footer.gohtml",
+		folder+"/templates/_header.gohtml",
+		folder+"/templates/_header_esi.gohtml",
+		folder+"/templates/_stats_header.gohtml",
+		folder+"/templates/_social.gohtml",
 		folder+"/templates/"+page+".gohtml",
 	)
 	if err != nil {

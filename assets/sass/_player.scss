@@ -2,42 +2,33 @@
     .jumbotron {
         img {
             float: right;
-            //height: 169px;
-            height: 139px;
-            margin: -2rem;
-        }
-        h1,
-        p.lead {
-            //margin-left: 160px;
-        }
-
-        .badge {
-            //line-height: 36px;
+            height: 120px;
+            margin: -2rem -2rem -2rem 2rem;
         }
     }
+
     .friend {
         a, div {
             color: $dark;
             text-decoration: none;
             @include text-truncate;
+
             img {
                 height: 52px;
                 margin-right: 5px;
             }
+
             span {
                 margin-top: 15px;
             }
+
             span:hover {
                 text-decoration: underline;
             }
+
             span.badge {
                 text-decoration: none;
             }
         }
-    }
-    table#badges-table {
-    }
-    #heatmap {
-        //height: 120px; // Set in JS
     }
 }

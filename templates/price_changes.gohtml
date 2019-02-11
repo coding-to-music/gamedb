@@ -10,7 +10,19 @@
     </div>
 
     <div class="card">
-        {{ template "_deals_header" . }}
+        <div class="card-header">
+
+            <h5 class="float-right mb-0">
+                <span class="badge badge-secondary cursor-pointer" id="live-badge">Live</span>
+            </h5>
+
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <span class="nav-link active" role="tab">Price Changes</span>
+                </li>
+            </ul>
+            
+        </div>
         <div class="card-body">
 
             <div class="table-responsive">
