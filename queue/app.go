@@ -615,7 +615,7 @@ func updateAppSchema(app *db.App) (schema steam.SchemaForGame, err error) {
 
 	// This endpoint seems to error if the app has no schema, so it's probably fine.
 	err2, ok := err.(steam.Error)
-	if ok && (err2.Code == 403) {
+	if ok && (err2.Code == 403 || err2.Code == 400) {
 		return schema, nil
 	}
 	if err != nil {
