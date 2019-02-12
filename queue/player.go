@@ -194,7 +194,7 @@ type RabbitMessageProfilePICS struct {
 		AccountType                   int  `json:"AccountType"`
 		AccountUniverse               int  `json:"AccountUniverse"`
 	} `json:"SteamID"`
-	TimeCreated time.Time   `json:"TimeCreated"`
+	TimeCreated string      `json:"TimeCreated"`
 	RealName    string      `json:"RealName"`
 	CityName    string      `json:"CityName"`
 	StateName   string      `json:"StateName"`
