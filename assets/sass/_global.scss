@@ -20,6 +20,23 @@ body::-webkit-scrollbar-thumb {
     border-radius: .1rem;
 }
 
+#corner-ribbon {
+    position: fixed;
+    top: 25px;
+    left: -50px;
+
+    width: 200px;
+    text-align: center;
+
+    height: 35px;
+    line-height: 35px;
+
+    color: #f0f0f0;
+    background-color: #28a745;
+
+    transform: rotate(-45deg);
+}
+
 div#top {
     position: fixed;
     bottom: 20px;
