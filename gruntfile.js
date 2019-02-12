@@ -72,10 +72,10 @@ module.exports = function (grunt) {
                 files: ['assets/js/*.js'],
                 tasks: ['concat:js', 'cachebreaker', 'clean', 'notify:done']
             },
-            // ts: {
-            //     files: ['assets/typescript/*.ts'],
-            //     tasks: ['grunt-ts', 'cachebreaker', 'clean', 'notify:done']
-            // }
+            ts: {
+                files: ['assets/ts/*.ts'],
+                tasks: ['ts:default', 'concat:js', 'cachebreaker', 'clean', 'notify:done']
+            }
         },
         clean: [
             'assets/css/sass/',
@@ -85,6 +85,14 @@ module.exports = function (grunt) {
             done: {
                 options: {
                     message: 'Done @ ' + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + '!'
+                }
+            }
+        },
+        ts: {
+            default: {
+                tsconfig: true,
+                options: {
+                    passThrough: true,
                 }
             }
         }
@@ -112,8 +120,8 @@ module.exports = function (grunt) {
         'cssmin',
 
         // JS
+        'ts:default',
         'concat:js',
-        //'grunt-ts',
 
         //
         'cachebreaker',

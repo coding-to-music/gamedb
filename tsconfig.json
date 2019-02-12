@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "system",
+        "removeComments": true,
+        "outFile": "assets/typescript-temp.js",
+        "sourceMap": true,
+        "target": "ES6"
+    },
+    "include": [
+        "./assets/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "vendor",
+        "third-party",
+        "**/*.spec.ts"
+    ]
+}
