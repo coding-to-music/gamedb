@@ -194,14 +194,6 @@
   version = "v2.1.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:197859ec3399ab85b72e7de88d85fbfa29d75692ddcf9f8bb81af4c73c6c49f7"
-  name = "github.com/davidscholberg/go-durationfmt"
-  packages = ["."]
-  pruneopts = ""
-  revision = "64843a2083d31a1c3b4adf5d1e3a7651eefdad56"
-
-[[projects]]
   digest = "1:edfb1e0276869665f9b91a70843712c1094a395ef5de7e5964adda96b986ee7d"
   name = "github.com/derekstavis/go-qs"
   packages = ["."]
@@ -1005,7 +997,6 @@
     "github.com/ahmdrz/goinsta",
     "github.com/bwmarrin/discordgo",
     "github.com/cenkalti/backoff",
-    "github.com/davidscholberg/go-durationfmt",
     "github.com/derekstavis/go-qs",
     "github.com/dghubble/go-twitter/twitter",
     "github.com/dghubble/oauth1",
