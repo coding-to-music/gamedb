@@ -658,7 +658,7 @@ func adminDevelopers() {
 	appsWithDevelopers, err := db.GetAppsWithColumnDepth("developers", 2, []string{"developers", "prices", "reviews_score"})
 	cronLogErr(err)
 
-	cronLogErr("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
+	cronLogInfo("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
 	newDevelopers := make(map[int]*statsRow)
 	for _, app := range appsWithDevelopers {
@@ -812,7 +812,7 @@ func adminTags() {
 	appsWithTags, err := db.GetAppsWithColumnDepth("tags", 2, []string{"tags", "prices", "reviews_score"})
 	cronLogErr(err)
 
-	cronLogErr("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
+	cronLogInfo("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
 
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
