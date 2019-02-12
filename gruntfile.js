@@ -90,9 +90,14 @@ module.exports = function (grunt) {
         },
         ts: {
             default: {
-                tsconfig: true,
+                tsconfig: false,
+                files: [{src: ["assets/ts/*.ts"], dest: "assets/typescript-temp.js"}],
                 options: {
-                    passThrough: true,
+                    "module": "system",
+                    "removeComments": true,
+                    "outFile": "assets/typescript-temp.js",
+                    "sourceMap": true,
+                    "target": "ES6"
                 }
             }
         }
