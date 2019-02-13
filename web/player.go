@@ -43,7 +43,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			err = queue.ProducePlayer(player.PlayerID)
 			log.Err(err, r)
 
-			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now."}
+			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now.", DataID: idx}
 			data.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 
 			returnErrorTemplate(w, r, data)

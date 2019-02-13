@@ -246,6 +246,7 @@ type errorTemplate struct {
 	Message string
 	Code    int
 	Error   error
+	DataID  int64 // To add to the page attribute
 }
 
 func getTemplateFuncMap() map[string]interface{} {
