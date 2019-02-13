@@ -45,7 +45,7 @@ const (
 	ServiceLocal   Service = "local"   // Default
 
 	// Options
-	//OptionStack Option = iota
+	// OptionStack Option = iota
 )
 
 type LogName string
@@ -185,7 +185,7 @@ func log(interfaces ...interface{}) {
 			loggingServices = append(loggingServices, val)
 		case Option:
 		default:
-			//Err("Invalid value given to log: " + reflect.TypeOf(val).String())
+			// Err("Invalid value given to log: " + reflect.TypeOf(val).String())
 		}
 	}
 
@@ -229,6 +229,9 @@ func log(interfaces ...interface{}) {
 				Severity:  entry.severity.toGoole(),
 				Timestamp: entry.timestamp,
 				Payload:   entry.toText(true),
+				Labels: map[string]string{
+					"env": config.Config.Environment.Get(),
+				},
 			})
 		}
 
