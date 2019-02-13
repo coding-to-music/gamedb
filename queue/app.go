@@ -179,6 +179,14 @@ func (q appQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
+	// Save to InfluxDB
+	err = saveToInflux(app)
+	if err != nil {
+		logError(err)
+		payload.ackRetry(msg)
+		return
+	}
+
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageApp)
 	if err != nil {
@@ -938,6 +946,11 @@ func updateBundles(app *db.App) error {
 	}
 
 	app.BundleIDs = string(b)
+
+	return nil
+}
+
+func saveToInflux(app db.App) error {
 
 	return nil
 }
