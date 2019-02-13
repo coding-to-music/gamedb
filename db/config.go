@@ -49,7 +49,8 @@ func SetConfig(id string, value string) (err error) {
 
 	// Save to memcache
 	item := helpers.MemcacheConfigRow(id)
-	return helpers.GetMemcache().Set(item.Key, helpers.MarshalLog(config), item.Expiration)
+
+	return helpers.GetMemcache().Set(item.Key, config, item.Expiration)
 }
 
 func GetConfig(id string) (config Config, err error) {
