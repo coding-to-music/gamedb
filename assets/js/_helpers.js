@@ -23,6 +23,10 @@ function toast(success = true, body, title = '', timeout = 0, link = '') {
         timeout = 8;
     }
 
+    if (timeout === -1) {
+        timeout = 0;
+    }
+
     const options = {
         onclick: link ? redirect : null,
         newestOnTop: true,

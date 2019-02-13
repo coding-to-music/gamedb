@@ -39,7 +39,7 @@ if ($playerPage.length > 0) {
 
         const data = $.parseJSON(e.data);
         if (data.Data.toString() === $playerPage.attr('data-id')) {
-            toast(true, 'Click to refresh', 'This player has been updated', 0, 'refresh');
+            toast(true, 'Click to refresh', 'This player has been updated', -1, 'refresh');
         }
 
     });
@@ -90,7 +90,7 @@ if ($playerPage.length > 0) {
         ]
     }));
 
-    if (heatMapData.length > 0) {
+    if (typeof heatMapData !== 'undefined' && heatMapData.length > 0) {
 
         $('#heatmap').height(120);
 
