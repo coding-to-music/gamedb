@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -214,7 +213,7 @@ func updatePlayerSummary(player *db.Player) error {
 	// Avatar
 	var avatarBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/"
 	if summary.AvatarFull != "" && helpers.GetResponseCode(avatarBase+summary.AvatarFull) == 200 {
-		player.Avatar = strings.Replace(summary.AvatarFull, avatarBase, "", 1)
+		player.Avatar = summary.AvatarFull
 	} else {
 		player.Avatar = ""
 	}
