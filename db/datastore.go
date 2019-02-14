@@ -170,7 +170,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 	for _, v := range chunks {
 
 		wg.Add(1)
-		go func() {
+		go func(v []*datastore.Key) {
 
 			defer wg.Done()
 
@@ -183,7 +183,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 				}
 			}
 
-		}()
+		}(v)
 	}
 
 	if wait {
