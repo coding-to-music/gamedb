@@ -23,7 +23,6 @@ var (
 	MemcacheBundlesCount          = memcache.Item{Key: "bundles-count", Expiration: 86400}
 	MemcacheUpcomingAppsCount     = memcache.Item{Key: "upcoming-apps-count", Expiration: 86400}
 	MemcacheUpcomingPackagesCount = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
-	MemcacheFreeAppsCount         = memcache.Item{Key: "free-apps-count", Expiration: 86400}
 	MemcacheRanksCount            = memcache.Item{Key: "ranks-count", Expiration: 86400}
 	MemcacheCountPlayers          = memcache.Item{Key: "players-count", Expiration: 86400 * 7}
 	MemcachePlayerEventsCount     = func(playerID int64) memcache.Item {
@@ -35,7 +34,6 @@ var (
 	MemcacheGenreKeyNames     = memcache.Item{Key: "genre-key-names", Expiration: 86400 * 7}
 	MemcachePublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: 86400 * 7}
 	MemcacheDeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 86400 * 7}
-	MemcacheAppTypes          = memcache.Item{Key: "app-types", Expiration: 86400 * 7}
 
 	// Rows
 	MemcacheChangeRow = func(changeID int64) memcache.Item {
