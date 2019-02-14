@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/website/social"
 	"github.com/gamedb/website/web"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/robfig/cron"
 )
 
 func main() {
@@ -58,13 +59,31 @@ func main() {
 		}
 	}()
 
-	// Instagram
-	if config.Config.IsProd() {
-		go func() {
-			log.Info("Starting Instagram")
-			social.RunInstagram()
-		}()
-	}
+	// Crons
+	c := cron.New()
+
+	err = c.AddFunc("0 0 0 * * *", web.CronRanks)
+	log.Critical(err)
+
+	err = c.AddFunc("0 0 1 * * *", web.CronGenres)
+	log.Critical(err)
+
+	err = c.AddFunc("0 0 2 * * *", web.CronTags)
+	log.Critical(err)
+
+	err = c.AddFunc("0 0 3 * * *", web.CronPublishers)
+	log.Critical(err)
+
+	err = c.AddFunc("0 0 4 * * *", web.CronDevelopers)
+	log.Critical(err)
+
+	err = c.AddFunc("0 0 5 * * *", web.CronDonations)
+	log.Critical(err)
+
+	err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
+	log.Critical(err)
+
+	c.Start()
 
 	// Block forever for goroutines to run
 	wg := sync.WaitGroup{}

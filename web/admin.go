@@ -47,17 +47,17 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	case "refresh-all-packages":
 		go adminQueueEveryPackage()
 	case "refresh-genres":
-		go adminGenres()
+		go CronGenres()
 	case "refresh-tags":
-		go adminTags()
+		go CronTags()
 	case "refresh-developers":
-		go adminDevelopers()
+		go CronDevelopers()
 	case "refresh-publishers":
-		go adminPublishers()
+		go CronPublishers()
 	case "refresh-donations":
-		go adminDonations()
+		go CronDonations()
 	case "refresh-ranks":
-		go adminRanks()
+		go CronRanks()
 	case "wipe-memcache":
 		go adminMemcache()
 	case "delete-bin-logs":
@@ -237,7 +237,7 @@ func adminQueueEveryPackage() {
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
 }
 
-func adminDonations() {
+func CronDonations() {
 
 	donations, err := db.GetDonations(0, 0)
 	if err != nil {
@@ -320,7 +320,7 @@ func adminQueues(r *http.Request) {
 	}
 }
 
-func adminGenres() {
+func CronGenres() {
 
 	cronLogInfo(log.ServiceLocal, "Genres updating")
 
@@ -477,7 +477,7 @@ func adminGenres() {
 	cronLogInfo("Genres updated")
 }
 
-func adminPublishers() {
+func CronPublishers() {
 
 	cronLogInfo(log.ServiceLocal, "Publishers updating")
 
@@ -633,7 +633,7 @@ func adminPublishers() {
 	cronLogInfo("Publishers updated")
 }
 
-func adminDevelopers() {
+func CronDevelopers() {
 
 	cronLogInfo(log.ServiceLocal, "Developers updating")
 
@@ -789,7 +789,7 @@ func adminDevelopers() {
 	cronLogInfo("Developers updated")
 }
 
-func adminTags() {
+func CronTags() {
 
 	// Get current tags, to delete old ones
 	tags, err := db.GetAllTags()
@@ -941,7 +941,7 @@ func adminStatsLogger(tableName string, count int, total int, rowName string) {
 	log.Info("Updating " + tableName + " - " + strconv.Itoa(count) + " / " + strconv.Itoa(total) + ": " + rowName)
 }
 
-func adminRanks() {
+func CronRanks() {
 
 	cronLogErr("Ranks updated started")
 
