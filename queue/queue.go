@@ -87,12 +87,17 @@ func (payload baseMessage) ackRetry(msg amqp.Delivery) {
 
 	payload.Attempt++
 
-	durStr, err := durationfmt.Format(payload.getNextAttempt().Sub(payload.FirstSeen), "%mm %ss")
+	totalStr, err := durationfmt.Format(payload.getNextAttempt().Sub(payload.FirstSeen), "%mm %ss")
 	if err != nil {
 		logError(err)
 	}
 
-	logInfo("Adding to delay queue for " + durStr + "(attempt " + strconv.Itoa(payload.Attempt) + ")")
+	leftStr, err := durationfmt.Format(payload.getNextAttempt().Sub(time.Now()), "%mm %ss")
+	if err != nil {
+		logError(err)
+	}
+
+	logInfo("Adding to delay queue for " + leftStr + ", " + totalStr + " total, attempt " + strconv.Itoa(payload.Attempt))
 
 	err = produce(payload, queueGoDelays)
 	if err != nil {
