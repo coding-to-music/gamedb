@@ -25,6 +25,7 @@ body::-webkit-scrollbar-thumb {
     top: 25px;
     left: -50px;
 
+    z-index: -10;
     width: 200px;
     text-align: center;
 
