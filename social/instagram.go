@@ -38,69 +38,66 @@ func getInstagram() (*goinsta.Instagram, error) {
 
 func UploadInstagram() {
 
-	if config.Config.IsProd() {
+	log.Info("Running IG")
 
-		log.Info("Running IG")
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		return
+	}
 
-		gorm, err := db.GetMySQLClient()
-		if err != nil {
-			log.Err(err)
-			return
-		}
+	gorm = gorm.Select([]string{"id", "name", "screenshots", "reviews_score"})
+	gorm = gorm.Where("JSON_DEPTH(screenshots) = ?", 3)
+	gorm = gorm.Where("name != ?", "")
+	gorm = gorm.Where("type = ?", "game")
+	gorm = gorm.Where("reviews_score >= ?", 90)
+	gorm = gorm.Order("RAND()")
+	gorm = gorm.Limit(1)
 
-		gorm = gorm.Select([]string{"id", "name", "screenshots", "reviews_score"})
-		gorm = gorm.Where("JSON_DEPTH(screenshots) = ?", 3)
-		gorm = gorm.Where("name != ?", "")
-		gorm = gorm.Where("type = ?", "game")
-		gorm = gorm.Where("reviews_score >= ?", 90)
-		gorm = gorm.Order("RAND()")
-		gorm = gorm.Limit(1)
+	var apps []db.App
+	gorm = gorm.Find(&apps)
+	if gorm.Error != nil {
+		log.Err(gorm.Error)
+		return
+	}
 
-		var apps []db.App
-		gorm = gorm.Find(&apps)
-		if gorm.Error != nil {
-			log.Err(gorm.Error)
-			return
-		}
+	if len(apps) == 0 {
+		log.Err("no apps found for instagram")
+		return
+	}
 
-		if len(apps) == 0 {
-			log.Err("no apps found for instagram")
-			return
-		}
+	var app = apps[0]
 
-		var app = apps[0]
+	screenshots, err := app.GetScreenshots()
+	if err != nil {
+		log.Err(err)
+		return
+	}
 
-		screenshots, err := app.GetScreenshots()
-		if err != nil {
-			log.Err(err)
-			return
-		}
+	var url = screenshots[rand.Intn(len(screenshots))].PathFull
+	if url == "" {
+		UploadInstagram()
+		return
+	}
 
-		var url = screenshots[rand.Intn(len(screenshots))].PathFull
-		if url == "" {
-			UploadInstagram()
-			return
-		}
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Err(err)
+		return
+	}
 
-		resp, err := http.Get(url)
-		if err != nil {
-			log.Err(err)
-			return
-		}
+	//noinspection GoUnhandledErrorResult
+	defer resp.Body.Close()
 
-		//noinspection GoUnhandledErrorResult
-		defer resp.Body.Close()
+	ig, err := getInstagram()
+	if err != nil {
+		log.Critical(err)
+		return
+	}
 
-		ig, err := getInstagram()
-		if err != nil {
-			log.Critical(err)
-			return
-		}
-
-		_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+", ID: "+strconv.Itoa(app.ID)+") #steamgames", 0, 0)
-		if err != nil {
-			log.Err(err)
-			return
-		}
+	_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+", ID: "+strconv.Itoa(app.ID)+") #steamgames", 0, 0)
+	if err != nil {
+		log.Err(err)
+		return
 	}
 }
