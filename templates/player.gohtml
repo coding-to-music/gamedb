@@ -4,7 +4,7 @@
 
     <div class="jumbotron">
 
-        <img src="{{ .Player.GetAvatar }}" alt="{{ .Player.PersonaName }}" onError="this.onerror=null;this.src='{{.Player.GetDefaultAvatar}}';">
+        <img src="{{ .Player.GetAvatar }}" alt="{{ .Player.PersonaName }}">
 
         {{ template "_social" .Player }}
 
