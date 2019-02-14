@@ -211,7 +211,15 @@ func updatePlayerSummary(player *db.Player) error {
 		return err
 	}
 
-	player.Avatar = strings.Replace(summary.AvatarFull, "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/", "", 1)
+	// Avatar
+	var avatarBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/"
+	if summary.AvatarFull != "" && helpers.GetResponseCode(avatarBase+summary.AvatarFull) == 200 {
+		player.Avatar = strings.Replace(summary.AvatarFull, avatarBase, "", 1)
+	} else {
+		player.Avatar = ""
+	}
+
+	//
 	player.VanintyURL = path.Base(summary.ProfileURL)
 	player.RealName = summary.RealName
 	player.CountryCode = summary.LOCCountryCode
