@@ -430,7 +430,7 @@ func CronGenres() {
 	var count = 1
 	for k, v := range newGenres {
 
-		if limit >= 5 {
+		if limit >= 2 {
 			wg.Wait()
 		}
 
@@ -586,7 +586,7 @@ func CronPublishers() {
 	var count = 1
 	for k, v := range newPublishers {
 
-		if limit >= 5 {
+		if limit >= 2 {
 			wg.Wait()
 		}
 
@@ -743,7 +743,7 @@ func CronDevelopers() {
 	var count = 1
 	for k, v := range newDevelopers {
 
-		if limit >= 5 {
+		if limit >= 2 {
 			wg.Wait()
 		}
 
@@ -890,7 +890,7 @@ func CronTags() {
 	var count = 1
 	for k, v := range newTags {
 
-		if limit >= 5 {
+		if limit >= 2 {
 			wg.Wait()
 		}
 
