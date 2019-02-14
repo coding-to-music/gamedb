@@ -109,10 +109,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		ranks, err = db.GetRank(player.PlayerID)
-		if err != nil {
-			if err != datastore.ErrNoSuchEntity {
-				log.Err(err, r)
-			}
+		if err != nil && err != datastore.ErrNoSuchEntity {
+			log.Err(err, r)
 		}
 
 	}(player)
