@@ -63,7 +63,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, v := range articles {
-		response.AddRow(v.OutputForJSON(r))
+		response.AddRow(v.OutputForJSON())
 	}
 
 	response.output(w, r)

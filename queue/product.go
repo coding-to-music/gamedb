@@ -36,9 +36,9 @@ func (i rabbitMessageProductKeyValues) String() string {
 			return ""
 		}
 		return string(b)
-	} else {
-		return i.Value.(string)
 	}
+
+	return i.Value.(string)
 }
 
 func (i rabbitMessageProductKeyValues) GetChildrenAsSlice() (ret []string) {

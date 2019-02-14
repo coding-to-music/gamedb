@@ -1,7 +1,6 @@
 package db
 
 import (
-	"net/http"
 	"strconv"
 	"time"
 
@@ -37,7 +36,7 @@ func (article News) GetBody() string {
 }
 
 // Data array for datatables
-func (article News) OutputForJSON(r *http.Request) (output []interface{}) {
+func (article News) OutputForJSON() (output []interface{}) {
 
 	var id = strconv.FormatInt(article.ArticleID, 10)
 	var path = GetAppPath(article.AppID, article.AppName)

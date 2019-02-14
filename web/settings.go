@@ -1,7 +1,6 @@
 package web
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"sort"
@@ -11,6 +10,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
@@ -70,21 +70,13 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		resp, err := player.GetAppIDs()
+		appIDs, err := player.GetAppIDs()
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
 
-		var gamesSlice []int
-		for _, v := range resp {
-			gamesSlice = append(gamesSlice, v)
-		}
-
-		bytes, err := json.Marshal(gamesSlice)
-		log.Err(err, r)
-
-		games = string(bytes)
+		games = string(helpers.MarshalLog(appIDs))
 
 	}(player)
 

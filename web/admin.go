@@ -1136,6 +1136,10 @@ func adminDev() {
 	gorm = gorm.Select([]string{"id"})
 	gorm = gorm.Limit(20)
 	gorm = gorm.Find(&apps)
+	if gorm.Error != nil {
+		log.Err(gorm.Error)
+		return
+	}
 
 	fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
 

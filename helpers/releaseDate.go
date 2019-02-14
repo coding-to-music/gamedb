@@ -48,7 +48,7 @@ func GetDaysToRelease(unix int64) string {
 
 	if days == 0 {
 		return "Today"
-	} else {
-		return "In " + GetTimeLong(int(release.Sub(now.BeginningOfDay()).Minutes()), 2)
 	}
+
+	return "In " + GetTimeLong(int(release.Sub(now.BeginningOfDay()).Minutes()), 2)
 }

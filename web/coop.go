@@ -41,6 +41,10 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	// Get players, queue missing ones
 	var err error
 	t.Players, err = db.GetPlayersByIDs(playerInts)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
+		return
+	}
 
 	var foundPlayerIDs []int64
 	for _, v := range t.Players {
