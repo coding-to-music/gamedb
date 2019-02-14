@@ -14,7 +14,7 @@ type delayQueue struct {
 
 func (q delayQueue) processMessage(msg amqp.Delivery) {
 
-	time.Sleep(time.Second / 10)
+	time.Sleep(time.Second / 2)
 
 	var err error
 	var payload = baseMessage{}
