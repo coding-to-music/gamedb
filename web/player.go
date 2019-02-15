@@ -419,7 +419,9 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	message, err, success := func(r *http.Request) (string, error, bool) {
 
-		var message string
+		if helpers.IsBot(r.UserAgent()) {
+			return "Bots can't update players", nil, false
+		}
 
 		idx, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 		if err != nil {
@@ -429,6 +431,8 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if !db.IsValidPlayerID(idx) {
 			return "Invalid Player ID", err, false
 		}
+
+		var message string
 
 		player, err := db.GetPlayer(idx)
 		if err == nil {
