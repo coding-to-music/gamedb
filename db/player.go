@@ -240,9 +240,13 @@ func (p Player) GetBans() (bans steam.GetPlayerBanResponse, err error) {
 	return bans, err
 }
 
-func (p Player) GetGameStats() (stats PlayerAppStatsTemplate, err error) {
+func (p Player) GetGameStats(code steam.CountryCode) (stats PlayerAppStatsTemplate, err error) {
 
 	err = helpers.Unmarshal([]byte(p.GameStats), &stats)
+
+	stats.All.Code = code
+	stats.Played.Code = code
+
 	return stats, err
 }
 

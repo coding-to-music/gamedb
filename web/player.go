@@ -207,12 +207,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14)
 
-	code := session.GetCountryCode(r)
-
-	gameStats, err := player.GetGameStats()
-	gameStats.All.Code = code
-	gameStats.Played.Code = code
-	log.Err(err, r)
+	// Game stats
+	gameStats, err := player.GetGameStats(session.GetCountryCode(r))
+	// log.Err(err, r) // Disable for now, too many logs
 
 	// Template
 	t.Fill(w, r, player.PersonaName, "")
