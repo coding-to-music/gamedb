@@ -211,6 +211,19 @@ func updateAppPICS(app *db.App, payload baseMessage, message appMessage) (err er
 	app.ChangeNumber = message.PICSAppInfo.ChangeNumber
 	app.ChangeNumberDate = payload.FirstSeen
 
+	// Reset values that might be removed
+	app.Common = ""
+	app.Tags = ""
+	app.Extended = ""
+	app.Config = ""
+	app.Launch = ""
+	app.Depots = ""
+	app.PublicOnly = false
+	app.UFS = ""
+	app.Install = ""
+	app.Localization = ""
+	app.SystemRequirements = ""
+
 	for _, v := range message.PICSAppInfo.KeyValues.Children {
 
 		switch v.Name {

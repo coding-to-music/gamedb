@@ -167,6 +167,16 @@ func updatePackageFromPICS(pack *db.Package, payload baseMessage, message packag
 	pack.ChangeNumber = message.PICSPackageInfo.ChangeNumber
 	pack.ChangeNumberDate = payload.FirstSeen
 
+	// Reset values that might be removed
+	pack.BillingType = 0
+	pack.LicenseType = 0
+	pack.Status = 0
+	pack.AppIDs = ""
+	pack.AppsCount = 0
+	pack.DepotIDs = ""
+	pack.AppItems = ""
+	pack.Extended = ""
+
 	for _, v := range message.PICSPackageInfo.KeyValues.Children {
 
 		switch v.Name {
