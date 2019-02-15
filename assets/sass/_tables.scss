@@ -1,4 +1,40 @@
+div table.dataTable {
+    border-collapse: separate !important;
+}
+
 table.table {
+
+    // Rounded corners
+    thead {
+        tr:first-child {
+            th:first-child, td:first-child {
+                -webkit-border-top-left-radius: 5px;
+                -moz-border-radius-topleft: 5px;
+                border-top-left-radius: 5px;
+            }
+
+            th:last-child, td:last-child {
+                -webkit-border-top-right-radius: 5px;
+                -moz-border-radius-topright: 5px;
+                border-top-right-radius: 5px;
+            }
+        }
+
+        tr:last-child {
+            td:first-child {
+                -webkit-border-bottom-left-radius: 5px;
+                -moz-border-radius-bottomleft: 5px;
+                border-bottom-left-radius: 5px;
+            }
+
+            td:last-child {
+                -webkit-border-bottom-right-radius: 5px;
+                -moz-border-radius-bottomright: 5px;
+                border-bottom-right-radius: 5px;
+            }
+        }
+    }
+
     thead {
         th {
             color: $dark;
