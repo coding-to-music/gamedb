@@ -101,13 +101,13 @@ func Serve() error {
 	r.Mount("/product-keys", productKeysRouter())
 	r.Mount("/queues", queuesRouter())
 	r.Mount("/settings", settingsRouter())
+	r.Mount("/sitemaps", siteMapRouter())
 	r.Mount("/stats", statsRouter())
 	r.Mount("/upcoming", upcomingRouter())
 
 	// Files
 	r.Get("/browserconfig.xml", rootFileHandler)
 	r.Get("/robots.txt", rootFileHandler)
-	r.Get("/sitemap.xml", siteMapHandler)
 	r.Get("/site.webmanifest", rootFileHandler)
 
 	// File server
