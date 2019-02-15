@@ -40,6 +40,13 @@ func (q delayQueue) processMessage(msg amqp.Delivery) {
 		return
 	}
 
+	if payload.OriginalQueue == queueGoDelays {
+
+		logInfo("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
+		payload.ack(msg)
+		return
+	}
+
 	//
 	var queue queueName
 
