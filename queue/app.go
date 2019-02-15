@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"html/template"
-	"io"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -860,17 +859,17 @@ func updateAppSteamSpy(app *db.App) error {
 		return err
 	}
 
-	defer func(body io.ReadCloser) {
-		if body != nil {
-			err = body.Close()
-			logError(err)
-		}
-	}(response.Body)
+	if response.StatusCode != 200 {
+		return errors.New("steamspy is down")
+	}
 
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
+
+	err = response.Body.Close()
+	logError(err)
 
 	// Unmarshal JSON
 	resp := db.SteamSpyAppResponse{}

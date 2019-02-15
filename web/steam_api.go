@@ -1,7 +1,6 @@
 package web
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -61,7 +60,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			i := steam.APIInterface{}
-			err = json.Unmarshal(b, &i)
+			err = helpers.Unmarshal(b, &i)
 			if err != nil {
 				log.Err(err)
 				return
