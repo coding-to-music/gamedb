@@ -8,6 +8,6 @@ func IsBot(userAgent string) bool {
 		return false
 	}
 
-	r, _ := regexp.Compile("/bot|crawl|slurp|spider|google|msn|bing|yahoo|jeeves|facebook/i")
+	r, _ := regexp.Compile("/bot|crawl|slurp|wget|curl|spider|yandex|baidu|google|msn|bing|yahoo|jeeves|facebook/i")
 	return r.MatchString(userAgent)
 }
