@@ -41,6 +41,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	option := chi.URLParam(r, "option")
 
+	log.Debug("Admin: " + r.URL.Path)
+
 	switch option {
 	case "refresh-all-apps":
 		go adminQueueEveryApp()
