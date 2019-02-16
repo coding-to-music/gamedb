@@ -154,14 +154,6 @@
   revision = "c8489ed3251e7d55ec2b7f18a2bc3a9a7222f0af"
 
 [[projects]]
-  digest = "1:b1f2b4b8773b94d2546774cea6b944518ea9b238c8962d66d3d6d8e2d0052900"
-  name = "github.com/beevik/etree"
-  packages = ["."]
-  pruneopts = ""
-  revision = "8aee6516be3b1163bb6450c35c50e4969e3a3aa8"
-  version = "v1.1.0"
-
-[[projects]]
   branch = "master"
   digest = "1:339bac0d398920a11fd7e8a7fbd4f133d4edd4faa1c2cbaba256d3684a266019"
   name = "github.com/bradfitz/gomemcache"
@@ -248,14 +240,6 @@
   pruneopts = ""
   revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
   version = "v1.7.0"
-
-[[projects]]
-  digest = "1:2defd14040b1ca18840524e9d0f9cfab0ea8d2f2d396b343d221f8bc8e21ab9d"
-  name = "github.com/fatih/structs"
-  packages = ["."]
-  pruneopts = ""
-  revision = "4966fc68f5b7593aafa6cbbba2d65ec6e1416047"
-  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -426,14 +410,6 @@
   pruneopts = ""
   revision = "42ac18c34c2c6f4843fa48167317dcaa9416d1e2"
   version = "v1.4.2"
-
-[[projects]]
-  digest = "1:37addf4dd7a979721d3b94e4f42240cbad4dcdc36af3db27c42ea7e139b1d06c"
-  name = "github.com/ikeikeikeike/go-sitemap-generator"
-  packages = ["stm"]
-  pruneopts = ""
-  revision = "caae15179f10529eae19a9b565418fd6b204beb2"
-  version = "v2.0.1"
 
 [[projects]]
   branch = "master"
@@ -1023,7 +999,6 @@
     "github.com/gorilla/sessions",
     "github.com/gorilla/websocket",
     "github.com/gosimple/slug",
-    "github.com/ikeikeikeike/go-sitemap-generator/stm",
     "github.com/influxdata/influxdb1-client",
     "github.com/jinzhu/gorm",
     "github.com/jinzhu/now",
