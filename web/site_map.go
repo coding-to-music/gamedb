@@ -105,6 +105,7 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		"/publishers",
 		"/queues",
 		"/stats",
+		"/steam-api",
 		"/tags",
 		"/upcoming",
 	}
