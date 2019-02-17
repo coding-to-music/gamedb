@@ -20,6 +20,23 @@ body::-webkit-scrollbar-thumb {
     border-radius: .1rem;
 }
 
+// Allow chosens to be one line
+html body .chosen-container-multi .chosen-choices .search-field input[type="text"] {
+    width: 1px !important;
+}
+
+// Fix chosen x symbol
+//html body .chosen-container-multi .chosen-choices .search-choice .search-choice-close {
+//    display: inline-block !important;
+//    position: absolute !important;
+//    top: 6px !important;
+//    right: 4px !important;
+//    width: 12px !important;
+//    height: 12px !important;
+//    cursor: pointer !important;
+//    background: url(chosen-sprite.png) -42px 1px no-repeat !important;
+//}
+
 #corner-ribbon {
     position: fixed;
     top: 25px;
