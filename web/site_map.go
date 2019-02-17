@@ -46,6 +46,7 @@ type siteMap struct {
 	LastModified string `xml:"lastmod,omitempty"` // https://www.w3.org/TR/NOTE-datetime
 }
 
+//noinspection GoUnusedParameter
 func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := siteMapIndex{}
@@ -78,6 +79,7 @@ type sitemapURL struct {
 	Priority        float32         `xml:"priority,omitempty"`
 }
 
+//noinspection GoUnusedParameter
 func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := urlSet{}
