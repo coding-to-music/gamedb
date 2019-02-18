@@ -17,8 +17,8 @@ type PlayerApp struct {
 	AppName      string                 `datastore:"app_name"`
 	AppIcon      string                 `datastore:"app_icon,noindex"`
 	AppTime      int                    `datastore:"app_time"`
-	AppPrices    CountryCodeIntStruct   `datastore:"app_price,flatten"`
-	AppPriceHour CountryCodeFloatStruct `datastore:"app_price_hour,flatten"`
+	AppPrices    CountryCodeIntStruct   `datastore:"app_price,flatten,noindex"`
+	AppPriceHour CountryCodeFloatStruct `datastore:"app_price_hour,flatten,noindex"`
 }
 
 func (p PlayerApp) GetKey() (key *datastore.Key) {
