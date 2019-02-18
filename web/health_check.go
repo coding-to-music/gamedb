@@ -26,7 +26,7 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check Memcache
 	var i int
-	err = helpers.GetMemcache().Get(helpers.MemcacheAppsCount.Key, &i)
+	err = helpers.GetMemcache().GetInterface(helpers.MemcacheAppsCount.Key, &i)
 	if err != nil && err != helpers.ErrCacheMiss {
 		log.Err(err, r)
 		code = http.StatusInternalServerError

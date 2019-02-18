@@ -41,7 +41,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	var item = helpers.MemcacheQueues
 	var jsonString string
 
-	err := helpers.GetMemcache().GetSet(item.Key, item.Expiration, &jsonString, func() (interface{}, error) {
+	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &jsonString, func() (interface{}, error) {
 
 		payload := rabbit.Payload{}
 		payload.LengthsAge = 3600
