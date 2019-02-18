@@ -21,6 +21,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
+	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -969,4 +970,46 @@ func updateBundles(app *db.App) error {
 func saveToInflux(app db.App) error {
 
 	return nil
+
+	i, err := db.GetInfluxClient()
+	if err != nil {
+		return err
+	}
+
+	price, err := app.GetPrice(steam.CountryUS)
+	if err != nil && err != db.ErrMissingCountryCode {
+		return err
+	}
+
+	reviews, err := app.GetReviews()
+	if err != nil && err != db.ErrMissingCountryCode {
+		return err
+	}
+
+	point := influx.Point{
+		Measurement: string(db.InfluxTableApps),
+		Tags: map[string]string{
+			"app_id": strconv.Itoa(app.ID),
+		},
+		Fields: map[string]interface{}{
+			"review_score":      app.ReviewsScore,
+			"reviews_positive":  reviews.Positive,
+			"reviews_negative":  reviews.Negative,
+			"player_count":      app.PlayerCount,
+			"price_us_initial":  price.Initial,
+			"price_us_final":    price.Final,
+			"price_us_discount": price.DiscountPercent,
+		},
+		Time:      time.Now(),
+		Precision: "n",
+	}
+
+	bps := influx.BatchPoints{
+		Points:          []influx.Point{point},
+		Database:        db.InfluxDB,
+		RetentionPolicy: "trial",
+	}
+
+	_, err = i.Write(bps)
+	return err
 }
