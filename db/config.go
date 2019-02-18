@@ -50,14 +50,14 @@ func SetConfig(id string, value string) (err error) {
 	// Save to memcache
 	item := helpers.MemcacheConfigRow(id)
 
-	return helpers.GetMemcache().Set(item.Key, config, item.Expiration)
+	return helpers.GetMemcache().SetInterface(item.Key, config, item.Expiration)
 }
 
 func GetConfig(id string) (config Config, err error) {
 
 	var item = helpers.MemcacheConfigRow(id)
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &config, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &config, func() (interface{}, error) {
 
 		var config Config
 

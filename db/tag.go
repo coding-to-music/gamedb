@@ -60,7 +60,7 @@ func GetTagsForSelect() (tags []Tag, err error) {
 
 	var item = helpers.MemcacheTagKeyNames
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 
 		var tags []Tag
 

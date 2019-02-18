@@ -71,7 +71,7 @@ func GetChange(id int64) (change Change, err error) {
 
 	var item = helpers.MemcacheChangeRow(id)
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &change, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &change, func() (interface{}, error) {
 
 		var change Change
 

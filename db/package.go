@@ -440,7 +440,7 @@ func CountPackages() (count int, err error) {
 
 	var item = helpers.MemcachePackagesCount
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

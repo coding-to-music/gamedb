@@ -102,7 +102,7 @@ func CountPlayerEvents(playerID int64) (count int, err error) {
 
 	var item = helpers.MemcachePlayerEventsCount(playerID)
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 
@@ -133,7 +133,7 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 		return err
 	}
 
-	err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID))
+	err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID).Key)
 	err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 	return err
 }

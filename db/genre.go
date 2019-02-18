@@ -54,7 +54,7 @@ func GetGenresForSelect() (genres []Genre, err error) {
 
 	var item = helpers.MemcacheGenreKeyNames
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &genres, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
 
 		var genres []Genre
 

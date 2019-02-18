@@ -78,7 +78,7 @@ func GetDevelopersForSelect() (devs []Developer, err error) {
 
 	var item = helpers.MemcacheDeveloperKeyNames
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &devs, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &devs, func() (interface{}, error) {
 
 		var devs []Developer
 

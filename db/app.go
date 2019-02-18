@@ -795,7 +795,7 @@ func CountApps() (count int, err error) {
 
 	var item = helpers.MemcacheAppsCount
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 
@@ -816,7 +816,7 @@ func GetMostExpensiveApp(code steam.CountryCode) (price int, err error) {
 
 	var item = helpers.MemcacheMostExpensiveApp(code)
 
-	err = helpers.GetMemcache().GetSet(item.Key, item.Expiration, &price, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &price, func() (interface{}, error) {
 
 		var count int
 
