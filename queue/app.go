@@ -834,6 +834,8 @@ func updateAppReviews(app *db.App) error {
 
 	app.Reviews = string(b)
 
+	return nil
+
 	// Log this app score
 	aot := new(db.AppOverTime)
 	aot.AppID = app.ID
