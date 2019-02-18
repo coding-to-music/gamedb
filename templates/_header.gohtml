@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=05a483778b">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=1a5a06eeaa">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -67,10 +67,6 @@
 
 </head>
 <body>
-
-{{ if ne .Env "local" }}
-    <div id="corner-ribbon"><a href="/info">Beta</a></div>
-{{ end }}
 
 <header class="container">
     <nav class="navbar navbar-expand-lg navbar-dark">
