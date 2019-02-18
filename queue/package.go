@@ -312,32 +312,38 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 
 			wg.Add(1)
 			go func() {
+
+				defer wg.Done()
+
 				code := helpers.GetResponseCode(response.Data.HeaderImage)
 				pack.ImageHeader = ""
 				if code == 200 {
 					pack.ImageHeader = response.Data.HeaderImage
 				}
-				wg.Done()
 			}()
 
 			wg.Add(1)
 			go func() {
+
+				defer wg.Done()
+
 				code := helpers.GetResponseCode(response.Data.SmallLogo)
 				pack.ImageLogo = ""
 				if code == 200 {
 					pack.ImageLogo = response.Data.SmallLogo
 				}
-				wg.Done()
 			}()
 
 			wg.Add(1)
 			go func() {
+
+				defer wg.Done()
+
 				code := helpers.GetResponseCode(response.Data.PageImage)
 				pack.ImagePage = ""
 				if code == 200 {
 					pack.ImagePage = response.Data.PageImage
 				}
-				wg.Done()
 			}()
 
 			wg.Wait()

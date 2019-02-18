@@ -535,22 +535,26 @@ func updateAppDetails(app *db.App) error {
 
 			wg.Add(1)
 			go func() {
+
+				defer wg.Done()
+
 				code := helpers.GetResponseCode(response.Data.Background)
 				app.Background = ""
 				if code == 200 {
 					app.Background = response.Data.Background
 				}
-				wg.Done()
 			}()
 
 			wg.Add(1)
 			go func() {
+
+				defer wg.Done()
+
 				code := helpers.GetResponseCode(response.Data.HeaderImage)
 				app.HeaderImage = ""
 				if code == 200 {
 					app.HeaderImage = response.Data.HeaderImage
 				}
-				wg.Done()
 			}()
 
 			wg.Wait()
