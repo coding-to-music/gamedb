@@ -410,7 +410,7 @@ func (t GlobalTemplate) GetFooterText() (text string) {
 	dayint, err := strconv.Atoi(ts.Format("2"))
 	log.Err(err)
 
-	text = "Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04")
+	text = "Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04") + " UTC"
 
 	// Get cashed
 	if t.IsCacheHit() {
