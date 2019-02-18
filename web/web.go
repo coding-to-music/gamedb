@@ -69,7 +69,7 @@ func Serve() error {
 	r.Use(middlewareLog)
 
 	// Pages
-	r.Get("/", homeRedirectHandler)
+	r.Get("/", homeHandler)
 	r.Get("/commits", commitsHandler)
 	r.Get("/coop", coopHandler)
 	r.Get("/developers", statsDevelopersHandler)
