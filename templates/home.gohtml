@@ -3,40 +3,67 @@
 <div class="container" id="home-page">
 
     <div class="jumbotron">
+
         <h1 class="display-4">Game DB</h1>
-        <p class="lead"></p>
+        <p class="lead">{{ .Description }}</p>
+
+        <h5 class="mt-4">Under Construction</h5>
+        <p class="mb-0">Game DB is still in beta, epect missing or stale information.
+            Please consider <a href="/donate">donating</a> to help pay server bills and improve website accuracy.</p>
     </div>
 
     <div class="card">
         <div class="card-body">
 
             <div class="row">
+                <div class="col-6">
 
-                <div class="col-12">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Popular Games</th>
+                            <th scope="col">Players</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $key, $value := .PopularApps }}
+                            <tr data-link="{{ .GetPath }}">
+                                <td class="img text-nowrap">
+                                    <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
+                                    <span>{{ .GetName }}</span>
+                                </td>
+                                <td>{{ comma .PlayerCount }}</td>
+                                <td class="platforms" nowrap="nowrap">{{ .GetPlatformImages }}</td>
+                            </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
 
-                    <h5>Under Development</h5>
-                    <p>Data might be missing or wrong as the site is currently being worked on.
-                        <br/>Please consider looking at the <a href="/donate">donate</a> page to help pay server costs while under development.</p>
+                </div>
+                <div class="col-6">
 
-                    <h5>Stats</h5>
-                    <div class="row">
-                        <div class="col col-md-6">
-                            <table class="table">
-                                <tr>
-                                    <th scope="row" width="20%" nowrap="nowrap">Ranked Players</th>
-                                    <td>{{ comma .RanksCount}}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Apps</th>
-                                    <td>{{ comma .AppsCount}}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Packages</th>
-                                    <td>{{ comma .PackagesCount}}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Highest Rated Games</th>
+                            <th scope="col">Players</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $key, $value := .RatedApps }}
+                            <tr data-link="{{ .GetPath }}">
+                                <td class="img text-nowrap">
+                                    <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
+                                    <span>{{ .GetName }}</span>
+                                </td>
+                                <td>{{ .ReviewsScore }}%</td>
+                                <td class="platforms" nowrap="nowrap">{{ .GetPlatformImages }}</td>
+                            </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
 
                 </div>
 
