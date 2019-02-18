@@ -476,7 +476,6 @@ func (t *GlobalTemplate) addToast(toast Toast) {
 
 func (t *GlobalTemplate) addAssetChosen() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js", Integrity: "sha256-c4gVE6fn+JRKMRvqjoDp+tlG4laudNYrXI1GncbfAYY="})
-	t.CSSFiles = append(t.CSSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css", Integrity: "sha256-EH/CzgoJbNED+gZgymswsIOrM9XhIbdSJ6Hwro09WE4="})
 }
 
 func (t *GlobalTemplate) addAssetJSON2HTML() {
@@ -487,7 +486,6 @@ func (t *GlobalTemplate) addAssetJSON2HTML() {
 func (t *GlobalTemplate) addAssetHighCharts() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/highcharts.js", Integrity: "sha256-j3WPKr23emLOeDVvf5mbfGs5xE+GERqV1vCz+Wx6n74="})
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/data.js", Integrity: "sha256-CYgititANzm6qnx8M/4TpaGqfa8xFOIbHfWbtvKAg4w="})
-	// t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.1/modules/heatmap.js", Integrity: "sha256-HgUQ2+RnyQrmj1venzdV9Q6/ahkZ8h4HYoXNbGu7dpo="})
 }
 
 func (t *GlobalTemplate) addAssetSlider() {
