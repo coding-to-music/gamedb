@@ -159,6 +159,7 @@ func adminQueueEveryApp() {
 	var keepGoing = true
 	var apps steam.AppList
 	var err error
+	var count int
 
 	for keepGoing {
 
@@ -168,17 +169,21 @@ func adminQueueEveryApp() {
 			return
 		}
 
+		count = count + len(apps.Apps)
+
 		for _, v := range apps.Apps {
 			err = queue.ProduceApp(v.AppID)
 			if err != nil {
-				log.Err(err)
-				return
+				log.Err(err, strconv.Itoa(v.AppID))
+				continue
 			}
 			last = v.AppID
 		}
 
 		keepGoing = apps.HaveMoreResults
 	}
+
+	log.Info("Found " + strconv.Itoa(count) + " apps")
 
 	//
 	err = db.SetConfig(db.ConfAddedAllApps, strconv.FormatInt(time.Now().Unix(), 10))
