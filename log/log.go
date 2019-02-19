@@ -2,6 +2,7 @@ package log
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	logg "log"
 	"net/http"
@@ -164,8 +165,15 @@ func log(interfaces ...interface{}) {
 		switch val := v.(type) {
 		case nil:
 			continue
+		case time.Duration:
+			entry.text = val.String()
 		case int:
 			entry.text = strconv.Itoa(val)
+		case int64:
+			entry.text = strconv.FormatInt(val, 10)
+		case interface{}:
+			b, _ := json.Marshal(val)
+			entry.text = string(b)
 		case string:
 			entry.text = val
 		case *http.Request:
