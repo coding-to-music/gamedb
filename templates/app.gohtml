@@ -153,6 +153,26 @@
                                 </td>
                             </tr>
                         {{ end }}
+                        {{ if gt (len .Developers) 0 }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">Developers</th>
+                                <td>
+                                    {{ range $key, $value := .Developers }}
+                                        <a class="badge badge-success" href="/apps?developers={{ .ID }}">{{ .GetName }}</a>
+                                    {{ end }}
+                                </td>
+                            </tr>
+                        {{ end }}
+                        {{ if gt (len .Publishers) 0 }}
+                            <tr>
+                                <th scope="row" nowrap="nowrap" width="1%">Publishers</th>
+                                <td>
+                                    {{ range $key, $value := .Publishers }}
+                                        <a class="badge badge-success" href="/apps?publishers={{ .ID }}">{{ .GetName }}</a>
+                                    {{ end }}
+                                </td>
+                            </tr>
+                        {{ end }}
                         <tr>
                             <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
                             <td>{{ .App.GetPICSUpdatedNice }}</td>

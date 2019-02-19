@@ -605,11 +605,31 @@ func (app App) GetDeveloperIDs() (developers []int, err error) {
 	return developers, err
 }
 
+func (app App) GetDevelopers() (developers []Developer, err error) {
+
+	ids, err := app.GetDeveloperIDs()
+	if err != nil {
+		return developers, err
+	}
+
+	return GetDevelopersByID(ids, []string{"id", "name"})
+}
+
 func (app App) GetPublisherIDs() (publishers []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Publishers), &publishers)
 	log.Err(err)
 	return publishers, err
+}
+
+func (app App) GetPublishers() (publishers []Publisher, err error) {
+
+	ids, err := app.GetPublisherIDs()
+	if err != nil {
+		return publishers, err
+	}
+
+	return GetPublishersByID(ids, []string{"id", "name"})
 }
 
 func (app App) GetName() (name string) {

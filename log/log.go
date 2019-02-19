@@ -2,12 +2,10 @@ package log
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	logg "log"
 	"net/http"
 	"os"
-	"reflect"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -171,9 +169,9 @@ func log(interfaces ...interface{}) {
 			entry.text = strconv.Itoa(val)
 		case int64:
 			entry.text = strconv.FormatInt(val, 10)
-		case interface{}:
-			b, _ := json.Marshal(val)
-			entry.text = string(b)
+		// case interface{}:
+		// 	b, _ := json.Marshal(val)
+		// 	entry.text = string(b)
 		case string:
 			entry.text = val
 		case *http.Request:
@@ -194,7 +192,7 @@ func log(interfaces ...interface{}) {
 			loggingServices = append(loggingServices, val)
 		case Option:
 		default:
-			Warning("Invalid value given to log: " + reflect.TypeOf(val).String())
+			// Warning("Invalid value given to log: " + reflect.TypeOf(val).String())
 		}
 	}
 

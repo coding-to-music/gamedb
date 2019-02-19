@@ -231,6 +231,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 	t.Reviews, err = t.App.GetReviews()
 	log.Err(err, r)
+	t.Developers, err = t.App.GetDevelopers()
+	log.Err(err, r)
+	t.Publishers, err = t.App.GetPublishers()
+	log.Err(err, r)
 
 	err = returnTemplate(w, r, "app", t)
 	log.Err(err, r)
@@ -243,6 +247,7 @@ type appTemplate struct {
 	Banners      map[string][]string
 	Bundles      []db.Bundle
 	Demos        []db.App
+	Developers   []db.Developer
 	DLC          []db.App
 	Genres       []db.Genre
 	Movies       []db.AppVideo
@@ -250,6 +255,7 @@ type appTemplate struct {
 	Packages     []db.Package
 	Price        db.ProductPriceFormattedStruct
 	Prices       db.ProductPrices
+	Publishers   []db.Publisher
 	Reviews      db.AppReviewSummary
 	Screenshots  []db.AppImage
 	Tags         []db.Tag
