@@ -2,7 +2,11 @@ node_modules/
 vendor/
 tmp/
 logs/
-.tscache
+.tscache/
 
 website
 debug
+
+index.yaml
+LICENSE.md
+revive.toml
