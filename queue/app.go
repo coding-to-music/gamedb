@@ -19,6 +19,7 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -835,18 +836,7 @@ func updateAppReviews(app *db.App) error {
 	}
 
 	app.Reviews = string(b)
-
 	return nil
-
-	// Log this app score
-	aot := new(db.AppOverTime)
-	aot.AppID = app.ID
-	aot.CreatedAt = time.Now()
-	aot.Score = app.ReviewsScore
-	aot.ReviewsPositive = reviews.Positive
-	aot.ReviewsNegative = reviews.Negative
-
-	return db.SaveKind(aot.GetKey(), aot)
 }
 
 func updateAppSteamSpy(app *db.App) error {
@@ -973,8 +963,6 @@ func updateBundles(app *db.App) error {
 
 func saveToInflux(app db.App) error {
 
-	return nil
-
 	i, err := db.GetInfluxClient()
 	if err != nil {
 		return err
@@ -1015,5 +1003,7 @@ func saveToInflux(app db.App) error {
 	}
 
 	_, err = i.Write(bps)
-	return err
+	log.Warning(err)
+
+	return nil
 }

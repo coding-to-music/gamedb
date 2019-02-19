@@ -14,14 +14,12 @@ import (
 )
 
 const (
-	KindAppOverTime    = "AppOverTime"
 	KindChange         = "Change"
 	KindDonation       = "Donation"
 	KindEvent          = "Event"
 	KindNews           = "News"
 	KindPlayer         = "Player"
 	KindPlayerApp      = "PlayerApp"
-	KindPlayerOverTime = "PlayerOverTime"
 	KindPlayerRank     = "PlayerRank"
 	KindProductPrice   = "ProductPrice"
 )
