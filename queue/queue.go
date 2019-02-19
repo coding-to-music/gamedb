@@ -261,19 +261,16 @@ func produce(payload baseMessage, queue queueName) (err error) {
 		return err
 	}
 
-	// Close channel
-	if ch != nil {
-		defer func(ch *amqp.Channel) {
-			err := ch.Close()
-			logError(err)
-		}(ch)
-	}
-
-	return ch.Publish("", qu.Name, false, false, amqp.Publishing{
+	err = ch.Publish("", qu.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
 		Body:         b,
 	})
+	if err != nil {
+		return err
+	}
+
+	return ch.Close()
 }
 
 func makeAConnection() (conn *amqp.Connection, err error) {

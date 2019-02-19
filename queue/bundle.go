@@ -59,7 +59,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	// Load current bundle
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -67,14 +67,14 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	bundle := db.Bundle{}
 	gorm = gorm.FirstOrInit(&bundle, db.Bundle{ID: message.ID})
 	if gorm.Error != nil {
-		logError(gorm.Error)
+		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	appIDs, err := bundle.GetAppIDs()
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -87,7 +87,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -95,7 +95,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	// Save new data
 	gorm = gorm.Save(&bundle)
 	if gorm.Error != nil {
-		logError(gorm.Error)
+		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -103,22 +103,22 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageBundle)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	} else if page.HasConnections() {
-		page.Send(bundle.ID)
+		page.Send(message.ID)
 	}
 
 	page, err = websockets.GetPage(websockets.PageBundles)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	if page.HasConnections() {
-		page.Send(bundle.ID)
+		page.Send(message.ID)
 	}
 
 	payload.ack(msg)

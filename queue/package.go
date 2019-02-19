@@ -62,7 +62,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Load current package
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -70,7 +70,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	pack := db.Package{}
 	gorm = gorm.FirstOrInit(&pack, db.Package{ID: message.ID})
 	if gorm.Error != nil {
-		logError(gorm.Error)
+		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -91,7 +91,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	if message.PICSPackageInfo.ID > 0 {
 		err = updatePackageFromPICS(&pack, payload, message)
 		if err != nil {
-			logError(err)
+			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -101,7 +101,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	err = updatePackageFromStore(&pack)
 	err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -111,14 +111,14 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 
 		appIDs, err := pack.GetAppIDs()
 		if err != nil {
-			logError(err)
+			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		app, err := db.GetApp(appIDs[0], []string{})
 		if err != nil && err != db.ErrRecordNotFound {
-			logError(err)
+			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		} else if err == nil && pack.HasDefaultName() {
@@ -130,7 +130,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Save price changes
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -138,7 +138,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Save new data
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
-		logError(gorm.Error)
+		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -146,7 +146,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PagePackage)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}

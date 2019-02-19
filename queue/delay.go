@@ -68,8 +68,9 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	if err == nil {
-		err = msg.Ack(false)
+	err = msg.Ack(false)
+	if err != nil {
 		logError(err)
+		return
 	}
 }

@@ -73,7 +73,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Load current app
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -81,7 +81,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	app := db.App{}
 	gorm = gorm.FirstOrInit(&app, db.App{ID: message.ID})
 	if gorm.Error != nil {
-		logError(gorm.Error)
+		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -100,7 +100,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	if message.PICSAppInfo.ID > 0 {
 		err = updateAppPICS(&app, payload, message)
 		if err != nil {
-			logError(err)
+			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -108,56 +108,56 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = updateAppDetails(&app)
 	if err != nil && err != steam.ErrAppNotFound {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	schema, err := updateAppSchema(&app)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppAchievements(&app, schema)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppNews(&app)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppPlayerCount(&app)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppReviews(&app)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateAppSteamSpy(&app)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	err = updateBundles(&app)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -165,7 +165,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Save price changes
 	err = savePriceChanges(appBeforeUpdate, app)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -177,7 +177,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Save new data
 	gorm = gorm.Save(&app)
 	if gorm.Error != nil {
-		logError(gorm.Error)
+		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -185,7 +185,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Save to InfluxDB
 	err = saveToInflux(app)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -193,13 +193,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageApp)
 	if err != nil {
-		logError(err)
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
 	if page.HasConnections() {
-		page.Send(app.ID)
+		page.Send(message.ID)
 	}
 
 	payload.ack(msg)
