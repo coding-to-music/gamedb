@@ -2,13 +2,20 @@ const $packagePage = $('#package-page');
 
 if ($packagePage.length > 0) {
 
-    // Link to dev tabs
-    $(document).ready(function (e) {
-        const hash = window.location.hash;
-        if (hash.startsWith('#dev-')) {
-            $('a.nav-link[href="#dev"]').tab('show');
-            $('a.nav-link[href="' + hash + '"]').tab('show');
-            window.location.hash = hash;
+    // On tab change
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+
+        const to = $(e.target);
+        const from = $(e.relatedTarget);
+
+        console.log(to.attr('href'));
+
+        // On entering tab
+        if (to.attr('href') === '#prices') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+                loadPriceChart();
+            }
         }
     });
 
@@ -19,6 +26,5 @@ if ($packagePage.length > 0) {
         if (data.Data.toString() === $packagePage.attr('data-id')) {
             toast(true, 'Click to refresh', 'This package has been updated', -1, 'refresh');
         }
-
     });
 }

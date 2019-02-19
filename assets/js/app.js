@@ -35,16 +35,6 @@ if ($appPage.length > 0) {
     $(window).on('hashchange', showArt);
     $(document).on('draw.dt', showArt);
 
-    // Link to dev tabs
-    $(document).ready(function (e) {
-        const hash = window.location.hash;
-        if (hash.startsWith('#dev-')) {
-            $('a.nav-link[href="#dev"]').tab('show');
-            $('a.nav-link[href="' + hash + '"]').tab('show');
-            window.location.hash = hash;
-        }
-    });
-
     // Detials image click
     const $detailsImage = $('#details img');
 
@@ -112,12 +102,35 @@ if ($appPage.length > 0) {
         }
     });
 
+    // On tab change
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 
-        if ($(e.target).attr('href') === '#media') {
-            $carousel1.slick('setPosition');
-            $carousel2.slick('setPosition');
-        } else {
+        const to = $(e.target);
+        const from = $(e.relatedTarget);
+
+        // On entering tab
+        if (to.attr('href') === '#media') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+                $carousel1.slick('setPosition');
+                $carousel2.slick('setPosition');
+            }
+        }
+        if (to.attr('href') === '#news') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+                loadNews();
+            }
+        }
+        if (to.attr('href') === '#prices') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+                loadPriceChart();
+            }
+        }
+
+        // On leaving tab
+        if (from.attr('href') === '#media') {
             resetVideos();
         }
     });
@@ -151,42 +164,47 @@ if ($appPage.length > 0) {
     });
 
     // News data table
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
-        "order": [[2, 'desc']],
-        "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-id', data[0]);
-        },
-        "columnDefs": [
-            // Title
-            {
-                "targets": 0,
-                "render": function (data, type, row) {
-                    return '<div><i class="fas fa-newspaper"></i> ' + row[1] + '</div><div class="d-none">' + row[5] + '</div>';
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('article-title');
-                },
-                "orderable": false
+    function loadNews() {
+
+        console.log('news loading');
+
+        $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+            "order": [[2, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-id', data[0]);
             },
-            // Author
-            {
-                "targets": 1,
-                "render": function (data, type, row) {
-                    return row[2];
+            "columnDefs": [
+                // Title
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<div><i class="fas fa-newspaper"></i> ' + row[1] + '</div><div class="d-none">' + row[5] + '</div>';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('article-title');
+                    },
+                    "orderable": false
                 },
-                "orderable": false
-            },
-            // Date
-            {
-                "targets": 2,
-                "render": function (data, type, row) {
-                    return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                // Author
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[2];
+                    },
+                    "orderable": false
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).attr('nowrap', 'nowrap');
-                },
-                "orderable": false
-            }
-        ]
-    }));
+                // Date
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    "orderable": false
+                }
+            ]
+        }));
+    }
 }

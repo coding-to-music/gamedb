@@ -90,22 +90,30 @@ $('.json').each(function (i, value) {
 (function ($, window) {
     'use strict';
 
-    // Choose tab from URL
-    const hashes = window.location.hash;
-    if (hashes) {
-        hashes.split(',').map(function (hash) {
-            $('.nav-link[href="' + hash + '"]').tab('show');
-        });
-    }
+    $(document).ready(function () {
 
-    // Set URL from tab
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        const hash = $(e.target).attr('href');
-        if (history.pushState) {
-            history.pushState(null, null, hash);
-        } else {
-            location.hash = hash;
+        // Choose tab from URL
+        const hash = window.location.hash;
+        if (hash) {
+
+            let fullHash = '';
+            hash.split(/[,\-]/).map(function (hash) {
+
+                fullHash = (fullHash === '') ? hash : fullHash + '-' + hash;
+
+                $('.nav-link[href="' + fullHash + '"]').tab('show');
+            });
         }
+
+        // Set URL from tab
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            const hash = $(e.target).attr('href');
+            if (history.pushState) {
+                history.pushState(null, null, hash);
+            } else {
+                location.hash = hash;
+            }
+        });
     });
 
 })(jQuery, window);

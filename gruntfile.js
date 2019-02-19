@@ -34,6 +34,7 @@ module.exports = function (grunt) {
                     'assets/js/_helpers.js',
                     'assets/js/tabs.js',
                     'assets/js/tables.js',
+                    'assets/js/product.js',
                     'assets/js/*.js'
                 ],
                 dest: 'assets/compiled.min.js'
