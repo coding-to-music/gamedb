@@ -21,7 +21,9 @@ type changeQueue struct {
 	baseQueue
 }
 
-func (q changeQueue) processMessage(msg amqp.Delivery) {
+func (q changeQueue) processMessages(msgs []amqp.Delivery) {
+
+	msg := msgs[0]
 
 	var err error
 	var payload = baseMessage{

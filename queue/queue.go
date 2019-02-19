@@ -46,12 +46,24 @@ var (
 	producerCloseChannel = make(chan *amqp.Error)
 
 	queues = map[queueName]baseQueue{
-		queueGoApps:     {queue: &appQueue{}},
-		queueGoBundles:  {queue: &bundleQueue{}},
-		queueGoChanges:  {queue: &changeQueue{}},
-		queueGoDelays:   {queue: &delayQueue{}},
-		queueGoPackages: {queue: &packageQueue{}},
-		queueGoProfiles: {queue: &playerQueue{}},
+		queueGoApps: {
+			queue: &appQueue{},
+		},
+		queueGoBundles: {
+			queue: &bundleQueue{},
+		},
+		queueGoChanges: {
+			queue: &changeQueue{},
+		},
+		queueGoDelays: {
+			queue: &delayQueue{},
+		},
+		queueGoPackages: {
+			queue: &packageQueue{},
+		},
+		queueGoProfiles: {
+			queue: &playerQueue{},
+		},
 	}
 )
 
@@ -113,21 +125,15 @@ func (payload baseMessage) ackRetry(msg amqp.Delivery) {
 }
 
 type queueInterface interface {
-	setQueueName(queueName)
-	processMessage(msg amqp.Delivery)
-	consumeMessages()
+	processMessages(msgs []amqp.Delivery)
 }
 
 type baseQueue struct {
 	queue       queueInterface
 	name        queueName
-	batchSize   int // Not in use yet
+	batchSize   int
 	maxAttempts int
 	maxTime     time.Duration
-}
-
-func (q *baseQueue) setQueueName(name queueName) {
-	q.name = name
 }
 
 func (q baseQueue) consumeMessages() {
@@ -176,13 +182,20 @@ func (q baseQueue) consumeMessages() {
 		// In a anon function so can return at anytime
 		func(msgs <-chan amqp.Delivery, q baseQueue) {
 
+			var msgSlice []amqp.Delivery
+
 			for {
 				select {
 				case err = <-consumerCloseChannel:
 					logWarning(err)
 					return
 				case msg := <-msgs:
-					q.queue.processMessage(msg)
+					msgSlice = append(msgSlice, msg)
+				}
+
+				if len(msgSlice) >= q.batchSize {
+					q.queue.processMessages(msgSlice)
+					msgSlice = []amqp.Delivery{}
 				}
 			}
 
@@ -196,9 +209,9 @@ func (q baseQueue) consumeMessages() {
 }
 
 func RunConsumers() {
-	for k, v := range queues {
-		v.setQueueName(k)
-		go v.consumeMessages()
+	for queueName, consumer := range queues {
+		consumer.name = queueName
+		go consumer.consumeMessages()
 	}
 }
 
