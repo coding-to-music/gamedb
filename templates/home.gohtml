@@ -23,18 +23,18 @@
                         <tr>
                             <th scope="col">Popular Games</th>
                             <th scope="col">Players</th>
-                            <th></th>
+                            <th scope="col">Platform</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{ range $key, $value := .PopularApps }}
                             <tr data-link="{{ .GetPath }}">
-                                <td class="img text-nowrap">
+                                <td class="img">
                                     <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                    <span>{{ .GetName }}</span>
+                                    <span class="text-truncate" style="max-width: 260px;">{{ .GetName }}</span>
                                 </td>
                                 <td>{{ comma .PlayerCount }}</td>
-                                <td class="platforms" nowrap="nowrap">{{ .GetPlatformImages }}</td>
+                                <td class="platforms">{{ .GetPlatformImages }}</td>
                             </tr>
                         {{ end }}
                         </tbody>
@@ -48,18 +48,18 @@
                         <tr>
                             <th scope="col">Highest Rated Games</th>
                             <th scope="col">Players</th>
-                            <th></th>
+                            <th scope="col">Platform</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{ range $key, $value := .RatedApps }}
                             <tr data-link="{{ .GetPath }}">
-                                <td class="img text-nowrap">
+                                <td class="img">
                                     <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                    <span>{{ .GetName }}</span>
+                                    <span class="text-truncate" style="max-width: 260px;">{{ .GetName }}</span>
                                 </td>
                                 <td>{{ .ReviewsScore }}%</td>
-                                <td class="platforms" nowrap="nowrap">{{ .GetPlatformImages }}</td>
+                                <td class="platforms">{{ .GetPlatformImages }}</td>
                             </tr>
                         {{ end }}
                         </tbody>
