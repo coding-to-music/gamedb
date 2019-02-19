@@ -16,55 +16,57 @@
         <div class="card-body">
 
             <div class="row">
-                <div class="col-6">
+                <div class="col-12 col-xl-6">
 
-                    <table class="table table-hover table-striped mb-0">
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col">Popular Games</th>
-                            <th scope="col">Players</th>
-                            <th scope="col">Platform</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{ range $key, $value := .PopularApps }}
-                            <tr data-link="{{ .GetPath }}">
-                                <td class="img">
-                                    <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                    <span class="text-truncate" style="max-width: 260px;">{{ .GetName }}</span>
-                                </td>
-                                <td>{{ comma .PlayerCount }}</td>
-                                <td class="platforms">{{ .GetPlatformImages }}</td>
+                    <div class="table-responsive mb-4 mb-xl-0">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Most Popular Games</th>
+                                <th scope="col">Players</th>
+                                <th scope="col">Platform</th>
                             </tr>
-                        {{ end }}
-                        </tbody>
-                    </table>
-
+                            </thead>
+                            <tbody>
+                            {{ range $key, $value := .PopularApps }}
+                                <tr data-link="{{ .GetPath }}">
+                                    <td class="img">
+                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
+                                        <span class="text-truncate" style="max-width: 260px;">{{ .GetName }}</span>
+                                    </td>
+                                    <td>{{ comma .PlayerCount }}</td>
+                                    <td class="platforms" nowrap="nowrap">{{ .GetPlatformImages }}</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="col-6">
+                <div class="col-12 col-xl-6">
 
-                    <table class="table table-hover table-striped mb-0">
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col">Highest Rated Games</th>
-                            <th scope="col">Players</th>
-                            <th scope="col">Platform</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{ range $key, $value := .RatedApps }}
-                            <tr data-link="{{ .GetPath }}">
-                                <td class="img">
-                                    <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                    <span class="text-truncate" style="max-width: 260px;">{{ .GetName }}</span>
-                                </td>
-                                <td>{{ .ReviewsScore }}%</td>
-                                <td class="platforms">{{ .GetPlatformImages }}</td>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Highest Rated Games</th>
+                                <th scope="col">Players</th>
+                                <th scope="col">Platform</th>
                             </tr>
-                        {{ end }}
-                        </tbody>
-                    </table>
-
+                            </thead>
+                            <tbody>
+                            {{ range $key, $value := .RatedApps }}
+                                <tr data-link="{{ .GetPath }}">
+                                    <td class="img">
+                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
+                                        <span class="text-truncate" style="max-width: 260px;">{{ .GetName }}</span>
+                                    </td>
+                                    <td>{{ .ReviewsScore }}%</td>
+                                    <td class="platforms" nowrap="nowrap">{{ .GetPlatformImages }}</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
