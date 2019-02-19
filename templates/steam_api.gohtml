@@ -49,7 +49,7 @@
                                 <div class="card mb-4" id="{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">
                                     <div class="card-header"><a href="#{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">{{ $methodName }}</a> <span class="badge badge-success">V{{ $version }}</span></div>
                                     <div class="card-body">
-                                        <div class="input-group mb-3">
+                                        <div class="input-group mb-0">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">{{ $httpMethod }}</span>
                                             </div>
@@ -62,20 +62,28 @@
                                     </div>
 
                                     {{ if gt (len $params) 0 }}
-                                        <table class="table table-borderless table-hover table-sm" style="display: none;">
+                                        <table class="table table-borderless table-hover table-sm mb-0" style="display: none;">
                                             <thead>
                                             <tr>
-                                                <td scope="col" class="font-weight-bold">Value</td>
-                                                <td scope="col" class="font-weight-bold">Name</td>
-                                                <td scope="col" class="font-weight-bold">Type</td>
-                                                <td scope="col" class="font-weight-bold">Required</td>
-                                                <td scope="col" class="font-weight-bold">Description</td>
+                                                <th scope="col" class="font-weight-bold">Value</th>
+                                                <th scope="col" class="font-weight-bold">Name</th>
+                                                <th scope="col" class="font-weight-bold">Type</th>
+                                                <th scope="col" class="font-weight-bold">Required</th>
+                                                <th scope="col" class="font-weight-bold">Description</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             {{ range $key2, $value2 := $params }}
                                                 <tr>
-                                                    <td><input type="text" name="{{ .Name }}"></td>
+                                                    <td>
+                                                        {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
+                                                            <input type="number" name="{{ .Name }}">
+                                                        {{ else if eq .Type "bool" }}
+                                                            <input type="checkbox" name="{{ .Name }}" value="1">
+                                                        {{ else }}
+                                                            <input type="text" name="{{ .Name }}">
+                                                        {{ end }}
+                                                    </td>
                                                     <td>{{ .Name }}</td>
                                                     <td>{{ .Type }}</td>
                                                     <td>{{ if .Optional }}<i class="fas fa-times"></i>{{ else }}<i class="fas fa-check"></i>{{ end }}</td>
