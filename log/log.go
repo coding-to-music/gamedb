@@ -6,6 +6,7 @@ import (
 	logg "log"
 	"net/http"
 	"os"
+	"reflect"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -185,7 +186,7 @@ func log(interfaces ...interface{}) {
 			loggingServices = append(loggingServices, val)
 		case Option:
 		default:
-			// Err("Invalid value given to log: " + reflect.TypeOf(val).String())
+			Warning("Invalid value given to log: " + reflect.TypeOf(val).String())
 		}
 	}
 
