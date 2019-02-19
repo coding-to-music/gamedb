@@ -73,22 +73,24 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {{ range $key2, $value2 := $params }}
-                                                <tr>
-                                                    <td>
-                                                        {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
-                                                            <input type="number" name="{{ .Name }}">
-                                                        {{ else if eq .Type "bool" }}
-                                                            <input type="checkbox" name="{{ .Name }}" value="1">
-                                                        {{ else }}
-                                                            <input type="text" name="{{ .Name }}">
-                                                        {{ end }}
-                                                    </td>
-                                                    <td>{{ .Name }}</td>
-                                                    <td>{{ .Type }}</td>
-                                                    <td>{{ if .Optional }}<i class="fas fa-times"></i>{{ else }}<i class="fas fa-check"></i>{{ end }}</td>
-                                                    <td>{{ .Description }}</td>
-                                                </tr>
+                                            {{ range $paramName, $param := $params }}
+                                                {{ if ne $paramName "key" }}
+                                                    <tr>
+                                                        <td>
+                                                            {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
+                                                                <input type="number" name="{{ $paramName }}">
+                                                            {{ else if eq .Type "bool" }}
+                                                                <input type="checkbox" name="{{ $paramName }}" value="1">
+                                                            {{ else }}
+                                                                <input type="text" name="{{ $paramName }}">
+                                                            {{ end }}
+                                                        </td>
+                                                        <td>{{ $paramName }}</td>
+                                                        <td>{{ .Type }}</td>
+                                                        <td>{{ if .Optional }}<i class="fas fa-times"></i>{{ else }}<i class="fas fa-check"></i>{{ end }}</td>
+                                                        <td>{{ .Description }}</td>
+                                                    </tr>
+                                                {{ end }}
                                             {{ end }}
                                             </tbody>
                                         </table>

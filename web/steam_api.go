@@ -93,36 +93,33 @@ func (i *Interfaces) addInterface(in steam.APIInterface) {
 		for _, param := range method.Parameters {
 
 			if (*i)[in.Name] == nil {
-				(*i)[in.Name] = make(map[string]map[int]map[string][]Param)
+				(*i)[in.Name] = make(map[string]map[int]map[string]map[string]Param)
 			}
 
 			if (*i)[in.Name][method.Name] == nil {
-				(*i)[in.Name][method.Name] = make(map[int]map[string][]Param)
+				(*i)[in.Name][method.Name] = make(map[int]map[string]map[string]Param)
 			}
 
 			if (*i)[in.Name][method.Name][method.Version] == nil {
-				(*i)[in.Name][method.Name][method.Version] = make(map[string][]Param)
+				(*i)[in.Name][method.Name][method.Version] = make(map[string]map[string]Param)
 			}
 
 			if (*i)[in.Name][method.Name][method.Version][method.HTTPmethod] == nil {
-				(*i)[in.Name][method.Name][method.Version][method.HTTPmethod] = make([]Param, 0)
+				(*i)[in.Name][method.Name][method.Version][method.HTTPmethod] = make(map[string]Param)
 			}
 
-			(*i)[in.Name][method.Name][method.Version][method.HTTPmethod] =
-				append((*i)[in.Name][method.Name][method.Version][method.HTTPmethod], Param{
-					Name:        param.Name,
-					Type:        param.Type,
-					Optional:    param.Optional,
-					Description: param.Description,
-				})
+			(*i)[in.Name][method.Name][method.Version][method.HTTPmethod][param.Name] = Param{
+				Type:        param.Type,
+				Optional:    param.Optional,
+				Description: param.Description,
+			}
 		}
 	}
 }
 
-type Interface map[string]map[int]map[string][]Param
+type Interface map[string]map[int]map[string]map[string]Param
 
 type Param struct {
-	Name        string `json:"name"`
 	Type        string `json:"type"`
 	Optional    bool   `json:"optional"`
 	Description string `json:"description"`
