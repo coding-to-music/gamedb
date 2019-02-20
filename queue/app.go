@@ -963,11 +963,6 @@ func updateBundles(app *db.App) error {
 
 func saveToInflux(app db.App) error {
 
-	i, err := db.GetInfluxClient()
-	if err != nil {
-		return err
-	}
-
 	price, err := app.GetPrice(steam.CountryUS)
 	if err != nil && err != db.ErrMissingCountryCode {
 		return err
@@ -978,13 +973,13 @@ func saveToInflux(app db.App) error {
 		return err
 	}
 
-	point := influx.Point{
+	_, err = db.InfluxWrite(influx.Point{
 		Measurement: string(db.InfluxTableApps),
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},
 		Fields: map[string]interface{}{
-			"review_score":      app.ReviewsScore,
+			"reviews_score":     app.ReviewsScore,
 			"reviews_positive":  reviews.Positive,
 			"reviews_negative":  reviews.Negative,
 			"player_count":      app.PlayerCount,
@@ -994,15 +989,7 @@ func saveToInflux(app db.App) error {
 		},
 		Time:      time.Now(),
 		Precision: "n",
-	}
-
-	bps := influx.BatchPoints{
-		Points:          []influx.Point{point},
-		Database:        db.InfluxDB,
-		RetentionPolicy: "trial",
-	}
-
-	_, err = i.Write(bps)
+	})
 	log.Warning(err)
 
 	return nil

@@ -39,7 +39,8 @@ func init() {
 	Config.RecaptchaPublic = os.Getenv(prefix + "RECAPTCHA_PUBLIC")
 	Config.RecaptchaPrivate = os.Getenv(prefix + "RECAPTCHA_PRIVATE")
 
-	Config.InfluxHost = os.Getenv(prefix + "INFLUX_DOMAIN")
+	Config.InfluxURL = os.Getenv(prefix + "INFLUX_URL")
+	Config.InfluxUsername = os.Getenv(prefix + "INFLUX_USERNAME")
 	Config.InfluxPassword = os.Getenv(prefix + "INFLUX_PASSWORD")
 
 	Config.TwitterAccessToken = os.Getenv(prefix + "TWITTER_ACCESS_TOKEN")
@@ -118,8 +119,9 @@ type BaseConfig struct {
 	TwitterConsumerKey       string
 	TwitterConsumerSecret    string
 
-	InfluxHost     string
+	InfluxURL      string
 	InfluxPassword string
+	InfluxUsername string
 
 	DiscordBotToken   string
 	Environment       ConfigItem
