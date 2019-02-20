@@ -98,10 +98,7 @@ func (p Page) HasConnections() bool {
 
 func (p *Page) setConnection(conn *websocket.Conn) error {
 
-	id, err := uuid.NewV4()
-	if err != nil {
-		return err
-	}
+	id := uuid.NewV4()
 
 	p.connections[id] = conn
 
