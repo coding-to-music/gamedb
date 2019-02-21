@@ -526,10 +526,10 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 		t.Data = make([][]interface{}, 0)
 	}
 
-	bytesx, err := json.Marshal(t)
+	b, err := json.Marshal(t)
 	log.Err(err, r)
 
-	err = returnJSON(w, r, bytesx)
+	err = returnJSON(w, r, b)
 	log.Err(err, r)
 }
 
