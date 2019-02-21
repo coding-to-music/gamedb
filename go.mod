@@ -18,7 +18,6 @@ require (
 	github.com/antchfx/htmlquery v1.0.0 // indirect
 	github.com/antchfx/xmlquery v1.0.0 // indirect
 	github.com/antchfx/xpath v0.0.0-20190129040759-c8489ed3251e // indirect
-	github.com/benjamin658/influx-query-builder v1.4.0
 	github.com/bwmarrin/discordgo v0.19.0
 	github.com/cenkalti/backoff v2.1.1+incompatible
 	github.com/cockroachdb/apd v1.1.0 // indirect
