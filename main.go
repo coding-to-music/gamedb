@@ -40,7 +40,7 @@ func main() {
 		go func() {
 			log.Info("Starting web server")
 			err := web.Serve()
-			log.Err(err)
+			log.Critical(err)
 		}()
 	}
 
@@ -91,13 +91,15 @@ func main() {
 
 	// Block forever for goroutines to run
 	c := make(chan os.Signal)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
 	signal.Notify(c, syscall.SIGTERM, os.Interrupt, os.Kill)
-	go func(wg sync.WaitGroup) {
+
+	wg := &sync.WaitGroup{} // Must be pointer
+	wg.Add(1)
+	go func(wg *sync.WaitGroup) {
 		for range c {
 
-			wg.Done()
+			//noinspection GoDeferInLoop
+			defer wg.Done()
 
 			sql, err := db.GetMySQLClient()
 			log.Err(err)
