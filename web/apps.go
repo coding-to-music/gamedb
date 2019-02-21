@@ -38,6 +38,8 @@ func appsRouter() http.Handler {
 	r.Get("/{id}", appHandler)
 	r.Get("/{id}/ajax/news", appNewsAjaxHandler)
 	r.Get("/{id}/ajax/prices", appPricesAjaxHandler)
+	r.Get("/{id}/ajax/reviews", appAjaxReviewsHandler)
+	r.Get("/{id}/ajax/players", appAjaxPlayersHandler)
 	r.Get("/{id}/{slug}", appHandler)
 	return r
 }

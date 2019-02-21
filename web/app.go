@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -365,4 +366,45 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	productPricesAjaxHandler(w, r, db.ProductTypeApp)
+}
+
+func appAjaxReviewsHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id")
+		return
+	}
+
+	resp, err := db.InfluxQuery(`SELECT mean("player_count") AS "mean_player_count" FROM "GameDB"."autogen"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(6h) FILL(0)`)
+	log.Err(err)
+
+	hc := db.InfluxResponseToHighCharts(resp)
+
+	b, err := json.Marshal(hc)
+	log.Err(err)
+
+	err = returnJSON(w, r, b)
+	log.Err(err, r)
+
+}
+
+func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id")
+		return
+	}
+
+	resp, err := db.InfluxQuery(`SELECT mean("player_count") AS "mean_player_count" FROM "GameDB"."autogen"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(6h) FILL(0)`)
+	log.Err(err)
+
+	hc := db.InfluxResponseToHighCharts(resp)
+
+	b, err := json.Marshal(hc)
+	log.Err(err)
+
+	err = returnJSON(w, r, b)
+	log.Err(err, r)
 }
