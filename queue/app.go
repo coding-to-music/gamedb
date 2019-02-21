@@ -19,7 +19,6 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -990,7 +989,6 @@ func saveAppToInflux(app db.App) error {
 		Time:      time.Now(),
 		Precision: "h",
 	})
-	log.Warning(err)
 
-	return nil
+	return err
 }
