@@ -36,6 +36,12 @@ func init() {
 	Config.InstagramUsername.Set("INSTAGRAM_USERNAME")
 	Config.InstagramPassword.Set("INSTAGRAM_PASSWORD")
 
+	Config.MySQLHost.Set("MYSQL_HOST")
+	Config.MySQLPort.Set("MYSQL_PORT")
+	Config.MySQLUsername.Set("MYSQL_USERNAME")
+	Config.MySQLPassword.Set("MYSQL_PASSWORD")
+	Config.MySQLDatabase.Set("MYSQL_DATABASE")
+
 	Config.RecaptchaPublic = os.Getenv(prefix + "RECAPTCHA_PUBLIC")
 	Config.RecaptchaPrivate = os.Getenv(prefix + "RECAPTCHA_PRIVATE")
 
@@ -54,7 +60,6 @@ func init() {
 	Config.GithubToken = os.Getenv(prefix + "GITHUB_TOKEN")
 	Config.GoogleBucket = os.Getenv(prefix + "GOOGLE_BUCKET")
 	Config.GoogleProject = os.Getenv(prefix + "GOOGLE_PROJECT")
-	Config.MySQLDSN.Set("MYSQL_DSN")
 	Config.GameDBDirectory.Set("PATH")
 	Config.RollbarPrivateKey = os.Getenv(prefix + "ROLLBAR_PRIVATE")
 	Config.SendGridAPIKey = os.Getenv(prefix + "SENDGRID")
@@ -80,7 +85,6 @@ func init() {
 		Config.RabbitUsername.SetDefault("guest")
 		Config.RabbitPassword.SetDefault("guest")
 		Config.MemcacheDSN.SetDefault("localhost:11211")
-		Config.MySQLDSN.SetDefault("root@tcp(localhost:3306)/steam")
 		Config.GameDBDomain.SetDefault("http://localhost:8081")
 
 	case EnvConsumer:
@@ -123,6 +127,12 @@ type BaseConfig struct {
 	InfluxPassword string
 	InfluxUsername string
 
+	MySQLHost     ConfigItem
+	MySQLPort     ConfigItem
+	MySQLUsername ConfigItem
+	MySQLPassword ConfigItem
+	MySQLDatabase ConfigItem
+
 	DiscordBotToken   string
 	Environment       ConfigItem
 	GameDBDirectory   ConfigItem
@@ -132,7 +142,6 @@ type BaseConfig struct {
 	GoogleBucket      string
 	GoogleProject     string
 	MemcacheDSN       ConfigItem
-	MySQLDSN          ConfigItem
 	RollbarPrivateKey string
 	SendGridAPIKey    string
 	SteamAPIKey       string
@@ -143,6 +152,10 @@ type BaseConfig struct {
 
 func (c BaseConfig) RabbitDSN() string {
 	return "amqp://" + c.RabbitUsername.Get() + ":" + c.RabbitPassword.Get() + "@" + c.RabbitHost + ":" + c.RabbitPort
+}
+
+func (c BaseConfig) MySQLDNS() string {
+	return c.MySQLUsername.Get() + ":" + c.MySQLPassword.Get() + "@tcp(" + c.MySQLHost.Get() + ":" + c.MySQLPort.Get() + ")/" + c.MySQLDatabase.Get()
 }
 
 func (c BaseConfig) RabbitAPI(values url.Values) string {
@@ -191,4 +204,12 @@ func (ci ConfigItem) Get() string {
 func (ci ConfigItem) GetBool() bool {
 	b, _ := strconv.ParseBool(ci.Get())
 	return b
+}
+
+func (ci ConfigItem) GetInt() int {
+	i, err := strconv.Atoi(ci.Get())
+	if err != nil {
+		fmt.Println(err)
+	}
+	return i
 }
