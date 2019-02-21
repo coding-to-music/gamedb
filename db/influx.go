@@ -13,11 +13,11 @@ const (
 	InfluxDB              = "GameDB"
 	InfluxRetentionPolicy = "autogen"
 
-	InfluxTableApps     InfluxTable = "apps"
-	InfluxTablePackages InfluxTable = "packages"
-	InfluxTableTags     InfluxTable = "tags"
-	InfluxTablePlayers  InfluxTable = "players"
-	InfluxTableStats    InfluxTable = "stats"
+	InfluxMeasurementApps     = "apps"
+	InfluxMeasurementPackages = "packages"
+	InfluxMeasurementTags     = "tags"
+	InfluxMeasurementPlayers  = "players"
+	InfluxMeasurementStats    = "stats"
 )
 
 func GetInfluxClient() (client *influx.Client, err error) {

@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
+	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -139,6 +140,14 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
 		logError(gorm.Error, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
+	// Save to InfluxDB
+	err = savePackageToInflux(pack, payload)
+	if err != nil {
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -366,4 +375,29 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 	pack.Prices = string(b)
 
 	return nil
+}
+
+func savePackageToInflux(pack db.Package, payload baseMessage) error {
+
+	price, err := pack.GetPrice(steam.CountryUS)
+	if err != nil && err != db.ErrMissingCountryCode {
+		return err
+	}
+
+	_, err = db.InfluxWrite(influx.Point{
+		Measurement: db.InfluxMeasurementPackages,
+		Tags: map[string]string{
+			"package_id": strconv.Itoa(pack.ID),
+		},
+		Fields: map[string]interface{}{
+			"price_us_initial":    price.Initial,
+			"price_us_final":      price.Final,
+			"price_us_discount":   price.DiscountPercent,
+			"price_us_individual": price.Individual,
+		},
+		Time:      time.Now(),
+		Precision: "h",
+	})
+
+	return err
 }

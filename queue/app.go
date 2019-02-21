@@ -183,7 +183,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Save to InfluxDB
-	err = saveToInflux(app)
+	err = saveAppToInflux(app)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -961,7 +961,7 @@ func updateBundles(app *db.App) error {
 	return nil
 }
 
-func saveToInflux(app db.App) error {
+func saveAppToInflux(app db.App) error {
 
 	price, err := app.GetPrice(steam.CountryUS)
 	if err != nil && err != db.ErrMissingCountryCode {
@@ -974,7 +974,7 @@ func saveToInflux(app db.App) error {
 	}
 
 	_, err = db.InfluxWrite(influx.Point{
-		Measurement: string(db.InfluxTableApps),
+		Measurement: string(db.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},
@@ -988,7 +988,7 @@ func saveToInflux(app db.App) error {
 			"price_us_discount": price.DiscountPercent,
 		},
 		Time:      time.Now(),
-		Precision: "n",
+		Precision: "h",
 	})
 	log.Warning(err)
 

@@ -14,22 +14,22 @@ import (
 )
 
 const (
-	KindChange         = "Change"
-	KindDonation       = "Donation"
-	KindEvent          = "Event"
-	KindNews           = "News"
-	KindPlayer         = "Player"
-	KindPlayerApp      = "PlayerApp"
-	KindPlayerRank     = "PlayerRank"
-	KindProductPrice   = "ProductPrice"
+	KindChange       = "Change"
+	KindDonation     = "Donation"
+	KindEvent        = "Event"
+	KindNews         = "News"
+	KindPlayer       = "Player"
+	KindPlayerApp    = "PlayerApp"
+	KindPlayerRank   = "PlayerRank"
+	KindProductPrice = "ProductPrice"
 )
 
 var (
-	ErrorTooMany = errors.New("datastore: too many")
+	ErrNoSuchEntity = datastore.ErrNoSuchEntity
+	ErrorTooMany    = errors.New("datastore: too many")
 
 	datastoreClient *datastore.Client
-
-	dsClientLock sync.Mutex
+	dsClientLock    sync.Mutex
 )
 
 type Kind interface {

@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
+	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -153,6 +154,14 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	err = player.Save()
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
+	// Save to InfluxDB
+	err = savePlayerToInflux(player, payload)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -613,4 +622,40 @@ func updatePlayerGroups(player *db.Player) error {
 	player.Groups = resp.GetIDs()
 
 	return nil
+}
+
+func savePlayerToInflux(player db.Player, payload baseMessage) error {
+
+	ranks, err := db.GetRank(player.PlayerID)
+	if err != nil && err != db.ErrNoSuchEntity {
+		return err
+	}
+
+	fields := map[string]interface{}{
+		"level":    player.Level,
+		"games":    player.GamesCount,
+		"badges":   player.BadgesCount,
+		"playtime": player.PlayTime,
+		"friends":  player.FriendsCount,
+	}
+
+	if err != db.ErrNoSuchEntity {
+		fields["level_rank"] = ranks.LevelRank
+		fields["games_rank"] = ranks.GamesRank
+		fields["badges_rank"] = ranks.BadgesRank
+		fields["playtime_rank"] = ranks.PlayTimeRank
+		fields["friends_rank"] = ranks.FriendsRank
+	}
+
+	_, err = db.InfluxWrite(influx.Point{
+		Measurement: db.InfluxMeasurementPlayers,
+		Tags: map[string]string{
+			"player_id": strconv.FormatInt(player.PlayerID, 10),
+		},
+		Fields:    fields,
+		Time:      time.Now(),
+		Precision: "h",
+	})
+
+	return err
 }
