@@ -2,12 +2,14 @@ package db
 
 import (
 	"net/url"
+	"sync"
+	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/log"
 	influx "github.com/influxdata/influxdb1-client"
 )
-
-type InfluxTable string
 
 const (
 	InfluxDB              = "GameDB"
@@ -20,20 +22,34 @@ const (
 	InfluxMeasurementStats    = "stats"
 )
 
+var (
+	influxClient *influx.Client
+	influxLock   sync.Mutex
+)
+
 func GetInfluxClient() (client *influx.Client, err error) {
 
-	host, err := url.Parse(config.Config.InfluxURL)
-	if err != nil {
-		return
+	influxLock.Lock()
+	defer influxLock.Unlock()
+
+	if influxClient == nil {
+
+		var host *url.URL
+		host, err = url.Parse(config.Config.InfluxURL)
+		if err != nil {
+			return
+		}
+
+		conf := influx.Config{
+			URL:      *host,
+			Username: config.Config.InfluxUsername,
+			Password: config.Config.InfluxPassword,
+		}
+
+		influxClient, err = influx.NewClient(conf)
 	}
 
-	conf := influx.Config{
-		URL:      *host,
-		Username: config.Config.InfluxUsername,
-		Password: config.Config.InfluxPassword,
-	}
-
-	return influx.NewClient(conf)
+	return influxClient, err
 }
 
 func InfluxWrite(point influx.Point) (resp *influx.Response, err error) {
@@ -54,23 +70,18 @@ func InfluxWriteMany(points []influx.Point) (resp *influx.Response, err error) {
 		return &influx.Response{}, err
 	}
 
-	return client.Write(batch)
-}
+	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = 1
 
-func InfluxQuery(query string) (resp *influx.Response, err error) {
+	operation := func() (err error) {
 
-	client, err := GetInfluxClient()
-	if err != nil {
-		return &influx.Response{}, err
+		resp, err = client.Write(batch)
+		return err
 	}
 
-	return client.Query(influx.Query{
-		Command:  query,
-		Database: InfluxDB,
-	})
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
+	return resp, err
 }
-
-type HighChartsJson map[string][]interface{}
 
 func InfluxResponseToHighCharts(resp *influx.Response) HighChartsJson {
 

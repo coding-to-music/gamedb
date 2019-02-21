@@ -973,7 +973,7 @@ func saveAppToInflux(app db.App) error {
 	}
 
 	_, err = db.InfluxWrite(influx.Point{
-		Measurement: string(db.InfluxMeasurementApps),
+		Measurement: db.InfluxMeasurementApps,
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},
