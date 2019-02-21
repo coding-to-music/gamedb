@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	iql "github.com/benjamin658/influx-query-builder"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -376,7 +378,16 @@ func appAjaxReviewsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := db.InfluxQuery(`SELECT mean("player_count") AS "mean_player_count" FROM "GameDB"."autogen"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(6h) FILL(0)`)
+	builder := iql.New()
+	query := builder.
+		Select(`mean("player_count") AS "mean_player_count"`).
+		From(`"GameDB"."autogen"."apps"`).
+		Where("time", ">", "NOW()-7d").
+		And("app_id", "=", id).
+		GroupBy("1h").Fill("none").
+		Build()
+
+	resp, err := db.InfluxQuery(query)
 	log.Err(err)
 
 	hc := db.InfluxResponseToHighCharts(resp)
@@ -397,7 +408,18 @@ func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := db.InfluxQuery(`SELECT mean("player_count") AS "mean_player_count" FROM "GameDB"."autogen"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(6h) FILL(0)`)
+	builder := iql.New()
+	query := builder.
+		Select(`mean("player_count") AS "mean_player_count"`).
+		From(`"GameDB"."autogen"."apps"`).
+		Where("time", ">", "NOW()-7d").
+		And("app_id", "=", id).
+		GroupBy("1h").Fill("none").
+		Build()
+
+	fmt.Println(query)
+
+	resp, err := db.InfluxQuery(query)
 	log.Err(err)
 
 	hc := db.InfluxResponseToHighCharts(resp)
