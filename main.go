@@ -3,9 +3,11 @@ package main
 import (
 	"math/rand"
 	"os"
+	"os/signal"
 	"runtime"
 	"strconv"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/gamedb/website/config"
@@ -88,7 +90,24 @@ func main() {
 	}
 
 	// Block forever for goroutines to run
+	c := make(chan os.Signal)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
+	signal.Notify(c, syscall.SIGTERM, os.Interrupt, os.Kill)
+	go func(wg sync.WaitGroup) {
+		for range c {
+
+			wg.Done()
+
+			sql, err := db.GetMySQLClient()
+			log.Err(err)
+
+			err = sql.Close()
+			log.Err(err)
+
+			return
+		}
+	}(wg)
+
 	wg.Wait()
 }
