@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"context"
+	"sync"
 
 	"github.com/gamedb/website/config"
 	"github.com/google/go-github/github"
@@ -11,9 +12,13 @@ import (
 var (
 	githubContext = context.Background()
 	githubClient  *github.Client
+	githubMutex   sync.Mutex
 )
 
 func GetGithub() (*github.Client, context.Context) {
+
+	githubMutex.Lock()
+	defer githubMutex.Unlock()
 
 	if githubClient == nil {
 		githubClient = github.NewClient(oauth2.NewClient(
