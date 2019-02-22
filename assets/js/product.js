@@ -24,6 +24,8 @@ if ($priceChart.length > 0 && prices) {
                 code: code
             },
             url: $priceChart.attr('data-ajax'),
+            dataType: 'json',
+            cache: true,
             success: function (data, textStatus, jqXHR) {
 
                 if ('prices' in data) {
@@ -32,8 +34,6 @@ if ($priceChart.length > 0 && prices) {
                     chart.hideLoading();
                 }
             },
-            dataType: 'json',
-            cache: true
         });
     }
 

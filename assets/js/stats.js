@@ -1,6 +1,6 @@
 if ($('#stats-page').length > 0) {
 
-    const columnDefaults = {
+    const defaultStatsChartOptions = {
         chart: {
             type: 'column'
         },
@@ -42,10 +42,11 @@ if ($('#stats-page').length > 0) {
     $.ajax({
         type: "GET",
         url: '/stats/app-scores',
+        dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
 
-            Highcharts.chart('scores', $.extend(true, {}, columnDefaults, {
+            Highcharts.chart('scores', $.extend(true, {}, defaultStatsChartOptions, {
                 xAxis: {
                     tickInterval: 5,
                 },
@@ -71,15 +72,15 @@ if ($('#stats-page').length > 0) {
                 }]
             }));
         },
-        dataType: 'json'
     });
 
     $.ajax({
         type: "GET",
         url: '/stats/app-types',
+        dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
-            Highcharts.chart('types', $.extend(true, {}, columnDefaults, {
+            Highcharts.chart('types', $.extend(true, {}, defaultStatsChartOptions, {
                 xAxis: {
                     labels: {
                         rotation: -20,
@@ -114,15 +115,15 @@ if ($('#stats-page').length > 0) {
                 }]
             }));
         },
-        dataType: 'json'
     });
 
     $.ajax({
         type: "GET",
         url: '/stats/ranked-countries',
+        dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
-            Highcharts.chart('countries', $.extend(true, {}, columnDefaults, {
+            Highcharts.chart('countries', $.extend(true, {}, defaultStatsChartOptions, {
                 xAxis: {
                     tickInterval: 1,
                 },
@@ -142,15 +143,15 @@ if ($('#stats-page').length > 0) {
                 }]
             }));
         },
-        dataType: 'json'
     });
 
     $.ajax({
         type: "GET",
         url: '/stats/release-dates',
+        dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
-            Highcharts.chart('release-dates', $.extend(true, {}, columnDefaults, {
+            Highcharts.chart('release-dates', $.extend(true, {}, defaultStatsChartOptions, {
                 chart: {
                     type: 'area',
                 },
@@ -177,6 +178,5 @@ if ($('#stats-page').length > 0) {
                 },
             }));
         },
-        dataType: 'json'
     });
 }

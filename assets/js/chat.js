@@ -4,6 +4,8 @@ if ($('#chat-page').length > 0) {
 
     $.ajax({
         url: '/chat/' + channel + '/ajax',
+        dataType: 'json',
+        cache: false,
         success: function (data, textStatus, jqXHR) {
             $('.fa-spin').remove();
             if (isIterable(data)) {
@@ -12,8 +14,6 @@ if ($('#chat-page').length > 0) {
                 }
             }
         },
-        dataType: 'json',
-        cache: false
     });
 
     websocketListener('chat', function (e) {

@@ -18,12 +18,12 @@ if ($('#queues-page').length > 0) {
 
         $.ajax({
             url: '/queues/ajax.json',
+            dataType: 'json',
+            cache: false,
             success: function (data, textStatus, jqXHR) {
                 chart.series[0].setData(data.items);
                 //chart.series[1].setData(data.rate);
             },
-            dataType: 'json',
-            cache: false,
             error: function (xhr, ajaxOptions, thrownError) {
                 clearTimeout(timer);
                 $('#live-badge').addClass('badge-danger').removeClass('badge-secondary badge-success');
