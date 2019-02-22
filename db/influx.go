@@ -83,6 +83,21 @@ func InfluxWriteMany(points []influx.Point) (resp *influx.Response, err error) {
 	return resp, err
 }
 
+func InfluxQuery(query string) (resp *influx.Response, err error) {
+
+	client, err := GetInfluxClient()
+	if err != nil {
+		return &influx.Response{}, err
+	}
+
+	return client.Query(influx.Query{
+		Command:  query,
+		Database: InfluxDB,
+	})
+}
+
+type HighChartsJson map[string][]interface{}
+
 func InfluxResponseToHighCharts(resp *influx.Response) HighChartsJson {
 
 	json := HighChartsJson{}
