@@ -647,8 +647,8 @@ func savePlayerToInflux(player db.Player, payload baseMessage) error {
 		fields["friends_rank"] = ranks.FriendsRank
 	}
 
-	_, err = db.InfluxWrite(influx.Point{
-		Measurement: db.InfluxMeasurementPlayers,
+	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(db.InfluxMeasurementPlayers),
 		Tags: map[string]string{
 			"player_id": strconv.FormatInt(player.PlayerID, 10),
 		},

@@ -22,6 +22,7 @@ func playersRouter() http.Handler {
 	r.Get("/{id:[0-9]+}", playerHandler)
 	r.Get("/{id:[0-9]+}/ajax/games", playerGamesAjaxHandler)
 	r.Get("/{id:[0-9]+}/ajax/update", playersUpdateAjaxHandler)
+	r.Get("/{id:[0-9]+}/ajax/history", playersHistoryAjaxHandler)
 	r.Get("/{id:[0-9]+}/{slug}", playerHandler)
 	return r
 }

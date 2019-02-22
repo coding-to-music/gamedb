@@ -477,6 +477,35 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id", r)
+		return
+	}
+
+	resp, err := db.InfluxQuery(`SELECT mean("level") as "mean_level", mean("games") as "mean_games", mean("badges") as "mean_badges", mean("playtime") as "mean_playtime", mean("friends") as "mean_friends", mean("level_rank") as "mean_level_rank", mean("games_rank") as "mean_games_rank", mean("badges_rank") as "mean_badges_rank", mean("playtime_rank") as "mean_playtime_rank", mean("friends_rank") as "mean_friends_rank" FROM "GameDB"."autogen"."players" WHERE time > NOW()-7d AND "player_id"='` + id + `' GROUP BY time(1d) FILL(previous)`)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	hc := db.InfluxResponseToHighCharts(resp)
+
+	b, err := json.Marshal(hc)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	err = returnJSON(w, r, b)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+}
+
 type PlayersUpdateResponse struct {
 	Success bool   `json:"success"` // Red or green
 	Toast   string `json:"toast"`   // Browser notification
