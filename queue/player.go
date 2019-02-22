@@ -654,7 +654,7 @@ func savePlayerToInflux(player db.Player, payload baseMessage) error {
 		},
 		Fields:    fields,
 		Time:      time.Now(),
-		Precision: "h",
+		Precision: "m",
 	})
 
 	return err

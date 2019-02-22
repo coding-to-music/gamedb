@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
+	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -96,6 +97,14 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	gorm = gorm.Save(&bundle)
 	if gorm.Error != nil {
 		logError(gorm.Error, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
+	// Save to InfluxDB
+	err = saveBundleToInflux(bundle)
+	if err != nil {
+		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
@@ -209,4 +218,25 @@ func updateBundle(bundle *db.Bundle) (err error) {
 	bundle.PackageIDs = string(b)
 
 	return nil
+}
+
+func saveBundleToInflux(bundle db.Bundle) (err error) {
+
+	_, err = db.InfluxWriteMany(db.InfluxRetentionPolicyAllTime, influx.BatchPoints{
+		Points: []influx.Point{
+			{
+				Measurement: string(db.InfluxMeasurementApps),
+				Tags: map[string]string{
+					"bundle_id": strconv.Itoa(bundle.ID),
+				},
+				Fields: map[string]interface{}{
+					"discount": bundle.Discount,
+				},
+				Time:      time.Now(),
+				Precision: "m",
+			},
+		},
+	})
+
+	return err
 }

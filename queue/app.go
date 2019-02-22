@@ -960,7 +960,7 @@ func updateBundles(app *db.App) error {
 	return nil
 }
 
-func saveAppToInflux(app db.App) error {
+func saveAppToInflux(app db.App) (err error) {
 
 	price, err := app.GetPrice(steam.CountryUS)
 	if err != nil && err != db.ErrMissingCountryCode {
@@ -972,36 +972,22 @@ func saveAppToInflux(app db.App) error {
 		return err
 	}
 
-	_, err = db.InfluxWriteMany(db.InfluxRetentionPolicyAllTime, influx.BatchPoints{
-		Points: []influx.Point{
-			{
-				Measurement: string(db.InfluxMeasurementApps),
-				Tags: map[string]string{
-					"app_id": strconv.Itoa(app.ID),
-				},
-				Fields: map[string]interface{}{
-					"reviews_score":     app.ReviewsScore,
-					"reviews_positive":  reviews.Positive,
-					"reviews_negative":  reviews.Negative,
-					"price_us_initial":  price.Initial,
-					"price_us_final":    price.Final,
-					"price_us_discount": price.DiscountPercent,
-				},
-				Time:      time.Now(),
-				Precision: "h",
-			},
-			{
-				Measurement: string(db.InfluxMeasurementApps),
-				Tags: map[string]string{
-					"app_id": strconv.Itoa(app.ID),
-				},
-				Fields: map[string]interface{}{
-					"player_count": app.PlayerCount,
-				},
-				Time:      time.Now(),
-				Precision: "m",
-			},
+	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(db.InfluxMeasurementApps),
+		Tags: map[string]string{
+			"app_id": strconv.Itoa(app.ID),
 		},
+		Fields: map[string]interface{}{
+			"reviews_score":     app.ReviewsScore,
+			"reviews_positive":  reviews.Positive,
+			"reviews_negative":  reviews.Negative,
+			"price_us_initial":  price.Initial,
+			"price_us_final":    price.Final,
+			"price_us_discount": price.DiscountPercent,
+			"player_count":      app.PlayerCount,
+		},
+		Time:      time.Now(),
+		Precision: "m",
 	})
 
 	return err

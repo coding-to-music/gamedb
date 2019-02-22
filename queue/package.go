@@ -396,7 +396,7 @@ func savePackageToInflux(pack db.Package, payload baseMessage) error {
 			"price_us_individual": price.Individual,
 		},
 		Time:      time.Now(),
-		Precision: "h",
+		Precision: "m",
 	})
 
 	return err
