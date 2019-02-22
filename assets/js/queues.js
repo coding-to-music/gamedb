@@ -21,8 +21,10 @@ if ($('#queues-page').length > 0) {
             dataType: 'json',
             cache: false,
             success: function (data, textStatus, jqXHR) {
-                chart.series[0].setData(data.items);
+
+                chart.series[0].setData(data['messages']);
                 //chart.series[1].setData(data.rate);
+
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 clearTimeout(timer);
@@ -33,6 +35,7 @@ if ($('#queues-page').length > 0) {
     }
 
     updateChart();
+
     const timer = window.setInterval(updateChart, 10000); // 10 Seconds
 
     const chart = Highcharts.chart('chart', {

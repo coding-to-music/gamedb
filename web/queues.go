@@ -3,11 +3,8 @@ package web
 import (
 	"encoding/json"
 	"net/http"
-	"sort"
-	"time"
 
-	"github.com/Jleagle/rabbit-go/rabbit"
-	"github.com/cenkalti/backoff"
+	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
@@ -39,81 +36,33 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	var item = helpers.MemcacheQueues
-	var jsonString string
+	var highcharts db.HighChartsJson
 
-	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &jsonString, func() (interface{}, error) {
+	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
-		payload := rabbit.Payload{}
-		payload.LengthsAge = 3600
-		payload.LengthsIncr = 60
-		payload.MsgRatesAge = 3600
-		payload.MsgRatesIncr = 60
-
-		overview := rabbit.Overview{}
-
-		// Retrying as this call can fail
-		operation := func() (err error) {
-			overview, err = helpers.GetRabbit().GetOverview(payload)
-			return err
-		}
-
-		policy := backoff.NewExponentialBackOff()
-		policy.InitialInterval = time.Second / 2
-		policy.MaxElapsedTime = time.Second * 5
-
-		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+		resp, err := db.InfluxQuery(`SELECT sum("messages") as "messages" FROM "Telegraf"."autogen"."rabbitmq_queue" WHERE time >= now() - 1h GROUP BY time(10s) fill(linear)`)
 		if err != nil {
-			return "", err
+			log.Err(err, r)
+			return highcharts, err
 		}
 
-		var response = queueJSONResponse{}
-
-		// Defaults so the response get marshaled correctly
-		response.Items = make([][]int64, 0)
-		response.Rates = make([][]int64, 0)
-
-		// Items
-		items := overview.QueueTotals.MessagesDetails.Samples
-		if len(items) > 0 {
-
-			sort.Slice(items, func(i, j int) bool {
-				return items[i].Timestamp < items[j].Timestamp
-			})
-
-			for _, v := range items {
-				response.Items = append(response.Items, []int64{v.Timestamp, int64(v.Sample)})
-			}
-		}
-
-		// Rates
-		rates := overview.MessageStats.AckDetails.Samples
-		if len(rates) > 0 {
-
-			sort.Slice(rates, func(i, j int) bool {
-				return rates[i].Timestamp < rates[j].Timestamp
-			})
-
-			var last = rates[0].Sample
-			for _, v := range rates {
-				response.Rates = append(response.Rates, []int64{v.Timestamp, int64(v.Sample - last)})
-				last = v.Sample
-			}
-		}
-
-		bytes, err := json.Marshal(response)
-		return string(bytes), err
+		return db.InfluxResponseToHighCharts(resp), err
 	})
 
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the queues.", Error: err})
+		log.Err(err, r)
 		return
 	}
 
-	err = returnJSON(w, r, []byte(jsonString))
-	log.Err(err, r)
-}
+	b, err := json.Marshal(highcharts)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
 
-type queueJSONResponse struct {
-	Items [][]int64 `json:"items"`
-	Rates [][]int64 `json:"rate"`
+	err = returnJSON(w, r, b)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
 }
