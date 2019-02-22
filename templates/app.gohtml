@@ -27,6 +27,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#charts" role="tab">Charts</a>
+                </li>
                 {{if gt (len .Prices) 0}}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
@@ -217,6 +220,17 @@
                             {{ end }}
                         </table>
                     </div>
+
+                </div>
+
+                {{/* Charts */}}
+                <div class="tab-pane" id="charts" role="tabpanel">
+
+                    <h5>Players</h5>
+                    <div id="players-chart" data-ajax="/apps/{{ .App.ID }}/ajax/players"></div>
+
+                    <h5>Review Score</h5>
+                    <div id="reviews-chart" data-ajax="/apps/{{ .App.ID }}/ajax/reviews"></div>
 
                 </div>
 

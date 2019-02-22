@@ -11,15 +11,20 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 )
 
-const (
-	InfluxDB              = "GameDB"
-	InfluxRetentionPolicy = "autogen"
+type InfluxRetentionPolicy string
+type InfluxMeasurement string
 
-	InfluxMeasurementApps     = "apps"
-	InfluxMeasurementPackages = "packages"
-	InfluxMeasurementTags     = "tags"
-	InfluxMeasurementPlayers  = "players"
-	InfluxMeasurementStats    = "stats"
+const (
+	InfluxDB = "GameDB"
+
+	InfluxRetentionPolicyAllTime InfluxRetentionPolicy = "alltime"
+	InfluxRetentionPolicy7Day    InfluxRetentionPolicy = "7d"
+
+	InfluxMeasurementApps     InfluxMeasurement = "apps"
+	InfluxMeasurementPackages InfluxMeasurement = "packages"
+	InfluxMeasurementTags     InfluxMeasurement = "tags"
+	InfluxMeasurementPlayers  InfluxMeasurement = "players"
+	InfluxMeasurementStats    InfluxMeasurement = "stats"
 )
 
 var (
@@ -52,17 +57,20 @@ func GetInfluxClient() (client *influx.Client, err error) {
 	return influxClient, err
 }
 
-func InfluxWrite(point influx.Point) (resp *influx.Response, err error) {
+func InfluxWrite(retention InfluxRetentionPolicy, point influx.Point) (resp *influx.Response, err error) {
 
-	return InfluxWriteMany([]influx.Point{point})
+	return InfluxWriteMany(retention, influx.BatchPoints{
+		Points: []influx.Point{point},
+	})
 }
 
-func InfluxWriteMany(points []influx.Point) (resp *influx.Response, err error) {
+func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) (resp *influx.Response, err error) {
 
-	batch := influx.BatchPoints{
-		Points:          points,
-		Database:        InfluxDB,
-		RetentionPolicy: InfluxRetentionPolicy,
+	batch.Database = InfluxDB
+	batch.RetentionPolicy = string(retention)
+
+	if batch.Time.IsZero() {
+		batch.Time = time.Now()
 	}
 
 	client, err := GetInfluxClient()

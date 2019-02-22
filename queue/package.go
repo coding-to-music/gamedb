@@ -384,8 +384,8 @@ func savePackageToInflux(pack db.Package, payload baseMessage) error {
 		return err
 	}
 
-	_, err = db.InfluxWrite(influx.Point{
-		Measurement: db.InfluxMeasurementPackages,
+	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(db.InfluxMeasurementPackages),
 		Tags: map[string]string{
 			"package_id": strconv.Itoa(pack.ID),
 		},

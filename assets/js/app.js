@@ -128,6 +128,12 @@ if ($appPage.length > 0) {
                 loadPriceChart();
             }
         }
+        if (to.attr('href') === '#charts') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+                loadAppCharts();
+            }
+        }
 
         // On leaving tab
         if (from.attr('href') === '#media') {
@@ -160,7 +166,6 @@ if ($appPage.length > 0) {
         if (data.Data.toString() === $appPage.attr('data-id')) {
             toast(true, 'Click to refresh', 'This app has been updated', -1, 'refresh');
         }
-
     });
 
     // News data table
@@ -206,5 +211,117 @@ if ($appPage.length > 0) {
                 }
             ]
         }));
+    }
+
+    function loadAppCharts() {
+
+        const defaultAppChartOptions = {};
+
+        $.ajax({
+            type: "GET",
+            url: $('#players-chart').attr('data-ajax'),
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
+                    chart: {
+                        type: 'line'
+                    },
+                    title: {
+                        text: ''
+                    },
+                    subtitle: {
+                        text: ''
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    xAxis: {
+                        title: {
+                            text: ''
+                        },
+                        type: 'datetime'
+                    },
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {
+                            text: ''
+                        }
+                    },
+                    plotOptions: {},
+                    tooltip: {
+                        formatter: function () {
+                            return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        },
+                    },
+                    series: [{
+                        color: '#28a745',
+                        data: data['mean_player_count']
+                    }],
+                }));
+
+            },
+        });
+
+        $.ajax({
+            type: "GET",
+            url: $('#reviews-chart').attr('data-ajax'),
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                Highcharts.chart('reviews-chart', $.extend(true, {}, defaultAppChartOptions, {
+                    chart: {
+                        type: 'line'
+                    },
+                    title: {
+                        text: ''
+                    },
+                    subtitle: {
+                        text: ''
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    xAxis: {
+                        title: {
+                            text: ''
+                        },
+                        type: 'datetime'
+                    },
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {
+                            text: ''
+                        }
+                    },
+                    plotOptions: {},
+                    tooltip: {
+                        formatter: function () {
+                            return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        },
+                    },
+                    series: [
+                        {
+                            color: '#28a745',
+                            data: data['reviews_score']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['reviews_positive']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['reviews_negative']
+                        }],
+                }));
+
+            },
+        });
     }
 }

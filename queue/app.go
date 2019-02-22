@@ -972,22 +972,36 @@ func saveAppToInflux(app db.App) error {
 		return err
 	}
 
-	_, err = db.InfluxWrite(influx.Point{
-		Measurement: db.InfluxMeasurementApps,
-		Tags: map[string]string{
-			"app_id": strconv.Itoa(app.ID),
+	_, err = db.InfluxWriteMany(db.InfluxRetentionPolicyAllTime, influx.BatchPoints{
+		Points: []influx.Point{
+			{
+				Measurement: string(db.InfluxMeasurementApps),
+				Tags: map[string]string{
+					"app_id": strconv.Itoa(app.ID),
+				},
+				Fields: map[string]interface{}{
+					"reviews_score":     app.ReviewsScore,
+					"reviews_positive":  reviews.Positive,
+					"reviews_negative":  reviews.Negative,
+					"price_us_initial":  price.Initial,
+					"price_us_final":    price.Final,
+					"price_us_discount": price.DiscountPercent,
+				},
+				Time:      time.Now(),
+				Precision: "h",
+			},
+			{
+				Measurement: string(db.InfluxMeasurementApps),
+				Tags: map[string]string{
+					"app_id": strconv.Itoa(app.ID),
+				},
+				Fields: map[string]interface{}{
+					"player_count": app.PlayerCount,
+				},
+				Time:      time.Now(),
+				Precision: "m",
+			},
 		},
-		Fields: map[string]interface{}{
-			"reviews_score":     app.ReviewsScore,
-			"reviews_positive":  reviews.Positive,
-			"reviews_negative":  reviews.Negative,
-			"player_count":      app.PlayerCount,
-			"price_us_initial":  price.Initial,
-			"price_us_final":    price.Final,
-			"price_us_discount": price.DiscountPercent,
-		},
-		Time:      time.Now(),
-		Precision: "h",
 	})
 
 	return err
