@@ -16,7 +16,10 @@ if ($('#admin-page').length > 0) {
         $.ajax({
             type: 'post',
             url: queuesForm.attr('action'),
-            data: $(this).serialize()
+            data: $(this).serialize(),
+            success: function (data, textStatus, jqXHR) {
+                toast(true, 'Queued');
+            },
         });
     });
 
