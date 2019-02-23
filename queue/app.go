@@ -20,7 +20,6 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -976,7 +975,7 @@ func saveAppToInflux(app db.App) (err error) {
 		return err
 	}
 
-	log.Info("Saving app to influx: " + strconv.Itoa(app.ID))
+	logInfo("Saving app to influx: " + strconv.Itoa(app.ID))
 
 	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(db.InfluxMeasurementApps),

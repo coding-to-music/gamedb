@@ -222,20 +222,18 @@ func updateBundle(bundle *db.Bundle) (err error) {
 
 func saveBundleToInflux(bundle db.Bundle) (err error) {
 
-	_, err = db.InfluxWriteMany(db.InfluxRetentionPolicyAllTime, influx.BatchPoints{
-		Points: []influx.Point{
-			{
-				Measurement: string(db.InfluxMeasurementApps),
-				Tags: map[string]string{
-					"bundle_id": strconv.Itoa(bundle.ID),
-				},
-				Fields: map[string]interface{}{
-					"discount": bundle.Discount,
-				},
-				Time:      time.Now(),
-				Precision: "m",
-			},
+	logInfo("Saving bundle to influx: " + strconv.Itoa(bundle.ID))
+
+	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(db.InfluxMeasurementApps),
+		Tags: map[string]string{
+			"bundle_id": strconv.Itoa(bundle.ID),
 		},
+		Fields: map[string]interface{}{
+			"discount": bundle.Discount,
+		},
+		Time:      time.Now(),
+		Precision: "m",
 	})
 
 	return err

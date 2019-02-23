@@ -376,7 +376,7 @@ func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := db.InfluxQuery(`SELECT mean("player_count") AS "mean_player_count" FROM "GameDB"."autogen"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(30m) FILL(linear)`)
+	resp, err := db.InfluxQuery(`SELECT mean("player_count") AS "mean_player_count" FROM "GameDB"."alltime"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(30m) FILL(linear)`)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -405,7 +405,7 @@ func appAjaxReviewsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := db.InfluxQuery(`SELECT mean("reviews_score") AS "mean_reviews_score, mean("reviews_positive") AS "mean_reviews_positive, mean("reviews_negative") AS "mean_reviews_negative" FROM "GameDB"."autogen"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(30m) FILL(linear)`)
+	resp, err := db.InfluxQuery(`SELECT mean("reviews_score") AS "mean_reviews_score", mean("reviews_positive") AS "mean_reviews_positive", mean("reviews_negative") AS "mean_reviews_negative" FROM "GameDB"."alltime"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(30m) FILL(linear)`)
 	if err != nil {
 		log.Err(err, r)
 		return

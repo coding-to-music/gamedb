@@ -40,7 +40,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
-		resp, err := db.InfluxQuery(`SELECT sum("messages") as "messages" FROM "Telegraf"."autogen"."rabbitmq_queue" WHERE time >= now() - 1h GROUP BY time(10s) fill(linear)`)
+		resp, err := db.InfluxQuery(`SELECT sum("messages") as "messages" FROM "Telegraf"."14d"."rabbitmq_queue" WHERE time >= now() - 1h GROUP BY time(10s) fill(linear)`)
 		if err != nil {
 			log.Err(err, r)
 			return highcharts, err
