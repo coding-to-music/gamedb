@@ -14,7 +14,7 @@ type delayQueue struct {
 
 func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
-	time.Sleep(time.Second / 2)
+	time.Sleep(time.Second)
 	msg := msgs[0]
 
 	var err error
@@ -29,22 +29,22 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	// Limits
 	if q.maxTime > 0 && payload.FirstSeen.Add(q.maxTime).Unix() < time.Now().Unix() {
 
-		logInfo("Message removed from delay queue (Over " + q.maxTime.String() + "): " + string(msg.Body))
-		payload.ack(msg)
+		logWarning("Message removed from delay queue (Over " + q.maxTime.String() + "): " + string(msg.Body))
+		payload.fail(msg)
 		return
 	}
 
 	if q.maxAttempts > 0 && payload.Attempt > q.maxAttempts {
 
-		logInfo("Message removed from delay queue (" + strconv.Itoa(payload.Attempt) + "/" + strconv.Itoa(q.maxAttempts) + " attempts): " + string(msg.Body))
-		payload.ack(msg)
+		logWarning("Message removed from delay queue (" + strconv.Itoa(payload.Attempt) + "/" + strconv.Itoa(q.maxAttempts) + " attempts): " + string(msg.Body))
+		payload.fail(msg)
 		return
 	}
 
 	if payload.OriginalQueue == queueGoDelays {
 
-		logInfo("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
-		payload.ack(msg)
+		logWarning("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
+		payload.fail(msg)
 		return
 	}
 

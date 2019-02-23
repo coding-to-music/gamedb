@@ -30,6 +30,7 @@ const (
 	queueGoDelays   queueName = "GameDB_Go_Delays"
 	queueGoPackages queueName = "GameDB_Go_Packages"
 	queueGoProfiles queueName = "GameDB_Go_Profiles"
+	queueGoFailed   queueName = "GameDB_Go_Failed"
 
 	//
 	maxBytesToStore int = 1024 * 10
@@ -45,24 +46,36 @@ var (
 	consumerCloseChannel = make(chan *amqp.Error)
 	producerCloseChannel = make(chan *amqp.Error)
 
-	queues = map[queueName]baseQueue{
-		queueGoApps: {
-			queue: &appQueue{},
+	queues = []baseQueue{
+		{
+			name:    queueGoApps,
+			queue:   &appQueue{},
+			maxTime: time.Hour * 24 * 7,
 		},
-		queueGoBundles: {
-			queue: &bundleQueue{},
+		{
+			name:    queueGoBundles,
+			queue:   &bundleQueue{},
+			maxTime: time.Hour * 24 * 7,
 		},
-		queueGoChanges: {
-			queue: &changeQueue{},
+		{
+			name:    queueGoChanges,
+			queue:   &changeQueue{},
+			maxTime: time.Hour * 24 * 7,
 		},
-		queueGoDelays: {
-			queue: &delayQueue{},
+		{
+			name:    queueGoDelays,
+			queue:   &delayQueue{},
+			maxTime: time.Hour * 24 * 7,
 		},
-		queueGoPackages: {
-			queue: &packageQueue{},
+		{
+			name:    queueGoPackages,
+			queue:   &packageQueue{},
+			maxTime: time.Hour * 24 * 7,
 		},
-		queueGoProfiles: {
-			queue: &playerQueue{},
+		{
+			name:    queueGoProfiles,
+			queue:   &playerQueue{},
+			maxTime: time.Hour * 24 * 7,
 		},
 	}
 )
@@ -92,6 +105,22 @@ func (payload baseMessage) ack(msg amqp.Delivery) {
 
 	err := msg.Ack(false)
 	logError(err)
+}
+
+// Send to failed queue
+func (payload baseMessage) fail(msg amqp.Delivery) {
+
+	err := produce(payload, queueGoFailed)
+	if err != nil {
+		logError(err)
+		return
+	}
+
+	err = msg.Ack(false)
+	if err != nil {
+		logError(err)
+		return
+	}
 }
 
 // Send to delay queue
@@ -209,9 +238,8 @@ func (q baseQueue) consumeMessages() {
 }
 
 func RunConsumers() {
-	for queueName, consumer := range queues {
-		consumer.name = queueName
-		go consumer.consumeMessages()
+	for _, queue := range queues {
+		go queue.consumeMessages()
 	}
 }
 
