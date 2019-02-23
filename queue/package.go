@@ -145,7 +145,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Save to InfluxDB
-	err = savePackageToInflux(pack, payload)
+	err = savePackageToInflux(pack)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -377,7 +377,7 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 	return nil
 }
 
-func savePackageToInflux(pack db.Package, payload baseMessage) error {
+func savePackageToInflux(pack db.Package) error {
 
 	price, err := pack.GetPrice(steam.CountryUS)
 	if err != nil && err != db.ErrMissingCountryCode {

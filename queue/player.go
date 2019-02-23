@@ -161,7 +161,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Save to InfluxDB
-	err = savePlayerToInflux(player, payload)
+	err = savePlayerToInflux(player)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -624,7 +624,7 @@ func updatePlayerGroups(player *db.Player) error {
 	return nil
 }
 
-func savePlayerToInflux(player db.Player, payload baseMessage) error {
+func savePlayerToInflux(player db.Player) error {
 
 	ranks, err := db.GetRank(player.PlayerID)
 	if err != nil && err != db.ErrNoSuchEntity {

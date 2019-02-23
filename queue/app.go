@@ -17,8 +17,10 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -86,11 +88,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
-		if app.ChangeNumber >= message.PICSAppInfo.ChangeNumber {
-			logInfo("Skipping app, updated in last day")
-			payload.ack(msg)
-			return
+	if !config.Config.IsLocal() {
+		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
+			if app.ChangeNumber >= message.PICSAppInfo.ChangeNumber {
+				logInfo("Skipping app, updated in last day")
+				payload.ack(msg)
+				return
+			}
 		}
 	}
 
@@ -971,6 +975,8 @@ func saveAppToInflux(app db.App) (err error) {
 	if err != nil && err != db.ErrMissingCountryCode {
 		return err
 	}
+
+	log.Info("Saving app to influx: " + strconv.Itoa(app.ID))
 
 	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(db.InfluxMeasurementApps),
