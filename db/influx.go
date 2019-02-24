@@ -68,6 +68,7 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 
 	batch.Database = InfluxDB
 	batch.RetentionPolicy = string(retention)
+	batch.Precision = "m" // Must be in batch and point
 
 	if batch.Time.IsZero() {
 		batch.Time = time.Now()
@@ -82,7 +83,6 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 	policy.InitialInterval = 1
 
 	operation := func() (err error) {
-
 		resp, err = client.Write(batch)
 		return err
 	}
@@ -99,8 +99,9 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 	}
 
 	return client.Query(influx.Query{
-		Command:  query,
-		Database: InfluxDB,
+		Command:         query,
+		Database:        InfluxDB,
+		RetentionPolicy: string(InfluxRetentionPolicyAllTime),
 	})
 }
 
