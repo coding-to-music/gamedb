@@ -222,8 +222,6 @@ func updateBundle(bundle *db.Bundle) (err error) {
 
 func saveBundleToInflux(bundle db.Bundle) (err error) {
 
-	logInfo("Saving bundle to influx: " + strconv.Itoa(bundle.ID))
-
 	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(db.InfluxMeasurementApps),
 		Tags: map[string]string{

@@ -975,8 +975,6 @@ func saveAppToInflux(app db.App) (err error) {
 		return err
 	}
 
-	logInfo("Saving app to influx: " + strconv.Itoa(app.ID))
-
 	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(db.InfluxMeasurementApps),
 		Tags: map[string]string{

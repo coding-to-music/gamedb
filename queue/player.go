@@ -647,8 +647,6 @@ func savePlayerToInflux(player db.Player) error {
 		fields["friends_rank"] = ranks.FriendsRank
 	}
 
-	logInfo("Saving player to influx: " + strconv.FormatInt(player.PlayerID, 10))
-
 	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(db.InfluxMeasurementPlayers),
 		Tags: map[string]string{
