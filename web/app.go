@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -376,7 +378,18 @@ func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := db.InfluxQuery(`SELECT mean("player_count") AS "mean_player_count" FROM "GameDB"."alltime"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(30m) FILL(linear)`)
+	builder := influxql.NewBuilder()
+	builder.AddSelect("mean(player_count)", "mpc")
+	builder.SetFrom("GameDB", "alltime", "apps")
+	builder.AddWhere("time", ">", "NOW()-7d")
+	builder.AddWhere("app_id", "=", id)
+	builder.AddGroupByTime("30m")
+	builder.SetLimit(10)
+	builder.SetFillLinear()
+
+	fmt.Println(builder.String())
+
+	resp, err := db.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r)
 		return
