@@ -15,6 +15,8 @@ github.com/Jleagle/go-durationfmt v0.0.0-20190212102610-5ae8bf56bcbe h1:JeH2DrRi
 github.com/Jleagle/go-durationfmt v0.0.0-20190212102610-5ae8bf56bcbe/go.mod h1:6Q6xyLL3Dcnj8DkW7BAHG0Y4+vFG+sNhXom2uFUGC20=
 github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c h1:WoNx50aOeP1faA2/B9bvBx/kwpFF7Q6iYNCZZNhHO7w=
 github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c/go.mod h1:xRFoP0dYM3dVozL4PyltmTlvkE6iyI+eSCmFGePPEtc=
+github.com/Jleagle/influxql v0.0.0-20190224214959-119ba9964679 h1:sz8/0CyKaIuICr6dEx4CKOTpFaXeyC2HnkgDE0Z2IzA=
+github.com/Jleagle/influxql v0.0.0-20190224214959-119ba9964679/go.mod h1:PIEhc56S2wVRYCvoplgo7hKwAdw+v4piHIc0q0SB3I0=
 github.com/Jleagle/memcache-go v0.0.0-20190218123846-599d3d90b628 h1:trmwRucZqSlKTXAaFMy8/asVJePxfhtxFwAzXNfm2sg=
 github.com/Jleagle/memcache-go v0.0.0-20190218123846-599d3d90b628/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
 github.com/Jleagle/rabbit-go v0.0.0-20190220085424-6afd4589ce23 h1:cRHJjlDorNr6vhbJKKjDcksOPpTowOGIkGRMSEqq+vA=
@@ -142,7 +144,6 @@ github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/pty v1.1.3/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/krylovsk/goinsta/v2 v2.4.0 h1:E7E82/YvjQpNR2KfJW3xwxIEGb2sFcsnCXuUjjyxrkg=
 github.com/krylovsk/goinsta/v2 v2.4.0/go.mod h1:M6/Tnc41f4gn+rl9HxFaNY1c6Px5zQWHgyY6S/wSZFs=
 github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514 h1:eX436NDlsA6AHjeLIPvfrJJ6n6OnK/Ap32N8WH5NFwg=
 github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514/go.mod h1:LErrn9E6BDZ0rwAIrPk99+1+KCSU2X+fy+6xeCB1C5U=
