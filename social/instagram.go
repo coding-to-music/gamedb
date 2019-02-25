@@ -3,7 +3,6 @@ package social
 import (
 	"math/rand"
 	"net/http"
-	"strconv"
 
 	"github.com/ahmdrz/goinsta/v2"
 	"github.com/gamedb/website/config"
@@ -95,7 +94,7 @@ func UploadInstagram() {
 		return
 	}
 
-	_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+", ID: "+strconv.Itoa(app.ID)+") #steamgames", 0, 0)
+	_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+") https://gamedb.online"+app.GetPath()+" #steamgames "+app.GetHashTag(), 0, 0)
 	if err != nil {
 		log.Err(err)
 		return
