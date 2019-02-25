@@ -54,7 +54,10 @@ func init() {
 	Config.TwitterConsumerKey = os.Getenv(prefix + "TWITTER_CONSUMER_KEY")
 	Config.TwitterConsumerSecret = os.Getenv(prefix + "TWITTER_CONSUMER_SECRET")
 
+	Config.DiscordClientID = os.Getenv(prefix + "DISCORD_CLIENT_ID")
+	Config.DiscordSescret = os.Getenv(prefix + "DISCORD_SECRET")
 	Config.DiscordBotToken = os.Getenv(prefix + "DISCORD_BOT_TOKEN")
+
 	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
 	Config.GithubToken = os.Getenv(prefix + "GITHUB_TOKEN")
@@ -73,7 +76,6 @@ func init() {
 	Config.WebserverPort.SetDefault("8081")
 	Config.EnableWebserver.SetDefault("1")
 	Config.EnableConsumers.SetDefault("1")
-	Config.GameDBDomain.SetDefault("https://gamedb.online")
 	Config.MemcacheDSN.SetDefault("memcache:11211")
 	Config.GameDBDirectory.SetDefault("/root")
 
@@ -85,7 +87,6 @@ func init() {
 		Config.RabbitUsername.SetDefault("guest")
 		Config.RabbitPassword.SetDefault("guest")
 		Config.MemcacheDSN.SetDefault("localhost:11211")
-		Config.GameDBDomain.SetDefault("http://localhost:8081")
 
 	case EnvConsumer:
 
@@ -133,7 +134,10 @@ type BaseConfig struct {
 	MySQLPassword ConfigItem
 	MySQLDatabase ConfigItem
 
-	DiscordBotToken   string
+	DiscordClientID string
+	DiscordSescret  string
+	DiscordBotToken string
+
 	Environment       ConfigItem
 	GameDBDirectory   ConfigItem
 	GameDBDomain      ConfigItem

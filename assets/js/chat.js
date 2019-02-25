@@ -16,6 +16,10 @@ if ($('#chat-page').length > 0) {
         },
     });
 
+    if (user.loggedIntoDiscord) {
+        $('#reply').show();
+    }
+
     websocketListener('chat', function (e) {
 
         const data = $.parseJSON(e.data);

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -9,15 +10,32 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
+	"golang.org/x/oauth2"
 )
 
 const (
 	guildID          = "407493776597057538"
 	generalChannelID = "407493777058693121"
+)
+
+var (
+	discordOauthContext = context.Background()
+	discordOauthConfig  = &oauth2.Config{
+		ClientID:     config.Config.DiscordClientID,
+		ClientSecret: config.Config.DiscordSescret,
+		Scopes:       []string{"identify", "guilds.join"},
+		RedirectURL:  "https://gamedb.online/chat/callback/",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
+			TokenURL: "https://discordapp.com/api/oauth2/token",
+		},
+	}
 )
 
 func getDiscord() (*discordgo.Session, error) {
@@ -52,9 +70,41 @@ func discordMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 func chatRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", chatHandler)
+	r.Get("/login", chatLoginHandler)
+	r.Get("/callback", chatLoginCallbackHandler)
 	r.Get("/{id}", chatHandler)
 	r.Get("/{id}/ajax", chatAjaxHandler)
 	return r
+}
+
+func chatLoginHandler(w http.ResponseWriter, r *http.Request) {
+
+	if config.Config.IsLocal() {
+		discordOauthConfig.RedirectURL = config.Config.GameDBDomain.Get() + "/chat/callback/"
+	}
+
+	http.Redirect(w, r, discordOauthConfig.AuthCodeURL("state", oauth2.AccessTypeOnline), 302)
+}
+
+func chatLoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	var code = r.URL.Query().Get("code")
+
+	tok, err := discordOauthConfig.Exchange(discordOauthContext, code)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Error: err, Message: "Something went wrong logging you in.", Code: 400})
+		return
+	}
+
+	b, err := json.Marshal(tok)
+
+	err = session.Write(w, r, "discord_token", string(b))
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Error: err, Message: "Something went wrong logging you in."})
+		return
+	}
+
+	http.Redirect(w, r, "/chat", 302)
 }
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
@@ -228,4 +278,29 @@ type chatWebsocketPayload struct {
 	AuthorAvatar string `json:"author_avatar"`
 	Content      string `json:"content"`
 	Channel      string `json:"channel"`
+}
+
+func updateDiscordClient(r *http.Request, d *discordgo.Session) *discordgo.Session {
+
+	tokenString, err := session.Read(r, "discord_token")
+	if err != nil {
+		log.Err(err, r)
+		return d
+	}
+
+	if tokenString != "" {
+
+		var token = new(oauth2.Token)
+
+		err = json.Unmarshal([]byte(tokenString), token)
+		if err != nil {
+			log.Err(err, r)
+			return d
+		}
+
+		client := discordOauthConfig.Client(discordOauthContext, token)
+		d.Client = client
+	}
+
+	return d
 }

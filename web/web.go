@@ -299,7 +299,8 @@ type GlobalTemplate struct {
 	session     map[string]string
 
 	//
-	toasts []Toast
+	toasts            []Toast
+	loggedIntoDiscord bool
 
 	//
 	request *http.Request // Internal
@@ -364,6 +365,12 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	t.userCurrencySymbol = locale.CurrencySymbol
 
+	discord, err := session.Read(r, "discord_token")
+	if err != nil {
+		log.Err(err, r)
+		t.loggedIntoDiscord = discord != ""
+	}
+
 	// Flashes
 	t.flashesGood, err = session.GetGoodFlashes(w, r)
 	log.Err(err, r)
@@ -379,20 +386,21 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
-		"userID":         strconv.Itoa(t.userID), // Too long for JS int
-		"userLevel":      t.userLevel,
-		"userName":       t.userName,
-		"userEmail":      t.userEmail,
-		"isLoggedIn":     t.isLoggedIn(),
-		"isLocal":        t.isLocal(),
-		"isAdmin":        t.isAdmin(),
-		"showAds":        t.showAds(),
-		"country":        t.userCountry,
-		"currencySymbol": t.userCurrencySymbol,
-		"flashesGood":    t.flashesGood,
-		"flashesBad":     t.flashesBad,
-		"toasts":         t.toasts,
-		"session":        t.session,
+		"userID":            strconv.Itoa(t.userID), // Too long for JS int
+		"userLevel":         t.userLevel,
+		"userName":          t.userName,
+		"userEmail":         t.userEmail,
+		"isLoggedIn":        t.isLoggedIn(),
+		"isLocal":           t.isLocal(),
+		"isAdmin":           t.isAdmin(),
+		"showAds":           t.showAds(),
+		"country":           t.userCountry,
+		"currencySymbol":    t.userCurrencySymbol,
+		"flashesGood":       t.flashesGood,
+		"flashesBad":        t.flashesBad,
+		"toasts":            t.toasts,
+		"session":           t.session, // todo, remove, and uses
+		"loggedIntoDiscord": t.loggedIntoDiscord,
 	}
 
 	b, err := json.Marshal(stringMap)
