@@ -32,7 +32,7 @@
                                 <tr data-link="{{ .GetPath }}">
                                     <td class="img">
                                         <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                        <span class="text-truncate" style="max-width: 260px;">{{ .GetName }}</span>
+                                        <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
                                     <td>{{ comma .PlayerCount }}</td>
                                     <td class="platforms" nowrap="nowrap">{{ .GetPlatformImages }}</td>
@@ -58,7 +58,7 @@
                                 <tr data-link="{{ .GetPath }}">
                                     <td class="img">
                                         <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                        <span class="text-truncate" style="max-width: 260px;">{{ .GetName }}</span>
+                                        <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
                                     <td>{{ .ReviewsScore }}%</td>
                                     <td class="platforms" nowrap="nowrap">{{ .GetPlatformImages }}</td>
