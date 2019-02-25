@@ -10,6 +10,8 @@ import (
 
 func rootFileHandler(w http.ResponseWriter, r *http.Request) {
 
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+
 	data, err := ioutil.ReadFile(config.Config.GameDBDirectory.Get() + "/assets/files" + r.URL.Path)
 
 	if err != nil {

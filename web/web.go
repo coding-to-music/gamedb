@@ -162,8 +162,13 @@ func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
-	w.Header().Set("Content-Type", "text/html")
-	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")                          // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")                          // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")                              // Protection from clickjacking
+	w.Header().Set("Content-Type", "text/html")                                  //
+	w.Header().Set("Language", string(session.GetCountryCode(r)))                // Used for varnish hash
+	w.Header().Set("Content-Security-Policy", string(session.GetCountryCode(r))) // Used for varnish hash
+
 	w.WriteHeader(200)
 
 	folder := config.Config.GameDBDirectory.Get()
