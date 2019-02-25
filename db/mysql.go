@@ -41,7 +41,12 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 			}
 			conn = gormConnectionDebug
 		}
-		return err
+
+		if err != nil {
+			return err
+		}
+
+		return pingMySQL(gormConnection)
 	}
 
 	policy := backoff.NewExponentialBackOff()
@@ -74,6 +79,11 @@ func getMySQLConnection() (*gorm.DB, error) {
 	db = db.Set("gorm:save_associations", false)
 
 	return db, err
+}
+
+func pingMySQL(gorm *gorm.DB) error {
+	gorm = gorm.Exec("SELECT VERSION()")
+	return gorm.Error
 }
 
 type mySQLLogger struct {
