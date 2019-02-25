@@ -10,7 +10,16 @@ if ($('#queues-page').length > 0) {
         activeWindow = false;
     });
 
-    function updateChart() {
+    const charts = {};
+    $('[data-queue]').each(function (index, value) {
+        charts[$(this).attr('data-queue')] = loadChart($(this).find('div').attr('id'));
+    });
+
+    updateCharts();
+
+    const timer = window.setInterval(updateCharts, 10000); // 10 Seconds
+
+    function updateCharts() {
 
         if (!activeWindow) {
             return;
@@ -22,8 +31,9 @@ if ($('#queues-page').length > 0) {
             cache: false,
             success: function (data, textStatus, jqXHR) {
 
-                chart.series[0].setData(data['messages']);
-                //chart.series[1].setData(data.rate);
+                $.each(charts, function (index, value) {
+                    value.series[0].setData(data[index][0]);
+                });
 
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -34,85 +44,66 @@ if ($('#queues-page').length > 0) {
         });
     }
 
-    updateChart();
+    function loadChart(id) {
 
-    const timer = window.setInterval(updateChart, 10000); // 10 Seconds
-
-    const chart = Highcharts.chart('chart', {
-        chart: {
-            animation: false
-        },
-        title: {
-            text: ''
-        },
-        subtitle: {
-            text: ''
-        },
-        credits: {
-            enabled: false
-        },
-        legend: {
-            enabled: false
-        },
-        xAxis: {
-            title: {
-                text: 'Time'
-            },
-            labels: {
-                step: 1,
-                formatter: function () {
-                    return moment(this.value).format("h:mm");
-                },
-            },
-            type: 'datetime',
-        },
-        yAxis: [
-            {
-                title: {
-                    text: 'Queue Size'
-                },
-                allowDecimals: false,
-                min: 0,
-            },
-            {
-                title: {
-                    text: 'Queue Speed'
-                },
-                allowDecimals: false,
-                min: 0,
-                opposite: true,
-            }
-        ],
-        plotOptions: {
-            series: {
-                marker: {
-                    enabled: false // Too close together
-                },
+        return Highcharts.chart(id, {
+            chart: {
                 animation: false
-            }
-        },
-        series: [
-            {
-                color: '#28a745',
-                yAxis: 0,
-                name: 'size',
-                type: 'areaspline',
             },
-            // {
-            //     color: '#007bff',
-            //     yAxis: 1,
-            //     name: 'speed',
-            //     type: 'spline'
-            // },
-        ],
-        tooltip: {
-            formatter: function (x) {
-                if (this.series.name === 'size') {
-                    return this.y.toLocaleString() + ' items in the queue at ' + moment(this.key).format("h:mm");
-                } else {
-                    return this.y.toLocaleString() + ' items updated at ' + moment(this.key).format("h:mm");
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            credits: {
+                enabled: false
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                title: {
+                    text: ''
+                },
+                labels: {
+                    step: 1,
+                    formatter: function () {
+                        return moment(this.value).format("h:mm");
+                    },
+                },
+                type: 'datetime',
+            },
+            yAxis: [
+                {
+                    title: {
+                        text: ''
+                    },
+                    allowDecimals: false,
+                    min: 0,
+                }
+            ],
+            plotOptions: {
+                series: {
+                    marker: {
+                        enabled: false // Too close together
+                    },
+                    animation: false
                 }
             },
-        }
-    });
+            series: [
+                {
+                    color: '#28a745',
+                    yAxis: 0,
+                    name: 'size',
+                    type: 'areaspline',
+                },
+            ],
+            tooltip: {
+                formatter: function () {
+                    return this.y.toLocaleString() + ' items in the queue at ' + moment(this.key).format("h:mm") + ' GMT';
+                },
+            }
+        });
+    }
 }

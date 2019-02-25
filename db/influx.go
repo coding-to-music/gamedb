@@ -9,6 +9,7 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	influx "github.com/influxdata/influxdb1-client"
+	"github.com/influxdata/influxdb1-client/models"
 )
 
 type InfluxRetentionPolicy string
@@ -105,29 +106,22 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 	})
 }
 
-type HighChartsJson map[string][]interface{}
+type HighChartsJson [][]interface{}
 
-func InfluxResponseToHighCharts(resp *influx.Response) HighChartsJson {
+func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
 
 	json := HighChartsJson{}
 
-	if resp != nil {
-		if len(resp.Results) > 0 {
-			if len(resp.Results[0].Series) > 0 {
+	for k := range series.Columns {
+		if k > 0 {
 
-				for k, v := range resp.Results[0].Series[0].Columns {
-					if k > 0 {
+			var data []interface{}
 
-						var data []interface{}
-
-						for _, vv := range resp.Results[0].Series[0].Values {
-							data = append(data, []interface{}{vv[0], vv[k]})
-						}
-
-						json[v] = data
-					}
-				}
+			for _, vv := range series.Values {
+				data = append(data, []interface{}{vv[0], vv[k]})
 			}
+
+			json = append(json, data)
 		}
 	}
 

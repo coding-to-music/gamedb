@@ -3,7 +3,9 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
+	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -36,17 +38,30 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	var item = helpers.MemcacheQueues
-	var highcharts db.HighChartsJson
+	var highcharts = map[string]db.HighChartsJson{}
 
 	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
-		resp, err := db.InfluxQuery(`SELECT sum("messages") as "messages" FROM "Telegraf"."14d"."rabbitmq_queue" WHERE time >= now() - 1h GROUP BY time(10s) fill(linear)`)
+		builder := influxql.NewBuilder()
+		builder.AddSelect(`sum("messages")`, "messages")
+		builder.SetFrom("Telegraf", "14d", "rabbitmq_queue")
+		builder.AddWhere("time", ">=", "now() - 1h")
+		builder.AddWhereRaw(`("queue"='GameDB_Go_Apps' OR "queue"='GameDB_Go_Packages' OR "queue"='GameDB_Go_Profiles')`)
+		builder.AddGroupByTime("10s")
+		builder.AddGroupBy("queue")
+		builder.SetFillLinear()
+
+		resp, err := db.InfluxQuery(builder.String())
 		if err != nil {
-			log.Err(err, r)
 			return highcharts, err
 		}
 
-		return db.InfluxResponseToHighCharts(resp), err
+		ret := map[string]db.HighChartsJson{}
+		for _, v := range resp.Results[0].Series {
+			ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = db.InfluxResponseToHighCharts(v)
+		}
+
+		return ret, err
 	})
 
 	if err != nil {

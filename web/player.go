@@ -491,7 +491,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hc := db.InfluxResponseToHighCharts(resp)
+	hc := db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 
 	b, err := json.Marshal(hc)
 	if err != nil {
