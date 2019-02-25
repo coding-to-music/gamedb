@@ -101,7 +101,7 @@ if ($('#queues-page').length > 0) {
             ],
             tooltip: {
                 formatter: function () {
-                    return this.y.toLocaleString() + ' items in the queue at ' + moment(this.key).format("h:mm") + ' GMT';
+                    return this.y.toLocaleString() + ' items in the queue at ' + moment(this.key).format("h:mm") + ' UTC';
                 },
             }
         });
