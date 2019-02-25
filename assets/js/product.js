@@ -37,7 +37,7 @@ if ($priceChart.length > 0 && prices) {
         });
     }
 
-    $('#prices table tbody tr[data-code]').on('click', function (e) {
+    $('#prices tr[data-code]').on('click', function (e) {
 
         if ($(this).hasClass('font-weight-bold')) {
             return
