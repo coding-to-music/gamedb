@@ -46,7 +46,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddSelect(`sum("messages")`, "messages")
 		builder.SetFrom("Telegraf", "14d", "rabbitmq_queue")
 		builder.AddWhere("time", ">=", "now() - 1h")
-		builder.AddWhereRaw(`("queue"='GameDB_Go_Apps' OR "queue"='GameDB_Go_Packages' OR "queue"='GameDB_Go_Profiles')`)
+		builder.AddWhereRaw(`("queue"='GameDB_Go_Apps' OR "queue"='GameDB_Go_Packages' OR "queue"='GameDB_Go_Profiles' OR "queue"='GameDB_Go_Changes')`)
 		builder.AddGroupByTime("10s")
 		builder.AddGroupBy("queue")
 		builder.SetFillLinear()
@@ -57,8 +57,10 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ret := map[string]db.HighChartsJson{}
-		for _, v := range resp.Results[0].Series {
-			ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = db.InfluxResponseToHighCharts(v)
+		if len(resp.Results) > 0 {
+			for _, v := range resp.Results[0].Series {
+				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = db.InfluxResponseToHighCharts(v)
+			}
 		}
 
 		return ret, err

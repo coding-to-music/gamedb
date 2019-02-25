@@ -99,11 +99,21 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 		return &influx.Response{}, err
 	}
 
-	return client.Query(influx.Query{
+	resp, err = client.Query(influx.Query{
 		Command:         query,
 		Database:        InfluxDB,
 		RetentionPolicy: string(InfluxRetentionPolicyAllTime),
 	})
+
+	if len(resp.Results) == 0 {
+		log.Warning(log.EnvLocal, "No results returned")
+	}
+
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) == 0 {
+		log.Warning(log.EnvLocal, "No series returned")
+	}
+
+	return resp, err
 }
 
 type HighChartsJson [][]interface{}
