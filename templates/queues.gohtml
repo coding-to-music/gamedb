@@ -19,6 +19,10 @@
         </div>
         <div class="card-body">
 
+            {{ if eq .Env "local" }}
+                <div class="alert alert-success" role="alert">Show production queues</div>
+            {{ end }}
+
             <div class="row">
                 <div class="col-6" data-queue="Apps">
                     <h5>Apps</h5>

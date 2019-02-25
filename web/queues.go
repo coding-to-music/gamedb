@@ -49,7 +49,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddWhereRaw(`("queue"='GameDB_Go_Apps' OR "queue"='GameDB_Go_Packages' OR "queue"='GameDB_Go_Profiles' OR "queue"='GameDB_Go_Changes')`)
 		builder.AddGroupByTime("10s")
 		builder.AddGroupBy("queue")
-		builder.SetFillLinear()
+		builder.SetFillNone()
 
 		resp, err := db.InfluxQuery(builder.String())
 		if err != nil {

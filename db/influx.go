@@ -128,7 +128,11 @@ func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
 			var data []interface{}
 
 			for _, vv := range series.Values {
-				data = append(data, []interface{}{vv[0], vv[k]})
+				t, err := time.Parse(time.RFC3339, vv[0].(string))
+				if err != nil {
+					log.Err(err)
+				}
+				data = append(data, []interface{}{t.Unix() * 1000, vv[k]})
 			}
 
 			json = append(json, data)
