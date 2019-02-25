@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/social"
 )
 
@@ -334,7 +335,7 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 
 			twitter := social.GetTwitter()
 
-			_, _, err = twitter.Statuses.Update("Free game! gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam", nil)
+			_, _, err = twitter.Statuses.Update("Free game! gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 			if err != nil {
 				if !strings.Contains(err.Error(), "Status is a duplicate") {
 					logCritical(err)

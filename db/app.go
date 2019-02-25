@@ -3,7 +3,6 @@ package db
 import (
 	"errors"
 	"html/template"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -288,16 +287,6 @@ func (app App) GetPICSUpdatedNice() string {
 
 func (app App) GetIcon() (ret string) {
 	return GetAppIcon(app.ID, app.Icon)
-}
-
-func (app App) GetHashTag() (ret string) {
-
-	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
-	if err != nil {
-		return ""
-	}
-
-	return "#" + reg.ReplaceAllString(app.GetName(), "")
 }
 
 func (app App) GetPrices() (prices ProductPrices, err error) {
