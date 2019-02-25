@@ -40,7 +40,7 @@ type Player struct {
 	GamesRecent      string    `datastore:"games_recent,noindex"`     // []ProfileRecentGame
 	GamesCount       int       `datastore:"games_count"`              //
 	GameStats        string    `datastore:"game_stats,noindex"`       // PlayerAppStatsTemplate
-	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // struct
+	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // struct // Not used
 	Badges           string    `datastore:"badges,noindex"`           // []ProfileBadge
 	BadgesCount      int       `datastore:"badges_count"`             //
 	BadgeStats       string    `datastore:"badge_stats,noindex"`      // ProfileBadgeStats
@@ -99,14 +99,6 @@ func (p Player) GetSteamCommunityLink() string {
 
 func (p Player) GetMaxFriends() int {
 	return GetPlayerMaxFriends(p.Level)
-}
-
-func (p Player) GetGameHeatMap() string {
-
-	if p.GameHeatMap == "" {
-		return "[]"
-	}
-	return p.GameHeatMap
 }
 
 func (p Player) GetAvatar() string {
