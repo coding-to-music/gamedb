@@ -23,7 +23,8 @@
             </div>
             <div class="col-12">
 
-                <p class="lead">{{ .Description }}. {{ comma .PlayersCount }} players. {{ comma .RanksCount }} ranked. Updated <span data-livestamp="{{ .Date }}"></span>.</p>
+                <p class="lead">{{ .Description }}</p>
+                <small>{{ comma .PlayersCount }} players. {{ comma .RanksCount }} ranked. Updated <span data-livestamp="{{ .Date }}"></span>.</small>
 
             </div>
         </div>
