@@ -215,11 +215,26 @@ if ($appPage.length > 0) {
 
     function loadAppCharts() {
 
-        const defaultAppChartOptions = {};
+        const defaultAppChartOptions = {
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {},
+            xAxis: {
+                title: {text: ''},
+                type: 'datetime'
+            },
+        };
 
         $.ajax({
             type: "GET",
-            url: $('#players-chart').attr('data-ajax'),
+            url: '/apps/' + $appPage.attr('data-id') + '/ajax/players',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
@@ -227,34 +242,18 @@ if ($appPage.length > 0) {
                     chart: {
                         type: 'area'
                     },
-                    title: {
-                        text: ''
-                    },
-                    subtitle: {
-                        text: ''
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    xAxis: {
-                        title: {
-                            text: ''
-                        },
-                        type: 'datetime'
-                    },
                     yAxis: {
                         allowDecimals: false,
                         title: {
                             text: ''
                         }
                     },
-                    plotOptions: {},
+                    legend: {
+                        enabled: false
+                    },
                     tooltip: {
                         formatter: function () {
-                            return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
+                            return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
                         },
                     },
                     series: [{
@@ -268,7 +267,7 @@ if ($appPage.length > 0) {
 
         $.ajax({
             type: "GET",
-            url: $('#reviews-chart').attr('data-ajax'),
+            url: '/apps/' + $appPage.attr('data-id') + '/ajax/reviews',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
@@ -276,49 +275,60 @@ if ($appPage.length > 0) {
                     chart: {
                         type: 'line'
                     },
-                    title: {
-                        text: ''
-                    },
-                    subtitle: {
-                        text: ''
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    xAxis: {
-                        title: {
-                            text: ''
+                    yAxis: [
+                        {
+                            allowDecimals: false,
+                            title: {text: ''},
+                            min: 0,
+                            max: 100,
+                            endOnTick: false,
                         },
-                        type: 'datetime'
-                    },
-                    yAxis: {
-                        allowDecimals: false,
-                        title: {
-                            text: ''
+                        {
+                            allowDecimals: false,
+                            title: {text: ''},
+                            opposite: true,
                         }
+                    ],
+                    legend: {
+                        enabled: true
                     },
-                    plotOptions: {},
                     tooltip: {
                         formatter: function () {
-                            return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
+
+                            const time = moment(this.key).format("DD MMM YYYY @ HH:mm");
+
+                            if (this.series.name === 'score') {
+                                return this.y.toLocaleString() + '% score on ' + time;
+                            } else if (this.series.name === 'positive') {
+                                return this.y.toLocaleString() + ' positive reviews on ' + time;
+                            } else if (this.series.name === 'negative') {
+                                return this.y.toLocaleString() + ' negative reviews on ' + time;
+                            }
                         },
                     },
                     series: [
                         {
+                            name: 'score',
                             color: '#28a745',
-                            data: data['mean_reviews_negative']
+                            data: data['mean_reviews_score'],
+                            yAxis: 0,
+                            marker: {symbol: 'circle'}
                         },
                         {
-                            color: '#28a745',
-                            data: data['mean_reviews_positive']
+                            name: 'positive',
+                            color: '#e83e8c',
+                            data: data['mean_reviews_positive'],
+                            yAxis: 1,
+                            marker: {symbol: 'circle'}
                         },
                         {
-                            color: '#28a745',
-                            data: data['mean_reviews_score']
-                        }],
+                            name: 'negative',
+                            color: '#007bff',
+                            data: data['mean_reviews_negative'],
+                            yAxis: 1,
+                            marker: {symbol: 'circle'}
+                        },
+                    ],
                 }));
 
             },
