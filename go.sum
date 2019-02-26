@@ -15,8 +15,10 @@ github.com/Jleagle/go-durationfmt v0.0.0-20190212102610-5ae8bf56bcbe h1:JeH2DrRi
 github.com/Jleagle/go-durationfmt v0.0.0-20190212102610-5ae8bf56bcbe/go.mod h1:6Q6xyLL3Dcnj8DkW7BAHG0Y4+vFG+sNhXom2uFUGC20=
 github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c h1:WoNx50aOeP1faA2/B9bvBx/kwpFF7Q6iYNCZZNhHO7w=
 github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c/go.mod h1:xRFoP0dYM3dVozL4PyltmTlvkE6iyI+eSCmFGePPEtc=
-github.com/Jleagle/influxql v0.0.0-20190225125524-9b438489f82c h1:XTrm0fmTB87o2V0WPAyvb89cb0YqCxy8fP5GHAK9l80=
-github.com/Jleagle/influxql v0.0.0-20190225125524-9b438489f82c/go.mod h1:PIEhc56S2wVRYCvoplgo7hKwAdw+v4piHIc0q0SB3I0=
+github.com/Jleagle/influxql v0.0.0-20190226190720-512d16697ccd h1:eWQx0Rbt9SvvlygWq901StFQmzC8EAGFCb9XpTM/4S8=
+github.com/Jleagle/influxql v0.0.0-20190226190720-512d16697ccd/go.mod h1:PIEhc56S2wVRYCvoplgo7hKwAdw+v4piHIc0q0SB3I0=
+github.com/Jleagle/influxql v0.0.0-20190226192859-431c80c56b66 h1:1lK8cLT+pxaz4LhVTJQXdnP1YaSkG/2DbJyywBQXLxM=
+github.com/Jleagle/influxql v0.0.0-20190226192859-431c80c56b66/go.mod h1:PIEhc56S2wVRYCvoplgo7hKwAdw+v4piHIc0q0SB3I0=
 github.com/Jleagle/memcache-go v0.0.0-20190218123846-599d3d90b628 h1:trmwRucZqSlKTXAaFMy8/asVJePxfhtxFwAzXNfm2sg=
 github.com/Jleagle/memcache-go v0.0.0-20190218123846-599d3d90b628/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
 github.com/Jleagle/rabbit-go v0.0.0-20190220085424-6afd4589ce23 h1:cRHJjlDorNr6vhbJKKjDcksOPpTowOGIkGRMSEqq+vA=

@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -387,8 +386,6 @@ func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.SetLimit(10)
 	builder.SetFillLinear()
 
-	fmt.Println(builder.String())
-
 	resp, err := db.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r)
@@ -418,7 +415,17 @@ func appAjaxReviewsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := db.InfluxQuery(`SELECT mean("reviews_score") AS "mean_reviews_score", mean("reviews_positive") AS "mean_reviews_positive", mean("reviews_negative") AS "mean_reviews_negative" FROM "GameDB"."alltime"."apps" WHERE time > NOW()-7d AND "app_id"='` + id + `' GROUP BY time(30m) FILL(linear)`)
+	builder := influxql.NewBuilder()
+	builder.AddSelect("mean(reviews_score)", "mean_reviews_score")
+	builder.AddSelect("mean(reviews_positive)", "mean_reviews_positive")
+	builder.AddSelect("mean(reviews_negative)", "mean_reviews_negative")
+	builder.SetFrom("GameDB", "alltime", "apps")
+	builder.AddWhere("time", ">", "NOW()-7d")
+	builder.AddWhere("app_id", "=", id)
+	builder.AddGroupByTime("30m")
+	builder.SetFillLinear()
+
+	resp, err := db.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r)
 		return
