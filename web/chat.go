@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -22,6 +23,7 @@ import (
 const (
 	guildID          = "407493776597057538"
 	generalChannelID = "407493777058693121"
+	sessionKey       = "discord_token"
 )
 
 var (
@@ -29,7 +31,7 @@ var (
 	discordOauthConfig  = &oauth2.Config{
 		ClientID:     config.Config.DiscordClientID,
 		ClientSecret: config.Config.DiscordSescret,
-		Scopes:       []string{"identify", "guilds.join"},
+		Scopes:       []string{"identify", "guilds.join", "guilds"},
 		RedirectURL:  "https://gamedb.online/chat/callback/",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
@@ -38,73 +40,15 @@ var (
 	}
 )
 
-func getDiscord() (*discordgo.Session, error) {
-	return helpers.GetDiscord(discordMessageHandler)
-}
-
-//noinspection GoUnusedParameter
-func discordMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
-
-	if m.Author.Bot {
-		return
-	}
-
-	page, err := websockets.GetPage(websockets.PageChat)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	if page.HasConnections() {
-
-		page.Send(chatWebsocketPayload{
-			AuthorID:     m.Author.ID,
-			AuthorUser:   m.Author.Username,
-			AuthorAvatar: m.Author.Avatar,
-			Content:      m.Content,
-			Channel:      m.ChannelID,
-		})
-	}
-}
-
 func chatRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", chatHandler)
 	r.Get("/login", chatLoginHandler)
 	r.Get("/callback", chatLoginCallbackHandler)
 	r.Get("/{id}", chatHandler)
+	r.Post("/{id}/post", chatPostHandler)
 	r.Get("/{id}/ajax", chatAjaxHandler)
 	return r
-}
-
-func chatLoginHandler(w http.ResponseWriter, r *http.Request) {
-
-	if config.Config.IsLocal() {
-		discordOauthConfig.RedirectURL = config.Config.GameDBDomain.Get() + "/chat/callback/"
-	}
-
-	http.Redirect(w, r, discordOauthConfig.AuthCodeURL("state", oauth2.AccessTypeOnline), 302)
-}
-
-func chatLoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	var code = r.URL.Query().Get("code")
-
-	tok, err := discordOauthConfig.Exchange(discordOauthContext, code)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Error: err, Message: "Something went wrong logging you in.", Code: 400})
-		return
-	}
-
-	b, err := json.Marshal(tok)
-
-	err = session.Write(w, r, "discord_token", string(b))
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Error: err, Message: "Something went wrong logging you in."})
-		return
-	}
-
-	http.Redirect(w, r, "/chat", 302)
 }
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
@@ -136,7 +80,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		operation := func() (err error) {
 
-			discord, err := getDiscord()
+			discord, err := getDiscord(r)
 			if err != nil {
 				return err
 			}
@@ -177,7 +121,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		operation := func() (err error) {
 
-			discord, err := getDiscord()
+			discord, err := getDiscord(r)
 			if err != nil {
 				return err
 			}
@@ -234,7 +178,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	operation := func() (err error) {
 
-		discord, err := getDiscord()
+		discord, err := getDiscord(r)
 		if err != nil {
 			return err
 		}
@@ -280,27 +224,129 @@ type chatWebsocketPayload struct {
 	Channel      string `json:"channel"`
 }
 
-func updateDiscordClient(r *http.Request, d *discordgo.Session) *discordgo.Session {
+func chatLoginHandler(w http.ResponseWriter, r *http.Request) {
 
-	tokenString, err := session.Read(r, "discord_token")
+	if config.Config.IsLocal() {
+		discordOauthConfig.RedirectURL = config.Config.GameDBDomain.Get() + "/chat/callback/"
+	}
+
+	http.Redirect(w, r, discordOauthConfig.AuthCodeURL("state", oauth2.AccessTypeOnline), 302)
+}
+
+func chatLoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	var code = r.URL.Query().Get("code")
+
+	// Get token
+	tok, err := discordOauthConfig.Exchange(discordOauthContext, code)
 	if err != nil {
-		log.Err(err, r)
-		return d
+		returnErrorTemplate(w, r, errorTemplate{Error: err, Message: "Something went wrong logging you in.", Code: 400})
+		return
+	}
+
+	// Add user to guild
+	discord, err := getDiscord(r)
+
+	err = discord.GuildMemberAdd(tok.AccessToken, guildID, "@me", "", []string{}, false, false)
+	if err != nil {
+		log.Err(err)
+		returnErrorTemplate(w, r, errorTemplate{Error: err, Message: "Something went wrong logging you in.", Code: 400})
+		return
+	}
+
+	b, err := json.Marshal(tok)
+
+	err = session.Write(w, r, sessionKey, string(b))
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Error: err, Message: "Something went wrong logging you in."})
+		return
+	}
+
+	http.Redirect(w, r, "/chat", 302)
+}
+
+func chatPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("Posting")
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Err(err)
+	}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("Missing channel ID")
+	}
+
+	discord, err := getDiscordOauth(r)
+	if err != nil {
+		log.Err(err)
+	}
+
+	_, err = discord.ChannelMessageSend(id, r.FormValue("message"))
+	if err != nil {
+		log.Err(err)
+	}
+}
+
+func getDiscord(r *http.Request) (discord *discordgo.Session, err error) {
+
+	return helpers.GetDiscord(discordMessageHandler)
+}
+
+func getDiscordOauth(r *http.Request) (discordDeref discordgo.Session, err error) {
+
+	discord, err := getDiscord(r)
+	if err != nil {
+		return
+	}
+
+	discordDeref = *discord
+
+	// Add oauth2 http client to discord
+	tokenString, err := session.Read(r, sessionKey)
+	if err != nil {
+		return
 	}
 
 	if tokenString != "" {
 
 		var token = new(oauth2.Token)
-
 		err = json.Unmarshal([]byte(tokenString), token)
 		if err != nil {
-			log.Err(err, r)
-			return d
+			return
 		}
 
-		client := discordOauthConfig.Client(discordOauthContext, token)
-		d.Client = client
+		fmt.Println(token)
+
+		discordDeref.Client = discordOauthConfig.Client(discordOauthContext, token)
 	}
 
-	return d
+	return discordDeref, err
+}
+
+//noinspection GoUnusedParameter
+func discordMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+	if m.Author.Bot {
+		return
+	}
+
+	page, err := websockets.GetPage(websockets.PageChat)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	if page.HasConnections() {
+
+		page.Send(chatWebsocketPayload{
+			AuthorID:     m.Author.ID,
+			AuthorUser:   m.Author.Username,
+			AuthorAvatar: m.Author.Avatar,
+			Content:      m.Content,
+			Channel:      m.ChannelID,
+		})
+	}
 }

@@ -360,16 +360,16 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 		t.userCountry = session.GetCountryCode(r)
 	}
 
+	// Currency
 	locale, err := helpers.GetLocaleFromCountry(t.userCountry)
 	log.Err(err, r)
 
 	t.userCurrencySymbol = locale.CurrencySymbol
 
+	// Discord
 	discord, err := session.Read(r, "discord_token")
-	if err != nil {
-		log.Err(err, r)
-		t.loggedIntoDiscord = discord != ""
-	}
+	log.Err(err, r)
+	t.loggedIntoDiscord = discord != ""
 
 	// Flashes
 	t.flashesGood, err = session.GetGoodFlashes(w, r)
