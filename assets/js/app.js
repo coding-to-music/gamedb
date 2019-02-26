@@ -225,7 +225,7 @@ if ($appPage.length > 0) {
 
                 Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
                     chart: {
-                        type: 'line'
+                        type: 'area'
                     },
                     title: {
                         text: ''
@@ -309,15 +309,15 @@ if ($appPage.length > 0) {
                     series: [
                         {
                             color: '#28a745',
-                            data: data['reviews_score']
+                            data: data['mean_reviews_negative']
                         },
                         {
                             color: '#28a745',
-                            data: data['reviews_positive']
+                            data: data['mean_reviews_positive']
                         },
                         {
                             color: '#28a745',
-                            data: data['reviews_negative']
+                            data: data['mean_reviews_score']
                         }],
                 }));
 

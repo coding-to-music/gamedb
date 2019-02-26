@@ -160,10 +160,48 @@ if ($playerPage.length > 0) {
                             return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
                         },
                     },
-                    series: [{
-                        color: '#28a745',
-                        data: data['mean_player_count']
-                    }],
+                    series: [
+                        {
+                            color: '#28a745',
+                            data: data['mean_level']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_games']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_badges']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_playtime']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_friends']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_level_rank']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_games_rank']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_badges_rank']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_playtime_rank']
+                        },
+                        {
+                            color: '#28a745',
+                            data: data['mean_friends_rank']
+                        }
+                    ],
                 }));
 
             },

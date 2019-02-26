@@ -378,12 +378,11 @@ func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("mean(player_count)", "mpc")
+	builder.AddSelect("mean(player_count)", "mean_player_count")
 	builder.SetFrom("GameDB", "alltime", "apps")
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhere("app_id", "=", id)
 	builder.AddGroupByTime("30m")
-	builder.SetLimit(10)
 	builder.SetFillLinear()
 
 	resp, err := db.InfluxQuery(builder.String())

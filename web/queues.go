@@ -43,7 +43,7 @@ func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
 	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
-		builder.AddSelect(`sum("messages")`, "messages")
+		builder.AddSelect(`sum("messages")`, "sum_messages")
 		builder.SetFrom("Telegraf", "14d", "rabbitmq_queue")
 		builder.AddWhere("time", ">=", "now() - 1h")
 		builder.AddWhereRaw(`("queue"='GameDB_Go_Apps' OR "queue"='GameDB_Go_Packages' OR "queue"='GameDB_Go_Profiles')`)

@@ -32,7 +32,7 @@ if ($('#queues-page').length > 0) {
             success: function (data, textStatus, jqXHR) {
 
                 $.each(charts, function (index, value) {
-                    value.series[0].setData(data[index][0]);
+                    value.series[0].setData(data[index]['sum_messages']);
                 });
 
             },
