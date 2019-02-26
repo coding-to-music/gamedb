@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
@@ -485,24 +486,44 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := db.InfluxQuery(`SELECT mean("level") as "mean_level", mean("games") as "mean_games", mean("badges") as "mean_badges", mean("playtime") as "mean_playtime", mean("friends") as "mean_friends", mean("level_rank") as "mean_level_rank", mean("games_rank") as "mean_games_rank", mean("badges_rank") as "mean_badges_rank", mean("playtime_rank") as "mean_playtime_rank", mean("friends_rank") as "mean_friends_rank" FROM "GameDB"."alltime"."players" WHERE time > NOW()-7d AND "player_id"='` + id + `' GROUP BY time(1d) FILL(previous)`)
+	builder := influxql.NewBuilder()
+	builder.AddSelect(`mean("level")`, "mean_level")
+	builder.AddSelect(`mean("games")`, "mean_games")
+	builder.AddSelect(`mean("badges")`, "mean_badges")
+	builder.AddSelect(`mean("playtime")`, "mean_playtime")
+	builder.AddSelect(`mean("friends")`, "mean_friends")
+	builder.AddSelect(`mean("level_rank")`, "mean_level_rank")
+	builder.AddSelect(`mean("games_rank")`, "mean_games_rank")
+	builder.AddSelect(`mean("badges_rank")`, "mean_badges_rank")
+	builder.AddSelect(`mean("playtime_rank")`, "mean_playtime_rank")
+	builder.AddSelect(`mean("friends_rank")`, "mean_friends_rank")
+	builder.SetFrom("GameDB", "alltime", "players")
+	builder.AddWhere("time", ">", "NOW() - 7d")
+	builder.AddWhere("player_id", "=", id)
+	builder.AddGroupByTime("1d")
+	builder.SetFillPrevious()
+
+	resp, err := db.InfluxQuery(builder.String())
 	if err != nil {
-		log.Err(err, r)
+		log.Err(err, r, builder.String())
 		return
 	}
 
-	hc := db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-	b, err := json.Marshal(hc)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
+		hc := db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 
-	err = returnJSON(w, r, b)
-	if err != nil {
-		log.Err(err, r)
-		return
+		b, err := json.Marshal(hc)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		err = returnJSON(w, r, b)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
 	}
 }
 
