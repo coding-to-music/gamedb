@@ -56,21 +56,21 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Backup
 		err = session.WriteMany(w, r, map[string]string{
-			"login-name":    r.PostForm.Get("name"),
-			"login-email":   r.PostForm.Get("email"),
-			"login-message": r.PostForm.Get("message"),
+			"contact-name":    r.PostForm.Get("name"),
+			"contact-email":   r.PostForm.Get("email"),
+			"contact-message": r.PostForm.Get("message"),
 		})
 		log.Err(err, r)
 
 		// Form validation
 		if r.PostForm.Get("name") == "" {
-			return errors.New("please fill in your name")
+			return errors.New("Please fill in your name")
 		}
 		if r.PostForm.Get("email") == "" {
-			return errors.New("please fill in your email")
+			return errors.New("Please fill in your email")
 		}
 		if r.PostForm.Get("message") == "" {
-			return errors.New("please fill in a message")
+			return errors.New("Please fill in a message")
 		}
 
 		// Recaptcha
@@ -103,9 +103,9 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Remove backup
 		err = session.WriteMany(w, r, map[string]string{
-			"login-name":    "",
-			"login-email":   "",
-			"login-message": "",
+			"contact-name":    "",
+			"contact-email":   "",
+			"contact-message": "",
 		})
 		log.Err(err, r)
 

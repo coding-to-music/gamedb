@@ -162,11 +162,11 @@ func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
-	w.Header().Set("X-Content-Type-Options", "nosniff")                          // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")                          // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")                              // Protection from clickjacking
-	w.Header().Set("Content-Type", "text/html")                                  //
-	w.Header().Set("Language", string(session.GetCountryCode(r)))                // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
+	w.Header().Set("Content-Type", "text/html")                   //
+	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
 
 	w.WriteHeader(200)
 
@@ -300,6 +300,8 @@ type GlobalTemplate struct {
 	//
 	toasts            []Toast
 	loggedIntoDiscord bool
+	contactPage       map[string]string
+	loginPage         map[string]string
 
 	//
 	request *http.Request // Internal
@@ -377,9 +379,27 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.flashesBad, err = session.GetBadFlashes(w, r)
 	log.Err(err, r)
 
-	// All session data
-	t.session, err = session.ReadAll(r)
-	log.Err(err, r)
+	// Contact page
+	contactName, err := session.Read(r, "contact-name")
+	log.Err(err)
+	contactEmail, err := session.Read(r, "contact-email")
+	log.Err(err)
+	contactMessage, err := session.Read(r, "contact-message")
+	log.Err(err)
+
+	t.contactPage = map[string]string{
+		"name":    contactName,
+		"email":   contactEmail,
+		"message": contactMessage,
+	}
+
+	// Login page
+	loginEmail, err := session.Read(r, "login-email")
+	log.Err(err)
+
+	t.loginPage = map[string]string{
+		"email": loginEmail,
+	}
 }
 
 func (t GlobalTemplate) GetUserJSON() string {
@@ -398,8 +418,9 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"flashesGood":       t.flashesGood,
 		"flashesBad":        t.flashesBad,
 		"toasts":            t.toasts,
-		"session":           t.session, // todo, remove, and uses
 		"loggedIntoDiscord": t.loggedIntoDiscord,
+		"contactPage":       t.contactPage,
+		"loginPage":         t.loginPage,
 	}
 
 	b, err := json.Marshal(stringMap)

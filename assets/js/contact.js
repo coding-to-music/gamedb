@@ -4,12 +4,11 @@ if ($('#contact-page').length > 0) {
     const $email = $('#email');
     const $message = $('#message');
 
-    $name.val(user.session['login-name']);
-    $email.val(user.session['login-email']);
-    $message.val(user.session['login-message']);
+    $name.val(user.contactPage['name']);
+    $email.val(user.contactPage['email']);
+    $message.val(user.contactPage['message']);
 
     if (!$email.val()) {
         $email.val(user.userEmail);
     }
-
 }
