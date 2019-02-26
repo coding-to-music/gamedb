@@ -1,8 +1,10 @@
 package web
 
 import (
+	"html/template"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -17,7 +19,7 @@ var addMutex sync.Mutex
 func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := steamAPITemplate{}
-	t.Fill(w, r, "Steam API", "All the known Steam web APIs")
+	t.Fill(w, r, "Steam API", "")
 	t.Interfaces = make(Interfaces)
 
 	steamResp, _, err := helpers.GetSteam().GetSupportedAPIList()
@@ -72,6 +74,18 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
+	for _, v := range t.Interfaces {
+		for _, vv := range v {
+			for _, vvv := range vv {
+				for range vvv {
+					t.Count++
+				}
+			}
+		}
+	}
+
+	t.Description = template.HTML(strconv.Itoa(t.Count)) + " of the known Steam web API endpoints."
+
 	err = returnTemplate(w, r, "steam_api", t)
 	log.Err(err, r)
 }
@@ -79,6 +93,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 type steamAPITemplate struct {
 	GlobalTemplate
 	Interfaces Interfaces
+	Count      int
 }
 
 type Interfaces map[string]Interface
