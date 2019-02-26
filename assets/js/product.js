@@ -127,6 +127,6 @@ if ($priceChart.length > 0 && prices) {
             }]
         });
 
-        upateChart(user.country);
+        upateChart(user.userCountry);
     }
 }

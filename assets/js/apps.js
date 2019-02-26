@@ -1,6 +1,6 @@
 if ($('#apps-page').length > 0) {
 
-    $('#user-currency-symbol').append(' ' + user.currencySymbol);
+    $('#user-currency-symbol').append(' ' + user.userCurrencySymbol);
 
     const $chosens = $('select.form-control-chosen');
     const $table = $('table.table-datatable2');
@@ -97,9 +97,9 @@ if ($('#apps-page').length > 0) {
         const scores = scoreSlider.get();
 
         if (prices[0] === prices[1]) {
-            $('label#price-label').html('Price (' + user.currencySymbol + Math.round(prices[0]) + ')');
+            $('label#price-label').html('Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ')');
         } else {
-            $('label#price-label').html('Price (' + user.currencySymbol + Math.round(prices[0]) + ' - ' + user.currencySymbol + Math.round(prices[1]) + ')');
+            $('label#price-label').html('Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ' - ' + user.userCurrencySymbol + Math.round(prices[1]) + ')');
         }
 
         if (scores[0] === scores[1]) {

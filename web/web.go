@@ -333,21 +333,6 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.userName, err = session.Read(r, session.PlayerName)
 	log.Err(err, r)
 
-	// Email
-	t.userEmail, err = session.Read(r, session.UserEmail)
-	log.Err(err, r)
-
-	// Level
-	level, err := session.Read(r, session.PlayerLevel)
-	log.Err(err, r)
-
-	if level == "" {
-		t.userLevel = 0
-	} else {
-		t.userLevel, err = strconv.Atoi(level)
-		log.Err(err, r)
-	}
-
 	// Country
 	t.userCountry = steam.CountryCode(r.URL.Query().Get("cc"))
 
@@ -367,11 +352,6 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 
 	t.userCurrencySymbol = locale.CurrencySymbol
 
-	// Discord
-	discord, err := session.Read(r, "discord_token")
-	log.Err(err, r)
-	t.loggedIntoDiscord = discord != ""
-
 	// Flashes
 	t.flashesGood, err = session.GetGoodFlashes(w, r)
 	log.Err(err, r)
@@ -379,48 +359,76 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	t.flashesBad, err = session.GetBadFlashes(w, r)
 	log.Err(err, r)
 
-	// Contact page
-	contactName, err := session.Read(r, "contact-name")
-	log.Err(err)
-	contactEmail, err := session.Read(r, "contact-email")
-	log.Err(err)
-	contactMessage, err := session.Read(r, "contact-message")
-	log.Err(err)
+	// Pages
+	switch t.Path {
+	case "/contact":
 
-	t.contactPage = map[string]string{
-		"name":    contactName,
-		"email":   contactEmail,
-		"message": contactMessage,
-	}
+		// Details from form
+		contactName, err := session.Read(r, "contact-name")
+		log.Err(err)
+		contactEmail, err := session.Read(r, "contact-email")
+		log.Err(err)
+		contactMessage, err := session.Read(r, "contact-message")
+		log.Err(err)
 
-	// Login page
-	loginEmail, err := session.Read(r, "login-email")
-	log.Err(err)
+		t.contactPage = map[string]string{
+			"name":    contactName,
+			"email":   contactEmail,
+			"message": contactMessage,
+		}
 
-	t.loginPage = map[string]string{
-		"email": loginEmail,
+		// Email from logged in user
+		t.userEmail, err = session.Read(r, session.UserEmail)
+		log.Err(err, r)
+
+	case "/login":
+
+		loginEmail, err := session.Read(r, "login-email")
+		log.Err(err)
+
+		t.loginPage = map[string]string{
+			"email": loginEmail,
+		}
+
+	case "/chat":
+
+		discord, err := session.Read(r, "discord_token")
+		log.Err(err, r)
+		t.loggedIntoDiscord = discord != ""
+
+	case "/experience":
+
+		level, err := session.Read(r, session.PlayerLevel)
+		log.Err(err, r)
+
+		if level == "" {
+			t.userLevel = 0
+		} else {
+			t.userLevel, err = strconv.Atoi(level)
+			log.Err(err, r)
+		}
 	}
 }
 
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
-		"userID":            strconv.Itoa(t.userID), // Too long for JS int
-		"userLevel":         t.userLevel,
-		"userName":          t.userName,
-		"userEmail":         t.userEmail,
-		"isLoggedIn":        t.isLoggedIn(),
-		"isLocal":           t.isLocal(),
-		"isAdmin":           t.isAdmin(),
-		"showAds":           t.showAds(),
-		"country":           t.userCountry,
-		"currencySymbol":    t.userCurrencySymbol,
-		"flashesGood":       t.flashesGood,
-		"flashesBad":        t.flashesBad,
-		"toasts":            t.toasts,
-		"loggedIntoDiscord": t.loggedIntoDiscord,
-		"contactPage":       t.contactPage,
-		"loginPage":         t.loginPage,
+		"userID":             strconv.Itoa(t.userID), // Too long for JS int
+		"userLevel":          t.userLevel,
+		"userName":           t.userName,
+		"userEmail":          t.userEmail,
+		"isLoggedIn":         t.isLoggedIn(),
+		"isLocal":            t.isLocal(),
+		"isAdmin":            t.isAdmin(),
+		"showAds":            t.showAds(),
+		"userCountry":        t.userCountry,
+		"userCurrencySymbol": t.userCurrencySymbol,
+		"flashesGood":        t.flashesGood,
+		"flashesBad":         t.flashesBad,
+		"toasts":             t.toasts,
+		"loggedIntoDiscord":  t.loggedIntoDiscord,
+		"contactPage":        t.contactPage,
+		"loginPage":          t.loginPage,
 	}
 
 	b, err := json.Marshal(stringMap)

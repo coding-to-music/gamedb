@@ -205,7 +205,7 @@ if (isIterable(user.toasts)) {
 }
 
 // Flag
-const flag = $('<img src="/assets/img/flags/' + user.country.toLowerCase() + '.png" alt="' + user.country + '">');
+const flag = $('<img src="/assets/img/flags/' + user.userCountry.toLowerCase() + '.png" alt="' + user.userCountry + '">');
 if (user.isLoggedIn) {
     $('#header-flag').html(flag);
 } else {
