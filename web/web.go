@@ -167,7 +167,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")                              // Protection from clickjacking
 	w.Header().Set("Content-Type", "text/html")                                  //
 	w.Header().Set("Language", string(session.GetCountryCode(r)))                // Used for varnish hash
-	w.Header().Set("Content-Security-Policy", string(session.GetCountryCode(r))) // Used for varnish hash
 
 	w.WriteHeader(200)
 
