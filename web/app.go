@@ -383,7 +383,7 @@ func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhere("app_id", "=", id)
 	builder.AddGroupByTime("30m")
-	builder.SetFillLinear()
+	builder.SetFillNone()
 
 	resp, err := db.InfluxQuery(builder.String())
 	if err != nil {
@@ -425,7 +425,7 @@ func appAjaxReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhere("app_id", "=", id)
 	builder.AddGroupByTime("30m")
-	builder.SetFillLinear()
+	builder.SetFillNone()
 
 	resp, err := db.InfluxQuery(builder.String())
 	if err != nil {
