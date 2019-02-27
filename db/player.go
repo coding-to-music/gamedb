@@ -426,7 +426,7 @@ func GetAllBrokenPlayers() (brokenPlayers []int64) {
 	}
 
 	var players []Player
-	allKeys, err := client.GetAll(ctx, datastore.NewQuery(KindPlayer).Limit(500).KeysOnly(), &players)
+	allKeys, err := client.GetAll(ctx, datastore.NewQuery(KindPlayer).KeysOnly(), &players)
 	if err != nil {
 		log.Err(err)
 		return
