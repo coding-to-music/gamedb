@@ -97,7 +97,6 @@ if ($('#stats-page').length > 0) {
                         point: {
                             events: {
                                 click: function () {
-                                    console.log(this);
                                     window.location.href = '/apps?types=' + (this.name.toLowerCase());
                                 }
                             }

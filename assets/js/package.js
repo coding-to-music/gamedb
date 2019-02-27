@@ -8,8 +8,6 @@ if ($packagePage.length > 0) {
         const to = $(e.target);
         const from = $(e.relatedTarget);
 
-        console.log(to.attr('href'));
-
         // On entering tab
         if (to.attr('href') === '#prices') {
             if (!to.attr('loaded')) {

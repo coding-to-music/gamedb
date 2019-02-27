@@ -171,8 +171,6 @@ if ($appPage.length > 0) {
     // News data table
     function loadNews() {
 
-        console.log('news loading');
-
         $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
