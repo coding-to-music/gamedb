@@ -44,6 +44,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminQueueEveryApp()
 	case "refresh-all-packages":
 		go adminQueueEveryPackage()
+	case "refresh-all-players":
+		go adminQueueEveryPlayer()
 	case "refresh-genres":
 		go CronGenres()
 	case "refresh-tags":
@@ -238,6 +240,22 @@ func adminQueueEveryPackage() {
 	page.Send(adminWebsocket{db.ConfAddedAllPackages + " complete"})
 
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
+}
+
+func adminQueueEveryPlayer() {
+
+	_, keys, err := db.GetAllPlayers("", 0, true)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	for _, v := range keys {
+		i, err := strconv.ParseInt(v.Name, 10, 64)
+		log.Err(err)
+		err = queue.ProducePlayer(i)
+		log.Err(err)
+	}
 }
 
 func CronDonations() {
@@ -968,15 +986,15 @@ func CronRanks() {
 
 			defer wg.Done()
 
-			players, err = db.GetAllPlayers(column, db.PlayersToRank)
+			players, _, err = db.GetAllPlayers(column, db.PlayersToRank, false)
 			if err != nil {
 				cronLogErr(err)
 				return
 			}
 
-			for _, v := range players {
-				newRanks[v.PlayerID] = db.NewRankFromPlayer(v)
-				delete(oldKeys, v.PlayerID)
+			for _, player := range players {
+				newRanks[player.PlayerID] = db.NewRankFromPlayer(player)
+				delete(oldKeys, player.PlayerID)
 			}
 
 		}(v)
