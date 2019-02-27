@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/queue"
 	"github.com/go-chi/chi"
 )
 
@@ -64,6 +65,24 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 		t.Apps, err = db.GetAppsByID(appIDs, []string{})
 		log.Err(err, r)
+
+		// Queue missing apps
+		if len(appIDs) != len(t.Apps) {
+			for _, v := range appIDs {
+				var found = false
+				for _, vv := range t.Apps {
+					if v == vv.ID {
+						found = true
+						break
+					}
+				}
+
+				if !found {
+					err = queue.ProduceApp(v)
+					log.Err()
+				}
+			}
+		}
 
 	}(bundle)
 
