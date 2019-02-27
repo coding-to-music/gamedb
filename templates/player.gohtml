@@ -1,6 +1,6 @@
 {{define "player"}} {{ template "_header" . }}
 
-<div class="container" id="player-page" data-id="{{ .Player.PlayerID }}">
+<div class="container" id="player-page" data-id="{{ .Player.PlayerID }}" data-path="{{ .Player.GetPath }}">
 
     <div class="jumbotron">
 

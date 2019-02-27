@@ -54,12 +54,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redirect to correct slug
-	if r.URL.Path != player.GetPath() {
-		http.Redirect(w, r, player.GetPath(), 302)
-		return
-	}
-
 	// Queue profile for a refresh
 	if player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto) {
 		err = queue.ProducePlayer(player.PlayerID)

@@ -1,6 +1,6 @@
 {{define "bundle"}} {{ template "_header" . }}
 
-<div class="container" id="bundle-page">
+<div class="container" id="bundle-page" data-path="{{ .Bundle.GetPath }}">
 
     <div class="jumbotron">
         <h1><i class="fas fa-cubes"></i> {{ .Bundle.Name }}</h1>

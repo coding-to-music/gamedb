@@ -37,12 +37,6 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redirect to correct slug
-	if r.URL.Path != pack.GetPath() {
-		http.Redirect(w, r, pack.GetPath(), 302)
-		return
-	}
-
 	//
 	var wg sync.WaitGroup
 

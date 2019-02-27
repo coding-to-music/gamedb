@@ -247,3 +247,11 @@ if (isIterable(user.flashesBad)) {
         $flashesBad.removeClass('d-none');
     }
 }
+
+// Fix URLs
+$(document).ready(function () {
+    const path = $('#app-page, #package-page, #player-page, #bundle-page').attr('data-path');
+    if (path !== '' && path !== window.location.pathname) {
+        history.replaceState(null, null, path);
+    }
+});

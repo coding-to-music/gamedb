@@ -50,12 +50,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redirect to correct slug
-	if r.URL.Path != app.GetPath() {
-		http.Redirect(w, r, app.GetPath(), 302)
-		return
-	}
-
 	// Template
 	t := appTemplate{}
 	t.Fill(w, r, app.GetName(), "")

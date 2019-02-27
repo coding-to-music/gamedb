@@ -42,12 +42,6 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redirect to correct slug
-	if r.URL.Path != bundle.GetPath() {
-		http.Redirect(w, r, bundle.GetPath(), 302)
-		return
-	}
-
 	// Template
 	t := bundleTemplate{}
 	t.Fill(w, r, bundle.Name, "")

@@ -1,6 +1,6 @@
 {{define "app"}} {{ template "_header" . }}
 
-<div class="container" id="app-page" data-bg="{{ .App.Background }}" data-id="{{ .App.ID }}">
+<div class="container" id="app-page" data-bg="{{ .App.Background }}" data-id="{{ .App.ID }}" data-path="{{ .App.GetPath }}">
 
     <div class="jumbotron">
 
