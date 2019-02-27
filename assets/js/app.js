@@ -246,7 +246,8 @@ if ($appPage.length > 0) {
                         allowDecimals: false,
                         title: {
                             text: ''
-                        }
+                        },
+                        min: 0
                     },
                     legend: {
                         enabled: false
@@ -282,11 +283,17 @@ if ($appPage.length > 0) {
                             min: 0,
                             max: 100,
                             endOnTick: false,
+                            labels: {
+                                formatter: function () {
+                                    return this.value + '%';
+                                }
+                            }
                         },
                         {
                             allowDecimals: false,
                             title: {text: ''},
                             opposite: true,
+                            min: 0,
                         }
                     ],
                     legend: {
