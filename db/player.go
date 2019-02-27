@@ -19,10 +19,6 @@ const defaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
-
-	// ErrUpdatingPlayerTooSoon = errors.New("updating too soon")
-	// ErrUpdatingPlayerBot     = errors.New("bots can't update")
-	// ErrUpdatingPlayerInQueue = errors.New("player is already in the queue")
 )
 
 type Player struct {
@@ -385,13 +381,8 @@ func GetPlayer(id int64) (ret Player, err error) {
 	player.PlayerID = id
 
 	err = client.Get(ctx, key, &player)
-
-	err = checkForMissingPlayerFields(err)
-	if err != nil {
-		return player, err
-	}
-
-	return player, nil
+	err = handleDSSingleError(err, oldPlayerFields)
+	return player, err
 }
 
 func GetPlayerByName(name string) (player Player, err error) {
@@ -408,70 +399,47 @@ func GetPlayerByName(name string) (player Player, err error) {
 	var players []Player
 
 	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("vanity_url =", name).Limit(1), &players)
-	err = checkForMissingPlayerFields(err)
-	if err != nil {
-		return player, err
+	if err != nil && len(players) > 0 {
+		return players[0], err
 	}
 
-	if len(players) == 0 {
-
-		_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("persona_name =", name).Limit(1), &players)
-		err = checkForMissingPlayerFields(err)
-		if err != nil {
-			return player, err
-		}
+	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("persona_name =", name).Limit(1), &players)
+	if err != nil && len(players) > 0 {
+		return players[0], err
 	}
 
-	// Return the first one
-	if len(players) > 0 {
-		return players[0], nil
+	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("settings_email =", name).Limit(1), &players)
+	if err != nil && len(players) > 0 {
+		return players[0], err
 	}
 
 	return player, datastore.ErrNoSuchEntity
 }
 
-func GetPlayersByEmail(email string) (ret []Player, err error) {
+func GetAllPlayers(order string, limit int, keysOnly bool) (players []Player, keys []*datastore.Key, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
-		return ret, err
+		return players, keys, err
 	}
 
-	q := datastore.NewQuery(KindPlayer).Filter("settings_email =", email).Limit(1)
+	q := datastore.NewQuery(KindPlayer)
 
-	var players []Player
-
-	_, err = client.GetAll(ctx, q, &players)
-
-	err = checkForMissingPlayerFields(err)
-	if err != nil {
-		return ret, err
+	if keysOnly {
+		q = q.KeysOnly()
 	}
 
-	if len(players) == 0 {
-		return ret, datastore.ErrNoSuchEntity
+	if order != "" {
+		q = q.Order(order)
 	}
-
-	return players, nil
-}
-
-func GetAllPlayers(order string, limit int) (players []Player, err error) {
-
-	client, ctx, err := GetDSClient()
-	if err != nil {
-		return players, err
-	}
-
-	q := datastore.NewQuery(KindPlayer).Order(order)
 
 	if limit > 0 {
 		q = q.Limit(limit)
 	}
 
-	_, err = client.GetAll(ctx, q, &players)
-
-	err = checkForMissingPlayerFields(err)
-	return players, err
+	keys, err = client.GetAll(ctx, q, &players)
+	err = handleDSMultiError(err, oldPlayerFields)
+	return players, keys, err
 }
 
 func GetPlayersByIDs(ids []int64) (players []Player, err error) {
@@ -496,49 +464,15 @@ func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 		playersChunk := make([]Player, len(chunk))
 
 		err = client.GetMulti(ctx, chunk, playersChunk)
-
-		players = append(players, playersChunk...)
-
-		if checkGetMultiPlayerErrors(err) != nil {
+		err = handleDSMultiError(err, oldPlayerFields)
+		if err != nil {
 			return players, err
 		}
+
+		players = append(players, playersChunk...)
 	}
 
 	return players, nil
-}
-
-func checkGetMultiPlayerErrors(err error) error {
-
-	if err != nil {
-
-		if multiErr, ok := err.(datastore.MultiError); ok {
-
-			for _, v := range multiErr {
-				err2 := checkGetMultiPlayerErrors(v)
-				if err2 != nil {
-					return err2
-				}
-			}
-
-		} else if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
-
-			err3 := checkForMissingPlayerFields(err2)
-			if err3 != nil {
-				return err3
-			}
-
-		} else if err.Error() == datastore.ErrNoSuchEntity.Error() {
-
-			return nil
-
-		} else {
-
-			return err
-
-		}
-	}
-
-	return nil
 }
 
 func CountPlayers() (count int, err error) {
@@ -560,30 +494,6 @@ func CountPlayers() (count int, err error) {
 	})
 
 	return count, err
-}
-
-func checkForMissingPlayerFields(err error) error {
-
-	if err == nil {
-		return nil
-	}
-
-	if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
-
-		removedColumns := []string{
-			"settings_email",
-			"settings_password",
-			"settings_alerts",
-			"settings_hidden",
-			"games",
-		}
-
-		if helpers.SliceHasString(removedColumns, err2.FieldName) {
-			return nil
-		}
-	}
-
-	return err
 }
 
 // PlayerAppStatsTemplate

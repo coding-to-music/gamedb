@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"

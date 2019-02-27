@@ -10,6 +10,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 )
 
@@ -190,6 +191,57 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 		if len(errs) > 0 {
 			return errs[0]
 		}
+	}
+
+	return nil
+}
+
+var (
+	oldPlayerFields = []string{"settings_email", "settings_password", "settings_alerts", "settings_hidden", "games",}
+)
+
+func handleDSSingleError(err error, oldFields []string) error {
+
+	if err == nil {
+		return nil
+	}
+
+	if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+
+		if helpers.SliceHasString(oldFields, err2.FieldName) {
+			return nil
+		}
+	}
+
+	return err
+}
+
+func handleDSMultiError(err error, oldFields []string) error {
+
+	if err == nil {
+		return nil
+	}
+
+	if multiErr, ok := err.(datastore.MultiError); ok {
+
+		for _, v := range multiErr {
+			err2 := handleDSMultiError(v, oldFields)
+			if err2 != nil {
+				return err2
+			}
+		}
+
+	} else if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
+
+		err3 := handleDSSingleError(err2, oldFields)
+		if err3 != nil {
+			return err3
+		}
+
+	} else if err == datastore.ErrNoSuchEntity {
+		return nil
+	}else{
+		return err
 	}
 
 	return nil
