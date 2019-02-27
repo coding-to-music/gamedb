@@ -263,6 +263,17 @@ type appTemplate struct {
 	Tags         []db.Tag
 }
 
+func (t appTemplate) GetReleaseDate() string {
+	nice := t.App.GetReleaseDateNice()
+	state := t.App.GetReleaseState()
+
+	if nice != "" {
+		state = " (" + state + ")"
+	}
+
+	return nice + state
+}
+
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")

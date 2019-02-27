@@ -119,8 +119,8 @@
                             <td>{{ .App.GetType }}</td>
                         </tr>
                         <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">Release State</th>
-                            <td>{{ .App.GetReleaseDateNice }} ({{ .App.GetReleaseState }})</td>
+                            <th scope="row" nowrap="nowrap" width="1%">Release Date</th>
+                            <td>{{ .GetReleaseDate }}</td>
                         </tr>
                         {{ if gt (len .App.GetPlatforms) 0 }}
                             <tr>
