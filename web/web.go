@@ -500,7 +500,7 @@ func (t GlobalTemplate) isLoggedIn() bool {
 }
 
 func (t GlobalTemplate) isLocal() bool {
-	return t.Env == string(log.EnvLocal)
+	return t.Env == string(config.EnvLocal)
 }
 
 func (t GlobalTemplate) isAdmin() bool {

@@ -106,11 +106,11 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 	})
 
 	if len(resp.Results) == 0 {
-		log.Warning(log.EnvLocal, "No results returned")
+		log.Warning(log.ServiceLocal, "No results returned")
 	}
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) == 0 {
-		log.Warning(log.EnvLocal, "No series returned")
+		log.Warning(log.ServiceLocal, "No series returned")
 	}
 
 	return resp, err

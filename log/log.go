@@ -18,10 +18,6 @@ import (
 
 //noinspection GoUnusedConst
 const (
-	// Environments
-	EnvProd  Environment = config.EnvProd
-	EnvLocal Environment = config.EnvLocal
-
 	// Log names
 	LogNameConsumers LogName = "consumers"
 	LogNameCron      LogName = "crons"
@@ -47,7 +43,6 @@ const (
 )
 
 type LogName string
-type Environment string
 type Service string
 type Option int
 type Severity string
@@ -71,13 +66,12 @@ func (s Severity) toGoole() (severity logging.Severity) {
 }
 
 type entry struct {
-	request     *http.Request
-	text        string
-	error       string
-	logName     LogName
-	severity    Severity
-	timestamp   time.Time
-	environment Environment
+	request   *http.Request
+	text      string
+	error     string
+	logName   LogName
+	severity  Severity
+	timestamp time.Time
 }
 
 func (e entry) toText(includeStack bool) string {
@@ -156,8 +150,6 @@ func log(interfaces ...interface{}) {
 			entry.logName = val
 		case Severity:
 			entry.severity = val
-		case Environment:
-			entry.environment = val
 		case time.Time:
 			entry.timestamp = val
 		case Service:
@@ -169,10 +161,6 @@ func log(interfaces ...interface{}) {
 	}
 
 	if entry.text == "" && entry.error == "" {
-		return
-	}
-
-	if entry.environment != "" && string(entry.environment) != config.Config.Environment.Get() {
 		return
 	}
 
