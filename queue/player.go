@@ -76,14 +76,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Update player
-	player, err := db.GetPlayer(id64)
-	err = helpers.IgnoreErrors(err, datastore.ErrNoSuchEntity)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
+	player := db.Player{}
 	player.PlayerID = id64
 	player.RealName = message.PICSProfileInfo.RealName
 	player.StateCode = message.PICSProfileInfo.StateName
@@ -146,13 +139,6 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	err = db.CreateEvent(new(http.Request), player.PlayerID, db.EventRefresh)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
 	err = player.Save()
 	if err != nil {
 		logError(err, message.ID)
@@ -160,8 +146,14 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// Save to InfluxDB
 	err = savePlayerToInflux(player)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
+	err = db.CreateEvent(new(http.Request), player.PlayerID, db.EventRefresh)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
