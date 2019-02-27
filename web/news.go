@@ -7,7 +7,15 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/go-chi/chi"
 )
+
+func newsRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", newsHandler)
+	r.Get("/ajax", newsAjaxHandler)
+	return r
+}
 
 func newsHandler(w http.ResponseWriter, r *http.Request) {
 
