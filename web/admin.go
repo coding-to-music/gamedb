@@ -44,8 +44,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminQueueEveryApp()
 	case "refresh-all-packages":
 		go adminQueueEveryPackage()
-	case "refresh-all-players":
-		go adminQueueEveryPlayer()
+	case "fix-all-broken-players":
+		go fixAllBrokenPlayers()
 	case "refresh-genres":
 		go CronGenres()
 	case "refresh-tags":
@@ -242,18 +242,14 @@ func adminQueueEveryPackage() {
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
 }
 
-func adminQueueEveryPlayer() {
+func fixAllBrokenPlayers() {
 
-	_, keys, err := db.GetAllPlayers("", 0, true)
-	if err != nil {
-		log.Err(err)
-		return
-	}
+	ids := db.GetAllBrokenPlayers()
 
-	for _, v := range keys {
-		i, err := strconv.ParseInt(v.Name, 10, 64)
-		log.Err(err)
-		err = queue.ProducePlayer(i)
+	fmt.Println(len(ids))
+
+	for _, v := range ids {
+		err := queue.ProducePlayer(v)
 		log.Err(err)
 	}
 }

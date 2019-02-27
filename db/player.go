@@ -11,6 +11,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gosimple/slug"
 )
 
@@ -414,6 +415,45 @@ func GetPlayerByName(name string) (player Player, err error) {
 	}
 
 	return player, datastore.ErrNoSuchEntity
+}
+
+func GetAllBrokenPlayers() (brokenPlayers []int64) {
+
+	client, ctx, err := GetDSClient()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var players []Player
+	allKeys, err := client.GetAll(ctx, datastore.NewQuery(KindPlayer).Limit(500).KeysOnly(), &players)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	keyChunks := chunkKeys(allKeys)
+	for _, chunk := range keyChunks {
+
+		players := make([]Player, len(chunk))
+		err = client.GetMulti(ctx, chunk, players)
+
+		if multiErr, ok := err.(datastore.MultiError); ok {
+
+			for k, v := range multiErr {
+
+				if v != nil {
+
+					i, err := strconv.ParseInt(chunk[k].Name, 10, 64)
+					log.Err(err)
+
+					brokenPlayers = append(brokenPlayers, i)
+				}
+			}
+		}
+	}
+
+	return brokenPlayers
 }
 
 func GetAllPlayers(order string, limit int, keysOnly bool) (players []Player, keys []*datastore.Key, err error) {
