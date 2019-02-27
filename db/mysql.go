@@ -90,7 +90,7 @@ type mySQLLogger struct {
 }
 
 func (logger mySQLLogger) Print(v ...interface{}) {
-	log.Debug(append(v, log.LogNameSQL, log.EnvProd)...)
+	log.Debug(append(v, log.LogNameSQL, log.ServiceGoogle)...)
 }
 
 type mySQLLoggerDebug struct {

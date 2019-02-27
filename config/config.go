@@ -64,7 +64,6 @@ func init() {
 	Config.GoogleBucket = os.Getenv(prefix + "GOOGLE_BUCKET")
 	Config.GoogleProject = os.Getenv(prefix + "GOOGLE_PROJECT")
 	Config.GameDBDirectory.Set("PATH")
-	Config.RollbarPrivateKey = os.Getenv(prefix + "ROLLBAR_PRIVATE")
 	Config.SendGridAPIKey = os.Getenv(prefix + "SENDGRID")
 	Config.GameDBShortName.Set("SHORT_NAME")
 	Config.SteamAPIKey = os.Getenv(prefix + "API_KEY")
@@ -138,20 +137,19 @@ type BaseConfig struct {
 	DiscordSescret  string
 	DiscordBotToken string
 
-	Environment       ConfigItem
-	GameDBDirectory   ConfigItem
-	GameDBDomain      ConfigItem
-	GameDBShortName   ConfigItem
-	GithubToken       string
-	GoogleBucket      string
-	GoogleProject     string
-	MemcacheDSN       ConfigItem
-	RollbarPrivateKey string
-	SendGridAPIKey    string
-	SteamAPIKey       string
-	WebserverPort     ConfigItem
-	EnableWebserver   ConfigItem
-	EnableConsumers   ConfigItem
+	Environment     ConfigItem
+	GameDBDirectory ConfigItem
+	GameDBDomain    ConfigItem
+	GameDBShortName ConfigItem
+	GithubToken     string
+	GoogleBucket    string
+	GoogleProject   string
+	MemcacheDSN     ConfigItem
+	SendGridAPIKey  string
+	SteamAPIKey     string
+	WebserverPort   ConfigItem
+	EnableWebserver ConfigItem
+	EnableConsumers ConfigItem
 }
 
 func (c BaseConfig) RabbitDSN() string {

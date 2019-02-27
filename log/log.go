@@ -14,7 +14,6 @@ import (
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/website/config"
 	"github.com/logrusorgru/aurora"
-	"github.com/rollbar/rollbar-go"
 )
 
 //noinspection GoUnusedConst
@@ -40,9 +39,8 @@ const (
 	SeverityCritical Severity = "critical"
 
 	// Services
-	ServiceGoogle  Service = "google"  // Default
-	ServiceRollbar Service = "rollbar" //
-	ServiceLocal   Service = "local"   // Default
+	ServiceGoogle Service = "google" // Default
+	ServiceLocal  Service = "local"  // Default
 
 	// Options
 	// OptionStack Option = iota
@@ -69,24 +67,6 @@ func (s Severity) toGoole() (severity logging.Severity) {
 		return logging.Critical
 	default:
 		return logging.Error
-	}
-}
-
-func (s Severity) toRollbar() (severity string) {
-
-	switch s {
-	case SeverityDebug:
-		return rollbar.DEBUG
-	case SeverityInfo:
-		return rollbar.INFO
-	case SeverityWarning:
-		return rollbar.WARN
-	case SeverityError:
-		return rollbar.ERR
-	case SeverityCritical:
-		return rollbar.CRIT
-	default:
-		return rollbar.ERR
 	}
 }
 
@@ -133,19 +113,11 @@ var (
 )
 
 func init() {
-
-	// Setup Google
 	var err error
 	googleClient, err = logging.NewClient(context.Background(), config.Config.GoogleProject)
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	// Setup Roolbar
-	rollbar.SetToken(config.Config.RollbarPrivateKey)
-	rollbar.SetEnvironment(config.Config.Environment.Get()) // defaults to "development"
-	rollbar.SetCodeVersion("master")                        // optional Git hash/branch/tag (required for GitHub integration)
-	rollbar.SetServerRoot("github.com/gamedb/website")      // path of project (required for GitHub integration and non-project stacktrace collapsing)
 }
 
 func log(interfaces ...interface{}) {
@@ -240,11 +212,6 @@ func log(interfaces ...interface{}) {
 					"env": config.Config.Environment.Get(),
 				},
 			})
-		}
-
-		// Rollbar
-		if v == ServiceRollbar {
-			rollbar.Log(entry.severity.toRollbar(), interfaces...)
 		}
 	}
 }
