@@ -935,15 +935,16 @@ func updateBundles(app *db.App) error {
 	operation := func() (err error) {
 
 		err = c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
-		if err != nil && !strings.Contains(err.Error(), "because its not in AllowedDomains") {
-			return backoff.Permanent(err)
+		if err != nil && strings.Contains(err.Error(), "because its not in AllowedDomains") {
+			return nil
 		}
 		return err
 	}
 
 	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err, app.ID) })
 	if err != nil {
 		return err
 	}
