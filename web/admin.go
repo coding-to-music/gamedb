@@ -1150,15 +1150,14 @@ func adminDev() {
 
 	var apps []db.App
 
-	gorm = gorm.Select([]string{"id", "genres"})
+	gorm = gorm.Select([]string{"id", "genres", "publishers", "tags", "developers"})
 	gorm = gorm.Find(&apps)
 	if gorm.Error != nil {
 		log.Err(gorm.Error)
 		return
 	}
 
-	fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
-
+	var count int
 	for _, v := range apps {
 
 		var addToQueue = false
@@ -1187,8 +1186,11 @@ func adminDev() {
 		if addToQueue {
 			err := queue.ProduceApp(v.ID)
 			log.Err(err)
+			count++
 		}
 	}
+
+	fmt.Println("Queued " + humanize.Comma(int64(count)) + "apps")
 
 	return
 
