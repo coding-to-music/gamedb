@@ -23,35 +23,35 @@ var (
 )
 
 type Player struct {
-	CreatedAt        time.Time `datastore:"created_at"`               //
-	UpdatedAt        time.Time `datastore:"updated_at"`               //
-	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"` //
-	PlayerID         int64     `datastore:"player_id"`                //
-	VanintyURL       string    `datastore:"vanity_url"`               //
 	Avatar           string    `datastore:"avatar,noindex"`           //
-	PersonaName      string    `datastore:"persona_name"`             //
-	RealName         string    `datastore:"real_name,noindex"`        //
-	CountryCode      string    `datastore:"country_code"`             //
-	StateCode        string    `datastore:"status_code,noindex"`      //
-	Level            int       `datastore:"level"`                    //
-	GamesRecent      string    `datastore:"games_recent,noindex"`     // []ProfileRecentGame
-	GamesCount       int       `datastore:"games_count"`              //
-	GameStats        string    `datastore:"game_stats,noindex"`       // PlayerAppStatsTemplate
-	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // struct // Not used
 	Badges           string    `datastore:"badges,noindex"`           // []ProfileBadge
 	BadgesCount      int       `datastore:"badges_count"`             //
 	BadgeStats       string    `datastore:"badge_stats,noindex"`      // ProfileBadgeStats
-	PlayTime         int       `datastore:"play_time"`                //
-	TimeCreated      time.Time `datastore:"time_created"`             //
-	LastLogOff       time.Time `datastore:"time_logged_off,noindex"`  //
-	PrimaryClanID    int       `datastore:"primary_clan_id,noindex"`  //
-	Friends          string    `datastore:"friends,noindex"`          // []ProfileFriend
-	FriendsCount     int       `datastore:"friends_count"`            //
-	Donated          int       `datastore:"donated"`                  //
 	Bans             string    `datastore:"bans,noindex"`             // PlayerBans
-	NumberOfVACBans  int       `datastore:"bans_cav"`                 //
-	NumberOfGameBans int       `datastore:"bans_game"`                //
+	CountryCode      string    `datastore:"country_code"`             //
+	CreatedAt        time.Time `datastore:"created_at"`               //
+	Donated          int       `datastore:"donated"`                  //
+	Friends          string    `datastore:"friends,noindex"`          // []ProfileFriend
+	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"` //
+	FriendsCount     int       `datastore:"friends_count"`            //
+	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // struct // Not used
+	GamesCount       int       `datastore:"games_count"`              //
+	GamesRecent      string    `datastore:"games_recent,noindex"`     // []ProfileRecentGame
+	GameStats        string    `datastore:"game_stats,noindex"`       // PlayerAppStatsTemplate
 	Groups           []int     `datastore:"groups,noindex"`           // []int
+	LastLogOff       time.Time `datastore:"time_logged_off,noindex"`  //
+	Level            int       `datastore:"level"`                    //
+	NumberOfGameBans int       `datastore:"bans_game"`                //
+	NumberOfVACBans  int       `datastore:"bans_cav"`                 //
+	PersonaName      string    `datastore:"persona_name"`             //
+	PlayerID         int64     `datastore:"player_id"`                //
+	PlayTime         int       `datastore:"play_time"`                //
+	PrimaryClanID    int       `datastore:"primary_clan_id,noindex"`  //
+	RealName         string    `datastore:"real_name,noindex"`        //
+	StateCode        string    `datastore:"status_code,noindex"`      //
+	TimeCreated      time.Time `datastore:"time_created"`             //
+	UpdatedAt        time.Time `datastore:"updated_at"`               //
+	VanintyURL       string    `datastore:"vanity_url"`               //
 }
 
 func (p Player) GetKey() (key *datastore.Key) {
@@ -397,20 +397,20 @@ func GetPlayerByName(name string) (player Player, err error) {
 		return player, err
 	}
 
-	var players []Player
+	var players = make([]Player, 1)
 
 	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("vanity_url =", name).Limit(1), &players)
-	if err != nil && len(players) > 0 {
+	if err == nil && len(players) > 0 {
 		return players[0], err
 	}
 
 	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("persona_name =", name).Limit(1), &players)
-	if err != nil && len(players) > 0 {
+	if err == nil && len(players) > 0 {
 		return players[0], err
 	}
 
 	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("settings_email =", name).Limit(1), &players)
-	if err != nil && len(players) > 0 {
+	if err == nil && len(players) > 0 {
 		return players[0], err
 	}
 

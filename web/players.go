@@ -96,10 +96,6 @@ func playerIDHandler(w http.ResponseWriter, r *http.Request) {
 	dbPlayer, err := db.GetPlayerByName(post)
 	if err != nil {
 
-		if err != datastore.ErrNoSuchEntity {
-			log.Err(err, r)
-		}
-
 		// Check for ID
 		id, err := helpers.GetSteam().GetID(post)
 		if err != nil {
