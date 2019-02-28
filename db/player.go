@@ -438,11 +438,15 @@ func GetAllBrokenPlayers() (brokenPlayers []int64) {
 		players := make([]Player, len(chunk))
 		err = client.GetMulti(ctx, chunk, players)
 
+		var count = 0
+
 		if multiErr, ok := err.(datastore.MultiError); ok {
 
 			for k, v := range multiErr {
 
 				if v != nil {
+
+					count++
 
 					i, err := strconv.ParseInt(chunk[k].Name, 10, 64)
 					log.Err(err)
@@ -451,6 +455,8 @@ func GetAllBrokenPlayers() (brokenPlayers []int64) {
 				}
 			}
 		}
+
+		log.Info("Found " + strconv.Itoa(count) + " broken players")
 	}
 
 	return brokenPlayers

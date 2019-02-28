@@ -246,8 +246,6 @@ func fixAllBrokenPlayers() {
 
 	ids := db.GetAllBrokenPlayers()
 
-	fmt.Println(len(ids))
-
 	for _, v := range ids {
 		err := queue.ProducePlayer(v)
 		log.Err(err)
