@@ -1148,8 +1148,7 @@ func adminDev() {
 
 	var apps []db.App
 
-	gorm = gorm.Select([]string{"id"})
-	gorm = gorm.Limit(20)
+	gorm = gorm.Select([]string{"id", "genres"})
 	gorm = gorm.Find(&apps)
 	if gorm.Error != nil {
 		log.Err(gorm.Error)
@@ -1158,39 +1157,69 @@ func adminDev() {
 
 	fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
 
-	var wg = sync.WaitGroup{}
-	var count int
 	for _, v := range apps {
-
-		wg.Add(1)
-		go func(v db.App) {
-
-			defer wg.Done()
-
-			players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
-
-			err2, ok := err.(steam.Error)
-			if ok && (err2.Code == 404) {
-				fmt.Println("-")
-				return
-			}
-
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			if players > 0 {
-				fmt.Println(players)
-				count++
-			}
-
-		}(v)
+		_, err := v.GetGenreIDs()
+		if err != nil {
+			err := queue.ProduceApp(v.ID)
+			log.Err(err)
+		}
 	}
 
-	wg.Wait()
+	return
 
-	fmt.Println(strconv.Itoa(count) + " apps with players")
+	// var err error
+	//
+	// gorm, err := db.GetMySQLClient()
+	// if err != nil {
+	// 	log.Err(err)
+	// 	return
+	// }
+	//
+	// var apps []db.App
+	//
+	// gorm = gorm.Select([]string{"id"})
+	// gorm = gorm.Limit(20)
+	// gorm = gorm.Find(&apps)
+	// if gorm.Error != nil {
+	// 	log.Err(gorm.Error)
+	// 	return
+	// }
+	//
+	// fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
+	//
+	// var wg = sync.WaitGroup{}
+	// var count int
+	// for _, v := range apps {
+	//
+	// 	wg.Add(1)
+	// 	go func(v db.App) {
+	//
+	// 		defer wg.Done()
+	//
+	// 		players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
+	//
+	// 		err2, ok := err.(steam.Error)
+	// 		if ok && (err2.Code == 404) {
+	// 			fmt.Println("-")
+	// 			return
+	// 		}
+	//
+	// 		if err != nil {
+	// 			fmt.Println(err)
+	// 			return
+	// 		}
+	//
+	// 		if players > 0 {
+	// 			fmt.Println(players)
+	// 			count++
+	// 		}
+	//
+	// 	}(v)
+	// }
+	//
+	// wg.Wait()
+	//
+	// fmt.Println(strconv.Itoa(count) + " apps with players")
 
 	// ######################################################
 
