@@ -12,12 +12,14 @@ const (
 	ConfPublishersUpdated = "refresh-publishers"
 	ConfDevelopersUpdated = "refresh-developers"
 
-	ConfRanksUpdated     = "refresh-ranks"
-	ConfDonationsUpdated = "refresh-donations"
-	ConfAddedAllApps     = "refresh-all-apps"
-	ConfAddedAllPackages = "refresh-all-packages"
-	ConfWipeMemcache     = "wipe-memcache"
-	ConfRunDevCode       = "run-dev-code"
+	ConfRanksUpdated      = "refresh-ranks"
+	ConfDonationsUpdated  = "refresh-donations"
+	ConfAddedAllApps      = "refresh-all-apps"
+	ConfAddedAllPackages  = "refresh-all-packages"
+	ConfWipeMemcache      = "wipe-memcache"
+	ConfRunDevCode        = "run-dev-code"
+	ConfGarbageCollection = "run-garbage-collection"
+	ConfFixBrokenPlayers  = "fix-broken-players"
 )
 
 type Config struct {

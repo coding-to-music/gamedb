@@ -60,6 +60,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go CronRanks()
 	case "wipe-memcache":
 		go adminMemcache()
+	case "garbage-collection":
+		go adminGarbageCollection()
 	case "delete-bin-logs":
 		go adminDeleteBinLogs(r)
 	case "disable-consumers":
@@ -90,6 +92,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		db.ConfPublishersUpdated,
 		db.ConfWipeMemcache + "-" + config.Config.Environment.Get(),
 		db.ConfRunDevCode,
+		db.ConfGarbageCollection,
+		db.ConfFixBrokenPlayers,
 	})
 	log.Err(err, r)
 
@@ -246,10 +250,23 @@ func fixAllBrokenPlayers() {
 
 	ids := db.GetAllBrokenPlayers()
 
+	var count int
 	for _, v := range ids {
 		err := queue.ProducePlayer(v)
 		log.Err(err)
+		count++
 	}
+
+	//
+	err := db.SetConfig(db.ConfFixBrokenPlayers, strconv.FormatInt(time.Now().Unix(), 10))
+	log.Err(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Err(err)
+
+	page.Send(adminWebsocket{db.ConfFixBrokenPlayers + " complete"})
+
+	log.Info(strconv.Itoa(count) + " players queued")
 }
 
 func CronDonations() {
@@ -1121,6 +1138,21 @@ func adminMemcache() {
 	page.Send(adminWebsocket{db.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
 
 	log.Info("Memcache wiped")
+}
+
+func adminGarbageCollection() {
+
+	runtime.GC()
+
+	err := db.SetConfig(db.ConfGarbageCollection, strconv.FormatInt(time.Now().Unix(), 10))
+	log.Err(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Err(err)
+
+	page.Send(adminWebsocket{db.ConfGarbageCollection + " complete"})
+
+	log.Info("Garbage Collected")
 }
 
 func adminDeleteBinLogs(r *http.Request) {
