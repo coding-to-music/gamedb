@@ -68,6 +68,7 @@ func init() {
 	Config.GameDBShortName.Set("SHORT_NAME")
 	Config.SteamAPIKey = os.Getenv(prefix + "API_KEY")
 	Config.WebserverPort.Set("PORT")
+	Config.CommitHash = os.Getenv(prefix + "COMMIT_HASH")
 
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
@@ -150,6 +151,7 @@ type BaseConfig struct {
 	WebserverPort   ConfigItem
 	EnableWebserver ConfigItem
 	EnableConsumers ConfigItem
+	CommitHash      string
 }
 
 func (c BaseConfig) RabbitDSN() string {
@@ -204,7 +206,10 @@ func (ci ConfigItem) Get() string {
 }
 
 func (ci ConfigItem) GetBool() bool {
-	b, _ := strconv.ParseBool(ci.Get())
+	b, err := strconv.ParseBool(ci.Get())
+	if err != nil {
+		fmt.Println(err)
+	}
 	return b
 }
 

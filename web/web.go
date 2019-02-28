@@ -445,38 +445,36 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	return t.MetaImage
 }
 
-func (t GlobalTemplate) GetFooterText() (text string) {
+func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 
+	// Get current time
 	ts := time.Now()
 	dayint, err := strconv.Atoi(ts.Format("2"))
 	log.Err(err)
 
-	text = "Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04") + " UTC"
+	currentTime := template.HTML("Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04") + " UTC")
 
 	// Get cashed
 	if t.IsCacheHit() {
-		text += " from cache"
+		currentTime += " from cache"
 	}
 
-	// Get time
-	startTimeString := t.request.Header.Get("start-time")
-	if startTimeString == "" {
-		return text
-	}
-
-	startTimeInt, err := strconv.ParseInt(startTimeString, 10, 64)
-	if err != nil {
-		log.Err(err)
-		return text
-	}
+	// Get load time
+	startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
+	log.Err(err)
 
 	durStr, err := durationfmt.Format(time.Duration(time.Now().UnixNano()-startTimeInt), "%ims")
-	if err != nil {
-		log.Err(err)
-		return text
+	log.Err(err)
+
+	var duration = template.HTML(" in " + durStr + ".")
+
+	// Get version hash
+	var hash = template.HTML("")
+	if len(config.Config.CommitHash) >= 7 {
+		hash = template.HTML("v<a target=\"_blank\" href=\"/https://github.com/gamedb/website/tree/" + config.Config.CommitHash + "\">" + config.Config.CommitHash[0:7] + "</a>.")
 	}
 
-	return text + " in " + durStr
+	return currentTime + duration + hash
 }
 
 func (t GlobalTemplate) IsCacheHit() bool {
