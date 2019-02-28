@@ -384,7 +384,8 @@ func CronGenres() {
 			if val, ok := genreNameMap[genreID]; ok {
 				genreName = val
 			} else {
-				genreName = "Unknown"
+				// genreName = "Unknown"
+				continue
 			}
 
 			if _, ok := newGenres[genreID]; ok {
@@ -392,7 +393,7 @@ func CronGenres() {
 				newGenres[genreID].totalScore += app.ReviewsScore
 			} else {
 				newGenres[genreID] = &statsRow{
-					name:       strings.TrimSpace(genreName),
+					name:       genreName,
 					count:      1,
 					totalScore: app.ReviewsScore,
 					totalPrice: map[steam.CountryCode]int{},
@@ -541,7 +542,8 @@ func CronPublishers() {
 			if val, ok := publisherNameMap[appPublisherID]; ok {
 				publisherName = val
 			} else {
-				publisherName = "Unknown"
+				// publisherName = "Unknown"
+				continue
 			}
 
 			if _, ok := newPublishers[appPublisherID]; ok {
@@ -697,7 +699,7 @@ func CronDevelopers() {
 			if val, ok := developersNameMap[appDeveloperID]; ok {
 				developersName = val
 			} else {
-				developersName = "Unknown"
+				continue
 			}
 
 			if _, ok := newDevelopers[appDeveloperID]; ok {
