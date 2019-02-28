@@ -16,7 +16,7 @@ type Developer struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice string     `gorm:"not null"` // JSON
+	MeanPrice string     `gorm:"not null"` // map[steam.CountryCode]float64
 	MeanScore float64    `gorm:"not null"`
 }
 
