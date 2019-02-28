@@ -502,11 +502,17 @@ func CronGenres() {
 	err = db.SetConfig(db.ConfGenresUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
+	//
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	cronLogErr(err)
 
 	page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
 
+	//
+	err = helpers.GetMemcache().Delete(helpers.MemcacheGenreKeyNames.Key)
+	cronLogErr(err)
+
+	//
 	cronLogInfo("Genres updated")
 }
 
@@ -656,14 +662,21 @@ func CronPublishers() {
 
 	wg.Wait()
 
+	//
 	err = db.SetConfig(db.ConfPublishersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
+	//
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	cronLogErr(err)
 
 	page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
 
+	//
+	err = helpers.GetMemcache().Delete(helpers.MemcachePublisherKeyNames.Key)
+	cronLogErr(err)
+
+	//
 	cronLogInfo("Publishers updated")
 }
 
@@ -812,14 +825,21 @@ func CronDevelopers() {
 	}
 	wg.Wait()
 
+	//
 	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
+	//
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	cronLogErr(err)
 
 	page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
 
+	//
+	err = helpers.GetMemcache().Delete(helpers.MemcacheDeveloperKeyNames.Key)
+	cronLogErr(err)
+
+	//
 	cronLogInfo("Developers updated")
 }
 
@@ -959,14 +979,21 @@ func CronTags() {
 	}
 	wg.Wait()
 
+	//
 	err = db.SetConfig(db.ConfTagsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
+	//
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	cronLogErr(err)
 
 	page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
 
+	//
+	err = helpers.GetMemcache().Delete(helpers.MemcacheTagKeyNames.Key)
+	cronLogErr(err)
+
+	//
 	cronLogInfo("Tags updated")
 }
 
@@ -1121,6 +1148,11 @@ func CronRanks() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
 
+	//
+	err = helpers.GetMemcache().Delete(helpers.MemcacheRanksCount.Key)
+	cronLogErr(err)
+
+	//
 	cronLogInfo("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
 }
 
