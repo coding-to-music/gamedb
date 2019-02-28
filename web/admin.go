@@ -1160,8 +1160,31 @@ func adminDev() {
 	fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
 
 	for _, v := range apps {
-		_, err := v.GetGenreIDs()
+
+		var addToQueue = false
+		var err error
+
+		_, err = v.GetGenreIDs()
 		if err != nil {
+			addToQueue = true
+		}
+
+		_, err = v.GetPublisherIDs()
+		if err != nil {
+			addToQueue = true
+		}
+
+		_, err = v.GetDeveloperIDs()
+		if err != nil {
+			addToQueue = true
+		}
+
+		_, err = v.GetTagIDs()
+		if err != nil {
+			addToQueue = true
+		}
+
+		if addToQueue {
 			err := queue.ProduceApp(v.ID)
 			log.Err(err)
 		}
