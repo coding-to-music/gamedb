@@ -208,3 +208,15 @@ func countUpcomingApps() (count int, err error) {
 
 	return count, err
 }
+
+func ClearUpcomingCache() {
+
+	var mc = helpers.GetMemcache()
+	var err error
+
+	err = mc.Delete(helpers.MemcacheUpcomingAppsCount.Key)
+	log.Err(err)
+
+	err = mc.Delete(helpers.MemcacheUpcomingPackagesCount.Key)
+	log.Err(err)
+}

@@ -65,6 +65,9 @@ func main() {
 	if config.Config.IsProd() {
 		c := cron.New()
 
+		err = c.AddFunc("0 0 0 * * *", web.ClearUpcomingCache)
+		log.Critical(err)
+
 		err = c.AddFunc("0 0 0 * * *", web.CronRanks)
 		log.Critical(err)
 

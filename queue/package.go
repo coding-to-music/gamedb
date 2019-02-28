@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
@@ -74,6 +75,11 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
 		return
+	}
+
+	var newPackage bool
+	if pack.CreatedAt.IsZero() {
+		newPackage = true
 	}
 
 	// Skip if updated in last day, unless its from PICS
@@ -162,6 +168,12 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 
 	if page.HasConnections() {
 		page.Send(pack.ID)
+	}
+
+	// Clear caches
+	if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
+		err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingPackagesCount.Key)
+		log.Err(err)
 	}
 
 	payload.ack(msg)

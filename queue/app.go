@@ -20,6 +20,7 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -84,6 +85,11 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
 		return
+	}
+
+	var newApp bool
+	if app.CreatedAt.IsZero() {
+		newApp = true
 	}
 
 	// Skip if updated in last day, unless its from PICS
@@ -204,6 +210,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		page.Send(message.ID)
 	}
 
+	// Clear caches
+	if app.ReleaseDateUnix > time.Now().Unix() && newApp {
+		err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingAppsCount.Key)
+		log.Err(err)
+	}
+
+	//
 	payload.ack(msg)
 }
 
