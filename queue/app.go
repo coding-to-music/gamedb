@@ -915,6 +915,11 @@ func updateAppSteamSpy(app *db.App) error {
 
 func updateBundles(app *db.App) error {
 
+	// Skip these app types
+	if helpers.SliceHasString([]string{"media", "movie"}, app.Type) {
+		return nil
+	}
+
 	var bundleIDs []string
 
 	c := colly.NewCollector(
