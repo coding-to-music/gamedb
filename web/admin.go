@@ -960,7 +960,7 @@ func adminStatsLogger(tableName string, count int, total int, rowName string) {
 
 func CronRanks() {
 
-	cronLogErr("Ranks updated started")
+	cronLogInfo("Ranks updated started")
 
 	timeStart := time.Now().Unix()
 
