@@ -30,7 +30,7 @@ import (
 
 type appMessage struct {
 	ID          int                  `json:"id"`
-	PICSAppInfo rabbitMessageProduct `` // Leave JSON key name as default
+	PICSAppInfo rabbitMessageProduct `json:"PICSAppInfo"`
 }
 
 type appQueue struct {

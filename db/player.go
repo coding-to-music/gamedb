@@ -397,7 +397,7 @@ func GetPlayerByName(name string) (player Player, err error) {
 		return player, err
 	}
 
-	var players = make([]Player, 1)
+	var players = make([]Player, 0, 1)
 
 	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("vanity_url =", name).Limit(1), &players)
 	if err == nil && len(players) > 0 {
@@ -409,12 +409,16 @@ func GetPlayerByName(name string) (player Player, err error) {
 		return players[0], err
 	}
 
-	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer).Filter("settings_email =", name).Limit(1), &players)
-	if err == nil && len(players) > 0 {
-		return players[0], err
+	users, err := GetUsersByEmail(name)
+	if err == nil && len(users) > 0 {
+
+		players, err := GetPlayersByIDs([]int64{users[0].PlayerID})
+		if err == nil && len(players) > 0 {
+			return players[0], err
+		}
 	}
 
-	return player, datastore.ErrNoSuchEntity
+	return player, err
 }
 
 func GetAllBrokenPlayers() (brokenPlayers []int64) {

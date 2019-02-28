@@ -107,6 +107,12 @@ func (payload baseMessage) ack(msg amqp.Delivery) {
 	logError(err)
 }
 
+func (payload baseMessage) ackMulti(msg amqp.Delivery) {
+
+	err := msg.Ack(true)
+	logError(err)
+}
+
 // Send to failed queue
 func (payload baseMessage) fail(msg amqp.Delivery) {
 
