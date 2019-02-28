@@ -242,11 +242,14 @@ func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []db.PICSAppConfigL
 
 	for _, v := range i.Children {
 
-		order, err := strconv.Atoi(v.Name)
-		logError(err)
-
 		item := db.PICSAppConfigLaunchItem{}
-		item.Order = order
+
+		order, err := strconv.Atoi(v.Name)
+		if err != nil {
+			item.Order = v.Name
+		} else {
+			item.Order = order
+		}
 
 		v.getAppLaunchItem(&item)
 
