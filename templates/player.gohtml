@@ -160,6 +160,14 @@
 
                                     <table class="table mb-0">
                                         <tr>
+                                            <th scope="row">Community Banned</th>
+                                            <td>{{ if .Bans.CommunityBanned }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">VAC Banned</th>
+                                            <td>{{ if .Bans.VACBanned }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                        </tr>
+                                        <tr>
                                             <th scope="row">Game Bans</th>
                                             <td>{{ comma .Bans.NumberOfGameBans }}</td>
                                         </tr>
@@ -168,19 +176,11 @@
                                             <td>{{ comma .Bans.NumberOfVACBans }}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Community Banned</th>
-                                            <td>{{.Bans.CommunityBanned}}</td>
-                                        </tr>
-                                        <tr>
                                             <th scope="row">Economy Ban</th>
                                             <td>{{ .Bans.EconomyBan }}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">VAC Banned</th>
-                                            <td>{{ .Bans.VACBanned }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Last Ban</th>
+                                            <th scope="row">Time Since Ban</th>
                                             <td>{{ comma .Bans.DaysSinceLastBan }} days</td>
                                         </tr>
                                     </table>

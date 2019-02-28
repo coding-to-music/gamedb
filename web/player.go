@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 
 	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/influxql"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -172,7 +172,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get bans
-	var bans steam.GetPlayerBanResponse
+	var bans db.PlayerBans
 	wg.Add(1)
 	go func(player db.Player) {
 
@@ -181,6 +181,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		bans, err = player.GetBans()
 		log.Err(err, r)
+
+		bans.EconomyBan = strings.Title(bans.EconomyBan)
 
 	}(player)
 
@@ -226,26 +228,26 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 type playerTemplate struct {
 	GlobalTemplate
-	Player      db.Player
-	Friends     []db.ProfileFriend
 	Apps        []db.PlayerApp
-	Ranks       playerRanksTemplate
 	Badges      []db.ProfileBadge
 	BadgeStats  db.ProfileBadgeStats
-	RecentGames []RecentlyPlayedGame
+	Bans        db.PlayerBans
+	Friends     []db.ProfileFriend
 	GameStats   db.PlayerAppStatsTemplate
-	Bans        steam.GetPlayerBanResponse
+	Player      db.Player
+	Ranks       playerRanksTemplate
+	RecentGames []RecentlyPlayedGame
 }
 
 // RecentlyPlayedGame
 type RecentlyPlayedGame struct {
+	AllTime     int
+	AllTimeNice string
 	AppID       int
 	Icon        string
 	Name        string
 	Weeks       int
 	WeeksNice   string
-	AllTime     int
-	AllTimeNice string
 }
 
 // playerRanksTemplate

@@ -223,7 +223,7 @@ func (p Player) GetRecentGames() (games []ProfileRecentGame, err error) {
 	return games, err
 }
 
-func (p Player) GetBans() (bans steam.GetPlayerBanResponse, err error) {
+func (p Player) GetBans() (bans PlayerBans, err error) {
 
 	err = helpers.Unmarshal([]byte(p.Bans), &bans)
 	return bans, err
