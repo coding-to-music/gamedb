@@ -554,10 +554,6 @@ func (app App) GetReviews() (reviews AppReviewSummary, err error) {
 func (app App) GetGenreIDs() (genres []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Genres), &genres)
-	if err != nil {
-		log.Err(err)
-		return genres, nil
-	}
 	return genres, err
 }
 
