@@ -59,11 +59,15 @@ func GetDevelopersByID(ids []int, columns []string) (developers []Developer, err
 	return developers, db.Error
 }
 
-func GetAllDevelopers() (developers []Developer, err error) {
+func GetAllDevelopers(fields []string) (developers []Developer, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
 		return developers, err
+	}
+
+	if len(fields) > 0 {
+		db = db.Select(fields)
 	}
 
 	db = db.Find(&developers)

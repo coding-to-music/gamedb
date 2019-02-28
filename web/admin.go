@@ -653,7 +653,7 @@ func CronDevelopers() {
 	cronLogInfo(log.ServiceLocal, "Developers updating")
 
 	// Get current developers, to delete old ones
-	allDevelopers, err := db.GetAllPublishers()
+	allDevelopers, err := db.GetAllDevelopers([]string{"id", "name"})
 	if err != nil {
 		cronLogErr(err)
 		return
