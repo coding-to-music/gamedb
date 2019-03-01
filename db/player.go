@@ -34,7 +34,6 @@ type Player struct {
 	Friends          string    `datastore:"friends,noindex"`          // []ProfileFriend
 	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"` //
 	FriendsCount     int       `datastore:"friends_count"`            //
-	GameHeatMap      string    `datastore:"games_heat_map,noindex"`   // struct // Not used
 	GamesCount       int       `datastore:"games_count"`              //
 	GamesRecent      string    `datastore:"games_recent,noindex"`     // []ProfileRecentGame
 	GameStats        string    `datastore:"game_stats,noindex"`       // PlayerAppStatsTemplate

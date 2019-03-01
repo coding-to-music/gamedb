@@ -197,7 +197,14 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 }
 
 var (
-	oldPlayerFields = []string{"settings_email", "settings_password", "settings_alerts", "settings_hidden", "games",}
+	oldPlayerFields = []string{
+		"settings_email",
+		"settings_password",
+		"settings_alerts",
+		"settings_hidden",
+		"games",
+		"games_heat_map",
+	}
 )
 
 func handleDSSingleError(err error, oldFields []string) error {
@@ -240,7 +247,7 @@ func handleDSMultiError(err error, oldFields []string) error {
 
 	} else if err == datastore.ErrNoSuchEntity {
 		return nil
-	}else{
+	} else {
 		return err
 	}
 
