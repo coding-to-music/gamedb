@@ -161,11 +161,11 @@
                                     <table class="table mb-0">
                                         <tr>
                                             <th scope="row">Community Banned</th>
-                                            <td>{{ if .Bans.CommunityBanned }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                            <td>{{ if .Bans.CommunityBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">VAC Banned</th>
-                                            <td>{{ if .Bans.VACBanned }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                            <td>{{ if .Bans.VACBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Game Bans</th>
