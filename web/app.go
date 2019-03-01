@@ -378,7 +378,7 @@ func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	productPricesAjaxHandler(w, r, db.ProductTypeApp)
 }
 
-func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
+func appChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -387,49 +387,10 @@ func appAjaxPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("mean(player_count)", "mean_player_count")
-	builder.SetFrom("GameDB", "alltime", "apps")
-	builder.AddWhere("time", ">", "NOW()-7d")
-	builder.AddWhere("app_id", "=", id)
-	builder.AddGroupByTime("30m")
-	builder.SetFillNone()
-
-	resp, err := db.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
-
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
-
-		hc := db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
-
-		b, err := json.Marshal(hc)
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		err = returnJSON(w, r, b)
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-	}
-}
-
-func appAjaxReviewsHandler(w http.ResponseWriter, r *http.Request) {
-
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Err("invalid id", r)
-		return
-	}
-
-	builder := influxql.NewBuilder()
-	builder.AddSelect("mean(reviews_score)", "mean_reviews_score")
-	builder.AddSelect("mean(reviews_positive)", "mean_reviews_positive")
-	builder.AddSelect("mean(reviews_negative)", "mean_reviews_negative")
+	builder.AddSelect("mean(player_count)", "mean_player_count")         // Players
+	builder.AddSelect("mean(reviews_score)", "mean_reviews_score")       // Reviews
+	builder.AddSelect("mean(reviews_positive)", "mean_reviews_positive") // Reviews
+	builder.AddSelect("mean(reviews_negative)", "mean_reviews_negative") // Reviews
 	builder.SetFrom("GameDB", "alltime", "apps")
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhere("app_id", "=", id)
