@@ -470,31 +470,27 @@ func (app App) GetCoopTags() (string, error) {
 }
 
 // Template
-func (app App) GetAchievements() (achievements []AppAchievement) {
+func (app App) GetAchievements() (achievements []AppAchievement, err error) {
 
-	err := helpers.Unmarshal([]byte(app.Achievements), &achievements)
-	log.Err(err)
-	return achievements
+	err = helpers.Unmarshal([]byte(app.Achievements), &achievements)
+	return achievements, err
 }
 
 func (app App) GetStats() (stats []AppStat, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Stats), &stats)
-	log.Err(err)
 	return stats, err
 }
 
 func (app App) GetDemoIDs() (demos []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.DemoIDs), &demos)
-	log.Err(err)
 	return demos, err
 }
 
 func (app App) GetPlatforms() (platforms []string, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Platforms), &platforms)
-	log.Err(err)
 	return platforms, err
 }
 
@@ -506,6 +502,7 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 
 	platforms, err := app.GetPlatforms()
 	if err != nil {
+		log.Err(err)
 		return ret, err
 	}
 

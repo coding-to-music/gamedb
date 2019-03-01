@@ -539,7 +539,7 @@
                                         <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
                                     </li>
                                 {{ end }}
-                                {{ if gt (len .App.GetStats) 0}}
+                                {{ if gt (len .Stats) 0}}
                                     <li class="nav-item">
                                         <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
                                     </li>
@@ -883,7 +883,7 @@
                                                 <th scope="col">Display</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .App.GetStats }}
+                                            {{ range $key, $value := .Stats }}
                                                 <tr>
                                                     <td>{{ .Name }}</td>
                                                     <td>{{ .Default }}</td>

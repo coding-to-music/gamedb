@@ -216,8 +216,11 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.Banners = banners
 
 	// Functions that get called multiple times in the template
-	t.Achievements = t.App.GetAchievements()
+	t.Achievements, err = t.App.GetAchievements()
+	log.Err(err, r)
 	t.NewsIDs, err = t.App.GetNewsIDs()
+	log.Err(err, r)
+	t.Stats, err = t.App.GetStats()
 	log.Err(err, r)
 	t.Prices, err = t.App.GetPrices()
 	log.Err(err, r)
@@ -254,6 +257,7 @@ type appTemplate struct {
 	Publishers   []db.Publisher
 	Reviews      db.AppReviewSummary
 	Screenshots  []db.AppImage
+	Stats        []db.AppStat
 	Tags         []db.Tag
 }
 
