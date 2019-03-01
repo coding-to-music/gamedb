@@ -92,25 +92,21 @@ func playerIDHandler(w http.ResponseWriter, r *http.Request) {
 	post := r.PostFormValue("id")
 	post = path.Base(post)
 
-	// Check datastore
-	dbPlayer, err := db.GetPlayerByName(post)
+	id64, err := helpers.GetSteam().GetID(post)
 	if err != nil {
 
-		// Check for ID
-		id, err := helpers.GetSteam().GetID(post)
-		if err != nil {
+		player, err := db.GetPlayerByName(post)
+		if err != nil || player.PlayerID == 0 {
 
-			log.Err(err, r)
-
-			returnErrorTemplate(w, r, errorTemplate{Code: 404, Title: "Can't find user: " + post, Message: "You can use your Steam ID or login to add your profile."})
+			returnErrorTemplate(w, r, errorTemplate{Code: 404, Title: "Can't find user: " + post, Message: "You can use your Steam ID or login to add your profile.", Error: err})
 			return
 		}
 
-		http.Redirect(w, r, "/players/"+strconv.FormatInt(id, 10), 302)
+		http.Redirect(w, r, db.GetPlayerPath(player.PlayerID, player.PersonaName), 302)
 		return
 	}
 
-	http.Redirect(w, r, db.GetPlayerPath(dbPlayer.PlayerID, dbPlayer.PersonaName), 302)
+	http.Redirect(w, r, "/players/"+strconv.FormatInt(id64, 10), 302)
 }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
