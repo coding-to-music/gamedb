@@ -89,6 +89,11 @@ func (pack Package) GetID() int {
 	return pack.ID
 }
 
+// For an interface
+func (pack Package) GetType() string {
+	return "Package"
+}
+
 func (pack Package) GetIcon() string {
 	if pack.Icon == "" {
 		return DefaultAppIcon

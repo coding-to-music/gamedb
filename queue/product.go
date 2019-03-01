@@ -326,9 +326,9 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 		if oldPrice != newPrice {
 			kinds = append(kinds, db.CreateProductPrice(after, code, oldPrice, newPrice))
 		}
-
+		
 		// Tweet free US products
-		if code == steam.CountryUS && before.GetProductType() == db.ProductTypeApp && oldPrice > 0 && newPrice == 0 {
+		if code == steam.CountryUS && before.GetProductType() == db.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
 
 			twitter := social.GetTwitter()
 
