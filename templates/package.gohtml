@@ -192,7 +192,9 @@
                 {{/* Prices */}}
                 <div class="tab-pane" id="prices" role="tabpanel">
 
-                    <div id="prices-chart" data-ajax="/packages/{{ .Package.ID }}/ajax/prices"></div>
+                    <div id="prices-chart" data-ajax="/packages/{{ .Package.ID }}/ajax/prices">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0" data-no-sort="1">

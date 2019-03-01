@@ -195,7 +195,9 @@
                 {{/* Prices */}}
                 <div class="tab-pane" id="prices" role="tabpanel">
 
-                    <div id="prices-chart" data-ajax="/apps/{{ .App.ID }}/ajax/prices"></div>
+                    <div id="prices-chart" data-ajax="/apps/{{ .App.ID }}/ajax/prices">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0" data-no-sort="1">
@@ -227,10 +229,14 @@
                 <div class="tab-pane" id="charts" role="tabpanel">
 
                     <h5>Players</h5>
-                    <div id="players-chart"><i class="fas fa-spinner fa-spin"></i></div>
+                    <div id="players-chart">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
 
                     <h5>Review Score</h5>
-                    <div id="reviews-chart"><i class="fas fa-spinner fa-spin"></i></div>
+                    <div id="reviews-chart">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
 
                 </div>
 
