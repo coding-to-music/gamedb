@@ -56,7 +56,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		gorm = gorm.Select([]string{"id", "name", "icon", "player_count", "platforms"})
+		gorm = gorm.Select([]string{"id", "name", "icon", "player_count"})
 		gorm = gorm.Order("player_count desc")
 		gorm = gorm.Limit(15)
 		gorm = gorm.Find(&t.PopularApps)
@@ -75,7 +75,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "platforms"})
+		gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score"})
 		gorm = gorm.Where("type = ?", "game")
 		gorm = gorm.Order("reviews_score desc")
 		gorm = gorm.Limit(15)
