@@ -495,7 +495,9 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddSelect(`mean("friends_rank")`, "mean_friends_rank")
 	builder.SetFrom("GameDB", "alltime", "players")
 	builder.AddWhere("player_id", "=", id)
+	builder.AddWhere("time", ">", "now()-365d")
 	builder.AddGroupByTime("1d")
+	builder.SetFillNone()
 
 	resp, err := db.InfluxQuery(builder.String())
 	if err != nil {
