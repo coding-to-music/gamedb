@@ -238,14 +238,6 @@ func (p Player) GetGameStats(code steam.CountryCode) (stats PlayerAppStatsTempla
 	return stats, err
 }
 
-func (p Player) GetTimeShort() (ret string) {
-	return helpers.GetTimeShort(p.PlayTime, 2)
-}
-
-func (p Player) GetTimeLong() (ret string) {
-	return helpers.GetTimeLong(p.PlayTime, 5)
-}
-
 type UpdateType string
 
 const (
