@@ -62,9 +62,10 @@ func main() {
 	}()
 
 	// Crons
-	if config.Config.IsProd() {
-		c := cron.New()
 
+	c := cron.New()
+
+	if config.Config.IsProd() {
 		err = c.AddFunc("0 0 0 * * *", web.ClearUpcomingCache)
 		log.Critical(err)
 
@@ -88,18 +89,21 @@ func main() {
 
 		err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
 		log.Critical(err)
-
-		c.Start()
 	}
 
+	err = c.AddFunc("0 */10 * * * *", CheckForPlayers)
+	log.Critical(err)
+
+	c.Start()
+
 	// Block forever for goroutines to run
-	c := make(chan os.Signal)
-	signal.Notify(c, syscall.SIGTERM, os.Interrupt, os.Kill)
+	x := make(chan os.Signal)
+	signal.Notify(x, syscall.SIGTERM, os.Interrupt, os.Kill)
 
 	wg := &sync.WaitGroup{} // Must be pointer
 	wg.Add(1)
 	go func(wg *sync.WaitGroup) {
-		for range c {
+		for range x {
 
 			//noinspection GoDeferInLoop
 			defer wg.Done()
@@ -115,4 +119,37 @@ func main() {
 	}(wg)
 
 	wg.Wait()
+}
+
+var appPlayersRunning bool
+
+func CheckForPlayers() {
+
+	if appPlayersRunning {
+		return
+	}
+
+	appPlayersRunning = true
+
+	gorm, err := db.GetMySQLClient()
+	if err != nil {
+		log.Critical(err)
+	}
+
+	gorm = gorm.Select([]string{"id"})
+	gorm = gorm.Order("player_count DESC")
+	gorm = gorm.Limit(500)
+
+	var apps []db.App
+	gorm = gorm.Find(&apps)
+	if gorm.Error != nil {
+		log.Critical(gorm.Error)
+	}
+
+	for _, v := range apps {
+		err = queue.ProduceAppPlayers(v.ID)
+		log.Err(err)
+	}
+
+	appPlayersRunning = false
 }

@@ -232,7 +232,7 @@ if ($appPage.length > 0) {
 
         $.ajax({
             type: "GET",
-            url: '/apps/' + $appPage.attr('data-id') + '/ajax/charts',
+            url: '/apps/' + $appPage.attr('data-id') + '/ajax/players',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
@@ -260,6 +260,15 @@ if ($appPage.length > 0) {
                         data: data['mean_player_count']
                     }],
                 }));
+
+            },
+        });
+
+        $.ajax({
+            type: "GET",
+            url: '/apps/' + $appPage.attr('data-id') + '/ajax/reviews',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
 
                 Highcharts.chart('reviews-chart', $.extend(true, {}, defaultAppChartOptions, {
                     chart: {
@@ -326,6 +335,7 @@ if ($appPage.length > 0) {
                         },
                     ],
                 }));
+
             },
         });
     }

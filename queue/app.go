@@ -1006,7 +1006,6 @@ func saveAppToInflux(app db.App) (err error) {
 			"price_us_initial":  price.Initial,
 			"price_us_final":    price.Final,
 			"price_us_discount": price.DiscountPercent,
-			"player_count":      app.PlayerCount,
 		},
 		Time:      time.Now(),
 		Precision: "m",

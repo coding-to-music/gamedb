@@ -24,13 +24,14 @@ const (
 	queueCSProfiles queueName = "GameDB_CS_Profiles"
 
 	// Go
-	queueGoApps     queueName = "GameDB_Go_Apps"
-	queueGoBundles  queueName = "GameDB_Go_Bundles"
-	queueGoChanges  queueName = "GameDB_Go_Changes"
-	queueGoDelays   queueName = "GameDB_Go_Delays"
-	queueGoPackages queueName = "GameDB_Go_Packages"
-	queueGoProfiles queueName = "GameDB_Go_Profiles"
-	queueGoFailed   queueName = "GameDB_Go_Failed"
+	queueGoApps      queueName = "GameDB_Go_Apps"
+	queueGoAppPlayer queueName = "GameDB_Go_App_Players"
+	queueGoBundles   queueName = "GameDB_Go_Bundles"
+	queueGoChanges   queueName = "GameDB_Go_Changes"
+	queueGoDelays    queueName = "GameDB_Go_Delays"
+	queueGoPackages  queueName = "GameDB_Go_Packages"
+	queueGoProfiles  queueName = "GameDB_Go_Profiles"
+	queueGoFailed    queueName = "GameDB_Go_Failed"
 
 	//
 	maxBytesToStore int = 1024 * 10
@@ -75,6 +76,11 @@ var (
 		{
 			name:    queueGoProfiles,
 			queue:   &playerQueue{},
+			maxTime: time.Hour * 24 * 7,
+		},
+		{
+			name:    queueGoAppPlayer,
+			queue:   &appPlayerQueue{},
 			maxTime: time.Hour * 24 * 7,
 		},
 	}
@@ -404,4 +410,13 @@ func ProducePlayer(ID int64) (err error) {
 			ID: ID,
 		},
 	}, queueCSProfiles)
+}
+
+func ProduceAppPlayers(ID int) (err error) {
+
+	return produce(baseMessage{
+		Message: appPlayerMessage{
+			ID: ID,
+		},
+	}, queueGoAppPlayer)
 }
