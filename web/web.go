@@ -471,7 +471,7 @@ func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 	// Get version hash
 	var hash = template.HTML("")
 	if len(config.Config.CommitHash) >= 7 {
-		hash = template.HTML("v<a target=\"_blank\" href=\"/https://github.com/gamedb/website/tree/" + config.Config.CommitHash + "\">" + config.Config.CommitHash[0:7] + "</a>.")
+		hash = template.HTML(" v<a target=\"_blank\" href=\"https://github.com/gamedb/website/tree/" + config.Config.CommitHash + "\">" + config.Config.CommitHash[0:7] + "</a>.")
 	}
 
 	return currentTime + duration + hash
