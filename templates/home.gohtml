@@ -13,17 +13,17 @@
     </div>
 
     <div class="card mb-3">
-        <div class="card-header">Games</div>
+        <div class="card-header">Games <span class="float-right font-italic">Data from the last 7 days</span></div>
         <div class="card-body">
 
             <div class="row">
-                <div class="col-12 col-xl-6">
+                <div class="col-12 col-lg-6">
 
-                    <div class="table-responsive mb-4 mb-xl-0">
+                    <div class="table-responsive mb-4 mb-lg-0">
                         <table class="table table-hover table-striped mb-0">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col">Most Popular Games</th>
+                                <th scope="col">Popular</th>
                                 <th scope="col">Players</th>
                             </tr>
                             </thead>
@@ -41,18 +41,18 @@
                         </table>
                     </div>
                 </div>
-                <div class="col-12 col-xl-6">
+                <div class="col-12 col-lg-6">
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped mb-0">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col">Highest Rated Games</th>
+                                <th scope="col">Trending</th>
                                 <th scope="col">Players</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {{ range $key, $value := .RatedApps }}
+                            {{ range $key, $value := .TrendingApps }}
                                 <tr data-link="{{ .GetPath }}">
                                     <td class="img">
                                         <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
@@ -71,8 +71,68 @@
         </div>
     </div>
 
+    <div class="card mb-3">
+        <div class="card-header">New Releases <span class="float-right font-italic">Data from the last 7 days</span></div>
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-12 col-lg-6">
+
+                    <div class="table-responsive mb-4 mb-lg-0">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Popular</th>
+                                <th scope="col">Players</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range $key, $value := .PopularNewApps }}
+                                <tr data-link="{{ .GetPath }}">
+                                    <td class="img">
+                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
+                                        <span class="text-truncate">{{ .GetName }}</span>
+                                    </td>
+                                    <td>{{ comma .PlayerCount }}</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="col-12 col-lg-6">
+
+                    <div class="table-responsive mb-0">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Highest Rated</th>
+                                <th scope="col">Score</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range $key, $value := .RatedNewApps }}
+                                <tr data-link="{{ .GetPath }}">
+                                    <td class="img">
+                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
+                                        <span class="text-truncate">{{ .GetName }}</span>
+                                    </td>
+                                    <td>{{ .ReviewsScore }}%</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <div class="card">
-        <div class="card-header">News</div>
+        <div class="card-header">News <span class="float-right font-italic">Data from the last 7 days</span></div>
         <div class="card-body">
 
 

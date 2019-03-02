@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
@@ -79,7 +80,49 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Where("type = ?", "game")
 		gorm = gorm.Order("reviews_score desc")
 		gorm = gorm.Limit(15)
-		gorm = gorm.Find(&t.RatedApps)
+		gorm = gorm.Find(&t.TrendingApps)
+
+		log.Err(err, r)
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		gorm = gorm.Select([]string{"id", "name", "icon", "player_count"})
+		gorm = gorm.Where("type = ?", "game")
+		gorm = gorm.Where("release_date_unix > ?", time.Now().Add(time.Hour * 24 * 7 * -1).Unix())
+		gorm = gorm.Order("player_count desc")
+		gorm = gorm.Limit(15)
+		gorm = gorm.Find(&t.PopularNewApps)
+
+		log.Err(err, r)
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		gorm, err := db.GetMySQLClient()
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score"})
+		gorm = gorm.Where("type = ?", "game")
+		gorm = gorm.Where("release_date_unix > ?", time.Now().Add(time.Hour * 24 * 7 * -1).Unix())
+		gorm = gorm.Order("reviews_score desc")
+		gorm = gorm.Limit(15)
+		gorm = gorm.Find(&t.RatedNewApps)
 
 		log.Err(err, r)
 	}()
@@ -92,9 +135,11 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 type homeTemplate struct {
 	GlobalTemplate
-	RanksCount    int
-	AppsCount     int
-	PackagesCount int
-	PopularApps   []db.App
-	RatedApps     []db.App
+	RanksCount     int
+	AppsCount      int
+	PackagesCount  int
+	PopularApps    []db.App
+	TrendingApps   []db.App
+	RatedNewApps   []db.App
+	PopularNewApps []db.App
 }
