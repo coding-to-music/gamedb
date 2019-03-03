@@ -94,7 +94,7 @@ func UploadInstagram() {
 		return
 	}
 
-	_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+") https://gamedb.online"+app.GetPath()+" #steamgames "+helpers.GetHashTag(app.GetName()), 0, 0)
+	_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+") https://gamedb.online"+app.GetPath()+" #steamgames #steam #gaming "+helpers.GetHashTag(app.GetName()), 0, 0)
 	if err != nil {
 		log.Err(err)
 		return
