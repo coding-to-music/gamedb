@@ -1247,6 +1247,11 @@ func adminDev() {
 			addToQueue = true
 		}
 
+		_, err = v.GetAchievements()
+		if err != nil {
+			addToQueue = true
+		}
+
 		if addToQueue {
 			err := queue.ProduceApp(v.ID)
 			log.Err(err)
