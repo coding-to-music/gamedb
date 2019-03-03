@@ -1,7 +1,9 @@
 package db
 
 import (
+	"encoding/json"
 	"net/url"
+	"reflect"
 	"sync"
 	"time"
 
@@ -112,7 +114,7 @@ type HighChartsJson map[string][][]interface{}
 
 func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
 
-	json := HighChartsJson{}
+	resp := HighChartsJson{}
 
 	for k, v := range series.Columns {
 		if k > 0 {
@@ -122,10 +124,33 @@ func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
 					log.Err(err)
 				}
 
-				json[v] = append(json[v], []interface{}{t.Unix() * 1000, vv[k]})
+				resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
 			}
 		}
 	}
 
-	return json
+	return resp
+}
+
+func GetFirstInfluxInt(resp *influx.Response) int {
+
+	if resp != nil &&
+		len(resp.Results) > 0 &&
+		len(resp.Results[0].Series) > 0 &&
+		len(resp.Results[0].Series[0].Values) > 0 &&
+		len(resp.Results[0].Series[0].Values[0]) > 1 {
+
+		switch v := resp.Results[0].Series[0].Values[0][1].(type) {
+		case int:
+			return v
+		case json.Number:
+			i, err := v.Int64()
+			log.Err(err)
+			return int(i)
+		default:
+			log.Warning("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
+		}
+	}
+
+	return 0
 }

@@ -769,10 +769,7 @@ func updateAppPlayerCount(app *db.App) error {
 		return err
 	}
 
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 && len(resp.Results[0].Series[0].Values[0]) > 1 {
-
-		app.PlayerPeakWeek = resp.Results[0].Series[0].Values[0][1].(int)
-	}
+	app.PlayerPeakWeek = db.GetFirstInfluxInt(resp)
 
 	// All time
 	builder = influxql.NewBuilder()
@@ -786,10 +783,7 @@ func updateAppPlayerCount(app *db.App) error {
 		return err
 	}
 
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 && len(resp.Results[0].Series[0].Values[0]) > 1 {
-
-		app.PlayerPeakAllTime = resp.Results[0].Series[0].Values[0][1].(int)
-	}
+	app.PlayerPeakAllTime = db.GetFirstInfluxInt(resp)
 
 	return nil
 }
