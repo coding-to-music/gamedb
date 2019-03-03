@@ -42,6 +42,9 @@ var (
 	MemcacheConfigRow = func(key string) memcache.Item {
 		return memcache.Item{Key: "config-item-" + key, Expiration: 0}
 	}
+	MemcacheAppPlayersRow = func(appID int) memcache.Item {
+		return memcache.Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60}
+	}
 
 	// Other
 	MemcacheMostExpensiveApp = func(code steam.CountryCode) memcache.Item {

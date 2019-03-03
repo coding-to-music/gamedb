@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
@@ -392,6 +393,27 @@ func (app App) GetUFS() (ufs PICSAppUFS, err error) {
 	err = helpers.Unmarshal([]byte(app.UFS), &ufs)
 	log.Err(err)
 	return ufs, err
+}
+
+func (app App) GetOnlinePlayers() (players int, err error) {
+
+	var item = helpers.MemcacheAppPlayersRow(app.ID)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+
+		builder := influxql.NewBuilder()
+		builder.AddSelect("player_count", "")
+		builder.SetFrom("GameDB", "alltime", "apps")
+		builder.AddWhere("app_id", "=", app.ID)
+		builder.AddOrderBy("time", false)
+		builder.SetLimit(1)
+
+		resp, err := InfluxQuery(builder.String())
+
+		return GetFirstInfluxInt(resp), err
+	})
+
+	return players, err
 }
 
 func (app App) GetCommunityLink() string {

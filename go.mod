@@ -10,7 +10,7 @@ require (
 	github.com/99designs/basicauth-go v0.0.0-20160802081356-2a93ba0f464d
 	github.com/Jleagle/go-durationfmt v0.0.0-20190212102610-5ae8bf56bcbe
 	github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c
-	github.com/Jleagle/influxql v0.0.0-20190303103832-9109fd705d0a
+	github.com/Jleagle/influxql v0.0.0-20190303215204-7c739e39d8a6
 	github.com/Jleagle/memcache-go v0.0.0-20190218123846-599d3d90b628
 	github.com/Jleagle/rabbit-go v0.0.0-20190220085424-6afd4589ce23
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
