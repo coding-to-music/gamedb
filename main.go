@@ -137,8 +137,7 @@ func CheckForPlayers() {
 	}
 
 	gorm = gorm.Select([]string{"id"})
-	gorm = gorm.Order("player_count DESC")
-	gorm = gorm.Limit(500)
+	gorm = gorm.Order("id ASC")
 
 	var apps []db.App
 	gorm = gorm.Find(&apps)
