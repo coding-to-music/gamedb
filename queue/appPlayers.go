@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	influx "github.com/influxdata/influxdb1-client"
@@ -64,6 +65,11 @@ func saveAppPlayerToInflux(appID int) (err error) {
 	sx := *s
 	sx.SetAPIRateLimit(time.Millisecond*600, 10)
 	count, _, err := sx.GetNumberOfCurrentPlayers(appID)
+
+	steamErr, ok := err.(steam.Error)
+	if ok && (steamErr.Code == 404) {
+		err = nil
+	}
 	if err != nil {
 		return err
 	}

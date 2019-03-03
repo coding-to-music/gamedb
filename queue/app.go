@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
@@ -751,18 +752,43 @@ func updateAppNews(app *db.App) error {
 
 func updateAppPlayerCount(app *db.App) error {
 
-	resp, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(app.ID)
+	var builder *influxql.Builder
+	var resp *influx.Response
+	var err error
 
-	err2, ok := err.(steam.Error)
-	if ok && (err2.Code == 404) {
-		err = nil
-	}
+	// 7 Days
+	builder = influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom("GameDB", "alltime", "apps")
+	builder.AddWhere("time", ">", "NOW() - 7d")
+	builder.AddWhere("app_id", "=", app.ID)
+	builder.SetFillNone()
+
+	resp, err = db.InfluxQuery(builder.String())
 	if err != nil {
 		return err
 	}
 
-	if resp > app.PlayerCount {
-		app.PlayerCount = resp
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 && len(resp.Results[0].Series[0].Values[0]) > 1 {
+
+		app.PlayerCount7Days = resp.Results[0].Series[0].Values[0][1].(int)
+	}
+
+	// All time
+	builder = influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom("GameDB", "alltime", "apps")
+	builder.AddWhere("app_id", "=", app.ID)
+	builder.SetFillNone()
+
+	resp, err = db.InfluxQuery(builder.String())
+	if err != nil {
+		return err
+	}
+
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 && len(resp.Results[0].Series[0].Values[0]) > 1 {
+
+		app.PlayerCount7Days = resp.Results[0].Series[0].Values[0][1].(int)
 	}
 
 	return nil

@@ -18,6 +18,8 @@ github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c h1
 github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c/go.mod h1:xRFoP0dYM3dVozL4PyltmTlvkE6iyI+eSCmFGePPEtc=
 github.com/Jleagle/influxql v0.0.0-20190226192859-431c80c56b66 h1:1lK8cLT+pxaz4LhVTJQXdnP1YaSkG/2DbJyywBQXLxM=
 github.com/Jleagle/influxql v0.0.0-20190226192859-431c80c56b66/go.mod h1:PIEhc56S2wVRYCvoplgo7hKwAdw+v4piHIc0q0SB3I0=
+github.com/Jleagle/influxql v0.0.0-20190303103832-9109fd705d0a h1:rJIh7xkSvRP2MKRupZCXcSvF/JchtNwXHFNUUAfrEIQ=
+github.com/Jleagle/influxql v0.0.0-20190303103832-9109fd705d0a/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
 github.com/Jleagle/memcache-go v0.0.0-20190218123846-599d3d90b628 h1:trmwRucZqSlKTXAaFMy8/asVJePxfhtxFwAzXNfm2sg=
 github.com/Jleagle/memcache-go v0.0.0-20190218123846-599d3d90b628/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
 github.com/Jleagle/rabbit-go v0.0.0-20190220085424-6afd4589ce23 h1:cRHJjlDorNr6vhbJKKjDcksOPpTowOGIkGRMSEqq+vA=
