@@ -105,14 +105,6 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 		RetentionPolicy: string(InfluxRetentionPolicyAllTime),
 	})
 
-	if len(resp.Results) == 0 {
-		log.Warning(log.ServiceLocal, "No results returned: "+query)
-	}
-
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) == 0 {
-		log.Warning(log.ServiceLocal, "No series returned: "+query)
-	}
-
 	return resp, err
 }
 
