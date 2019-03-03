@@ -771,7 +771,7 @@ func updateAppPlayerCount(app *db.App) error {
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 && len(resp.Results[0].Series[0].Values[0]) > 1 {
 
-		app.PlayerCount7Days = resp.Results[0].Series[0].Values[0][1].(int)
+		app.PlayerPeakWeek = resp.Results[0].Series[0].Values[0][1].(int)
 	}
 
 	// All time
@@ -788,7 +788,7 @@ func updateAppPlayerCount(app *db.App) error {
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 && len(resp.Results[0].Series[0].Values[0]) > 1 {
 
-		app.PlayerCount7Days = resp.Results[0].Series[0].Values[0][1].(int)
+		app.PlayerPeakAllTime = resp.Results[0].Series[0].Values[0][1].(int)
 	}
 
 	return nil

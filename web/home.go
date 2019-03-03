@@ -16,35 +16,35 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	// wg.Add(1)
-	// go func() {
-	//
-	// 	defer wg.Done()
-	//
-	// 	var err error
-	// 	t.RanksCount, err = db.CountRanks()
-	// 	log.Err(err, r)
-	// }()
-	//
-	// wg.Add(1)
-	// go func() {
-	//
-	// 	defer wg.Done()
-	//
-	// 	var err error
-	// 	t.AppsCount, err = db.CountApps()
-	// 	log.Err(err, r)
-	// }()
-	//
-	// wg.Add(1)
-	// go func() {
-	//
-	// 	defer wg.Done()
-	//
-	// 	var err error
-	// 	t.PackagesCount, err = db.CountPackages()
-	// 	log.Err(err, r)
-	// }()
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PlayersCount, err = db.CountPlayers()
+		log.Err(err, r)
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.AppsCount, err = db.CountApps()
+		log.Err(err, r)
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PackagesCount, err = db.CountPackages()
+		log.Err(err, r)
+	}()
 
 	wg.Add(1)
 	go func() {
@@ -135,9 +135,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 type homeTemplate struct {
 	GlobalTemplate
-	RanksCount     int
 	AppsCount      int
 	PackagesCount  int
+	PlayersCount   int
 	PopularApps    []db.App
 	TrendingApps   []db.App
 	RatedNewApps   []db.App

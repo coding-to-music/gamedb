@@ -60,9 +60,8 @@ type App struct {
 	NewsIDs            string    `gorm:"not null;column:news_ids"`                         // []int64
 	Packages           string    `gorm:"not null;column:packages;type:json"`               // []int
 	Platforms          string    `gorm:"not null;column:platforms;type:json"`              // []string
-	PlayerCountNow     int       `gorm:"not null;column:player_count_now"`                 //
-	PlayerCount7Days   int       `gorm:"not null;column:player_count_week"`                //
-	PlayerCountAllTime int       `gorm:"not null;column:player_count_all_time"`            //
+	PlayerPeakWeek     int       `gorm:"not null;column:player_peak_week"`                 //
+	PlayerPeakAllTime  int       `gorm:"not null;column:player_peak_alltime"`              //
 	Prices             string    `gorm:"not null;column:prices"`                           // ProductPrices
 	PublicOnly         bool      `gorm:"not null;column:public_only"`                      //
 	Publishers         string    `gorm:"not null;column:publishers;type:json"`             // []int

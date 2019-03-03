@@ -12,6 +12,18 @@
             Please consider <a href="/donate">donating</a> to help pay server bills and improve website accuracy.</p>
     </div>
 
+    <div class="row">
+        <div class="col-12 col-sm-6 col-lg-4 col-xl">
+            <div role="button" class="btn btn-success btn-block mb-4">Apps<br/>{{ comma .AppsCount }}</div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-4 col-xl">
+            <div role="button" class="btn btn-success btn-block mb-4">Packages<br/>{{ comma .PackagesCount }}</div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-4 col-xl">
+            <div role="button" class="btn btn-success btn-block mb-4">Players<br/>{{ comma .PlayersCount }}</div>
+        </div>
+    </div>
+
     <div class="card mb-3">
         <div class="card-header">Games <span class="float-right font-italic">Data from the last 7 days</span></div>
         <div class="card-body">
@@ -34,7 +46,7 @@
                                         <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
                                         <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
-                                    <td>{{ comma .PlayerCount7Days }}</td>
+                                    <td>{{ comma .PlayerPeakWeek }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
@@ -94,7 +106,7 @@
                                         <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
                                         <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
-                                    <td>{{ comma .PlayerCount7Days }}</td>
+                                    <td>{{ comma .PlayerPeakWeek }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
