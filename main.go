@@ -91,8 +91,8 @@ func main() {
 		err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
 		log.Critical(err)
 
-	err = c.AddFunc("0 */10 * * * *", CheckForPlayers)
-	log.Critical(err)
+		err = c.AddFunc("0 0 * * * *", CheckForPlayers)
+		log.Critical(err)
 
 		c.Start()
 	}
