@@ -84,8 +84,15 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	// Get summary
 	err = updatePlayerSummary(&player)
 	if err != nil {
+
 		logError(err, message.ID)
-		payload.ackRetry(msg)
+
+		if err == steam.ErrNoUserFound {
+			payload.ack(msg)
+		} else {
+			payload.ackRetry(msg)
+		}
+
 		return
 	}
 
