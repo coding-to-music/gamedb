@@ -57,8 +57,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		gorm = gorm.Select([]string{"id", "name", "icon", "player_count"})
-		gorm = gorm.Order("player_count desc")
+		gorm = gorm.Select([]string{"id", "name", "icon", "player_peak_week"})
+		gorm = gorm.Order("player_peak_week desc")
 		gorm = gorm.Limit(15)
 		gorm = gorm.Find(&t.PopularApps)
 
@@ -96,10 +96,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		gorm = gorm.Select([]string{"id", "name", "icon", "player_count"})
+		gorm = gorm.Select([]string{"id", "name", "icon", "player_peak_week"})
 		gorm = gorm.Where("type = ?", "game")
 		gorm = gorm.Where("release_date_unix > ?", time.Now().Add(time.Hour * 24 * 7 * -1).Unix())
-		gorm = gorm.Order("player_count desc")
+		gorm = gorm.Order("player_peak_week desc")
 		gorm = gorm.Limit(15)
 		gorm = gorm.Find(&t.PopularNewApps)
 
