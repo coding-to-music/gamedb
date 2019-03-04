@@ -73,17 +73,17 @@ func main() {
 		err = c.AddFunc("0 0 0 * * *", web.CronRanks)
 		log.Critical(err)
 
-		// err = c.AddFunc("0 0 1 * * *", web.CronGenres)
-		// log.Critical(err)
+		err = c.AddFunc("0 0 1 * * *", web.CronGenres)
+		log.Critical(err)
 
-		// err = c.AddFunc("0 0 2 * * *", web.CronTags)
-		// log.Critical(err)
+		err = c.AddFunc("0 0 2 * * *", web.CronTags)
+		log.Critical(err)
 
-		// err = c.AddFunc("0 0 3 * * *", web.CronPublishers)
-		// log.Critical(err)
+		err = c.AddFunc("0 0 3 * * *", web.CronPublishers)
+		log.Critical(err)
 
-		// err = c.AddFunc("0 0 4 * * *", web.CronDevelopers)
-		// log.Critical(err)
+		err = c.AddFunc("0 0 4 * * *", web.CronDevelopers)
+		log.Critical(err)
 
 		err = c.AddFunc("0 0 5 * * *", web.CronDonations)
 		log.Critical(err)
@@ -91,7 +91,7 @@ func main() {
 		err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
 		log.Critical(err)
 
-		err = c.AddFunc("0 0 * * * *", CheckForPlayers)
+		err = c.AddFunc("0 0 */2 * * *", CheckForPlayers)
 		log.Critical(err)
 
 		c.Start()
