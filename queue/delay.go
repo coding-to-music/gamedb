@@ -27,9 +27,9 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Limits
-	if q.maxTime > 0 && payload.FirstSeen.Add(q.maxTime).Unix() > time.Now().Unix() {
+	if q.getMaxTime() > 0 && payload.FirstSeen.Add(q.getMaxTime()).Unix() > time.Now().Unix() {
 
-		logWarning("Message removed from delay queue (Over " + q.maxTime.String() + "): " + string(msg.Body))
+		logWarning("Message removed from delay queue (Over " + q.getMaxTime().String() + "): " + string(msg.Body))
 		payload.fail(msg)
 		return
 	}

@@ -47,41 +47,27 @@ var (
 	consumerCloseChannel = make(chan *amqp.Error)
 	producerCloseChannel = make(chan *amqp.Error)
 
-	queues = []baseQueue{
-		{
-			name:    queueGoApps,
-			queue:   &appQueue{},
-			maxTime: time.Hour * 24 * 7,
+	queues = map[queueName]baseQueue{
+		queueGoApps: {
+			queue: &appQueue{},
 		},
-		{
-			name:    queueGoBundles,
-			queue:   &bundleQueue{},
-			maxTime: time.Hour * 24 * 7,
+		queueGoBundles: {
+			queue: &bundleQueue{},
 		},
-		{
-			name:    queueGoChanges,
-			queue:   &changeQueue{},
-			maxTime: time.Hour * 24 * 7,
+		queueGoChanges: {
+			queue: &changeQueue{},
 		},
-		{
-			name:    queueGoDelays,
-			queue:   &delayQueue{},
-			maxTime: time.Hour * 24 * 7,
+		queueGoDelays: {
+			queue: &delayQueue{},
 		},
-		{
-			name:    queueGoPackages,
-			queue:   &packageQueue{},
-			maxTime: time.Hour * 24 * 7,
+		queueGoPackages: {
+			queue: &packageQueue{},
 		},
-		{
-			name:    queueGoProfiles,
-			queue:   &playerQueue{},
-			maxTime: time.Hour * 24 * 7,
+		queueGoProfiles: {
+			queue: &playerQueue{},
 		},
-		{
-			name:    queueGoAppPlayer,
-			queue:   &appPlayerQueue{},
-			maxTime: time.Hour * 24 * 7,
+		queueGoAppPlayer: {
+			queue: &appPlayerQueue{},
 		},
 	}
 )
@@ -172,9 +158,28 @@ type queueInterface interface {
 type baseQueue struct {
 	queue       queueInterface
 	name        queueName
+	qos         int
 	batchSize   int
 	maxAttempts int
 	maxTime     time.Duration
+}
+
+func (q baseQueue) getQOS() int {
+
+	if q.qos != 0 {
+		return q.qos
+	}
+
+	return 10
+}
+
+func (q baseQueue) getMaxTime() time.Duration {
+
+	if q.maxTime != 0 {
+		return q.maxTime
+	}
+
+	return time.Hour * 24 * 7
 }
 
 func (q baseQueue) consumeMessages() {
@@ -208,7 +213,7 @@ func (q baseQueue) consumeMessages() {
 		}
 
 		//
-		ch, qu, err := getQueue(consumerConnection, q.name)
+		ch, qu, err := getQueue(consumerConnection, q.name, q.getQOS())
 		if err != nil {
 			logError(err)
 			return
@@ -250,7 +255,8 @@ func (q baseQueue) consumeMessages() {
 }
 
 func RunConsumers() {
-	for _, queue := range queues {
+	for queueName, queue := range queues {
+		queue.name = queueName
 		go queue.consumeMessages()
 	}
 }
@@ -296,7 +302,7 @@ func produce(payload baseMessage, queue queueName) (err error) {
 	}
 
 	//
-	ch, qu, err := getQueue(producerConnection, queue)
+	ch, qu, err := getQueue(producerConnection, queue, queues[queue].getQOS())
 	if err != nil {
 		return err
 	}
@@ -333,14 +339,14 @@ func makeAConnection() (conn *amqp.Connection, err error) {
 	return conn, err
 }
 
-func getQueue(conn *amqp.Connection, queue queueName) (ch *amqp.Channel, qu amqp.Queue, err error) {
+func getQueue(conn *amqp.Connection, queue queueName, qos int) (ch *amqp.Channel, qu amqp.Queue, err error) {
 
 	ch, err = conn.Channel()
 	if err != nil {
 		return
 	}
 
-	err = ch.Qos(10, 0, false)
+	err = ch.Qos(qos, 0, false)
 	if err != nil {
 		return
 	}
@@ -412,11 +418,11 @@ func ProducePlayer(ID int64) (err error) {
 	}, queueCSProfiles)
 }
 
-func ProduceAppPlayers(ID int) (err error) {
+func ProduceAppPlayers(IDs []int) (err error) {
 
 	return produce(baseMessage{
 		Message: appPlayerMessage{
-			ID: ID,
+			IDs: IDs,
 		},
 	}, queueGoAppPlayer)
 }
