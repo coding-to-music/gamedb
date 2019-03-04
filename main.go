@@ -63,9 +63,10 @@ func main() {
 
 	// Crons
 
-	c := cron.New()
-
 	if config.Config.IsProd() {
+
+		c := cron.New()
+
 		err = c.AddFunc("0 0 0 * * *", web.ClearUpcomingCache)
 		log.Critical(err)
 
@@ -89,12 +90,12 @@ func main() {
 
 		err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
 		log.Critical(err)
-	}
 
 	err = c.AddFunc("0 */10 * * * *", CheckForPlayers)
 	log.Critical(err)
 
-	c.Start()
+		c.Start()
+	}
 
 	// Block forever for goroutines to run
 	x := make(chan os.Signal)
