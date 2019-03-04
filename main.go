@@ -110,7 +110,10 @@ func main() {
 			defer wg.Done()
 
 			sql, err := db.GetMySQLClient()
-			log.Err(err)
+			if err != nil {
+				log.Err(err)
+				return
+			}
 
 			err = sql.Close()
 			log.Err(err)
@@ -122,34 +125,39 @@ func main() {
 	wg.Wait()
 }
 
-var appPlayersRunning bool
-
 func CheckForPlayers() {
-
-	if appPlayersRunning {
-		return
-	}
-
-	appPlayersRunning = true
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
 		log.Critical(err)
+		return
 	}
 
 	gorm = gorm.Select([]string{"id"})
 	gorm = gorm.Order("id ASC")
 
-	var apps []db.App
-	gorm = gorm.Find(&apps)
+	var appIDs []int
+
+	gorm = gorm.Model(&[]db.App{}).Pluck("id", &appIDs)
 	if gorm.Error != nil {
 		log.Critical(gorm.Error)
 	}
 
-	for _, v := range apps {
-		err = queue.ProduceAppPlayers(v.ID)
-		log.Err(err)
+	// Chunk appIDs
+	var chunks [][]int
+	for i := 0; i < len(appIDs); i += 10 {
+		end := i + 10
+
+		if end > len(appIDs) {
+			end = len(appIDs)
+		}
+
+		chunks = append(chunks, appIDs[i:end])
 	}
 
-	appPlayersRunning = false
+	for _, chunk := range chunks {
+
+		err = queue.ProduceAppPlayers(chunk)
+		log.Err(err)
+	}
 }

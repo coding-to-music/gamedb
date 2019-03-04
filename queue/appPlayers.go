@@ -13,7 +13,7 @@ import (
 )
 
 type appPlayerMessage struct {
-	ID int `json:"id"`
+	IDs []int `json:"ids"`
 }
 
 type appPlayerQueue struct {
@@ -44,15 +44,18 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	if payload.Attempt > 1 {
-		logInfo("Consuming app player " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
-	}
+	for _, appID := range message.IDs {
 
-	err = saveAppPlayerToInflux(message.ID)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
+		if payload.Attempt > 1 {
+			logInfo("Consuming app player " + strconv.Itoa(appID) + ", attempt " + strconv.Itoa(payload.Attempt))
+		}
+
+		err = saveAppPlayerToInflux(appID)
+		if err != nil {
+			logError(err, appID)
+			payload.ackRetry(msg)
+			return
+		}
 	}
 
 	//
