@@ -10,10 +10,12 @@ import (
 func StringSliceToIntSlice(in []string) (ret []int) {
 
 	for _, v := range in {
-		i, err := strconv.Atoi(v)
-		log.Err(err)
-		if err == nil {
-			ret = append(ret, i)
+		if v != "" {
+			i, err := strconv.Atoi(v)
+			log.Err(err)
+			if err == nil {
+				ret = append(ret, i)
+			}
 		}
 	}
 	return ret

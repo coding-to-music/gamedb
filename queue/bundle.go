@@ -135,9 +135,6 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 func updateBundle(bundle *db.Bundle) (err error) {
 
-	var apps []string
-	var packages []string
-
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
 		colly.AllowURLRevisit(), // This is for retrys
@@ -175,11 +172,13 @@ func updateBundle(bundle *db.Bundle) (err error) {
 	})
 
 	// Apps
+	var apps []string
 	c.OnHTML("[data-ds-appid]", func(e *colly.HTMLElement) {
 		apps = append(apps, strings.Split(e.Attr("data-ds-appid"), ",")...)
 	})
 
 	// Packages
+	var packages []string
 	c.OnHTML("[data-ds-packageid]", func(e *colly.HTMLElement) {
 		packages = append(packages, strings.Split(e.Attr("data-ds-packageid"), ",")...)
 	})
