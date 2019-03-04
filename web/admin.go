@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"runtime"
 	"sort"
@@ -14,7 +13,6 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -1212,54 +1210,43 @@ func adminDev() {
 		return
 	}
 
-	var apps []db.App
+	var allApps []db.App
 
-	gorm = gorm.Select([]string{"id", "genres", "publishers", "tags", "developers"})
-	gorm = gorm.Find(&apps)
+	// 1
+	gorm = gorm.Select([]string{"id", "achievements"})
+	gorm = gorm.Order("id ASC")
+	gorm = gorm.Where("achievements = ?", "null")
+
+	var apps1 []db.App
+	gorm = gorm.Find(&apps1)
 	if gorm.Error != nil {
 		log.Err(gorm.Error)
 		return
 	}
+	allApps = append(allApps, apps1...)
 
-	var count int
-	for _, v := range apps {
+	// 2
+	gorm = gorm.Select([]string{"id", "achievements"})
+	gorm = gorm.Order("id ASC")
+	gorm = gorm.Where("achievements LIKE", "{*")
 
-		var addToQueue = false
-		var err error
-
-		_, err = v.GetGenreIDs()
-		if err != nil {
-			addToQueue = true
-		}
-
-		_, err = v.GetPublisherIDs()
-		if err != nil {
-			addToQueue = true
-		}
-
-		_, err = v.GetDeveloperIDs()
-		if err != nil {
-			addToQueue = true
-		}
-
-		_, err = v.GetTagIDs()
-		if err != nil {
-			addToQueue = true
-		}
-
-		_, err = v.GetAchievements()
-		if err != nil {
-			addToQueue = true
-		}
-
-		if addToQueue {
-			err := queue.ProduceApp(v.ID)
-			log.Err(err)
-			count++
-		}
+	var apps2 []db.App
+	gorm = gorm.Find(&apps2)
+	if gorm.Error != nil {
+		log.Err(gorm.Error)
+		return
 	}
+	allApps = append(allApps, apps2...)
 
-	fmt.Println("Queued " + humanize.Comma(int64(count)) + "apps")
+	//
+	for _, v := range allApps {
+
+		var app = db.App{}
+		app.ID = v.ID
+
+		gorm = gorm.Model(&app).Update("achievements", "[]")
+		log.Err(gorm.Error)
+	}
 
 	return
 
