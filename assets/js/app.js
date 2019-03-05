@@ -257,7 +257,7 @@ if ($appPage.length > 0) {
                     },
                     series: [{
                         color: '#28a745',
-                        data: data['mean_player_count']
+                        data: data['max_player_count']
                     }],
                 }));
 
