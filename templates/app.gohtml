@@ -238,23 +238,23 @@
                         <tbody>
                         <tr>
                             <td>Owners</td>
-                            <td>{{ comma .SteamSpy.SSOwnersLow }} - {{ comma .SteamSpy.SSOwnersHigh }}</td>
+                            <td>{{ comma .SteamSpy.SSOwnersLow }} - {{ comma .SteamSpy.SSOwnersHigh }} hours</td>
                         </tr>
                         <tr>
                             <td>Average Playtime (Two Weeks)</td>
-                            <td>{{ .SteamSpy.SSAveragePlaytimeTwoWeeks }}</td>
+                            <td>{{ .SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
                         </tr>
                         <tr>
                             <td>Average Playtime (Forever)</td>
-                            <td>{{ .SteamSpy.SSAveragePlaytimeForever }}</td>
+                            <td>{{ .SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
                         </tr>
                         <tr>
                             <td>Median Playtime (Two Weeks)</td>
-                            <td>{{ .SteamSpy.SSMedianPlaytimeTwoWeeks }}</td>
+                            <td>{{ .SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
                         </tr>
                         <tr>
                             <td>Median Playtime (Forever)</td>
-                            <td>{{ .SteamSpy.SSMedianPlaytimeForever }}</td>
+                            <td>{{ .SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
                         </tr>
                         </tbody>
                     </table>

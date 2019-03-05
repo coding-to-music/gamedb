@@ -951,6 +951,22 @@ type AppSteamSpy struct {
 	SSOwnersHigh              int `json:"oh"`
 }
 
+func (ss AppSteamSpy) GetSSAveragePlaytimeTwoWeeks() float64 {
+	return helpers.RoundFloatTo1DP(float64(ss.SSAveragePlaytimeTwoWeeks) / 60)
+}
+
+func (ss AppSteamSpy) GetSSAveragePlaytimeForever() float64 {
+	return helpers.RoundFloatTo1DP(float64(ss.SSAveragePlaytimeForever) / 60)
+}
+
+func (ss AppSteamSpy) GetSSMedianPlaytimeTwoWeeks() float64 {
+	return helpers.RoundFloatTo1DP(float64(ss.SSMedianPlaytimeTwoWeeks) / 60)
+}
+
+func (ss AppSteamSpy) GetSSMedianPlaytimeForever() float64 {
+	return helpers.RoundFloatTo1DP(float64(ss.SSMedianPlaytimeForever) / 60)
+}
+
 type AppReviewSummary struct {
 	Positive int
 	Negative int
