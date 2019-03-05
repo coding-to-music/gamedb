@@ -236,6 +236,10 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
+                if (data === null) {
+                    data = [];
+                }
+
                 Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
                     chart: {
                         type: 'area'
@@ -269,6 +273,10 @@ if ($appPage.length > 0) {
             url: '/apps/' + $appPage.attr('data-id') + '/ajax/reviews',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
 
                 Highcharts.chart('reviews-chart', $.extend(true, {}, defaultAppChartOptions, {
                     chart: {

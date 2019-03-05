@@ -149,6 +149,10 @@ if ($playerPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
+                if (data === null) {
+                    data = [];
+                }
+
                 const yAxisHistory = {
                     allowDecimals: false,
                     title: {

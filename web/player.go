@@ -505,21 +505,23 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var hc db.HighChartsJson
+
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc := db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+	}
 
-		b, err := json.Marshal(hc)
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
+	b, err := json.Marshal(hc)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
 
-		err = returnJSON(w, r, b)
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
+	err = returnJSON(w, r, b)
+	if err != nil {
+		log.Err(err, r)
+		return
 	}
 }
 

@@ -45,6 +45,9 @@ if ($('#stats-page').length > 0) {
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
+            if (data === null) {
+                data = [];
+            }
 
             Highcharts.chart('scores', $.extend(true, {}, defaultStatsChartOptions, {
                 xAxis: {
@@ -79,6 +82,10 @@ if ($('#stats-page').length > 0) {
         url: '/stats/app-types',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
+
+            if (data === null) {
+                data = [];
+            }
 
             Highcharts.chart('types', $.extend(true, {}, defaultStatsChartOptions, {
                 xAxis: {
@@ -122,6 +129,10 @@ if ($('#stats-page').length > 0) {
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
+            if (data === null) {
+                data = [];
+            }
+
             Highcharts.chart('countries', $.extend(true, {}, defaultStatsChartOptions, {
                 xAxis: {
                     tickInterval: 1,
@@ -149,6 +160,10 @@ if ($('#stats-page').length > 0) {
         url: '/stats/release-dates',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
+
+            if (data === null) {
+                data = [];
+            }
 
             Highcharts.chart('release-dates', $.extend(true, {}, defaultStatsChartOptions, {
                 chart: {
