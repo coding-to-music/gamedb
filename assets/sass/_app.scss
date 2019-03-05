@@ -17,13 +17,26 @@
         }
     }
 
-    #charts {
-        div {
+    #players {
+
+        #players-chart {
             height: 250px;
+        }
+
+        table {
+            tr {
+                td:first-child {
+                    width: 30%;
+                }
+            }
         }
     }
 
     #reviews {
+
+        #reviews-chart {
+            height: 250px;
+        }
 
         // todo, get these from BS variables
         div[data-vote=true] {

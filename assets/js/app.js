@@ -128,10 +128,16 @@ if ($appPage.length > 0) {
                 loadPriceChart();
             }
         }
-        if (to.attr('href') === '#charts') {
+        if (to.attr('href') === '#players') {
             if (!to.attr('loaded')) {
                 to.attr('loaded', 1);
-                loadAppCharts();
+                loadAppPlayersChart();
+            }
+        }
+        if (to.attr('href') === '#reviews') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+                loadAppReviewsChart();
             }
         }
 
@@ -211,62 +217,24 @@ if ($appPage.length > 0) {
         }));
     }
 
-    function loadAppCharts() {
+    const defaultAppChartOptions = {
+        title: {
+            text: ''
+        },
+        subtitle: {
+            text: ''
+        },
+        credits: {
+            enabled: false
+        },
+        plotOptions: {},
+        xAxis: {
+            title: {text: ''},
+            type: 'datetime'
+        },
+    };
 
-        const defaultAppChartOptions = {
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false
-            },
-            plotOptions: {},
-            xAxis: {
-                title: {text: ''},
-                type: 'datetime'
-            },
-        };
-
-        $.ajax({
-            type: "GET",
-            url: '/apps/' + $appPage.attr('data-id') + '/ajax/players',
-            dataType: 'json',
-            success: function (data, textStatus, jqXHR) {
-
-                if (data === null) {
-                    data = [];
-                }
-
-                Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
-                    chart: {
-                        type: 'area'
-                    },
-                    yAxis: {
-                        allowDecimals: false,
-                        title: {
-                            text: ''
-                        },
-                        min: 0
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    tooltip: {
-                        formatter: function () {
-                            return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
-                        },
-                    },
-                    series: [{
-                        color: '#28a745',
-                        data: data['max_player_count']
-                    }],
-                }));
-
-            },
-        });
+    function loadAppReviewsChart() {
 
         $.ajax({
             type: "GET",
@@ -342,6 +310,64 @@ if ($appPage.length > 0) {
                             marker: {symbol: 'circle'}
                         },
                     ],
+                }));
+
+            },
+        });
+    }
+
+    function loadAppPlayersChart() {
+
+        const defaultAppChartOptions = {
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {},
+            xAxis: {
+                title: {text: ''},
+                type: 'datetime'
+            },
+        };
+
+        $.ajax({
+            type: "GET",
+            url: '/apps/' + $appPage.attr('data-id') + '/ajax/players',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
+
+                Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
+                    chart: {
+                        type: 'area'
+                    },
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {
+                            text: ''
+                        },
+                        min: 0,
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                        },
+                    },
+                    series: [{
+                        color: '#28a745',
+                        data: data['max_player_count']
+                    }],
                 }));
 
             },

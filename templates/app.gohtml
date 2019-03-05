@@ -28,7 +28,7 @@
                     <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#charts" role="tab">Charts</a>
+                    <a class="nav-link" data-toggle="tab" href="#players" role="tab">Players</a>
                 </li>
                 {{if gt (len .Prices) 0}}
                     <li class="nav-item">
@@ -226,17 +226,38 @@
                 </div>
 
                 {{/* Charts */}}
-                <div class="tab-pane" id="charts" role="tabpanel">
+                <div class="tab-pane" id="players" role="tabpanel">
 
-                    <h5>Players</h5>
                     <div id="players-chart">
                         <i class="fas fa-spinner fa-spin"></i>
                     </div>
 
-                    <h5>Review Score</h5>
-                    <div id="reviews-chart">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
+                    <h5>Steam Spy</h5>
+
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td>Owners</td>
+                            <td>{{ comma .SteamSpy.SSOwnersLow }} - {{ comma .SteamSpy.SSOwnersHigh }}</td>
+                        </tr>
+                        <tr>
+                            <td>Average Playtime (Two Weeks)</td>
+                            <td>{{ .SteamSpy.SSAveragePlaytimeTwoWeeks }}</td>
+                        </tr>
+                        <tr>
+                            <td>Average Playtime (Forever)</td>
+                            <td>{{ .SteamSpy.SSAveragePlaytimeForever }}</td>
+                        </tr>
+                        <tr>
+                            <td>Median Playtime (Two Weeks)</td>
+                            <td>{{ .SteamSpy.SSMedianPlaytimeTwoWeeks }}</td>
+                        </tr>
+                        <tr>
+                            <td>Median Playtime (Forever)</td>
+                            <td>{{ .SteamSpy.SSMedianPlaytimeForever }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
 
                 </div>
 
@@ -441,9 +462,13 @@
                             </tbody>
                         </table>
 
+                        <div id="reviews-chart">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+
                         {{ range $key, $value := .Reviews.Reviews }}
 
-                            <div class="card mt-4">
+                            <div class="card mt-3">
                                 <div class="card-header" data-vote="{{ .Vote }}">
                                     <div class="float-right">
                                         {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>

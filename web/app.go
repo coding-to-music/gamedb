@@ -234,6 +234,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 	t.Publishers, err = t.App.GetPublishers()
 	log.Err(err, r)
+	t.SteamSpy, err = t.App.GetSteamSpy()
+	log.Err(err, r)
 
 	err = returnTemplate(w, r, "app", t)
 	log.Err(err, r)
@@ -257,6 +259,7 @@ type appTemplate struct {
 	Publishers   []db.Publisher
 	Reviews      db.AppReviewSummary
 	Screenshots  []db.AppImage
+	SteamSpy     db.AppSteamSpy
 	Stats        []db.AppStat
 	Tags         []db.Tag
 }
