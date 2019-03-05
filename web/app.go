@@ -308,9 +308,8 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		q := datastore.NewQuery(db.KindNews).Filter("app_id =", idx).Limit(100)
-		q, err = query.SetOrderOffsetDS(q, map[string]string{})
-		q = q.Order("-date")
+		q := datastore.NewQuery(db.KindNews).Filter("app_id =", idx).Order("-date").Limit(100)
+		q, err = query.SetOffsetDS(q)
 		if err != nil {
 
 			log.Err(err, r)

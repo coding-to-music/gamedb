@@ -723,7 +723,7 @@ func updateAppNews(app *db.App) error {
 		news.Author = v.Author
 		news.Contents = v.Contents
 		news.FeedLabel = v.Feedlabel
-		news.Date = time.Unix(int64(v.Date), 0)
+		news.Date = time.Unix(v.Date, 0)
 		news.FeedName = v.Feedname
 		news.FeedType = int8(v.FeedType)
 
