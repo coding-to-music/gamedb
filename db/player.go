@@ -345,11 +345,13 @@ func IsValidPlayerID(id int64) bool {
 		return false
 	}
 
-	if id < 10000000000000000 {
+	idString := strconv.FormatInt(id, 10)
+
+	if !strings.HasPrefix(idString, "76") {
 		return false
 	}
 
-	if len(strconv.FormatInt(id, 10)) != 17 {
+	if len(idString) != 17 {
 		return false
 	}
 
