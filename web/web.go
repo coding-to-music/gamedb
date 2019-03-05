@@ -506,6 +506,7 @@ func (t GlobalTemplate) isAdmin() bool {
 }
 
 func (t GlobalTemplate) showAds() bool {
+	return false
 	return !t.isLocal()
 }
 
