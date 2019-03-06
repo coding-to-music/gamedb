@@ -232,7 +232,23 @@
                         <i class="fas fa-spinner fa-spin"></i>
                     </div>
 
-                    <h5>Steam Spy</h5>
+                    <h5>Peaks</h5>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td>All Time</td>
+                            <td>{{ comma .App.PlayerPeakAllTime }}</td>
+                        </tr>
+                        <tr>
+                            <td>Last week</td>
+                            <td>{{ comma .App.PlayerPeakWeek }}</td>
+                        </tr>
+                        <tr>
+                            <td>Last 10 minutes</td>
+                            <td>{{ comma .App.GetOnlinePlayers }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
 
                     <table class="table">
                         <tbody>
