@@ -47,9 +47,8 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		q := datastore.NewQuery(db.KindNews).Limit(100)
-		q, err = query.SetOrderOffsetDS(q, map[string]string{})
-		q = q.Order("-date")
+		q := datastore.NewQuery(db.KindNews).Order("-date").Limit(100)
+		q, err = query.SetOffsetDS(q)
 		if err != nil {
 
 			log.Err(err, r)
