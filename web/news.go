@@ -2,8 +2,10 @@ package web
 
 import (
 	"net/http"
+	"sort"
 
 	"cloud.google.com/go/datastore"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -22,12 +24,41 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t := newsTemplate{}
 	t.Fill(w, r, "News", "All the news from all the games, all in one place.")
 
-	err := returnTemplate(w, r, "news", t)
+	apps, err := db.PopularApps()
+	log.Err(err, r)
+
+	if config.Config.IsLocal() {
+		apps = apps[0:3]
+	}
+
+	client, ctx, err := db.GetDSClient()
+	if err != nil {
+
+		log.Err(err, r)
+		return
+	}
+
+	for _, v := range apps {
+
+		var news []db.News
+		q := datastore.NewQuery(db.KindNews).Filter("app_id =", v.ID).Order("-date").Limit(3)
+		_, err = client.GetAll(ctx, q, &news)
+		err = db.HandleDSMultiError(err, db.OldNewsFields)
+		log.Err(err, r)
+		t.News = append(t.News, news...)
+	}
+
+	sort.Slice(t.News, func(i, j int) bool {
+		return t.News[i].Date.Unix() < t.News[j].Date.Unix()
+	})
+
+	err = returnTemplate(w, r, "news", t)
 	log.Err(err, r)
 }
 
 type newsTemplate struct {
 	GlobalTemplate
+	News []db.News
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {

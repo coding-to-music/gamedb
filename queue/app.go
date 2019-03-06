@@ -268,6 +268,9 @@ func updateAppPICS(app *db.App, payload baseMessage, message appMessage) (err er
 					stringTags := vv.GetChildrenAsSlice()
 					tags = helpers.StringSliceToIntSlice(stringTags)
 				}
+				if vv.Name == "name" {
+					app.SetNameIfEmpty(vv.Value.(string))
+				}
 
 				common[vv.Name] = vv.String()
 			}
@@ -580,7 +583,7 @@ func updateAppDetails(app *db.App) error {
 			wg.Wait()
 
 			// Other
-			app.Name = response.Data.Name
+			app.SetNameIfEmpty(response.Data.Name)
 			app.Type = response.Data.Type
 			app.IsFree = response.Data.IsFree
 			app.ShortDescription = response.Data.ShortDescription
@@ -728,8 +731,8 @@ func updateAppNews(app *db.App) error {
 		news.FeedType = int8(v.FeedType)
 
 		news.AppID = v.AppID
-		news.AppName = app.Name
-		news.AppIcon = app.Icon
+		news.AppName = app.GetName()
+		news.AppIcon = app.GetIcon()
 
 		kinds = append(kinds, news)
 		ids = append(ids, int64(v.GID))

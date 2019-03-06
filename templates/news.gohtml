@@ -9,13 +9,17 @@
     </div>
 
     <div class="card">
-        <div class="card-header d-none">
+
+        <div class="card-header">
 
             <ul class="nav nav-tabs card-header-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#apps" role="tab">App News</a>
+                    <a class="nav-link active" data-toggle="tab" href="#popular" role="tab">Popular Apps</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#apps" role="tab">All Apps</a>
+                </li>
+                <li class="nav-item d-none">
                     <a class="nav-link" data-toggle="tab" href="#steam" role="tab">Steam News</a>
                 </li>
             </ul>
@@ -25,8 +29,25 @@
 
             <div class="tab-content">
 
+                {{/* Steam */}}
+                <div class="tab-pane show active" id="popular" role="tabpanel">
+
+                    {{ range $key, $value := .News }}
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .AppIcon }}.jpg" alt="{{ .AppName }}" class="rounded">
+                                <a href="/apps/{{ .AppID }}">{{ .AppName }}</a> - {{ .Title }}
+                            </div>
+                            <div class="card-body">{{ html .Contents }}</div>
+                        </div>
+
+                    {{ end }}
+
+                </div>
+
                 {{/* Apps */}}
-                <div class="tab-pane show active" id="apps" role="tabpanel">
+                <div class="tab-pane" id="apps" role="tabpanel">
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/news/ajax">

@@ -665,6 +665,35 @@ func (app App) GetMetaImage() string {
 	return ss[0].PathFull
 }
 
+func (app *App) SetNameIfEmpty(name string) {
+
+	if app.Name == "" && name != "" {
+		app.Name = name
+	}
+}
+
+func PopularApps() (apps []App, err error) {
+
+	var item = helpers.MemcachePopularApps
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return apps, err
+		}
+
+		db = db.Select([]string{"id", "name", "icon", "player_peak_week"})
+		db = db.Order("player_peak_week desc")
+		db = db.Limit(15)
+		db = db.Find(&apps)
+
+		return apps, err
+	})
+
+	return apps, err
+}
+
 type SteamSpyAppResponse struct {
 	Appid     int    `json:"appid"`
 	Name      string `json:"name"`

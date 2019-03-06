@@ -1,6 +1,11 @@
 package helpers
 
-import "github.com/frustra/bbcode"
+import (
+	"html"
+	"html/template"
+
+	"github.com/frustra/bbcode"
+)
 
 var BBCodeCompiler = bbcode.NewCompiler(true, true)
 
@@ -27,4 +32,10 @@ func init() {
 		out.Name = "li"
 		return out, true
 	})
+}
+
+func RenderHTMLAndBBCode(in string) template.HTML {
+
+	return template.HTML(html.UnescapeString(BBCodeCompiler.Compile(in)))
+
 }
