@@ -481,7 +481,7 @@ func GetAllPlayers(order string, limit int, keysOnly bool) (players []Player, ke
 	}
 
 	keys, err = client.GetAll(ctx, q, &players)
-	err = handleDSMultiError(err, oldPlayerFields)
+	err = HandleDSMultiError(err, oldPlayerFields)
 	return players, keys, err
 }
 
@@ -507,7 +507,7 @@ func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 		playersChunk := make([]Player, len(chunk))
 
 		err = client.GetMulti(ctx, chunk, playersChunk)
-		err = handleDSMultiError(err, oldPlayerFields)
+		err = HandleDSMultiError(err, oldPlayerFields)
 		if err != nil {
 			return players, err
 		}

@@ -9,8 +9,6 @@ import (
 )
 
 type News struct {
-	CreatedAt  time.Time `datastore:"created_at,noindex"`
-	UpdatedAt  time.Time `datastore:"updated_at,noindex"`
 	ArticleID  int64     `datastore:"article_id,noindex"`
 	Title      string    `datastore:"title,noindex"`
 	URL        string    `datastore:"url,noindex"`

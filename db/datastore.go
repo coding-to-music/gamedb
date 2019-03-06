@@ -205,6 +205,10 @@ var (
 		"games",
 		"games_heat_map",
 	}
+	OldNewsFields = []string{
+		"created_at",
+		"updated_at",
+	}
 )
 
 func handleDSSingleError(err error, oldFields []string) error {
@@ -223,7 +227,7 @@ func handleDSSingleError(err error, oldFields []string) error {
 	return err
 }
 
-func handleDSMultiError(err error, oldFields []string) error {
+func HandleDSMultiError(err error, oldFields []string) error {
 
 	if err == nil {
 		return nil
@@ -232,7 +236,7 @@ func handleDSMultiError(err error, oldFields []string) error {
 	if multiErr, ok := err.(datastore.MultiError); ok {
 
 		for _, v := range multiErr {
-			err2 := handleDSMultiError(v, oldFields)
+			err2 := HandleDSMultiError(v, oldFields)
 			if err2 != nil {
 				return err2
 			}

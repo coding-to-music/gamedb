@@ -320,6 +320,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		_, err = client.GetAll(ctx, q, &articles)
+		err = db.HandleDSMultiError(err, db.OldNewsFields)
 		log.Err(err, r)
 
 		// todo, add http to links here instead of JS

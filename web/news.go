@@ -56,6 +56,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			_, err := client.GetAll(ctx, q, &articles)
+			err = db.HandleDSMultiError(err, db.OldNewsFields)
 			log.Err(err, r)
 
 			for k, v := range articles {
