@@ -1,10 +1,14 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
+	"sort"
 	"sync"
 	"time"
 
+	"cloud.google.com/go/datastore"
+	"github.com/gamedb/website/cache"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 )
@@ -51,17 +55,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient()
-		if err != nil {
-			log.Err(err)
-			return
-		}
-
-		gorm = gorm.Select([]string{"id", "name", "icon", "player_peak_week"})
-		gorm = gorm.Order("player_peak_week desc")
-		gorm = gorm.Limit(15)
-		gorm = gorm.Find(&t.PopularApps)
-
+		var err error
+		t.PopularApps, err = cache.PopularApps()
 		log.Err(err, r)
 	}()
 
