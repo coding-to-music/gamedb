@@ -49,7 +49,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sort.Slice(t.News, func(i, j int) bool {
-		return t.News[i].Date.Unix() < t.News[j].Date.Unix()
+		return t.News[i].Date.Unix() > t.News[j].Date.Unix()
 	})
 
 	err = returnTemplate(w, r, "news", t)
