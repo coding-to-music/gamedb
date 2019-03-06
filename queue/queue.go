@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/go-durationfmt"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/streadway/amqp"
 )
@@ -393,6 +394,10 @@ func ProduceBundle(ID int, appID int) (err error) {
 
 func ProduceApp(ID int) (err error) {
 
+	if !db.IsValidAppID(ID) {
+		return db.ErrInvalidAppID
+	}
+
 	return produce(baseMessage{
 		Message: appMessage{
 			ID: ID,
@@ -401,6 +406,10 @@ func ProduceApp(ID int) (err error) {
 }
 
 func ProducePackage(ID int) (err error) {
+
+	if !db.IsValidPackageID(ID) {
+		return db.ErrInvalidPackageID
+	}
 
 	return produce(baseMessage{
 		Message: packageMessage{
@@ -411,6 +420,10 @@ func ProducePackage(ID int) (err error) {
 
 func ProducePlayer(ID int64) (err error) {
 
+	if !db.IsValidPlayerID(ID) {
+		return db.ErrInvalidPlayerID
+	}
+
 	return produce(baseMessage{
 		Message: playerMessage{
 			ID: ID,
@@ -419,6 +432,10 @@ func ProducePlayer(ID int64) (err error) {
 }
 
 func ProduceAppPlayers(IDs []int) (err error) {
+
+	if len(IDs) == 0 {
+		return nil
+	}
 
 	return produce(baseMessage{
 		Message: appPlayerMessage{

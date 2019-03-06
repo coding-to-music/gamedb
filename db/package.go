@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"html/template"
 	"strconv"
 	"time"
@@ -9,6 +10,10 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
+)
+
+var (
+	ErrInvalidPackageID = errors.New("invalid id")
 )
 
 type Package struct {

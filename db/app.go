@@ -24,6 +24,10 @@ const (
 	DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
 )
 
+var (
+	ErrInvalidAppID = errors.New("invalid id")
+)
+
 type App struct {
 	Achievements       string    `gorm:"not null;column:achievements;type:text"`           // []AppAchievement
 	Background         string    `gorm:"not null;column:background"`                       //
