@@ -178,14 +178,6 @@
                                 </td>
                             </tr>
                         {{ end }}
-                        <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
-                            <td>{{ .App.GetPICSUpdatedNice }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
-                            <td>{{ .App.GetUpdatedNice }}</td>
-                        </tr>
                     </table>
 
                     {{/*<iframe src="https://store.steampowered.com/widget/{{ .App.ID }}/" frameborder="0"></iframe>*/}}
@@ -633,6 +625,14 @@
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
                                                 <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
+                                                <td>{{ .App.GetPICSUpdatedNice }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
+                                                <td>{{ .App.GetUpdatedNice }}</td>
                                             </tr>
                                         </table>
                                     </div>

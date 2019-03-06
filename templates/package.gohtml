@@ -91,14 +91,6 @@
                                         <th>Platforms</th>
                                         <td class="platforms">{{ .Package.GetPlatformImages }}</td>
                                     </tr>
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
-                                        <td>{{ .Package.GetPICSUpdatedNice }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
-                                        <td>{{ .Package.GetUpdatedNice }}</td>
-                                    </tr>
                                 </table>
                             </div>
 
@@ -257,6 +249,25 @@
 
                                 {{/* Details */}}
                                 <div class="tab-pane show active" id="dev-details" role="tabpanel">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
+                                                <td>{{ .Package.GetPICSUpdatedNice }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
+                                                <td>{{ .Package.GetUpdatedNice }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
 
                                 </div>
 
