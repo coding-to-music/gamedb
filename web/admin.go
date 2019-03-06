@@ -198,7 +198,9 @@ func adminQueueEveryApp() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
-	page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
+	}
 
 	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
@@ -241,7 +243,9 @@ func adminQueueEveryPackage() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
-	page.Send(adminWebsocket{db.ConfAddedAllPackages + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfAddedAllPackages + " complete"})
+	}
 
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
 }
@@ -264,7 +268,9 @@ func fixAllBrokenPlayers() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
-	page.Send(adminWebsocket{db.ConfFixBrokenPlayers + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfFixBrokenPlayers + " complete"})
+	}
 
 	log.Info(strconv.Itoa(count) + " players queued")
 }
@@ -308,7 +314,9 @@ func CronDonations() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
-	page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
+	}
 
 	cronLogInfo("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
@@ -506,7 +514,9 @@ func CronGenres() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	cronLogErr(err)
 
-	page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
+	}
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheGenreKeyNames.Key)
@@ -670,7 +680,9 @@ func CronPublishers() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	cronLogErr(err)
 
-	page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
+	}
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcachePublisherKeyNames.Key)
@@ -833,7 +845,9 @@ func CronDevelopers() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	cronLogErr(err)
 
-	page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
+	}
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheDeveloperKeyNames.Key)
@@ -859,7 +873,10 @@ func CronTags() {
 
 	// Get tags from Steam
 	tagsResp, _, err := helpers.GetSteam().GetTags()
-	cronLogErr(err)
+	if err != nil {
+		cronLogErr(err)
+		return
+	}
 
 	steamTagMap := tagsResp.GetMap()
 
@@ -987,7 +1004,9 @@ func CronTags() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	cronLogErr(err)
 
-	page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
+	}
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheTagKeyNames.Key)
@@ -1146,7 +1165,10 @@ func CronRanks() {
 	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
-	page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
+
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
+	}
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheRanksCount.Key)
@@ -1167,7 +1189,9 @@ func adminMemcache() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
-	page.Send(adminWebsocket{db.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
+	}
 
 	log.Info("Memcache wiped")
 }
@@ -1182,7 +1206,9 @@ func adminGarbageCollection() {
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
-	page.Send(adminWebsocket{db.ConfGarbageCollection + " complete"})
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfGarbageCollection + " complete"})
+	}
 
 	log.Info("Garbage Collected")
 }

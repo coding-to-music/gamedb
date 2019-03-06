@@ -122,6 +122,7 @@ func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
 				t, err := time.Parse(time.RFC3339, vv[0].(string))
 				if err != nil {
 					log.Err(err)
+					continue
 				}
 
 				resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})

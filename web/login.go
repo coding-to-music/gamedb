@@ -227,7 +227,10 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get user
 	gorm, err := db.GetMySQLClient()
-	log.Err(err, r)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+		return
+	}
 
 	var user db.User
 	gorm = gorm.First(&user, idInt)

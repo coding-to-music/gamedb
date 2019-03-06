@@ -144,6 +144,10 @@ func updateBundle(bundle *db.Bundle) (err error) {
 	cookieURL, _ := url.Parse("https://store.steampowered.com")
 
 	cookieJar, err := cookiejar.New(nil)
+	if err != nil {
+		return err
+	}
+
 	cookieJar.SetCookies(cookieURL, []*http.Cookie{
 		{Name: "birthtime", Value: "536457601", Path: "/", Domain: "store.steampowered.com"},
 		{Name: "lastagecheckage", Value: "1-January-1987", Path: "/", Domain: "store.steampowered.com"},

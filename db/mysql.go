@@ -31,19 +31,21 @@ func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
 		if len(debug) == 0 {
 			if gormConnection == nil {
 				gormConnection, err = getMySQLConnection()
+				if err != nil {
+					return err
+				}
 				gormConnection.SetLogger(mySQLLogger{})
 			}
 			conn = gormConnection
 		} else {
 			if gormConnectionDebug == nil {
 				gormConnectionDebug, err = getMySQLConnection()
+				if err != nil {
+					return err
+				}
 				gormConnectionDebug.SetLogger(mySQLLoggerDebug{})
 			}
 			conn = gormConnectionDebug
-		}
-
-		if err != nil {
-			return err
 		}
 
 		return pingMySQL(gormConnection)

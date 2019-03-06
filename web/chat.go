@@ -246,6 +246,10 @@ func chatLoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Add user to guild
 	discord, err := getDiscord(r)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Error: err, Message: "Something went wrong logging you in.", Code: 400})
+		return
+	}
 
 	err = discord.GuildMemberAdd(tok.AccessToken, guildID, "@me", "", []string{}, false, false)
 	if err != nil {
@@ -272,21 +276,25 @@ func chatPostHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		log.Err(err)
+		return
 	}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		log.Err("Missing channel ID")
+		return
 	}
 
 	discord, err := getDiscordOauth(r)
 	if err != nil {
 		log.Err(err)
+		return
 	}
 
 	_, err = discord.ChannelMessageSend(id, r.FormValue("message"))
 	if err != nil {
 		log.Err(err)
+		return
 	}
 }
 
