@@ -16,7 +16,7 @@ const (
 
 func GetTimeShort(minutes int, max int) (ret string) {
 
-	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), "%d days, %h hours")
+	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), "%yy, %om, %ww, %dd, %hh, %mm")
 	log.Err(err)
 
 	return t
@@ -24,7 +24,7 @@ func GetTimeShort(minutes int, max int) (ret string) {
 
 func GetTimeLong(minutes int, max int) (ret string) {
 
-	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), "%d, %hh")
+	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), "%y years, %o months, %w weeks, %d days, %h hours, %m minutes")
 	log.Err(err)
 
 	return t

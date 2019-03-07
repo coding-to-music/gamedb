@@ -8,7 +8,7 @@ require github.com/ahmdrz/goinsta/v2 v2.4.0
 require (
 	cloud.google.com/go v0.36.0
 	github.com/99designs/basicauth-go v0.0.0-20160802081356-2a93ba0f464d
-	github.com/Jleagle/go-durationfmt v0.0.0-20190212102610-5ae8bf56bcbe
+	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c
 	github.com/Jleagle/influxql v0.0.0-20190303215204-7c739e39d8a6
 	github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89

@@ -14,6 +14,8 @@ github.com/99designs/basicauth-go v0.0.0-20160802081356-2a93ba0f464d/go.mod h1:3
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Jleagle/go-durationfmt v0.0.0-20190212102610-5ae8bf56bcbe h1:JeH2DrRiI6TKqItxp5nujDkM1EZIxDovU6A/Q4eVqfE=
 github.com/Jleagle/go-durationfmt v0.0.0-20190212102610-5ae8bf56bcbe/go.mod h1:6Q6xyLL3Dcnj8DkW7BAHG0Y4+vFG+sNhXom2uFUGC20=
+github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057 h1:gIPGag4G5pc8Hhm9AAuJclokTqczjkq28Xuyjzs7yKY=
+github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057/go.mod h1:6Q6xyLL3Dcnj8DkW7BAHG0Y4+vFG+sNhXom2uFUGC20=
 github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c h1:WoNx50aOeP1faA2/B9bvBx/kwpFF7Q6iYNCZZNhHO7w=
 github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c/go.mod h1:xRFoP0dYM3dVozL4PyltmTlvkE6iyI+eSCmFGePPEtc=
 github.com/Jleagle/influxql v0.0.0-20190303215204-7c739e39d8a6 h1:JbUyRrb2VtPVQfmkQB81uDe3RkF0/uWDUqToyA1CyY8=
