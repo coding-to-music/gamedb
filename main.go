@@ -88,9 +88,11 @@ func main() {
 		err = c.AddFunc("0 0 5 * * *", web.CronDonations)
 		log.Critical(err)
 
+		// Midday
 		err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
 		log.Critical(err)
 
+		// Every 2 hours
 		err = c.AddFunc("0 0 */2 * * *", CheckForPlayers)
 		log.Critical(err)
 
