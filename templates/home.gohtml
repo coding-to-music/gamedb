@@ -71,7 +71,7 @@
                                         <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
                                         <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
-                                    <td>{{ .ReviewsScore }}%</td>
+                                    <td>{{ comma .PlayerPeakWeek }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
@@ -97,6 +97,7 @@
                             <tr>
                                 <th scope="col">Popular</th>
                                 <th scope="col">Players</th>
+                                <th scope="col">Price</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -107,6 +108,7 @@
                                         <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
                                     <td>{{ comma .PlayerPeakWeek }}</td>
+                                    <td>{{ index $.Prices .ID }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
@@ -122,6 +124,7 @@
                             <tr>
                                 <th scope="col">Highest Rated</th>
                                 <th scope="col">Score</th>
+                                <th scope="col">Price</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -132,6 +135,7 @@
                                         <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
                                     <td>{{ .ReviewsScore }}%</td>
+                                    <td>{{ index $.Prices .ID }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
