@@ -276,22 +276,22 @@ func getTemplateFuncMap() map[string]interface{} {
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
 	// These variables can be used in templates and cached
-	Title       string        // Page title
-	Description template.HTML // Page description
-	Path        string        // URL path
-	Env         string        // Environment
-	CSSFiles    []Asset
-	JSFiles     []Asset
-	MetaImage   string
-
+	Title              string        // Page title
+	Description        template.HTML // Page description
+	Path               string        // URL path
+	Env                string        // Environment
+	CSSFiles           []Asset
+	JSFiles            []Asset
+	MetaImage          string
+	UserCountry        steam.CountryCode
+	UserCurrencySymbol string
+	
 	// These variables can't!
 	// Session
-	userName           string
-	userEmail          string
-	userID             int
-	userLevel          int
-	userCountry        steam.CountryCode
-	userCurrencySymbol string
+	userName  string
+	userEmail string
+	userID    int
+	userLevel int
 
 	// Session
 	flashesGood []interface{}
@@ -335,23 +335,23 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	log.Err(err, r)
 
 	// Country
-	t.userCountry = steam.CountryCode(r.URL.Query().Get("cc"))
+	t.UserCountry = steam.CountryCode(r.URL.Query().Get("cc"))
 
 	// Check if valid country
-	if _, ok := steam.Countries[t.userCountry]; !ok {
-		t.userCountry = session.GetCountryCode(r)
+	if _, ok := steam.Countries[t.UserCountry]; !ok {
+		t.UserCountry = session.GetCountryCode(r)
 	}
 
 	// Default country to session
-	if t.userCountry == "" {
-		t.userCountry = session.GetCountryCode(r)
+	if t.UserCountry == "" {
+		t.UserCountry = session.GetCountryCode(r)
 	}
 
 	// Currency
-	locale, err := helpers.GetLocaleFromCountry(t.userCountry)
+	locale, err := helpers.GetLocaleFromCountry(t.UserCountry)
 	log.Err(err, r)
 	if err == nil {
-		t.userCurrencySymbol = locale.CurrencySymbol
+		t.UserCurrencySymbol = locale.CurrencySymbol
 	}
 
 	// Flashes
@@ -423,8 +423,8 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"isLocal":            t.isLocal(),
 		"isAdmin":            t.isAdmin(),
 		"showAds":            t.showAds(),
-		"userCountry":        t.userCountry,
-		"userCurrencySymbol": t.userCurrencySymbol,
+		"userCountry":        t.UserCountry,
+		"userCurrencySymbol": t.UserCurrencySymbol,
 		"flashesGood":        t.flashesGood,
 		"flashesBad":         t.flashesBad,
 		"toasts":             t.toasts,
