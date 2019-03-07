@@ -423,40 +423,54 @@ func GetAllBrokenPlayers() (brokenPlayers []int64) {
 	}
 
 	var players []Player
-	allKeys, err := client.GetAll(ctx, datastore.NewQuery(KindPlayer).KeysOnly(), &players)
+	_, err = client.GetAll(ctx, datastore.NewQuery(KindPlayer), &players)
+	err = HandleDSMultiError(err, oldPlayerFields)
 	if err != nil {
 		log.Err(err)
 		return
 	}
 
-	keyChunks := chunkKeys(allKeys)
-	for _, chunk := range keyChunks {
+	var playerIDs []int64
 
-		players := make([]Player, len(chunk))
-		err = client.GetMulti(ctx, chunk, players)
+	for _, v := range players {
 
-		var count = 0
+		// _, err = v.GetAppIDs()
+		// if err != nil {
+		// 	playerIDs = append(playerIDs, v.PlayerID)
+		// }
 
-		if multiErr, ok := err.(datastore.MultiError); ok {
-
-			for k, v := range multiErr {
-
-				if v != nil {
-
-					count++
-
-					i, err := strconv.ParseInt(chunk[k].Name, 10, 64)
-					log.Err(err)
-
-					brokenPlayers = append(brokenPlayers, i)
-				}
-			}
+		_, err = v.GetBadges()
+		if err != nil {
+			playerIDs = append(playerIDs, v.PlayerID)
 		}
 
-		log.Info("Found " + strconv.Itoa(count) + " broken players")
+		_, err = v.GetBadgeStats()
+		if err != nil {
+			playerIDs = append(playerIDs, v.PlayerID)
+		}
+
+		_, err = v.GetBans()
+		if err != nil {
+			playerIDs = append(playerIDs, v.PlayerID)
+		}
+
+		_, err = v.GetFriends()
+		if err != nil {
+			playerIDs = append(playerIDs, v.PlayerID)
+		}
+
+		_, err = v.GetRecentGames()
+		if err != nil {
+			playerIDs = append(playerIDs, v.PlayerID)
+		}
+
+		_, err = v.GetGameStats(steam.CountryUS)
+		if err != nil {
+			playerIDs = append(playerIDs, v.PlayerID)
+		}
 	}
 
-	return brokenPlayers
+	return playerIDs
 }
 
 func GetAllPlayers(order string, limit int, keysOnly bool) (players []Player, keys []*datastore.Key, err error) {
