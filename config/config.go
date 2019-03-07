@@ -68,7 +68,6 @@ func init() {
 	Config.GameDBShortName.Set("SHORT_NAME")
 	Config.SteamAPIKey = os.Getenv(prefix + "API_KEY")
 	Config.WebserverPort.Set("PORT")
-	Config.CommitHash = os.Getenv(prefix + "COMMIT_HASH")
 
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")

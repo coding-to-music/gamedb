@@ -21,7 +21,12 @@ import (
 	"github.com/robfig/cron"
 )
 
+//noinspection GoUnusedGlobalVariable
+var version string
+
 func main() {
+
+	config.Config.CommitHash = version
 
 	rand.Seed(time.Now().UnixNano())
 
