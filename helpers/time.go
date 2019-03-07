@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
@@ -15,17 +17,56 @@ const (
 )
 
 func GetTimeShort(minutes int, max int) (ret string) {
-
-	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), "%yy, %om, %ww, %dd, %hh, %mm")
-	log.Err(err)
-
-	return t
+	return formatTime(minutes, max, "%yy %om %ww %dd %hh %mm", false)
 }
 
 func GetTimeLong(minutes int, max int) (ret string) {
+	return formatTime(minutes, max, "%yyears %omonths %wweeks %ddays %hhours %mminutes", true)
+}
 
-	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), "%y years, %o months, %w weeks, %d days, %h hours, %m minutes")
+func formatTime(minutes int, pieces int, format string, addSpaces bool) string {
+
+	if minutes == 0 {
+		return "-"
+	}
+
+	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), format)
 	log.Err(err)
 
-	return t
+	// Remove pieces that are zero-value
+	var re = regexp.MustCompile(`(^0[a-z]+)|( 0[a-z]+)`)
+	t = re.ReplaceAllString(t, "")
+
+	//
+	var re2 = regexp.MustCompile(`([0-9]+)([a-z]+?)(s?)$`)
+	var ts = strings.Split(t, " ")
+
+	var ret []string
+	for _, v := range ts {
+
+		if len(ret) >= pieces {
+			break
+		}
+
+		v = strings.TrimSpace(v)
+		if v != "" {
+
+			// Add/remove plural "s"
+			var s = "$3"
+			if re2.ReplaceAllString(v, "$1") == "1" {
+				s = ""
+			}
+
+			// Add/remove space
+			if addSpaces {
+				v = re2.ReplaceAllString(v, "$1 $2"+s)
+			} else {
+				v = re2.ReplaceAllString(v, "$1$2"+s)
+			}
+
+			ret = append(ret, v)
+		}
+	}
+
+	return strings.Join(ret, ", ")
 }
