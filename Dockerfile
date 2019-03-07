@@ -12,6 +12,8 @@ COPY --from=build-env /root/website ./
 COPY package.json ./package.json
 COPY templates ./templates
 COPY assets ./assets
+COPY health-check.sh ./health-check.sh
 RUN touch ./google-auth.json
 RUN apk update && apk add ca-certificates curl bash
 CMD ["./website"]
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=2 CMD ./health-check.sh
