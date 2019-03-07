@@ -70,18 +70,17 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-		friends, err = player.GetFriends()
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
+		// var err error
+		friends, _ = player.GetFriends()
+		// if err != nil {
+		// 	log.Err(err, r)
+		// 	return
+		// }
 
 		// Queue friends to be scanned
-		if !player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateFriends) {
-			return
-		}
+		// if !player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateFriends) {
+		// 	return
+		// }
 
 		// for _, friend := range friends {
 		// 	err = queue.QueuePlayer(friend.SteamID)
@@ -130,9 +129,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-		badges, err = player.GetBadges()
-		log.Err(err, r)
+		// var err error
+		badges, _ = player.GetBadges()
+		// log.Err(err, r) // log.Err(err, r) // Too many logs
 
 	}(player)
 
