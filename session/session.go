@@ -31,19 +31,20 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 	defer writeMutex.Unlock()
 
 	session, err := store.Get(r, "gamedb-session")
-
-	if config.Config.IsProd() {
-		session.Options = &sessions.Options{
-			MaxAge:   86400,
-			Domain:   "gamedb.online",
-			Path:     "/",
-			Secure:   true,
-			HttpOnly: true,
-		}
-	} else {
-		session.Options = &sessions.Options{
-			MaxAge: 0,
-			Path:   "/",
+	if err == nil {
+		if config.Config.IsProd() {
+			session.Options = &sessions.Options{
+				MaxAge:   86400,
+				Domain:   "gamedb.online",
+				Path:     "/",
+				Secure:   true,
+				HttpOnly: true,
+			}
+		} else {
+			session.Options = &sessions.Options{
+				MaxAge: 0,
+				Path:   "/",
+			}
 		}
 	}
 

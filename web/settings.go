@@ -244,9 +244,8 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		q := datastore.NewQuery(db.KindEvent).Filter("player_id =", playerID).Limit(100)
-		q, err = query.SetOrderOffsetDS(q, map[string]string{})
-		q = q.Order("-created_at")
+		q := datastore.NewQuery(db.KindEvent).Filter("player_id =", playerID).Order("-created_at").Limit(100)
+		q, err = query.SetOffsetDS(q)
 		if err != nil {
 
 			log.Err(err, r)

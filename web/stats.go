@@ -68,6 +68,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
+	// Get total prices
 	wg.Add(1)
 	go func() {
 
@@ -96,16 +97,18 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 			locale, err := helpers.GetLocaleFromCountry(code)
 			log.Err(err, r)
+			if err == nil {
 
-			final := locale.Format(v.Total)
+				final := locale.Format(v.Total)
 
-			if v.Total > 0 && (v.Type == "game" || v.Type == "dlc") {
-				app := db.App{}
-				app.Type = v.Type
-				t.Totals = append(t.Totals, statsAppTypeTotals{
-					"Total price of all " + app.GetType() + "s",
-					final,
-				})
+				if v.Total > 0 && (v.Type == "game" || v.Type == "dlc") {
+					app := db.App{}
+					app.Type = v.Type
+					t.Totals = append(t.Totals, statsAppTypeTotals{
+						"Total price of all " + app.GetType() + "s",
+						final,
+					})
+				}
 			}
 		}
 
@@ -218,7 +221,10 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	var ranks []db.PlayerRank
 
 	client, ctx, err := db.GetDSClient()
-	log.Err(err, r)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Error: err, Code: 500, Message: "Something went wrong"})
+		return
+	}
 
 	q := datastore.NewQuery(db.KindPlayerRank)
 

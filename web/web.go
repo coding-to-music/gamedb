@@ -350,8 +350,9 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 	// Currency
 	locale, err := helpers.GetLocaleFromCountry(t.userCountry)
 	log.Err(err, r)
-
-	t.userCurrencySymbol = locale.CurrencySymbol
+	if err == nil {
+		t.userCurrencySymbol = locale.CurrencySymbol
+	}
 
 	// Flashes
 	t.flashesGood, err = session.GetGoodFlashes(w, r)

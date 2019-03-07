@@ -45,7 +45,9 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		config, err := db.GetConfig(db.ConfRanksUpdated)
 		log.Err(err, r)
 
-		t.Date = config.Value
+		if err == nil {
+			t.Date = config.Value
+		}
 
 	}()
 

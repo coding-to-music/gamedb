@@ -182,7 +182,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		bans, err = player.GetBans()
 		log.Err(err, r)
 
-		bans.EconomyBan = strings.Title(bans.EconomyBan)
+		if err == nil {
+			bans.EconomyBan = strings.Title(bans.EconomyBan)
+		}
 
 	}(player)
 
