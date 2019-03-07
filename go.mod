@@ -12,7 +12,6 @@ require (
 	github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c
 	github.com/Jleagle/influxql v0.0.0-20190303215204-7c739e39d8a6
 	github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89
-	github.com/Jleagle/rabbit-go v0.0.0-20190220085424-6afd4589ce23
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/steam-go v0.0.0-20190220084322-c18ad4f60799
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
