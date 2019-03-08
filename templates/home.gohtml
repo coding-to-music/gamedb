@@ -8,7 +8,7 @@
         <p class="lead">{{ .Description }}</p>
 
         <h5 class="mt-4">Under Construction</h5>
-        <p class="mb-0">Game DB is still in beta, expect missing or stale information.
+        <p class="mb-0">Game DB is still in beta, expect missing information.
             Please consider <a href="/donate">donating</a> to help pay server bills and improve website accuracy.</p>
     </div>
 
@@ -57,11 +57,11 @@
                 <div class="col-12 col-lg-6">
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0">
+                        <table class="table table-hover table-striped mb-0" id="trending">
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col">Trending</th>
-                                <th scope="col">Players</th>
+                                <th scope="col" colspan="2">Players</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -72,6 +72,9 @@
                                         <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
                                     <td>{{ comma .PlayerPeakWeek }}</td>
+                                    <td class="chart">
+                                        <div data-app-id="{{ .ID }}"></div>
+                                    </td>
                                 </tr>
                             {{ end }}
                             </tbody>

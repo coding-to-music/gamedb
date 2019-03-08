@@ -7,7 +7,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -18,7 +17,6 @@ import (
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
@@ -93,6 +91,7 @@ func Serve() error {
 	r.Mount("/depots", depotsRouter())
 	r.Mount("/experience", experienceRouter())
 	r.Mount("/games", gamesRouter())
+	r.Mount("/home", homeRouter())
 	r.Mount("/login", loginRouter())
 	r.Mount("/news", newsRouter())
 	r.Mount("/packages", packagesRouter())

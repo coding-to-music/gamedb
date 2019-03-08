@@ -1,6 +1,28 @@
 #home-page {
 
     table .text-truncate {
-        max-width: 260px;
+        max-width: 300px;
     }
+
+    table#trending .text-truncate {
+        max-width: 200px;
+    }
+
+    td.chart {
+        width: 140px;
+    }
+
+    div[data-app-id] {
+        height: 32px;
+        margin: -4px;
+        width: 140px;
+    }
+
+    //.highcharts-tooltip span {
+    //    //height:auto;
+    //    //width:140px;
+    //    //background-color:green;
+    //    //overflow:auto;
+    //    white-space:nowrap !important; // add this line...
+    //}
 }
