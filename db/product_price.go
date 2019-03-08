@@ -14,16 +14,16 @@ import (
 )
 
 type ProductPrice struct {
-	CreatedAt         time.Time         `datastore:"created_at"`
-	AppID             int               `datastore:"app_id"`
-	PackageID         int               `datastore:"package_id"`
-	Currency          steam.CountryCode `datastore:"currency"`
+	CreatedAt         time.Time         `datastore:"created_at,noindex"`
+	AppID             int               `datastore:"app_id,noindex"`
+	PackageID         int               `datastore:"package_id,noindex"`
+	Currency          steam.CountryCode `datastore:"currency,noindex"`
 	Name              string            `datastore:"name,noindex"`
 	Icon              string            `datastore:"icon,noindex"`
-	PriceBefore       int               `datastore:"price_before"` // cents
-	PriceAfter        int               `datastore:"price_after"`  // cents
-	Difference        int               `datastore:"difference"`
-	DifferencePercent float64           `datastore:"difference_percent"`
+	PriceBefore       int               `datastore:"price_before,noindex"` // cents
+	PriceAfter        int               `datastore:"price_after,noindex"`  // cents
+	Difference        int               `datastore:"difference,noindex"`
+	DifferencePercent float64           `datastore:"difference_percent,noindex"`
 }
 
 func (p ProductPrice) GetKey() (key *datastore.Key) {
