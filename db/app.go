@@ -68,6 +68,7 @@ type App struct {
 	Platforms          string    `gorm:"not null;column:platforms;type:json"`              // []string
 	PlayerPeakWeek     int       `gorm:"not null;column:player_peak_week"`                 //
 	PlayerPeakAllTime  int       `gorm:"not null;column:player_peak_alltime"`              //
+	PlayerTrend        int       `gorm:"not null;column:player_trend"`                     //
 	Prices             string    `gorm:"not null;column:prices"`                           // ProductPrices
 	PublicOnly         bool      `gorm:"not null;column:public_only"`                      //
 	Publishers         string    `gorm:"not null;column:publishers;type:json"`             // []int
