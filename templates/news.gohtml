@@ -36,7 +36,7 @@
 
                         <div class="card mb-3">
                             <div class="card-header text-truncate">
-                                <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .AppIcon }}.jpg" class="rounded">
+                                <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{ .AppID }}/{{ .AppIcon }}.jpg" class="rounded" data-src="/assets/img/no-app-image-square.jpg">
                                 <a href="/apps/{{ .AppID }}">{{ .AppName }}</a> - <span title="{{ .Title }}">{{ .Title }}</span>
                             </div>
                             <div class="card-body">{{ html .Contents }}</div>

@@ -261,3 +261,15 @@ $(document).ready(function () {
         history.replaceState(null, null, path);
     }
 });
+
+// Broken images
+$(document).ready(function () {
+
+    $('img').one('error', function () {
+
+        const url = $(this).attr('data-src');
+        if (url) {
+            this.src = url;
+        }
+    });
+});
