@@ -686,6 +686,7 @@ func PopularApps() (apps []App, err error) {
 		}
 
 		db = db.Select([]string{"id", "name", "icon", "player_peak_week"})
+		db = db.Where("type = ?", "game")
 		db = db.Order("player_peak_week desc")
 		db = db.Limit(15)
 		db = db.Find(&apps)
@@ -703,7 +704,7 @@ func TrendingApps() (apps []App, err error) {
 	trendingMutex.Lock()
 	defer trendingMutex.Unlock()
 
-	var item = helpers.MemcachePopularApps
+	var item = helpers.MemcacheTrendingApps
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
