@@ -34,89 +34,106 @@
         </div>
     </div>
 
-    {{ range $interfaceName, $methods := .Interfaces }}
+    <div class="row">
+        <div class="col-3">
 
-        <div class="card mt-3" id="{{ lower $interfaceName }}">
-            <h4 class="card-header"><a href="#{{ lower $interfaceName }}">{{ $interfaceName }}</a></h4>
-            <div class="card-body interface">
+            <div class="card mt-3">
+                <div class="card-body" style="overflow: hidden">
 
-                {{ range $methodName, $method := $methods }}
-                    {{ range $version, $httpMethods := .Versions }}
-                        {{ range $httpMethod, $params := $httpMethods }}
-
-                            <form action="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}" target="_blank" method="{{ $httpMethod }}">
-
-                                <div class="card mb-4" id="{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">
-                                    <div class="card-header">
-                                        <a href="#{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">{{ $methodName }}</a>
-                                        <span class="badge badge-success">V{{ $version }}</span>
-                                        {{ if not $method.Documented }}
-                                            <span class="badge badge-warning">Undocumented</span>
-                                        {{ end }}
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="input-group mb-0">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">{{ $httpMethod }}</span>
-                                            </div>
-                                            <input type="text" class="form-control endpoint" value="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-success" type="submit">Go</button>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    {{ if gt (len $params) 0 }}
-                                        <table class="table table-borderless table-hover table-sm mb-0" style="display: none;">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col" class="font-weight-bold">Value</th>
-                                                <th scope="col" class="font-weight-bold">Name</th>
-                                                <th scope="col" class="font-weight-bold">Type</th>
-                                                <th scope="col" class="font-weight-bold">Required</th>
-                                                <th scope="col" class="font-weight-bold">Description</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {{ range $paramName, $param := $params }}
-                                                {{ if ne $paramName "key" }}
-                                                    <tr>
-                                                        <td>
-                                                            {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
-                                                                <input type="number" name="{{ $paramName }}">
-                                                            {{ else if eq .Type "bool" }}
-                                                                <input type="checkbox" name="{{ $paramName }}" value="1">
-                                                            {{ else }}
-                                                                <input type="text" name="{{ $paramName }}">
-                                                            {{ end }}
-                                                        </td>
-                                                        <td>{{ $paramName }}</td>
-                                                        <td>{{ .Type }}</td>
-                                                        <td>{{ if .Optional }}<i class="fas fa-times"></i>{{ else }}<i class="fas fa-check"></i>{{ end }}</td>
-                                                        <td>{{ .Description }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                            {{ end }}
-                                            </tbody>
-                                        </table>
-                                    {{ end }}
-                                </div>
-
-                                <input type="hidden" name="key">
-                                <input type="hidden" name="format">
-
-                            </form>
-
-                        {{ end }}
+                    {{ range $interfaceName, $methods := .Interfaces }}
+                        <a class="text-truncate" href="#{{ lower $interfaceName }}" title="{{ $interfaceName }}">{{ $interfaceName }}</a>
                     {{ end }}
-                {{ end }}
 
+                </div>
             </div>
         </div>
+        <div class="col-9">
 
-    {{ end }}
+            {{ range $interfaceName, $methods := .Interfaces }}
 
+                <div class="card mt-3" id="{{ lower $interfaceName }}">
+                    <h4 class="card-header"><a href="#{{ lower $interfaceName }}">{{ $interfaceName }}</a></h4>
+                    <div class="card-body interface">
+
+                        {{ range $methodName, $method := $methods }}
+                            {{ range $version, $httpMethods := .Versions }}
+                                {{ range $httpMethod, $params := $httpMethods }}
+
+                                    <form action="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}" target="_blank" method="{{ $httpMethod }}">
+
+                                        <div class="card mb-4" id="{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">
+                                            <div class="card-header">
+                                                <a href="#{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">{{ $methodName }}</a>
+                                                <span class="badge badge-success">V{{ $version }}</span>
+                                                {{ if not $method.Documented }}
+                                                    <span class="badge badge-warning">Undocumented</span>
+                                                {{ end }}
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-group mb-0">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">{{ $httpMethod }}</span>
+                                                    </div>
+                                                    <input type="text" class="form-control endpoint" value="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}">
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-success" type="submit">Go</button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            {{ if gt (len $params) 0 }}
+                                                <table class="table table-borderless table-hover table-sm mb-0" style="display: none;">
+                                                    <thead>
+                                                    <tr>
+                                                        <th scope="col" class="font-weight-bold">Value</th>
+                                                        <th scope="col" class="font-weight-bold">Name</th>
+                                                        <th scope="col" class="font-weight-bold">Type</th>
+                                                        <th scope="col" class="font-weight-bold">Required</th>
+                                                        <th scope="col" class="font-weight-bold">Description</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {{ range $paramName, $param := $params }}
+                                                        {{ if ne $paramName "key" }}
+                                                            <tr>
+                                                                <td>
+                                                                    {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
+                                                                        <input type="number" name="{{ $paramName }}">
+                                                                    {{ else if eq .Type "bool" }}
+                                                                        <input type="checkbox" name="{{ $paramName }}" value="1">
+                                                                    {{ else }}
+                                                                        <input type="text" name="{{ $paramName }}">
+                                                                    {{ end }}
+                                                                </td>
+                                                                <td>{{ $paramName }}</td>
+                                                                <td>{{ .Type }}</td>
+                                                                <td>{{ if .Optional }}<i class="fas fa-times"></i>{{ else }}<i class="fas fa-check"></i>{{ end }}</td>
+                                                                <td>{{ .Description }}</td>
+                                                            </tr>
+                                                        {{ end }}
+                                                    {{ end }}
+                                                    </tbody>
+                                                </table>
+                                            {{ end }}
+                                        </div>
+
+                                        <input type="hidden" name="key">
+                                        <input type="hidden" name="format">
+
+                                    </form>
+
+                                {{ end }}
+                            {{ end }}
+                        {{ end }}
+
+                    </div>
+                </div>
+
+            {{ end }}
+
+        </div>
+    </div>
 
 </div>
 
