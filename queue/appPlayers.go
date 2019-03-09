@@ -102,6 +102,8 @@ func saveAppPlayerToInflux(appID int) (err error) {
 
 func updateAppRow(appID int) (err error) {
 
+	// https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
+
 	query := `SELECT cumulative_sum(difference) FROM (
 		SELECT difference(last("player_count")) FROM "GameDB"."alltime"."apps" WHERE "app_id" = '` + strconv.Itoa(appID) + `' AND time >= now() - 7d GROUP BY time(1h)
 	)`
