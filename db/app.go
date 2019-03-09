@@ -804,16 +804,16 @@ func GetApp(id int, columns []string) (app App, err error) {
 		return app, err
 	}
 
-	db = db.First(&app, id)
-	if db.Error != nil {
-		return app, db.Error
-	}
-
 	if len(columns) > 0 {
 		db = db.Select(columns)
 		if db.Error != nil {
 			return app, db.Error
 		}
+	}
+
+	db = db.First(&app, id)
+	if db.Error != nil {
+		return app, db.Error
 	}
 
 	if app.ID == 0 {
