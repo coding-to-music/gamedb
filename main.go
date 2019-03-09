@@ -66,8 +66,7 @@ func main() {
 		}
 	}()
 
-	// Crons
-
+	// Prod crons
 	if config.Config.IsProd() {
 
 		c := cron.New()
@@ -99,6 +98,18 @@ func main() {
 
 		// Every 2 hours
 		err = c.AddFunc("0 0 */2 * * *", CheckForPlayers)
+		log.Critical(err)
+
+		c.Start()
+	}
+
+	// Local crons
+	if config.Config.IsLocal() {
+
+		c := cron.New()
+
+		// Every 2 hours
+		err = c.AddFunc("0 */4 * * * *", CheckForPlayers)
 		log.Critical(err)
 
 		c.Start()
@@ -141,7 +152,13 @@ func CheckForPlayers() {
 	}
 
 	gorm = gorm.Select([]string{"id"})
-	gorm = gorm.Order("id ASC")
+
+	if config.Config.IsLocal() {
+		gorm = gorm.Order("RAND()")
+		gorm = gorm.Limit(1)
+	} else {
+		gorm = gorm.Order("id ASC")
+	}
 
 	var appIDs []int
 
