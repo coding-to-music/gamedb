@@ -36,6 +36,22 @@ func (p Publisher) GetMeanScore() string {
 	return helpers.FloatToString(p.MeanScore, 2) + "%"
 }
 
+func GetPublisher(id int) (publisher Publisher, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return publisher, err
+	}
+
+	db = db.Where("id = ?", id)
+	db = db.Limit(1)
+	db = db.Find(&publisher)
+
+	db = db.First(&publisher, id)
+
+	return publisher, db.Error
+}
+
 func GetPublishersByID(ids []int, columns []string) (publishers []Publisher, err error) {
 
 	if len(ids) == 0 {
