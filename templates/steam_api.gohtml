@@ -43,7 +43,9 @@
                     <div class="card">
                         <div class="card-body">
                             {{ range $interfaceName, $methods := .Interfaces }}
-                                <a href="#{{ lower $interfaceName }}" title="{{ $interfaceName }}">{{ $interfaceName }}</a>
+                                <div>
+                                    <a href="#{{ lower $interfaceName }}" title="{{ $interfaceName }}">{{ $interfaceName }}</a>
+                                </div>
                             {{ end }}
                         </div>
                     </div>
