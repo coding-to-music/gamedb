@@ -34,20 +34,26 @@
         </div>
     </div>
 
-    {{ range $interfaceName, $interfaceMethods := .Interfaces }}
+    {{ range $interfaceName, $methods := .Interfaces }}
 
         <div class="card mt-3" id="{{ lower $interfaceName }}">
             <h4 class="card-header"><a href="#{{ lower $interfaceName }}">{{ $interfaceName }}</a></h4>
             <div class="card-body interface">
 
-                {{ range $methodName, $versions := $interfaceMethods }}
-                    {{ range $version, $httpMethods := $versions }}
+                {{ range $methodName, $method := $methods }}
+                    {{ range $version, $httpMethods := .Versions }}
                         {{ range $httpMethod, $params := $httpMethods }}
 
                             <form action="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}" target="_blank" method="{{ $httpMethod }}">
 
                                 <div class="card mb-4" id="{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">
-                                    <div class="card-header"><a href="#{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">{{ $methodName }}</a> <span class="badge badge-success">V{{ $version }}</span></div>
+                                    <div class="card-header">
+                                        <a href="#{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">{{ $methodName }}</a>
+                                        <span class="badge badge-success">V{{ $version }}</span>
+                                        {{ if not $method.Documented }}
+                                            <span class="badge badge-warning">Undocumented</span>
+                                        {{ end }}
+                                    </div>
                                     <div class="card-body">
                                         <div class="input-group mb-0">
                                             <div class="input-group-prepend">
