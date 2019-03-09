@@ -37,15 +37,20 @@
     <div class="row">
         <div class="col-3">
 
-            <div class="card mt-3">
-                <div class="card-body" style="overflow: hidden">
+            <div id="sidebar">
+                <div class="sidebar__inner pt-3 pb-3">
 
-                    {{ range $interfaceName, $methods := .Interfaces }}
-                        <a class="text-truncate" href="#{{ lower $interfaceName }}" title="{{ $interfaceName }}">{{ $interfaceName }}</a>
-                    {{ end }}
+                    <div class="card">
+                        <div class="card-body">
+                            {{ range $interfaceName, $methods := .Interfaces }}
+                                <a href="#{{ lower $interfaceName }}" title="{{ $interfaceName }}">{{ $interfaceName }}</a>
+                            {{ end }}
+                        </div>
+                    </div>
 
                 </div>
             </div>
+
         </div>
         <div class="col-9">
 

@@ -2,6 +2,11 @@ const $steamApiPage = $('#steam-api-page');
 
 if ($steamApiPage.length > 0) {
 
+    $('#sidebar').stickySidebar({
+        topSpacing: 0,
+        bottomSpacing: 0
+    });
+
     $('.endpoint').on('mouseenter', function () {
         $(this).select();
     });
