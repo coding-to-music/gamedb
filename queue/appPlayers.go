@@ -1,14 +1,13 @@
 package queue
 
 import (
-	"fmt"
+	"encoding/json"
 	"strconv"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -58,6 +57,13 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 			payload.ackRetry(msg)
 			return
 		}
+
+		err = updateAppRow(appID)
+		if err != nil {
+			logError(err, appID)
+			payload.ackRetry(msg)
+			return
+		}
 	}
 
 	//
@@ -94,7 +100,7 @@ func saveAppPlayerToInflux(appID int) (err error) {
 	return err
 }
 
-func UpdateAppRow(appID int) {
+func updateAppRow(appID int) (err error) {
 
 	query := `SELECT cumulative_sum(difference) FROM (
 		SELECT difference(last("player_count")) FROM "GameDB"."alltime"."apps" WHERE "app_id" = '` + strconv.Itoa(appID) + `' AND time >= now() - 7d GROUP BY time(1h)
@@ -102,27 +108,31 @@ func UpdateAppRow(appID int) {
 
 	resp, err := db.InfluxQuery(query)
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
+
+	var lastInt int64
 
 	values := resp.Results[0].Series[0].Values
 	if len(values) > 0 {
 
 		last := values[len(values)-1]
 
-		fmt.Println(last[1])
+		lastInt, err = last[1].(json.Number).Int64()
+		if err != nil {
+			return err
+		}
 	}
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	app := db.App{}
 	app.ID = appID
 
-	gorm = gorm.Model(&app).UpdateColumns(db.App{PlayerTrend: 1})
-	log.Err(gorm.Error)
+	gorm = gorm.Model(&app).UpdateColumns(db.App{PlayerTrend: int(lastInt)})
+
+	return gorm.Error
 }

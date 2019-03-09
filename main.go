@@ -97,7 +97,7 @@ func main() {
 		log.Critical(err)
 
 		// Every 2 hours
-		err = c.AddFunc("0 0 */2 * * *", CheckForPlayers)
+		err = c.AddFunc("0 0 */2 * * *", checkForPlayers)
 		log.Critical(err)
 
 		c.Start()
@@ -109,7 +109,7 @@ func main() {
 		c := cron.New()
 
 		// Every 2 hours
-		err = c.AddFunc("0 */4 * * * *", CheckForPlayers)
+		err = c.AddFunc("@every 5s", checkForPlayers)
 		log.Critical(err)
 
 		c.Start()
@@ -143,7 +143,7 @@ func main() {
 	wg.Wait()
 }
 
-func CheckForPlayers() {
+func checkForPlayers() {
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
