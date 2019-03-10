@@ -37,11 +37,12 @@ if ($('#changes-page').length > 0) {
                     let apps = [];
                     if (isIterable(row[3])) {
                         for (const v of row[3]) {
+
                             if (v.name === '') {
-                                apps.push('Unknown App');
-                            } else {
-                                apps.push('<a href="/apps/' + v.id + '">' + v.name + '</a>');
+                                v.name = 'Unknown App';
                             }
+
+                            apps.push('<a href="/apps/' + v.id + '">' + v.name + '</a>');
                         }
                     }
 
@@ -57,11 +58,12 @@ if ($('#changes-page').length > 0) {
                     let packages = [];
                     if (isIterable(row[4])) {
                         for (const v of row[4]) {
+
                             if (v.name === '') {
-                                packages.push('Unknown Package');
-                            } else {
-                                packages.push('<a href="/packages/' + v.id + '">' + v.name + '</a>');
+                                v.name = 'Unknown Package'
                             }
+
+                            packages.push('<a href="/packages/' + v.id + '">' + v.name + '</a>');
                         }
                     }
 
