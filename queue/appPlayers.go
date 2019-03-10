@@ -115,14 +115,16 @@ func updateAppRow(appID int) (err error) {
 
 	var lastInt int64
 
-	values := resp.Results[0].Series[0].Values
-	if len(values) > 0 {
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+		values := resp.Results[0].Series[0].Values
+		if len(values) > 0 {
 
-		last := values[len(values)-1]
+			last := values[len(values)-1]
 
-		lastInt, err = last[1].(json.Number).Int64()
-		if err != nil {
-			return err
+			lastInt, err = last[1].(json.Number).Int64()
+			if err != nil {
+				return err
+			}
 		}
 	}
 
