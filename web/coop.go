@@ -38,7 +38,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get players, queue missing ones
+	// Get players
 	var err error
 	t.Players, err = db.GetPlayersByIDs(playerInts)
 	if err != nil {
