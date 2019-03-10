@@ -78,7 +78,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	err := returnTemplate(w, r, "ranks", t)
+	err := returnTemplate(w, r, "players", t)
 	log.Err(err, r)
 }
 
