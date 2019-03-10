@@ -36,6 +36,7 @@ if ($('#changes-page').length > 0) {
 
                     let apps = [];
                     if (isIterable(row[3])) {
+                        row[3].sort(sortByProductName);
                         for (const v of row[3]) {
 
                             if (v.name === '') {
@@ -57,6 +58,7 @@ if ($('#changes-page').length > 0) {
 
                     let packages = [];
                     if (isIterable(row[4])) {
+                        row[4].sort(sortByProductName);
                         for (const v of row[4]) {
 
                             if (v.name === '') {
@@ -74,6 +76,14 @@ if ($('#changes-page').length > 0) {
             }
         ]
     });
+
+    function sortByProductName(a, b) {
+        if (a.name < b.name)
+            return -1;
+        if (a.name > b.name)
+            return 1;
+        return 0;
+    }
 
     const $table = $('table.table-datatable2');
     const dt = $table.DataTable(options);
