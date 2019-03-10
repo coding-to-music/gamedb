@@ -209,6 +209,11 @@ var (
 		"created_at",
 		"updated_at",
 	}
+	OldChangeFields = []string{
+		"updated_at",
+		"apps",
+		"packages",
+	}
 )
 
 func handleDSSingleError(err error, oldFields []string) error {

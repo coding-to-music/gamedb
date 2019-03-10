@@ -81,20 +81,7 @@ func GetChange(id int64) (change Change, err error) {
 		}
 
 		err = client.Get(context, datastore.NameKey(KindChange, strconv.FormatInt(id, 10), nil), &change)
-		if err != nil {
-			if err2, ok := err.(*datastore.ErrFieldMismatch); ok {
-
-				removedColumns := []string{
-					"updated_at",
-					"apps",
-					"packages",
-				}
-
-				if helpers.SliceHasString(removedColumns, err2.FieldName) {
-					err = nil
-				}
-			}
-		}
+		err = handleDSSingleError(err, OldChangeFields)
 
 		return change, err
 	})
