@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"runtime"
 	"sort"
@@ -14,7 +13,6 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -1230,64 +1228,66 @@ func adminDeleteBinLogs(r *http.Request) {
 
 func adminDev() {
 
-	var err error
-
-	gorm, err := db.GetMySQLClient()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	var apps []db.App
-
-	gorm = gorm.Select([]string{"id", "genres", "publishers", "tags", "developers"})
-	gorm = gorm.Find(&apps)
-	if gorm.Error != nil {
-		log.Err(gorm.Error)
-		return
-	}
-
-	var count int
-	for _, v := range apps {
-
-		var addToQueue = false
-		var err error
-
-		_, err = v.GetGenreIDs()
-		if err != nil {
-			addToQueue = true
-		}
-
-		_, err = v.GetPublisherIDs()
-		if err != nil {
-			addToQueue = true
-		}
-
-		_, err = v.GetDeveloperIDs()
-		if err != nil {
-			addToQueue = true
-		}
-
-		_, err = v.GetTagIDs()
-		if err != nil {
-			addToQueue = true
-		}
-
-		_, err = v.GetAchievements()
-		if err != nil {
-			addToQueue = true
-		}
-
-		if addToQueue {
-			err := queue.ProduceApp(v.ID)
-			log.Err(err)
-			count++
-		}
-	}
-
-	fmt.Println("Queued " + humanize.Comma(int64(count)) + "apps")
-
-	return
+	// var err error
+	//
+	// gorm, err := db.GetMySQLClient()
+	// if err != nil {
+	// 	log.Err(err)
+	// 	return
+	// }
+	//
+	// var apps []db.App
+	//
+	// gorm = gorm.Select([]string{"id", "genres", "publishers", "tags", "developers"})
+	// gorm = gorm.Find(&apps)
+	// if gorm.Error != nil {
+	// 	log.Err(gorm.Error)
+	// 	return
+	// }
+	//
+	// var count int
+	// for _, v := range apps {
+	//
+	// 	var addToQueue = false
+	// 	var err error
+	//
+	// 	_, err = v.GetGenreIDs()
+	// 	if err != nil {
+	// 		addToQueue = true
+	// 	}
+	//
+	// 	_, err = v.GetPublisherIDs()
+	// 	if err != nil {
+	// 		addToQueue = true
+	// 	}
+	//
+	// 	_, err = v.GetDeveloperIDs()
+	// 	if err != nil {
+	// 		addToQueue = true
+	// 	}
+	//
+	// 	_, err = v.GetTagIDs()
+	// 	if err != nil {
+	// 		addToQueue = true
+	// 	}
+	//
+	// 	_, err = v.GetAchievements()
+	// 	if err != nil {
+	// 		addToQueue = true
+	// 	}
+	//
+	// 	if addToQueue {
+	// 		err := queue.ProduceApp(v.ID)
+	// 		log.Err(err)
+	// 		count++
+	// 	}
+	// }
+	//
+	// fmt.Println("Queued " + humanize.Comma(int64(count)) + "apps")
+	//
+	// return
+	//
+	// // ########################################
 
 	// var err error
 	//
@@ -1416,15 +1416,15 @@ func adminDev() {
 	//
 	// log.Info("Done")
 
-	err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-
-	page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
-
-	log.Info("Dev code run")
+	// err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
+	// log.Err(err)
+	//
+	// page, err := websockets.GetPage(websockets.PageAdmin)
+	// log.Err(err)
+	//
+	// page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
+	//
+	// log.Info("Dev code run")
 }
 
 type statsRow struct {

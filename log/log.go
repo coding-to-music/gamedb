@@ -39,7 +39,8 @@ const (
 	ServiceLocal  Service = "local"  // Default
 
 	// Options
-	// OptionStack Option = iota
+	OptionStack Option = iota
+	OptionLogNil
 )
 
 type LogName string

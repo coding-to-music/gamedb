@@ -71,6 +71,7 @@ func main() {
 
 		c := cron.New()
 
+		// Daily
 		err = c.AddFunc("0 0 0 * * *", web.ClearUpcomingCache)
 		log.Critical(err)
 
@@ -92,12 +93,14 @@ func main() {
 		err = c.AddFunc("0 0 5 * * *", web.CronDonations)
 		log.Critical(err)
 
-		// Midday
 		err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
 		log.Critical(err)
 
-		// Every 2 hours
-		err = c.AddFunc("0 0 */2 * * *", checkForPlayers)
+		//
+		err = c.AddFunc("@every 2h", checkForPlayers)
+		log.Critical(err)
+
+		err = c.AddFunc("@every 10m", db.CopyBufferToDS)
 		log.Critical(err)
 
 		c.Start()
@@ -108,7 +111,6 @@ func main() {
 
 		c := cron.New()
 
-		// Every 2 hours
 		err = c.AddFunc("@every 5s", checkForPlayers)
 		log.Critical(err)
 

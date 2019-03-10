@@ -7,6 +7,7 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -126,6 +127,10 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	for _, v := range changes {
 		changesSlice = append(changesSlice, *v)
 	}
+
+	// Save to buffer
+	err = db.SaveKindToBuffer(changesSlice, db.KindChange)
+	log.Err(err)
 
 	// Save change to DS
 	if config.Config.IsProd() {
