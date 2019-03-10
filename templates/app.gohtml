@@ -549,56 +549,56 @@
 
                             <ul class="nav nav-tabs card-header-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
+                                    <a class="nav-link active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
                                 </li>
                                 {{if gt (len .App.GetExtended) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-extended" role="tab">Extended Values</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-extended" role="tab">Extended</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetCommon) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-common" role="tab">Common Values</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-common" role="tab">Common</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetConfig) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-config" role="tab">Config</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-config" role="tab">Config</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetUFS) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-ufs" role="tab">UFS</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-ufs" role="tab">UFS</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetInstall) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-install" role="tab">Install</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetLocalization) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .Stats) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
                                     </li>
                                 {{ end }}
                                 {{ if and (ne .App.SystemRequirements "") (ne .App.SystemRequirements "{}") }}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-system-requirements" role="tab">System Req's</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-system-requirements" role="tab">System</a>
                                     </li>
                                 {{ end }}
                                 {{ if or (gt (len .App.GetDepots.Depots) 0) (gt (len .App.GetDepots.Branches) 0) (gt (len .App.GetDepots.Extra) 0)}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetLaunch) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
+                                        <a class="nav-link" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
                                     </li>
                                 {{ end }}
                             </ul>
@@ -688,6 +688,7 @@
                                 {{/* System Requirements */}}
                                 <div class="tab-pane json" id="dev-system-requirements" role="tabpanel">
 
+                                    <h5>System Requirements</h5>
                                     <pre>{{ .App.SystemRequirements }}</pre>
 
                                 </div>
@@ -818,6 +819,7 @@
                                 {{/* UFS */}}
                                 <div class="tab-pane" id="dev-ufs" role="tabpanel">
 
+                                    <h5>User File System</h5>
                                     <div class="table-responsive">
                                         <table class="table table-hover table-striped table-datatable mb-0">
                                             <thead class="thead-light">
