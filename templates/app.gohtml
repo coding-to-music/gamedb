@@ -618,10 +618,12 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" width="1%">Version</th>
-                                                <td>{{ .App.Version }}</td>
-                                            </tr>
+                                            {{ if ne .App.Version "" }}
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap" width="1%">Version</th>
+                                                    <td>{{ .App.Version }}</td>
+                                                </tr>
+                                            {{ end }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
                                                 <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
