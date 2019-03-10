@@ -25,7 +25,7 @@ func settingsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", settingsHandler)
 	r.Post("/", settingsPostHandler)
-	r.Get("/ajax/events", settingsEventsAjaxHandler)
+	r.Get("/events.json", settingsEventsAjaxHandler)
 	return r
 }
 

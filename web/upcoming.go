@@ -16,9 +16,9 @@ func upcomingRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", upcomingHandler)
 	r.Get("/apps", upcomingAppsHandler)
-	r.Get("/apps/ajax", upcomingAppsAjaxHandler)
+	r.Get("/apps.json", upcomingAppsAjaxHandler)
 	r.Get("/packages", upcomingPackagesHandler)
-	r.Get("/packages/ajax", upcomingPackagesAjaxHandler)
+	r.Get("/packages.json", upcomingPackagesAjaxHandler)
 	return r
 }
 
@@ -33,7 +33,7 @@ func upcomingAppsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := upcomingTemplate{}
 	t.Fill(w, r, "Upcoming Apps", "The apps you have to look forward to!")
-	t.AjaxURL = "/upcoming/apps/ajax"
+	t.AjaxURL = "/upcoming/apps.json"
 
 	t.Apps, err = countUpcomingApps()
 	log.Err(err, r)
@@ -52,7 +52,7 @@ func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := upcomingTemplate{}
 	t.Fill(w, r, "Upcoming Packages", "The packages you have to look forward to!")
-	t.AjaxURL = "/upcoming/packages/ajax"
+	t.AjaxURL = "/upcoming/packages.json"
 
 	t.Apps, err = countUpcomingApps()
 	log.Err(err, r)

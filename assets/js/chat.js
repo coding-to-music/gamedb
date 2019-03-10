@@ -3,7 +3,7 @@ if ($('#chat-page').length > 0) {
     const channel = $('[data-channel-id]').attr('data-channel-id');
 
     $.ajax({
-        url: '/chat/' + channel + '/ajax',
+        url: '/chat/' + channel + '/chat.json',
         dataType: 'json',
         cache: false,
         success: function (data, textStatus, jqXHR) {

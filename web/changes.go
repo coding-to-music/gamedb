@@ -12,7 +12,7 @@ import (
 func changesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", changesHandler)
-	r.Get("/ajax", changesAjaxHandler)
+	r.Get("/changes.json", changesAjaxHandler)
 	r.Get("/{id}", changeHandler)
 	return r
 }

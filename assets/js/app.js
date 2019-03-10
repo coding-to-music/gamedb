@@ -238,7 +238,7 @@ if ($appPage.length > 0) {
 
         $.ajax({
             type: "GET",
-            url: '/apps/' + $appPage.attr('data-id') + '/ajax/reviews',
+            url: '/apps/' + $appPage.attr('data-id') + '/reviews.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
@@ -337,7 +337,7 @@ if ($appPage.length > 0) {
 
         $.ajax({
             type: "GET",
-            url: '/apps/' + $appPage.attr('data-id') + '/ajax/players',
+            url: '/apps/' + $appPage.attr('data-id') + '/players.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 

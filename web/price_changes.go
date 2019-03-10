@@ -15,7 +15,7 @@ import (
 func priceChangeRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", priceChangesHandler)
-	r.Get("/ajax", priceChangesAjaxHandler)
+	r.Get("/price-changes.json", priceChangesAjaxHandler)
 	return r
 }
 

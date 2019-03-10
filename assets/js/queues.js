@@ -26,7 +26,7 @@ if ($('#queues-page').length > 0) {
         }
 
         $.ajax({
-            url: '/queues/ajax.json',
+            url: '/queues/queues.json',
             dataType: 'json',
             cache: false,
             success: function (data, textStatus, jqXHR) {

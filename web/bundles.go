@@ -16,7 +16,7 @@ func bundlesRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", bundlesHandler)
-	r.Get("/ajax", bundlesAjaxHandler)
+	r.Get("/bundles.json", bundlesAjaxHandler)
 	r.Get("/{id}", bundleHandler)
 	r.Get("/{id}/{slug}", bundleHandler)
 	return r

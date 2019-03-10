@@ -18,11 +18,11 @@ func playersRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", playersHandler)
 	r.Post("/", playerIDHandler)
-	r.Get("/ajax", playersAjaxHandler)
+	r.Get("/players.json", playersAjaxHandler)
 	r.Get("/{id:[0-9]+}", playerHandler)
-	r.Get("/{id:[0-9]+}/ajax/games", playerGamesAjaxHandler)
-	r.Get("/{id:[0-9]+}/ajax/update", playersUpdateAjaxHandler)
-	r.Get("/{id:[0-9]+}/ajax/history", playersHistoryAjaxHandler)
+	r.Get("/{id:[0-9]+}/games.json", playerGamesAjaxHandler)
+	r.Get("/{id:[0-9]+}/update.json", playersUpdateAjaxHandler)
+	r.Get("/{id:[0-9]+}/history.json", playersHistoryAjaxHandler)
 	r.Get("/{id:[0-9]+}/{slug}", playerHandler)
 	return r
 }

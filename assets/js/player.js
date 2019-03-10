@@ -18,7 +18,7 @@ if ($playerPage.length > 0) {
         $('i', $link).addClass('fa-spin');
 
         $.ajax({
-            url: '/players/' + $(this).attr('data-update-id') + '/ajax/update',
+            url: '/players/' + $(this).attr('data-update-id') + '/update.json',
             dataType: 'json',
             cache: false,
             success: function (data, textStatus, jqXHR) {
@@ -145,7 +145,7 @@ if ($playerPage.length > 0) {
 
         $.ajax({
             type: "GET",
-            url: '/players/' + $playerPage.attr('data-id') + '/ajax/history',
+            url: '/players/' + $playerPage.attr('data-id') + '/history.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 

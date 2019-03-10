@@ -14,7 +14,7 @@ import (
 func productKeysRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", productKeysHandler)
-	r.Get("/ajax", productKeysAjaxHandler)
+	r.Get("/product-keys.json", productKeysAjaxHandler)
 	return r
 }
 

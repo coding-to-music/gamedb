@@ -15,7 +15,7 @@ import (
 func newsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", newsHandler)
-	r.Get("/ajax", newsAjaxHandler)
+	r.Get("/news.json", newsAjaxHandler)
 	return r
 }
 

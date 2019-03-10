@@ -15,7 +15,7 @@ import (
 func queuesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", queuesHandler)
-	r.Get("/ajax.json", queuesJSONHandler)
+	r.Get("/queues.json", queuesAjaxHandler)
 	return r
 }
 
@@ -33,7 +33,7 @@ type queuesTemplate struct {
 	GlobalTemplate
 }
 
-func queuesJSONHandler(w http.ResponseWriter, r *http.Request) {
+func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setNoCacheHeaders(w)
 

@@ -47,7 +47,7 @@ func chatRouter() http.Handler {
 	r.Get("/callback", chatLoginCallbackHandler)
 	r.Get("/{id}", chatHandler)
 	r.Post("/{id}/post", chatPostHandler)
-	r.Get("/{id}/ajax", chatAjaxHandler)
+	r.Get("/{id}/chat.json", chatAjaxHandler)
 	return r
 }
 
