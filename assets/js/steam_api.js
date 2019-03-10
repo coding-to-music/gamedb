@@ -26,11 +26,11 @@ if ($steamApiPage.length > 0) {
         const key = $('#key-form input[name=key]').val();
         const format = $('#key-form select[name=format]').val();
 
-        if (key) {
-            $steamApiPage.find('table').show();
-        } else {
-            $steamApiPage.find('table').hide();
-        }
+        // if (key) {
+        //     $steamApiPage.find('table').show();
+        // } else {
+        //     $steamApiPage.find('table').hide();
+        // }
 
         $('div.interface input[name=key]').val(key);
         $('div.interface input[name=format]').val(format);
