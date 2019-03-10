@@ -4,7 +4,7 @@ if ($steamApiPage.length > 0) {
 
     $('#sidebar').stickySidebar({
         topSpacing: 0,
-        bottomSpacing: 0
+        bottomSpacing: 16,
     });
 
     $('.endpoint').on('mouseenter', function () {
