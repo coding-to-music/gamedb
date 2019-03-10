@@ -139,7 +139,8 @@ func (p Player) GetAppIDs() (appIDs []int, err error) {
 
 	for _, v := range keys {
 		_, appID, err := ParsePlayerAppKey(v)
-		if err != nil {
+		log.Err(err)
+		if err == nil {
 			appIDs = append(appIDs, appID)
 		}
 	}
