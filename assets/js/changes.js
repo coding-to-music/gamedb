@@ -35,7 +35,7 @@ if ($('#changes-page').length > 0) {
                 "render": function (data, type, row) {
 
                     let apps = [];
-                    if (isIterable(Array)) {
+                    if (isIterable(row[3])) {
                         for (const v of row[3]) {
                             if (v.name === '') {
                                 apps.push('Unknown App');
