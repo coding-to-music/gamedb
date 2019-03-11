@@ -921,6 +921,10 @@ func updateAppSteamSpy(app *db.App) error {
 	err = response.Body.Close()
 	logError(err)
 
+	if strings.Contains(string(bytes), "Connection failed") {
+		return errors.New("steamspy is down: " + string(bytes))
+	}
+
 	// Unmarshal JSON
 	resp := db.SteamSpyAppResponse{}
 	err = helpers.Unmarshal(bytes, &resp)
