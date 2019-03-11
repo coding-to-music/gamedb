@@ -52,7 +52,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appTemplate{}
-	t.Fill(w, r, app.GetName(), "")
+	t.fill(w, r, app.GetName(), "")
 	t.MetaImage = app.GetMetaImage()
 	t.addAssetCarousel()
 	t.addAssetHighCharts()
@@ -290,7 +290,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := DataTablesQuery{}
-	err = query.FillFromURL(r.URL.Query())
+	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
@@ -306,18 +306,11 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		client, ctx, err := db.GetDSClient()
 		if err != nil {
-
 			log.Err(err, r)
 			return
 		}
 
-		q := datastore.NewQuery(db.KindNews).Filter("app_id =", idx).Order("-date").Limit(100)
-		q, err = query.SetOffsetDS(q)
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
+		q := datastore.NewQuery(db.KindNews).Filter("app_id =", idx).Order("-date").Limit(100).Offset(query.getOffset())
 
 		_, err = client.GetAll(ctx, q, &articles)
 		err = db.HandleDSMultiError(err, db.OldNewsFields)

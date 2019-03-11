@@ -45,7 +45,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := bundleTemplate{}
-	t.Fill(w, r, bundle.Name, "")
+	t.fill(w, r, bundle.Name, "")
 	t.Bundle = bundle
 
 	//

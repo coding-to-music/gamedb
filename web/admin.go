@@ -97,7 +97,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := adminTemplate{}
-	t.Fill(w, r, "Admin", "")
+	t.fill(w, r, "Admin", "")
 	t.Configs = configs
 	t.Goroutines = runtime.NumGoroutine()
 
@@ -491,8 +491,8 @@ func CronGenres() {
 
 			genre.Name = v.name
 			genre.Apps = v.count
-			genre.MeanPrice = v.GetMeanPrice()
-			genre.MeanScore = v.GetMeanScore()
+			genre.MeanPrice = v.getMeanPrice()
+			genre.MeanScore = v.getMeanScore()
 			genre.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&genre)
@@ -656,8 +656,8 @@ func CronPublishers() {
 
 			publisher.Name = v.name
 			publisher.Apps = v.count
-			publisher.MeanPrice = v.GetMeanPrice()
-			publisher.MeanScore = v.GetMeanScore()
+			publisher.MeanPrice = v.getMeanPrice()
+			publisher.MeanScore = v.getMeanScore()
 			publisher.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&publisher)
@@ -822,8 +822,8 @@ func CronDevelopers() {
 
 			developer.Name = v.name
 			developer.Apps = v.count
-			developer.MeanPrice = v.GetMeanPrice()
-			developer.MeanScore = v.GetMeanScore()
+			developer.MeanPrice = v.getMeanPrice()
+			developer.MeanScore = v.getMeanScore()
 			developer.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&developer)
@@ -981,8 +981,8 @@ func CronTags() {
 
 			tag.Name = v.name
 			tag.Apps = v.count
-			tag.MeanPrice = v.GetMeanPrice()
-			tag.MeanScore = v.GetMeanScore()
+			tag.MeanPrice = v.getMeanPrice()
+			tag.MeanScore = v.getMeanScore()
 			tag.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&tag)
@@ -1228,203 +1228,18 @@ func adminDeleteBinLogs(r *http.Request) {
 
 func adminDev() {
 
-	// var err error
-	//
-	// gorm, err := db.GetMySQLClient()
-	// if err != nil {
-	// 	log.Err(err)
-	// 	return
-	// }
-	//
-	// var apps []db.App
-	//
-	// gorm = gorm.Select([]string{"id", "genres", "publishers", "tags", "developers"})
-	// gorm = gorm.Find(&apps)
-	// if gorm.Error != nil {
-	// 	log.Err(gorm.Error)
-	// 	return
-	// }
-	//
-	// var count int
-	// for _, v := range apps {
-	//
-	// 	var addToQueue = false
-	// 	var err error
-	//
-	// 	_, err = v.GetGenreIDs()
-	// 	if err != nil {
-	// 		addToQueue = true
-	// 	}
-	//
-	// 	_, err = v.GetPublisherIDs()
-	// 	if err != nil {
-	// 		addToQueue = true
-	// 	}
-	//
-	// 	_, err = v.GetDeveloperIDs()
-	// 	if err != nil {
-	// 		addToQueue = true
-	// 	}
-	//
-	// 	_, err = v.GetTagIDs()
-	// 	if err != nil {
-	// 		addToQueue = true
-	// 	}
-	//
-	// 	_, err = v.GetAchievements()
-	// 	if err != nil {
-	// 		addToQueue = true
-	// 	}
-	//
-	// 	if addToQueue {
-	// 		err := queue.ProduceApp(v.ID)
-	// 		log.Err(err)
-	// 		count++
-	// 	}
-	// }
-	//
-	// fmt.Println("Queued " + humanize.Comma(int64(count)) + "apps")
-	//
-	// return
-	//
-	// // ########################################
+	db.CopyBufferToDS()
 
-	// var err error
-	//
-	// gorm, err := db.GetMySQLClient()
-	// if err != nil {
-	// 	log.Err(err)
-	// 	return
-	// }
-	//
-	// var apps []db.App
-	//
-	// gorm = gorm.Select([]string{"id"})
-	// gorm = gorm.Limit(20)
-	// gorm = gorm.Find(&apps)
-	// if gorm.Error != nil {
-	// 	log.Err(gorm.Error)
-	// 	return
-	// }
-	//
-	// fmt.Println("Found " + humanize.Comma(int64(len(apps))) + "apps")
-	//
-	// var wg = sync.WaitGroup{}
-	// var count int
-	// for _, v := range apps {
-	//
-	// 	wg.Add(1)
-	// 	go func(v db.App) {
-	//
-	// 		defer wg.Done()
-	//
-	// 		players, _, err := helpers.GetSteam().GetNumberOfCurrentPlayers(v.ID)
-	//
-	// 		err2, ok := err.(steam.Error)
-	// 		if ok && (err2.Code == 404) {
-	// 			fmt.Println("-")
-	// 			return
-	// 		}
-	//
-	// 		if err != nil {
-	// 			fmt.Println(err)
-	// 			return
-	// 		}
-	//
-	// 		if players > 0 {
-	// 			fmt.Println(players)
-	// 			count++
-	// 		}
-	//
-	// 	}(v)
-	// }
-	//
-	// wg.Wait()
-	//
-	// fmt.Println(strconv.Itoa(count) + " apps with players")
+	err := db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
+	log.Err(err)
 
-	// ######################################################
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Err(err)
+	if err == nil {
+		page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
+	}
 
-	// gorm, err := db.GetMySQLClient()
-	// if err != nil {
-	//
-	// 	log.Err(err)
-	// 	return
-	// }
-	//
-	// var packages []db.App
-	//
-	// gorm = gorm.Select([]string{"id"})
-	// gorm = gorm.Where("achievements LIKE ?", "{%")
-	// gorm = gorm.Limit(1000)
-	// gorm = gorm.Order("reviews_score desc")
-	// gorm = gorm.Find(&packages)
-	//
-	// for _, v := range packages {
-	// 	err = queue.QueueApp([]int{v.ID})
-	// 	log.Err(err)
-	// }
-
-	// ######################################################
-
-	// log.Info("Running...")
-	//
-	// client, ctx, err := db.GetDSClient()
-	// log.Err(err, r)
-	//
-	// q := datastore.NewQuery(db.KindNews)
-	//
-	// var articles []db.News
-	// _, err = client.GetAll(ctx, q, &articles)
-	// log.Err(err, r)
-	//
-	// var articlesToDelete []*datastore.Key
-	// for _, v := range articles {
-	// 	if strings.TrimSpace(v.Contents) == "" {
-	// 		articlesToDelete = append(articlesToDelete, v.GetKey())
-	// 		fmt.Println(v.ArticleID)
-	// 	}
-	// }
-	//
-	// err = db.BulkDeleteKinds(articlesToDelete, true)
-	// log.Err(err, r)
-
-	// ######################################################
-
-	// log.Info("Dev")
-	//
-	// players, err := db.GetAllPlayers("__key__", 0)
-	//
-	// log.Info("Got players")
-	//
-	// if err != nil {
-	//
-	// 	log.Err(err, r)
-	//
-	// 	if _, ok := err.(*ds.ErrFieldMismatch); ok {
-	//
-	// 	} else {
-	// 		return
-	// 	}
-	// }
-	//
-	// for _, v := range players {
-	// 	//v.Games = ""
-	// 	err := v.Save()
-	// 	log.Err(err, r)
-	// }
-	//
-	// log.Info("Done")
-
-	// err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
-	// log.Err(err)
-	//
-	// page, err := websockets.GetPage(websockets.PageAdmin)
-	// log.Err(err)
-	//
-	// page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
-	//
-	// log.Info("Dev code run")
+	log.Info("Dev code run")
 }
 
 type statsRow struct {
@@ -1434,7 +1249,7 @@ type statsRow struct {
 	totalScore float64
 }
 
-func (t statsRow) GetMeanPrice() string {
+func (t statsRow) getMeanPrice() string {
 
 	means := map[steam.CountryCode]float64{}
 
@@ -1448,7 +1263,7 @@ func (t statsRow) GetMeanPrice() string {
 	return string(bytes)
 }
 
-func (t statsRow) GetMeanScore() float64 {
+func (t statsRow) getMeanScore() float64 {
 	return t.totalScore / float64(t.count)
 }
 

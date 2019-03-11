@@ -29,7 +29,7 @@ func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := bundlesTemplate{}
-	t.Fill(w, r, "Bundles", "The last "+template.HTML(humanize.Comma(int64(total)))+" bundles to be updated.")
+	t.fill(w, r, "Bundles", "The last "+template.HTML(humanize.Comma(int64(total)))+" bundles to be updated.")
 
 	err = returnTemplate(w, r, "bundles", t)
 	log.Err(err, r)
@@ -44,7 +44,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
@@ -68,7 +68,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Model(&db.Bundle{})
 		gorm = gorm.Select([]string{"id", "name", "updated_at", "discount", "app_ids", "package_ids"})
 
-		gorm = query.SetOrderOffsetGorm(gorm, "", map[string]string{
+		gorm = query.setOrderOffsetGorm(gorm, "", map[string]string{
 			"0": "name",
 			"1": "discount",
 			"2": "JSON_LENGTH(app_ids)",

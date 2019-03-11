@@ -145,28 +145,38 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 	}))
 }
 
-func setNoCacheHeaders(w http.ResponseWriter) {
-	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate") // HTTP 1.1.
-	w.Header().Set("Pragma", "no-cache")                                   // HTTP 1.0.
-	w.Header().Set("Expires", "0")                                         // Proxies.
+func setCacheHeaders(w http.ResponseWriter, r *http.Request, duration time.Duration) {
+
+	if duration == 0 {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Expires", "0")
+	} else {
+		w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
+		w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
+	}
+
 }
 
-func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
+func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte, cache time.Duration) (err error) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+
+	setCacheHeaders(w, r, cache)
 
 	_, err = w.Write(bytes)
 	return err
 }
 
-func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
+func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}, cache time.Duration) (err error) {
 
 	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
 	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
 	w.Header().Set("Content-Type", "text/html")                   //
 	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+
+	setCacheHeaders(w, r, cache)
 
 	w.WriteHeader(200)
 
@@ -236,7 +246,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 
 	log.Err(data.Error)
 
-	data.Fill(w, r, "Error", "Something has gone wrong!")
+	data.fill(w, r, "Error", "Something has gone wrong!")
 
 	w.WriteHeader(data.Code)
 
@@ -265,11 +275,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"html":       func(html string) template.HTML { return helpers.RenderHTMLAndBBCode(html) },
-		"json": func(v interface{}) (string, error) {
-			b, err := json.Marshal(v)
-			log.Err(err)
-			return string(b), err
-		},
+		"json":       func(v interface{}) (string, error) { b, err := json.Marshal(v); log.Err(err); return string(b), err },
 	}
 }
 
@@ -308,7 +314,7 @@ type GlobalTemplate struct {
 	request *http.Request // Internal
 }
 
-func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
+func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
 
 	var err error
 
@@ -415,22 +421,22 @@ func (t *GlobalTemplate) Fill(w http.ResponseWriter, r *http.Request, title stri
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
+		"contactPage":        t.contactPage,
+		"flashesBad":         t.flashesBad,
+		"flashesGood":        t.flashesGood,
+		"isAdmin":            t.isAdmin(),
+		"isLocal":            t.isLocal(),
+		"isLoggedIn":         t.isLoggedIn(),
+		"loggedIntoDiscord":  t.loggedIntoDiscord,
+		"loginPage":          t.loginPage,
+		"showAds":            t.showAds(),
+		"toasts":             t.toasts,
+		"userCountry":        t.UserCountry,
+		"userCurrencySymbol": t.UserCurrencySymbol,
+		"userEmail":          t.userEmail,
 		"userID":             strconv.Itoa(t.userID), // Too long for JS int
 		"userLevel":          t.userLevel,
 		"userName":           t.userName,
-		"userEmail":          t.userEmail,
-		"isLoggedIn":         t.isLoggedIn(),
-		"isLocal":            t.isLocal(),
-		"isAdmin":            t.isAdmin(),
-		"showAds":            t.showAds(),
-		"userCountry":        t.UserCountry,
-		"userCurrencySymbol": t.UserCurrencySymbol,
-		"flashesGood":        t.flashesGood,
-		"flashesBad":         t.flashesBad,
-		"toasts":             t.toasts,
-		"loggedIntoDiscord":  t.loggedIntoDiscord,
-		"contactPage":        t.contactPage,
-		"loginPage":          t.loginPage,
 	}
 
 	b, err := json.Marshal(stringMap)
@@ -509,7 +515,7 @@ func (t GlobalTemplate) isAdmin() bool {
 
 func (t GlobalTemplate) showAds() bool {
 	return false
-	return !t.isLocal()
+	// return !t.isLocal()
 }
 
 func (t *GlobalTemplate) addToast(toast Toast) {
@@ -584,7 +590,7 @@ type DataTablesQuery struct {
 	Time   string `mapstructure:"_"`
 }
 
-func (q *DataTablesQuery) FillFromURL(url url.Values) (err error) {
+func (q *DataTablesQuery) fillFromURL(url url.Values) (err error) {
 
 	// Convert string into map
 	queryMap, err := qs.Unmarshal(url.Encode())
@@ -601,7 +607,7 @@ func (q *DataTablesQuery) FillFromURL(url url.Values) (err error) {
 	return nil
 }
 
-func (q DataTablesQuery) GetSearchString(k string) (search string) {
+func (q DataTablesQuery) getSearchString(k string) (search string) {
 
 	if val, ok := q.Search[k]; ok {
 		if ok && val != "" {
@@ -612,7 +618,7 @@ func (q DataTablesQuery) GetSearchString(k string) (search string) {
 	return ""
 }
 
-func (q DataTablesQuery) GetSearchSlice(k string) (search []string) {
+func (q DataTablesQuery) getSearchSlice(k string) (search []string) {
 
 	if val, ok := q.Search[k]; ok {
 		if val != "" {
@@ -625,7 +631,7 @@ func (q DataTablesQuery) GetSearchSlice(k string) (search []string) {
 	return search
 }
 
-func (q DataTablesQuery) GetOrderSQL(columns map[string]string, code steam.CountryCode) (order string) {
+func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.CountryCode) (order string) {
 
 	var ret []string
 
@@ -658,7 +664,7 @@ func (q DataTablesQuery) GetOrderSQL(columns map[string]string, code steam.Count
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) GetOrderDS(columns map[string]string, signed bool) (order string) {
+func (q DataTablesQuery) setOrderDS(columns map[string]string, signed bool) (order string) {
 
 	for _, v := range q.Order {
 
@@ -686,22 +692,19 @@ func (q DataTablesQuery) GetOrderDS(columns map[string]string, signed bool) (ord
 	return ""
 }
 
-func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {
+func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {
 
-	db = db.Order(q.GetOrderSQL(columns, code))
+	db = db.Order(q.getOrderSQL(columns, code))
 	db = db.Offset(q.Start)
 
 	return db
 }
 
-func (q DataTablesQuery) SetOrderOffsetDS(qu *datastore.Query, columns map[string]string) (*datastore.Query, error) {
+func (q DataTablesQuery) setOrderOffsetDS(qu *datastore.Query, columns map[string]string) (*datastore.Query, error) {
 
-	qu, err := q.SetOffsetDS(qu)
-	if err != nil {
-		return qu, err
-	}
+	qu = q.setOffsetDS(qu)
 
-	order := q.GetOrderDS(columns, true)
+	order := q.setOrderDS(columns, true)
 	if order != "" {
 		qu = qu.Order(order)
 	}
@@ -709,16 +712,14 @@ func (q DataTablesQuery) SetOrderOffsetDS(qu *datastore.Query, columns map[strin
 	return qu, nil
 }
 
-func (q DataTablesQuery) SetOffsetDS(qu *datastore.Query) (*datastore.Query, error) {
+func (q DataTablesQuery) setOffsetDS(qu *datastore.Query) *datastore.Query {
 
-	i, err := strconv.Atoi(q.Start)
-	if err != nil {
-		return qu, err
-	}
+	return qu.Offset(q.getOffset())
+}
 
-	qu = qu.Offset(i)
-
-	return qu, nil
+func (q DataTablesQuery) getOffset() int {
+	i, _ := strconv.Atoi(q.Start)
+	return i
 }
 
 // Toasts

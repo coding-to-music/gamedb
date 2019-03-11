@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -133,14 +132,14 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	log.Err(err)
 
 	// Save change to DS
-	if config.Config.IsProd() {
-		err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
-		if err != nil {
-			logError(err)
-			payload.ackRetry(msg)
-			return
-		}
-	}
+	// if config.Config.IsProd() {
+	// 	err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
+	// 	if err != nil {
+	// 		logError(err)
+	// 		payload.ackRetry(msg)
+	// 		return
+	// 	}
+	// }
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageChanges)

@@ -31,7 +31,7 @@ func statsDevelopersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := statsDevelopersTemplate{}
-	t.Fill(w, r, "Developers", "All the software developers that create Steam content.")
+	t.fill(w, r, "Developers", "All the software developers that create Steam content.")
 	t.Developers = developers
 	t.Date = config.Value
 	t.Prices = prices

@@ -33,7 +33,7 @@ func depotHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := depotTemplate{}
-	t.Fill(w, r, "Depot", "")
+	t.fill(w, r, "Depot", "")
 	t.Depot = db.Depot{}
 	t.Depot.ID = idx
 
@@ -50,7 +50,7 @@ func depotsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := depotsTemplate{}
-	t.Fill(w, r, "Depots", "")
+	t.fill(w, r, "Depots", "")
 
 	err := returnTemplate(w, r, "depots", t)
 	log.Err(err, r)

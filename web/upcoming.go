@@ -32,7 +32,7 @@ func upcomingAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := upcomingTemplate{}
-	t.Fill(w, r, "Upcoming Apps", "The apps you have to look forward to!")
+	t.fill(w, r, "Upcoming Apps", "The apps you have to look forward to!")
 	t.AjaxURL = "/upcoming/apps.json"
 
 	t.Apps, err = countUpcomingApps()
@@ -51,7 +51,7 @@ func upcomingPackagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := upcomingTemplate{}
-	t.Fill(w, r, "Upcoming Packages", "The packages you have to look forward to!")
+	t.fill(w, r, "Upcoming Packages", "The packages you have to look forward to!")
 	t.AjaxURL = "/upcoming/packages.json"
 
 	t.Apps, err = countUpcomingApps()
@@ -74,7 +74,7 @@ type upcomingTemplate struct {
 func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	var count int
@@ -120,7 +120,7 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	var count int

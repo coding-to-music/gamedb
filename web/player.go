@@ -210,7 +210,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// log.Err(err, r) // Disable for now, too many logs
 
 	// Template
-	t.Fill(w, r, player.PersonaName, "")
+	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
 	t.Player = player
 	t.Friends = friends
@@ -337,7 +337,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := DataTablesQuery{}
-	err = query.FillFromURL(r.URL.Query())
+	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
@@ -366,7 +366,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt).Limit(100)
-		q, err = query.SetOrderOffsetDS(q, columns)
+		q, err = query.setOrderOffsetDS(q, columns)
 		if err != nil {
 
 			log.Err(err, r)

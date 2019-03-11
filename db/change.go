@@ -75,6 +75,23 @@ func GetChange(id int64) (change Change, err error) {
 
 		var change Change
 
+		// Try MySQL
+		db, err := GetMySQLClient(true)
+		if err != nil {
+			return change, err
+		}
+
+		var buffer DatastoreBuffer
+		db.Where("kind = ?", KindChange).Where("key_name = ?", id).First(&buffer)
+		if db.Error != nil {
+			return change, db.Error
+		}
+
+		if buffer.Kind != "" {
+			return buffer.ToChange()
+		}
+
+		// Try Datastore
 		client, context, err := GetDSClient()
 		if err != nil {
 			return change, err

@@ -30,7 +30,7 @@ func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := packagesTemplate{}
-	t.Fill(w, r, "Packages", "The last "+template.HTML(humanize.Comma(int64(total)))+" packages to be updated.")
+	t.fill(w, r, "Packages", "The last "+template.HTML(humanize.Comma(int64(total)))+" packages to be updated.")
 
 	err = returnTemplate(w, r, "packages", t)
 	log.Err(err, r)
@@ -45,7 +45,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
@@ -70,7 +70,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Model(&db.Package{})
 		gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon", "icon"})
 
-		gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
+		gorm = query.setOrderOffsetGorm(gorm, code, map[string]string{
 			"0": "name",
 			"2": "apps_count",
 			"3": "price",

@@ -31,7 +31,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := playersTemplate{}
-	t.Fill(w, r, "Players", "See where you come against the rest of the world.")
+	t.fill(w, r, "Players", "See where you come against the rest of the world.")
 
 	//
 	var wg sync.WaitGroup
@@ -114,7 +114,7 @@ func playerIDHandler(w http.ResponseWriter, r *http.Request) {
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
@@ -145,9 +145,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		q := datastore.NewQuery(db.KindPlayerRank).Limit(100)
 
-		column := query.GetOrderDS(columns, false)
+		column := query.setOrderDS(columns, false)
 		if column != "" {
-			q, err = query.SetOrderOffsetDS(q, columns)
+			q, err = query.setOrderOffsetDS(q, columns)
 			if err != nil {
 
 				log.Err(err, r)

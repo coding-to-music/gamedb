@@ -2,7 +2,7 @@ package db
 
 import (
 	"encoding/json"
-	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -20,6 +20,41 @@ func (b DatastoreBuffer) TableName() string {
 	return "datastore"
 }
 
+func (b DatastoreBuffer) ToChange() (change Change, err error) {
+
+	err = json.Unmarshal([]byte(b.RowData), &change)
+	return change, err
+}
+
+func GetBufferRows(kind string, limit int, offset int) (kinds []Kind, err error) {
+
+	gorm, err := GetMySQLClient(true)
+	if err != nil {
+		return kinds, err
+	}
+
+	gorm = gorm.Where("kind = ?", kind)
+	gorm = gorm.Order("created_at DESC")
+	gorm = gorm.Limit(limit)
+	gorm = gorm.Offset(offset)
+
+	var rows []DatastoreBuffer
+	gorm = gorm.Find(&rows)
+
+	for _, v := range rows {
+
+		switch v.Kind {
+		case KindChange:
+
+			var change Change
+			err = json.Unmarshal([]byte(v.RowData), &change)
+			kinds = append(kinds, change)
+		}
+	}
+
+	return kinds, gorm.Error
+}
+
 func SaveKindToBuffer(kinds []Kind, kindType string) (err error) {
 
 	gorm, err := GetMySQLClient()
@@ -28,8 +63,6 @@ func SaveKindToBuffer(kinds []Kind, kindType string) (err error) {
 	}
 
 	for _, kind := range kinds {
-
-		fmt.Println("buffer")
 
 		buffer := DatastoreBuffer{}
 		buffer.CreatedAt = time.Now()
@@ -89,6 +122,8 @@ func CopyBufferToDS() {
 			log.Info("Less than 500 " + v.Kind + " buffer rows")
 			continue
 		}
+
+		log.Info("Found " + strconv.Itoa(len(rows)) + " " + v.Kind + " rows")
 
 		var kinds []Kind
 

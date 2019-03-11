@@ -24,7 +24,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := productKeysTemplate{}
-	t.Fill(w, r, "Product Keys", "Search extended and common product keys")
+	t.fill(w, r, "Product Keys", "Search extended and common product keys")
 	t.Type = q.Get("type")
 	t.Key = q.Get("key")
 	t.Value = q.Get("value")
@@ -50,13 +50,13 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
 	var code = session.GetCountryCode(r)
 	var wg sync.WaitGroup
-	var productType = query.GetSearchString("type")
+	var productType = query.getSearchString("type")
 
 	// Get products
 	var products []extendedRow
@@ -82,11 +82,11 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Search
-		key := query.GetSearchString("key")
+		key := query.getSearchString("key")
 		if key == "" {
 			return
 		}
-		value := query.GetSearchString("value")
+		value := query.getSearchString("value")
 
 		gorm = gorm.Select([]string{"id", "name", "icon", "extended->>'$." + key + "' as value"})
 
@@ -102,7 +102,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
-		gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{})
+		gorm = query.setOrderOffsetGorm(gorm, code, map[string]string{})
 		gorm = gorm.Order("change_number_date desc")
 
 		// Get rows

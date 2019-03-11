@@ -18,7 +18,7 @@ const (
 func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := coopTemplate{}
-	t.Fill(w, r, "Co-op", "Find a game to play with friends.")
+	t.fill(w, r, "Co-op", "Find a game to play with friends.")
 
 	// Get player ints
 	var playerInts []int64

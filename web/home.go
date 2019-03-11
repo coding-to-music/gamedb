@@ -24,7 +24,7 @@ func homeRouter() http.Handler {
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeTemplate{}
-	t.Fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
+	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetHighCharts()
 
 	var wg sync.WaitGroup

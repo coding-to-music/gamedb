@@ -31,7 +31,7 @@ func statsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := statsPublishersTemplate{}
-	t.Fill(w, r, "Publishers", "Publishers handle marketing and advertising.")
+	t.fill(w, r, "Publishers", "Publishers handle marketing and advertising.")
 	t.Publishers = publishers
 	t.Date = config.Value
 	t.Prices = prices

@@ -21,7 +21,7 @@ func changesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := changesTemplate{}
-	t.Fill(w, r, "Changes", "Every time the Steam library gets updated, a change record is created. We use these to keep website information up to date.")
+	t.fill(w, r, "Changes", "Every time the Steam library gets updated, a change record is created. We use these to keep website information up to date.")
 
 	err := returnTemplate(w, r, "changes", t)
 	log.Err(err, r)
@@ -36,26 +36,35 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	var changes []db.Change
-
-	client, ctx, err := db.GetDSClient()
+	err := query.fillFromURL(r.URL.Query())
 	if err != nil {
-
 		log.Err(err, r)
+		return
+	}
 
-	} else {
+	var limit = 100
+	var offset = query.getOffset()
 
-		q := datastore.NewQuery(db.KindChange).Limit(100).Order("-change_id")
+	kinds, err := db.GetBufferRows(db.KindChange, limit, offset)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+	var changes = db.KindsToChanges(kinds)
 
-		q, err = query.SetOrderOffsetDS(q, map[string]string{})
+	if len(changes) < limit {
+
+		limit = limit - len(changes)
+		offset = offset - len(changes)
+
+		client, ctx, err := db.GetDSClient()
 		if err != nil {
 
 			log.Err(err, r)
 
 		} else {
+
+			q := datastore.NewQuery(db.KindChange).Order("-change_id").Limit(limit).Offset(offset)
 
 			_, err := client.GetAll(ctx, q, &changes)
 			log.Err(err, r)

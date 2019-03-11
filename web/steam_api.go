@@ -19,7 +19,7 @@ var addMutex sync.Mutex
 func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := steamAPITemplate{}
-	t.Fill(w, r, "Steam API", "")
+	t.fill(w, r, "Steam API", "")
 	t.Interfaces = Interfaces{}
 	t.addDocumented(w, r)
 	t.addUndocumented()

@@ -103,7 +103,7 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 			case KindPlayerApp:
 				_, err = client.PutMulti(ctx, keys, kindsToPlayerApps(chunk))
 			case KindChange:
-				_, err = client.PutMulti(ctx, keys, kindsToChanges(chunk))
+				_, err = client.PutMulti(ctx, keys, KindsToChanges(chunk))
 			case KindPlayerRank:
 				_, err = client.PutMulti(ctx, keys, kindsToPlayerRanks(chunk))
 			case KindProductPrice:
@@ -306,7 +306,7 @@ func kindsToPlayerApps(a []Kind) (b []PlayerApp) {
 	return b
 }
 
-func kindsToChanges(a []Kind) (b []Change) {
+func KindsToChanges(a []Kind) (b []Change) {
 
 	for _, v := range a {
 

@@ -109,7 +109,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := settingsTemplate{}
-	t.Fill(w, r, "Settings", "")
+	t.fill(w, r, "Settings", "")
 	t.addAssetPasswordStrength()
 	t.Player = player
 	t.User = user
@@ -216,7 +216,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
@@ -244,13 +244,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		q := datastore.NewQuery(db.KindEvent).Filter("player_id =", playerID).Order("-created_at").Limit(100)
-		q, err = query.SetOffsetDS(q)
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
+		q := datastore.NewQuery(db.KindEvent).Filter("player_id =", playerID).Order("-created_at").Limit(100).Offset(query.getOffset())
 
 		_, err = client.GetAll(ctx, q, &events)
 		log.Err(err, r)

@@ -22,7 +22,7 @@ func newsRouter() http.Handler {
 func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newsTemplate{}
-	t.Fill(w, r, "News", "All the news from all the games, all in one place.")
+	t.fill(w, r, "News", "All the news from all the games, all in one place.")
 
 	apps, err := db.PopularApps()
 	log.Err(err, r)
@@ -66,7 +66,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	var articles []db.News
@@ -78,21 +78,13 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		q := datastore.NewQuery(db.KindNews).Order("-date").Limit(100)
-		q, err = query.SetOffsetDS(q)
-		if err != nil {
+		q := datastore.NewQuery(db.KindNews).Order("-date").Limit(100).Offset(query.getOffset())
+		_, err := client.GetAll(ctx, q, &articles)
+		err = db.HandleDSMultiError(err, db.OldNewsFields)
+		log.Err(err, r)
 
-			log.Err(err, r)
-
-		} else {
-
-			_, err := client.GetAll(ctx, q, &articles)
-			err = db.HandleDSMultiError(err, db.OldNewsFields)
-			log.Err(err, r)
-
-			for k, v := range articles {
-				articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
-			}
+		for k, v := range articles {
+			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
 		}
 	}
 

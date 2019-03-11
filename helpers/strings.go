@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"regexp"
+	"strings"
 )
 
 func TruncateString(str string, size int) string {
@@ -23,4 +24,19 @@ func GetHashTag(string string) (ret string) {
 	}
 
 	return "#" + reg.ReplaceAllString(string, "")
+}
+
+func JoinInterface(i []interface{}) string {
+
+	var stringSlice []string
+
+	for _, v := range i {
+
+		s, ok := v.(string)
+		if ok {
+			stringSlice = append(stringSlice, s)
+		}
+	}
+
+	return strings.Join(stringSlice, " | ")
 }

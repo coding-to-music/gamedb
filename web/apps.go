@@ -48,7 +48,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appsTemplate{}
-	t.Fill(w, r, "Apps", "") // Description gets set later
+	t.fill(w, r, "Apps", "") // Description gets set later
 	t.Types = db.GetTypesForSelect()
 	t.addAssetChosen()
 	t.addAssetSlider()
@@ -229,7 +229,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
@@ -256,13 +256,13 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Select([]string{"id", "name", "icon", "type", "reviews_score", "prices", "change_number_date"})
 
 		// Types
-		types := query.GetSearchSlice("types")
+		types := query.getSearchSlice("types")
 		if len(types) > 0 {
 			gorm = gorm.Where("type IN (?)", types)
 		}
 
 		// Tags
-		tags := query.GetSearchSlice("tags")
+		tags := query.getSearchSlice("tags")
 		if len(tags) > 0 {
 
 			var or []string
@@ -276,7 +276,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Genres
-		genres := query.GetSearchSlice("genres")
+		genres := query.getSearchSlice("genres")
 		if len(genres) > 0 {
 
 			var or []string
@@ -290,7 +290,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Developers
-		developers := query.GetSearchSlice("developers")
+		developers := query.getSearchSlice("developers")
 		if len(developers) > 0 {
 
 			var or []string
@@ -304,7 +304,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Publishers
-		publishers := query.GetSearchSlice("publishers")
+		publishers := query.getSearchSlice("publishers")
 		if len(publishers) > 0 {
 
 			var or []string
@@ -318,7 +318,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Platforms / Operating System
-		platforms := query.GetSearchSlice("platforms")
+		platforms := query.getSearchSlice("platforms")
 		if len(platforms) > 0 {
 
 			var or []string
@@ -331,7 +331,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Price range
-		prices := query.GetSearchSlice("prices")
+		prices := query.getSearchSlice("prices")
 		if len(prices) == 2 {
 
 			maxPrice, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
@@ -363,7 +363,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Score range
-		scores := query.GetSearchSlice("scores")
+		scores := query.getSearchSlice("scores")
 		if len(scores) == 2 {
 
 			low, err := strconv.Atoi(strings.Replace(scores[0], ".00", "", 1))
@@ -382,7 +382,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Search
-		search := query.GetSearchString("search")
+		search := query.getSearchString("search")
 		if search != "" {
 			gorm = gorm.Where("name LIKE ?", "%"+search+"%")
 		}
@@ -393,7 +393,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
-		gorm = query.SetOrderOffsetGorm(gorm, code, map[string]string{
+		gorm = query.setOrderOffsetGorm(gorm, code, map[string]string{
 			"0": "name",
 			"2": "reviews_score",
 			"3": "price",

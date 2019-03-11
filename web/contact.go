@@ -27,7 +27,7 @@ func contactRouter() http.Handler {
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
-	t.Fill(w, r, "Contact", "Get in touch with Game DB.")
+	t.fill(w, r, "Contact", "Get in touch with Game DB.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic
 
 	err := returnTemplate(w, r, "contact", t)

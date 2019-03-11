@@ -56,7 +56,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 	rows = rows[0 : totalRows+1]
 
 	t := experienceTemplate{}
-	t.Fill(w, r, "Experience", "Check how much XP you need to go up a level")
+	t.fill(w, r, "Experience", "Check how much XP you need to go up a level")
 	t.Chunks = chunk(rows, chunkRows)
 
 	// Highlight level from URL

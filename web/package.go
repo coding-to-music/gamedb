@@ -106,7 +106,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := packageTemplate{}
-	t.Fill(w, r, pack.GetName(), "")
+	t.fill(w, r, pack.GetName(), "")
 	t.MetaImage = pack.GetMetaImage()
 	t.addAssetHighCharts()
 	t.Package = pack

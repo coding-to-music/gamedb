@@ -32,7 +32,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := changeTemplate{}
-	t.Fill(w, r, change.GetName(), "")
+	t.fill(w, r, change.GetName(), "")
 	t.Change = change
 	t.Apps = map[int]db.App{}
 	t.Packages = map[int]db.Package{}

@@ -22,7 +22,7 @@ func priceChangeRouter() http.Handler {
 func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := priceChangesTemplate{}
-	t.Fill(w, r, "Price Changes", "Pick up a bargain.")
+	t.fill(w, r, "Price Changes", "Pick up a bargain.")
 
 	err := returnTemplate(w, r, "price_changes", t)
 	log.Err(err, r)
@@ -37,7 +37,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setNoCacheHeaders(w)
 
 	query := DataTablesQuery{}
-	err := query.FillFromURL(r.URL.Query())
+	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	//
@@ -58,18 +58,10 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		q := datastore.NewQuery(db.KindProductPrice).Limit(100).Order("-created_at")
+		q := datastore.NewQuery(db.KindProductPrice).Order("-created_at").Limit(100).Offset(query.getOffset())
 		q = q.Filter("currency =", string(session.GetCountryCode(r)))
 
-		q, err = query.SetOffsetDS(q)
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
 		_, err = client.GetAll(ctx, q, &priceChanges)
-
 		log.Err(err, r)
 
 	}(r)
