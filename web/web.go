@@ -215,14 +215,11 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 			KeepWhitespace:          true,
 		})
 
-		buf2 := &bytes.Buffer{}
-		err = m.Minify("text/html", buf2, buf)
+		err = m.Minify("text/html", w, buf)
 		if err != nil {
 			log.Err(err)
 			return err
 		}
-
-		_, err = buf2.WriteTo(w)
 
 	} else {
 
