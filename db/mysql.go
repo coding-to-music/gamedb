@@ -7,6 +7,7 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/jinzhu/gorm"
 )
@@ -92,12 +93,16 @@ type mySQLLogger struct {
 }
 
 func (logger mySQLLogger) Print(v ...interface{}) {
-	log.Debug(append(v, log.LogNameSQL, log.ServiceGoogle)...)
+
+	s := helpers.JoinInterface(v)
+	log.Debug(s, log.LogNameSQL, log.ServiceGoogle)
 }
 
 type mySQLLoggerDebug struct {
 }
 
 func (logger mySQLLoggerDebug) Print(v ...interface{}) {
-	log.Debug(append(v, log.LogNameSQL, log.ServiceLocal)...)
+
+	s := helpers.JoinInterface(v)
+	log.Debug(s, log.LogNameSQL, log.ServiceLocal)
 }
