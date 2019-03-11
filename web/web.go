@@ -145,7 +145,7 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 	}))
 }
 
-func setCacheHeaders(w http.ResponseWriter, r *http.Request, duration time.Duration) {
+func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {
 
 	if duration == 0 {
 		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -157,18 +157,16 @@ func setCacheHeaders(w http.ResponseWriter, r *http.Request, duration time.Durat
 
 }
 
-func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte, cache time.Duration) (err error) {
+func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
-
-	setCacheHeaders(w, r, cache)
 
 	_, err = w.Write(bytes)
 	return err
 }
 
-func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}, cache time.Duration) (err error) {
+func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
 	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
 	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
@@ -176,9 +174,9 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	w.Header().Set("Content-Type", "text/html")                   //
 	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
 
-	setCacheHeaders(w, r, cache)
-
-	w.WriteHeader(200)
+	if w.Header().Get("Cache-Control") == "" || w.Header().Get("Expires") == "" {
+		setCacheHeaders(w, time.Hour*24)
+	}
 
 	folder := config.Config.GameDBDirectory.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(

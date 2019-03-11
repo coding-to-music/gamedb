@@ -35,7 +35,7 @@ type queuesTemplate struct {
 
 func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
+	setCacheHeaders(w, 0)
 
 	var item = helpers.MemcacheQueues
 	var highcharts = map[string]db.HighChartsJson{}

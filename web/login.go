@@ -55,8 +55,6 @@ var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
-
 	err := func() (err error) {
 
 		// Parse form
@@ -161,8 +159,6 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
-
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
 		log.Err(err, r)
@@ -195,7 +191,7 @@ var discoveryCache = openid.NewSimpleDiscoveryCache()
 
 func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
+	setCacheHeaders(w, 0)
 
 	// Get ID from OpenID
 	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
@@ -265,8 +261,6 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-
-	setNoCacheHeaders(w)
 
 	id, err := getPlayerIDFromSession(r)
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)

@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 	"sort"
+	"time"
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/config"
@@ -63,7 +64,7 @@ type newsTemplate struct {
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
+	setCacheHeaders(w, time.Hour*1)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

@@ -31,7 +31,7 @@ func settingsRouter() http.Handler {
 
 func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
+	setCacheHeaders(w, 0)
 
 	player, err := getPlayer(r)
 	if err != nil {
@@ -133,8 +133,6 @@ type settingsTemplate struct {
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
-
 	// Get user
 	user, err := getUser(r, 0)
 	if err != nil {
@@ -213,7 +211,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
+	setCacheHeaders(w, 0)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

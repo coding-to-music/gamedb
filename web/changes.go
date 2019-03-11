@@ -33,7 +33,7 @@ type changesTemplate struct {
 
 func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
+	setCacheHeaders(w, 0)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

@@ -47,8 +47,6 @@ type productKeysTemplate struct {
 
 func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
-
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)

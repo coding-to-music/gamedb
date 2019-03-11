@@ -167,7 +167,7 @@ type chatTemplate struct {
 
 func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	setNoCacheHeaders(w)
+	setCacheHeaders(w, 0)
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
