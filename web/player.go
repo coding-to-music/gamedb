@@ -209,6 +209,20 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	gameStats, err := player.GetGameStats(session.GetCountryCode(r))
 	// log.Err(err, r) // Disable for now, too many logs
 
+	// Make banners
+	banners := make(map[string][]string)
+	var primary []string
+
+	if player.PlayerID == 76561197960287930 {
+		primary = append(primary, "This profile belongs to Gabe Newell, the Co-founder of Valve")
+	}
+
+	if len(primary) > 0 {
+		banners["primary"] = primary
+	}
+
+	t.Banners = banners
+
 	// Template
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
@@ -232,6 +246,7 @@ type playerTemplate struct {
 	Apps        []db.PlayerApp
 	Badges      []db.ProfileBadge
 	BadgeStats  db.ProfileBadgeStats
+	Banners     map[string][]string
 	Bans        db.PlayerBans
 	Friends     []db.ProfileFriend
 	GameStats   db.PlayerAppStatsTemplate
