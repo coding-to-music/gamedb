@@ -111,7 +111,7 @@
                                         <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
                                     <td>{{ comma .PlayerPeakWeek }}</td>
-                                    <td>{{ index $.Prices .ID }}</td>
+                                    <td nowrap="nowrap">{{ index $.Prices .ID }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
@@ -138,7 +138,7 @@
                                         <span class="text-truncate">{{ .GetName }}</span>
                                     </td>
                                     <td>{{ .ReviewsScore }}%</td>
-                                    <td>{{ index $.Prices .ID }}</td>
+                                    <td nowrap="nowrap">{{ index $.Prices .ID }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
