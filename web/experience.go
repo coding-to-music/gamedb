@@ -57,7 +57,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := experienceTemplate{}
 	t.fill(w, r, "Experience", "Check how much XP you need to go up a level")
-	t.Chunks = chunk(rows, chunkRows)
+	t.Chunks = chunkExperienceRow(rows, chunkRows)
 
 	// Highlight level from URL
 	t.Level = -1
@@ -75,7 +75,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 }
 
-func chunk(rows []level, chunkSize int) (chunked [][]level) {
+func chunkExperienceRow(rows []level, chunkSize int) (chunked [][]level) {
 
 	for i := 0; i < len(rows); i += chunkSize {
 		end := i + chunkSize
