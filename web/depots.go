@@ -17,6 +17,20 @@ func depotsRouter() http.Handler {
 	return r
 }
 
+func depotsHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Template
+	t := depotsTemplate{}
+	t.fill(w, r, "Depots", "")
+
+	err := returnTemplate(w, r, "depots", t)
+	log.Err(err, r)
+}
+
+type depotsTemplate struct {
+	GlobalTemplate
+}
+
 func depotHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
@@ -44,18 +58,4 @@ func depotHandler(w http.ResponseWriter, r *http.Request) {
 type depotTemplate struct {
 	GlobalTemplate
 	Depot db.Depot
-}
-
-func depotsHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Template
-	t := depotsTemplate{}
-	t.fill(w, r, "Depots", "")
-
-	err := returnTemplate(w, r, "depots", t)
-	log.Err(err, r)
-}
-
-type depotsTemplate struct {
-	GlobalTemplate
 }
