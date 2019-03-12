@@ -201,20 +201,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Get price
 	t.Price = db.GetPriceFormatted(app, session.GetCountryCode(r))
 
-	// Make banners
-	banners := make(map[string][]string)
-	var primary []string
-
-	if app.ID == 753 {
-		primary = append(primary, "This app record is for the Steam client.")
-	}
-
-	if len(primary) > 0 {
-		banners["primary"] = primary
-	}
-
-	t.Banners = banners
-
 	// Functions that get called multiple times in the template
 	t.Achievements, err = t.App.GetAchievements()
 	log.Err(err, r)
@@ -237,6 +223,25 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.SteamSpy, err = t.App.GetSteamSpy()
 	log.Err(err, r)
 
+	// Make banners
+	banners := make(map[string][]string)
+	var primary []string
+
+	if app.ID == 753 {
+		primary = append(primary, "This app record is for the Steam client")
+	}
+
+	if len(t.Achievements) > 5000 {
+		primary = append(primary, "Apps are limited to 5000 achievements, but this app created more before the limit put in place")
+	}
+
+	if len(primary) > 0 {
+		banners["primary"] = primary
+	}
+
+	t.Banners = banners
+
+	//
 	err = returnTemplate(w, r, "app", t)
 	log.Err(err, r)
 }
