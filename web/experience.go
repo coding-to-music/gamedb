@@ -4,6 +4,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -24,6 +25,8 @@ func experienceRouter() http.Handler {
 }
 
 func experienceHandler(w http.ResponseWriter, r *http.Request) {
+
+	setCacheHeaders(w, time.Hour*24*30)
 
 	var rows []level
 	xp := 0

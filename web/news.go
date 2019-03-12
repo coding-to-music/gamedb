@@ -22,6 +22,8 @@ func newsRouter() http.Handler {
 
 func newsHandler(w http.ResponseWriter, r *http.Request) {
 
+	setCacheHeaders(w, time.Hour)
+
 	t := newsTemplate{}
 	t.fill(w, r, "News", "All the news from all the games, all in one place.")
 

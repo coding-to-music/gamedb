@@ -2,6 +2,7 @@ package web
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
@@ -10,6 +11,8 @@ import (
 )
 
 func commitsHandler(w http.ResponseWriter, r *http.Request) {
+
+	setCacheHeaders(w, time.Minute*10)
 
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "The last commits to the Game DB code base.")

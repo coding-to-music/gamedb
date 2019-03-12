@@ -23,6 +23,8 @@ func homeRouter() http.Handler {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 
+	setCacheHeaders(w, time.Hour)
+
 	t := homeTemplate{}
 	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetHighCharts()
