@@ -13,6 +13,7 @@ COPY package.json ./package.json
 COPY templates ./templates
 COPY assets ./assets
 COPY health-check.sh ./health-check.sh
+RUN ["chmod", "+x", "health-check.sh"]
 RUN touch ./google-auth.json
 RUN apk update && apk add ca-certificates curl bash
 CMD ["./website"]
