@@ -168,11 +168,11 @@ func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
+	w.Header().Set("Content-Type", "text/html")                   //
+	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
 	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
 	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
-	w.Header().Set("Content-Type", "text/html")                   //
-	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
 
 	if w.Header().Get("Cache-Control") == "" || w.Header().Get("Expires") == "" {
 		setCacheHeaders(w, time.Hour*24)
@@ -450,34 +450,32 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 
 func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 
-	// Get current time
-	ts := time.Now()
-	dayint, err := strconv.Atoi(ts.Format("2"))
-	log.Err(err)
+	// Page created time
+	text += template.HTML(`Page created <span data-livestamp="` + strconv.FormatInt(time.Now().Unix(), 10) + `"></span>`)
 
-	currentTime := template.HTML("Page created on " + ts.Format("Mon") + " the " + humanize.Ordinal(dayint) + " @ " + ts.Format("15:04") + " UTC")
-
-	// Get cashed
+	// From cache
 	if t.IsCacheHit() {
-		currentTime += " from cache"
+		text += " from cache"
 	}
 
-	// Get load time
-	startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
-	log.Err(err)
+	// Page load time
+	if config.Config.IsLocal() {
 
-	durStr, err := durationfmt.Format(time.Duration(time.Now().UnixNano()-startTimeInt), "%ims")
-	log.Err(err)
+		startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
+		log.Err(err)
 
-	var duration = template.HTML(" in " + durStr + ".")
+		durStr, err := durationfmt.Format(time.Duration(time.Now().UnixNano()-startTimeInt), "%ims")
+		log.Err(err)
 
-	// Get version hash
-	var hash = template.HTML("")
+		text += template.HTML(" in " + durStr)
+	}
+
+	// Deployed commit hash
 	if len(config.Config.CommitHash) >= 7 {
-		hash = template.HTML(" v<a target=\"_blank\" href=\"/commits#" + config.Config.CommitHash[0:7] + "\">" + config.Config.CommitHash[0:7] + "</a>.")
+		text += template.HTML(`. v<a target="_blank" href="/commits#` + config.Config.CommitHash[0:7] + `">` + config.Config.CommitHash[0:7] + `</a>.`)
 	}
 
-	return currentTime + duration + hash
+	return text
 }
 
 func (t GlobalTemplate) IsCacheHit() bool {
