@@ -2,7 +2,6 @@ package db
 
 import (
 	"encoding/json"
-	"strconv"
 	"sync"
 	"time"
 
@@ -112,18 +111,18 @@ func CopyBufferToDS() {
 
 	for _, v := range counts {
 
+		if v.Count < 600 {
+			log.Info("Less than 600 " + v.Kind + " buffer rows")
+			continue
+		}
+
 		rows, err := getBufferRows(v.Kind)
 		if err != nil {
 			log.Err(err)
 			continue
 		}
 
-		if len(rows) < 500 {
-			log.Info("Less than 500 " + v.Kind + " buffer rows")
-			continue
-		}
-
-		log.Info("Found " + strconv.Itoa(len(rows)) + " " + v.Kind + " rows")
+		log.Info("Copying " + v.Kind + " buffer rows")
 
 		var kinds []Kind
 
