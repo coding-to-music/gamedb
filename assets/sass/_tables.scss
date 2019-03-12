@@ -2,9 +2,8 @@ div table.dataTable {
     border-collapse: separate !important;
 }
 
-table.table {
+table.table:not(.fixedHeader-floating) {
 
-    // Rounded corners
     thead {
         tr:first-child {
             th:first-child, td:first-child {
@@ -34,6 +33,9 @@ table.table {
             }
         }
     }
+}
+
+table.table {
 
     thead {
         th {
