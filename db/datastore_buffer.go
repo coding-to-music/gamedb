@@ -28,7 +28,7 @@ func (b DatastoreBuffer) ToChange() (change Change, err error) {
 
 func GetBufferRows(kind string, limit int, offset int) (kinds []Kind, err error) {
 
-	gorm, err := GetMySQLClient(true)
+	gorm, err := GetMySQLClient()
 	if err != nil {
 		return kinds, err
 	}
