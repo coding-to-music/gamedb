@@ -22,6 +22,7 @@ $document.on('mousemove', '[data-link]', function handler(e) {
 $(document).on('mouseup', '[data-link]', function (e) {
 
     const link = $(this).attr('data-link');
+    const target = $(this).attr('data-target');
 
     if (!link) {
         return true;
@@ -37,7 +38,7 @@ $(document).on('mouseup', '[data-link]', function (e) {
     }
 
     // Middle click
-    if (e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2) {
+    if (e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2 || target === '_blank') {
         window.open(link, '_blank');
         return true;
     }

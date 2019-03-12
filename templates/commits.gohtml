@@ -10,23 +10,32 @@
     <div class="card">
         <div class="card-body">
 
-            <ul class="list-unstyled">
-                {{ range $key, $value := .Commits }}
+            {{ if eq .Env "local" }}
+                <div class="alert alert-primary" role="alert">Local environment doesn't know current version</div>
+            {{ end }}
 
-                    <li class="media">
-                        <div class="media-body">
-                            <h5 class="mt-0 mb-1">{{ .Commit.Message }}</h5>
-                            <p class="text-muted">
-                                <span data-livestamp="{{ .Commit.Author.Date.Unix }}">{{ .Commit.Author.Date.Unix }}</span>
-                                <a href="{{ .HTMLURL }}">
-                                    <i class="fas fa-paperclip" aria-hidden="true"></i>
-                                </a>
-                            </p>
-                        </div>
-                    </li>
-
-                {{ end }}
-            </ul>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable mb-0" data-sort="[[1, 'desc']]" data-limit="100" data-no-sort="1">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Message</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Hash</th>
+                        <th scope="col">Deployed</th>
+                    </tr>
+                    </thead>
+                    <tbody class="tags-list">
+                    {{ range $key, $value := .Commits }}
+                        <tr data-link="{{ .Link }}" data-target="_blank" class="{{ if .Highlight }}table-success{{ end }}" id="{{ .Hash }}">
+                            <td>{{ .Message }}</td>
+                            <td><span data-livestamp="{{ .Time }}">{{ .Time }}</span></td>
+                            <td>{{ .Hash }}</td>
+                            <td>{{ if .Deployed }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                        </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     </div>
