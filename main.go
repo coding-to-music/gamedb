@@ -96,11 +96,12 @@ func main() {
 		err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
 		log.Critical(err)
 
-		//
-		err = c.AddFunc("@every 2h", checkForPlayers)
+		// Every 2 hours
+		err = c.AddFunc("0 0 */2 * * *", checkForPlayers)
 		log.Critical(err)
 
-		err = c.AddFunc("@every 10m", db.CopyBufferToDS)
+		// Every 10 minutes
+		err = c.AddFunc("0 */10 * * * *", db.CopyBufferToDS)
 		log.Critical(err)
 
 		c.Start()
@@ -111,8 +112,8 @@ func main() {
 
 		c := cron.New()
 
-		err = c.AddFunc("@every 5s", checkForPlayers)
-		log.Critical(err)
+		// err = c.AddFunc("@every 5s", checkForPlayers)
+		// log.Critical(err)
 
 		c.Start()
 	}
@@ -146,6 +147,8 @@ func main() {
 }
 
 func checkForPlayers() {
+
+	log.Info("Queueing apps for player checks")
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
