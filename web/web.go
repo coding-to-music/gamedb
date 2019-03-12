@@ -68,6 +68,7 @@ func Serve() error {
 
 	// Pages
 	r.Get("/", homeHandler)
+	r.Get("/api", apiHandler)
 	r.Get("/commits", commitsHandler)
 	r.Get("/coop", coopHandler)
 	r.Get("/developers", statsDevelopersHandler)
