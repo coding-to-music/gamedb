@@ -6,7 +6,7 @@ replace github.com/ahmdrz/goinsta/v2 => github.com/krylovsk/goinsta/v2 v2.4.0
 require github.com/ahmdrz/goinsta/v2 v2.4.0
 
 require (
-	cloud.google.com/go v0.36.0
+	cloud.google.com/go v0.37.0
 	github.com/99designs/basicauth-go v0.0.0-20160802081356-2a93ba0f464d
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c
@@ -35,10 +35,13 @@ require (
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
+	github.com/golang/protobuf v1.3.0
+	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/gorilla/sessions v1.1.3
 	github.com/gorilla/websocket v1.4.0
 	github.com/gosimple/slug v1.4.2
+	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/influxdata/influxdb1-client v0.0.0-20190124185755-16c852ea613f
 	github.com/jinzhu/gorm v1.9.2
 	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a // indirect
@@ -59,11 +62,16 @@ require (
 	github.com/sendgrid/sendgrid-go v3.4.1+incompatible
 	github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
 	github.com/streadway/amqp v0.0.0-20190214183023-884228600bc9
+	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.0 // indirect
 	github.com/temoto/robotstxt v0.0.0-20180810133444-97ee4a9ee6ea // indirect
 	github.com/yohcop/openid-go v0.0.0-20170901155220-cfc72ed89575
-	golang.org/x/crypto v0.0.0-20190219172222-a4c6cb3142f2
-	golang.org/x/oauth2 v0.0.0-20190219183015-4b83411ed2b3
+	go.opencensus.io v0.19.1 // indirect
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+	golang.org/x/net v0.0.0-20190311183353-d8887717615a // indirect
+	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
+	golang.org/x/sys v0.0.0-20190312061237-fead79001313 // indirect
+	google.golang.org/genproto v0.0.0-20190307195333-5fe7a883aa19 // indirect
 )
