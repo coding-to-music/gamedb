@@ -26,6 +26,7 @@ import (
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
+	"github.com/nicklaw5/helix"
 	"github.com/streadway/amqp"
 )
 
@@ -171,6 +172,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	err = updateBundles(&app)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
+	err = updateAppTwitch(&app)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -1045,4 +1053,32 @@ func saveAppToInflux(app db.App) (err error) {
 	})
 
 	return err
+}
+
+func updateAppTwitch(app *db.App) error {
+
+	client, err := helpers.GetTwitch()
+	if err != nil {
+		return err
+	}
+
+	if app.TwitchID == 0 && app.Name != "" {
+
+		resp, err := client.GetGames(&helix.GamesParams{Names: []string{app.Name}})
+		if err != nil {
+			return err
+		}
+
+		if len(resp.Data.Games) > 0 {
+
+			i, err := strconv.Atoi(resp.Data.Games[0].ID)
+			if err != nil {
+				return err
+			}
+
+			app.TwitchID = i
+		}
+	}
+
+	return nil
 }

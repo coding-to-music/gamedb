@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/website/helpers"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
+	"github.com/nicklaw5/helix"
 	"github.com/streadway/amqp"
 )
 
@@ -45,24 +46,48 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	// Get apps
+	appMap := map[int]db.App{}
+	apps, err := db.GetAppsByID(message.IDs, []string{"id", "twitch_id"})
+	if err != nil {
+		logError(err)
+		payload.ackRetry(msg)
+		return
+	}
+
+	for _, v := range apps {
+		appMap[v.ID] = v
+	}
+
 	for _, appID := range message.IDs {
 
 		if payload.Attempt > 1 {
 			logInfo("Consuming app player " + strconv.Itoa(appID) + ", attempt " + strconv.Itoa(payload.Attempt))
 		}
 
-		err = saveAppPlayerToInflux(appID)
-		if err != nil {
-			logError(err, appID)
-			payload.ackRetry(msg)
-			return
-		}
+		app, ok := appMap[appID]
+		if ok {
 
-		err = updateAppRow(appID)
-		if err != nil {
-			logError(err, appID)
-			payload.ackRetry(msg)
-			return
+			err, viewers := getAppTwitchStreamers(&app)
+			if err != nil {
+				logError(err, appID)
+				payload.ackRetry(msg)
+				return
+			}
+
+			err = saveAppPlayerToInflux(&app, viewers)
+			if err != nil {
+				logError(err, appID)
+				payload.ackRetry(msg)
+				return
+			}
+
+			err = updateAppTrendRow(&app)
+			if err != nil {
+				logError(err, appID)
+				payload.ackRetry(msg)
+				return
+			}
 		}
 	}
 
@@ -70,12 +95,34 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func saveAppPlayerToInflux(appID int) (err error) {
+func getAppTwitchStreamers(app *db.App) (err error, viewers int) {
+
+	client, err := helpers.GetTwitch()
+	if err != nil {
+		return err, 0
+	}
+
+	if app.TwitchID > 0 {
+
+		resp, err := client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(app.TwitchID)}, Language: []string{"en"}})
+		if err != nil {
+			return err, 0
+		}
+
+		for _, v := range resp.Data.Streams {
+			viewers += v.ViewerCount
+		}
+	}
+
+	return nil, viewers
+}
+
+func saveAppPlayerToInflux(app *db.App, viewers int) (err error) {
 
 	s := helpers.GetSteam()
 	sx := *s
 	sx.SetAPIRateLimit(time.Millisecond*600, 10)
-	count, _, err := sx.GetNumberOfCurrentPlayers(appID)
+	count, _, err := sx.GetNumberOfCurrentPlayers(app.ID)
 
 	steamErr, ok := err.(steam.Error)
 	if ok && (steamErr.Code == 404) {
@@ -88,10 +135,11 @@ func saveAppPlayerToInflux(appID int) (err error) {
 	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(db.InfluxMeasurementApps),
 		Tags: map[string]string{
-			"app_id": strconv.Itoa(appID),
+			"app_id": strconv.Itoa(app.ID),
 		},
 		Fields: map[string]interface{}{
-			"player_count": count,
+			"player_count":   count,
+			"twitch_viewers": viewers,
 		},
 		Time:      time.Now(),
 		Precision: "m",
@@ -100,12 +148,12 @@ func saveAppPlayerToInflux(appID int) (err error) {
 	return err
 }
 
-func updateAppRow(appID int) (err error) {
+func updateAppTrendRow(app *db.App) (err error) {
 
 	// https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
 
 	query := `SELECT cumulative_sum(difference) FROM (
-		SELECT difference(last("player_count")) FROM "GameDB"."alltime"."apps" WHERE "app_id" = '` + strconv.Itoa(appID) + `' AND time >= now() - 7d GROUP BY time(1h)
+		SELECT difference(last("player_count")) FROM "GameDB"."alltime"."apps" WHERE "app_id" = '` + strconv.Itoa(app.ID) + `' AND time >= now() - 7d GROUP BY time(1h)
 	)`
 
 	resp, err := db.InfluxQuery(query)
@@ -133,10 +181,11 @@ func updateAppRow(appID int) (err error) {
 		return err
 	}
 
-	app := db.App{}
-	app.ID = appID
+	data := map[string]interface{}{
+		"player_trend": int(lastInt),
+	}
 
-	gorm = gorm.Model(&app).UpdateColumns(db.App{PlayerTrend: int(lastInt)})
+	gorm.Table("apps").Where("id = ?", app.ID).Updates(data)
 
 	return gorm.Error
 }

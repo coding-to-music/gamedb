@@ -53,6 +53,7 @@ require (
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
 	github.com/mitchellh/mapstructure v1.1.2
+	github.com/nicklaw5/helix v0.5.1
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
@@ -75,4 +76,5 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	golang.org/x/sys v0.0.0-20190312061237-fead79001313 // indirect
 	google.golang.org/genproto v0.0.0-20190307195333-5fe7a883aa19 // indirect
+	google.golang.org/grpc v1.19.0
 )

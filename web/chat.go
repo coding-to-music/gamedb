@@ -3,7 +3,6 @@ package web
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -271,8 +270,6 @@ func chatLoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 func chatPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("Posting")
-
 	err := r.ParseForm()
 	if err != nil {
 		log.Err(err)
@@ -325,8 +322,6 @@ func getDiscordOauth(r *http.Request) (discordDeref discordgo.Session, err error
 		if err != nil {
 			return
 		}
-
-		fmt.Println(token)
 
 		discordDeref.Client = discordOauthConfig.Client(discordOauthContext, token)
 	}

@@ -840,11 +840,8 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 	}
 
 	db.Where("id IN (?)", ids).Find(&apps)
-	if db.Error != nil {
-		return apps, db.Error
-	}
 
-	return apps, nil
+	return apps, db.Error
 }
 
 func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []App, err error) {

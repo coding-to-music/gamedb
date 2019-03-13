@@ -45,6 +45,9 @@ func init() {
 	Config.RecaptchaPublic = os.Getenv(prefix + "RECAPTCHA_PUBLIC")
 	Config.RecaptchaPrivate = os.Getenv(prefix + "RECAPTCHA_PRIVATE")
 
+	Config.TwitchClientID = os.Getenv(prefix + "TWITCH_CLIENT_ID")
+	Config.TwitchClientSecret = os.Getenv(prefix + "TWITCH_CLIENT_SECRET")
+
 	Config.InfluxURL = os.Getenv(prefix + "INFLUX_URL")
 	Config.InfluxUsername = os.Getenv(prefix + "INFLUX_USERNAME")
 	Config.InfluxPassword = os.Getenv(prefix + "INFLUX_PASSWORD")
@@ -111,6 +114,9 @@ type BaseConfig struct {
 
 	SessionAuthentication string
 	SessionEncryption     string
+
+	TwitchClientID     string
+	TwitchClientSecret string
 
 	InstagramPassword ConfigItem
 	InstagramUsername ConfigItem
