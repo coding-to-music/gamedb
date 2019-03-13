@@ -994,10 +994,10 @@ type AppAchievement struct {
 }
 
 func (a AppAchievement) GetIcon() string {
-	if a.Icon == "" {
-		return DefaultAppIcon
+	if strings.HasSuffix(a.Icon, ".jpg") {
+		return a.Icon
 	}
-	return a.Icon
+	return DefaultAppIcon
 }
 
 type AppStat struct {
