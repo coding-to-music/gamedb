@@ -15,10 +15,11 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, time.Minute*10)
 
 	t := commitsTemplate{}
-	t.fill(w, r, "Commits", "The last commits to the Game DB code base.")
+	t.fill(w, r, "Commits", "")
 
 	client, ctx := helpers.GetGithub()
 
+	// Get commits
 	var err error
 	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
@@ -49,6 +50,13 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// Get total
+	contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
+	for _, v := range contributors {
+		t.Total += v.GetTotal()
+	}
+
+	//
 	err = returnTemplate(w, r, "commits", t)
 	log.Err(err, r)
 }
@@ -57,6 +65,7 @@ type commitsTemplate struct {
 	GlobalTemplate
 	Commits []commit
 	Hash    string
+	Total   int
 }
 
 type commit struct {
