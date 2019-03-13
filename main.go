@@ -146,6 +146,7 @@ func main() {
 	wg.Wait()
 }
 
+// This is here because you can't queue things from db package
 func checkForPlayers() {
 
 	log.Info("Queueing apps for player checks")
