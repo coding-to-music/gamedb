@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/datastore"
+	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -23,6 +24,7 @@ func statsRouter() http.Handler {
 	r.Get("/app-types", statsTypesHandler)
 	r.Get("/ranked-countries", statsCountriesHandler)
 	r.Get("/release-dates", statsDatesHandler)
+	r.Get("/client-players", statsClientPlayersHandler)
 	return r
 }
 
@@ -310,4 +312,40 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 type statsAppReleaseDate struct {
 	Date  int64
 	Count int
+}
+
+func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom("GameDB", "alltime", "apps")
+	builder.AddWhere("time", ">", "NOW() - 30d")
+	builder.AddWhere("app_id", "=", 0)
+	builder.AddGroupByTime("30m")
+	builder.SetFillNone()
+
+	resp, err := db.InfluxQuery(builder.String())
+	if err != nil {
+		log.Err(err, r, builder.String())
+		return
+	}
+
+	var hc db.HighChartsJson
+
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+		hc = db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+	}
+
+	b, err := json.Marshal(hc)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	err = returnJSON(w, r, b)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
 }
