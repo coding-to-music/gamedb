@@ -13,7 +13,8 @@ require (
 	github.com/Jleagle/influxql v0.0.0-20190303215204-7c739e39d8a6
 	github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
-	github.com/Jleagle/steam-go v0.0.0-20190220084322-c18ad4f60799
+	github.com/Jleagle/steam-go v0.0.0-20190313125813-b17e40b361dc
+	github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/antchfx/htmlquery v1.0.0 // indirect
 	github.com/antchfx/xmlquery v1.0.0 // indirect

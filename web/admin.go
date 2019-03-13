@@ -167,7 +167,7 @@ func adminQueueEveryApp() {
 
 	for keepGoing {
 
-		apps, _, err = helpers.GetSteam().GetAppList(1000, last)
+		apps, _, err = helpers.GetSteam().GetAppList(1000, last, 0, "")
 		if err != nil {
 			log.Err(err)
 			return
@@ -325,36 +325,66 @@ func adminQueues(r *http.Request) {
 
 		playerID, err := strconv.ParseInt(val, 10, 64)
 		log.Err(err, r)
+		if err == nil {
 
-		err = queue.ProducePlayer(playerID)
-		log.Err(err, r)
+			err = queue.ProducePlayer(playerID)
+			log.Err(err, r)
+		}
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
 		appID, err := strconv.Atoi(val)
 		log.Err(err, r)
+		if err == nil {
 
-		err = queue.ProduceApp(appID)
-		log.Err(err, r)
+			err = queue.ProduceApp(appID)
+			log.Err(err, r)
+		}
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
 		packageID, err := strconv.Atoi(val)
 		log.Err(err, r)
+		if err == nil {
 
-		err = queue.ProducePackage(packageID)
-		log.Err(err, r)
+			err = queue.ProducePackage(packageID)
+			log.Err(err, r)
+		}
 	}
 
 	if val := r.PostForm.Get("bundle-id"); val != "" {
 
 		bundleID, err := strconv.Atoi(val)
 		log.Err(err, r)
+		if err == nil {
 
-		err = queue.ProduceBundle(bundleID, 0)
+			err = queue.ProduceBundle(bundleID, 0)
+			log.Err(err, r)
+		}
+	}
+
+	if val := r.PostForm.Get("apps-ts"); val != "" {
+
+		log.Info("Queueing apps")
+
+		ts, err := strconv.ParseInt(val, 10, 64)
 		log.Err(err, r)
+		if err == nil {
+
+			apps, _, err := helpers.GetSteam().GetAppList(100000, 0, ts, "")
+			log.Err(err, r)
+			if err == nil {
+
+				log.Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
+
+				for _, v := range apps.Apps {
+					err = queue.ProduceApp(v.AppID)
+					log.Err(err, r)
+				}
+			}
+		}
 	}
 }
 
@@ -1216,7 +1246,7 @@ func adminDeleteBinLogs(r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name != "" {
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := db.GetMySQLClient(true)
 		if err != nil {
 			log.Err(err)
 			return
