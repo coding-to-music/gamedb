@@ -107,17 +107,6 @@ func main() {
 		c.Start()
 	}
 
-	// Local crons
-	if config.Config.IsLocal() {
-
-		c := cron.New()
-
-		// err = c.AddFunc("@every 5s", checkForPlayers)
-		// log.Critical(err)
-
-		c.Start()
-	}
-
 	// Block forever for goroutines to run
 	x := make(chan os.Signal)
 	signal.Notify(x, syscall.SIGTERM, os.Interrupt, os.Kill)
@@ -158,17 +147,11 @@ func checkForPlayers() {
 	}
 
 	gorm = gorm.Select([]string{"id"})
-
-	if config.Config.IsLocal() {
-		gorm = gorm.Order("RAND()")
-		gorm = gorm.Limit(1)
-	} else {
-		gorm = gorm.Order("id ASC")
-	}
+	gorm = gorm.Order("id ASC")
+	gorm = gorm.Model(&[]db.App{})
 
 	var appIDs []int
-
-	gorm = gorm.Model(&[]db.App{}).Pluck("id", &appIDs)
+	gorm = gorm.Pluck("id", &appIDs)
 	if gorm.Error != nil {
 		log.Critical(gorm.Error)
 	}
