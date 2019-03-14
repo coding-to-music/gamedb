@@ -101,7 +101,7 @@ func main() {
 		log.Critical(err)
 
 		// Every 10 minutes
-		err = c.AddFunc("0 */10 * * * *", db.CopyBufferToDS)
+		err = c.AddFunc("0 */10 * * * *", db.FlushBufferToDatastore)
 		log.Critical(err)
 
 		c.Start()

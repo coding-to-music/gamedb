@@ -6,7 +6,6 @@ import (
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
-	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -129,7 +128,11 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 
 	// Save to buffer
 	err = db.SaveKindsToBuffer(changesSlice, db.KindChange)
-	log.Err(err)
+	if err != nil {
+		logError(err)
+		payload.ackRetry(msg)
+		return
+	}
 
 	// Save change to DS
 	// if config.Config.IsProd() {
