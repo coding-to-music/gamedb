@@ -15,7 +15,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
@@ -140,13 +139,6 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	err = updateAppNews(&app)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = updateAppPlayerCount(&app)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -764,44 +756,6 @@ func updateAppNews(app *db.App) error {
 	}
 
 	app.NewsIDs = string(b)
-	return nil
-}
-
-func updateAppPlayerCount(app *db.App) error {
-
-	var builder *influxql.Builder
-	var resp *influx.Response
-	var err error
-
-	// 7 Days
-	builder = influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom("GameDB", "alltime", "apps")
-	builder.AddWhere("time", ">", "NOW() - 7d")
-	builder.AddWhere("app_id", "=", app.ID)
-	builder.SetFillNone()
-
-	resp, err = db.InfluxQuery(builder.String())
-	if err != nil {
-		return err
-	}
-
-	app.PlayerPeakWeek = db.GetFirstInfluxInt(resp)
-
-	// All time
-	builder = influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom("GameDB", "alltime", "apps")
-	builder.AddWhere("app_id", "=", app.ID)
-	builder.SetFillNone()
-
-	resp, err = db.InfluxQuery(builder.String())
-	if err != nil {
-		return err
-	}
-
-	app.PlayerPeakAllTime = db.GetFirstInfluxInt(resp)
-
 	return nil
 }
 

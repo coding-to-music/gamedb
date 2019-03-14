@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -82,7 +83,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				return
 			}
 
-			err = updateAppTrendRow(&app)
+			err = updateAppPlayerInfoRow(&app)
 			if err != nil {
 				logError(err, appID)
 				payload.ackRetry(msg)
@@ -148,33 +149,66 @@ func saveAppPlayerToInflux(app *db.App, viewers int) (err error) {
 	return err
 }
 
-func updateAppTrendRow(app *db.App) (err error) {
+func updateAppPlayerInfoRow(app *db.App) (err error) {
 
-	// https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
+	var resp *influx.Response
 
+	// Trend value - https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
 	query := `SELECT cumulative_sum(difference) FROM (
 		SELECT difference(last("player_count")) FROM "GameDB"."alltime"."apps" WHERE "app_id" = '` + strconv.Itoa(app.ID) + `' AND time >= now() - 7d GROUP BY time(1h)
 	)`
 
-	resp, err := db.InfluxQuery(query)
+	resp, err = db.InfluxQuery(query)
 	if err != nil {
 		return err
 	}
 
-	var lastInt int64
+	var trendTotal int64
 
+	// Get the last value, todo, put into influx helper, like the ones below
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 		values := resp.Results[0].Series[0].Values
 		if len(values) > 0 {
 
 			last := values[len(values)-1]
 
-			lastInt, err = last[1].(json.Number).Int64()
+			trendTotal, err = last[1].(json.Number).Int64()
 			if err != nil {
 				return err
 			}
 		}
 	}
+
+	var builder *influxql.Builder
+
+	// 7 Days
+	builder = influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom("GameDB", "alltime", "apps")
+	builder.AddWhere("time", ">", "NOW() - 7d")
+	builder.AddWhere("app_id", "=", app.ID)
+	builder.SetFillNone()
+
+	resp, err = db.InfluxQuery(builder.String())
+	if err != nil {
+		return err
+	}
+
+	var week = db.GetFirstInfluxInt(resp)
+
+	// All time
+	builder = influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom("GameDB", "alltime", "apps")
+	builder.AddWhere("app_id", "=", app.ID)
+	builder.SetFillNone()
+
+	resp, err = db.InfluxQuery(builder.String())
+	if err != nil {
+		return err
+	}
+
+	var alltime = db.GetFirstInfluxInt(resp)
 
 	gorm, err := db.GetMySQLClient()
 	if err != nil {
@@ -182,7 +216,9 @@ func updateAppTrendRow(app *db.App) (err error) {
 	}
 
 	data := map[string]interface{}{
-		"player_trend": int(lastInt),
+		"player_trend":        int(trendTotal),
+		"player_peak_week":    week,
+		"player_peak_alltime": alltime,
 	}
 
 	gorm.Table("apps").Where("id = ?", app.ID).Updates(data)
