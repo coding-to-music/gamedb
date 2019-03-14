@@ -95,7 +95,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get ranks
-	var ranks *db.PlayerRank
+	var ranks db.PlayerRank
 	wg.Add(1)
 	go func(player db.Player) {
 
@@ -229,7 +229,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Player = player
 	t.Friends = friends
 	t.Apps = []db.PlayerApp{}
-	t.Ranks = playerRanksTemplate{*ranks, players}
+	t.Ranks = playerRanksTemplate{ranks, players}
 	t.Badges = badges
 	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames

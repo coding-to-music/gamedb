@@ -76,7 +76,7 @@ func (rank PlayerRank) GetTimeLong() (ret string) {
 	return helpers.GetTimeLong(rank.PlayTime, 5)
 }
 
-func GetRank(playerID int64) (rank *PlayerRank, err error) {
+func GetRank(playerID int64) (rank PlayerRank, err error) {
 
 	client, context, err := GetDSClient()
 	if err != nil {
@@ -85,10 +85,10 @@ func GetRank(playerID int64) (rank *PlayerRank, err error) {
 
 	key := datastore.NameKey(KindPlayerRank, strconv.FormatInt(playerID, 10), nil)
 
-	rank = new(PlayerRank)
+	rank = PlayerRank{}
 	rank.PlayerID = playerID
 
-	err = client.Get(context, key, rank)
+	err = client.Get(context, key, &rank)
 	return rank, err
 }
 
