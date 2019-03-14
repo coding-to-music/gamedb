@@ -20,13 +20,13 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		log.Err("invalid id")
+		log.Err("invalid id", r)
 		return
 	}
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
-		log.Err("invalid id")
+		log.Err("invalid id", r)
 		return
 	}
 
@@ -39,7 +39,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 		product, err = db.GetPackage(idx, []string{"id", "product_type", "prices"})
 	}
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -50,7 +50,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	if code == "" {
-		log.Err("no code given")
+		log.Err("no code given", r)
 		return
 	}
 
@@ -99,7 +99,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	err = returnJSON(w, r, pricesBytes)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 type productPricesAjaxResponse struct {

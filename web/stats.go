@@ -93,7 +93,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Order("total desc")
 		gorm = gorm.Find(&rows)
 
-		log.Err(gorm.Error)
+		log.Err(gorm.Error, r)
 
 		for _, v := range rows {
 
@@ -157,7 +157,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Group("FLOOR(reviews_score)")
 	gorm = gorm.Find(&scores)
 
-	log.Err(gorm.Error)
+	log.Err(gorm.Error, r)
 
 	ret := make([]int, 101) // 0-100
 	for i := 0; i <= 100; i++ {
@@ -196,7 +196,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Order("count desc")
 	gorm = gorm.Find(&types)
 
-	log.Err(gorm.Error)
+	log.Err(gorm.Error, r)
 
 	var ret [][]interface{}
 
@@ -295,7 +295,7 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Where("release_date_unix < ?", time.Now().AddDate(0, 0, 1).Unix())
 	gorm = gorm.Find(&dates)
 
-	log.Err(gorm.Error)
+	log.Err(gorm.Error, r)
 
 	var ret [][]int64
 	for _, v := range dates {
