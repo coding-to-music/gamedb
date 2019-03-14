@@ -50,12 +50,16 @@ if ($('#stats-page').length > 0) {
             }
 
             Highcharts.chart('client-players', $.extend(true, {}, defaultStatsChartOptions, {
+                chart: {
+                    type: 'area',
+                },
                 xAxis: {
-                    tickInterval: 5,
+                    type: 'datetime',
+                    // tickInterval: 5,
                 },
                 tooltip: {
                     formatter: function () {
-                        return this.y.toLocaleString() + ' apps have ' + this.x + '/100';
+                        return this.y.toLocaleString() + ' people logged into steam on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
                     },
                 },
                 plotOptions: {
@@ -71,7 +75,7 @@ if ($('#stats-page').length > 0) {
                     }
                 },
                 series: [{
-                    data: data
+                    data: data['max_player_count']
                 }]
             }));
         },
