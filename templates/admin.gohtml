@@ -87,12 +87,6 @@
                             </a>
                         </div>
                         <div class="col col-xl-3">
-                            <a href="/admin/garbage-collection" role="button" class="btn btn-danger btn-block mb-4">
-                                Garbage Collection<br/>
-                                <small data-livestamp="{{ (index .Configs "run-garbage-collection").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col col-xl-3">
                             <a href="/admin/refresh-all-apps" role="button" class="btn btn-danger btn-block mb-4">
                                 Refresh All Apps<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-all-apps").Value }}"></small>
@@ -102,12 +96,6 @@
                             <a href="/admin/refresh-all-packages" role="button" class="btn btn-danger btn-block mb-4">
                                 Refresh All Packages<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-all-packages").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col col-xl-3">
-                            <a href="/admin/fix-all-broken-players" role="button" class="btn btn-danger btn-block mb-4">
-                                Fix All Broken Profiles<br/>
-                                <small data-livestamp="{{ (index .Configs "fix-broken-players").Value }}"></small>
                             </a>
                         </div>
                         <div class="col col-xl-3">

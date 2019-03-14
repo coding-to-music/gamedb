@@ -42,8 +42,6 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminQueueEveryApp()
 	case "refresh-all-packages":
 		go adminQueueEveryPackage()
-	case "fix-all-broken-players":
-		go fixAllBrokenPlayers()
 	case "refresh-genres":
 		go CronGenres()
 	case "refresh-tags":
@@ -58,8 +56,6 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go CronRanks()
 	case "wipe-memcache":
 		go adminMemcache()
-	case "garbage-collection":
-		go adminGarbageCollection()
 	case "delete-bin-logs":
 		go adminDeleteBinLogs(r)
 	case "disable-consumers":
@@ -246,31 +242,6 @@ func adminQueueEveryPackage() {
 	}
 
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
-}
-
-func fixAllBrokenPlayers() {
-
-	ids := db.GetAllBrokenPlayers()
-
-	var count int
-	for _, v := range ids {
-		err := queue.ProducePlayer(v)
-		log.Err(err)
-		count++
-	}
-
-	//
-	err := db.SetConfig(db.ConfFixBrokenPlayers, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-
-	if err == nil {
-		page.Send(adminWebsocket{db.ConfFixBrokenPlayers + " complete"})
-	}
-
-	log.Info(strconv.Itoa(count) + " players queued")
 }
 
 func CronDonations() {
@@ -1222,23 +1193,6 @@ func adminMemcache() {
 	}
 
 	log.Info("Memcache wiped")
-}
-
-func adminGarbageCollection() {
-
-	runtime.GC()
-
-	err := db.SetConfig(db.ConfGarbageCollection, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-
-	if err == nil {
-		page.Send(adminWebsocket{db.ConfGarbageCollection + " complete"})
-	}
-
-	log.Info("Garbage Collected")
 }
 
 func adminDeleteBinLogs(r *http.Request) {
