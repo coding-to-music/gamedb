@@ -128,7 +128,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Save to buffer
-	err = db.SaveKindToBuffer(changesSlice, db.KindChange)
+	err = db.SaveKindsToBuffer(changesSlice, db.KindChange)
 	log.Err(err)
 
 	// Save change to DS

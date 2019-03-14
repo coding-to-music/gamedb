@@ -80,6 +80,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	player.RealName = message.PICSProfileInfo.RealName
 	player.StateCode = message.PICSProfileInfo.StateName
 	player.CountryCode = message.PICSProfileInfo.CountryName
+	player.UpdatedAt = time.Now()
 
 	// Get summary
 	err = updatePlayerSummary(&player)
@@ -145,7 +146,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	err = player.Save()
+	err = savePlayerToBuffer(player)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -595,6 +596,11 @@ func updatePlayerGroups(player *db.Player) error {
 	return nil
 }
 
+func savePlayerToBuffer(player db.Player) error {
+
+	return db.SaveKindsToBuffer([]db.Kind{player}, db.KindPlayer)
+}
+
 func savePlayerToInflux(player db.Player) error {
 
 	ranks, err := db.GetRank(player.PlayerID)
@@ -608,14 +614,12 @@ func savePlayerToInflux(player db.Player) error {
 		"badges":   player.BadgesCount,
 		"playtime": player.PlayTime,
 		"friends":  player.FriendsCount,
-	}
 
-	if err != db.ErrNoSuchEntity {
-		fields["level_rank"] = ranks.LevelRank
-		fields["games_rank"] = ranks.GamesRank
-		fields["badges_rank"] = ranks.BadgesRank
-		fields["playtime_rank"] = ranks.PlayTimeRank
-		fields["friends_rank"] = ranks.FriendsRank
+		"level_rank":    ranks.LevelRank,
+		"games_rank":    ranks.GamesRank,
+		"badges_rank":   ranks.BadgesRank,
+		"playtime_rank": ranks.PlayTimeRank,
+		"friends_rank":  ranks.FriendsRank,
 	}
 
 	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{

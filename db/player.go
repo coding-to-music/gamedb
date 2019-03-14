@@ -29,7 +29,6 @@ type Player struct {
 	BadgeStats       string    `datastore:"badge_stats,noindex"`      // ProfileBadgeStats
 	Bans             string    `datastore:"bans,noindex"`             // PlayerBans
 	CountryCode      string    `datastore:"country_code"`             //
-	CreatedAt        time.Time `datastore:"created_at"`               //
 	Donated          int       `datastore:"donated"`                  //
 	Friends          string    `datastore:"friends,noindex"`          // []ProfileFriend
 	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"` //
@@ -284,21 +283,6 @@ func (p Player) ShouldUpdate(userAgent string, updateType UpdateType) bool {
 	return false
 }
 
-func (p *Player) Save() (err error) {
-
-	if !IsValidPlayerID(p.PlayerID) {
-		return ErrInvalidPlayerID
-	}
-
-	// Fix dates
-	p.UpdatedAt = time.Now()
-	if p.CreatedAt.IsZero() {
-		p.CreatedAt = time.Now()
-	}
-
-	return SaveKind(p.GetKey(), p)
-}
-
 func GetPlayerMaxFriends(level int) (ret int) {
 
 	ret = 750
@@ -359,21 +343,35 @@ func IsValidPlayerID(id int64) bool {
 	return true
 }
 
-func GetPlayer(id int64) (ret Player, err error) {
+func GetPlayer(id int64) (player Player, err error) {
 
 	if !IsValidPlayerID(id) {
-		return ret, ErrInvalidPlayerID
+		return player, ErrInvalidPlayerID
 	}
 
+	// Try MySQL
+	db, err := GetMySQLClient()
+	if err != nil {
+		return player, err
+	}
+
+	var buffer DatastoreBuffer
+	db.Where("kind = ?", KindPlayer).Where("key_name = ?", id).First(&buffer)
+	if db.Error != nil {
+		return player, db.Error
+	}
+
+	if buffer.Kind != "" {
+		return buffer.ToPlayer()
+	}
+
+	// Try Datastore
 	client, ctx, err := GetDSClient()
 	if err != nil {
-		return ret, err
+		return player, err
 	}
 
 	key := datastore.NameKey(KindPlayer, strconv.FormatInt(id, 10), nil)
-
-	player := Player{}
-	player.PlayerID = id
 
 	err = client.Get(ctx, key, &player)
 	err = handleDSSingleError(err, oldPlayerFields)

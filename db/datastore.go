@@ -198,6 +198,7 @@ func BulkDeleteKinds(keys []*datastore.Key, wait bool) (err error) {
 
 var (
 	oldPlayerFields = []string{
+		"created_at",
 		"settings_email",
 		"settings_password",
 		"settings_alerts",

@@ -9,10 +9,10 @@ import (
 )
 
 type DatastoreBuffer struct {
-	KeyName   string    `gorm:"not null;column:key_name;primary_key"`
-	Kind      string    `gorm:"not null;column:kind;primary_key"`
-	CreatedAt time.Time `gorm:"not null;column:created_at"`
-	RowData   string    `gorm:"not null;column:row_data"`
+	KeyName   string    `gorm:"not null;column:key_name;primary_key"` //
+	Kind      string    `gorm:"not null;column:kind;primary_key"`     //
+	CreatedAt time.Time `gorm:"not null;column:created_at"`           // Just used for sorting
+	RowData   string    `gorm:"not null;column:row_data"`             //
 }
 
 func (b DatastoreBuffer) TableName() string {
@@ -23,6 +23,12 @@ func (b DatastoreBuffer) ToChange() (change Change, err error) {
 
 	err = json.Unmarshal([]byte(b.RowData), &change)
 	return change, err
+}
+
+func (b DatastoreBuffer) ToPlayer() (player Player, err error) {
+
+	err = json.Unmarshal([]byte(b.RowData), &player)
+	return player, err
 }
 
 func GetBufferRows(kind string, limit int, offset int) (kinds []Kind, err error) {
@@ -42,19 +48,13 @@ func GetBufferRows(kind string, limit int, offset int) (kinds []Kind, err error)
 
 	for _, v := range rows {
 
-		switch v.Kind {
-		case KindChange:
-
-			var change Change
-			err = json.Unmarshal([]byte(v.RowData), &change)
-			kinds = append(kinds, change)
-		}
+		bufferDataToKind(&kinds, v)
 	}
 
 	return kinds, gorm.Error
 }
 
-func SaveKindToBuffer(kinds []Kind, kindType string) (err error) {
+func SaveKindsToBuffer(kinds []Kind, kindType string) (err error) {
 
 	gorm, err := GetMySQLClient()
 	if err != nil {
@@ -128,13 +128,7 @@ func CopyBufferToDS() {
 
 		for _, vv := range rows {
 
-			switch v.Kind {
-			case KindChange:
-
-				var change Change
-				err = json.Unmarshal([]byte(vv.RowData), &change)
-				kinds = append(kinds, change)
-			}
+			bufferDataToKind(&kinds, vv)
 		}
 
 		if len(kinds) > 0 {
@@ -151,6 +145,38 @@ func CopyBufferToDS() {
 			}
 		}
 	}
+}
+
+func bufferDataToKind(kinds *[]Kind, buffer DatastoreBuffer) {
+
+	var err error
+
+	switch buffer.Kind {
+	case KindChange:
+
+		var change Change
+		change, err = buffer.ToChange()
+		*kinds = append(*kinds, change)
+
+	case KindPlayer:
+
+		var player Player
+		player, err = buffer.ToPlayer()
+		*kinds = append(*kinds, player)
+
+		// case KindEvent:
+		//
+		// 	var event Event
+		// 	*kinds = append(*kinds, event)
+		//
+		// case KindProductPrice:
+		//
+		// 	var priceChange ProductPrice
+		// 	*kinds = append(*kinds, priceChange)
+
+	}
+
+	log.Err(err)
 }
 
 func getBufferRows(kind string) (rows []DatastoreBuffer, err error) {
