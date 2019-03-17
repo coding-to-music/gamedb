@@ -35,12 +35,18 @@ func loginRouter() http.Handler {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
+	_, err := getPlayer(r)
+	if err == nil {
+		http.Redirect(w, r, "/settings", 302)
+		return
+	}
+
 	t := loginTemplate{}
 	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic
 	t.Domain = config.Config.GameDBDomain.Get()
 
-	err := returnTemplate(w, r, "login", t)
+	err = returnTemplate(w, r, "login", t)
 	log.Err(err, r)
 }
 
