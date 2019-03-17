@@ -25,8 +25,8 @@
                     <tbody class="tags-list">
                     {{ range $key, $value := .Commits }}
                         <tr data-link="{{ .Link }}" data-target="_blank" class="{{ if .Highlight }}table-success{{ end }}" id="{{ .Hash }}">
-                            <td>{{ .Message }}</td>
-                            <td><span data-livestamp="{{ .Time }}">{{ .Time }}</span></td>
+                            <td nowrap="nowrap">{{ .Message }}</td>
+                            <td nowrap="nowrap"><span data-livestamp="{{ .Time }}">{{ .Time }}</span></td>
                             <td>{{ .Hash }}</td>
                             {{ if eq $.Env "production" }}
                                 <td>{{ if .Deployed }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
