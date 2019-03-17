@@ -1206,7 +1206,7 @@ func adminDeleteBinLogs(r *http.Request) {
 			return
 		}
 
-		gorm.Exec("PURGE BINARY LOGS TO '?';", name)
+		gorm.Exec("PURGE BINARY LOGS TO '" + name + "'")
 	}
 }
 
