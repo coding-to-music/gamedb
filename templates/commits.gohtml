@@ -10,10 +10,6 @@
     <div class="card">
         <div class="card-body">
 
-            {{ if eq .Env "local" }}
-                <div class="alert alert-primary" role="alert">Local environment doesn't know current version</div>
-            {{ end }}
-
             <div class="table-responsive">
                 <table class="table table-hover table-striped table-datatable mb-0" data-sort="[[1, 'desc']]" data-limit="100" data-no-sort="1">
                     <thead class="thead-light">
@@ -21,7 +17,9 @@
                         <th scope="col">Message</th>
                         <th scope="col">Time</th>
                         <th scope="col">Hash</th>
-                        <th scope="col">Deployed</th>
+                        {{ if eq .Env "production" }}
+                            <th scope="col">Deployed</th>
+                        {{ end }}
                     </tr>
                     </thead>
                     <tbody class="tags-list">
@@ -30,7 +28,9 @@
                             <td>{{ .Message }}</td>
                             <td><span data-livestamp="{{ .Time }}">{{ .Time }}</span></td>
                             <td>{{ .Hash }}</td>
-                            <td>{{ if .Deployed }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                            {{ if eq $.Env "production" }}
+                                <td>{{ if .Deployed }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                            {{ end }}
                         </tr>
                     {{ end }}
                     </tbody>
