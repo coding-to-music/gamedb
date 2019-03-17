@@ -473,7 +473,7 @@ func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 
 	// Deployed commit hash
 	if len(config.Config.CommitHash) >= 7 {
-		text += template.HTML(`. v<a target="_blank" href="/commits#` + config.Config.CommitHash[0:7] + `">` + config.Config.CommitHash[0:7] + `</a>.`)
+		text += template.HTML(`. v<a target="_blank" href="/commits">` + config.Config.CommitHash[0:7] + `</a>.`)
 	}
 
 	return text
