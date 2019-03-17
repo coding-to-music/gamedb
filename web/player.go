@@ -41,7 +41,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == datastore.ErrNoSuchEntity {
 
-			err = queue.ProducePlayer(player.PlayerID)
+			err = queue.ProducePlayer(idx)
 			log.Err(err, r)
 
 			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now.", DataID: idx}
