@@ -98,7 +98,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 	// Skip if updated in last day, unless its from PICS
 	if !config.Config.IsLocal() {
-		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
+		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -7).Unix() {
 			if app.ChangeNumber >= message.PICSAppInfo.ChangeNumber {
 				logInfo("Skipping app, updated in last day")
 				payload.ack(msg)
