@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=4572c93071">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=f1092692f1">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -29,17 +29,17 @@
     <meta name="msapplication-TileColor" content="#343a40">
     <meta name="msapplication-config" content="/browserconfig.xml">
     <meta name="theme-color" content="#343a40">
-    <meta name="google" content="notranslate">
+    {{/*<meta name="google" content="notranslate">*/}}
     <meta name="google-site-verification" content="brhvE2bHEwuvvoiOxeYHMQRSQECE4vAk8rMJ3iYZtSg"/>
 
     <!-- Common -->
     <title>{{ .Title }}</title>
-    <meta charset="utf-8">
-    <meta name="keywords" content="Game DB, Steam Authority, Steam Database, Steam Games">
     <meta name="description" content="{{ .Description }}">
+
     <!-- Schema.org -->
     <meta itemprop="name" content="{{ .Title }}">
     <meta itemprop="description" content="{{ .Description }}">
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@gamedbonline"/>
@@ -47,6 +47,7 @@
     <meta name="twitter:description" content="{{ .Description }}">
     <meta name="twitter:image" content="{{ .GetMetaImage }}"/>
     <meta name="twitter:image:alt" content="{{ .Title }}"/>
+
     <!-- Open Graph -->
     <meta name="og:title" content="{{ .Title }}">
     <meta name="og:description" content="{{ .Description }}">
@@ -54,6 +55,7 @@
     <meta name="og:url" content="https://gamedb.online{{ .Path }}">
     <meta name="og:locale" content="en_US">
     <meta name="og:type" content="website">
+
     <!-- Facebook -->
     <meta name="fb:admins" content="537840742">
     <meta name="fb:app_id" content="2539079269452708">
