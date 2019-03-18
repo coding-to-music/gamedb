@@ -78,16 +78,15 @@ func init() {
 	Config.WebserverPort.SetDefault("8081")
 	Config.EnableWebserver.SetDefault("1")
 	Config.EnableConsumers.SetDefault("1")
-	Config.MemcacheDSN.SetDefault("memcache:11211")
 	Config.GameDBDirectory.SetDefault("/root")
 
 	switch Config.Environment.Get() {
 	case EnvProd:
 
+		Config.MemcacheDSN.SetDefault("memcache:11211")
+
 	case EnvLocal:
 
-		Config.RabbitUsername.SetDefault("guest")
-		Config.RabbitPassword.SetDefault("guest")
 		Config.MemcacheDSN.SetDefault("localhost:11211")
 
 	case EnvConsumer:
@@ -173,6 +172,10 @@ func (c BaseConfig) RabbitAPI(values url.Values) string {
 
 func (c BaseConfig) ListenOn() string {
 	return "0.0.0.0:" + c.WebserverPort.Get()
+}
+
+func (c BaseConfig) HasMemcache() bool {
+	return c.MemcacheDSN.Get() != ""
 }
 
 func (c BaseConfig) IsLocal() bool {
