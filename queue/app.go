@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
@@ -220,6 +221,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Clear caches
 	if app.ReleaseDateUnix > time.Now().Unix() && newApp {
 		err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingAppsCount.Key)
+		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 		log.Err(err)
 	}
 
