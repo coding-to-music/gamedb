@@ -219,7 +219,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Clear caches
-	if app.ReleaseDateUnix > time.Now().Unix() && newApp {
+	if config.Config.HasMemcache() && app.ReleaseDateUnix > time.Now().Unix() && newApp {
 		err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingAppsCount.Key)
 		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 		log.Err(err)
