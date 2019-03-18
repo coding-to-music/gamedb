@@ -52,6 +52,10 @@ func init() {
 	Config.InfluxUsername = os.Getenv(prefix + "INFLUX_USERNAME")
 	Config.InfluxPassword = os.Getenv(prefix + "INFLUX_PASSWORD")
 
+	Config.MongoUsername = os.Getenv(prefix + "MONGO_USERNAME")
+	Config.MongoPassword = os.Getenv(prefix + "MONGO_PASSWORD")
+	Config.MongoDatabase = os.Getenv(prefix + "MONGO_DATABASE")
+
 	Config.TwitterAccessToken = os.Getenv(prefix + "TWITTER_ACCESS_TOKEN")
 	Config.TwitterAccessTokenSecret = os.Getenv(prefix + "TWITTER_ACCESS_TOKEN_SECRET")
 	Config.TwitterConsumerKey = os.Getenv(prefix + "TWITTER_CONSUMER_KEY")
@@ -131,6 +135,10 @@ type BaseConfig struct {
 	InfluxURL      string
 	InfluxPassword string
 	InfluxUsername string
+
+	MongoUsername string
+	MongoPassword string
+	MongoDatabase string
 
 	MySQLHost     ConfigItem
 	MySQLPort     ConfigItem
