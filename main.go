@@ -96,8 +96,8 @@ func main() {
 		err = c.AddFunc("0 0 12 * * *", social.UploadInstagram)
 		log.Critical(err)
 
-		// Every 2 hours
-		err = c.AddFunc("0 0 */2 * * *", checkForPlayers)
+		// Every 3 hours
+		err = c.AddFunc("0 0 */3 * * *", checkForPlayers)
 		log.Critical(err)
 
 		// Every 10 minutes
