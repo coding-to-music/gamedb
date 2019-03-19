@@ -389,6 +389,7 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
 	builder.SetFrom("GameDB", "alltime", "apps")
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhere("app_id", "=", id)

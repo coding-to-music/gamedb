@@ -349,25 +349,46 @@ if ($appPage.length > 0) {
                     chart: {
                         type: 'area'
                     },
-                    yAxis: {
-                        allowDecimals: false,
-                        title: {
-                            text: ''
+                    yAxis: [
+                        {
+                            allowDecimals: false,
+                            title: {text: ''},
+                            min: 0,
                         },
-                        min: 0,
-                    },
+                        {
+                            allowDecimals: false,
+                            title: {text: ''},
+                            min: 0,
+                            opposite: true,
+                        }
+                    ],
                     legend: {
                         enabled: false
                     },
                     tooltip: {
                         formatter: function () {
-                            return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                            if (this.series.name === 'Players') {
+                                return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                            } else {
+                                return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                            }
                         },
                     },
-                    series: [{
-                        color: '#28a745',
-                        data: data['max_player_count']
-                    }],
+                    series: [
+                        {
+                            name: 'Players',
+                            color: '#28a745',
+                            data: data['max_player_count'],
+                            yAxis: 0,
+                        },
+                        {
+                            name: 'Viewers',
+                            color: '#6441A4', // Twitch purple
+                            data: data['max_twitch_viewers'],
+                            yAxis: 1,
+                            type: 'line',
+                        }
+                    ],
                 }));
 
             },
