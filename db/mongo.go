@@ -4,14 +4,22 @@ import (
 	"context"
 	"time"
 
+	"github.com/gamedb/website/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
+const (
+	collectionPlayerApps = "player_apps"
+	collectionEvents     = "events"
+)
+
 var (
 	mongoClient *mongo.Client
 	mongoCtx    context.Context
+
+	database = config.Config.MongoDatabase
 )
 
 func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
@@ -20,8 +28,15 @@ func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 
 		ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
-		// todo, auth
-		client, err = mongo.NewClient(options.Client().ApplyURI("mongodb://mongo:27017"))
+		creds := options.Credential{
+			AuthSource:  database,
+			Username:    config.Config.MongoUsername,
+			Password:    config.Config.MongoPassword,
+			PasswordSet: true,
+		}
+
+		client, err = mongo.NewClient(options.Client().SetAuth(creds).ApplyURI(config.Config.MongoDSN()))
+
 		if err != nil {
 			return client, ctx, err
 		}

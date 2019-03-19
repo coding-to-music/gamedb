@@ -134,6 +134,13 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 		return err
 	}
 
+	// client, ctx, err := GetMongo()
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// _, err = client.Database("steam").Collection("events").InsertOne(ctx, bson.M{"name": "pi", "value": 3.14159})
+
 	if config.Config.HasMemcache() {
 		err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID).Key)
 		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)

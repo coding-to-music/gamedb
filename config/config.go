@@ -52,6 +52,8 @@ func init() {
 	Config.InfluxUsername = os.Getenv(prefix + "INFLUX_USERNAME")
 	Config.InfluxPassword = os.Getenv(prefix + "INFLUX_PASSWORD")
 
+	Config.MongoHost = os.Getenv(prefix + "MONGO_HOST")
+	Config.MongoPort = os.Getenv(prefix + "MONGO_PORT")
 	Config.MongoUsername = os.Getenv(prefix + "MONGO_USERNAME")
 	Config.MongoPassword = os.Getenv(prefix + "MONGO_PASSWORD")
 	Config.MongoDatabase = os.Getenv(prefix + "MONGO_DATABASE")
@@ -136,6 +138,8 @@ type BaseConfig struct {
 	InfluxPassword string
 	InfluxUsername string
 
+	MongoHost     string
+	MongoPort     string
 	MongoUsername string
 	MongoPassword string
 	MongoDatabase string
@@ -172,6 +176,10 @@ func (c BaseConfig) RabbitDSN() string {
 
 func (c BaseConfig) MySQLDNS() string {
 	return c.MySQLUsername.Get() + ":" + c.MySQLPassword.Get() + "@tcp(" + c.MySQLHost.Get() + ":" + c.MySQLPort.Get() + ")/" + c.MySQLDatabase.Get()
+}
+
+func (c BaseConfig) MongoDSN() string {
+	return "mongodb://" + c.MongoUsername + ":" + c.MongoPassword + "@" + c.MongoHost + ":" + c.MongoPort
 }
 
 func (c BaseConfig) RabbitAPI(values url.Values) string {
