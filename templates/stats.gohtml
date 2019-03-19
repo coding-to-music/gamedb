@@ -21,11 +21,16 @@
                 <div class="col-12 col-sm-6 col-lg-4 col-xl">
                     <div role="button" class="btn btn-success btn-block mb-4">Total Ranked Players<br/>{{ comma .RanksCount}}</div>
                 </div>
-                {{ range $key, $value := .Totals }}
-                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <div role="button" class="btn btn-success btn-block mb-4">{{ .Type }}<br/>{{ .Total }}</div>
-                    </div>
-                {{ end }}
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                    <a href="/apps?types=game" role="button" class="btn btn-success btn-block mb-4">
+                        Total price of all Games<br/>{{ index .Totals "game" }}
+                    </a>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                    <a href="/apps?types=dlc" role="button" class="btn btn-success btn-block mb-4">
+                        Total price of all DLCs<br/>{{ index .Totals "dlc" }}
+                    </a>
+                </div>
             </div>
 
             <h5>

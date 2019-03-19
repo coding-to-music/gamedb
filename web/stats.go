@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"sync"
@@ -76,7 +77,6 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var rows []statsAppTypeTotalsRow
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
@@ -89,31 +89,25 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm = gorm.Select([]string{"type", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
 		gorm = gorm.Table("apps")
+		gorm = gorm.Where("type in (?)", []string{"game", "dlc"})
 		gorm = gorm.Group("type")
 		gorm = gorm.Order("total desc")
-		gorm = gorm.Find(&rows)
 
+		var rows []statsAppTypeTotalsRow
+		gorm = gorm.Find(&rows)
 		log.Err(gorm.Error, r)
 
+		fmt.Println(rows)
+
+		t.Totals = map[string]string{}
 		for _, v := range rows {
 
 			locale, err := helpers.GetLocaleFromCountry(code)
 			log.Err(err, r)
 			if err == nil {
-
-				final := locale.Format(v.Total)
-
-				if v.Total > 0 && (v.Type == "game" || v.Type == "dlc") {
-					app := db.App{}
-					app.Type = v.Type
-					t.Totals = append(t.Totals, statsAppTypeTotals{
-						"Total price of all " + app.GetType() + "s",
-						final,
-					})
-				}
+				t.Totals[v.Type] = locale.Format(int(v.Total))
 			}
 		}
-
 	}()
 
 	wg.Wait()
@@ -127,17 +121,12 @@ type statsTemplate struct {
 	RanksCount    int
 	AppsCount     int
 	PackagesCount int
-	Totals        []statsAppTypeTotals
+	Totals        map[string]string
 }
 
 type statsAppTypeTotalsRow struct {
-	Type  string `gorm:"column:type"`
-	Total int    `gorm:"column:total;type:int"`
-}
-
-type statsAppTypeTotals struct {
-	Type  string
-	Total string
+	Type  string  `gorm:"column:type"`
+	Total float64 `gorm:"column:total;type:float64"`
 }
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
