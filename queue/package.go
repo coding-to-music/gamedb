@@ -109,7 +109,13 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	err = updatePackageFromStore(&pack)
 	err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
 	if err != nil {
-		logError(err, message.ID)
+		
+		if err == steam.ErrHTMLResponse {
+			logInfo(err, message.ID)
+		} else {
+			logError(err, message.ID)
+		}
+
 		payload.ackRetry(msg)
 		return
 	}
