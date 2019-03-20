@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sort"
 	"sync"
@@ -77,6 +76,8 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		t.Totals = map[string]string{}
+
 		gorm, err := db.GetMySQLClient()
 		if err != nil {
 
@@ -85,27 +86,25 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 
-		code := session.GetCountryCode(r)
+		var code = session.GetCountryCode(r)
+		var rows []statsAppTypeTotalsRow
 
 		gorm = gorm.Select([]string{"type", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
 		gorm = gorm.Table("apps")
-		gorm = gorm.Where("type in (?)", []string{"game", "dlc"})
 		gorm = gorm.Group("type")
-		gorm = gorm.Order("total desc")
-
-		var rows []statsAppTypeTotalsRow
+		gorm = gorm.Where("type in (?)", []string{"game", "dlc"})
 		gorm = gorm.Find(&rows)
+
 		log.Err(gorm.Error, r)
+		if gorm.Error == nil {
 
-		fmt.Println(rows)
+			for _, v := range rows {
 
-		t.Totals = map[string]string{}
-		for _, v := range rows {
-
-			locale, err := helpers.GetLocaleFromCountry(code)
-			log.Err(err, r)
-			if err == nil {
-				t.Totals[v.Type] = locale.Format(int(v.Total))
+				locale, err := helpers.GetLocaleFromCountry(code)
+				log.Err(err, r)
+				if err == nil {
+					t.Totals[v.Type] = locale.Format(int(v.Total))
+				}
 			}
 		}
 	}()
