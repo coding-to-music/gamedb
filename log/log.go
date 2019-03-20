@@ -21,11 +21,12 @@ const (
 	// Log names
 	LogNameConsumers LogName = "consumers"
 	LogNameCron      LogName = "crons"
-	LogNameSteam     LogName = "steam-calls"
+	LogNameDatastore LogName = "datastore"
+	LogNameDebug     LogName = "debug"
 	LogNameGameDB    LogName = "gamedb" // Default
 	LogNameRequests  LogName = "requests"
-	LogNameDatastore LogName = "datastore"
 	LogNameSQL       LogName = "sql"
+	LogNameSteam     LogName = "steam-calls"
 
 	// Severities
 	SeverityDebug    Severity = "debug"
