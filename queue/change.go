@@ -2,6 +2,7 @@ package queue
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gamedb/website/db"
@@ -145,17 +146,17 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	// }
 
 	// Save to Mongo
-	// var changesDocuments []db.MongoDocument
-	// for _, v := range changes {
-	// 	changesDocuments = append(changesDocuments, *v)
-	// }
-	//
-	// _, err = db.InsertDocuments(changesDocuments, db.CollectionChanges)
-	// if err != nil {
-	// 	logError(err)
-	// 	payload.ackRetry(msg)
-	// 	return
-	// }
+	var changesDocuments []db.MongoDocument
+	for _, v := range changes {
+		changesDocuments = append(changesDocuments, *v)
+	}
+
+	_, err = db.InsertDocuments(db.CollectionChanges, changesDocuments)
+	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
+		logError(err)
+		payload.ackRetry(msg)
+		return
+	}
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageChanges)

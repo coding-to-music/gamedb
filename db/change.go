@@ -25,6 +25,10 @@ func (change Change) GetKey() (key *datastore.Key) {
 	return datastore.NameKey(KindChange, strconv.Itoa(change.ChangeID), nil)
 }
 
+func (change Change) GetMongoKey() interface{} {
+	return change.ChangeID
+}
+
 func (change Change) GetName() (name string) {
 
 	return "Change " + strconv.Itoa(change.ChangeID)

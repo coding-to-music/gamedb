@@ -24,6 +24,7 @@ var (
 
 type MongoDocument interface {
 	ToBSON() interface{}
+	GetMongoKey() interface{}
 }
 
 func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
@@ -62,7 +63,7 @@ func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
-func InsertDocument(document MongoDocument, collection string) (resp *mongo.InsertOneResult, err error) {
+func InsertDocument(collection string, document MongoDocument) (resp *mongo.InsertOneResult, err error) {
 
 	// Save to Mongo
 	client, ctx, err := GetMongo()
@@ -71,10 +72,10 @@ func InsertDocument(document MongoDocument, collection string) (resp *mongo.Inse
 	}
 
 	c := client.Database(mongoDatabase).Collection(collection)
-	return c.InsertOne(ctx, document.ToBSON())
+	return c.InsertOne(ctx, document.ToBSON(), &options.InsertOneOptions{})
 }
 
-func InsertDocuments(documents []MongoDocument, collection string) (resp *mongo.InsertManyResult, err error) {
+func InsertDocuments(collection string, documents []MongoDocument) (resp *mongo.InsertManyResult, err error) {
 
 	if len(documents) < 1 {
 		return resp, nil
@@ -91,6 +92,7 @@ func InsertDocuments(documents []MongoDocument, collection string) (resp *mongo.
 		many = append(many, v.ToBSON())
 	}
 
+	f := false
 	c := client.Database(mongoDatabase).Collection(collection)
-	return c.InsertMany(ctx, many)
+	return c.InsertMany(ctx, many, &options.InsertManyOptions{Ordered: &f})
 }
