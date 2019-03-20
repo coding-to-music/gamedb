@@ -393,11 +393,10 @@ func updateAppDetails(app *db.App) error {
 		// Get app details
 		response, b, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
 		if err != nil && err != steam.ErrAppNotFound {
-			return err
-		}
 
-		if err != nil {
 			log.Debug(log.LogNameDebug, err, string(b))
+
+			return err
 		}
 
 		prices.AddPriceFromApp(code, response)
