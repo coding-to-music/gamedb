@@ -30,7 +30,7 @@ func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 
 	if mongoClient == nil {
 
-		ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
+		ctx = context.Background()
 
 		creds := options.Credential{
 			AuthSource:  mongoDatabase,
