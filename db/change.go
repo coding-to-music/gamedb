@@ -32,28 +32,36 @@ func (change Change) GetName() (name string) {
 
 func (change Change) ToBSON() (ret interface{}) {
 
-	var apps bson.A
-	for _, v := range change.Apps {
-		apps = append(apps, bson.M{
-			"id":   v.ID,
-			"name": v.Name,
-		})
-	}
-
-	var packages bson.A
-	for _, v := range change.Apps {
-		packages = append(packages, bson.M{
-			"id":   v.ID,
-			"name": v.Name,
-		})
-	}
-
-	return bson.M{
+	m := bson.M{
 		"_id":        change.ChangeID,
 		"created_at": change.CreatedAt,
-		"apps":       apps,
-		"packages":   packages,
 	}
+
+	// Apps
+	if len(change.Apps) > 0 {
+		var apps bson.A
+		for _, v := range change.Apps {
+			apps = append(apps, bson.M{
+				"id":   v.ID,
+				"name": v.Name,
+			})
+		}
+		m["apps"] = apps
+	}
+
+	// Packages
+	if len(change.Packages) > 0 {
+		var packages bson.A
+		for _, v := range change.Packages {
+			packages = append(packages, bson.M{
+				"id":   v.ID,
+				"name": v.Name,
+			})
+		}
+		m["packages"] = packages
+	}
+
+	return m
 }
 
 func (change Change) GetTimestamp() int64 {
