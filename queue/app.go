@@ -391,9 +391,13 @@ func updateAppDetails(app *db.App) error {
 	for _, code := range helpers.GetActiveCountries() {
 
 		// Get app details
-		response, _, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
+		response, b, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
 		if err != nil && err != steam.ErrAppNotFound {
 			return err
+		}
+
+		if err != nil {
+			log.Debug(string(b))
 		}
 
 		prices.AddPriceFromApp(code, response)
