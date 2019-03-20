@@ -11,16 +11,21 @@ import (
 )
 
 const (
-	collectionPlayerApps = "player_apps"
-	collectionEvents     = "events"
+	CollectionPlayerApps = "player_apps"
+	CollectionEvents     = "events"
+	CollectionChanges    = "changes"
 )
 
 var (
 	mongoClient *mongo.Client
 	mongoCtx    context.Context
 
-	database = config.Config.MongoDatabase
+	mongoDatabase = config.Config.MongoDatabase
 )
+
+type MongoDocument interface {
+	ToBSON() interface{}
+}
 
 func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 
@@ -29,7 +34,7 @@ func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 		ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
 		creds := options.Credential{
-			AuthSource:  database,
+			AuthSource:  mongoDatabase,
 			Username:    config.Config.MongoUsername,
 			Password:    config.Config.MongoPassword,
 			PasswordSet: true,
@@ -56,4 +61,33 @@ func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 	}
 
 	return mongoClient, mongoCtx, err
+}
+
+func InsertDocument(document MongoDocument, collection string) (resp *mongo.InsertOneResult, err error) {
+
+	// Save to Mongo
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return resp, err
+	}
+
+	c := client.Database(mongoDatabase).Collection(collection)
+	return c.InsertOne(ctx, document.ToBSON())
+}
+
+func InsertDocuments(documents []MongoDocument, collection string) (resp *mongo.InsertManyResult, err error) {
+
+	// Save to Mongo
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return resp, err
+	}
+
+	var many []interface{}
+	for _, v := range documents {
+		many = append(many, v.ToBSON())
+	}
+
+	c := client.Database(mongoDatabase).Collection(collection)
+	return c.InsertMany(ctx, many)
 }

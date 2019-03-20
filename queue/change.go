@@ -145,15 +145,17 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	// }
 
 	// Save to Mongo
-	// mongo, ctx, err := db.GetMongo()
+	// var changesDocuments []db.MongoDocument
+	// for _, v := range changes {
+	// 	changesDocuments = append(changesDocuments, *v)
+	// }
+	//
+	// _, err = db.InsertDocuments(changesDocuments, db.CollectionChanges)
 	// if err != nil {
 	// 	logError(err)
 	// 	payload.ackRetry(msg)
 	// 	return
 	// }
-	//
-	// collection := mongo.Database("steam").Collection("changes")
-	// res, err := collection.InsertOne(ctx, bson.M{"name": "pi", "value": 3.14159})
 
 	// Send websocket
 	page, err := websockets.GetPage(websockets.PageChanges)

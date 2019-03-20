@@ -30,17 +30,29 @@ func (change Change) GetName() (name string) {
 	return "Change " + strconv.Itoa(change.ChangeID)
 }
 
-func (change Change) ToBSON() (ret bson.M) {
+func (change Change) ToBSON() (ret interface{}) {
+
+	var apps bson.A
+	for _, v := range change.Apps {
+		apps = append(apps, bson.M{
+			"id":   v.ID,
+			"name": v.Name,
+		})
+	}
+
+	var packages bson.A
+	for _, v := range change.Apps {
+		packages = append(packages, bson.M{
+			"id":   v.ID,
+			"name": v.Name,
+		})
+	}
 
 	return bson.M{
-		"created_at": "x",
-		"change_id":  "x",
-		"apps": bson.A{
-			bson.M{
-				"id":   "x",
-				"name": "x",
-			},
-		},
+		"_id":        change.ChangeID,
+		"created_at": change.CreatedAt,
+		"apps":       apps,
+		"packages":   packages,
 	}
 }
 
@@ -91,7 +103,7 @@ func GetChange(id int64) (change Change, err error) {
 		var change Change
 
 		// Try MySQL
-		db, err := GetMySQLClient(true)
+		db, err := GetMySQLClient()
 		if err != nil {
 			return change, err
 		}
