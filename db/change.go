@@ -6,6 +6,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/helpers"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Change struct {
@@ -27,6 +28,20 @@ func (change Change) GetKey() (key *datastore.Key) {
 func (change Change) GetName() (name string) {
 
 	return "Change " + strconv.Itoa(change.ChangeID)
+}
+
+func (change Change) ToBSON() (ret bson.M) {
+
+	return bson.M{
+		"created_at": "x",
+		"change_id":  "x",
+		"apps": bson.A{
+			bson.M{
+				"id":   "x",
+				"name": "x",
+			},
+		},
+	}
 }
 
 func (change Change) GetTimestamp() int64 {
