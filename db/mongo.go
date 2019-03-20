@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"time"
 
 	"github.com/gamedb/website/config"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -76,6 +75,10 @@ func InsertDocument(document MongoDocument, collection string) (resp *mongo.Inse
 }
 
 func InsertDocuments(documents []MongoDocument, collection string) (resp *mongo.InsertManyResult, err error) {
+
+	if len(documents) < 1 {
+		return resp, nil
+	}
 
 	// Save to Mongo
 	client, ctx, err := GetMongo()
