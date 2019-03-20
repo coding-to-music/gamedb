@@ -396,8 +396,8 @@ func updateAppDetails(app *db.App) error {
 			return err
 		}
 
-		if err != nil {
-			log.Debug(string(b))
+		if err == steam.ErrHTMLResponse {
+			log.Debug(err.Error() + " " + string(b))
 		}
 
 		prices.AddPriceFromApp(code, response)
