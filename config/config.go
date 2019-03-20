@@ -179,7 +179,7 @@ func (c BaseConfig) MySQLDNS() string {
 }
 
 func (c BaseConfig) MongoDSN() string {
-	return "mongodb://" + c.MongoUsername + ":" + c.MongoPassword + "@" + c.MongoHost + ":" + c.MongoPort
+	return "mongodb://" + c.MongoHost + ":" + c.MongoPort
 }
 
 func (c BaseConfig) RabbitAPI(values url.Values) string {
