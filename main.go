@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"runtime"

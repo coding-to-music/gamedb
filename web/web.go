@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"math"
 	"net/http"
+	"net/http/pprof"
 	"net/url"
 	"strconv"
 	"strings"
@@ -65,6 +66,16 @@ func Serve() error {
 	r.Use(middleware.DefaultCompress)
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middlewareLog)
+
+	// Profiling
+	if config.Config.IsLocal() {
+		r.Get("/debug/pprof/", pprof.Index)
+		r.Get("/debug/pprof/cmdline", pprof.Cmdline)
+		r.Get("/debug/pprof/profile", pprof.Profile)
+		r.Get("/debug/pprof/symbol", pprof.Symbol)
+		r.Get("/debug/pprof/trace", pprof.Trace)
+		r.Get("/debug/pprof/heap", pprof.Trace)
+	}
 
 	// Pages
 	r.Get("/", homeHandler)
