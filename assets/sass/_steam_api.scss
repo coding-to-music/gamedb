@@ -19,6 +19,10 @@
     #sidebar {
         font-size: 0.9rem;
         will-change: min-height;
+
+        a {
+            padding: 5px;
+        }
     }
 
     .sidebar__inner {

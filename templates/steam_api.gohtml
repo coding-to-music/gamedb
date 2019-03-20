@@ -42,11 +42,15 @@
 
                     <div class="card">
                         <div class="card-body">
-                            {{ range $interfaceName, $methods := .Interfaces }}
-                                <div>
-                                    <a href="#{{ lower $interfaceName }}" title="{{ $interfaceName }}">{{ $interfaceName }}</a>
-                                </div>
-                            {{ end }}
+
+                            <ul class="list-group">
+                                {{ range $interfaceName, $methods := .Interfaces }}
+                                    <a href="#{{ lower $interfaceName }}" class="list-group-item list-group-item-action text-truncate" title="{{ $interfaceName }}">
+                                        {{ $interfaceName }}
+                                    </a>
+                                {{ end }}
+                            </ul>
+
                         </div>
                     </div>
 
