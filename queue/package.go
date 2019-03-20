@@ -109,7 +109,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	err = updatePackageFromStore(&pack)
 	err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
 	if err != nil {
-		
+
 		if err == steam.ErrHTMLResponse {
 			logInfo(err, message.ID)
 		} else {
@@ -297,10 +297,14 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 	for _, code := range helpers.GetActiveCountries() {
 
 		// Get package details
-		response, _, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
+		response, b, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
 
 		if err != nil && err != steam.ErrPackageNotFound {
 			return err
+		}
+
+		if err != nil {
+			log.Debug(log.LogNameDebug, err, string(b))
 		}
 
 		prices.AddPriceFromPackage(code, response)

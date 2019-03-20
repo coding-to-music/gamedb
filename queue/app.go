@@ -397,7 +397,7 @@ func updateAppDetails(app *db.App) error {
 		}
 
 		if err != nil {
-			log.Debug(log.SeverityDebug, err, string(b))
+			log.Debug(log.LogNameDebug, err, string(b))
 		}
 
 		prices.AddPriceFromApp(code, response)
