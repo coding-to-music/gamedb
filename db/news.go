@@ -2,6 +2,7 @@ package db
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/datastore"
@@ -31,6 +32,15 @@ func (article News) GetKey() (key *datastore.Key) {
 
 func (article News) GetBody() string {
 	return helpers.BBCodeCompiler.Compile(article.Contents)
+}
+
+func (article News) GetIcon() string {
+
+	if strings.HasPrefix(article.AppIcon, "http") {
+		return article.AppIcon
+	} else {
+		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(article.AppID) + "/" + article.AppIcon + ".jpg"
+	}
 }
 
 // Data array for datatables
