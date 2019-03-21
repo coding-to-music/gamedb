@@ -727,6 +727,11 @@ func (q DataTablesQuery) getOffset() int {
 	return i
 }
 
+func (q DataTablesQuery) getOffset64() int64 {
+	i, _ := strconv.ParseInt(q.Start, 10, 64)
+	return i
+}
+
 func (q DataTablesQuery) getPage(perPage int) int {
 
 	i, _ := strconv.Atoi(q.Start)

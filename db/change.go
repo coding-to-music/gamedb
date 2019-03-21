@@ -10,8 +10,8 @@ import (
 )
 
 type Change struct {
-	CreatedAt time.Time    `datastore:"created_at,noindex"`
-	ChangeID  int          `datastore:"change_id"`
+	CreatedAt time.Time    `datastore:"created_at,noindex" bson:"created_at"`
+	ChangeID  int          `datastore:"change_id" bson:"_id"`
 	Apps      []ChangeItem `datastore:"apps,noindex"`
 	Packages  []ChangeItem `datastore:"packages,noindex"`
 }

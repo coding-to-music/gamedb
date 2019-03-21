@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/log"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -19,7 +21,7 @@ var (
 	mongoClient *mongo.Client
 	mongoCtx    context.Context
 
-	mongoDatabase = config.Config.MongoDatabase
+	MongoDatabase = config.Config.MongoDatabase
 )
 
 type MongoDocument interface {
@@ -34,7 +36,7 @@ func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 		ctx = context.Background()
 
 		creds := options.Credential{
-			AuthSource:  mongoDatabase,
+			AuthSource:  MongoDatabase,
 			Username:    config.Config.MongoUsername,
 			Password:    config.Config.MongoPassword,
 			PasswordSet: true,
@@ -71,7 +73,7 @@ func InsertDocument(collection string, document MongoDocument) (resp *mongo.Inse
 		return resp, err
 	}
 
-	c := client.Database(mongoDatabase).Collection(collection)
+	c := client.Database(MongoDatabase).Collection(collection)
 	return c.InsertOne(ctx, document.ToBSON(), &options.InsertOneOptions{})
 }
 
@@ -93,6 +95,41 @@ func InsertDocuments(collection string, documents []MongoDocument) (resp *mongo.
 	}
 
 	f := false
-	c := client.Database(mongoDatabase).Collection(collection)
+	c := client.Database(MongoDatabase).Collection(collection)
 	return c.InsertMany(ctx, many, &options.InsertManyOptions{Ordered: &f})
+}
+
+func GetChanges(offset int64) (changes []Change, err error) {
+
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return changes, err
+	}
+
+	c := client.Database(MongoDatabase, &options.DatabaseOptions{}).Collection(CollectionChanges)
+
+	var limit int64 = 100
+	cur, err := c.Find(ctx, bson.M{}, &options.FindOptions{
+		Limit: &limit,
+		Skip:  &offset,
+		Sort:  bson.M{"_id": -1},
+	})
+	if err != nil {
+		return changes, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var change Change
+		err := cur.Decode(&change)
+		log.Err(err)
+		changes = append(changes, change)
+	}
+
+	return changes, cur.Err()
 }

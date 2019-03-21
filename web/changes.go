@@ -3,7 +3,6 @@ package web
 import (
 	"net/http"
 
-	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
@@ -42,33 +41,39 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var limit = 100
-	var offset = query.getOffset()
+	// var limit = 100
+	// var offset = query.getOffset()
+	//
+	// kinds, err := db.GetBufferRows(db.KindChange, limit, offset)
+	// if err != nil {
+	// 	log.Err(err, r)
+	// 	return
+	// }
+	// var changes = db.KindsToChanges(kinds)
+	//
+	// if len(changes) < limit {
+	//
+	// 	limit = limit - len(changes)
+	// 	offset = offset - len(changes)
+	//
+	// 	client, ctx, err := db.GetDSClient()
+	// 	if err != nil {
+	//
+	// 		log.Err(err, r)
+	//
+	// 	} else {
+	//
+	// 		q := datastore.NewQuery(db.KindChange).Order("-change_id").Limit(limit).Offset(offset)
+	//
+	// 		_, err := client.GetAll(ctx, q, &changes)
+	// 		log.Err(err, r)
+	// 	}
+	// }
 
-	kinds, err := db.GetBufferRows(db.KindChange, limit, offset)
+	changes, err := db.GetChanges(query.getOffset64())
 	if err != nil {
 		log.Err(err, r)
 		return
-	}
-	var changes = db.KindsToChanges(kinds)
-
-	if len(changes) < limit {
-
-		limit = limit - len(changes)
-		offset = offset - len(changes)
-
-		client, ctx, err := db.GetDSClient()
-		if err != nil {
-
-			log.Err(err, r)
-
-		} else {
-
-			q := datastore.NewQuery(db.KindChange).Order("-change_id").Limit(limit).Offset(offset)
-
-			_, err := client.GetAll(ctx, q, &changes)
-			log.Err(err, r)
-		}
 	}
 
 	response := DataTablesAjaxResponse{}
