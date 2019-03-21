@@ -4,35 +4,23 @@
 
     <div class="jumbotron">
         <h1><i class="fab fa-github"></i> Commits</h1>
-        <p class="lead">The last {{ comma (len .Commits) }} of {{ comma .Total }} commits to the Game DB code base</p>
+        <p class="lead">{{ comma .Total }} commits so far</p>
     </div>
 
     <div class="card">
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable mb-0" data-sort="[[1, 'desc']]" data-limit="100" data-no-sort="1">
+                <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/commits/commits.json" id="commits">
                     <thead class="thead-light">
                     <tr>
                         <th scope="col">Message</th>
                         <th scope="col">Time</th>
                         <th scope="col">Hash</th>
-                        {{ if eq .Env "production" }}
-                            <th scope="col">Deployed</th>
-                        {{ end }}
+                        <th scope="col">Deployed</th>
                     </tr>
                     </thead>
                     <tbody class="tags-list">
-                    {{ range $key, $value := .Commits }}
-                        <tr data-link="{{ .Link }}" data-target="_blank" class="{{ if .Highlight }}table-success{{ end }}" id="{{ .Hash }}">
-                            <td nowrap="nowrap">{{ .Message }}</td>
-                            <td nowrap="nowrap"><span data-livestamp="{{ .Time }}">{{ .Time }}</span></td>
-                            <td>{{ .Hash }}</td>
-                            {{ if eq $.Env "production" }}
-                                <td>{{ if .Deployed }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
-                            {{ end }}
-                        </tr>
-                    {{ end }}
                     </tbody>
                 </table>
             </div>

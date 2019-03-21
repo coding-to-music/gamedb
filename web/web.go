@@ -80,7 +80,6 @@ func Serve() error {
 	// Pages
 	r.Get("/", homeHandler)
 	r.Get("/api", apiHandler)
-	r.Get("/commits", commitsHandler)
 	r.Get("/coop", coopHandler)
 	r.Get("/developers", statsDevelopersHandler)
 	r.Get("/donate", donateHandler)
@@ -99,6 +98,7 @@ func Serve() error {
 	r.Mount("/bundles", bundlesRouter())
 	r.Mount("/changes", changesRouter())
 	r.Mount("/chat", chatRouter())
+	r.Mount("/commits", commitsRouter())
 	r.Mount("/contact", contactRouter())
 	r.Mount("/depots", depotsRouter())
 	r.Mount("/experience", experienceRouter())
@@ -725,6 +725,17 @@ func (q DataTablesQuery) setOffsetDS(qu *datastore.Query) *datastore.Query {
 func (q DataTablesQuery) getOffset() int {
 	i, _ := strconv.Atoi(q.Start)
 	return i
+}
+
+func (q DataTablesQuery) getPage(perPage int) int {
+
+	i, _ := strconv.Atoi(q.Start)
+
+	if i == 0 {
+		return 1
+	}
+
+	return int(i/perPage) + 1
 }
 
 // Toasts

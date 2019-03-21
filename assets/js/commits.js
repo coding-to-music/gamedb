@@ -1,0 +1,62 @@
+if ($('#commits-page').length > 0) {
+
+    $('table#commits').DataTable($.extend(true, {}, dtDefaultOptions, {
+        "order": [[1, 'desc']],
+        "createdRow": function (row, data, dataIndex) {
+            $(row).attr('data-link', data[3]);
+            $(row).attr('data-target', '_blank');
+        },
+        "columnDefs": [
+            // Message
+            {
+                "targets": 0,
+                "render": function (data, type, row) {
+                    return row[0];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+
+                    $(td).attr('id', rowData[5]);
+                    $(td).attr('nowrap', 'nowrap');
+                    if (rowData[4]) {
+                        $(td).addClass('table-success', rowData[0]);
+                    }
+                },
+                "orderable": false
+            },
+            // Time
+            {
+                "targets": 1,
+                "render": function (data, type, row) {
+                    return '<span data-toggle="tooltip" data-placement="left" title="' + row[1] + '" data-livestamp="' + row[1] + '">' + row[1] + '</span>';
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
+                "orderable": false
+            },
+            // Hash
+            {
+                "targets": 2,
+                "render": function (data, type, row) {
+                    return row[5];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
+                "orderable": false
+            },
+            // Deployed
+            {
+                "targets": 3,
+                "render": function (data, type, row) {
+                    if (row[2]) {
+                        return '<i class="fas fa-check"></i>';
+                    } else {
+                        return '<i class="fas fa-times"></i>';
+                    }
+                },
+                "orderable": false
+            }
+        ]
+    }));
+}

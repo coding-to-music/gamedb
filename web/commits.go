@@ -2,29 +2,64 @@ package web
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/go-chi/chi"
 	"github.com/google/go-github/github"
 )
 
-func commitsHandler(w http.ResponseWriter, r *http.Request) {
+const (
+	commitsLimit = 100
+)
 
-	setCacheHeaders(w, time.Minute*10)
+func commitsRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", commitsHandler)
+	r.Get("/commits.json", commitsAjaxHandler)
+	return r
+}
+
+func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
 
 	client, ctx := helpers.GetGithub()
 
-	// Get commits
-	var err error
+	contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
+	for _, v := range contributors {
+		t.Total += v.GetTotal()
+	}
+
+	err = returnTemplate(w, r, "commits", t)
+	log.Err(err, r)
+}
+
+type commitsTemplate struct {
+	GlobalTemplate
+	Total int
+}
+
+func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	setCacheHeaders(w, time.Minute*10)
+
+	query := DataTablesQuery{}
+	err := query.fillFromURL(r.URL.Query())
+	log.Err(err, r)
+
+	query.getOffset()
+
+	client, ctx := helpers.GetGithub()
+
 	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
-			Page:    1,
-			PerPage: 100,
+			Page:    query.getPage(commitsLimit),
+			PerPage: commitsLimit,
 		},
 	})
 
@@ -33,6 +68,9 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get commits
+	var commits2 []commit
+
 	var deployed bool
 	for _, v := range commits {
 
@@ -40,7 +78,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 			deployed = true
 		}
 
-		t.Commits = append(t.Commits, commit{
+		commits2 = append(commits2, commit{
 			Message:   v.Commit.GetMessage(),
 			Time:      v.Commit.Author.Date.Unix(),
 			Deployed:  deployed,
@@ -51,21 +89,22 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get total
+	var total int
 	contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
 	for _, v := range contributors {
-		t.Total += v.GetTotal()
+		total += v.GetTotal()
 	}
 
-	//
-	err = returnTemplate(w, r, "commits", t)
-	log.Err(err, r)
-}
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.Itoa(total)
+	response.RecordsFiltered = strconv.Itoa(total)
+	response.Draw = query.Draw
 
-type commitsTemplate struct {
-	GlobalTemplate
-	Commits []commit
-	Hash    string
-	Total   int
+	for _, v := range commits2 {
+		response.AddRow(v.OutputForJSON())
+	}
+
+	response.output(w, r)
 }
 
 type commit struct {
@@ -75,4 +114,16 @@ type commit struct {
 	Link      string
 	Highlight bool
 	Hash      string
+}
+
+func (commit commit) OutputForJSON() (output []interface{}) {
+
+	return []interface{}{
+		commit.Message,
+		commit.Time,
+		commit.Deployed,
+		commit.Link,
+		commit.Highlight,
+		commit.Hash,
+	}
 }
