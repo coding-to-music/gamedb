@@ -39,7 +39,9 @@
                                 <img src="{{ .GetIcon }}" class="rounded" data-src="/assets/img/no-app-image-square.jpg">
                                 <a href="/apps/{{ .AppID }}">{{ .AppName }}</a> - <span title="{{ .Title }}">{{ .Title }}</span>
                             </div>
-                            <div class="card-body">{{ html .Contents }}</div>
+                            <div class="card-body minned">
+                                <div>{{ html .Contents }}</div>
+                            </div>
                         </div>
 
                     {{ end }}

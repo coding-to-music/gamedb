@@ -49,6 +49,11 @@ if ($('#news-page').length > 0) {
         }
     });
 
+    // Show more article
+    $('.minned').on('click', function (e) {
+        $(this).removeClass('minned');
+    });
+
     function loadNewsAjax() {
 
         $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {

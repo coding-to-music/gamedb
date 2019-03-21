@@ -9,9 +9,23 @@
         }
 
         .card-body {
+
             img {
                 max-width: 100%;
                 max-height: 300px;
+            }
+        }
+
+        .card-body.minned {
+            cursor: ns-resize;
+
+            > div {
+                img {
+                    display: none;
+                }
+
+                max-height: 200px;
+                overflow: hidden;
             }
         }
     }
