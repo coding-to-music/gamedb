@@ -12,9 +12,10 @@ import (
 )
 
 const (
-	CollectionPlayerApps = "player_apps"
-	CollectionEvents     = "events"
-	CollectionChanges    = "changes"
+	CollectionPlayerApps    = "player_apps"
+	CollectionEvents        = "events"
+	CollectionChanges       = "changes"
+	CollectionProductPrices = "app_pricess"
 )
 
 var (
@@ -83,7 +84,6 @@ func InsertDocuments(collection string, documents []MongoDocument) (resp *mongo.
 		return resp, nil
 	}
 
-	// Save to Mongo
 	client, ctx, err := GetMongo()
 	if err != nil {
 		return resp, err
@@ -97,6 +97,21 @@ func InsertDocuments(collection string, documents []MongoDocument) (resp *mongo.
 	f := false
 	c := client.Database(MongoDatabase).Collection(collection)
 	return c.InsertMany(ctx, many, &options.InsertManyOptions{Ordered: &f})
+}
+
+func CountDocuments(collection string, filter interface{}) (count int64, err error) {
+
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return count, err
+	}
+
+	if filter == nil {
+		filter = bson.M{}
+	}
+
+	c := client.Database(MongoDatabase).Collection(collection)
+	return c.CountDocuments(ctx, filter, &options.CountOptions{})
 }
 
 func GetChanges(offset int64) (changes []Change, err error) {
@@ -132,4 +147,157 @@ func GetChanges(offset int64) (changes []Change, err error) {
 	}
 
 	return changes, cur.Err()
+}
+
+func GetEvents(playerID int64, offset int64) (events []Event, err error) {
+
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return events, err
+	}
+
+	c := client.Database(MongoDatabase, &options.DatabaseOptions{}).Collection(CollectionEvents)
+
+	var limit int64 = 100
+	cur, err := c.Find(ctx, bson.M{"player_id": playerID}, &options.FindOptions{
+		Limit: &limit,
+		Skip:  &offset,
+		Sort:  bson.M{"created_at": -1},
+	})
+	if err != nil {
+		return events, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var event Event
+		err := cur.Decode(&event)
+		log.Err(err)
+		events = append(events, event)
+	}
+
+	return events, cur.Err()
+}
+
+func GetNews(appID int, offset int64) (news []News, err error) {
+
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return news, err
+	}
+
+	c := client.Database(MongoDatabase, &options.DatabaseOptions{}).Collection(CollectionEvents)
+
+	var limit int64 = 100
+	cur, err := c.Find(ctx, bson.M{"app_id": appID}, &options.FindOptions{
+		Limit: &limit,
+		Skip:  &offset,
+		Sort:  bson.M{"created_at": -1},
+	})
+	if err != nil {
+		return news, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var article News
+		err := cur.Decode(&article)
+		log.Err(err)
+		news = append(news, article)
+	}
+
+	return news, cur.Err()
+}
+
+func GetProductPricesMongo(appID int, packageID int, offset int64) (prices []ProductPrice, err error) {
+
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return prices, err
+	}
+
+	c := client.Database(MongoDatabase, &options.DatabaseOptions{}).Collection(CollectionProductPrices)
+
+	o := options.FindOptions{}
+	o.Skip = &offset
+
+	filter := bson.M{}
+
+	var limit int64 = 100
+
+	if appID != 0 {
+		filter["app_id"] = appID
+		o.Sort = bson.M{"created_at": -1}
+	} else if packageID != 0 {
+		filter["package_id"] = packageID
+		o.Sort = bson.M{"created_at": -1}
+	} else {
+		o.Limit = &limit
+		o.Sort = bson.M{"created_at": 1}
+	}
+
+	cur, err := c.Find(ctx, filter, &o)
+	if err != nil {
+		return prices, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var price ProductPrice
+		err := cur.Decode(&price)
+		log.Err(err)
+		prices = append(prices, price)
+	}
+
+	return prices, cur.Err()
+}
+
+func GetPlayerApps(playerID int64, offset int64) (apps []PlayerApp, err error) {
+
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return apps, err
+	}
+
+	c := client.Database(MongoDatabase, &options.DatabaseOptions{}).Collection(CollectionEvents)
+
+	var limit int64 = 100
+	cur, err := c.Find(ctx, bson.M{"player_id": playerID}, &options.FindOptions{
+		Limit: &limit,
+		Skip:  &offset,
+		Sort:  bson.M{"app_time": -1},
+	})
+	if err != nil {
+		return apps, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var app PlayerApp
+		err := cur.Decode(&app)
+		log.Err(err)
+		apps = append(apps, app)
+	}
+
+	return apps, cur.Err()
 }

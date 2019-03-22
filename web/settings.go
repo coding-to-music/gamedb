@@ -7,13 +7,13 @@ import (
 	"strconv"
 	"sync"
 
-	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -217,63 +217,48 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	//
+	// Get player ID
+	playerID, err := getPlayerIDFromSession(r)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
 	var wg sync.WaitGroup
 
 	// Get events
 	var events []db.Event
-
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		playerID, err := getPlayerIDFromSession(r)
+		events, err = db.GetEvents(playerID, query.getOffset64())
 		if err != nil {
-
 			log.Err(err, r)
 			return
 		}
-
-		client, ctx, err := db.GetDSClient()
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
-		q := datastore.NewQuery(db.KindEvent).Filter("player_id =", playerID).Order("-created_at").Limit(100).Offset(query.getOffset())
-
-		_, err = client.GetAll(ctx, q, &events)
-		log.Err(err, r)
 
 	}(r)
 
 	// Get total
-	var total int
+	var total int64
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		playerID, err := getPlayerIDFromSession(r)
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
-		total, err = db.CountPlayerEvents(playerID)
+		// todo, memcache
+		total, err = db.CountDocuments(db.CollectionEvents, bson.M{"player_id": playerID})
 		log.Err(err, r)
 
 	}(r)
 
-	// Wait
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(total)
-	response.RecordsFiltered = strconv.Itoa(total)
+	response.RecordsTotal = strconv.FormatInt(total, 10)
+	response.RecordsFiltered = response.RecordsTotal
 	response.Draw = query.Draw
 
 	for _, v := range events {
