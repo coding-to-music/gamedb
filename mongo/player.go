@@ -69,7 +69,7 @@ func (player Player) BSON() (ret interface{}) {
 		"real_name":        player.RealName,
 		"status_code":      player.StateCode,
 		"time_created":     player.TimeCreated,
-		"updated_at":       player.UpdatedAt,
+		"updated_at":       time.Now(),
 		"vanity_url":       player.VanintyURL,
 	}
 }
