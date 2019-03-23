@@ -59,7 +59,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 
 		} else {
 			changes[v.ChangeNumber] = &db.Change{
-				CreatedAt: time.Now(),
+				CreatedAt: payload.FirstSeen,
 				ChangeID:  v.ChangeNumber,
 				Apps:      []db.ChangeItem{{v.ID, ""}},
 			}
@@ -71,7 +71,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 			changes[v.ChangeNumber].Packages = append(changes[v.ChangeNumber].Packages, db.ChangeItem{ID: v.ID})
 		} else {
 			changes[v.ChangeNumber] = &db.Change{
-				CreatedAt: time.Now(),
+				CreatedAt: payload.FirstSeen,
 				ChangeID:  v.ChangeNumber,
 				Packages:  []db.ChangeItem{{v.ID, ""}},
 			}
