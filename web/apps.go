@@ -16,21 +16,6 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func gamesRouter() http.Handler {
-
-	gamesRedirect := func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, strings.Replace(r.URL.Path, "games", "apps", 1), 302)
-	}
-
-	r := chi.NewRouter()
-	r.Get("/", gamesRedirect)
-	r.Get("/ajax", gamesRedirect)
-	r.Get("/{id}", gamesRedirect)
-	r.Get("/{id}/ajax/news", gamesRedirect)
-	r.Get("/{id}/{slug}", gamesRedirect)
-	return r
-}
-
 func appsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", appsHandler)

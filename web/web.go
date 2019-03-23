@@ -103,7 +103,6 @@ func Serve() error {
 	r.Mount("/depots", depotsRouter())
 	r.Mount("/experience", experienceRouter())
 	r.Mount("/franchise", franchiseRouter())
-	r.Mount("/games", gamesRouter())
 	r.Mount("/home", homeRouter())
 	r.Mount("/login", loginRouter())
 	r.Mount("/news", newsRouter())
