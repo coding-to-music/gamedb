@@ -6,12 +6,11 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/helpers"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Change struct {
-	CreatedAt time.Time    `datastore:"created_at,noindex" bson:"created_at"`
-	ChangeID  int          `datastore:"change_id" bson:"_id"`
+	CreatedAt time.Time    `datastore:"created_at,noindex"`
+	ChangeID  int          `datastore:"change_id"`
 	Apps      []ChangeItem `datastore:"apps,noindex"`
 	Packages  []ChangeItem `datastore:"packages,noindex"`
 }
@@ -25,47 +24,9 @@ func (change Change) GetKey() (key *datastore.Key) {
 	return datastore.NameKey(KindChange, strconv.Itoa(change.ChangeID), nil)
 }
 
-func (change Change) GetMongoKey() interface{} {
-	return change.ChangeID
-}
-
 func (change Change) GetName() (name string) {
 
 	return "Change " + strconv.Itoa(change.ChangeID)
-}
-
-func (change Change) ToBSON() (ret interface{}) {
-
-	m := bson.M{
-		"_id":        change.ChangeID,
-		"created_at": change.CreatedAt,
-	}
-
-	// Apps
-	if len(change.Apps) > 0 {
-		var apps bson.A
-		for _, v := range change.Apps {
-			apps = append(apps, bson.M{
-				"id":   v.ID,
-				"name": v.Name,
-			})
-		}
-		m["apps"] = apps
-	}
-
-	// Packages
-	if len(change.Packages) > 0 {
-		var packages bson.A
-		for _, v := range change.Packages {
-			packages = append(packages, bson.M{
-				"id":   v.ID,
-				"name": v.Name,
-			})
-		}
-		m["packages"] = packages
-	}
-
-	return m
 }
 
 func (change Change) GetTimestamp() int64 {

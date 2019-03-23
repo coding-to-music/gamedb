@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -146,12 +147,18 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	// }
 
 	// Save to Mongo
-	var changesDocuments []db.MongoDocument
+	var changesDocuments []mongo.MongoDocument
 	for _, v := range changes {
-		changesDocuments = append(changesDocuments, *v)
+
+		changesDocuments = append(changesDocuments, mongo.Change{
+			CreatedAt: v.CreatedAt,
+			ChangeID:  v.ChangeID,
+			Apps:      v.GetAppIDs(),
+			Packages:  v.GetPackageIDs(),
+		})
 	}
 
-	_, err = db.InsertDocuments(db.CollectionChanges, changesDocuments)
+	_, err = mongo.InsertDocuments(mongo.CollectionChanges, changesDocuments)
 	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
 		logError(err)
 		payload.ackRetry(msg)
