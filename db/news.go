@@ -10,13 +10,13 @@ import (
 )
 
 type News struct {
-	ArticleID  int64     `datastore:"article_id,noindex" bson:"_id"`
+	ArticleID  int64     `datastore:"article_id,noindex"`
 	Title      string    `datastore:"title,noindex"`
 	URL        string    `datastore:"url,noindex"`
 	IsExternal bool      `datastore:"is_external,noindex"`
 	Author     string    `datastore:"author,noindex"`
 	Contents   string    `datastore:"contents,noindex"`
-	Date       time.Time `datastore:"date" bson:"created_at"`
+	Date       time.Time `datastore:"date"`
 	FeedLabel  string    `datastore:"feed_label,noindex"`
 	FeedName   string    `datastore:"feed_name,noindex"`
 	FeedType   int8      `datastore:"feed_type,noindex"`

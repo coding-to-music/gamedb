@@ -9,7 +9,6 @@ import (
 	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 const (
@@ -28,21 +27,6 @@ type Event struct {
 
 func (event Event) GetKey() (key *datastore.Key) {
 	return datastore.IncompleteKey(KindEvent, nil)
-}
-
-func (event Event) GetMongoKey() interface{} {
-	return nil
-}
-
-func (event Event) ToBSON() (ret interface{}) {
-
-	return bson.M{
-		"created_at": event.CreatedAt,
-		"type":       event.Type,
-		"player_id":  event.PlayerID,
-		"user_agent": event.UserAgent,
-		"ip":         event.IP,
-	}
 }
 
 func (event Event) GetCreatedNice() (t string) {
