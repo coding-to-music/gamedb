@@ -73,7 +73,8 @@ func getMySQLConnection() (*gorm.DB, error) {
 
 	db, err := gorm.Open("mysql", config.Config.MySQLDNS()+"?"+options.Encode())
 	if err != nil {
-		return db, err
+
+		return nil, err
 	}
 	db = db.LogMode(true)
 	db = db.Set("gorm:association_autoupdate", false)
