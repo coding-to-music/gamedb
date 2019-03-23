@@ -113,7 +113,7 @@ func Serve() error {
 	r.Mount("/product-keys", productKeysRouter())
 	r.Mount("/queues", queuesRouter())
 	r.Mount("/settings", settingsRouter())
-	r.Mount("/sitemaps", siteMapRouter())
+	r.Mount("/sitemap.xml", siteMapRouter())
 	r.Mount("/stats", statsRouter())
 	r.Mount("/upcoming", upcomingRouter())
 
