@@ -11,10 +11,12 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type playerMessage struct {
@@ -154,6 +156,13 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	err = savePlayerToInflux(player)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
+	err = savePlayerMongo(player)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -599,6 +608,16 @@ func updatePlayerGroups(player *db.Player) error {
 func savePlayerToBuffer(player db.Player) error {
 
 	return db.SaveKindsToBuffer([]db.Kind{player}, db.KindPlayer)
+}
+
+func savePlayerMongo(player db.Player) error {
+
+	mPlayer := mongo.Player{}
+	mPlayer.ID = player.PlayerID
+
+	_, err := mongo.ReplaceDocument(mongo.CollectionPlayers, bson.M{"_id": player.PlayerID}, mPlayer)
+
+	return err
 }
 
 func savePlayerToInflux(player db.Player) error {

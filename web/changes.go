@@ -3,8 +3,8 @@ package web
 import (
 	"net/http"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/go-chi/chi"
 )
 
@@ -70,7 +70,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// 	}
 	// }
 
-	changes, err := db.GetChanges(query.getOffset64())
+	changes, err := mongo.GetChanges(query.getOffset64())
 	if err != nil {
 		log.Err(err, r)
 		return

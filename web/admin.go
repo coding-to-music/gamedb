@@ -1212,6 +1212,41 @@ func adminDeleteBinLogs(r *http.Request) {
 
 func adminDev() {
 
+	log.Info("Started dev code")
+
+	// players, _, err := db.GetAllPlayers("player_id", 0, false)
+	// if err != nil {
+	// 	log.Err(err)
+	// 	return
+	// }
+	//
+	// chunks := db.ChunkPlayers(players)
+	//
+	// for k, chunk := range chunks {
+	//
+	// 	log.Info("Chunk " + strconv.Itoa(k))
+	//
+	// 	var keys []*datastore.Key
+	// 	var docs []mongo.MongoDocument
+	//
+	// 	for _, vv := range chunk {
+	//
+	// 		keys = append(keys, vv.GetKey())
+	//
+	// 		docs = append(docs, mongo.Player{
+	// 			ID: vv.PlayerID,
+	// 		})
+	// 	}
+	//
+	// 	_, err := mongo.InsertDocuments(mongo.CollectionPlayers, docs)
+	// 	if err != nil {
+	// 		log.Err(err)
+	// 	} else {
+	// 		err = db.BulkDeleteKinds(keys, true)
+	// 		log.Err(err)
+	// 	}
+	// }
+
 	err := db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 

@@ -11,6 +11,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -37,7 +38,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PlayersCount, err = db.CountPlayers()
+		t.PlayersCount, err = mongo.CountPlayers()
 		log.Err(err, r)
 	}()
 
@@ -160,7 +161,7 @@ type homeTemplate struct {
 	GlobalTemplate
 	AppsCount      int
 	PackagesCount  int
-	PlayersCount   int
+	PlayersCount   int64
 	PopularApps    []db.App
 	TrendingApps   []db.App
 	RatedNewApps   []db.App

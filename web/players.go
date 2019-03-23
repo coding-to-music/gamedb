@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/go-chi/chi"
 )
 
@@ -58,7 +59,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PlayersCount, err = db.CountPlayers()
+		t.PlayersCount, err = mongo.CountPlayers()
 		log.Err(err, r)
 
 	}()
@@ -84,7 +85,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 type playersTemplate struct {
 	GlobalTemplate
-	PlayersCount int
+	PlayersCount int64
 	RanksCount   int
 	Date         string
 }

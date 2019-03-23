@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
@@ -110,14 +111,14 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Number of players
-	var players int
+	var players int64
 	wg.Add(1)
 	go func(player db.Player) {
 
 		defer wg.Done()
 
 		var err error
-		players, err = db.CountPlayers()
+		players, err = mongo.CountPlayers()
 		log.Err(err, r)
 
 	}(player)
@@ -269,7 +270,7 @@ type RecentlyPlayedGame struct {
 // playerRanksTemplate
 type playerRanksTemplate struct {
 	Ranks   db.PlayerRank
-	Players int
+	Players int64
 }
 
 func (p playerRanksTemplate) format(rank int) string {

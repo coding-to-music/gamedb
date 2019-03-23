@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
@@ -227,13 +228,13 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get events
-	var events []db.Event
+	var events []mongo.Event
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		events, err = db.GetEvents(playerID, query.getOffset64())
+		events, err = mongo.GetEvents(playerID, query.getOffset64())
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -249,7 +250,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		// todo, memcache
-		total, err = db.CountDocuments(db.CollectionEvents, bson.M{"player_id": playerID})
+		total, err = mongo.CountDocuments(mongo.CollectionEvents, bson.M{"player_id": playerID})
 		log.Err(err, r)
 
 	}(r)

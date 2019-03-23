@@ -31,7 +31,7 @@ type Player struct {
 	CountryCode      string    `datastore:"country_code"`             //
 	Donated          int       `datastore:"donated"`                  //
 	Friends          string    `datastore:"friends,noindex"`          // []ProfileFriend
-	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"` //
+	FriendsAddedAt   time.Time `datastore:"friends_added_at,noindex"` // delete?
 	FriendsCount     int       `datastore:"friends_count"`            //
 	GamesCount       int       `datastore:"games_count"`              //
 	GamesRecent      string    `datastore:"games_recent,noindex"`     // []ProfileRecentGame
@@ -531,25 +531,19 @@ func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 	return players, nil
 }
 
-func CountPlayers() (count int, err error) {
+func ChunkPlayers(players []Player) (chunked [][]Player) {
 
-	var item = helpers.MemcacheCountPlayers
+	for i := 0; i < len(players); i += 500 {
+		end := i + 500
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		var count int
-
-		client, ctx, err := GetDSClient()
-		if err != nil {
-			return count, err
+		if end > len(players) {
+			end = len(players)
 		}
 
-		q := datastore.NewQuery(KindPlayer)
-		count, err = client.Count(ctx, q)
-		return count, err
-	})
+		chunked = append(chunked, players[i:end])
+	}
 
-	return count, err
+	return chunked
 }
 
 // PlayerAppStatsTemplate
