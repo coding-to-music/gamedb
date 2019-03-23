@@ -273,4 +273,8 @@ $(document).ready(function () {
             this.src = url;
         }
     });
+
+    $('img[src=""][data-src]').each(function (i, value) {
+        this.src = $(this).attr('data-src');
+    });
 });
