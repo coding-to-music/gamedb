@@ -152,7 +152,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 
 		changesDocuments = append(changesDocuments, mongo.Change{
 			CreatedAt: v.CreatedAt,
-			ChangeID:  v.ChangeID,
+			ID:        v.ChangeID,
 			Apps:      v.GetAppIDs(),
 			Packages:  v.GetPackageIDs(),
 		})

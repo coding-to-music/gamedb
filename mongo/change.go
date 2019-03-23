@@ -11,14 +11,14 @@ import (
 )
 
 type Change struct {
+	ID        int       `bson:"_id"`
 	CreatedAt time.Time `bson:"created_at"`
-	ChangeID  int       `bson:"_id"`
 	Apps      []int     ``
 	Packages  []int     ``
 }
 
 func (change Change) Key() interface{} {
-	return change.ChangeID
+	return change.ID
 }
 
 func (change Change) BSON() (ret interface{}) {
@@ -37,7 +37,7 @@ func (change Change) BSON() (ret interface{}) {
 
 	// BSON
 	m := bson.M{
-		"_id":        change.ChangeID,
+		"_id":        change.ID,
 		"created_at": change.CreatedAt,
 		"apps":       apps,
 		"packages":   packages,
@@ -49,7 +49,7 @@ func (change Change) BSON() (ret interface{}) {
 func (change Change) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{
-		change.ChangeID,
+		change.ID,
 		change.CreatedAt.Unix(),
 		change.CreatedAt.Format(helpers.DateYearTime),
 		change.Apps,
@@ -59,7 +59,7 @@ func (change Change) OutputForJSON() (output []interface{}) {
 }
 
 func (change Change) GetPath() string {
-	return "/changes/" + strconv.Itoa(change.ChangeID)
+	return "/changes/" + strconv.Itoa(change.ID)
 }
 
 func GetChanges(offset int64) (changes []Change, err error) {
