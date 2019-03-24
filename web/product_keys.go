@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
@@ -150,12 +151,12 @@ type extendedRow struct {
 }
 
 func (e extendedRow) GetIcon() string {
-	return db.GetAppIcon(e.ID, e.Icon)
+	return helpers.GetAppIcon(e.ID, e.Icon)
 }
 
 func (e extendedRow) GetPath(productType string) string {
 	if productType == "app" {
-		return db.GetAppPath(e.ID, e.Name)
+		return helpers.GetAppPath(e.ID, e.Name)
 	}
 	return db.GetPackagePath(e.ID, e.Name)
 }

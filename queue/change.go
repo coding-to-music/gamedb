@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/websockets"
@@ -49,115 +48,35 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming change " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
-	// Group products by change id
-	changes := map[int]*db.Change{}
+	// Group products by change ID
+	changes := map[int]*mongo.Change{}
 
 	for _, v := range message.PICSChanges.AppChanges {
 		if _, ok := changes[v.ChangeNumber]; ok {
-			changes[v.ChangeNumber].Apps = append(changes[v.ChangeNumber].Apps, db.ChangeItem{ID: v.ID})
-
+			changes[v.ChangeNumber].Apps = append(changes[v.ChangeNumber].Apps, v.ID)
 		} else {
-			changes[v.ChangeNumber] = &db.Change{
+			changes[v.ChangeNumber] = &mongo.Change{
 				CreatedAt: payload.FirstSeen,
-				ChangeID:  v.ChangeNumber,
-				Apps:      []db.ChangeItem{{v.ID, ""}},
+				ID:        v.ChangeNumber,
+				Apps:      []int{v.ID},
 			}
 		}
 	}
 
 	for _, v := range message.PICSChanges.PackageChanges {
 		if _, ok := changes[v.ChangeNumber]; ok {
-			changes[v.ChangeNumber].Packages = append(changes[v.ChangeNumber].Packages, db.ChangeItem{ID: v.ID})
+			changes[v.ChangeNumber].Packages = append(changes[v.ChangeNumber].Packages, v.ID)
 		} else {
-			changes[v.ChangeNumber] = &db.Change{
+			changes[v.ChangeNumber] = &mongo.Change{
 				CreatedAt: payload.FirstSeen,
-				ChangeID:  v.ChangeNumber,
-				Packages:  []db.ChangeItem{{v.ID, ""}},
+				ID:        v.ChangeNumber,
+				Packages:  []int{v.ID},
 			}
 		}
 	}
-
-	// Get apps slice
-	var appsSlice []int
-	for _, v := range message.PICSChanges.AppChanges {
-		appsSlice = append(appsSlice, v.ID)
-	}
-
-	var packagesSlice []int
-	for _, v := range message.PICSChanges.PackageChanges {
-		packagesSlice = append(packagesSlice, v.ID)
-	}
-
-	// Get mysql rows
-	appRows, err := db.GetAppsByID(appsSlice, []string{"id", "name"})
-	logError(err)
-
-	packageRows, err := db.GetPackages(packagesSlice, []string{"id", "name"})
-	logError(err)
-
-	// Make map
-	appRowsMap := map[int]db.App{}
-	for _, v := range appRows {
-		appRowsMap[v.ID] = v
-	}
-
-	packageRowsMap := map[int]db.Package{}
-	for _, v := range packageRows {
-		packageRowsMap[v.ID] = v
-	}
-
-	// Fill in the change item names
-	for changeID, change := range changes {
-
-		for k, changeItem := range change.Apps {
-			if val, ok := appRowsMap[changeItem.ID]; ok {
-				changes[changeID].Apps[k].Name = val.GetName()
-			}
-		}
-		for k, changeItem := range change.Packages {
-			if val, ok := packageRowsMap[changeItem.ID]; ok {
-				changes[changeID].Packages[k].Name = val.GetName()
-			}
-		}
-	}
-
-	// Make changes into slice for bulk add
-	var changesSlice []db.Kind
-	for _, v := range changes {
-		changesSlice = append(changesSlice, *v)
-	}
-
-	// Save to buffer
-	// err = db.SaveKindsToBuffer(changesSlice, db.KindChange)
-	// if err != nil {
-	// 	logError(err)
-	// 	payload.ackRetry(msg)
-	// 	return
-	// }
-
-	// Save change to DS
-	// if config.Config.IsProd() {
-	// 	err = db.BulkSaveKinds(changesSlice, db.KindChange, true)
-	// 	if err != nil {
-	// 		logError(err)
-	// 		payload.ackRetry(msg)
-	// 		return
-	// 	}
-	// }
 
 	// Save to Mongo
-	var changesDocuments []mongo.MongoDocument
-	for _, v := range changes {
-
-		changesDocuments = append(changesDocuments, mongo.Change{
-			CreatedAt: v.CreatedAt,
-			ID:        v.ChangeID,
-			Apps:      v.GetAppIDs(),
-			Packages:  v.GetPackageIDs(),
-		})
-	}
-
-	_, err = mongo.InsertDocuments(mongo.CollectionChanges, changesDocuments)
+	err = saveChangesToMongo(changes)
 	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
 		logError(err)
 		payload.ackRetry(msg)
@@ -165,23 +84,11 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page, err := websockets.GetPage(websockets.PageChanges)
+	err = sendChangesWebsocket(changes)
 	if err != nil {
 		logError(err)
 		payload.ackRetry(msg)
 		return
-	}
-
-	if page.HasConnections() {
-
-		// Make websocket
-		var ws [][]interface{}
-		for _, v := range changes {
-
-			ws = append(ws, v.OutputForJSON())
-		}
-
-		page.Send(ws)
 	}
 
 	payload.ack(msg)
@@ -202,4 +109,43 @@ type RabbitMessageChangesPICS struct {
 		NeedsToken   bool `json:"NeedsToken"`
 	} `json:"AppChanges"`
 	JobID steamKitJob `json:"JobID"`
+}
+
+func saveChangesToMongo(changes map[int]*mongo.Change) (err error) {
+
+	var changesDocuments []mongo.MongoDocument
+	for _, v := range changes {
+
+		changesDocuments = append(changesDocuments, mongo.Change{
+			ID:        v.ID,
+			CreatedAt: v.CreatedAt,
+			Apps:      v.Apps,
+			Packages:  v.Packages,
+		})
+	}
+
+	_, err = mongo.InsertDocuments(mongo.CollectionChanges, changesDocuments)
+	return err
+}
+
+func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
+
+	page, err := websockets.GetPage(websockets.PageChanges)
+	if err != nil {
+		return err
+	}
+
+	if page.HasConnections() {
+
+		// Make websocket
+		var ws [][]interface{}
+		for _, v := range changes {
+
+			ws = append(ws, v.OutputForJSON())
+		}
+
+		page.Send(ws)
+	}
+
+	return nil
 }

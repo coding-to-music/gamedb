@@ -36,14 +36,29 @@ func (change Change) BSON() (ret interface{}) {
 	}
 
 	// BSON
-	m := bson.M{
+	return bson.M{
 		"_id":        change.ID,
 		"created_at": change.CreatedAt,
 		"apps":       apps,
 		"packages":   packages,
 	}
+}
 
-	return m
+func (change Change) GetName() (name string) {
+
+	return "Change " + strconv.Itoa(change.ID)
+}
+
+func (change Change) GetPath() string {
+	return "/changes/" + strconv.Itoa(change.ID)
+}
+
+func (change Change) GetTimestamp() int64 {
+	return change.CreatedAt.Unix()
+}
+
+func (change Change) GetNiceDate() string {
+	return change.CreatedAt.Format(helpers.DateYearTime)
 }
 
 func (change Change) OutputForJSON() (output []interface{}) {
@@ -58,8 +73,20 @@ func (change Change) OutputForJSON() (output []interface{}) {
 	}
 }
 
-func (change Change) GetPath() string {
-	return "/changes/" + strconv.Itoa(change.ID)
+func GetChange(id int64) (change Change, err error) {
+
+	var item = helpers.MemcacheChangeRow(id)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &change, func() (interface{}, error) {
+
+		var change Change
+
+		err = FindDocument(CollectionChanges, "_id", id, &change)
+
+		return change, err
+	})
+
+	return change, err
 }
 
 func GetChanges(offset int64) (changes []Change, err error) {

@@ -47,7 +47,7 @@ func (article News) GetIcon() string {
 func (article News) OutputForJSON() (output []interface{}) {
 
 	var id = strconv.FormatInt(article.ArticleID, 10)
-	var path = GetAppPath(article.AppID, article.AppName)
+	var path = helpers.GetAppPath(article.AppID, article.AppName)
 
 	return []interface{}{
 		id,                                    // 0

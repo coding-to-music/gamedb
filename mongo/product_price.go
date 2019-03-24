@@ -22,6 +22,17 @@ type ProductPrice struct {
 	DifferencePercent float64
 }
 
+func (price ProductPrice) Key() interface{} {
+	return nil
+}
+
+func (price ProductPrice) BSON() (ret interface{}) {
+
+	return bson.M{
+
+	}
+}
+
 func GetProductPrices(appID int, packageID int, offset int64) (prices []ProductPrice, err error) {
 
 	client, ctx, err := GetMongo()

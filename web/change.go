@@ -8,6 +8,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/go-chi/chi"
 )
 
@@ -19,7 +20,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	change, err := db.GetChange(id)
+	change, err := mongo.GetChange(id)
 	if err != nil {
 		if err == datastore.ErrNoSuchEntity {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "We don't have this change in the database."})
@@ -46,11 +47,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		for _, v := range change.Apps {
-			t.Apps[v.ID] = db.App{ID: v.ID, Name: v.Name}
-		}
-
-		appsSlice, err := db.GetAppsByID(change.GetAppIDs(), []string{"id", "icon", "type", "name"})
+		appsSlice, err := db.GetAppsByID(change.Apps, []string{"id", "icon", "type", "name"})
 		if err != nil {
 
 			log.Err(err, r)
@@ -69,11 +66,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		for _, v := range change.Packages {
-			t.Packages[v.ID] = db.Package{ID: v.ID, Name: v.Name}
-		}
-
-		packagesSlice, err := db.GetPackages(change.GetPackageIDs(), []string{})
+		packagesSlice, err := db.GetPackages(change.Packages, []string{})
 		if err != nil {
 
 			log.Err(err, r)
@@ -95,7 +88,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 type changeTemplate struct {
 	GlobalTemplate
-	Change   db.Change
+	Change   mongo.Change
 	Apps     map[int]db.App
 	Packages map[int]db.Package
 }

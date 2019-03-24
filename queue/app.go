@@ -22,6 +22,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -69,7 +70,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming app " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
-	if !db.IsValidAppID(message.ID) {
+	if !helpers.IsValidAppID(message.ID) {
 		logError(errors.New("invalid app ID: " + strconv.Itoa(message.ID)))
 		payload.ack(msg)
 		return
@@ -783,26 +784,26 @@ func updateAppReviews(app *db.App) error {
 	}
 
 	// Get players from Datastore
-	players, err := db.GetPlayersByIDs(playersSlice)
+	players, err := mongo.GetPlayersByIDs(playersSlice)
 	if err != nil {
 		return err
 	}
 
 	// Make map of players
-	var playersMap = map[int64]db.Player{}
+	var playersMap = map[int64]mongo.Player{}
 	for _, v := range players {
-		playersMap[v.PlayerID] = v
+		playersMap[v.ID] = v
 	}
 
 	// Make template slice
 	for _, v := range resp.Reviews {
 
-		var player db.Player
+		var player mongo.Player
 		if val, ok := playersMap[int64(v.Author.SteamID)]; ok {
 			player = val
 		} else {
-			player = db.Player{}
-			player.PlayerID = int64(v.Author.SteamID)
+			player = mongo.Player{}
+			player.ID = int64(v.Author.SteamID)
 			player.PersonaName = "Unknown"
 		}
 

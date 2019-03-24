@@ -53,12 +53,12 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get donations
 	var donations []db.Donation
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
 		if player.Donated > 0 {
-			donations, err = db.GetDonations(player.PlayerID, 10)
+			donations, err = db.GetDonations(player.ID, 10)
 			log.Err(err, r)
 		}
 
@@ -67,14 +67,19 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get games
 	var games string
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
-		appIDs, err := player.GetAppIDs()
+		playerApps, err := mongo.GetPlayerApps(player.ID, 0, false)
 		if err != nil {
 			log.Err(err, r)
 			return
+		}
+
+		var appIDs []int
+		for _, v := range playerApps {
+			appIDs = append(appIDs, v.AppID)
 		}
 
 		games = string(helpers.MarshalLog(appIDs))
@@ -84,7 +89,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get User
 	var user db.User
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -124,7 +129,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 type settingsTemplate struct {
 	GlobalTemplate
-	Player    db.Player
+	Player    mongo.Player
 	User      db.User
 	Donations []db.Donation
 	Games     string
@@ -291,14 +296,14 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	return strconv.ParseInt(id, 10, 64)
 }
 
-func getPlayer(r *http.Request) (player db.Player, err error) {
+func getPlayer(r *http.Request) (player mongo.Player, err error) {
 
 	playerID, err := getPlayerIDFromSession(r)
 	if err != nil {
 		return player, err
 	}
 
-	return db.GetPlayer(playerID)
+	return mongo.GetPlayer(playerID)
 }
 
 func getUser(r *http.Request, playerID int64) (user db.User, err error) {

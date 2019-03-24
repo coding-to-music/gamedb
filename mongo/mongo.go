@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/log"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -65,10 +67,22 @@ func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
+func FindDocument(collection string, col string, val interface{}, document MongoDocument) (err error) {
+
+	client, ctx, err := GetMongo()
+	if err != nil {
+		return err
+	}
+
+	c := client.Database(MongoDatabase).Collection(collection)
+	result := c.FindOne(ctx, bson.M{col: val}, options.FindOne())
+
+	return result.Decode(document)
+}
+
 // Errors if key already exists
 func InsertDocument(collection string, document MongoDocument) (resp *mongo.InsertOneResult, err error) {
 
-	// Save to Mongo
 	client, ctx, err := GetMongo()
 	if err != nil {
 		return resp, err
@@ -110,9 +124,9 @@ func InsertDocuments(collection string, documents []MongoDocument) (resp *mongo.
 	c := client.Database(MongoDatabase).Collection(collection)
 	resp, err = c.InsertMany(ctx, many, options.InsertMany().SetOrdered(false))
 
-	serr, ok := err.(mongo.BulkWriteException)
+	bulkErr, ok := err.(mongo.BulkWriteException)
 	if ok {
-		for _, v := range serr.WriteErrors {
+		for _, v := range bulkErr.WriteErrors {
 			if v.Code != 11000 { // duplicate key
 				return resp, err
 			}
@@ -132,4 +146,73 @@ func CountDocuments(collection string, filter interface{}) (count int64, err err
 
 	c := client.Database(MongoDatabase).Collection(collection)
 	return c.CountDocuments(ctx, filter, options.Count())
+}
+
+func documentsToArticles(a []MongoDocument) (b []Article) {
+
+	for _, v := range a {
+
+		original, ok := v.(Article)
+		if ok {
+			b = append(b, original)
+		} else {
+			log.Info("kind not a struct")
+		}
+	}
+
+	return b
+}
+
+func documentsToPlayers(a []MongoDocument) (b []Player) {
+
+	for _, v := range a {
+
+		original, ok := v.(Player)
+		if ok {
+			b = append(b, original)
+		} else {
+			log.Info("kind not a struct")
+		}
+	}
+
+	return b
+}
+
+func documentsToPlayerApps(a []MongoDocument) (b []PlayerApp) {
+
+	for _, v := range a {
+
+		original, ok := v.(PlayerApp)
+		if ok {
+			b = append(b, original)
+		}
+	}
+
+	return b
+}
+
+func documentsToChanges(a []MongoDocument) (b []Change) {
+
+	for _, v := range a {
+
+		original, ok := v.(Change)
+		if ok {
+			b = append(b, original)
+		}
+	}
+
+	return b
+}
+
+func documentsToProductPrices(a []MongoDocument) (b []ProductPrice) {
+
+	for _, v := range a {
+
+		original, ok := v.(ProductPrice)
+		if ok {
+			b = append(b, original)
+		}
+	}
+
+	return b
 }

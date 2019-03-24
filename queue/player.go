@@ -77,8 +77,8 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Update player
-	player := db.Player{}
-	player.PlayerID = id64
+	player := mongo.Player{}
+	player.ID = id64
 	player.RealName = message.PICSProfileInfo.RealName
 	player.StateCode = message.PICSProfileInfo.StateName
 	player.CountryCode = message.PICSProfileInfo.CountryName
@@ -169,7 +169,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	err = db.CreateEvent(new(http.Request), player.PlayerID, db.EventRefresh)
+	err = db.CreateEvent(new(http.Request), player.ID, db.EventRefresh)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -185,7 +185,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	if page.HasConnections() {
-		page.Send(strconv.FormatInt(player.PlayerID, 10))
+		page.Send(strconv.FormatInt(player.ID, 10))
 	}
 
 	payload.ack(msg)
@@ -222,9 +222,9 @@ type RabbitMessageProfilePICS struct {
 	JobID       steamKitJob `json:"JobID"`
 }
 
-func updatePlayerSummary(player *db.Player) error {
+func updatePlayerSummary(player *mongo.Player) error {
 
-	summary, _, err := helpers.GetSteam().GetPlayer(player.PlayerID)
+	summary, _, err := helpers.GetSteam().GetPlayer(player.ID)
 	if err != nil {
 		return err
 	}
@@ -250,10 +250,10 @@ func updatePlayerSummary(player *db.Player) error {
 	return err
 }
 
-func updatePlayerGames(player *db.Player) error {
+func updatePlayerGames(player *mongo.Player) error {
 
 	// Grab games from Steam
-	resp, _, err := helpers.GetSteam().GetOwnedGames(player.PlayerID)
+	resp, _, err := helpers.GetSteam().GetOwnedGames(player.ID)
 	if err != nil {
 		return err
 	}
@@ -271,7 +271,7 @@ func updatePlayerGames(player *db.Player) error {
 		playtime = playtime + v.PlaytimeForever
 		appIDs = append(appIDs, v.AppID)
 		playerApps[v.AppID] = &db.PlayerApp{
-			PlayerID: player.PlayerID,
+			PlayerID: player.ID,
 			AppID:    v.AppID,
 			AppName:  v.Name,
 			AppIcon:  v.ImgIconURL,
@@ -331,7 +331,7 @@ func updatePlayerGames(player *db.Player) error {
 	}
 
 	// Save stats to player
-	var gameStats = db.PlayerAppStatsTemplate{}
+	var gameStats = mongo.PlayerAppStatsTemplate{}
 	for _, v := range playerApps {
 
 		gameStats.All.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
@@ -350,16 +350,16 @@ func updatePlayerGames(player *db.Player) error {
 	return nil
 }
 
-func updatePlayerRecentGames(player *db.Player) error {
+func updatePlayerRecentGames(player *mongo.Player) error {
 
-	recentResponse, _, err := helpers.GetSteam().GetRecentlyPlayedGames(player.PlayerID)
+	recentResponse, _, err := helpers.GetSteam().GetRecentlyPlayedGames(player.ID)
 	if err != nil {
 		return err
 	}
 
-	var games []db.ProfileRecentGame
+	var games []mongo.ProfileRecentGame
 	for _, v := range recentResponse.Games {
-		games = append(games, db.ProfileRecentGame{
+		games = append(games, mongo.ProfileRecentGame{
 			AppID:           v.AppID,
 			Name:            v.Name,
 			PlayTime2Weeks:  v.PlayTime2Weeks,
@@ -376,7 +376,7 @@ func updatePlayerRecentGames(player *db.Player) error {
 
 	// Upload
 	if len(b) > maxBytesToStore {
-		storagePath := helpers.PathRecentGames(player.PlayerID)
+		storagePath := helpers.PathRecentGames(player.ID)
 		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
@@ -389,9 +389,9 @@ func updatePlayerRecentGames(player *db.Player) error {
 	return nil
 }
 
-func updatePlayerBadges(player *db.Player) error {
+func updatePlayerBadges(player *mongo.Player) error {
 
-	response, _, err := helpers.GetSteam().GetBadges(player.PlayerID)
+	response, _, err := helpers.GetSteam().GetBadges(player.ID)
 	if err != nil {
 		return err
 	}
@@ -400,7 +400,7 @@ func updatePlayerBadges(player *db.Player) error {
 	player.BadgesCount = len(response.Badges)
 
 	// Save stats
-	stats := db.ProfileBadgeStats{
+	stats := mongo.ProfileBadgeStats{
 		PlayerXP:                   response.PlayerXP,
 		PlayerLevel:                response.PlayerLevel,
 		PlayerXPNeededToLevelUp:    response.PlayerXPNeededToLevelUp,
@@ -416,11 +416,11 @@ func updatePlayerBadges(player *db.Player) error {
 	player.BadgeStats = string(b)
 
 	// Start badges slice
-	var badgeSlice []db.ProfileBadge
+	var badgeSlice []mongo.ProfileBadge
 	var appIDSlice []int
 	for _, v := range response.Badges {
 		appIDSlice = append(appIDSlice, v.AppID)
-		badgeSlice = append(badgeSlice, db.ProfileBadge{
+		badgeSlice = append(badgeSlice, mongo.ProfileBadge{
 			BadgeID:        v.BadgeID,
 			AppID:          v.AppID,
 			Level:          v.Level,
@@ -456,7 +456,7 @@ func updatePlayerBadges(player *db.Player) error {
 
 	// Upload
 	if len(b) > maxBytesToStore {
-		storagePath := helpers.PathBadges(player.PlayerID)
+		storagePath := helpers.PathBadges(player.ID)
 		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
@@ -469,9 +469,9 @@ func updatePlayerBadges(player *db.Player) error {
 	return nil
 }
 
-func updatePlayerFriends(player *db.Player) error {
+func updatePlayerFriends(player *mongo.Player) error {
 
-	resp, _, err := helpers.GetSteam().GetFriendList(player.PlayerID)
+	resp, _, err := helpers.GetSteam().GetFriendList(player.ID)
 
 	// This endpoint seems to error if the player is private, so it's probably fine.
 	err2, ok := err.(steam.Error)
@@ -485,40 +485,40 @@ func updatePlayerFriends(player *db.Player) error {
 	player.FriendsCount = len(resp.Friends)
 
 	// Make friend ID slice & map
-	var friendsMap = map[int64]*db.ProfileFriend{}
+	var friendsMap = map[int64]*mongo.ProfileFriend{}
 	var friendsSlice []int64
 	for _, v := range resp.Friends {
 
 		friendsSlice = append(friendsSlice, int64(v.SteamID))
 
-		friendsMap[int64(v.SteamID)] = &db.ProfileFriend{
+		friendsMap[int64(v.SteamID)] = &mongo.ProfileFriend{
 			SteamID:     int64(v.SteamID),
 			FriendSince: v.FriendSince,
 		}
 	}
 
 	// Get friends from DS
-	friendRows, err := db.GetPlayersByIDs(friendsSlice)
+	friendRows, err := mongo.GetPlayersByIDs(friendsSlice)
 	if err != nil {
 		return err
 	}
 
 	// Fill in the map
-	for _, v := range friendRows {
-		if v.PlayerID != 0 {
+	for _, friend := range friendRows {
+		if friend.ID != 0 {
 
-			friendsMap[v.PlayerID].Avatar = v.GetAvatar()
-			friendsMap[v.PlayerID].Games = v.GamesCount
-			friendsMap[v.PlayerID].Name = v.GetName()
-			friendsMap[v.PlayerID].Level = v.Level
-			friendsMap[v.PlayerID].LoggedOff = v.GetLogoffUnix()
+			friendsMap[friend.ID].Avatar = friend.GetAvatar()
+			friendsMap[friend.ID].Games = friend.GamesCount
+			friendsMap[friend.ID].Name = friend.GetName()
+			friendsMap[friend.ID].Level = friend.Level
+			friendsMap[friend.ID].LoggedOff = friend.GetLogoffUnix()
 
 		}
 	}
 
 	// Make into map again, so it can be unmarshalled
 
-	var friends []db.ProfileFriend
+	var friends []mongo.ProfileFriend
 	for _, v := range friendsMap {
 		friends = append(friends, *v)
 	}
@@ -531,7 +531,7 @@ func updatePlayerFriends(player *db.Player) error {
 
 	// Upload
 	if len(b) > maxBytesToStore {
-		storagePath := helpers.PathFriends(player.PlayerID)
+		storagePath := helpers.PathFriends(player.ID)
 		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
@@ -544,9 +544,9 @@ func updatePlayerFriends(player *db.Player) error {
 	return nil
 }
 
-func updatePlayerLevel(player *db.Player) error {
+func updatePlayerLevel(player *mongo.Player) error {
 
-	level, _, err := helpers.GetSteam().GetSteamLevel(player.PlayerID)
+	level, _, err := helpers.GetSteam().GetSteamLevel(player.ID)
 	if err != nil {
 		return err
 	}
@@ -556,9 +556,9 @@ func updatePlayerLevel(player *db.Player) error {
 	return nil
 }
 
-func updatePlayerBans(player *db.Player) error {
+func updatePlayerBans(player *mongo.Player) error {
 
-	response, _, err := helpers.GetSteam().GetPlayerBans(player.PlayerID)
+	response, _, err := helpers.GetSteam().GetPlayerBans(player.ID)
 	if err == steam.ErrNoUserFound {
 		return nil
 	} else if err != nil {
@@ -568,7 +568,7 @@ func updatePlayerBans(player *db.Player) error {
 	player.NumberOfGameBans = response.NumberOfGameBans
 	player.NumberOfVACBans = response.NumberOfVACBans
 
-	var bans db.PlayerBans
+	var bans mongo.PlayerBans
 	bans.CommunityBanned = response.CommunityBanned
 	bans.VACBanned = response.VACBanned
 	bans.NumberOfVACBans = response.NumberOfVACBans
@@ -587,9 +587,9 @@ func updatePlayerBans(player *db.Player) error {
 	return nil
 }
 
-func updatePlayerGroups(player *db.Player) error {
+func updatePlayerGroups(player *mongo.Player) error {
 
-	resp, _, err := helpers.GetSteam().GetUserGroupList(player.PlayerID)
+	resp, _, err := helpers.GetSteam().GetUserGroupList(player.ID)
 
 	// This endpoint seems to error if the player is private, so it's probably fine.
 	err2, ok := err.(steam.Error)
@@ -605,24 +605,16 @@ func updatePlayerGroups(player *db.Player) error {
 	return nil
 }
 
-// func savePlayerToBuffer(player db.Player) error {
-//
-// 	return db.SaveKindsToBuffer([]db.Kind{player}, db.KindPlayer)
-// }
+func savePlayerMongo(player mongo.Player) error {
 
-func savePlayerMongo(player db.Player) error {
-
-	mPlayer := mongo.Player{}
-	mPlayer.ID = player.PlayerID
-
-	_, err := mongo.ReplaceDocument(mongo.CollectionPlayers, bson.M{"_id": player.PlayerID}, mPlayer)
+	_, err := mongo.ReplaceDocument(mongo.CollectionPlayers, bson.M{"_id": player.ID}, player)
 
 	return err
 }
 
-func savePlayerToInflux(player db.Player) error {
+func savePlayerToInflux(player mongo.Player) error {
 
-	ranks, err := db.GetRank(player.PlayerID)
+	ranks, err := db.GetRank(player.ID)
 	if err != nil && err != db.ErrNoSuchEntity {
 		return err
 	}
@@ -644,7 +636,7 @@ func savePlayerToInflux(player db.Player) error {
 	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(db.InfluxMeasurementPlayers),
 		Tags: map[string]string{
-			"player_id": strconv.FormatInt(player.PlayerID, 10),
+			"player_id": strconv.FormatInt(player.ID, 10),
 		},
 		Fields:    fields,
 		Time:      time.Now(),

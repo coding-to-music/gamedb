@@ -101,10 +101,6 @@ func main() {
 		err = c.AddFunc("0 0 */3 * * *", checkForPlayers)
 		log.Critical(err)
 
-		// Every 10 minutes
-		err = c.AddFunc("0 */10 * * * *", db.FlushBufferToDatastore)
-		log.Critical(err)
-
 		c.Start()
 	}
 

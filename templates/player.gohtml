@@ -1,6 +1,6 @@
 {{define "player"}} {{ template "_header" . }}
 
-<div class="container" id="player-page" data-id="{{ .Player.PlayerID }}" data-path="{{ .Player.GetPath }}">
+<div class="container" id="player-page" data-id="{{ .Player.ID }}" data-path="{{ .Player.GetPath }}">
 
     <div class="jumbotron">
 
@@ -37,12 +37,12 @@
                 <li class="ml-0 ml-lg-auto"></li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#" role="tab" data-update-id="{{ .Player.PlayerID }}" rel="nofollow">
+                    <a class="nav-link" href="#" role="tab" data-update-id="{{ .Player.ID }}" rel="nofollow">
                         <i class="fas fa-sync-alt"></i> Update
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/coop?p={{ .Player.PlayerID }}" role="tab" id="coop-link">
+                    <a class="nav-link" href="/coop?p={{ .Player.ID }}" role="tab" id="coop-link">
                         <i class="fas fa-user-friends"></i> Co-op
                     </a>
                 </li>
@@ -409,7 +409,7 @@
 
                         {{/* Games List */}}
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/players/{{ .Player.PlayerID }}/games.json">
+                            <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/players/{{ .Player.ID }}/games.json">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">All Games</th>

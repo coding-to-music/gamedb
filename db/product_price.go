@@ -33,7 +33,7 @@ func (p ProductPrice) GetKey() (key *datastore.Key) {
 func (p ProductPrice) GetPath() string {
 
 	if p.AppID != 0 {
-		return GetAppPath(p.AppID, p.Name)
+		return helpers.GetAppPath(p.AppID, p.Name)
 	} else if p.PackageID != 0 {
 		return GetPackagePath(p.PackageID, p.Name)
 	}
@@ -43,7 +43,7 @@ func (p ProductPrice) GetPath() string {
 
 func (p ProductPrice) GetIcon() string {
 	if p.Icon == "" {
-		return DefaultAppIcon
+		return helpers.DefaultAppIcon
 	} else if strings.HasPrefix(p.Icon, "/") || strings.HasPrefix(p.Icon, "http") {
 		return p.Icon
 	} else {

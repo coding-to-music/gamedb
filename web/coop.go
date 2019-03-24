@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 )
 
@@ -40,7 +41,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get players
 	var err error
-	t.Players, err = db.GetPlayersByIDs(playerInts)
+	t.Players, err = mongo.GetPlayersByIDs(playerInts)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
 		return
@@ -48,7 +49,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	var foundPlayerIDs []int64
 	for _, v := range t.Players {
-		foundPlayerIDs = append(foundPlayerIDs, v.PlayerID)
+		foundPlayerIDs = append(foundPlayerIDs, v.ID)
 	}
 
 	for _, v := range playerInts {
@@ -73,11 +74,11 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, player := range t.Players {
 
 		wg.Add(1)
-		go func(player db.Player) {
+		go func(player mongo.Player) {
 
 			defer wg.Done()
 
-			playerApps, err := player.GetAppIDs()
+			playerApps, err := mongo.GetPlayerApps(player.ID, 0, false)
 			if err != nil {
 				log.Err(err, r)
 				return
@@ -85,8 +86,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 			var playerAppIDs []int
 			for _, v := range playerApps {
-				allGames[v] = true
-				playerAppIDs = append(playerAppIDs, v)
+				allGames[v.AppID] = true
+				playerAppIDs = append(playerAppIDs, v.AppID)
 			}
 			allGamesByPlayer = append(allGamesByPlayer, playerAppIDs)
 
@@ -145,7 +146,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 type coopTemplate struct {
 	GlobalTemplate
-	Players []db.Player
+	Players []mongo.Player
 	Games   []coopGameTemplate
 }
 

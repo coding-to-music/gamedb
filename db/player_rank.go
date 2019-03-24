@@ -146,25 +146,25 @@ func CountRanks() (count int, err error) {
 	return count, err
 }
 
-func NewRankFromPlayer(player Player) (rank *PlayerRank) {
-
-	rank = new(PlayerRank)
-
-	// Profile
-	rank.CreatedAt = time.Now()
-	rank.UpdatedAt = time.Now()
-	rank.PlayerID = player.PlayerID
-	rank.VanintyURL = player.VanintyURL
-	rank.Avatar = player.Avatar
-	rank.PersonaName = player.PersonaName
-	rank.CountryCode = player.CountryCode
-
-	// Rankable
-	rank.Level = player.Level
-	rank.Games = player.GamesCount
-	rank.Badges = player.BadgesCount
-	rank.PlayTime = player.PlayTime
-	rank.Friends = player.FriendsCount
-
-	return rank
-}
+// func NewRankFromPlayer(player Player) (rank *PlayerRank) {
+//
+// 	rank = new(PlayerRank)
+//
+// 	// Profile
+// 	rank.CreatedAt = time.Now()
+// 	rank.UpdatedAt = time.Now()
+// 	rank.PlayerID = player.PlayerID
+// 	rank.VanintyURL = player.VanintyURL
+// 	rank.Avatar = player.Avatar
+// 	rank.PersonaName = player.PersonaName
+// 	rank.CountryCode = player.CountryCode
+//
+// 	// Rankable
+// 	rank.Level = player.Level
+// 	rank.Games = player.GamesCount
+// 	rank.Badges = player.BadgesCount
+// 	rank.PlayTime = player.PlayTime
+// 	rank.Friends = player.FriendsCount
+//
+// 	return rank
+// }

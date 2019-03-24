@@ -101,7 +101,7 @@ func (pack Package) GetType() string {
 
 func (pack Package) GetIcon() string {
 	if pack.Icon == "" {
-		return DefaultAppIcon
+		return helpers.DefaultAppIcon
 	}
 	return pack.Icon
 }

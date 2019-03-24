@@ -32,7 +32,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !db.IsValidAppID(idx) {
+	if !helpers.IsValidAppID(idx) {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
 		return
 	}

@@ -32,13 +32,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !db.IsValidPlayerID(idx) {
+	if !helpers.IsValidPlayerID(idx) {
 		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid Player ID: " + id})
 		return
 	}
 
 	// Find the player row
-	player, err := db.GetPlayer(idx)
+	player, err := mongo.GetPlayer(idx)
 	if err != nil {
 		if err == datastore.ErrNoSuchEntity {
 
@@ -56,8 +56,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue profile for a refresh
-	if player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto) {
-		err = queue.ProducePlayer(player.PlayerID)
+	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
+		err = queue.ProducePlayer(player.ID)
 		log.Err(err, r)
 		t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 	}
@@ -65,9 +65,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get friends
-	var friends []db.ProfileFriend
+	var friends []mongo.ProfileFriend
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -98,12 +98,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Get ranks
 	var ranks db.PlayerRank
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
 		var err error
-		ranks, err = db.GetRank(player.PlayerID)
+		ranks, err = db.GetRank(player.ID)
 		if err != nil && err != datastore.ErrNoSuchEntity {
 			log.Err(err, r)
 		}
@@ -113,7 +113,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Number of players
 	var players int64
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -124,9 +124,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get badges
-	var badges []db.ProfileBadge
+	var badges []mongo.ProfileBadge
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -139,7 +139,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Get recent games
 	var recentGames []RecentlyPlayedGame
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -161,7 +161,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
 
 			if v.ImgIconURL == "" {
-				game.Icon = db.DefaultAppIcon
+				game.Icon = helpers.DefaultAppIcon
 			} else {
 				game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
 			}
@@ -172,9 +172,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get bans
-	var bans db.PlayerBans
+	var bans mongo.PlayerBans
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -189,9 +189,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get badge stats
-	var badgeStats db.ProfileBadgeStats
+	var badgeStats mongo.ProfileBadgeStats
 	wg.Add(1)
-	go func(player db.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -214,7 +214,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	banners := make(map[string][]string)
 	var primary []string
 
-	if player.PlayerID == 76561197960287930 {
+	if player.ID == 76561197960287930 {
 		primary = append(primary, "This profile belongs to Gabe Newell, the Co-founder of Valve")
 	}
 
@@ -245,13 +245,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 type playerTemplate struct {
 	GlobalTemplate
 	Apps        []db.PlayerApp
-	Badges      []db.ProfileBadge
-	BadgeStats  db.ProfileBadgeStats
+	Badges      []mongo.ProfileBadge
+	BadgeStats  mongo.ProfileBadgeStats
 	Banners     map[string][]string
-	Bans        db.PlayerBans
-	Friends     []db.ProfileFriend
-	GameStats   db.PlayerAppStatsTemplate
-	Player      db.Player
+	Bans        mongo.PlayerBans
+	Friends     []mongo.ProfileFriend
+	GameStats   mongo.PlayerAppStatsTemplate
+	Player      mongo.Player
 	Ranks       playerRanksTemplate
 	RecentGames []RecentlyPlayedGame
 }
@@ -401,7 +401,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		player, err := db.GetPlayer(playerIDInt)
+		player, err := mongo.GetPlayer(playerIDInt)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -442,13 +442,13 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Invalid Player ID", err, false
 		}
 
-		if !db.IsValidPlayerID(idx) {
+		if !helpers.IsValidPlayerID(idx) {
 			return "Invalid Player ID", err, false
 		}
 
 		var message string
 
-		player, err := db.GetPlayer(idx)
+		player, err := mongo.GetPlayer(idx)
 		if err == nil {
 			message = "Updating player!"
 		} else if err == datastore.ErrNoSuchEntity {
@@ -458,17 +458,17 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Error looking for player", err, false
 		}
 
-		updateType := db.PlayerUpdateManual
+		updateType := mongo.PlayerUpdateManual
 		if isAdmin(r) {
 			message = "Admin update!"
-			updateType = db.PlayerUpdateAdmin
+			updateType = mongo.PlayerUpdateAdmin
 		}
 
 		if !player.ShouldUpdate(r.UserAgent(), updateType) {
 			return "Player can't be updated yet", nil, false
 		}
 
-		err = queue.ProducePlayer(player.PlayerID)
+		err = queue.ProducePlayer(player.ID)
 		if err != nil {
 			log.Err(err, r)
 			return "Something has gone wrong", err, false

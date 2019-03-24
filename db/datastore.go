@@ -5,6 +5,7 @@ package db
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"sync"
 
@@ -15,11 +16,9 @@ import (
 )
 
 const (
-	KindChange       = "Change"
 	KindDonation     = "Donation"
 	KindEvent        = "Event"
 	KindNews         = "News"
-	KindPlayer       = "Player"
 	KindPlayerApp    = "PlayerApp"
 	KindPlayerRank   = "PlayerRank"
 	KindProductPrice = "ProductPrice"
@@ -102,13 +101,12 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 				_, err = client.PutMulti(ctx, keys, kindsToNews(chunk))
 			case KindPlayerApp:
 				_, err = client.PutMulti(ctx, keys, kindsToPlayerApps(chunk))
-			case KindChange:
-				_, err = client.PutMulti(ctx, keys, KindsToChanges(chunk))
 			case KindPlayerRank:
 				_, err = client.PutMulti(ctx, keys, kindsToPlayerRanks(chunk))
 			case KindProductPrice:
 				_, err = client.PutMulti(ctx, keys, kindsToProductPrices(chunk))
 			default:
+				fmt.Println(kind)
 				log.Critical(errors.New("missing case in BulkSaveKinds"))
 			}
 
@@ -299,19 +297,6 @@ func kindsToPlayerApps(a []Kind) (b []PlayerApp) {
 	for _, v := range a {
 
 		original, ok := v.(PlayerApp)
-		if ok {
-			b = append(b, original)
-		}
-	}
-
-	return b
-}
-
-func KindsToChanges(a []Kind) (b []Change) {
-
-	for _, v := range a {
-
-		original, ok := v.(Change)
 		if ok {
 			b = append(b, original)
 		}

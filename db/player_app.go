@@ -26,7 +26,7 @@ func (p PlayerApp) GetKey() (key *datastore.Key) {
 }
 
 func (p PlayerApp) GetPath() string {
-	return GetAppPath(p.AppID, p.AppName)
+	return helpers.GetAppPath(p.AppID, p.AppName)
 }
 
 func (p PlayerApp) GetIcon() string {

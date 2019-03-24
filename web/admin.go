@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"runtime"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
@@ -246,38 +244,38 @@ func adminQueueEveryPackage() {
 
 func CronDonations() {
 
-	donations, err := db.GetDonations(0, 0)
-	if err != nil {
-		cronLogErr(err)
-		return
-	}
-
-	// map[player]total
-	counts := make(map[int64]int)
-
-	for _, v := range donations {
-
-		if _, ok := counts[v.PlayerID]; ok {
-			counts[v.PlayerID] = counts[v.PlayerID] + v.AmountUSD
-		} else {
-			counts[v.PlayerID] = v.AmountUSD
-		}
-	}
-
-	for k, v := range counts {
-		player, err := db.GetPlayer(k)
-		if err != nil {
-			cronLogErr(err)
-			continue
-		}
-
-		player.Donated = v
-		err = db.SaveKind(player.GetKey(), player)
-		cronLogErr(err)
-	}
+	// donations, err := db.GetDonations(0, 0)
+	// if err != nil {
+	// 	cronLogErr(err)
+	// 	return
+	// }
+	//
+	// // map[player]total
+	// counts := make(map[int64]int)
+	//
+	// for _, v := range donations {
+	//
+	// 	if _, ok := counts[v.PlayerID]; ok {
+	// 		counts[v.PlayerID] = counts[v.PlayerID] + v.AmountUSD
+	// 	} else {
+	// 		counts[v.PlayerID] = v.AmountUSD
+	// 	}
+	// }
+	//
+	// for k, v := range counts {
+	// 	player, err := mongo.GetPlayer(k)
+	// 	if err != nil {
+	// 		cronLogErr(err)
+	// 		continue
+	// 	}
+	//
+	// 	player.Donated = v
+	// 	err = db.SaveKind(player.GetKey(), player)
+	// 	cronLogErr(err)
+	// }
 
 	//
-	err = db.SetConfig(db.ConfDonationsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err := db.SetConfig(db.ConfDonationsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -287,7 +285,7 @@ func CronDonations() {
 		page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
 	}
 
-	cronLogInfo("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
+	// cronLogInfo("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
 
 func adminQueues(r *http.Request) {
@@ -1024,143 +1022,143 @@ func CronRanks() {
 
 	cronLogInfo("Ranks updated started")
 
-	timeStart := time.Now().Unix()
-
-	oldKeys, err := db.GetRankKeys()
-	if err != nil {
-		cronLogErr(err)
-		return
-	}
-
-	newRanks := make(map[int64]*db.PlayerRank)
-	var players []db.Player
-
-	var wg sync.WaitGroup
-
-	for _, v := range []string{"-level", "-games_count", "-badges_count", "-play_time", "-friends_count"} {
-
-		wg.Add(1)
-		go func(column string) {
-
-			defer wg.Done()
-
-			players, _, err = db.GetAllPlayers(column, db.PlayersToRank, false)
-			if err != nil {
-				cronLogErr(err)
-				return
-			}
-
-			for _, player := range players {
-				newRanks[player.PlayerID] = db.NewRankFromPlayer(player)
-				delete(oldKeys, player.PlayerID)
-			}
-
-		}(v)
-
-	}
-	wg.Wait()
-
-	// Convert new ranks to slice
-	var ranks []*db.PlayerRank
-	for _, v := range newRanks {
-		ranks = append(ranks, v)
-	}
-
-	// Make ranks
-	var prev int
-	var rank = 0
-
-	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].Level > ranks[j].Level
-	})
-	for _, v := range ranks {
-		if v.Level != prev {
-			rank++
-		}
-		v.UpdatedAt = time.Now()
-		v.LevelRank = rank
-		prev = v.Level
-	}
-
-	rank = 0
-	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].Games > ranks[j].Games
-	})
-	for _, v := range ranks {
-		if v.Games != prev {
-			rank++
-		}
-		v.UpdatedAt = time.Now()
-		v.GamesRank = rank
-		prev = v.Games
-	}
-
-	rank = 0
-	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].Badges > ranks[j].Badges
-	})
-	for _, v := range ranks {
-		if v.Badges != prev {
-			rank++
-		}
-		v.UpdatedAt = time.Now()
-		v.BadgesRank = rank
-		prev = v.Badges
-	}
-
-	rank = 0
-	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].PlayTime > ranks[j].PlayTime
-	})
-	for _, v := range ranks {
-		if v.PlayTime != prev {
-			rank++
-		}
-		v.UpdatedAt = time.Now()
-		v.PlayTimeRank = rank
-		prev = v.PlayTime
-	}
-
-	rank = 0
-	sort.Slice(ranks, func(i, j int) bool {
-		return ranks[i].Friends > ranks[j].Friends
-	})
-	for _, v := range ranks {
-		if v.Friends != prev {
-			rank++
-		}
-		v.UpdatedAt = time.Now()
-		v.FriendsRank = rank
-		prev = v.Friends
-	}
-
-	// Make kinds
-	var kinds []db.Kind
-	for _, v := range ranks {
-		kinds = append(kinds, *v)
-	}
-
-	// Update ranks
-	err = db.BulkSaveKinds(kinds, db.KindPlayerRank, false)
-	if err != nil {
-		cronLogErr(err)
-		return
-	}
-
-	// Remove old ranks
-	var keysToDelete []*datastore.Key
-	for _, v := range oldKeys {
-		keysToDelete = append(keysToDelete, v)
-	}
-
-	err = db.BulkDeleteKinds(keysToDelete, false)
-	if err != nil {
-		cronLogErr(err)
-		return
-	}
+	// timeStart := time.Now().Unix()
+	//
+	// oldKeys, err := db.GetRankKeys()
+	// if err != nil {
+	// 	cronLogErr(err)
+	// 	return
+	// }
+	//
+	// newRanks := make(map[int64]*db.PlayerRank)
+	// var players []db.Player
+	//
+	// var wg sync.WaitGroup
+	//
+	// for _, v := range []string{"-level", "-games_count", "-badges_count", "-play_time", "-friends_count"} {
+	//
+	// 	wg.Add(1)
+	// 	go func(column string) {
+	//
+	// 		defer wg.Done()
+	//
+	// 		players, _, err = db.GetAllPlayers(column, db.PlayersToRank, false)
+	// 		if err != nil {
+	// 			cronLogErr(err)
+	// 			return
+	// 		}
+	//
+	// 		for _, player := range players {
+	// 			newRanks[player.PlayerID] = db.NewRankFromPlayer(player)
+	// 			delete(oldKeys, player.PlayerID)
+	// 		}
+	//
+	// 	}(v)
+	//
+	// }
+	// wg.Wait()
+	//
+	// // Convert new ranks to slice
+	// var ranks []*db.PlayerRank
+	// for _, v := range newRanks {
+	// 	ranks = append(ranks, v)
+	// }
+	//
+	// // Make ranks
+	// var prev int
+	// var rank = 0
+	//
+	// sort.Slice(ranks, func(i, j int) bool {
+	// 	return ranks[i].Level > ranks[j].Level
+	// })
+	// for _, v := range ranks {
+	// 	if v.Level != prev {
+	// 		rank++
+	// 	}
+	// 	v.UpdatedAt = time.Now()
+	// 	v.LevelRank = rank
+	// 	prev = v.Level
+	// }
+	//
+	// rank = 0
+	// sort.Slice(ranks, func(i, j int) bool {
+	// 	return ranks[i].Games > ranks[j].Games
+	// })
+	// for _, v := range ranks {
+	// 	if v.Games != prev {
+	// 		rank++
+	// 	}
+	// 	v.UpdatedAt = time.Now()
+	// 	v.GamesRank = rank
+	// 	prev = v.Games
+	// }
+	//
+	// rank = 0
+	// sort.Slice(ranks, func(i, j int) bool {
+	// 	return ranks[i].Badges > ranks[j].Badges
+	// })
+	// for _, v := range ranks {
+	// 	if v.Badges != prev {
+	// 		rank++
+	// 	}
+	// 	v.UpdatedAt = time.Now()
+	// 	v.BadgesRank = rank
+	// 	prev = v.Badges
+	// }
+	//
+	// rank = 0
+	// sort.Slice(ranks, func(i, j int) bool {
+	// 	return ranks[i].PlayTime > ranks[j].PlayTime
+	// })
+	// for _, v := range ranks {
+	// 	if v.PlayTime != prev {
+	// 		rank++
+	// 	}
+	// 	v.UpdatedAt = time.Now()
+	// 	v.PlayTimeRank = rank
+	// 	prev = v.PlayTime
+	// }
+	//
+	// rank = 0
+	// sort.Slice(ranks, func(i, j int) bool {
+	// 	return ranks[i].Friends > ranks[j].Friends
+	// })
+	// for _, v := range ranks {
+	// 	if v.Friends != prev {
+	// 		rank++
+	// 	}
+	// 	v.UpdatedAt = time.Now()
+	// 	v.FriendsRank = rank
+	// 	prev = v.Friends
+	// }
+	//
+	// // Make kinds
+	// var kinds []db.Kind
+	// for _, v := range ranks {
+	// 	kinds = append(kinds, *v)
+	// }
+	//
+	// // Update ranks
+	// err = db.BulkSaveKinds(kinds, db.KindPlayerRank, false)
+	// if err != nil {
+	// 	cronLogErr(err)
+	// 	return
+	// }
+	//
+	// // Remove old ranks
+	// var keysToDelete []*datastore.Key
+	// for _, v := range oldKeys {
+	// 	keysToDelete = append(keysToDelete, v)
+	// }
+	//
+	// err = db.BulkDeleteKinds(keysToDelete, false)
+	// if err != nil {
+	// 	cronLogErr(err)
+	// 	return
+	// }
 
 	// Update config
-	err = db.SetConfig(db.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err := db.SetConfig(db.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -1174,7 +1172,7 @@ func CronRanks() {
 	cronLogErr(err)
 
 	//
-	cronLogInfo("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
+	// cronLogInfo("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
 }
 
 func adminMemcache() {
@@ -1212,42 +1210,40 @@ func adminDeleteBinLogs(r *http.Request) {
 
 func adminDev() {
 
+	var err error
+
 	log.Info("Started dev code")
 
-	// players, _, err := db.GetAllPlayers("player_id", 0, false)
+	// changes, _, err := db.GetAllChanges("change_id", 0, false)
 	// if err != nil {
 	// 	log.Err(err)
 	// 	return
 	// }
 	//
-	// chunks := db.ChunkPlayers(players)
+	// chunks := db.ChunkChanges(changes)
 	//
 	// for k, chunk := range chunks {
 	//
 	// 	log.Info("Chunk " + strconv.Itoa(k))
 	//
-	// 	var keys []*datastore.Key
 	// 	var docs []mongo.MongoDocument
 	//
 	// 	for _, vv := range chunk {
 	//
-	// 		keys = append(keys, vv.GetKey())
-	//
-	// 		docs = append(docs, mongo.Player{
-	// 			ID: vv.PlayerID,
+	// 		docs = append(docs, mongo.Change{
+	// 			ID:        vv.ChangeID,
+	// 			CreatedAt: vv.CreatedAt,
+	// 			Apps:      vv.GetAppIDs(),
+	// 			Packages:  vv.GetPackageIDs(),
 	// 		})
 	// 	}
 	//
-	// 	_, err := mongo.InsertDocuments(mongo.CollectionPlayers, docs)
-	// 	if err != nil {
-	// 		log.Err(err)
-	// 	} else {
-	// 		err = db.BulkDeleteKinds(keys, true)
-	// 		log.Err(err)
-	// 	}
+	// 	_, err := mongo.InsertDocuments(mongo.CollectionChanges, docs)
+	// 	log.Err(err)
 	// }
 
-	err := db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
+	//
+	err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)

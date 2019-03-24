@@ -11,7 +11,9 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/streadway/amqp"
 )
 
@@ -394,7 +396,7 @@ func ProduceBundle(ID int, appID int) (err error) {
 
 func ProduceApp(ID int) (err error) {
 
-	if !db.IsValidAppID(ID) {
+	if !helpers.IsValidAppID(ID) {
 		return db.ErrInvalidAppID
 	}
 
@@ -420,8 +422,8 @@ func ProducePackage(ID int) (err error) {
 
 func ProducePlayer(ID int64) (err error) {
 
-	if !db.IsValidPlayerID(ID) {
-		return db.ErrInvalidPlayerID
+	if !helpers.IsValidPlayerID(ID) {
+		return mongo.ErrInvalidPlayerID
 	}
 
 	return produce(baseMessage{

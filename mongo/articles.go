@@ -70,7 +70,7 @@ func GetArticles(appID int, offset int64) (news []Article, err error) {
 
 		var article Article
 		err := cur.Decode(&article)
-		log.Err(err)
+		log.Err(err, article.ID)
 		news = append(news, article)
 	}
 

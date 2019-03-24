@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
@@ -122,7 +123,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get player from user
-		player, err := db.GetPlayer(user.PlayerID)
+		player, err := mongo.GetPlayer(user.PlayerID)
 		if err != nil {
 			return errors.New("no corresponding player")
 		}
@@ -214,16 +215,16 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if we have the player
-	player, err := db.GetPlayer(idInt)
+	player, err := mongo.GetPlayer(idInt)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return
 	}
 
 	// Queue for an update
-	if player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateAuto) {
+	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
 
-		err = queue.ProducePlayer(player.PlayerID)
+		err = queue.ProducePlayer(player.ID)
 		log.Err(err, r)
 	}
 
@@ -247,11 +248,11 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", 302)
 }
 
-func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.User) (err error) {
+func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user db.User) (err error) {
 
 	// Save session
 	err = session.WriteMany(w, r, map[string]string{
-		session.PlayerID:    strconv.FormatInt(player.PlayerID, 10),
+		session.PlayerID:    strconv.FormatInt(player.ID, 10),
 		session.PlayerName:  player.PersonaName,
 		session.PlayerLevel: strconv.Itoa(player.Level),
 		session.UserEmail:   user.Email,
@@ -263,7 +264,7 @@ func login(w http.ResponseWriter, r *http.Request, player db.Player, user db.Use
 	}
 
 	// Create login record
-	return db.CreateEvent(r, player.PlayerID, db.EventLogin)
+	return db.CreateEvent(r, player.ID, db.EventLogin)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {

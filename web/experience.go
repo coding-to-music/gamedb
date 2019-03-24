@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
@@ -108,7 +107,7 @@ type level struct {
 }
 
 func (l level) GetFriends() int {
-	return db.GetPlayerMaxFriends(l.Level)
+	return helpers.GetPlayerMaxFriends(l.Level)
 }
 
 func (l level) GetAvatar2() string {
