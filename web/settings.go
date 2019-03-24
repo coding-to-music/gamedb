@@ -56,10 +56,10 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		if player.Donated > 0 {
-			donations, err = db.GetDonations(player.ID, 10)
-			log.Err(err, r)
-		}
+		// if player.Donated > 0 {
+		// 	donations, err = db.GetDonations(player.ID, 10)
+		// 	log.Err(err, r)
+		// }
 
 	}(player)
 

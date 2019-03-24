@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
@@ -296,30 +296,21 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	log.Err(err, r, idx)
 
 	//
 	var wg sync.WaitGroup
 
 	// Get events
-	var articles []db.News
+	var articles []mongo.Article
 
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		client, ctx, err := db.GetDSClient()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		q := datastore.NewQuery(db.KindNews).Filter("app_id =", idx).Order("-date").Limit(100).Offset(query.getOffset())
-
-		_, err = client.GetAll(ctx, q, &articles)
-		err = db.HandleDSMultiError(err, db.OldNewsFields)
-		log.Err(err, r)
+		articles, err := mongo.GetArticles(idx, query.getOffset64())
+		log.Err(err, r, idx)
 
 		// todo, add http to links here instead of JS
 		// var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
@@ -346,13 +337,13 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		app, err := db.GetApp(idx, []string{})
 		if err != nil {
-			log.Err(err, r)
+			log.Err(err, r, idx)
 			return
 		}
 
 		newsIDs, err := app.GetNewsIDs()
 		if err != nil {
-			log.Err(err, r)
+			log.Err(err, r, idx)
 			return
 		}
 

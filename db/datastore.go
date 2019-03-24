@@ -16,8 +16,6 @@ import (
 )
 
 const (
-	KindDonation     = "Donation"
-	KindEvent        = "Event"
 	KindNews         = "News"
 	KindPlayerApp    = "PlayerApp"
 	KindPlayerRank   = "PlayerRank"
@@ -97,8 +95,6 @@ func BulkSaveKinds(kinds []Kind, kind string, wait bool) (err error) {
 			}
 
 			switch kind {
-			case KindNews:
-				_, err = client.PutMulti(ctx, keys, kindsToNews(chunk))
 			case KindPlayerApp:
 				_, err = client.PutMulti(ctx, keys, kindsToPlayerApps(chunk))
 			case KindPlayerRank:
@@ -275,21 +271,6 @@ func chunkKeys(keys []*datastore.Key) (chunked [][]*datastore.Key) {
 	}
 
 	return chunked
-}
-
-func kindsToNews(a []Kind) (b []News) {
-
-	for _, v := range a {
-
-		original, ok := v.(News)
-		if ok {
-			b = append(b, original)
-		} else {
-			log.Info("kind not a struct")
-		}
-	}
-
-	return b
 }
 
 func kindsToPlayerApps(a []Kind) (b []PlayerApp) {

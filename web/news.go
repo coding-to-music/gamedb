@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/go-chi/chi"
 )
 
@@ -43,7 +44,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range apps {
 
-		var news []db.News
+		var news []mongo.Article
 		q := datastore.NewQuery(db.KindNews).Filter("app_id =", v.ID).Order("-date").Limit(3)
 		_, err = client.GetAll(ctx, q, &news)
 		err = db.HandleDSMultiError(err, db.OldNewsFields)
@@ -61,7 +62,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 type newsTemplate struct {
 	GlobalTemplate
-	News []db.News
+	News []mongo.Article
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +73,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	var articles []db.News
+	var articles []mongo.Article
 
 	client, ctx, err := db.GetDSClient()
 	if err != nil {
