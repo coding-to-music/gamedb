@@ -29,7 +29,16 @@ func (price ProductPrice) Key() interface{} {
 func (price ProductPrice) BSON() (ret interface{}) {
 
 	return bson.M{
-
+		"created_at":         price.CreatedAt,
+		"app_id":             price.AppID,
+		"package_id":         price.PackageID,
+		"currency":           price.Currency,
+		"name":               price.Name,
+		"icon":               price.Icon,
+		"price_before":       price.PriceBefore,
+		"price_after":        price.PriceAfter,
+		"difference":         price.Difference,
+		"difference_percent": price.DifferencePercent,
 	}
 }
 
