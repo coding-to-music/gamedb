@@ -9,12 +9,14 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
@@ -1214,33 +1216,39 @@ func adminDev() {
 
 	log.Info("Started dev code")
 
-	// changes, _, err := db.GetAllChanges("change_id", 0, false)
-	// if err != nil {
-	// 	log.Err(err)
-	// 	return
-	// }
-	//
-	// chunks := db.ChunkChanges(changes)
-	//
-	// for k, chunk := range chunks {
-	//
-	// 	log.Info("Chunk " + strconv.Itoa(k))
-	//
-	// 	var docs []mongo.MongoDocument
-	//
-	// 	for _, vv := range chunk {
-	//
-	// 		docs = append(docs, mongo.Change{
-	// 			ID:        vv.ChangeID,
-	// 			CreatedAt: vv.CreatedAt,
-	// 			Apps:      vv.GetAppIDs(),
-	// 			Packages:  vv.GetPackageIDs(),
-	// 		})
-	// 	}
-	//
-	// 	_, err := mongo.InsertDocuments(mongo.CollectionChanges, docs)
-	// 	log.Err(err)
-	// }
+	client, ctx, err := db.GetDSClient()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	q := datastore.NewQuery(db.KindEvent)
+
+	var events []db.Event
+	_, err = client.GetAll(ctx, q, &events)
+
+	chunks := db.ChunkEvents(events)
+
+	for k, chunk := range chunks {
+
+		log.Info("Chunk " + strconv.Itoa(k))
+
+		var docs []mongo.MongoDocument
+
+		for _, vv := range chunk {
+
+			docs = append(docs, mongo.Event{
+				CreatedAt: vv.CreatedAt,
+				Type:      vv.Type,
+				PlayerID:  vv.PlayerID,
+				UserAgent: vv.UserAgent,
+				IP:        vv.IP,
+			})
+		}
+
+		_, err := mongo.InsertDocuments(mongo.CollectionEvents, docs)
+		log.Err(err)
+	}
 
 	//
 	err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))

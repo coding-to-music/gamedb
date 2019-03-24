@@ -329,7 +329,7 @@ func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 
 func CountPlayers() (count int64, err error) {
 
-	var item = helpers.MemcacheCountPlayers
+	var item = helpers.MemcachePlayersCount
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 

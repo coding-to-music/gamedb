@@ -1,13 +1,22 @@
 package mongo
 
 import (
+	"net/http"
 	"strings"
 	"time"
 
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"google.golang.org/appengine/memcache"
+)
+
+const (
+	EventLogin   = "login"
+	EventLogout  = "logout"
+	EventRefresh = "refresh"
 )
 
 type Event struct {
@@ -75,12 +84,6 @@ func (event Event) GetIP(ip string) string {
 	return "-"
 }
 
-const (
-	EventLogin   = "login"
-	EventLogout  = "logout"
-	EventRefresh = "refresh"
-)
-
 func (event Event) GetType() string {
 
 	switch event.Type {
@@ -137,4 +140,38 @@ func GetEvents(playerID int64, offset int64) (events []Event, err error) {
 	}
 
 	return events, cur.Err()
+}
+
+func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) {
+
+	event := new(Event)
+	event.CreatedAt = time.Now()
+	event.PlayerID = playerID
+	event.Type = eventType
+	event.UserAgent = r.Header.Get("User-Agent")
+	event.IP = r.RemoteAddr
+
+	_, err = InsertDocument(CollectionEvents, event)
+	if err != nil {
+		return err
+	}
+
+	if config.Config.HasMemcache() {
+		err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID).Key)
+		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
+	}
+
+	return err
+}
+
+func CountEvents(playerID int64) (count int64, err error) {
+
+	var item = helpers.MemcachePlayerEventsCount(playerID)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		return CountDocuments(CollectionEvents, bson.M{"player_id": playerID})
+	})
+
+	return count, err
 }

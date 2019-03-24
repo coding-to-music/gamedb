@@ -148,3 +148,18 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 
 	return err
 }
+
+func ChunkEvents(kinds []Event) (chunked [][]Event) {
+
+	for i := 0; i < len(kinds); i += 500 {
+		end := i + 500
+
+		if end > len(kinds) {
+			end = len(kinds)
+		}
+
+		chunked = append(chunked, kinds[i:end])
+	}
+
+	return chunked
+}

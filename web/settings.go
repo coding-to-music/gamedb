@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
-	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -254,8 +253,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		// todo, memcache
-		total, err = mongo.CountDocuments(mongo.CollectionEvents, bson.M{"player_id": playerID})
+		total, err = mongo.CountEvents(playerID)
 		log.Err(err, r)
 
 	}(r)

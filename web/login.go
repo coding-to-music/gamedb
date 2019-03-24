@@ -264,7 +264,7 @@ func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user db.
 	}
 
 	// Create login record
-	return db.CreateEvent(r, player.ID, db.EventLogin)
+	return mongo.CreateEvent(r, player.ID, mongo.EventLogin)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -273,7 +273,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)
 	log.Err(err, r)
 
-	err = db.CreateEvent(r, id, db.EventLogout)
+	err = mongo.CreateEvent(r, id, mongo.EventLogout)
 	log.Err(err, r)
 
 	err = session.Clear(w, r)

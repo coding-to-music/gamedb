@@ -169,7 +169,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	err = db.CreateEvent(new(http.Request), player.ID, db.EventRefresh)
+	err = mongo.CreateEvent(new(http.Request), player.ID, mongo.EventRefresh)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
