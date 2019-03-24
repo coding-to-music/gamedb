@@ -15,7 +15,7 @@ type Article struct {
 	IsExternal bool      ``
 	Author     string    ``
 	Contents   string    ``
-	Date       time.Time `bson:"created_at"`
+	Date       time.Time ``
 	FeedLabel  string    ``
 	FeedName   string    ``
 	FeedType   int8      ``
@@ -41,9 +41,10 @@ func (article Article) BSON() (ret interface{}) {
 		"feed_label":  article.FeedLabel,
 		"feed_name":   article.FeedName,
 		"feed_type":   article.FeedType,
-		"app_id":      article.AppID,
-		"app_name":    article.AppName,
-		"app_icon":    article.AppIcon,
+
+		"app_id":   article.AppID,
+		"app_name": article.AppName,
+		"app_icon": article.AppIcon,
 	}
 }
 

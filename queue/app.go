@@ -719,7 +719,7 @@ func updateAppNews(app *db.App) error {
 		return err
 	}
 
-	var kinds []db.Kind
+	var documents []mongo.MongoDocument
 	for _, v := range resp.Items {
 
 		if strings.TrimSpace(v.Contents) == "" {
@@ -730,8 +730,8 @@ func updateAppNews(app *db.App) error {
 			continue
 		}
 
-		news := db.News{}
-		news.ArticleID = int64(v.GID)
+		news := mongo.Article{}
+		news.ID = int64(v.GID)
 		news.Title = v.Title
 		news.URL = v.URL
 		news.IsExternal = v.IsExternalURL
@@ -746,11 +746,11 @@ func updateAppNews(app *db.App) error {
 		news.AppName = app.GetName()
 		news.AppIcon = app.GetIcon()
 
-		kinds = append(kinds, news)
+		documents = append(documents, news)
 		ids = append(ids, int64(v.GID))
 	}
 
-	err = db.BulkSaveKinds(kinds, db.KindNews, false)
+	_, err = mongo.InsertDocuments(mongo.CollectionAppArticles, documents)
 	if err != nil {
 		return err
 	}

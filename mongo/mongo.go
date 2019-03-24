@@ -12,11 +12,12 @@ import (
 )
 
 const (
+	CollectionAppArticles   = "app_articles"
 	CollectionChanges       = "changes"
 	CollectionEvents        = "events"
 	CollectionPlayers       = "players"
 	CollectionPlayerApps    = "player_apps"
-	CollectionProductPrices = "app_pricess"
+	CollectionProductPrices = "product_prices"
 )
 
 var (
