@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -215,8 +216,10 @@ func ClearUpcomingCache() {
 	var err error
 
 	err = mc.Delete(helpers.MemcacheUpcomingAppsCount.Key)
+	err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 	log.Err(err)
 
 	err = mc.Delete(helpers.MemcacheUpcomingPackagesCount.Key)
+	err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 	log.Err(err)
 }
