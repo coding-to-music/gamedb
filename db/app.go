@@ -189,8 +189,8 @@ func (app App) GetID() int {
 	return app.ID
 }
 
-func (app App) GetProductType() ProductType {
-	return ProductTypeApp
+func (app App) GetProductType() helpers.ProductType {
+	return helpers.ProductTypeApp
 }
 
 func (app App) GetPath() string {

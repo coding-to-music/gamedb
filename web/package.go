@@ -170,5 +170,5 @@ func (p packageTemplate) ShowDev() bool {
 }
 
 func packagePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
-	productPricesAjaxHandler(w, r, db.ProductTypePackage)
+	productPricesAjaxHandler(w, r, helpers.ProductTypePackage)
 }

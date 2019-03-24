@@ -367,7 +367,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
-	productPricesAjaxHandler(w, r, db.ProductTypeApp)
+	productPricesAjaxHandler(w, r, helpers.ProductTypeApp)
 }
 
 func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {

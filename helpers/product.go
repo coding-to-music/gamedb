@@ -7,7 +7,14 @@ import (
 	"github.com/gosimple/slug"
 )
 
-const DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
+type ProductType string
+
+const (
+	ProductTypeApp     ProductType = "product"
+	ProductTypePackage ProductType = "package"
+
+	DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
+)
 
 func IsValidAppID(id int) bool {
 	return id != 0

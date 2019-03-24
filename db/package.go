@@ -106,8 +106,8 @@ func (pack Package) GetIcon() string {
 	return pack.Icon
 }
 
-func (pack Package) GetProductType() ProductType {
-	return ProductTypePackage
+func (pack Package) GetProductType() helpers.ProductType {
+	return helpers.ProductTypePackage
 }
 
 func (pack Package) GetName() (name string) {

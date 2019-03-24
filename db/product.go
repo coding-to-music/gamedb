@@ -12,7 +12,7 @@ import (
 
 type ProductInterface interface {
 	GetID() int
-	GetProductType() ProductType
+	GetProductType() helpers.ProductType
 	GetName() string
 	GetIcon() string
 	GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error)
@@ -76,12 +76,7 @@ type PICSAppDepotBranches struct {
 }
 
 //
-type ProductType string
 
-const (
-	ProductTypeApp     ProductType = "product"
-	ProductTypePackage ProductType = "package"
-)
 
 //
 type ProductPrices map[steam.CountryCode]ProductPriceStruct

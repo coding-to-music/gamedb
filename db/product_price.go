@@ -88,9 +88,9 @@ func CreateProductPrice(product ProductInterface, currency steam.CountryCode, pr
 
 	price := ProductPrice{}
 
-	if product.GetProductType() == ProductTypeApp {
+	if product.GetProductType() == helpers.ProductTypeApp {
 		price.AppID = product.GetID()
-	} else if product.GetProductType() == ProductTypePackage {
+	} else if product.GetProductType() == helpers.ProductTypePackage {
 		price.PackageID = product.GetID()
 	} else {
 		panic("Invalid productType")
@@ -108,7 +108,7 @@ func CreateProductPrice(product ProductInterface, currency steam.CountryCode, pr
 	return price
 }
 
-func GetProductPrices(ID int, productType ProductType, currency steam.CountryCode) (prices []ProductPrice, err error) {
+func GetProductPrices(ID int, productType helpers.ProductType, currency steam.CountryCode) (prices []ProductPrice, err error) {
 
 	client, ctx, err := GetDSClient()
 	if err != nil {
@@ -118,9 +118,9 @@ func GetProductPrices(ID int, productType ProductType, currency steam.CountryCod
 	q := datastore.NewQuery(KindProductPrice).Order("-created_at").Limit(1000)
 	q = q.Filter("currency =", string(currency))
 
-	if productType == ProductTypeApp {
+	if productType == helpers.ProductTypeApp {
 		q = q.Filter("app_id =", ID)
-	} else if productType == ProductTypePackage {
+	} else if productType == helpers.ProductTypePackage {
 		q = q.Filter("package_id =", ID)
 	}
 
@@ -132,4 +132,19 @@ func GetProductPrices(ID int, productType ProductType, currency steam.CountryCod
 	})
 
 	return prices, err
+}
+
+func ChunkPrice(kinds []ProductPrice) (chunked [][]ProductPrice) {
+
+	for i := 0; i < len(kinds); i += 500 {
+		end := i + 500
+
+		if end > len(kinds) {
+			end = len(kinds)
+		}
+
+		chunked = append(chunked, kinds[i:end])
+	}
+
+	return chunked
 }

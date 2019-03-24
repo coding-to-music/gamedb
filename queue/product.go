@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/social"
 )
 
@@ -298,37 +300,61 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 
 	var prices db.ProductPrices
 	var price db.ProductPriceStruct
-	var kinds []db.Kind
+	var documents []mongo.MongoDocument
+
 	for code := range steam.Countries {
 
 		var oldPrice, newPrice int
 
 		prices, err = before.GetPrices()
 		if err == nil {
+
 			price, err = prices.Get(code)
-			if err == nil {
-				oldPrice = price.Final
-			} else {
+			if err != nil {
 				continue // Only compare if there is an old price to compare to
 			}
+
+			oldPrice = price.Final
 		}
 
 		prices, err = after.GetPrices()
 		if err == nil {
+
 			price, err = prices.Get(code)
-			if err == nil {
-				newPrice = price.Final
-			} else {
+			if err != nil {
 				continue // Only compare if there is a new price to compare to
+
 			}
+
+			newPrice = price.Final
 		}
 
 		if oldPrice != newPrice {
-			kinds = append(kinds, db.CreateProductPrice(after, code, oldPrice, newPrice))
+
+			price := mongo.ProductPrice{}
+
+			if after.GetProductType() == helpers.ProductTypeApp {
+				price.AppID = after.GetID()
+			} else if after.GetProductType() == helpers.ProductTypePackage {
+				price.PackageID = after.GetID()
+			} else {
+				panic("Invalid productType")
+			}
+
+			price.Name = after.GetName()
+			price.Icon = after.GetIcon()
+			price.CreatedAt = time.Now()
+			price.Currency = code
+			price.PriceBefore = oldPrice
+			price.PriceAfter = newPrice
+			price.Difference = newPrice - oldPrice
+			price.DifferencePercent = (float64(newPrice-oldPrice) / float64(oldPrice)) * 100
+
+			documents = append(documents, price)
 		}
-		
+
 		// Tweet free US products
-		if code == steam.CountryUS && before.GetProductType() == db.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
+		if code == steam.CountryUS && before.GetProductType() == helpers.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
 
 			twitter := social.GetTwitter()
 
@@ -341,5 +367,6 @@ func savePriceChanges(before db.ProductInterface, after db.ProductInterface) (er
 		}
 	}
 
-	return db.BulkSaveKinds(kinds, db.KindProductPrice, true)
+	_, err = mongo.InsertDocuments(mongo.CollectionProductPrices, documents)
+	return err
 }

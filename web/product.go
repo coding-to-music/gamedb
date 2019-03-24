@@ -16,7 +16,7 @@ import (
 )
 
 // Get prices ajax
-func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productType db.ProductType) {
+func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productType helpers.ProductType) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -33,7 +33,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	// Get product
 	var product db.ProductInterface
 
-	if productType == db.ProductTypeApp {
+	if productType == helpers.ProductTypeApp {
 		product, err = db.GetApp(idx, []string{})
 	} else {
 		product, err = db.GetPackage(idx, []string{"id", "product_type", "prices"})
