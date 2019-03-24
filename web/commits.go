@@ -1,10 +1,12 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -90,11 +92,24 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get total
 	var total int
-	contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
-	for _, v := range contributors {
-		total += v.GetTotal()
+	operation := func() (err error) {
+
+		contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
+		for _, v := range contributors {
+			total += v.GetTotal()
+		}
+		if total == 0 {
+			return errors.New("no contributors found")
+		}
+		return nil
 	}
 
+	policy := backoff.NewExponentialBackOff()
+
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 2), func(err error, t time.Duration) { log.Info(err) })
+	log.Err(err)
+
+	//
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = strconv.Itoa(total)
 	response.RecordsFiltered = strconv.Itoa(total)
