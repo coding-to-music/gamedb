@@ -85,35 +85,35 @@ func GetBufferRows(kind string, limit int, offset int) (kinds []Kind, err error)
 	return kinds, gorm.Error
 }
 
-func SaveKindsToBuffer(kinds []Kind, kindType string) (err error) {
-
-	gorm, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	for _, kind := range kinds {
-
-		buffer := DatastoreBuffer{}
-		buffer.CreatedAt = time.Now()
-		buffer.Kind = kindType
-		buffer.KeyName = kind.GetKey().Name
-
-		b, err := json.Marshal(kind)
-
-		if err == nil {
-			buffer.RowData = string(b)
-		}
-
-		gorm = gorm.Save(&buffer)
-
-		if gorm.Error != nil {
-			return gorm.Error
-		}
-	}
-
-	return nil
-}
+// func SaveKindsToBuffer(kinds []Kind, kindType string) (err error) {
+//
+// 	gorm, err := GetMySQLClient()
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	for _, kind := range kinds {
+//
+// 		buffer := DatastoreBuffer{}
+// 		buffer.CreatedAt = time.Now()
+// 		buffer.Kind = kindType
+// 		buffer.KeyName = kind.GetKey().Name
+//
+// 		b, err := json.Marshal(kind)
+//
+// 		if err == nil {
+// 			buffer.RowData = string(b)
+// 		}
+//
+// 		gorm = gorm.Save(&buffer)
+//
+// 		if gorm.Error != nil {
+// 			return gorm.Error
+// 		}
+// 	}
+//
+// 	return nil
+// }
 
 var copyMutex sync.Mutex
 
@@ -145,8 +145,8 @@ func FlushBufferToDatastore() {
 	for _, v := range counts {
 
 		if v.Count < 600 {
-			log.Info("Less than 600 " + v.Kind + " buffer rows")
-			continue
+			// log.Info("Less than 600 " + v.Kind + " buffer rows")
+			// continue
 		}
 
 		rows, err := getBufferRows(v.Kind)

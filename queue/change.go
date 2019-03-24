@@ -3,7 +3,6 @@ package queue
 import (
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -129,12 +128,12 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Save to buffer
-	err = db.SaveKindsToBuffer(changesSlice, db.KindChange)
-	if err != nil {
-		logError(err)
-		payload.ackRetry(msg)
-		return
-	}
+	// err = db.SaveKindsToBuffer(changesSlice, db.KindChange)
+	// if err != nil {
+	// 	logError(err)
+	// 	payload.ackRetry(msg)
+	// 	return
+	// }
 
 	// Save change to DS
 	// if config.Config.IsProd() {

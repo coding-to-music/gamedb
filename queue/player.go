@@ -148,12 +148,12 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	err = savePlayerToBuffer(player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+	// err = savePlayerToBuffer(player)
+	// if err != nil {
+	// 	logError(err, message.ID)
+	// 	payload.ackRetry(msg)
+	// 	return
+	// }
 
 	err = savePlayerToInflux(player)
 	if err != nil {
@@ -605,10 +605,10 @@ func updatePlayerGroups(player *db.Player) error {
 	return nil
 }
 
-func savePlayerToBuffer(player db.Player) error {
-
-	return db.SaveKindsToBuffer([]db.Kind{player}, db.KindPlayer)
-}
+// func savePlayerToBuffer(player db.Player) error {
+//
+// 	return db.SaveKindsToBuffer([]db.Kind{player}, db.KindPlayer)
+// }
 
 func savePlayerMongo(player db.Player) error {
 
