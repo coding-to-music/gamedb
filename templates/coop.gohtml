@@ -37,7 +37,7 @@
                 <h5>Players</h5>
                 <div class="players clearfix mb-4">
                     {{ range $key, $value := .Players }}
-                        {{ if eq .PlayerID 0 }}
+                        {{ if eq .ID 0 }}
                             <img data-toggle="tooltip" data-placement="top" title="Unknown Player" alt="Unknown Player" src="{{.GetDefaultAvatar}}" class="rounded avatar">
                         {{ else }}
                             <a href="{{.GetPath}}">
