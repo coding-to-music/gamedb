@@ -24,6 +24,8 @@ var (
 	mongoCtx    context.Context
 
 	MongoDatabase = config.Config.MongoDatabase
+
+	ErrNoDocuments = mongo.ErrNoDocuments
 )
 
 type MongoDocument interface {

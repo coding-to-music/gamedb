@@ -40,7 +40,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Find the player row
 	player, err := mongo.GetPlayer(idx)
 	if err != nil {
-		if err == datastore.ErrNoSuchEntity {
+		if err == mongo.ErrNoDocuments {
 
 			err = queue.ProducePlayer(idx)
 			log.Err(err, r)
@@ -451,7 +451,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		player, err := mongo.GetPlayer(idx)
 		if err == nil {
 			message = "Updating player!"
-		} else if err == datastore.ErrNoSuchEntity {
+		} else if err == mongo.ErrNoDocuments {
 			message = "Looking for new player!"
 		} else {
 			log.Err(err, r)
