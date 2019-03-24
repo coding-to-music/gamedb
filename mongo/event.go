@@ -5,12 +5,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"google.golang.org/appengine/memcache"
 )
 
 const (
