@@ -70,7 +70,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 		app, ok := appMap[appID]
 		if ok {
 
-			err, viewers := getAppTwitchStreamers(&app)
+			viewers, err := getAppTwitchStreamers(&app)
 			if err != nil {
 				logError(err, appID)
 				payload.ackRetry(msg)
