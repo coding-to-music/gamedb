@@ -138,9 +138,6 @@ func log(interfaces ...interface{}) {
 			entry.text = strconv.Itoa(val)
 		case int64:
 			entry.text = strconv.FormatInt(val, 10)
-		// case interface{}:
-		// 	b, _ := json.Marshal(val)
-		// 	entry.text = string(b)
 		case string:
 			entry.text = val
 		case *http.Request:
@@ -168,7 +165,11 @@ func log(interfaces ...interface{}) {
 	}
 
 	if len(loggingServices) == 0 {
-		loggingServices = append(loggingServices, ServiceGoogle, ServiceLocal)
+		if config.Config.IsLocal() {
+			loggingServices = append(loggingServices, ServiceLocal)
+		} else {
+			loggingServices = append(loggingServices, ServiceLocal, ServiceGoogle)
+		}
 	}
 
 	// Send entry
@@ -179,9 +180,9 @@ func log(interfaces ...interface{}) {
 
 			switch entry.severity {
 			case SeverityCritical:
-				logger.Println(aurora.Red(aurora.Bold(entry.toText(false))))
+				logger.Println(aurora.Red(aurora.Bold(entry.toText(true))))
 			case SeverityError:
-				logger.Println(aurora.Red(entry.toText(false)))
+				logger.Println(aurora.Red(entry.toText(true)))
 			case SeverityWarning:
 				logger.Println(aurora.Brown(entry.toText(false)))
 			case SeverityInfo:

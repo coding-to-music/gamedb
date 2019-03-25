@@ -203,6 +203,10 @@ func (c BaseConfig) IsProd() bool {
 	return c.Environment.Get() == EnvProd
 }
 
+func (c BaseConfig) IsConsumer() bool {
+	return c.Environment.Get() == EnvConsumer
+}
+
 // ConfigItem
 type ConfigItem struct {
 	value        string
