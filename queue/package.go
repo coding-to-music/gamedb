@@ -9,9 +9,9 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
@@ -55,22 +55,22 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming package " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
-	if !db.IsValidPackageID(message.ID) {
+	if !sql.IsValidPackageID(message.ID) {
 		logError(errors.New("invalid package ID: " + strconv.Itoa(message.ID)))
 		payload.ack(msg)
 		return
 	}
 
 	// Load current package
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
-	pack := db.Package{}
-	gorm = gorm.FirstOrInit(&pack, db.Package{ID: message.ID})
+	pack := sql.Package{}
+	gorm = gorm.FirstOrInit(&pack, sql.Package{ID: message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
@@ -130,8 +130,8 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		app, err := db.GetApp(appIDs[0], []string{})
-		if err != nil && err != db.ErrRecordNotFound {
+		app, err := sql.GetApp(appIDs[0], []string{})
+		if err != nil && err != sql.ErrRecordNotFound {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
@@ -186,7 +186,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func updatePackageFromPICS(pack *db.Package, payload baseMessage, message packageMessage) (err error) {
+func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packageMessage) (err error) {
 
 	if pack.ChangeNumber > message.PICSPackageInfo.ChangeNumber {
 		return nil
@@ -290,9 +290,9 @@ func updatePackageFromPICS(pack *db.Package, payload baseMessage, message packag
 	return nil
 }
 
-func updatePackageFromStore(pack *db.Package) (err error) {
+func updatePackageFromStore(pack *sql.Package) (err error) {
 
-	prices := db.ProductPrices{}
+	prices := sql.ProductPrices{}
 
 	for _, code := range helpers.GetActiveCountries() {
 
@@ -311,7 +311,7 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 		if code == steam.CountryUS {
 
 			// Controller
-			var controller = db.PICSController{}
+			var controller = sql.PICSController{}
 			for k, v := range response.Data.Controller {
 				controller[k] = v
 			}
@@ -399,15 +399,15 @@ func updatePackageFromStore(pack *db.Package) (err error) {
 	return nil
 }
 
-func savePackageToInflux(pack db.Package) error {
+func savePackageToInflux(pack sql.Package) error {
 
 	price, err := pack.GetPrice(steam.CountryUS)
-	if err != nil && err != db.ErrMissingCountryCode {
+	if err != nil && err != sql.ErrMissingCountryCode {
 		return err
 	}
 
-	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(db.InfluxMeasurementPackages),
+	_, err = sql.InfluxWrite(sql.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(sql.InfluxMeasurementPackages),
 		Tags: map[string]string{
 			"package_id": strconv.Itoa(pack.ID),
 		},

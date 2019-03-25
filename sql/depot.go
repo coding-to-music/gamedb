@@ -1,4 +1,4 @@
-package db
+package sql
 
 type Depot struct {
 	ID int

@@ -8,11 +8,11 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -50,7 +50,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get donations
-	var donations []db.Donation
+	var donations []sql.Donation
 	wg.Add(1)
 	go func(player mongo.Player) {
 
@@ -86,7 +86,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get User
-	var user db.User
+	var user sql.User
 	wg.Add(1)
 	go func(player mongo.Player) {
 
@@ -129,8 +129,8 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 type settingsTemplate struct {
 	GlobalTemplate
 	Player    mongo.Player
-	User      db.User
-	Donations []db.Donation
+	User      sql.User
+	Donations []sql.Donation
 	Games     string
 	Messages  []interface{}
 	Countries [][]string
@@ -304,7 +304,7 @@ func getPlayer(r *http.Request) (player mongo.Player, err error) {
 	return mongo.GetPlayer(playerID)
 }
 
-func getUser(r *http.Request, playerID int64) (user db.User, err error) {
+func getUser(r *http.Request, playerID int64) (user sql.User, err error) {
 
 	if playerID == 0 {
 		playerID, err = getPlayerIDFromSession(r)
@@ -313,7 +313,7 @@ func getUser(r *http.Request, playerID int64) (user db.User, err error) {
 		}
 	}
 
-	user, err = db.GetUser(playerID)
+	user, err = sql.GetUser(playerID)
 	if err != nil {
 		return user, err
 	}

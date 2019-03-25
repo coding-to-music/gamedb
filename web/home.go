@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -48,7 +48,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.AppsCount, err = db.CountApps()
+		t.AppsCount, err = sql.CountApps()
 		log.Err(err, r)
 	}()
 
@@ -58,7 +58,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PackagesCount, err = db.CountPackages()
+		t.PackagesCount, err = sql.CountPackages()
 		log.Err(err, r)
 	}()
 
@@ -69,7 +69,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PopularApps, err = db.PopularApps()
+		t.PopularApps, err = sql.PopularApps()
 		log.Err(err, r)
 	}()
 
@@ -80,7 +80,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.TrendingApps, err = db.TrendingApps()
+		t.TrendingApps, err = sql.TrendingApps()
 		log.Err(err, r)
 	}()
 
@@ -90,7 +90,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err)
 			return
@@ -112,7 +112,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err)
 			return
@@ -162,16 +162,16 @@ type homeTemplate struct {
 	AppsCount      int
 	PackagesCount  int
 	PlayersCount   int64
-	PopularApps    []db.App
-	TrendingApps   []db.App
-	RatedNewApps   []db.App
-	PopularNewApps []db.App
+	PopularApps    []sql.App
+	TrendingApps   []sql.App
+	RatedNewApps   []sql.App
+	PopularNewApps []sql.App
 	Prices         map[int]string
 }
 
 func homeChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := db.TrendingApps()
+	apps, err := sql.TrendingApps()
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -195,16 +195,16 @@ func homeChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
-	resp, err := db.InfluxQuery(builder.String())
+	resp, err := sql.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	ret := map[string]db.HighChartsJson{}
+	ret := map[string]sql.HighChartsJson{}
 	if len(resp.Results) > 0 {
 		for _, v := range resp.Results[0].Series {
-			ret[v.Tags["app_id"]] = db.InfluxResponseToHighCharts(v)
+			ret[v.Tags["app_id"]] = sql.InfluxResponseToHighCharts(v)
 		}
 	}
 

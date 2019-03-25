@@ -3,19 +3,19 @@ package web
 import (
 	"net/http"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 )
 
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := db.GetConfig(db.ConfTagsUpdated)
+	config, err := sql.GetConfig(sql.ConfTagsUpdated)
 	log.Err(err, r)
 
 	// Get tags
-	tags, err := db.GetAllTags()
+	tags, err := sql.GetAllTags()
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the tags.", Error: err})
 		return
@@ -42,7 +42,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsTagsTemplate struct {
 	GlobalTemplate
-	Tags   []db.Tag
+	Tags   []sql.Tag
 	Date   string
 	Prices map[int]string
 }

@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/mongo"
+	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -431,8 +431,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 	appIDSlice = helpers.Unique(appIDSlice)
 
 	// Make map of app rows
-	var appRowsMap = map[int]db.App{}
-	appRows, err := db.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
+	var appRowsMap = map[int]sql.App{}
+	appRows, err := sql.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
 	logError(err)
 
 	for _, v := range appRows {

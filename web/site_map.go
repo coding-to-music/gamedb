@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -174,10 +174,10 @@ func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
-func sitemapGetGames(r *http.Request, sort string) (apps []db.App) {
+func sitemapGetGames(r *http.Request, sort string) (apps []sql.App) {
 
 	// Add most played apps
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		log.Err(err, r)
 		return

@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -26,7 +26,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t := newsTemplate{}
 	t.fill(w, r, "News", "All the news from all the games, all in one place.")
 
-	apps, err := db.PopularApps()
+	apps, err := sql.PopularApps()
 	log.Err(err, r)
 
 	if config.Config.IsLocal() && len(apps) >= 3 {

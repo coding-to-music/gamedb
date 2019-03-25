@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -65,7 +65,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -117,7 +117,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = db.CountApps()
+		count, err = sql.CountApps()
 		log.Err(err, r)
 
 	}()

@@ -11,8 +11,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -58,15 +58,15 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Load current bundle
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
-	bundle := db.Bundle{}
-	gorm = gorm.FirstOrInit(&bundle, db.Bundle{ID: message.ID})
+	bundle := sql.Bundle{}
+	gorm = gorm.FirstOrInit(&bundle, sql.Bundle{ID: message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
@@ -133,7 +133,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func updateBundle(bundle *db.Bundle) (err error) {
+func updateBundle(bundle *sql.Bundle) (err error) {
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
@@ -223,10 +223,10 @@ func updateBundle(bundle *db.Bundle) (err error) {
 	return nil
 }
 
-func saveBundleToInflux(bundle db.Bundle) (err error) {
+func saveBundleToInflux(bundle sql.Bundle) (err error) {
 
-	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(db.InfluxMeasurementApps),
+	_, err = sql.InfluxWrite(sql.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(sql.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"bundle_id": strconv.Itoa(bundle.ID),
 		},

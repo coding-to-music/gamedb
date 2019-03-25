@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -40,7 +40,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		config, err := db.GetConfig(db.ConfRanksUpdated)
+		config, err := sql.GetConfig(sql.ConfRanksUpdated)
 		log.Err(err, r)
 
 		if err == nil {

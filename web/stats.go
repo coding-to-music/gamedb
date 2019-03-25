@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -52,7 +52,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.AppsCount, err = db.CountApps()
+		t.AppsCount, err = sql.CountApps()
 		log.Err(err, r)
 
 	}()
@@ -63,7 +63,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PackagesCount, err = db.CountPackages()
+		t.PackagesCount, err = sql.CountPackages()
 		log.Err(err, r)
 
 	}()
@@ -76,7 +76,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		t.Totals = map[string]string{}
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 
 			log.Err(err, r)
@@ -128,7 +128,7 @@ type statsAppTypeTotalsRow struct {
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 
 		log.Err(err, r)
@@ -167,7 +167,7 @@ type statsAppScore struct {
 
 func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 
 		log.Err(err, r)
@@ -187,7 +187,7 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	var ret [][]interface{}
 
 	for _, v := range types {
-		app := db.App{}
+		app := sql.App{}
 		app.Type = v.Type
 		ret = append(ret, []interface{}{app.GetType(), v.Count})
 	}
@@ -264,7 +264,7 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 
 		log.Err(err, r)
@@ -310,17 +310,17 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("30m")
 	builder.SetFillNone()
 
-	resp, err := db.InfluxQuery(builder.String())
+	resp, err := sql.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc db.HighChartsJson
+	var hc sql.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = sql.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)

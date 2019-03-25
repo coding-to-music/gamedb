@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -38,10 +38,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get app
-	app, err := db.GetApp(idx, []string{})
+	app, err := sql.GetApp(idx, []string{})
 	if err != nil {
 
-		if err == db.ErrRecordNotFound {
+		if err == sql.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this app."})
 			return
 		}
@@ -83,11 +83,11 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get achievements
 	wg.Add(1)
-	go func(app db.App) {
+	go func(app sql.App) {
 
 		defer wg.Done()
 
-		var achievements []db.AppAchievement
+		var achievements []sql.AppAchievement
 
 		err := helpers.Unmarshal([]byte(app.Achievements), &achievements)
 		log.Err(err, r)
@@ -96,7 +96,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Tags
 	wg.Add(1)
-	go func(app db.App) {
+	go func(app sql.App) {
 
 		defer wg.Done()
 
@@ -108,7 +108,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Genres
 	wg.Add(1)
-	go func(app db.App) {
+	go func(app sql.App) {
 
 		defer wg.Done()
 
@@ -124,7 +124,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -145,7 +145,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Packages, err = db.GetPackagesAppIsIn(app.ID)
+		t.Packages, err = sql.GetPackagesAppIsIn(app.ID)
 		log.Err(err, r)
 
 	}()
@@ -164,13 +164,13 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		if len(demoIDs) > 0 {
 
-			gorm, err := db.GetMySQLClient()
+			gorm, err := sql.GetMySQLClient()
 			if err != nil {
 				log.Err(err, r)
 				return
 			}
 
-			var demos []db.App
+			var demos []sql.App
 			gorm = gorm.Where("id IN (?)", demoIDs)
 			gorm = gorm.Find(&demos)
 			if gorm.Error != nil {
@@ -190,7 +190,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.DLC, err = db.GetDLC(app, []string{"id", "name"})
+		t.DLC, err = sql.GetDLC(app, []string{"id", "name"})
 		log.Err(err, r)
 
 	}()
@@ -199,7 +199,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Get price
-	t.Price = db.GetPriceFormatted(app, session.GetCountryCode(r))
+	t.Price = sql.GetPriceFormatted(app, session.GetCountryCode(r))
 
 	// Functions that get called multiple times in the template
 	t.Achievements, err = t.App.GetAchievements()
@@ -248,25 +248,25 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 type appTemplate struct {
 	GlobalTemplate
-	Achievements []db.AppAchievement
-	App          db.App
+	Achievements []sql.AppAchievement
+	App          sql.App
 	Banners      map[string][]string
-	Bundles      []db.Bundle
-	Demos        []db.App
-	Developers   []db.Developer
-	DLC          []db.App
-	Genres       []db.Genre
-	Movies       []db.AppVideo
+	Bundles      []sql.Bundle
+	Demos        []sql.App
+	Developers   []sql.Developer
+	DLC          []sql.App
+	Genres       []sql.Genre
+	Movies       []sql.AppVideo
 	NewsIDs      []int64
-	Packages     []db.Package
-	Price        db.ProductPriceFormattedStruct
-	Prices       db.ProductPrices
-	Publishers   []db.Publisher
-	Reviews      db.AppReviewSummary
-	Screenshots  []db.AppImage
-	SteamSpy     db.AppSteamSpy
-	Stats        []db.AppStat
-	Tags         []db.Tag
+	Packages     []sql.Package
+	Price        sql.ProductPriceFormattedStruct
+	Prices       sql.ProductPrices
+	Publishers   []sql.Publisher
+	Reviews      sql.AppReviewSummary
+	Screenshots  []sql.AppImage
+	SteamSpy     sql.AppSteamSpy
+	Stats        []sql.AppStat
+	Tags         []sql.Tag
 }
 
 func (t appTemplate) GetReleaseDate() string {
@@ -330,7 +330,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		app, err := db.GetApp(idx, []string{})
+		app, err := sql.GetApp(idx, []string{})
 		if err != nil {
 			log.Err(err, r, idx)
 			return
@@ -382,17 +382,17 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("10m")
 	builder.SetFillNone()
 
-	resp, err := db.InfluxQuery(builder.String())
+	resp, err := sql.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc db.HighChartsJson
+	var hc sql.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = sql.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)
@@ -426,17 +426,17 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := db.InfluxQuery(builder.String())
+	resp, err := sql.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc db.HighChartsJson
+	var hc sql.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = sql.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)

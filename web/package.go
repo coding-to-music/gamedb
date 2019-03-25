@@ -6,11 +6,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -25,10 +25,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get package
-	pack, err := db.GetPackage(idx, []string{})
+	pack, err := sql.GetPackage(idx, []string{})
 	if err != nil {
 
-		if err == db.ErrRecordNotFound {
+		if err == sql.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this package."})
 			return
 		}
@@ -40,7 +40,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	var apps = map[int]db.App{}
+	var apps = map[int]sql.App{}
 	wg.Add(1)
 	go func() {
 
@@ -54,10 +54,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, v := range appIDs {
-			apps[v] = db.App{ID: v}
+			apps[v] = sql.App{ID: v}
 		}
 
-		appRows, err := db.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
+		appRows, err := sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -69,13 +69,13 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	var bundles []db.Bundle
+	var bundles []sql.Bundle
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -133,7 +133,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get price
-	t.Price = db.GetPriceFormatted(pack, session.GetCountryCode(r))
+	t.Price = sql.GetPriceFormatted(pack, session.GetCountryCode(r))
 
 	t.Prices, err = t.Package.GetPrices()
 	log.Err(err)
@@ -153,15 +153,15 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 type packageTemplate struct {
 	GlobalTemplate
-	Apps       map[int]db.App
-	Bundles    []db.Bundle
+	Apps       map[int]sql.App
+	Bundles    []sql.Bundle
 	Banners    map[string][]string
-	Controller db.PICSController
+	Controller sql.PICSController
 	DepotIDs   []int
-	Extended   db.PICSExtended
-	Package    db.Package
-	Price      db.ProductPriceFormattedStruct
-	Prices     db.ProductPrices
+	Extended   sql.PICSExtended
+	Package    sql.Package
+	Price      sql.ProductPriceFormattedStruct
+	Prices     sql.ProductPrices
 }
 
 func (p packageTemplate) ShowDev() bool {

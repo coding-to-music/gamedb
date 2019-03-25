@@ -9,12 +9,12 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
@@ -96,7 +96,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get users that match the email
-		users, err := db.GetUsersByEmail(email)
+		users, err := sql.GetUsersByEmail(email)
 		if err != nil {
 			return err
 		}
@@ -106,7 +106,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check password matches
-		var user db.User
+		var user sql.User
 		var success bool
 		for _, v := range users {
 
@@ -229,13 +229,13 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return
 	}
 
-	var user db.User
+	var user sql.User
 	gorm = gorm.First(&user, idInt)
 	log.Err(gorm.Error)
 
@@ -248,7 +248,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", 302)
 }
 
-func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user db.User) (err error) {
+func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user sql.User) (err error) {
 
 	// Save session
 	err = session.WriteMany(w, r, map[string]string{

@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/sql"
 )
 
 const (
@@ -123,7 +123,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		gamesSlice = append(gamesSlice, k)
 	}
 
-	games, err := db.GetAppsByID(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
+	games, err := sql.GetAppsByID(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
 		log.Err(err, r)
 	}
@@ -151,6 +151,6 @@ type coopTemplate struct {
 }
 
 type coopGameTemplate struct {
-	Game db.App
+	Game sql.App
 	Tags string
 }

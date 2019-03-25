@@ -10,10 +10,10 @@ import (
 	"github.com/Jleagle/go-durationfmt"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
+	"github.com/gamedb/website/sql"
 	"github.com/streadway/amqp"
 )
 
@@ -397,7 +397,7 @@ func ProduceBundle(ID int, appID int) (err error) {
 func ProduceApp(ID int) (err error) {
 
 	if !helpers.IsValidAppID(ID) {
-		return db.ErrInvalidAppID
+		return sql.ErrInvalidAppID
 	}
 
 	return produce(baseMessage{
@@ -409,8 +409,8 @@ func ProduceApp(ID int) (err error) {
 
 func ProducePackage(ID int) (err error) {
 
-	if !db.IsValidPackageID(ID) {
-		return db.ErrInvalidPackageID
+	if !sql.IsValidPackageID(ID) {
+		return sql.ErrInvalidPackageID
 	}
 
 	return produce(baseMessage{

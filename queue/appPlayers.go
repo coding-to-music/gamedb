@@ -7,8 +7,8 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/sql"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/nicklaw5/helix"
@@ -48,8 +48,8 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Get apps
-	appMap := map[int]db.App{}
-	apps, err := db.GetAppsByID(message.IDs, []string{"id", "twitch_id"})
+	appMap := map[int]sql.App{}
+	apps, err := sql.GetAppsByID(message.IDs, []string{"id", "twitch_id"})
 	if err != nil {
 		logError(err)
 		payload.ackRetry(msg)
@@ -96,7 +96,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func getAppTwitchStreamers(app *db.App) (err error, viewers int) {
+func getAppTwitchStreamers(app *sql.App) (err error, viewers int) {
 
 	client, err := helpers.GetTwitch()
 	if err != nil {
@@ -118,7 +118,7 @@ func getAppTwitchStreamers(app *db.App) (err error, viewers int) {
 	return nil, viewers
 }
 
-func saveAppPlayerToInflux(app *db.App, viewers int) (err error) {
+func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 
 	s := helpers.GetSteam()
 	sx := *s
@@ -133,8 +133,8 @@ func saveAppPlayerToInflux(app *db.App, viewers int) (err error) {
 		return err
 	}
 
-	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(db.InfluxMeasurementApps),
+	_, err = sql.InfluxWrite(sql.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(sql.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},
@@ -149,7 +149,7 @@ func saveAppPlayerToInflux(app *db.App, viewers int) (err error) {
 	return err
 }
 
-func updateAppPlayerInfoRow(app *db.App) (err error) {
+func updateAppPlayerInfoRow(app *sql.App) (err error) {
 
 	var resp *influx.Response
 
@@ -158,7 +158,7 @@ func updateAppPlayerInfoRow(app *db.App) (err error) {
 		SELECT difference(last("player_count")) FROM "GameDB"."alltime"."apps" WHERE "app_id" = '` + strconv.Itoa(app.ID) + `' AND time >= now() - 7d GROUP BY time(1h)
 	)`
 
-	resp, err = db.InfluxQuery(query)
+	resp, err = sql.InfluxQuery(query)
 	if err != nil {
 		return err
 	}
@@ -189,12 +189,12 @@ func updateAppPlayerInfoRow(app *db.App) (err error) {
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.SetFillNone()
 
-	resp, err = db.InfluxQuery(builder.String())
+	resp, err = sql.InfluxQuery(builder.String())
 	if err != nil {
 		return err
 	}
 
-	var week = db.GetFirstInfluxInt(resp)
+	var week = sql.GetFirstInfluxInt(resp)
 
 	// All time
 	builder = influxql.NewBuilder()
@@ -203,14 +203,14 @@ func updateAppPlayerInfoRow(app *db.App) (err error) {
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.SetFillNone()
 
-	resp, err = db.InfluxQuery(builder.String())
+	resp, err = sql.InfluxQuery(builder.String())
 	if err != nil {
 		return err
 	}
 
-	var alltime = db.GetFirstInfluxInt(resp)
+	var alltime = sql.GetFirstInfluxInt(resp)
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		return err
 	}

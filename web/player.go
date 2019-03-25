@@ -8,12 +8,12 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -501,17 +501,17 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := db.InfluxQuery(builder.String())
+	resp, err := sql.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc db.HighChartsJson
+	var hc sql.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = db.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = sql.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)

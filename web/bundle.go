@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -31,10 +31,10 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// Get bundle
-	bundle, err := db.GetBundle(idx, []string{})
+	bundle, err := sql.GetBundle(idx, []string{})
 	if err != nil {
 
-		if err == db.ErrRecordNotFound {
+		if err == sql.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Sorry but we can not find this bundle."})
 			return
 		}
@@ -53,7 +53,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get apps
 	wg.Add(1)
-	go func(bundle db.Bundle) {
+	go func(bundle sql.Bundle) {
 
 		defer wg.Done()
 
@@ -63,7 +63,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		t.Apps, err = db.GetAppsByID(appIDs, []string{})
+		t.Apps, err = sql.GetAppsByID(appIDs, []string{})
 		log.Err(err, r)
 
 		// Queue missing apps
@@ -98,7 +98,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		t.Packages, err = db.GetPackages(appIDs, []string{})
+		t.Packages, err = sql.GetPackages(appIDs, []string{})
 		log.Err(err, r)
 
 	}()
@@ -112,7 +112,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 type bundleTemplate struct {
 	GlobalTemplate
-	Bundle   db.Bundle
-	Apps     []db.App
-	Packages []db.Package
+	Bundle   sql.Bundle
+	Apps     []sql.App
+	Packages []sql.Package
 }

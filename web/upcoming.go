@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/Jleagle/memcache-go/memcache"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -79,16 +79,16 @@ func upcomingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	var count int
-	var apps []db.App
+	var apps []sql.App
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 
 		log.Err(err, r)
 
 	} else {
 
-		gorm = gorm.Model(db.App{})
+		gorm = gorm.Model(sql.App{})
 		gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
 		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
 		gorm = gorm.Order("release_date_unix asc, id asc")
@@ -125,16 +125,16 @@ func upcomingPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	var count int
-	var packages []db.Package
+	var packages []sql.Package
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 
 		log.Err(err, r)
 
 	} else {
 
-		gorm = gorm.Model(db.Package{})
+		gorm = gorm.Model(sql.Package{})
 		gorm = gorm.Select([]string{"id", "name", "apps_count", "prices", "release_date_unix"})
 		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
 		gorm = gorm.Order("release_date_unix asc, id asc")
@@ -172,12 +172,12 @@ func countUpcomingPackages() (count int, err error) {
 
 		var count int
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 			return count, err
 		}
 
-		gorm = gorm.Model(db.Package{})
+		gorm = gorm.Model(sql.Package{})
 		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
 		gorm = gorm.Count(&count)
 
@@ -195,12 +195,12 @@ func countUpcomingApps() (count int, err error) {
 
 		var count int
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 			return count, err
 		}
 
-		gorm = gorm.Model(db.App{})
+		gorm = gorm.Model(sql.App{})
 		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
 		gorm = gorm.Count(&count)
 

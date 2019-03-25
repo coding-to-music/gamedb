@@ -12,10 +12,10 @@ import (
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
+	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 )
@@ -73,19 +73,19 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get configs for times
-	configs, err := db.GetConfigs([]string{
-		db.ConfTagsUpdated,
-		db.ConfGenresUpdated,
-		db.ConfGenresUpdated,
-		db.ConfDonationsUpdated,
-		db.ConfRanksUpdated,
-		db.ConfAddedAllApps,
-		db.ConfDevelopersUpdated,
-		db.ConfPublishersUpdated,
-		db.ConfWipeMemcache + "-" + config.Config.Environment.Get(),
-		db.ConfRunDevCode,
-		db.ConfGarbageCollection,
-		db.ConfFixBrokenPlayers,
+	configs, err := sql.GetConfigs([]string{
+		sql.ConfTagsUpdated,
+		sql.ConfGenresUpdated,
+		sql.ConfGenresUpdated,
+		sql.ConfDonationsUpdated,
+		sql.ConfRanksUpdated,
+		sql.ConfAddedAllApps,
+		sql.ConfDevelopersUpdated,
+		sql.ConfPublishersUpdated,
+		sql.ConfWipeMemcache + "-" + config.Config.Environment.Get(),
+		sql.ConfRunDevCode,
+		sql.ConfGarbageCollection,
+		sql.ConfFixBrokenPlayers,
 	})
 	log.Err(err, r)
 
@@ -96,7 +96,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Goroutines = runtime.NumGoroutine()
 
 	//
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't connect to mysql", Error: err})
 		return
@@ -119,7 +119,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 type adminTemplate struct {
 	GlobalTemplate
 	Errors     []string
-	Configs    map[string]db.Config
+	Configs    map[string]sql.Config
 	Goroutines int
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
@@ -184,14 +184,14 @@ func adminQueueEveryApp() {
 	log.Info("Found " + strconv.Itoa(count) + " apps")
 
 	//
-	err = db.SetConfig(db.ConfAddedAllApps, strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfAddedAllApps, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfAddedAllApps + " complete"})
+		page.Send(adminWebsocket{sql.ConfAddedAllApps + " complete"})
 	}
 
 	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
@@ -199,7 +199,7 @@ func adminQueueEveryApp() {
 
 func adminQueueEveryPackage() {
 
-	apps, err := db.GetAppsWithColumnDepth("packages", 2, []string{"packages"})
+	apps, err := sql.GetAppsWithColumnDepth("packages", 2, []string{"packages"})
 	if err != nil {
 		log.Err(err)
 		return
@@ -229,14 +229,14 @@ func adminQueueEveryPackage() {
 	}
 
 	//
-	err = db.SetConfig(db.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfAddedAllPackages + " complete"})
+		page.Send(adminWebsocket{sql.ConfAddedAllPackages + " complete"})
 	}
 
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
@@ -275,14 +275,14 @@ func CronDonations() {
 	// }
 
 	//
-	err := db.SetConfig(db.ConfDonationsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err := sql.SetConfig(sql.ConfDonationsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfDonationsUpdated + " complete"})
+		page.Send(adminWebsocket{sql.ConfDonationsUpdated + " complete"})
 	}
 
 	// cronLogInfo("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
@@ -362,7 +362,7 @@ func CronGenres() {
 	cronLogInfo(log.ServiceLocal, "Genres updating")
 
 	// Get current genres, to delete old ones
-	currentGenres, err := db.GetAllGenres()
+	currentGenres, err := sql.GetAllGenres()
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -379,7 +379,7 @@ func CronGenres() {
 	}
 
 	// Get apps from mysql
-	appsWithGenres, err := db.GetAppsWithColumnDepth("genres", 3, []string{"genres", "prices", "reviews_score"})
+	appsWithGenres, err := sql.GetAppsWithColumnDepth("genres", 3, []string{"genres", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogInfo("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
@@ -451,14 +451,14 @@ func CronGenres() {
 			genresToDeleteSlice = append(genresToDeleteSlice, genreID)
 		}
 
-		err := db.DeleteGenres(genresToDeleteSlice)
+		err := sql.DeleteGenres(genresToDeleteSlice)
 		cronLogErr(err)
 
 	}()
 
 	wg.Wait()
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -483,9 +483,9 @@ func CronGenres() {
 				wg.Done()
 			}()
 
-			var genre db.Genre
+			var genre sql.Genre
 
-			gorm = gorm.Unscoped().FirstOrInit(&genre, db.Genre{ID: genreID})
+			gorm = gorm.Unscoped().FirstOrInit(&genre, sql.Genre{ID: genreID})
 			cronLogErr(gorm.Error)
 
 			genre.Name = v.name
@@ -504,7 +504,7 @@ func CronGenres() {
 	wg.Wait()
 
 	//
-	err = db.SetConfig(db.ConfGenresUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfGenresUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	//
@@ -512,7 +512,7 @@ func CronGenres() {
 	cronLogErr(err)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfGenresUpdated + " complete"})
+		page.Send(adminWebsocket{sql.ConfGenresUpdated + " complete"})
 	}
 
 	//
@@ -528,7 +528,7 @@ func CronPublishers() {
 	cronLogInfo(log.ServiceLocal, "Publishers updating")
 
 	// Get current publishers, to delete old ones
-	allPublishers, err := db.GetAllPublishers()
+	allPublishers, err := sql.GetAllPublishers()
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -545,7 +545,7 @@ func CronPublishers() {
 	}
 
 	// Get apps from mysql
-	appsWithPublishers, err := db.GetAppsWithColumnDepth("publishers", 2, []string{"publishers", "prices", "reviews_score"})
+	appsWithPublishers, err := sql.GetAppsWithColumnDepth("publishers", 2, []string{"publishers", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogInfo("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
@@ -616,14 +616,14 @@ func CronPublishers() {
 			pubsToDeleteSlice = append(pubsToDeleteSlice, publisherID)
 		}
 
-		err := db.DeletePublishers(pubsToDeleteSlice)
+		err := sql.DeletePublishers(pubsToDeleteSlice)
 		cronLogErr(err)
 
 	}()
 
 	wg.Wait()
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -648,9 +648,9 @@ func CronPublishers() {
 				wg.Done()
 			}()
 
-			var publisher db.Publisher
+			var publisher sql.Publisher
 
-			gorm = gorm.Unscoped().FirstOrInit(&publisher, db.Publisher{ID: publisherID})
+			gorm = gorm.Unscoped().FirstOrInit(&publisher, sql.Publisher{ID: publisherID})
 			cronLogErr(gorm.Error)
 
 			publisher.Name = v.name
@@ -670,7 +670,7 @@ func CronPublishers() {
 	wg.Wait()
 
 	//
-	err = db.SetConfig(db.ConfPublishersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfPublishersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	//
@@ -678,7 +678,7 @@ func CronPublishers() {
 	cronLogErr(err)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfPublishersUpdated + " complete"})
+		page.Send(adminWebsocket{sql.ConfPublishersUpdated + " complete"})
 	}
 
 	//
@@ -694,7 +694,7 @@ func CronDevelopers() {
 	cronLogInfo(log.ServiceLocal, "Developers updating")
 
 	// Get current developers, to delete old ones
-	allDevelopers, err := db.GetAllDevelopers([]string{"id", "name"})
+	allDevelopers, err := sql.GetAllDevelopers([]string{"id", "name"})
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -711,7 +711,7 @@ func CronDevelopers() {
 	}
 
 	// Get apps from mysql
-	appsWithDevelopers, err := db.GetAppsWithColumnDepth("developers", 2, []string{"developers", "prices", "reviews_score"})
+	appsWithDevelopers, err := sql.GetAppsWithColumnDepth("developers", 2, []string{"developers", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogInfo("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
@@ -782,14 +782,14 @@ func CronDevelopers() {
 			devsToDeleteSlice = append(devsToDeleteSlice, k)
 		}
 
-		err := db.DeleteDevelopers(devsToDeleteSlice)
+		err := sql.DeleteDevelopers(devsToDeleteSlice)
 		cronLogErr(err)
 
 	}()
 
 	wg.Wait()
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -814,9 +814,9 @@ func CronDevelopers() {
 				wg.Done()
 			}()
 
-			var developer db.Developer
+			var developer sql.Developer
 
-			gorm = gorm.Unscoped().FirstOrInit(&developer, db.Developer{ID: developerInt})
+			gorm = gorm.Unscoped().FirstOrInit(&developer, sql.Developer{ID: developerInt})
 			cronLogErr(gorm.Error)
 
 			developer.Name = v.name
@@ -835,7 +835,7 @@ func CronDevelopers() {
 	wg.Wait()
 
 	//
-	err = db.SetConfig(db.ConfDevelopersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfDevelopersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	//
@@ -843,7 +843,7 @@ func CronDevelopers() {
 	cronLogErr(err)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfDevelopersUpdated + " complete"})
+		page.Send(adminWebsocket{sql.ConfDevelopersUpdated + " complete"})
 	}
 
 	//
@@ -857,7 +857,7 @@ func CronDevelopers() {
 func CronTags() {
 
 	// Get current tags, to delete old ones
-	tags, err := db.GetAllTags()
+	tags, err := sql.GetAllTags()
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -877,7 +877,7 @@ func CronTags() {
 
 	steamTagMap := tagsResp.GetMap()
 
-	appsWithTags, err := db.GetAppsWithColumnDepth("tags", 2, []string{"tags", "prices", "reviews_score"})
+	appsWithTags, err := sql.GetAppsWithColumnDepth("tags", 2, []string{"tags", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogInfo("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
@@ -941,14 +941,14 @@ func CronTags() {
 			tagsToDeleteSlice = append(tagsToDeleteSlice, v)
 		}
 
-		err := db.DeleteTags(tagsToDeleteSlice)
+		err := sql.DeleteTags(tagsToDeleteSlice)
 		cronLogErr(err)
 
 	}()
 
 	wg.Wait()
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -973,9 +973,9 @@ func CronTags() {
 				wg.Done()
 			}()
 
-			var tag db.Tag
+			var tag sql.Tag
 
-			gorm = gorm.Unscoped().FirstOrInit(&tag, db.Tag{ID: tagID})
+			gorm = gorm.Unscoped().FirstOrInit(&tag, sql.Tag{ID: tagID})
 			cronLogErr(gorm.Error)
 
 			tag.Name = v.name
@@ -994,7 +994,7 @@ func CronTags() {
 	wg.Wait()
 
 	//
-	err = db.SetConfig(db.ConfTagsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfTagsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	//
@@ -1002,7 +1002,7 @@ func CronTags() {
 	cronLogErr(err)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfTagsUpdated + " complete"})
+		page.Send(adminWebsocket{sql.ConfTagsUpdated + " complete"})
 	}
 
 	//
@@ -1158,13 +1158,13 @@ func CronRanks() {
 	// }
 
 	// Update config
-	err := db.SetConfig(db.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err := sql.SetConfig(sql.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfRanksUpdated + " complete"})
+		page.Send(adminWebsocket{sql.ConfRanksUpdated + " complete"})
 	}
 
 	//
@@ -1180,14 +1180,14 @@ func adminMemcache() {
 	err := helpers.GetMemcache().DeleteAll()
 	log.Err(err)
 
-	err = db.SetConfig(db.ConfWipeMemcache+"-"+config.Config.Environment.Get(), strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfWipeMemcache+"-"+config.Config.Environment.Get(), strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
+		page.Send(adminWebsocket{sql.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
 	}
 
 	log.Info("Memcache wiped")
@@ -1198,7 +1198,7 @@ func adminDeleteBinLogs(r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name != "" {
 
-		gorm, err := db.GetMySQLClient(true)
+		gorm, err := sql.GetMySQLClient(true)
 		if err != nil {
 			log.Err(err)
 			return
@@ -1215,13 +1215,13 @@ func adminDev() {
 	log.Info("Started dev code")
 
 	//
-	err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
 	log.Err(err)
 	if err == nil {
-		page.Send(adminWebsocket{db.ConfRunDevCode + " complete"})
+		page.Send(adminWebsocket{sql.ConfRunDevCode + " complete"})
 	}
 
 	log.Info("Dev code run")

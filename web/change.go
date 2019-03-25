@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -34,8 +34,8 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 	t := changeTemplate{}
 	t.fill(w, r, change.GetName(), "")
 	t.Change = change
-	t.Apps = map[int]db.App{}
-	t.Packages = map[int]db.Package{}
+	t.Apps = map[int]sql.App{}
+	t.Packages = map[int]sql.Package{}
 
 	//
 	var wg sync.WaitGroup
@@ -46,7 +46,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		appsSlice, err := db.GetAppsByID(change.Apps, []string{"id", "icon", "type", "name"})
+		appsSlice, err := sql.GetAppsByID(change.Apps, []string{"id", "icon", "type", "name"})
 		if err != nil {
 
 			log.Err(err, r)
@@ -65,7 +65,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		packagesSlice, err := db.GetPackages(change.Packages, []string{})
+		packagesSlice, err := sql.GetPackages(change.Packages, []string{})
 		if err != nil {
 
 			log.Err(err, r)
@@ -88,6 +88,6 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 type changeTemplate struct {
 	GlobalTemplate
 	Change   mongo.Change
-	Apps     map[int]db.App
-	Packages map[int]db.Package
+	Apps     map[int]sql.App
+	Packages map[int]sql.Package
 }

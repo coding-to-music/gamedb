@@ -6,9 +6,9 @@ import (
 
 	"github.com/ahmdrz/goinsta/v2"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/sql"
 )
 
 var (
@@ -39,7 +39,7 @@ func UploadInstagram() {
 
 	log.Info("Running IG")
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		log.Err(err)
 		return
@@ -53,7 +53,7 @@ func UploadInstagram() {
 	gorm = gorm.Order("RAND()")
 	gorm = gorm.Limit(1)
 
-	var apps []db.App
+	var apps []sql.App
 	gorm = gorm.Find(&apps)
 	if gorm.Error != nil {
 		log.Err(gorm.Error)

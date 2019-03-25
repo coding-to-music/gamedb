@@ -19,10 +19,10 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
+	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -77,15 +77,15 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Load current app
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}
 
-	app := db.App{}
-	gorm = gorm.FirstOrInit(&app, db.App{ID: message.ID})
+	app := sql.App{}
+	gorm = gorm.FirstOrInit(&app, sql.App{ID: message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
@@ -230,7 +230,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func updateAppPICS(app *db.App, payload baseMessage, message appMessage) (err error) {
+func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err error) {
 
 	if app.ChangeNumber > message.PICSAppInfo.ChangeNumber {
 		return nil
@@ -268,7 +268,7 @@ func updateAppPICS(app *db.App, payload baseMessage, message appMessage) (err er
 
 		case "common":
 
-			var common = db.PICSAppCommon{}
+			var common = sql.PICSAppCommon{}
 			var tags []int
 
 			for _, vv := range v.Children {
@@ -338,7 +338,7 @@ func updateAppPICS(app *db.App, payload baseMessage, message appMessage) (err er
 
 		case "ufs":
 
-			var ufs = db.PICSAppUFS{}
+			var ufs = sql.PICSAppUFS{}
 			for _, vv := range v.Children {
 				ufs[vv.Name] = vv.String()
 			}
@@ -385,9 +385,9 @@ func updateAppPICS(app *db.App, payload baseMessage, message appMessage) (err er
 	return nil
 }
 
-func updateAppDetails(app *db.App) error {
+func updateAppDetails(app *sql.App) error {
 
-	prices := db.ProductPrices{}
+	prices := sql.ProductPrices{}
 
 	for _, code := range helpers.GetActiveCountries() {
 
@@ -405,9 +405,9 @@ func updateAppDetails(app *db.App) error {
 		if code == steam.CountryUS {
 
 			// Screenshots
-			var images []db.AppImage
+			var images []sql.AppImage
 			for _, v := range response.Data.Screenshots {
-				images = append(images, db.AppImage{
+				images = append(images, sql.AppImage{
 					PathFull:      v.PathFull,
 					PathThumbnail: v.PathThumbnail,
 				})
@@ -421,9 +421,9 @@ func updateAppDetails(app *db.App) error {
 			app.Screenshots = string(b)
 
 			// Movies
-			var videos []db.AppVideo
+			var videos []sql.AppVideo
 			for _, v := range response.Data.Movies {
-				videos = append(videos, db.AppVideo{
+				videos = append(videos, sql.AppVideo{
 					PathFull:      v.Webm.Max,
 					PathThumbnail: v.Thumbnail,
 					Title:         v.Name,
@@ -455,15 +455,15 @@ func updateAppDetails(app *db.App) error {
 			app.Packages = string(b)
 
 			// Publishers
-			gorm, err := db.GetMySQLClient()
+			gorm, err := sql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			var publisherIDs []int
 			for _, v := range response.Data.Publishers {
-				var publisher db.Publisher
-				gorm = gorm.Unscoped().FirstOrCreate(&publisher, db.Publisher{Name: strings.TrimSpace(v)})
+				var publisher sql.Publisher
+				gorm = gorm.Unscoped().FirstOrCreate(&publisher, sql.Publisher{Name: strings.TrimSpace(v)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}
@@ -477,15 +477,15 @@ func updateAppDetails(app *db.App) error {
 			app.Publishers = string(b)
 
 			// Developers
-			gorm, err = db.GetMySQLClient()
+			gorm, err = sql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			var developerIDs []int
 			for _, v := range response.Data.Developers {
-				var developer db.Developer
-				gorm = gorm.Unscoped().FirstOrCreate(&developer, db.Developer{Name: strings.TrimSpace(v)})
+				var developer sql.Developer
+				gorm = gorm.Unscoped().FirstOrCreate(&developer, sql.Developer{Name: strings.TrimSpace(v)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}
@@ -512,15 +512,15 @@ func updateAppDetails(app *db.App) error {
 			app.Categories = string(b)
 
 			// Genres
-			gorm, err = db.GetMySQLClient()
+			gorm, err = sql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			var genreIDs []int
 			for _, v := range response.Data.Genres {
-				var genre db.Genre
-				gorm = gorm.Unscoped().Assign(db.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, db.Genre{ID: int(v.ID)})
+				var genre sql.Genre
+				gorm = gorm.Unscoped().Assign(sql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, sql.Genre{ID: int(v.ID)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}
@@ -619,7 +619,7 @@ func updateAppDetails(app *db.App) error {
 	return nil
 }
 
-func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
+func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
 	resp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 
@@ -638,9 +638,9 @@ func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
 	}
 
 	// Make template struct
-	var achievements []db.AppAchievement
+	var achievements []sql.AppAchievement
 	for _, v := range schema.AvailableGameStats.Achievements {
-		achievements = append(achievements, db.AppAchievement{
+		achievements = append(achievements, sql.AppAchievement{
 			Name:        v.DisplayName,
 			Icon:        v.Icon,
 			Description: v.Description,
@@ -652,7 +652,7 @@ func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
 
 	// Add achievements that are in global but missing in schema
 	for k, v := range achievementsMap {
-		achievements = append(achievements, db.AppAchievement{
+		achievements = append(achievements, sql.AppAchievement{
 			Name:      k,
 			Completed: helpers.RoundFloatTo2DP(v),
 		})
@@ -668,7 +668,7 @@ func updateAppAchievements(app *db.App, schema steam.SchemaForGame) error {
 	return nil
 }
 
-func updateAppSchema(app *db.App) (schema steam.SchemaForGame, err error) {
+func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 
 	resp, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
 
@@ -681,9 +681,9 @@ func updateAppSchema(app *db.App) (schema steam.SchemaForGame, err error) {
 		return schema, err
 	}
 
-	var stats []db.AppStat
+	var stats []sql.AppStat
 	for _, v := range resp.AvailableGameStats.Stats {
-		stats = append(stats, db.AppStat{
+		stats = append(stats, sql.AppStat{
 			Name:        v.Name,
 			Default:     v.DefaultValue,
 			DisplayName: v.DisplayName,
@@ -701,7 +701,7 @@ func updateAppSchema(app *db.App) (schema steam.SchemaForGame, err error) {
 	return resp, nil
 }
 
-func updateAppNews(app *db.App) error {
+func updateAppNews(app *sql.App) error {
 
 	resp, _, err := helpers.GetSteam().GetNews(app.ID, 10000)
 
@@ -765,7 +765,7 @@ func updateAppNews(app *db.App) error {
 	return nil
 }
 
-func updateAppReviews(app *db.App) error {
+func updateAppReviews(app *sql.App) error {
 
 	resp, _, err := helpers.GetSteam().GetReviews(app.ID)
 	if err != nil {
@@ -773,7 +773,7 @@ func updateAppReviews(app *db.App) error {
 	}
 
 	//
-	reviews := db.AppReviewSummary{}
+	reviews := sql.AppReviewSummary{}
 	reviews.Positive = resp.QuerySummary.TotalPositive
 	reviews.Negative = resp.QuerySummary.TotalNegative
 
@@ -811,7 +811,7 @@ func updateAppReviews(app *db.App) error {
 		regex := regexp.MustCompile("[\n]{3,}") // After comma
 		v.Review = regex.ReplaceAllString(v.Review, "\n\n")
 
-		reviews.Reviews = append(reviews.Reviews, db.AppReview{
+		reviews.Reviews = append(reviews.Reviews, sql.AppReview{
 			Review:     template.HTML(helpers.BBCodeCompiler.Compile(v.Review)),
 			PlayerPath: player.GetPath(),
 			PlayerName: player.PersonaName,
@@ -851,7 +851,7 @@ func updateAppReviews(app *db.App) error {
 	return nil
 }
 
-func updateAppSteamSpy(app *db.App) error {
+func updateAppSteamSpy(app *sql.App) error {
 
 	query := url.Values{}
 	query.Set("request", "appdetails")
@@ -900,7 +900,7 @@ func updateAppSteamSpy(app *db.App) error {
 	}
 
 	// Unmarshal JSON
-	resp := db.SteamSpyAppResponse{}
+	resp := sql.SteamSpyAppResponse{}
 	err = helpers.Unmarshal(bytes, &resp)
 	if err != nil {
 		return errSteamSpyDown
@@ -908,7 +908,7 @@ func updateAppSteamSpy(app *db.App) error {
 
 	owners := resp.GetOwners()
 
-	ss := db.AppSteamSpy{
+	ss := sql.AppSteamSpy{
 		SSAveragePlaytimeTwoWeeks: resp.Average2Weeks,
 		SSAveragePlaytimeForever:  resp.AverageForever,
 		SSMedianPlaytimeTwoWeeks:  resp.Median2Weeks,
@@ -927,7 +927,7 @@ func updateAppSteamSpy(app *db.App) error {
 	return nil
 }
 
-func updateBundles(app *db.App) error {
+func updateBundles(app *sql.App) error {
 
 	// Skip these app types
 	if helpers.SliceHasString([]string{"media", "movie"}, app.Type) {
@@ -983,20 +983,20 @@ func updateBundles(app *db.App) error {
 	return nil
 }
 
-func saveAppToInflux(app db.App) (err error) {
+func saveAppToInflux(app sql.App) (err error) {
 
 	price, err := app.GetPrice(steam.CountryUS)
-	if err != nil && err != db.ErrMissingCountryCode {
+	if err != nil && err != sql.ErrMissingCountryCode {
 		return err
 	}
 
 	reviews, err := app.GetReviews()
-	if err != nil && err != db.ErrMissingCountryCode {
+	if err != nil && err != sql.ErrMissingCountryCode {
 		return err
 	}
 
-	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(db.InfluxMeasurementApps),
+	_, err = sql.InfluxWrite(sql.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(sql.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},
@@ -1015,7 +1015,7 @@ func saveAppToInflux(app db.App) (err error) {
 	return err
 }
 
-func updateAppTwitch(app *db.App) error {
+func updateAppTwitch(app *sql.App) error {
 
 	client, err := helpers.GetTwitch()
 	if err != nil {

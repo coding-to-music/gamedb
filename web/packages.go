@@ -7,9 +7,9 @@ import (
 	"sync"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -25,7 +25,7 @@ func packagesRouter() http.Handler {
 
 func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
-	total, err := db.CountPackages()
+	total, err := sql.CountPackages()
 	log.Err(err, r)
 
 	// Template
@@ -53,21 +53,21 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var packages []db.Package
+	var packages []sql.Package
 
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 
 			log.Err(err, r)
 			return
 		}
 
-		gorm = gorm.Model(&db.Package{})
+		gorm = gorm.Model(&sql.Package{})
 		gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon", "icon"})
 
 		gorm = query.setOrderOffsetGorm(gorm, code, map[string]string{
@@ -92,7 +92,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = db.CountPackages()
+		count, err = sql.CountPackages()
 		log.Err(err, r)
 
 	}()

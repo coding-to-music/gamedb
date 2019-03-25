@@ -10,9 +10,9 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -34,7 +34,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := appsTemplate{}
 	t.fill(w, r, "Apps", "") // Description gets set later
-	t.Types = db.GetTypesForSelect()
+	t.Types = sql.GetTypesForSelect()
 	t.addAssetChosen()
 	t.addAssetSlider()
 
@@ -48,7 +48,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Count, err = db.CountApps()
+		t.Count, err = sql.CountApps()
 		t.Description = "A live database of " + template.HTML(humanize.Comma(int64(t.Count))) + " Steam games."
 		log.Err(err, r)
 
@@ -61,7 +61,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Tags, err = db.GetTagsForSelect()
+		t.Tags, err = sql.GetTagsForSelect()
 		log.Err(err, r)
 
 	}()
@@ -73,7 +73,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Genres, err = db.GetGenresForSelect()
+		t.Genres, err = sql.GetGenresForSelect()
 		log.Err(err, r)
 
 	}()
@@ -85,7 +85,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Publishers, err = db.GetPublishersForSelect()
+		t.Publishers, err = sql.GetPublishersForSelect()
 		log.Err(err, r)
 
 		// Check if we need to fetch any more to add to the list
@@ -116,7 +116,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			publishers, err := db.GetPublishersByID(publishersToLoad, []string{"id", "name"})
+			publishers, err := sql.GetPublishersByID(publishersToLoad, []string{"id", "name"})
 			log.Err(err, r)
 			if err == nil {
 				t.Publishers = append(t.Publishers, publishers...)
@@ -132,7 +132,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Developers, err = db.GetDevelopersForSelect()
+		t.Developers, err = sql.GetDevelopersForSelect()
 		log.Err(err, r)
 
 		// Check if we need to fetch any more to add to the list
@@ -163,7 +163,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			developers, err := db.GetDevelopersByID(developersToLoad, []string{"id", "name"})
+			developers, err := sql.GetDevelopersByID(developersToLoad, []string{"id", "name"})
 			log.Err(err, r)
 			if err == nil {
 				t.Developers = append(t.Developers, developers...)
@@ -178,7 +178,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		price, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
+		price, err := sql.GetMostExpensiveApp(session.GetCountryCode(r))
 		log.Err(err, r)
 
 		// Convert cents to dollars
@@ -202,11 +202,11 @@ type appsTemplate struct {
 	GlobalTemplate
 	Count        int
 	ExpensiveApp int
-	Types        []db.AppType
-	Tags         []db.Tag
-	Genres       []db.Genre
-	Publishers   []db.Publisher
-	Developers   []db.Developer
+	Types        []sql.AppType
+	Tags         []sql.Tag
+	Genres       []sql.Genre
+	Publishers   []sql.Publisher
+	Developers   []sql.Developer
 }
 
 func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -220,7 +220,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var apps []db.App
+	var apps []sql.App
 	var recordsFiltered int
 
 	wg.Add(1)
@@ -228,14 +228,14 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := db.GetMySQLClient()
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 
 			log.Err(err, r)
 			return
 		}
 
-		gorm = gorm.Model(db.App{})
+		gorm = gorm.Model(sql.App{})
 		gorm = gorm.Select([]string{"id", "name", "icon", "type", "reviews_score", "prices", "change_number_date"})
 
 		// Types
@@ -317,7 +317,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		prices := query.getSearchSlice("prices")
 		if len(prices) == 2 {
 
-			maxPrice, err := db.GetMostExpensiveApp(session.GetCountryCode(r))
+			maxPrice, err := sql.GetMostExpensiveApp(session.GetCountryCode(r))
 			log.Err(err, r)
 
 			// Round up to dollar
@@ -397,7 +397,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = db.CountApps()
+		count, err = sql.CountApps()
 		log.Err(err, r)
 
 	}()

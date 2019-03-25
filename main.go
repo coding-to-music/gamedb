@@ -12,11 +12,11 @@ import (
 	"time"
 
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/social"
+	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/web"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/robfig/cron"
@@ -38,7 +38,7 @@ func main() {
 
 	// Preload connections
 	helpers.GetMemcache()
-	_, err := db.GetMySQLClient()
+	_, err := sql.GetMySQLClient()
 	log.Critical(err)
 
 	// Web server
@@ -116,7 +116,7 @@ func main() {
 			//noinspection GoDeferInLoop
 			defer wg.Done()
 
-			sql, err := db.GetMySQLClient()
+			sql, err := sql.GetMySQLClient()
 			if err != nil {
 				log.Err(err)
 				return
@@ -137,7 +137,7 @@ func checkForPlayers() {
 
 	log.Info("Queueing apps for player checks")
 
-	gorm, err := db.GetMySQLClient()
+	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		log.Critical(err)
 		return
@@ -145,7 +145,7 @@ func checkForPlayers() {
 
 	gorm = gorm.Select([]string{"id"})
 	gorm = gorm.Order("id ASC")
-	gorm = gorm.Model(&[]db.App{})
+	gorm = gorm.Model(&[]sql.App{})
 
 	var appIDs []int
 	gorm = gorm.Pluck("id", &appIDs)

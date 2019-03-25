@@ -3,19 +3,19 @@ package web
 import (
 	"net/http"
 
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 )
 
 func statsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := db.GetConfig(db.ConfPublishersUpdated)
+	config, err := sql.GetConfig(sql.ConfPublishersUpdated)
 	log.Err(err, r)
 
 	// Get publishers
-	publishers, err := db.GetAllPublishers()
+	publishers, err := sql.GetAllPublishers()
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the publishers.", Error: err})
 		return
@@ -42,7 +42,7 @@ func statsPublishersHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsPublishersTemplate struct {
 	GlobalTemplate
-	Publishers []db.Publisher
+	Publishers []sql.Publisher
 	Date       string
 	Prices     map[int]string
 }

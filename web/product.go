@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -32,12 +32,12 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	// Get product
-	var product db.ProductInterface
+	var product sql.ProductInterface
 
 	if productType == helpers.ProductTypeApp {
-		product, err = db.GetApp(idx, []string{})
+		product, err = sql.GetApp(idx, []string{})
 	} else {
-		product, err = db.GetPackage(idx, []string{"id", "product_type", "prices"})
+		product, err = sql.GetPackage(idx, []string{"id", "product_type", "prices"})
 	}
 	if err != nil {
 		log.Err(err, r)
@@ -79,7 +79,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 
 	// Add current price
 	price, err := product.GetPrice(code)
-	err = helpers.IgnoreErrors(err, db.ErrMissingCountryCode)
+	err = helpers.IgnoreErrors(err, sql.ErrMissingCountryCode)
 	if err != nil {
 		log.Err(err, r)
 		return
