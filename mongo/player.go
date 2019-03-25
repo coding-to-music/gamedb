@@ -290,20 +290,20 @@ func GetPlayer(id int64) (player Player, err error) {
 	return player, err
 }
 
-func GetPlayers(offset int64, ops *options.FindOptions) (players []Player, err error) {
-
-	if ops == nil {
-		ops = options.Find()
-	}
+func GetPlayers(offset int64, limit int64, sort bson.D) (players []Player, err error) {
 
 	client, ctx, err := GetMongo()
 	if err != nil {
 		return players, err
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers)
+	ops := options.Find().SetSkip(offset)
+	if limit > 0 {
+		ops.SetLimit(limit)
+	}
 
-	cur, err := c.Find(ctx, bson.M{}, ops.SetLimit(100).SetSkip(offset))
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers)
+	cur, err := c.Find(ctx, bson.M{}, ops)
 	if err != nil {
 		return players, err
 	}
@@ -372,6 +372,33 @@ func CountPlayers() (count int64, err error) {
 	})
 
 	return count, err
+}
+
+func RankPlayers() (err error) {
+
+	// db.foo.updateMany({}, {$set: {lastLookedAt: Date.now() / 1000}})
+
+	// players, err := GetPlayers(0, 3, bson.D{{}})
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// client, ctx, err := GetMongo()
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// var writes []mongo.WriteModel
+	// for _, v := range players {
+	// 	write := mongo.NewUpdateOneModel()
+	//
+	// 	writes = append(writes, write)
+	// }
+	//
+	// c := client.Database(MongoDatabase).Collection(CollectionPlayers)
+	// _, err = c.BulkWrite(ctx, writes, options.BulkWrite())
+
+	return err
 }
 
 func IsValidPlayerID(id int64) bool {

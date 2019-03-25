@@ -9,7 +9,6 @@ import (
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func playersRouter() http.Handler {
@@ -133,8 +132,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"7": "friends_rank",
 		}
 
-		ops := options.Find().SetSort(query.getOrderMongo(columns, "level_rank", -1))
-		players, err := mongo.GetPlayers(query.getOffset64(), ops)
+		players, err := mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, "level_rank", -1))
 		if err != nil {
 			log.Err(err)
 			return

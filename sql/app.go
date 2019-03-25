@@ -827,6 +827,8 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 		return apps, nil
 	}
 
+	ids = helpers.Unique(ids)
+
 	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err

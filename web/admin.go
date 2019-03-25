@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
@@ -1213,6 +1214,9 @@ func adminDev() {
 	var err error
 
 	log.Info("Started dev code")
+
+	err = mongo.RankPlayers()
+	log.Err(err)
 
 	//
 	err = sql.SetConfig(sql.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))

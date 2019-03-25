@@ -375,7 +375,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		var ops = options.Find().SetSort(query.getOrderMongo(columns, "app_time", -1))
-		playerApps, err = mongo.GetPlayerApps(playerIDInt, query.getOffset64(), true, ops)
+		playerApps, err = mongo.GetPlayerAppsByPlayer(playerIDInt, query.getOffset64(), true, ops)
 		log.Err(err)
 	}()
 

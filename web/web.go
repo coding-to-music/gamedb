@@ -669,7 +669,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.Count
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol string, fallbackSort int8) bson.M {
+func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol string, fallbackSort int8) bson.D {
 
 	for _, v := range q.Order {
 
@@ -683,9 +683,9 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol st
 							if ok {
 
 								if dir == "desc" {
-									return bson.M{col: -1}
+									return bson.D{{col, -1}}
 								} else {
-									return bson.M{col: 1}
+									return bson.D{{col, 1}}
 								}
 							}
 						}
@@ -695,7 +695,7 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol st
 		}
 	}
 
-	return bson.M{"_id": 1}
+	return bson.D{{"_id", 1}}
 }
 
 func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {

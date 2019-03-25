@@ -115,18 +115,17 @@ func (pa PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{})
 	}
 }
 
-// todo, use for coop
-func GetPlayerAppsByPlayerIDs(playerIDs []int64, offset int64) (apps []PlayerApp, err error) {
+func GetPlayerAppsByPlayers(playerIDs []int64) (apps []PlayerApp, err error) {
 
 	playersFilter := bson.A{}
 	for _, v := range playerIDs {
 		playersFilter = append(playersFilter, v)
 	}
 
-	return getPlayerApps(offset, 0, bson.M{"$or": playersFilter})
+	return getPlayerApps(0, 0, bson.M{"$or": playersFilter})
 }
 
-func GetPlayerApps(playerID int64, offset int64, limit bool, ops *options.FindOptions) (apps []PlayerApp, err error) {
+func GetPlayerAppsByPlayer(playerID int64, offset int64, limit bool, ops *options.FindOptions) (apps []PlayerApp, err error) {
 
 	return getPlayerApps(offset, 100, bson.M{"player_id": playerID})
 }
@@ -138,7 +137,10 @@ func getPlayerApps(offset int64, limit int64, filter interface{}) (apps []Player
 		return apps, err
 	}
 
-	ops := options.Find().SetSkip(offset)
+	ops := options.Find()
+	if offset > 0 {
+		ops.SetSkip(offset)
+	}
 	if limit > 0 {
 		ops.SetLimit(limit)
 	}
