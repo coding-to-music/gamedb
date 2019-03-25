@@ -1,8 +1,11 @@
 package mongo
 
 import (
+	"reflect"
 	"strconv"
 
+	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -46,20 +49,102 @@ func (pa PlayerApp) BSON() (ret interface{}) {
 	}
 }
 
-func GetPlayerApps(playerID int64, offset int64, limit bool) (apps []PlayerApp, err error) {
+func (pa PlayerApp) GetPath() string {
+	return helpers.GetAppPath(pa.AppID, pa.AppName)
+}
+
+func (pa PlayerApp) GetIcon() string {
+
+	if pa.AppIcon == "" {
+		return "/assets/img/no-player-image.jpg"
+	}
+	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(pa.AppID) + "/" + pa.AppIcon + ".jpg"
+}
+
+func (pa PlayerApp) GetTimeNice() string {
+
+	return helpers.GetTimeShort(pa.AppTime, 2)
+}
+
+func (pa PlayerApp) GetPriceFormatted(code steam.CountryCode) string {
+
+	s := reflect.Indirect(reflect.ValueOf(pa.AppPrices))
+	f := s.FieldByName(string(code))
+
+	if f.IsNil() {
+		return ""
+	}
+
+	locale, err := helpers.GetLocaleFromCountry(code)
+	log.Err(err)
+
+	return locale.Format(int(f.Elem().Int()))
+}
+
+func (pa PlayerApp) GetPriceHourFormatted(code steam.CountryCode) string {
+
+	s := reflect.Indirect(reflect.ValueOf(pa.AppPriceHour))
+	f := s.FieldByName(string(code))
+
+	if f.IsNil() {
+		return ""
+	}
+
+	locale, err := helpers.GetLocaleFromCountry(code)
+	log.Err(err)
+
+	val := f.Elem().Float()
+	if val < 0 {
+		return "∞"
+	}
+
+	return locale.FormatFloat(val)
+}
+
+func (pa PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{}) {
+
+	return []interface{}{
+		pa.AppID,
+		pa.AppName,
+		pa.GetIcon(),
+		pa.AppTime,
+		pa.GetTimeNice(),
+		pa.GetPriceFormatted(code),
+		pa.GetPriceHourFormatted(code),
+		pa.GetPath(),
+	}
+}
+
+// todo, use for coop
+func GetPlayerAppsByPlayerIDs(playerIDs []int64, offset int64) (apps []PlayerApp, err error) {
+
+	playersFilter := bson.A{}
+	for _, v := range playerIDs {
+		playersFilter = append(playersFilter, v)
+	}
+
+	return getPlayerApps(offset, 0, bson.M{"$or": playersFilter})
+}
+
+func GetPlayerApps(playerID int64, offset int64, limit bool, ops *options.FindOptions) (apps []PlayerApp, err error) {
+
+	return getPlayerApps(offset, 100, bson.M{"player_id": playerID})
+}
+
+func getPlayerApps(offset int64, limit int64, filter interface{}) (apps []PlayerApp, err error) {
 
 	client, ctx, err := GetMongo()
 	if err != nil {
 		return apps, err
 	}
 
-	o := options.Find().SetSkip(offset).SetSort(bson.M{"app_time": -1})
-	if limit {
-		o = o.SetLimit(100)
+	ops := options.Find().SetSkip(offset)
+	if limit > 0 {
+		ops.SetLimit(limit)
 	}
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps)
-	cur, err := c.Find(ctx, bson.M{"player_id": playerID}, o)
+	cur, err := c.Find(ctx, filter, ops)
 	if err != nil {
 		return apps, err
 	}

@@ -5,9 +5,8 @@ import (
 	"strconv"
 	"sync"
 
-	"cloud.google.com/go/datastore"
-	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
 )
@@ -44,45 +43,36 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get ranks
-	var priceChanges []db.ProductPrice
+	var priceChanges []mongo.ProductPrice
 
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		client, ctx, err := db.GetDSClient()
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
-		q := datastore.NewQuery(db.KindProductPrice).Order("-created_at").Limit(100).Offset(query.getOffset())
-		q = q.Filter("currency =", string(session.GetCountryCode(r)))
-
-		_, err = client.GetAll(ctx, q, &priceChanges)
+		var err error
+		priceChanges, err = mongo.GetPrices(query.getOffset64(), session.GetCountryCode(r))
 		log.Err(err, r)
-
 	}(r)
 
 	// Get total
-	var total int
+	var total int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		total = 10000
-
+		var err error
+		total, err = mongo.CountPrices()
+		log.Err(err, r)
 	}()
 
 	// Wait
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(total)
-	response.RecordsFiltered = strconv.Itoa(total)
+	response.RecordsTotal = strconv.FormatInt(total, 10)
+	response.RecordsFiltered = strconv.FormatInt(total, 10)
 	response.Draw = query.Draw
 
 	for _, v := range priceChanges {

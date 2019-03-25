@@ -13,7 +13,6 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/websockets"
-	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 	"go.mongodb.org/mongo-driver/bson"
@@ -253,99 +252,99 @@ func updatePlayerSummary(player *mongo.Player) error {
 func updatePlayerGames(player *mongo.Player) error {
 
 	// Grab games from Steam
-	resp, _, err := helpers.GetSteam().GetOwnedGames(player.ID)
-	if err != nil {
-		return err
-	}
-
-	// Save count
-	player.GamesCount = len(resp.Games)
-
-	// Start creating PlayerApp's
-	var playerApps = map[int]*db.PlayerApp{}
-	var appPrices = map[int]map[string]int{}
-	var appPriceHour = map[int]map[string]float64{}
-	var appIDs []int
-	var playtime = 0
-	for _, v := range resp.Games {
-		playtime = playtime + v.PlaytimeForever
-		appIDs = append(appIDs, v.AppID)
-		playerApps[v.AppID] = &db.PlayerApp{
-			PlayerID: player.ID,
-			AppID:    v.AppID,
-			AppName:  v.Name,
-			AppIcon:  v.ImgIconURL,
-			AppTime:  v.PlaytimeForever,
-		}
-		appPrices[v.AppID] = map[string]int{}
-		appPriceHour[v.AppID] = map[string]float64{}
-	}
-
-	// Save playtime
-	player.PlayTime = playtime
-
-	// Getting missing price info from MySQL
-	gameRows, err := db.GetAppsByID(appIDs, []string{"id", "prices"})
-	if err != nil {
-		return err
-	}
-
-	for _, v := range gameRows {
-
-		prices, err := v.GetPrices()
-		if err != nil {
-			logError(err)
-			continue
-		}
-
-		for code, vv := range prices {
-
-			appPrices[v.ID][string(code)] = vv.Final
-			if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime == 0 {
-				appPriceHour[v.ID][string(code)] = -1
-			} else if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime > 0 {
-				appPriceHour[v.ID][string(code)] = (float64(appPrices[v.ID][string(code)]) / 100) / (float64(playerApps[v.ID].AppTime) / 60)
-			} else {
-				appPriceHour[v.ID][string(code)] = 0
-			}
-		}
-
-		//
-		err = mapstructure.Decode(appPrices[v.ID], &playerApps[v.ID].AppPrices)
-		logError(err)
-
-		//
-		err = mapstructure.Decode(appPriceHour[v.ID], &playerApps[v.ID].AppPriceHour)
-		logError(err)
-	}
-
-	// Save playerApps to Datastore
-	var appsSlice []db.Kind
-	for _, v := range playerApps {
-		appsSlice = append(appsSlice, *v)
-	}
-
-	err = db.BulkSaveKinds(appsSlice, db.KindPlayerApp, true)
-	if err != nil {
-		return err
-	}
-
-	// Save stats to player
-	var gameStats = mongo.PlayerAppStatsTemplate{}
-	for _, v := range playerApps {
-
-		gameStats.All.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
-		if v.AppTime > 0 {
-			gameStats.Played.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
-		}
-	}
-
-	b, err := json.Marshal(gameStats)
-	if err != nil {
-		return err
-	}
-
-	player.GameStats = string(b)
+	// resp, _, err := helpers.GetSteam().GetOwnedGames(player.ID)
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// // Save count
+	// player.GamesCount = len(resp.Games)
+	//
+	// // Start creating PlayerApp's
+	// var playerApps = map[int]*db.PlayerApp{}
+	// var appPrices = map[int]map[string]int{}
+	// var appPriceHour = map[int]map[string]float64{}
+	// var appIDs []int
+	// var playtime = 0
+	// for _, v := range resp.Games {
+	// 	playtime = playtime + v.PlaytimeForever
+	// 	appIDs = append(appIDs, v.AppID)
+	// 	playerApps[v.AppID] = &db.PlayerApp{
+	// 		PlayerID: player.ID,
+	// 		AppID:    v.AppID,
+	// 		AppName:  v.Name,
+	// 		AppIcon:  v.ImgIconURL,
+	// 		AppTime:  v.PlaytimeForever,
+	// 	}
+	// 	appPrices[v.AppID] = map[string]int{}
+	// 	appPriceHour[v.AppID] = map[string]float64{}
+	// }
+	//
+	// // Save playtime
+	// player.PlayTime = playtime
+	//
+	// // Getting missing price info from MySQL
+	// gameRows, err := db.GetAppsByID(appIDs, []string{"id", "prices"})
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// for _, v := range gameRows {
+	//
+	// 	prices, err := v.GetPrices()
+	// 	if err != nil {
+	// 		logError(err)
+	// 		continue
+	// 	}
+	//
+	// 	for code, vv := range prices {
+	//
+	// 		appPrices[v.ID][string(code)] = vv.Final
+	// 		if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime == 0 {
+	// 			appPriceHour[v.ID][string(code)] = -1
+	// 		} else if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime > 0 {
+	// 			appPriceHour[v.ID][string(code)] = (float64(appPrices[v.ID][string(code)]) / 100) / (float64(playerApps[v.ID].AppTime) / 60)
+	// 		} else {
+	// 			appPriceHour[v.ID][string(code)] = 0
+	// 		}
+	// 	}
+	//
+	// 	//
+	// 	err = mapstructure.Decode(appPrices[v.ID], &playerApps[v.ID].AppPrices)
+	// 	logError(err)
+	//
+	// 	//
+	// 	err = mapstructure.Decode(appPriceHour[v.ID], &playerApps[v.ID].AppPriceHour)
+	// 	logError(err)
+	// }
+	//
+	// // Save playerApps to Datastore
+	// var appsSlice []db.Kind
+	// for _, v := range playerApps {
+	// 	appsSlice = append(appsSlice, *v)
+	// }
+	//
+	// err = db.BulkSaveKinds(appsSlice, db.KindPlayerApp, true)
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// // Save stats to player
+	// var gameStats = mongo.PlayerAppStatsTemplate{}
+	// for _, v := range playerApps {
+	//
+	// 	gameStats.All.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
+	// 	if v.AppTime > 0 {
+	// 		gameStats.Played.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
+	// 	}
+	// }
+	//
+	// b, err := json.Marshal(gameStats)
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// player.GameStats = string(b)
 
 	return nil
 }
@@ -612,36 +611,36 @@ func savePlayerMongo(player mongo.Player) error {
 	return err
 }
 
-func savePlayerToInflux(player mongo.Player) error {
+func savePlayerToInflux(player mongo.Player) (err error) {
 
-	ranks, err := db.GetRank(player.ID)
-	if err != nil && err != db.ErrNoSuchEntity {
-		return err
-	}
-
-	fields := map[string]interface{}{
-		"level":    player.Level,
-		"games":    player.GamesCount,
-		"badges":   player.BadgesCount,
-		"playtime": player.PlayTime,
-		"friends":  player.FriendsCount,
-
-		"level_rank":    ranks.LevelRank,
-		"games_rank":    ranks.GamesRank,
-		"badges_rank":   ranks.BadgesRank,
-		"playtime_rank": ranks.PlayTimeRank,
-		"friends_rank":  ranks.FriendsRank,
-	}
-
-	_, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(db.InfluxMeasurementPlayers),
-		Tags: map[string]string{
-			"player_id": strconv.FormatInt(player.ID, 10),
-		},
-		Fields:    fields,
-		Time:      time.Now(),
-		Precision: "m",
-	})
+	// ranks, err := db.GetRank(player.ID)
+	// if err != nil && err != db.ErrNoSuchEntity {
+	// 	return err
+	// }
+	//
+	// fields := map[string]interface{}{
+	// 	"level":    player.Level,
+	// 	"games":    player.GamesCount,
+	// 	"badges":   player.BadgesCount,
+	// 	"playtime": player.PlayTime,
+	// 	"friends":  player.FriendsCount,
+	//
+	// 	"level_rank":    ranks.LevelRank,
+	// 	"games_rank":    ranks.GamesRank,
+	// 	"badges_rank":   ranks.BadgesRank,
+	// 	"playtime_rank": ranks.PlayTimeRank,
+	// 	"friends_rank":  ranks.FriendsRank,
+	// }
+	//
+	// _, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
+	// 	Measurement: string(db.InfluxMeasurementPlayers),
+	// 	Tags: map[string]string{
+	// 		"player_id": strconv.FormatInt(player.ID, 10),
+	// 	},
+	// 	Fields:    fields,
+	// 	Time:      time.Now(),
+	// 	Precision: "m",
+	// })
 
 	return err
 }

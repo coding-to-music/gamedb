@@ -309,17 +309,12 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		articles, err := mongo.GetArticles(idx, query.getOffset64())
-		log.Err(err, r, idx)
-
-		// todo, add http to links here instead of JS
-		// var regex = regexp.MustCompile(`href="(?!http)(.*)"`)
-		// var conv bbConvert.HTMLConverter
-		// conv.ImplementDefaults()
-		// Fix broken links
-		// v.Contents = regex.ReplaceAllString(v.Contents, `$1http://$2`)
-		// Convert BBCdoe to HTML
-		// v.Contents = conv.Convert(v.Contents)
+		var err error
+		articles, err = mongo.GetArticlesByAppID(idx, query.getOffset64())
+		if err != nil {
+			log.Err(err, r, idx)
+			return
+		}
 
 		for k, v := range articles {
 			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)

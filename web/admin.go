@@ -9,14 +9,12 @@ import (
 	"sync"
 	"time"
 
-	"cloud.google.com/go/datastore"
 	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
@@ -1215,45 +1213,6 @@ func adminDev() {
 	var err error
 
 	log.Info("Started dev code")
-
-	client, ctx, err := db.GetDSClient()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	q := datastore.NewQuery(db.KindProductPrice)
-
-	var prices []db.ProductPrice
-	_, err = client.GetAll(ctx, q, &prices)
-
-	chunks := db.ChunkPrice(prices)
-
-	for k, chunk := range chunks {
-
-		log.Info("Chunk " + strconv.Itoa(k))
-
-		var docs []mongo.MongoDocument
-
-		for _, vv := range chunk {
-
-			docs = append(docs, mongo.ProductPrice{
-				CreatedAt:         vv.CreatedAt,
-				AppID:             vv.AppID,
-				PackageID:         vv.PackageID,
-				Currency:          vv.Currency,
-				Name:              vv.Name,
-				Icon:              vv.Icon,
-				PriceBefore:       vv.PriceBefore,
-				PriceAfter:        vv.PriceAfter,
-				Difference:        vv.Difference,
-				DifferencePercent: vv.DifferencePercent,
-			})
-		}
-
-		_, err := mongo.InsertDocuments(mongo.CollectionProductPrices, docs)
-		log.Err(err)
-	}
 
 	//
 	err = db.SetConfig(db.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))

@@ -783,7 +783,7 @@ func updateAppReviews(app *db.App) error {
 		playersSlice = append(playersSlice, int64(v.Author.SteamID))
 	}
 
-	// Get players from Datastore
+	// Get players
 	players, err := mongo.GetPlayersByIDs(playersSlice)
 	if err != nil {
 		return err

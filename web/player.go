@@ -7,9 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/influxql"
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -17,6 +15,7 @@ import (
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/session"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func playerHandler(w http.ResponseWriter, r *http.Request) {
@@ -96,17 +95,17 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get ranks
-	var ranks db.PlayerRank
+	// var ranks db.PlayerRank
 	wg.Add(1)
 	go func(player mongo.Player) {
 
 		defer wg.Done()
 
-		var err error
-		ranks, err = db.GetRank(player.ID)
-		if err != nil && err != datastore.ErrNoSuchEntity {
-			log.Err(err, r)
-		}
+		// var err error
+		// ranks, err = db.GetRank(player.ID)
+		// if err != nil && err != datastore.ErrNoSuchEntity {
+		// 	log.Err(err, r)
+		// }
 
 	}(player)
 
@@ -229,8 +228,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetHighCharts()
 	t.Player = player
 	t.Friends = friends
-	t.Apps = []db.PlayerApp{}
-	t.Ranks = playerRanksTemplate{ranks, players}
+	t.Apps = []mongo.PlayerApp{}
+	// t.Ranks = playerRanksTemplate{ranks, players}
 	t.Badges = badges
 	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames
@@ -244,15 +243,15 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 type playerTemplate struct {
 	GlobalTemplate
-	Apps        []db.PlayerApp
-	Badges      []mongo.ProfileBadge
-	BadgeStats  mongo.ProfileBadgeStats
-	Banners     map[string][]string
-	Bans        mongo.PlayerBans
-	Friends     []mongo.ProfileFriend
-	GameStats   mongo.PlayerAppStatsTemplate
-	Player      mongo.Player
-	Ranks       playerRanksTemplate
+	Apps       []mongo.PlayerApp
+	Badges     []mongo.ProfileBadge
+	BadgeStats mongo.ProfileBadgeStats
+	Banners    map[string][]string
+	Bans       mongo.PlayerBans
+	Friends    []mongo.ProfileFriend
+	GameStats  mongo.PlayerAppStatsTemplate
+	Player     mongo.Player
+	// Ranks       playerRanksTemplate
 	RecentGames []RecentlyPlayedGame
 }
 
@@ -267,80 +266,80 @@ type RecentlyPlayedGame struct {
 	WeeksNice   string
 }
 
-// playerRanksTemplate
-type playerRanksTemplate struct {
-	Ranks   db.PlayerRank
-	Players int64
-}
-
-func (p playerRanksTemplate) format(rank int) string {
-
-	ord := humanize.Ordinal(rank)
-	if ord == "0th" {
-		return "-"
-	}
-	return ord
-}
-
-func (p playerRanksTemplate) GetLevel() string {
-	return p.format(p.Ranks.LevelRank)
-}
-
-func (p playerRanksTemplate) GetGames() string {
-	return p.format(p.Ranks.GamesRank)
-}
-
-func (p playerRanksTemplate) GetBadges() string {
-	return p.format(p.Ranks.BadgesRank)
-}
-
-func (p playerRanksTemplate) GetTime() string {
-	return p.format(p.Ranks.PlayTimeRank)
-}
-
-func (p playerRanksTemplate) GetFriends() string {
-	return p.format(p.Ranks.FriendsRank)
-}
-
-func (p playerRanksTemplate) formatPercent(rank int) string {
-
-	if rank == 0 {
-		return ""
-	}
-
-	precision := 0
-	if rank <= 10 {
-		precision = 3
-	} else if rank <= 100 {
-		precision = 2
-	} else if rank <= 1000 {
-		precision = 1
-	}
-
-	percent := (float64(rank) / float64(p.Players)) * 100
-	return helpers.FloatToString(percent, precision) + "%"
-
-}
-
-func (p playerRanksTemplate) GetLevelPercent() string {
-	return p.formatPercent(p.Ranks.LevelRank)
-}
-
-func (p playerRanksTemplate) GetGamesPercent() string {
-	return p.formatPercent(p.Ranks.GamesRank)
-}
-
-func (p playerRanksTemplate) GetBadgesPercent() string {
-	return p.formatPercent(p.Ranks.BadgesRank)
-}
-
-func (p playerRanksTemplate) GetTimePercent() string {
-	return p.formatPercent(p.Ranks.PlayTimeRank)
-}
-
-func (p playerRanksTemplate) GetFriendsPercent() string {
-	return p.formatPercent(p.Ranks.FriendsRank)
-}
+// // playerRanksTemplate
+// type playerRanksTemplate struct {
+// 	Ranks   mongo.PlayerRank
+// 	Players int64
+// }
+//
+// // func (p playerRanksTemplate) format(rank int) string {
+// //
+// // 	ord := humanize.Ordinal(rank)
+// // 	if ord == "0th" {
+// // 		return "-"
+// // 	}
+// // 	return ord
+// // }
+// //
+// // func (p playerRanksTemplate) GetLevel() string {
+// // 	return p.format(p.Ranks.LevelRank)
+// // }
+// //
+// // func (p playerRanksTemplate) GetGames() string {
+// // 	return p.format(p.Ranks.GamesRank)
+// // }
+// //
+// // func (p playerRanksTemplate) GetBadges() string {
+// // 	return p.format(p.Ranks.BadgesRank)
+// // }
+// //
+// // func (p playerRanksTemplate) GetTime() string {
+// // 	return p.format(p.Ranks.PlayTimeRank)
+// // }
+// //
+// // func (p playerRanksTemplate) GetFriends() string {
+// // 	return p.format(p.Ranks.FriendsRank)
+// // }
+// //
+// // func (p playerRanksTemplate) formatPercent(rank int) string {
+// //
+// // 	if rank == 0 {
+// // 		return ""
+// // 	}
+// //
+// // 	precision := 0
+// // 	if rank <= 10 {
+// // 		precision = 3
+// // 	} else if rank <= 100 {
+// // 		precision = 2
+// // 	} else if rank <= 1000 {
+// // 		precision = 1
+// // 	}
+// //
+// // 	percent := (float64(rank) / float64(p.Players)) * 100
+// // 	return helpers.FloatToString(percent, precision) + "%"
+// //
+// // }
+// //
+// // func (p playerRanksTemplate) GetLevelPercent() string {
+// // 	return p.formatPercent(p.Ranks.LevelRank)
+// // }
+// //
+// // func (p playerRanksTemplate) GetGamesPercent() string {
+// // 	return p.formatPercent(p.Ranks.GamesRank)
+// // }
+// //
+// // func (p playerRanksTemplate) GetBadgesPercent() string {
+// // 	return p.formatPercent(p.Ranks.BadgesRank)
+// // }
+// //
+// // func (p playerRanksTemplate) GetTimePercent() string {
+// // 	return p.formatPercent(p.Ranks.PlayTimeRank)
+// // }
+// //
+// // func (p playerRanksTemplate) GetFriendsPercent() string {
+// // 	return p.formatPercent(p.Ranks.FriendsRank)
+// // }
 
 func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -360,19 +359,12 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var playerApps []db.PlayerApp
+	var playerApps []mongo.PlayerApp
 
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
-
-		client, ctx, err := db.GetDSClient()
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
 
 		columns := map[string]string{
 			"0": "app_name",
@@ -381,17 +373,10 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"3": "app_price_hour",
 		}
 
-		q := datastore.NewQuery(db.KindPlayerApp).Filter("player_id =", playerIDInt).Limit(100)
-		q, err = query.setOrderOffsetDS(q, columns)
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
-		_, err = client.GetAll(ctx, q, &playerApps)
-		log.Err(err, r)
-
+		var err error
+		var ops = options.Find().SetSort(query.getOrderMongo(columns, "app_time", -1))
+		playerApps, err = mongo.GetPlayerApps(playerIDInt, query.getOffset64(), true, ops)
+		log.Err(err)
 	}()
 
 	// Get total

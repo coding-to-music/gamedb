@@ -2,10 +2,8 @@ package web
 
 import (
 	"net/http"
-	"sort"
 	"time"
 
-	"cloud.google.com/go/datastore"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/helpers"
@@ -31,30 +29,17 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	apps, err := db.PopularApps()
 	log.Err(err, r)
 
-	if config.Config.IsLocal() {
+	if config.Config.IsLocal() && len(apps) >= 3 {
 		apps = apps[0:3]
 	}
 
-	client, ctx, err := db.GetDSClient()
-	if err != nil {
-
-		log.Err(err, r)
-		return
-	}
-
+	var appIDs []int
 	for _, v := range apps {
-
-		var news []mongo.Article
-		q := datastore.NewQuery(db.KindNews).Filter("app_id =", v.ID).Order("-date").Limit(3)
-		_, err = client.GetAll(ctx, q, &news)
-		err = db.HandleDSMultiError(err, db.OldNewsFields)
-		log.Err(err, r)
-		t.News = append(t.News, news...)
+		appIDs = append(appIDs, v.ID)
 	}
 
-	sort.Slice(t.News, func(i, j int) bool {
-		return t.News[i].Date.Unix() > t.News[j].Date.Unix()
-	})
+	t.Articles, err = mongo.GetArticlesByAppIDs(appIDs)
+	log.Err(err, r)
 
 	err = returnTemplate(w, r, "news", t)
 	log.Err(err, r)
@@ -62,7 +47,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 type newsTemplate struct {
 	GlobalTemplate
-	News []mongo.Article
+	Articles []mongo.Article
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,23 +58,10 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	var articles []mongo.Article
+	articles, err := mongo.GetArticles(query.getOffset64())
 
-	client, ctx, err := db.GetDSClient()
-	if err != nil {
-
-		log.Err(err, r)
-
-	} else {
-
-		q := datastore.NewQuery(db.KindNews).Order("-date").Limit(100).Offset(query.getOffset())
-		_, err := client.GetAll(ctx, q, &articles)
-		err = db.HandleDSMultiError(err, db.OldNewsFields)
-		log.Err(err, r)
-
-		for k, v := range articles {
-			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
-		}
+	for k, v := range articles {
+		articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
 	}
 
 	response := DataTablesAjaxResponse{}

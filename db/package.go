@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
-	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
 
@@ -87,7 +86,7 @@ func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 }
 
 func (pack Package) GetPath() string {
-	return GetPackagePath(pack.ID, pack.GetName())
+	return helpers.GetPackagePath(pack.ID, pack.GetName())
 }
 
 func (pack Package) GetID() int {
@@ -373,15 +372,6 @@ func (pack Package) GetDaysToRelease() string {
 
 func IsValidPackageID(id int) bool {
 	return id != 0
-}
-
-func GetPackagePath(id int, name string) string {
-
-	path := "/packages/" + strconv.Itoa(id)
-	if name == "" {
-		return path
-	}
-	return path + "/" + slug.Make(name)
 }
 
 func GetPackage(id int, columns []string) (pack Package, err error) {

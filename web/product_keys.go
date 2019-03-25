@@ -158,5 +158,5 @@ func (e extendedRow) GetPath(productType string) string {
 	if productType == "app" {
 		return helpers.GetAppPath(e.ID, e.Name)
 	}
-	return db.GetPackagePath(e.ID, e.Name)
+	return helpers.GetPackagePath(e.ID, e.Name)
 }

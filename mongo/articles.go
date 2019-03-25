@@ -83,7 +83,27 @@ func (article Article) OutputForJSON() (output []interface{}) {
 	}
 }
 
-func GetArticles(appID int, offset int64) (news []Article, err error) {
+func GetArticlesByAppIDs(appIDs []int) (news []Article, err error) {
+
+	appsFilter := bson.A{}
+	for _, v := range appIDs {
+		appsFilter = append(appsFilter, v)
+	}
+
+	return getArticles(0, 3, bson.M{"$or": appsFilter})
+}
+
+func GetArticlesByAppID(appID int, offset int64) (news []Article, err error) {
+
+	return getArticles(offset, 100, bson.M{"app_id": appID})
+}
+
+func GetArticles(offset int64) (news []Article, err error) {
+
+	return getArticles(offset, 100, bson.M{})
+}
+
+func getArticles(offset int64, limit int64, filter interface{}) (news []Article, err error) {
 
 	client, ctx, err := GetMongo()
 	if err != nil {
@@ -92,7 +112,7 @@ func GetArticles(appID int, offset int64) (news []Article, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents)
 
-	cur, err := c.Find(ctx, bson.M{"app_id": appID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(bson.M{"_id": -1}))
+	cur, err := c.Find(ctx, filter, options.Find().SetLimit(limit).SetSkip(offset).SetSort(bson.M{"_id": -1}))
 	if err != nil {
 		return news, err
 	}

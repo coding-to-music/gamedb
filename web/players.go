@@ -5,12 +5,11 @@ import (
 	"strconv"
 	"sync"
 
-	"cloud.google.com/go/datastore"
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/db"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func playersRouter() http.Handler {
@@ -68,9 +67,9 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-		t.RanksCount, err = db.CountRanks()
-		log.Err(err, r)
+		// var err error
+		// t.RanksCount, err = db.CountRanks()
+		// log.Err(err, r)
 
 	}()
 
@@ -120,19 +119,11 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get ranks
-	var ranksExtra []RankExtra
-
+	var playersExtra []RankExtra
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
-
-		client, ctx, err := db.GetDSClient()
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
 
 		columns := map[string]string{
 			"3": "level_rank",
@@ -142,43 +133,43 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"7": "friends_rank",
 		}
 
-		q := datastore.NewQuery(db.KindPlayerRank).Limit(100)
-
-		column := query.setOrderDS(columns, false)
-		if column != "" {
-			q, err = query.setOrderOffsetDS(q, columns)
-			if err != nil {
-
-				log.Err(err, r)
-				return
-			}
-
-			// q = q.Filter(column+" >", 0)
-
-			var ranks []db.PlayerRank
-			_, err := client.GetAll(ctx, q, &ranks)
-			log.Err(err, r)
-
-			for _, v := range ranks {
-
-				rank := RankExtra{RankRow: v}
-
-				switch column {
-				case "badges_rank":
-					rank.Rank = humanize.Ordinal(rank.RankRow.BadgesRank)
-				case "friends_rank":
-					rank.Rank = humanize.Ordinal(rank.RankRow.FriendsRank)
-				case "games_rank":
-					rank.Rank = humanize.Ordinal(rank.RankRow.GamesRank)
-				case "level_rank", "":
-					rank.Rank = humanize.Ordinal(rank.RankRow.LevelRank)
-				case "play_time_rank":
-					rank.Rank = humanize.Ordinal(rank.RankRow.PlayTimeRank)
-				}
-
-				ranksExtra = append(ranksExtra, rank)
-			}
+		ops := options.Find().SetSort(query.getOrderMongo(columns, "level_rank", -1))
+		players, err := mongo.GetPlayers(query.getOffset64(), ops)
+		if err != nil {
+			log.Err(err)
+			return
 		}
+
+		for _, v := range players {
+			playersExtra = append(playersExtra, RankExtra{
+				RankRow: mongo.PlayerRank{
+					PersonaName: v.PersonaName,
+				},
+			})
+		}
+
+		// _, err := client.GetAll(ctx, q, &ranks)
+		// log.Err(err, r)
+		//
+		// for _, v := range ranks {
+		//
+		// 	rank := RankExtra{RankRow: v}
+		//
+		// 	switch column {
+		// 	case "badges_rank":
+		// 		rank.Rank = humanize.Ordinal(rank.RankRow.BadgesRank)
+		// 	case "friends_rank":
+		// 		rank.Rank = humanize.Ordinal(rank.RankRow.FriendsRank)
+		// 	case "games_rank":
+		// 		rank.Rank = humanize.Ordinal(rank.RankRow.GamesRank)
+		// 	case "level_rank", "":
+		// 		rank.Rank = humanize.Ordinal(rank.RankRow.LevelRank)
+		// 	case "play_time_rank":
+		// 		rank.Rank = humanize.Ordinal(rank.RankRow.PlayTimeRank)
+		// 	}
+		//
+		// 	ranksExtra = append(ranksExtra, rank)
+		// }
 
 	}()
 
@@ -189,9 +180,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-		total, err = db.CountRanks()
-		log.Err(err, r)
+		// var err error
+		// total, err = db.CountRanks()
+		// log.Err(err, r)
 
 	}()
 
@@ -203,7 +194,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsFiltered = strconv.Itoa(total)
 	response.Draw = query.Draw
 
-	for _, v := range ranksExtra {
+	for _, v := range playersExtra {
 
 		response.AddRow(v.outputForJSON())
 	}
@@ -212,7 +203,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type RankExtra struct {
-	RankRow db.PlayerRank
+	RankRow mongo.PlayerRank
 	Rank    string
 }
 

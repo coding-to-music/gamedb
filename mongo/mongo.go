@@ -17,6 +17,7 @@ const (
 	CollectionEvents        = "events"
 	CollectionPlayers       = "players"
 	CollectionPlayerApps    = "player_apps"
+	CollectionPlayerRanks   = "player_ranks"
 	CollectionProductPrices = "product_prices"
 )
 
@@ -145,6 +146,10 @@ func CountDocuments(collection string, filter interface{}) (count int64, err err
 	client, ctx, err := GetMongo()
 	if err != nil {
 		return count, err
+	}
+
+	if filter == nil {
+		filter = bson.M{}
 	}
 
 	c := client.Database(MongoDatabase).Collection(collection)

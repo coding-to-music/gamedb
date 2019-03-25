@@ -22,6 +22,7 @@ const (
 	LogNameConsumers LogName = "consumers"
 	LogNameCron      LogName = "crons"
 	LogNameDatastore LogName = "datastore"
+	LogNameMongo     LogName = "mongo"
 	LogNameDebug     LogName = "debug"
 	LogNameGameDB    LogName = "gamedb" // Default
 	LogNameRequests  LogName = "requests"

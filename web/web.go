@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/datastore"
 	"github.com/Jleagle/go-durationfmt"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
@@ -29,6 +28,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func middlewareLog(next http.Handler) http.Handler {
@@ -669,7 +669,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.Count
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) setOrderDS(columns map[string]string, signed bool) (order string) {
+func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol string, fallbackSort int8) bson.M {
 
 	for _, v := range q.Order {
 
@@ -682,10 +682,11 @@ func (q DataTablesQuery) setOrderDS(columns map[string]string, signed bool) (ord
 						if col, ok := columns[col]; ok {
 							if ok {
 
-								if dir == "desc" && signed {
-									col = "-" + col
+								if dir == "desc" {
+									return bson.M{col: -1}
+								} else {
+									return bson.M{col: 1}
 								}
-								return col
 							}
 						}
 					}
@@ -694,7 +695,7 @@ func (q DataTablesQuery) setOrderDS(columns map[string]string, signed bool) (ord
 		}
 	}
 
-	return ""
+	return bson.M{"_id": 1}
 }
 
 func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {
@@ -703,23 +704,6 @@ func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.CountryCode,
 	db = db.Offset(q.Start)
 
 	return db
-}
-
-func (q DataTablesQuery) setOrderOffsetDS(qu *datastore.Query, columns map[string]string) (*datastore.Query, error) {
-
-	qu = q.setOffsetDS(qu)
-
-	order := q.setOrderDS(columns, true)
-	if order != "" {
-		qu = qu.Order(order)
-	}
-
-	return qu, nil
-}
-
-func (q DataTablesQuery) setOffsetDS(qu *datastore.Query) *datastore.Query {
-
-	return qu.Offset(q.getOffset())
 }
 
 func (q DataTablesQuery) getOffset() int {

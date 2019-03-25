@@ -50,3 +50,12 @@ func GetAppIcon(id int, icon string) string {
 	}
 	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(id) + "/" + icon + ".jpg"
 }
+
+func GetPackagePath(id int, name string) string {
+
+	path := "/packages/" + strconv.Itoa(id)
+	if name == "" {
+		return path
+	}
+	return path + "/" + slug.Make(name)
+}
