@@ -1024,7 +1024,18 @@ func updateAppTwitch(app *sql.App) error {
 
 	if app.TwitchID == 0 && app.Name != "" {
 
-		resp, err := client.GetGames(&helix.GamesParams{Names: []string{app.Name}})
+		var resp *helix.GamesResponse
+
+		// Retrying as this call can fail
+		operation := func() (err error) {
+
+			resp, err = client.GetGames(&helix.GamesParams{Names: []string{app.Name}})
+			return err
+		}
+
+		policy := backoff.NewExponentialBackOff()
+
+		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { logInfo(err) })
 		if err != nil {
 			return err
 		}

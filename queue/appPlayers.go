@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/sql"
 	influx "github.com/influxdata/influxdb1-client"
@@ -96,18 +97,29 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func getAppTwitchStreamers(app *sql.App) (err error, viewers int) {
+func getAppTwitchStreamers(app *sql.App) (viewers int, err error) {
 
 	client, err := helpers.GetTwitch()
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 
 	if app.TwitchID > 0 {
 
-		resp, err := client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(app.TwitchID)}, Language: []string{"en"}})
+		var resp *helix.StreamsResponse
+
+		// Retrying as this call can fail
+		operation := func() (err error) {
+
+			resp, err = client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(app.TwitchID)}, Language: []string{"en"}})
+			return err
+		}
+
+		policy := backoff.NewExponentialBackOff()
+
+		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { logInfo(err) })
 		if err != nil {
-			return err, 0
+			return 0, err
 		}
 
 		for _, v := range resp.Data.Streams {
@@ -115,7 +127,7 @@ func getAppTwitchStreamers(app *sql.App) (err error, viewers int) {
 		}
 	}
 
-	return nil, viewers
+	return viewers, nil
 }
 
 func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
