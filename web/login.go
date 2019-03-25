@@ -62,6 +62,9 @@ var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Stop brute forces
+	time.Sleep(time.Second / 2)
+	
 	err := func() (err error) {
 
 		// Parse form
@@ -146,9 +149,6 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		err2 := helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
 		log.Err(err2)
-
-		// Stop brute forces
-		time.Sleep(time.Second)
 
 		err = session.SetGoodFlash(w, r, err.Error())
 		log.Err(err, r)
