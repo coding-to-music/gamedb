@@ -63,7 +63,9 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminDev()
 	case "queues":
 		err := r.ParseForm()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 		go adminQueues(r)
 	}
 

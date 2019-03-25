@@ -317,7 +317,9 @@ func GetPlayers(offset int64, limit int64, sort bson.D) (players []Player, err e
 
 		var player Player
 		err := cur.Decode(&player)
-		log.Err(err, player.ID)
+		if err != nil {
+			log.Err(err, player.ID)
+		}
 		players = append(players, player)
 	}
 

@@ -126,7 +126,9 @@ func getArticles(offset int64, limit int64, filter interface{}) (news []Article,
 
 		var article Article
 		err := cur.Decode(&article)
-		log.Err(err, article.ID)
+		if err != nil {
+			log.Err(err, article.ID)
+		}
 		news = append(news, article)
 	}
 
