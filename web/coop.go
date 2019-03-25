@@ -3,7 +3,6 @@ package web
 import (
 	"net/http"
 	"strconv"
-	"sync"
 
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -13,7 +12,7 @@ import (
 )
 
 const (
-	maxPlayers = 8
+	maxPlayers = 10
 )
 
 func coopHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,63 +66,52 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make a map of all games the players have
-	var wg sync.WaitGroup
-	var allGames = map[int]bool{}
-	var allGamesByPlayer [][]int
+	var allApps = map[int]bool{}
+	var allAppsByPlayer = map[int64][]int{}
 
-	for _, player := range t.Players {
+	playerApps, err := mongo.GetPlayerAppsByPlayers(foundPlayerIDs)
+	for _, v := range playerApps {
 
-		wg.Add(1)
-		go func(player mongo.Player) {
+		allApps[v.AppID] = true
 
-			defer wg.Done()
+		_, ok := allAppsByPlayer[v.PlayerID]
+		if ok {
 
-			playerApps, err := mongo.GetPlayerApps(player.ID, 0, false, nil)
-			if err != nil {
-				log.Err(err, r)
-				return
-			}
+			allAppsByPlayer[v.PlayerID] = append(allAppsByPlayer[v.PlayerID], v.AppID)
 
-			var playerAppIDs []int
-			for _, v := range playerApps {
-				allGames[v.AppID] = true
-				playerAppIDs = append(playerAppIDs, v.AppID)
-			}
-			allGamesByPlayer = append(allGamesByPlayer, playerAppIDs)
+		} else {
 
-		}(player)
+			allAppsByPlayer[v.PlayerID] = []int{v.AppID}
+
+		}
 	}
 
-	// Wait
-	wg.Wait()
-
 	// Remove apps that are not in a users apps
-	// Loop each game
-	for allGameID := range allGames {
+	for appID := range allApps {
 
 		var remove = false
 
 		// Loop each user
-		for _, gamesSlice := range allGamesByPlayer {
+		for _, gamesSlice := range allAppsByPlayer {
 
-			if !helpers.SliceHasInt(gamesSlice, allGameID) {
+			if !helpers.SliceHasInt(gamesSlice, appID) {
 				remove = true
 				break
 			}
 		}
 
 		if remove {
-			delete(allGames, allGameID)
+			delete(allApps, appID)
 		}
 	}
 
 	// Convert to slice
-	var gamesSlice []int
-	for k := range allGames {
-		gamesSlice = append(gamesSlice, k)
+	var appsSlice []int
+	for k := range allApps {
+		appsSlice = append(appsSlice, k)
 	}
 
-	games, err := sql.GetAppsByID(gamesSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
+	games, err := sql.GetAppsByID(appsSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
 		log.Err(err, r)
 	}
