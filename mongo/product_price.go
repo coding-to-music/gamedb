@@ -148,6 +148,9 @@ func getProductPrices(filter interface{}, offset int64, limit int64, sortOrder b
 
 	o := options.Find()
 	o.SetSkip(offset)
+	if limit > 0 {
+		o.SetLimit(limit)
+	}
 
 	if sortOrder {
 		o.SetSort(bson.M{"created_at": 1})
