@@ -668,7 +668,7 @@ func (app App) GetMetaImage() string {
 func (app *App) SetNameIfEmpty(name string) {
 
 	if app.Name == "" && name != "" {
-		app.Name = name
+		app.Name = strings.TrimSpace(name)
 	}
 }
 
