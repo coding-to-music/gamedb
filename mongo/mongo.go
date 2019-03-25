@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/gamedb/website/config"
-	"github.com/gamedb/website/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -154,73 +153,4 @@ func CountDocuments(collection string, filter interface{}) (count int64, err err
 
 	c := client.Database(MongoDatabase).Collection(collection)
 	return c.CountDocuments(ctx, filter, options.Count())
-}
-
-func documentsToArticles(a []MongoDocument) (b []Article) {
-
-	for _, v := range a {
-
-		original, ok := v.(Article)
-		if ok {
-			b = append(b, original)
-		} else {
-			log.Info("kind not a struct")
-		}
-	}
-
-	return b
-}
-
-func documentsToPlayers(a []MongoDocument) (b []Player) {
-
-	for _, v := range a {
-
-		original, ok := v.(Player)
-		if ok {
-			b = append(b, original)
-		} else {
-			log.Info("kind not a struct")
-		}
-	}
-
-	return b
-}
-
-func documentsToPlayerApps(a []MongoDocument) (b []PlayerApp) {
-
-	for _, v := range a {
-
-		original, ok := v.(PlayerApp)
-		if ok {
-			b = append(b, original)
-		}
-	}
-
-	return b
-}
-
-func documentsToChanges(a []MongoDocument) (b []Change) {
-
-	for _, v := range a {
-
-		original, ok := v.(Change)
-		if ok {
-			b = append(b, original)
-		}
-	}
-
-	return b
-}
-
-func documentsToProductPrices(a []MongoDocument) (b []ProductPrice) {
-
-	for _, v := range a {
-
-		original, ok := v.(ProductPrice)
-		if ok {
-			b = append(b, original)
-		}
-	}
-
-	return b
 }
