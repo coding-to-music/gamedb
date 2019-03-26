@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"reflect"
+	"sort"
 	"sync"
 	"time"
 
@@ -128,6 +129,14 @@ func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
 				resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
 			}
 		}
+	}
+
+	for k := range resp {
+
+		sort.Slice(resp[k], func(i, j int) bool {
+			return resp[k][i][0].(int64) < resp[k][j][0].(int64)
+		})
+
 	}
 
 	return resp
