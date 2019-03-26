@@ -41,9 +41,8 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.RanksCount, err = mongo.CountPlayers()
+		t.PlayersCount, err = mongo.CountPlayers()
 		log.Err(err, r)
-
 	}()
 
 	wg.Add(1)
@@ -54,7 +53,6 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.AppsCount, err = sql.CountApps()
 		log.Err(err, r)
-
 	}()
 
 	wg.Add(1)
@@ -65,7 +63,6 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PackagesCount, err = sql.CountPackages()
 		log.Err(err, r)
-
 	}()
 
 	// Get total prices
@@ -78,10 +75,8 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm, err := sql.GetMySQLClient()
 		if err != nil {
-
 			log.Err(err, r)
 			return
-
 		}
 
 		var code = session.GetCountryCode(r)
@@ -115,9 +110,9 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsTemplate struct {
 	GlobalTemplate
-	RanksCount    int64
 	AppsCount     int
 	PackagesCount int
+	PlayersCount  int64
 	Totals        map[string]string
 }
 
