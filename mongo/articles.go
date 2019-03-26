@@ -106,7 +106,7 @@ func getArticles(offset int64, limit int64, filter interface{}) (news []Article,
 		return news, err
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents.String())
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppArticles.String())
 
 	cur, err := c.Find(ctx, filter, options.Find().SetLimit(limit).SetSkip(offset).SetSort(bson.M{"_id": -1}))
 	if err != nil {
