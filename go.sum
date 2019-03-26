@@ -19,6 +19,10 @@ github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c h1
 github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c/go.mod h1:xRFoP0dYM3dVozL4PyltmTlvkE6iyI+eSCmFGePPEtc=
 github.com/Jleagle/influxql v0.0.0-20190303215204-7c739e39d8a6 h1:JbUyRrb2VtPVQfmkQB81uDe3RkF0/uWDUqToyA1CyY8=
 github.com/Jleagle/influxql v0.0.0-20190303215204-7c739e39d8a6/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
+github.com/Jleagle/influxql v0.0.0-20190326220800-b1ef3c24a22d h1:gMYp2uDABJhJeRNXVOe1x0B5SydslIzVXyIi8793ti8=
+github.com/Jleagle/influxql v0.0.0-20190326220800-b1ef3c24a22d/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
+github.com/Jleagle/influxql v0.0.0-20190326222351-022d7e9bc683 h1:Q6J1LV0gUvup/ZKc9zgQ44pfNOBvajXkYsKu4tJzLq8=
+github.com/Jleagle/influxql v0.0.0-20190326222351-022d7e9bc683/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
 github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89 h1:oxgneM6VUEWBQVvP7zbf8pnDI+351CtX1BAFsnIDB1M=
 github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83 h1:u+ekQU2p89s6sgUhl8MkK6Ii7lCmdNmcKeXjlrTj/0U=

@@ -129,8 +129,7 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhere("time", ">", "NOW() - 30d")
 	builder.AddWhere("app_id", "=", 0)
 	builder.AddGroupByTime("30m")
-	builder.SetFillNone()
-
+	builder.SetFillLinear()
 	resp, err := sql.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
