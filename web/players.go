@@ -1,10 +1,12 @@
 package web
 
 import (
+	"html/template"
 	"net/http"
 	"strconv"
 	"sync"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/sql"
@@ -28,7 +30,6 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := playersTemplate{}
-	t.fill(w, r, "Players", "See where you come against the rest of the world.")
 
 	//
 	var wg sync.WaitGroup
@@ -60,20 +61,10 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Count ranks
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		// var err error
-		// t.RanksCount, err = db.CountRanks()
-		// log.Err(err, r)
-
-	}()
-
 	// Wait
 	wg.Wait()
+
+	t.fill(w, r, "Players", "See where you come against the rest of the world ("+template.HTML(humanize.Comma(t.PlayersCount))+" players).")
 
 	err := returnTemplate(w, r, "players", t)
 	log.Err(err, r)
@@ -82,7 +73,6 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 type playersTemplate struct {
 	GlobalTemplate
 	PlayersCount int64
-	RanksCount   int
 	Date         string
 }
 
@@ -117,42 +107,28 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	// Get ranks
-	var playersExtra []RankExtra
+	// Get players
+	var players []mongo.Player
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		columns := map[string]string{
-			"3": "level_rank",
-			"4": "games_rank",
-			"5": "badges_rank",
-			"6": "play_time_rank",
-			"7": "friends_rank",
+			"3": "level",
+			"4": "games_count",
+			"5": "badges_count",
+			"6": "play_time",
+			"7": "friends_count",
 		}
 
-		players, err := mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, "level_rank", -1))
+		var err error
+		players, err = mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, "level", -1), mongo.M{})
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		for _, v := range players {
-			playersExtra = append(playersExtra, RankExtra{
-				RankRow: mongo.PlayerRank{
-					PersonaName: v.PersonaName,
-				},
-			})
-		}
-
-		// _, err := client.GetAll(ctx, q, &ranks)
-		// log.Err(err, r)
-		//
-		// for _, v := range ranks {
-		//
-		// 	rank := RankExtra{RankRow: v}
-		//
 		// 	switch column {
 		// 	case "badges_rank":
 		// 		rank.Rank = humanize.Ordinal(rank.RankRow.BadgesRank)
@@ -165,22 +141,19 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		// 	case "play_time_rank":
 		// 		rank.Rank = humanize.Ordinal(rank.RankRow.PlayTimeRank)
 		// 	}
-		//
-		// 	ranksExtra = append(ranksExtra, rank)
-		// }
 
 	}()
 
 	// Get total
-	var total int
+	var total int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		// var err error
-		// total, err = db.CountRanks()
-		// log.Err(err, r)
+		var err error
+		total, err = mongo.CountPlayers()
+		log.Err(err, r)
 
 	}()
 
@@ -188,39 +161,14 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(total)
-	response.RecordsFiltered = strconv.Itoa(total)
+	response.RecordsTotal = strconv.FormatInt(total, 10)
+	response.RecordsFiltered = response.RecordsTotal // todo, update if we filter players by name
 	response.Draw = query.Draw
 
-	for _, v := range playersExtra {
+	for _, v := range players {
 
-		response.AddRow(v.outputForJSON())
+		response.AddRow(v.OutputForJSON())
 	}
 
 	response.output(w, r)
-}
-
-type RankExtra struct {
-	RankRow mongo.PlayerRank
-	Rank    string
-}
-
-// Data array for datatables
-func (r *RankExtra) outputForJSON() (output []interface{}) {
-
-	return []interface{}{
-		r.Rank,
-		strconv.FormatInt(r.RankRow.PlayerID, 10),
-		r.RankRow.PersonaName,
-		r.RankRow.GetAvatar(),
-		r.RankRow.GetAvatar2(),
-		r.RankRow.Level,
-		r.RankRow.Games,
-		r.RankRow.Badges,
-		r.RankRow.GetTimeShort(),
-		r.RankRow.GetTimeLong(),
-		r.RankRow.Friends,
-		r.RankRow.GetFlag(),
-		r.RankRow.GetCountry(),
-	}
 }

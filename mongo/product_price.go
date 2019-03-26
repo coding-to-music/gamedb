@@ -27,10 +27,6 @@ type ProductPrice struct {
 	DifferencePercent float64
 }
 
-func (price ProductPrice) Key() interface{} {
-	return nil
-}
-
 func (price ProductPrice) BSON() (ret interface{}) {
 
 	return bson.M{
@@ -47,33 +43,33 @@ func (price ProductPrice) BSON() (ret interface{}) {
 	}
 }
 
-func (p ProductPrice) GetPath() string {
+func (price ProductPrice) GetPath() string {
 
-	if p.AppID != 0 {
-		return helpers.GetAppPath(p.AppID, p.Name)
-	} else if p.PackageID != 0 {
-		return helpers.GetPackagePath(p.PackageID, p.Name)
+	if price.AppID != 0 {
+		return helpers.GetAppPath(price.AppID, price.Name)
+	} else if price.PackageID != 0 {
+		return helpers.GetPackagePath(price.PackageID, price.Name)
 	}
 
 	return ""
 }
 
-func (p ProductPrice) GetIcon() string {
-	if p.Icon == "" {
+func (price ProductPrice) GetIcon() string {
+	if price.Icon == "" {
 		return helpers.DefaultAppIcon
-	} else if strings.HasPrefix(p.Icon, "/") || strings.HasPrefix(p.Icon, "http") {
-		return p.Icon
+	} else if strings.HasPrefix(price.Icon, "/") || strings.HasPrefix(price.Icon, "http") {
+		return price.Icon
 	} else {
-		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(p.AppID) + "/" + p.Icon + ".jpg"
+		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(price.AppID) + "/" + price.Icon + ".jpg"
 	}
 }
 
-func (p ProductPrice) GetPercentChange() float64 {
+func (price ProductPrice) GetPercentChange() float64 {
 
-	if math.IsInf(p.DifferencePercent, 0) {
+	if math.IsInf(price.DifferencePercent, 0) {
 		return 0
 	}
-	return helpers.RoundFloatTo2DP(p.DifferencePercent)
+	return helpers.RoundFloatTo2DP(price.DifferencePercent)
 
 }
 
@@ -139,12 +135,12 @@ func GetPrices(offset int64, cc steam.CountryCode) (prices []ProductPrice, err e
 
 func getProductPrices(filter interface{}, offset int64, limit int64, sortOrder bool) (prices []ProductPrice, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return prices, err
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionProductPrices)
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionProductPrices.String())
 
 	o := options.Find()
 	o.SetSkip(offset)

@@ -12,10 +12,11 @@ import (
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const defaultPlayerAvatar = "/assets/img/no-player-image.jpg"
+const DefaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
@@ -24,35 +25,40 @@ var (
 
 type Player struct {
 	ID               int64     `bson:"_id"`             //
-	Avatar           string    ``                       //
-	Badges           string    ``                       // []ProfileBadge
-	BadgesCount      int       `bson:"badges_count"`    //
+	Avatar           string    `bson:"avatar"`          //
+	Badges           string    `bson:"badges"`          // []ProfileBadge
 	BadgeStats       string    `bson:"badge_stats"`     // ProfileBadgeStats
-	Bans             string    ``                       // PlayerBans
+	Bans             string    `bson:"bans"`            // PlayerBans
 	CountryCode      string    `bson:"country_code"`    //
-	Donated          int       ``                       //
-	Friends          string    ``                       // []ProfileFriend
-	FriendsCount     int       `bson:"friends_count"`   //
-	GamesCount       int       `bson:"games_count"`     //
+	Donated          int       `bson:"donated"`         //
+	Friends          string    `bson:"friends"`         // []ProfileFriend
 	GamesRecent      string    `bson:"games_recent"`    // []ProfileRecentGame
 	GameStats        string    `bson:"game_stats"`      // PlayerAppStatsTemplate
-	Groups           []int     ``                       // []int
+	Groups           []int     `bson:"groups"`          // []int
 	LastLogOff       time.Time `bson:"time_logged_off"` //
-	Level            int       ``                       //
 	NumberOfGameBans int       `bson:"bans_game"`       //
 	NumberOfVACBans  int       `bson:"bans_cav"`        //
 	PersonaName      string    `bson:"persona_name"`    //
-	PlayTime         int       `bson:"play_time"`       //
 	PrimaryClanID    int       `bson:"primary_clan_id"` //
 	RealName         string    `bson:"real_name"`       //
 	StateCode        string    `bson:"status_code"`     //
 	TimeCreated      time.Time `bson:"time_created"`    //
 	UpdatedAt        time.Time `bson:"updated_at"`      //
 	VanintyURL       string    `bson:"vanity_url"`      //
-}
 
-func (player Player) Key() interface{} {
-	return player.ID
+	// Ranked
+	BadgesCount  int `bson:"badges_count"`
+	FriendsCount int `bson:"friends_count"`
+	GamesCount   int `bson:"games_count"`
+	Level        int `bson:"level"`
+	PlayTime     int `bson:"play_time"`
+
+	// Ranks
+	BadgesRank   int `bson:"badges_rank"`
+	FriendsRank  int `bson:"friends_rank"`
+	GamesRank    int `bson:"games_rank"`
+	LevelRank    int `bson:"level_rank"`
+	PlayTimeRank int `bson:"play_time_rank"`
 }
 
 func (player Player) BSON() (ret interface{}) {
@@ -133,15 +139,14 @@ func (player Player) GetAvatar() string {
 	} else if player.Avatar != "" {
 		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/" + player.Avatar
 	} else {
-		return player.GetDefaultAvatar()
+		return DefaultPlayerAvatar
 	}
 }
 
-func (player Player) GetDefaultAvatar() string {
-	return defaultPlayerAvatar
-}
-
 func (player Player) GetFlag() string {
+	if player.CountryCode == "" {
+		return ""
+	}
 	return "/assets/img/flags/" + strings.ToLower(player.CountryCode) + ".png"
 }
 
@@ -155,6 +160,40 @@ func (player Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
 	return stats, err
 }
 
+func (player Player) GetAvatar2() string {
+	return helpers.GetAvatar2(player.Level)
+}
+
+func (player Player) GetTimeShort() (ret string) {
+	return helpers.GetTimeShort(player.PlayTime, 2)
+}
+
+func (player Player) GetTimeLong() (ret string) {
+	return helpers.GetTimeLong(player.PlayTime, 5)
+}
+
+//
+func (player Player) GetBadgesRank() string {
+	return humanize.Ordinal(player.BadgesRank)
+}
+
+func (player Player) GetFriendsRank() string {
+	return humanize.Ordinal(player.FriendsRank)
+}
+
+func (player Player) GetGamesRank() string {
+	return humanize.Ordinal(player.GamesRank)
+}
+
+func (player Player) GetLevelRank() string {
+	return humanize.Ordinal(player.LevelRank)
+}
+
+func (player Player) GetPlaytimeRank() string {
+	return humanize.Ordinal(player.PlayTimeRank)
+}
+
+//
 func (player Player) GetBadges() (badges []ProfileBadge, err error) {
 
 	if player.Badges == "" || player.Badges == "null" {
@@ -280,6 +319,25 @@ func (player Player) ShouldUpdate(userAgent string, updateType UpdateType) bool 
 	return false
 }
 
+func (player Player) OutputForJSON() (output []interface{}) {
+
+	return []interface{}{
+		0,                                // Rank
+		strconv.FormatInt(player.ID, 10), //
+		player.PersonaName,               //
+		player.GetAvatar(),               //
+		player.GetAvatar2(),              //
+		player.Level,                     //
+		player.GamesCount,                //
+		player.BadgesCount,               //
+		player.GetTimeShort(),            //
+		player.GetTimeLong(),             //
+		player.FriendsCount,              //
+		player.GetFlag(),                 //
+		player.GetCountry(),              //
+	}
+}
+
 func GetPlayer(id int64) (player Player, err error) {
 
 	if !IsValidPlayerID(id) {
@@ -290,9 +348,9 @@ func GetPlayer(id int64) (player Player, err error) {
 	return player, err
 }
 
-func GetPlayers(offset int64, limit int64, sort bson.D) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, filter M) (players []Player, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return players, err
 	}
@@ -302,8 +360,8 @@ func GetPlayers(offset int64, limit int64, sort bson.D) (players []Player, err e
 		ops.SetLimit(limit)
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers)
-	cur, err := c.Find(ctx, bson.M{}, ops)
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
+	cur, err := c.Find(ctx, filter, ops)
 	if err != nil {
 		return players, err
 	}
@@ -332,7 +390,7 @@ func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 		return players, nil
 	}
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return players, err
 	}
@@ -342,7 +400,7 @@ func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 		idsBSON = append(idsBSON, v)
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionPlayers)
+	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
 	cur, err := c.Find(ctx, bson.M{"_id": bson.M{"$in": idsBSON}}, options.Find())
 	if err != nil {
 		return players, err
@@ -376,29 +434,39 @@ func CountPlayers() (count int64, err error) {
 	return count, err
 }
 
-func RankPlayers() (err error) {
+// todo, when we get more players, this should be batched
+func RankPlayers(col string, colToUpdate string) (err error) {
 
-	// db.foo.updateMany({}, {$set: {lastLookedAt: Date.now() / 1000}})
+	players, err := GetPlayers(0, 0, D{{col, -1}, {"_id", 1}}, M{col: bson.M{"$gt": 0}})
+	if err != nil {
+		return err
+	}
 
-	// players, err := GetPlayers(0, 3, bson.D{{}})
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// client, ctx, err := GetMongo()
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// var writes []mongo.WriteModel
-	// for _, v := range players {
-	// 	write := mongo.NewUpdateOneModel()
-	//
-	// 	writes = append(writes, write)
-	// }
-	//
-	// c := client.Database(MongoDatabase).Collection(CollectionPlayers)
-	// _, err = c.BulkWrite(ctx, writes, options.BulkWrite())
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	var writes []mongo.WriteModel
+	for k, v := range players {
+
+		write := mongo.NewUpdateOneModel()
+		write.SetFilter(bson.M{"_id": v.ID})
+		write.SetUpdate(bson.M{"$set": bson.M{colToUpdate: k + 1}})
+		write.SetUpsert(false)
+
+		writes = append(writes, write)
+	}
+
+	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
+
+	// Clear all current values
+	_, err = c.UpdateMany(ctx, bson.M{colToUpdate: bson.M{"$ne": 0}}, bson.M{"$set": bson.M{colToUpdate: 0}}, options.Update())
+	log.Err(err)
+
+	// Write in new values
+	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
+	log.Err(err)
 
 	return err
 }
@@ -439,10 +507,6 @@ func (p ProfileFriend) Scanned() bool {
 
 func (p ProfileFriend) GetPath() string {
 	return helpers.GetPlayerPath(p.SteamID, p.Name)
-}
-
-func (p ProfileFriend) GetDefaultAvatar() string {
-	return defaultPlayerAvatar
 }
 
 func (p ProfileFriend) GetLoggedOff() string {

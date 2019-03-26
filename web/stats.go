@@ -41,7 +41,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.RanksCount, err = mongo.CountRanks()
+		t.RanksCount, err = mongo.CountPlayers()
 		log.Err(err, r)
 
 	}()

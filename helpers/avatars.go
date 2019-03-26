@@ -4,6 +4,7 @@ import (
 	"math"
 )
 
+// Steam's generated avatar
 func GetAvatar2(level int) string {
 
 	ret := "avatar2"

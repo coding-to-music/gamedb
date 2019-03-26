@@ -23,7 +23,6 @@ var (
 	MemcacheBundlesCount          = memcache.Item{Key: "bundles-count", Expiration: 86400}
 	MemcacheUpcomingAppsCount     = memcache.Item{Key: "upcoming-apps-count", Expiration: 86400}
 	MemcacheUpcomingPackagesCount = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
-	MemcacheRanksCount            = memcache.Item{Key: "ranks-count", Expiration: 86400}
 	MemcachePlayersCount          = memcache.Item{Key: "players-count", Expiration: 86400 * 7}
 	MemcachePricesCount           = memcache.Item{Key: "prices-count", Expiration: 86400 * 7}
 	MemcachePlayerEventsCount     = func(playerID int64) memcache.Item {

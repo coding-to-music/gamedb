@@ -21,10 +21,6 @@ type PlayerApp struct {
 	AppPriceHour map[string]float32 ``
 }
 
-func (pa PlayerApp) Key() interface{} {
-	return strconv.FormatInt(pa.PlayerID, 10) + "-" + strconv.Itoa(pa.AppID)
-}
-
 func (pa PlayerApp) BSON() (ret interface{}) {
 
 	var prices = bson.M{}
@@ -38,7 +34,7 @@ func (pa PlayerApp) BSON() (ret interface{}) {
 	}
 
 	return bson.M{
-		"_id":             pa.Key(),
+		"_id":             strconv.FormatInt(pa.PlayerID, 10) + "-" + strconv.Itoa(pa.AppID),
 		"player_id":       pa.PlayerID,
 		"app_id":          pa.AppID,
 		"app_name":        pa.AppName,
@@ -122,22 +118,22 @@ func GetPlayerAppsByPlayers(playerIDs []int64) (apps []PlayerApp, err error) {
 		playersFilter = append(playersFilter, v)
 	}
 
-	return getPlayerApps(0, 0, bson.M{"$or": playersFilter})
+	return getPlayerApps(0, 0, bson.M{"$or": playersFilter}, nil)
 }
 
-func GetPlayerAppsByPlayer(playerID int64, offset int64, limit bool, ops *options.FindOptions) (apps []PlayerApp, err error) {
+func GetPlayerAppsByPlayer(playerID int64, offset int64, limit bool, sort D) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, 100, bson.M{"player_id": playerID})
+	return getPlayerApps(offset, 100, bson.M{"player_id": playerID}, sort)
 }
 
-func getPlayerApps(offset int64, limit int64, filter interface{}) (apps []PlayerApp, err error) {
+func getPlayerApps(offset int64, limit int64, filter interface{}, sort D) (apps []PlayerApp, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return apps, err
 	}
 
-	ops := options.Find()
+	ops := options.Find().SetSort(sort)
 	if offset > 0 {
 		ops.SetSkip(offset)
 	}
@@ -145,7 +141,7 @@ func getPlayerApps(offset int64, limit int64, filter interface{}) (apps []Player
 		ops.SetLimit(limit)
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps)
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String())
 	cur, err := c.Find(ctx, filter, ops)
 	if err != nil {
 		return apps, err

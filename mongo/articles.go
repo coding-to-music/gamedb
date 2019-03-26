@@ -27,10 +27,6 @@ type Article struct {
 	AppIcon    string    ``
 }
 
-func (article Article) Key() interface{} {
-	return article.ID
-}
-
 func (article Article) BSON() (ret interface{}) {
 
 	return bson.M{
@@ -105,12 +101,12 @@ func GetArticles(offset int64) (news []Article, err error) {
 
 func getArticles(offset int64, limit int64, filter interface{}) (news []Article, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return news, err
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents)
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents.String())
 
 	cur, err := c.Find(ctx, filter, options.Find().SetLimit(limit).SetSkip(offset).SetSort(bson.M{"_id": -1}))
 	if err != nil {

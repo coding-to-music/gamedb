@@ -1025,143 +1025,28 @@ func CronRanks() {
 
 	cronLogInfo("Ranks updated started")
 
-	// timeStart := time.Now().Unix()
-	//
-	// oldKeys, err := db.GetRankKeys()
-	// if err != nil {
-	// 	cronLogErr(err)
-	// 	return
-	// }
-	//
-	// newRanks := make(map[int64]*db.PlayerRank)
-	// var players []db.Player
-	//
-	// var wg sync.WaitGroup
-	//
-	// for _, v := range []string{"-level", "-games_count", "-badges_count", "-play_time", "-friends_count"} {
-	//
-	// 	wg.Add(1)
-	// 	go func(column string) {
-	//
-	// 		defer wg.Done()
-	//
-	// 		players, _, err = db.GetAllPlayers(column, db.PlayersToRank, false)
-	// 		if err != nil {
-	// 			cronLogErr(err)
-	// 			return
-	// 		}
-	//
-	// 		for _, player := range players {
-	// 			newRanks[player.PlayerID] = db.NewRankFromPlayer(player)
-	// 			delete(oldKeys, player.PlayerID)
-	// 		}
-	//
-	// 	}(v)
-	//
-	// }
-	// wg.Wait()
-	//
-	// // Convert new ranks to slice
-	// var ranks []*db.PlayerRank
-	// for _, v := range newRanks {
-	// 	ranks = append(ranks, v)
-	// }
-	//
-	// // Make ranks
-	// var prev int
-	// var rank = 0
-	//
-	// sort.Slice(ranks, func(i, j int) bool {
-	// 	return ranks[i].Level > ranks[j].Level
-	// })
-	// for _, v := range ranks {
-	// 	if v.Level != prev {
-	// 		rank++
-	// 	}
-	// 	v.UpdatedAt = time.Now()
-	// 	v.LevelRank = rank
-	// 	prev = v.Level
-	// }
-	//
-	// rank = 0
-	// sort.Slice(ranks, func(i, j int) bool {
-	// 	return ranks[i].Games > ranks[j].Games
-	// })
-	// for _, v := range ranks {
-	// 	if v.Games != prev {
-	// 		rank++
-	// 	}
-	// 	v.UpdatedAt = time.Now()
-	// 	v.GamesRank = rank
-	// 	prev = v.Games
-	// }
-	//
-	// rank = 0
-	// sort.Slice(ranks, func(i, j int) bool {
-	// 	return ranks[i].Badges > ranks[j].Badges
-	// })
-	// for _, v := range ranks {
-	// 	if v.Badges != prev {
-	// 		rank++
-	// 	}
-	// 	v.UpdatedAt = time.Now()
-	// 	v.BadgesRank = rank
-	// 	prev = v.Badges
-	// }
-	//
-	// rank = 0
-	// sort.Slice(ranks, func(i, j int) bool {
-	// 	return ranks[i].PlayTime > ranks[j].PlayTime
-	// })
-	// for _, v := range ranks {
-	// 	if v.PlayTime != prev {
-	// 		rank++
-	// 	}
-	// 	v.UpdatedAt = time.Now()
-	// 	v.PlayTimeRank = rank
-	// 	prev = v.PlayTime
-	// }
-	//
-	// rank = 0
-	// sort.Slice(ranks, func(i, j int) bool {
-	// 	return ranks[i].Friends > ranks[j].Friends
-	// })
-	// for _, v := range ranks {
-	// 	if v.Friends != prev {
-	// 		rank++
-	// 	}
-	// 	v.UpdatedAt = time.Now()
-	// 	v.FriendsRank = rank
-	// 	prev = v.Friends
-	// }
-	//
-	// // Make kinds
-	// var kinds []db.Kind
-	// for _, v := range ranks {
-	// 	kinds = append(kinds, *v)
-	// }
-	//
-	// // Update ranks
-	// err = db.BulkSaveKinds(kinds, db.KindPlayerRank, false)
-	// if err != nil {
-	// 	cronLogErr(err)
-	// 	return
-	// }
-	//
-	// // Remove old ranks
-	// var keysToDelete []*datastore.Key
-	// for _, v := range oldKeys {
-	// 	keysToDelete = append(keysToDelete, v)
-	// }
-	//
-	// err = db.BulkDeleteKinds(keysToDelete, false)
-	// if err != nil {
-	// 	cronLogErr(err)
-	// 	return
-	// }
+	cronLogInfo("Level")
+	err := mongo.RankPlayers("level", "level_rank")
+	log.Err(err)
+
+	cronLogInfo("Games")
+	err = mongo.RankPlayers("games_count", "games_rank")
+	log.Err(err)
+
+	cronLogInfo("Badges")
+	err = mongo.RankPlayers("badges_count", "badges_rank")
+	log.Err(err)
+
+	cronLogInfo("Time")
+	err = mongo.RankPlayers("play_time", "play_time_rank")
+	log.Err(err)
+
+	cronLogInfo("Friends")
+	err = mongo.RankPlayers("friends_count", "friends_rank")
+	log.Err(err)
 
 	// Update config
-	err := sql.SetConfig(sql.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	page, err := websockets.GetPage(websockets.PageAdmin)
@@ -1169,10 +1054,6 @@ func CronRanks() {
 	if err == nil {
 		page.Send(adminWebsocket{sql.ConfRanksUpdated + " complete"})
 	}
-
-	//
-	err = helpers.GetMemcache().Delete(helpers.MemcacheRanksCount.Key)
-	cronLogErr(err)
 
 	//
 	// cronLogInfo("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
@@ -1216,9 +1097,6 @@ func adminDev() {
 	var err error
 
 	log.Info("Started dev code")
-
-	err = mongo.RankPlayers()
-	log.Err(err)
 
 	//
 	err = sql.SetConfig(sql.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))

@@ -300,7 +300,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 
 	var prices sql.ProductPrices
 	var price sql.ProductPriceStruct
-	var documents []mongo.MongoDocument
+	var documents []mongo.Document
 
 	for code := range steam.Countries {
 

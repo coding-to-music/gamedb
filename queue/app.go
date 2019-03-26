@@ -719,7 +719,7 @@ func updateAppNews(app *sql.App) error {
 		return err
 	}
 
-	var documents []mongo.MongoDocument
+	var documents []mongo.Document
 	for _, v := range resp.Items {
 
 		if strings.TrimSpace(v.Contents) == "" {

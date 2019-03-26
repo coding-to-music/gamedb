@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/website/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type playerMessage struct {
@@ -76,7 +75,14 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Update player
-	player := mongo.Player{}
+	player, err := mongo.GetPlayer(id64)
+	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ack(msg)
+		return
+	}
+
 	player.ID = id64
 	player.RealName = message.PICSProfileInfo.RealName
 	player.StateCode = message.PICSProfileInfo.StateName
@@ -606,7 +612,7 @@ func updatePlayerGroups(player *mongo.Player) error {
 
 func savePlayerMongo(player mongo.Player) error {
 
-	_, err := mongo.ReplaceDocument(mongo.CollectionPlayers, bson.M{"_id": player.ID}, player)
+	_, err := mongo.ReplaceDocument(mongo.CollectionPlayers, mongo.M{"_id": player.ID}, player)
 
 	return err
 }

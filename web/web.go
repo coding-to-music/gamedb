@@ -19,6 +19,7 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
@@ -28,7 +29,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func middlewareLog(next http.Handler) http.Handler {
@@ -669,7 +669,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.Count
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol string, fallbackSort int8) bson.D {
+func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol string, fallbackSort int8) mongo.D {
 
 	for _, v := range q.Order {
 
@@ -683,9 +683,9 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol st
 							if ok {
 
 								if dir == "desc" {
-									return bson.D{{col, -1}}
+									return mongo.D{{col, -1}}
 								} else {
-									return bson.D{{col, 1}}
+									return mongo.D{{col, 1}}
 								}
 							}
 						}
@@ -695,7 +695,7 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol st
 		}
 	}
 
-	return bson.D{{"_id", 1}}
+	return mongo.D{{"_id", 1}}
 }
 
 func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {

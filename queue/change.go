@@ -113,7 +113,7 @@ type RabbitMessageChangesPICS struct {
 
 func saveChangesToMongo(changes map[int]*mongo.Change) (err error) {
 
-	var changesDocuments []mongo.MongoDocument
+	var changesDocuments []mongo.Document
 	for _, v := range changes {
 
 		changesDocuments = append(changesDocuments, mongo.Change{

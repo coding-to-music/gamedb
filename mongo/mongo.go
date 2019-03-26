@@ -10,16 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-const (
-	CollectionAppArticles   = "app_articles"
-	CollectionChanges       = "changes"
-	CollectionEvents        = "events"
-	CollectionPlayers       = "players"
-	CollectionPlayerApps    = "player_apps"
-	CollectionPlayerRanks   = "player_ranks"
-	CollectionProductPrices = "product_prices"
-)
-
 var (
 	mongoClient *mongo.Client
 	mongoCtx    context.Context
@@ -29,12 +19,33 @@ var (
 	ErrNoDocuments = mongo.ErrNoDocuments
 )
 
-type MongoDocument interface {
+type Document interface {
 	BSON() interface{}
-	Key() interface{}
 }
 
-func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
+type (
+	D bson.D
+	E bson.E
+	M bson.M
+	A bson.A
+)
+
+type collection string
+
+func (c collection) String() string {
+	return string(c)
+}
+
+const (
+	CollectionAppArticles   collection = "app_articles"
+	CollectionChanges       collection = "changes"
+	CollectionEvents        collection = "events"
+	CollectionPlayers       collection = "players"
+	CollectionPlayerApps    collection = "player_apps"
+	CollectionProductPrices collection = "product_prices"
+)
+
+func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 
 	if mongoClient == nil {
 
@@ -70,51 +81,51 @@ func GetMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
-func FindDocument(collection string, col string, val interface{}, document MongoDocument) (err error) {
+func FindDocument(collection collection, col string, val interface{}, document Document) (err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return err
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection)
+	c := client.Database(MongoDatabase).Collection(collection.String())
 	result := c.FindOne(ctx, bson.M{col: val}, options.FindOne())
 
 	return result.Decode(document)
 }
 
 // Errors if key already exists
-func InsertDocument(collection string, document MongoDocument) (resp *mongo.InsertOneResult, err error) {
+func InsertDocument(collection collection, document Document) (resp *mongo.InsertOneResult, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return resp, err
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection)
+	c := client.Database(MongoDatabase).Collection(collection.String())
 	return c.InsertOne(ctx, document.BSON(), options.InsertOne())
 }
 
 // Create or update whole document
-func ReplaceDocument(collection string, filter interface{}, document MongoDocument) (resp *mongo.UpdateResult, err error) {
+func ReplaceDocument(collection collection, filter interface{}, document Document) (resp *mongo.UpdateResult, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return resp, err
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection)
+	c := client.Database(MongoDatabase).Collection(collection.String())
 	return c.ReplaceOne(ctx, filter, document.BSON(), options.Replace().SetUpsert(true))
 }
 
 // Will skip documents that already exist
-func InsertDocuments(collection string, documents []MongoDocument) (resp *mongo.InsertManyResult, err error) {
+func InsertDocuments(collection collection, documents []Document) (resp *mongo.InsertManyResult, err error) {
 
 	if len(documents) < 1 {
 		return resp, nil
 	}
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return resp, err
 	}
@@ -124,7 +135,7 @@ func InsertDocuments(collection string, documents []MongoDocument) (resp *mongo.
 		many = append(many, v.BSON())
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection)
+	c := client.Database(MongoDatabase).Collection(collection.String())
 	resp, err = c.InsertMany(ctx, many, options.InsertMany().SetOrdered(false))
 
 	bulkErr, ok := err.(mongo.BulkWriteException)
@@ -140,9 +151,9 @@ func InsertDocuments(collection string, documents []MongoDocument) (resp *mongo.
 	return resp, err
 }
 
-func CountDocuments(collection string, filter interface{}) (count int64, err error) {
+func CountDocuments(collection collection, filter interface{}) (count int64, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return count, err
 	}
@@ -151,6 +162,6 @@ func CountDocuments(collection string, filter interface{}) (count int64, err err
 		filter = bson.M{}
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection)
+	c := client.Database(MongoDatabase).Collection(collection.String())
 	return c.CountDocuments(ctx, filter, options.Count())
 }

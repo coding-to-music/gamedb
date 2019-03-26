@@ -27,10 +27,6 @@ type Event struct {
 	IP        string
 }
 
-func (event Event) Key() interface{} {
-	return nil
-}
-
 func (event Event) BSON() (ret interface{}) {
 
 	return bson.M{
@@ -114,12 +110,12 @@ func (event Event) GetIcon() string {
 
 func GetEvents(playerID int64, offset int64) (events []Event, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return events, err
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents)
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents.String())
 
 	cur, err := c.Find(ctx, bson.M{"player_id": playerID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(bson.M{"created_at": -1}))
 	if err != nil {

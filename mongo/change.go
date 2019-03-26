@@ -17,10 +17,6 @@ type Change struct {
 	Packages  []int     ``
 }
 
-func (change Change) Key() interface{} {
-	return change.ID
-}
-
 func (change Change) BSON() (ret interface{}) {
 
 	// Apps
@@ -91,12 +87,12 @@ func GetChange(id int64) (change Change, err error) {
 
 func GetChanges(offset int64) (changes []Change, err error) {
 
-	client, ctx, err := GetMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return changes, err
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionChanges)
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionChanges.String())
 
 	cur, err := c.Find(ctx, bson.M{}, options.Find().SetLimit(100).SetSkip(offset).SetSort(bson.M{"_id": -1}))
 	if err != nil {

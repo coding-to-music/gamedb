@@ -55,7 +55,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 		return
 	}
 
-	// Get prices from datastore
+	// Get prices
 	pricesResp, err := mongo.GetPricesForProduct(product.GetID(), product.GetProductType(), code)
 	if err != nil {
 		log.Err(err, r)

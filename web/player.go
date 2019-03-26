@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func playerHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,42 +69,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		// var err error
-		friends, _ = player.GetFriends()
-		// if err != nil {
-		// 	log.Err(err, r)
-		// 	return
-		// }
-
-		// Queue friends to be scanned
-		// if !player.ShouldUpdate(r.UserAgent(), db.PlayerUpdateFriends) {
-		// 	return
-		// }
-
-		// for _, friend := range friends {
-		// 	err = queue.QueuePlayer(friend.SteamID)
-		// 	log.Err(err, r)
-		// }
-		//
-		// player.FriendsAddedAt = time.Now()
-		//
-		// err = player.Save() // switch to update query so not to overwrite other player changes
-		// log.Err(err, r)
-
-	}(player)
-
-	// Get ranks
-	// var ranks db.PlayerRank
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		// var err error
-		// ranks, err = db.GetRank(player.ID)
-		// if err != nil && err != datastore.ErrNoSuchEntity {
-		// 	log.Err(err, r)
-		// }
+		var err error
+		friends, err = player.GetFriends()
+		log.Err(err, r)
 
 	}(player)
 
@@ -229,13 +195,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Player = player
 	t.Friends = friends
 	t.Apps = []mongo.PlayerApp{}
-	// t.Ranks = playerRanksTemplate{ranks, players}
 	t.Badges = badges
 	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames
 	t.GameStats = gameStats
 	t.Bans = bans
 	t.toasts = toasts
+	t.DefaultAvatar = mongo.DefaultPlayerAvatar
 
 	err = returnTemplate(w, r, "player", t)
 	log.Err(err, r)
@@ -252,7 +218,8 @@ type playerTemplate struct {
 	GameStats  mongo.PlayerAppStatsTemplate
 	Player     mongo.Player
 	// Ranks       playerRanksTemplate
-	RecentGames []RecentlyPlayedGame
+	RecentGames   []RecentlyPlayedGame
+	DefaultAvatar string
 }
 
 // RecentlyPlayedGame
@@ -374,8 +341,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		var ops = options.Find().SetSort(query.getOrderMongo(columns, "app_time", -1))
-		playerApps, err = mongo.GetPlayerAppsByPlayer(playerIDInt, query.getOffset64(), true, ops)
+		playerApps, err = mongo.GetPlayerAppsByPlayer(playerIDInt, query.getOffset64(), true, query.getOrderMongo(columns, "app_time", -1))
 		log.Err(err)
 	}()
 
