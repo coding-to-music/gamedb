@@ -695,7 +695,7 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol st
 		}
 	}
 
-	return mongo.D{{"_id", 1}}
+	return mongo.D{{fallbackCol, fallbackSort}}
 }
 
 func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {
