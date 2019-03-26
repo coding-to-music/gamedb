@@ -297,7 +297,7 @@ func GetPlayers(offset int64, limit int64, sort bson.D) (players []Player, err e
 		return players, err
 	}
 
-	ops := options.Find().SetSkip(offset)
+	ops := options.Find().SetSkip(offset).SetSort(sort)
 	if limit > 0 {
 		ops.SetLimit(limit)
 	}
