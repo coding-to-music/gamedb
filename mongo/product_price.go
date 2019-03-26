@@ -15,16 +15,16 @@ import (
 )
 
 type ProductPrice struct {
-	CreatedAt         time.Time
-	AppID             int
-	PackageID         int
-	Currency          steam.CountryCode
-	Name              string
-	Icon              string
-	PriceBefore       int
-	PriceAfter        int
-	Difference        int
-	DifferencePercent float64
+	CreatedAt         time.Time         `bson:"created_at"`
+	AppID             int               `bson:"app_id"`
+	PackageID         int               `bson:"package_id"`
+	Currency          steam.CountryCode `bson:"currency"`
+	Name              string            `bson:"name"`
+	Icon              string            `bson:"icon"`
+	PriceBefore       int               `bson:"price_before"`
+	PriceAfter        int               `bson:"price_after"`
+	Difference        int               `bson:"difference"`
+	DifferencePercent float64           `bson:"difference_percent"`
 }
 
 func (price ProductPrice) BSON() (ret interface{}) {
