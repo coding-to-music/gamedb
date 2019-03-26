@@ -217,58 +217,67 @@
 
                 </div>
 
-                {{/* Charts */}}
+                {{/* Players */}}
                 <div class="tab-pane" id="players" role="tabpanel">
 
                     <div id="players-chart">
                         <i class="fas fa-spinner fa-spin"></i>
                     </div>
 
-                    <h5>Peaks</h5>
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <td>All Time</td>
-                            <td>{{ comma .App.PlayerPeakAllTime }}</td>
-                        </tr>
-                        <tr>
-                            <td>Last week</td>
-                            <td>{{ comma .App.PlayerPeakWeek }}</td>
-                        </tr>
-                        <tr>
-                            <td>Last 10 minutes</td>
-                            <td>{{ comma .App.GetOnlinePlayers }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div class="row">
+                        <div class="col-12 col-lg-8">
 
-                    <h5>Owner Estimations
-                        <small class="float-right"><a target="_blank" href="http://steamspy.com/app/{{ .App.ID }}">Steam Spy</a></small>
-                    </h5>
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <td>Owners</td>
-                            <td>{{ comma .SteamSpy.SSOwnersLow }} - {{ comma .SteamSpy.SSOwnersHigh }}</td>
-                        </tr>
-                        <tr>
-                            <td>Average Playtime (Two Weeks)</td>
-                            <td>{{ .SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
-                        </tr>
-                        <tr>
-                            <td>Average Playtime (Forever)</td>
-                            <td>{{ .SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
-                        </tr>
-                        <tr>
-                            <td>Median Playtime (Two Weeks)</td>
-                            <td>{{ .SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
-                        </tr>
-                        <tr>
-                            <td>Median Playtime (Forever)</td>
-                            <td>{{ .SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                            <h5>Owner Estimations
+                                <small class="float-right"><a target="_blank" href="http://steamspy.com/app/{{ .App.ID }}">Steam Spy</a></small>
+                            </h5>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td>Owners</td>
+                                    <td>{{ comma .SteamSpy.SSOwnersLow }} - {{ comma .SteamSpy.SSOwnersHigh }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Average Playtime (Two Weeks)</td>
+                                    <td>{{ .SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
+                                </tr>
+                                <tr>
+                                    <td>Average Playtime (Forever)</td>
+                                    <td>{{ .SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
+                                </tr>
+                                <tr>
+                                    <td>Median Playtime (Two Weeks)</td>
+                                    <td>{{ .SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
+                                </tr>
+                                <tr>
+                                    <td>Median Playtime (Forever)</td>
+                                    <td>{{ .SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="col-12 col-lg-4">
+
+                            <h5>Peaks</h5>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td>All Time</td>
+                                    <td>{{ comma .App.PlayerPeakAllTime }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Last week</td>
+                                    <td>{{ comma .App.PlayerPeakWeek }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Last 10 minutes</td>
+                                    <td>{{ comma .App.GetOnlinePlayers }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
 
                 </div>
 
