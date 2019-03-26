@@ -1,7 +1,7 @@
 if ($('#ranks-page').length > 0) {
 
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
-        "order": [[3, 'asc']],
+        "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[1]);
             $(row).attr('data-link', '/players/' + data[1]);
@@ -51,7 +51,8 @@ if ($('#ranks-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')
-                }
+                },
+                "orderSequence": ["desc"],
             },
             // Games
             {
@@ -62,14 +63,16 @@ if ($('#ranks-page').length > 0) {
                         return row[6].toLocaleString();
                     }
                     return $lockIcon;
-                }
+                },
+                "orderSequence": ["desc"],
             },
             // Badges
             {
                 "targets": 5,
                 "render": function (data, type, row) {
                     return row[7].toLocaleString();
-                }
+                },
+                "orderSequence": ["desc"],
             },
             // Time
             {
@@ -89,14 +92,16 @@ if ($('#ranks-page').length > 0) {
                     if (rowData[8] !== '0m') {
                         $(td).attr('data-toggle', 'tooltip').attr('data-placement', 'left').attr('title', rowData[9]);
                     }
-                }
+                },
+                "orderSequence": ["desc"],
             },
             // Friends
             {
                 "targets": 7,
                 "render": function (data, type, row) {
                     return row[10].toLocaleString();
-                }
+                },
+                "orderSequence": ["desc"],
             }
         ]
     }));
