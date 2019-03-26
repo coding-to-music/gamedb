@@ -86,7 +86,7 @@ func GetArticlesByAppIDs(appIDs []int) (news []Article, err error) {
 		appsFilter = append(appsFilter, v)
 	}
 
-	return getArticles(0, 3, bson.M{"$or": appsFilter})
+	return getArticles(0, 3, bson.M{"app_id": bson.M{"$in": appsFilter}})
 }
 
 func GetArticlesByAppID(appID int, offset int64) (news []Article, err error) {
