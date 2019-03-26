@@ -354,12 +354,22 @@ if ($appPage.length > 0) {
                             allowDecimals: false,
                             title: {text: ''},
                             min: 0,
+                            labels: {
+                                formatter: function () {
+                                    return this.value.toLocaleString();
+                                },
+                            },
                         },
                         {
                             allowDecimals: false,
                             title: {text: ''},
                             min: 0,
                             opposite: true,
+                            labels: {
+                                formatter: function () {
+                                    return this.value.toLocaleString();
+                                },
+                            },
                         }
                     ],
                     legend: {
