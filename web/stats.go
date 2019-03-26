@@ -121,6 +121,42 @@ type statsAppTypeTotalsRow struct {
 	Total float64 `gorm:"column:total;type:float64"`
 }
 
+func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom("GameDB", "alltime", "apps")
+	builder.AddWhere("time", ">", "NOW() - 30d")
+	builder.AddWhere("app_id", "=", 0)
+	builder.AddGroupByTime("30m")
+	builder.SetFillNone()
+
+	resp, err := sql.InfluxQuery(builder.String())
+	if err != nil {
+		log.Err(err, r, builder.String())
+		return
+	}
+
+	var hc sql.HighChartsJson
+
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+		hc = sql.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+	}
+
+	b, err := json.Marshal(hc)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	err = returnJSON(w, r, b)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+}
+
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
 	gorm, err := sql.GetMySQLClient()
@@ -293,40 +329,4 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 type statsAppReleaseDate struct {
 	Date  int64
 	Count int
-}
-
-func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
-
-	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom("GameDB", "alltime", "apps")
-	builder.AddWhere("time", ">", "NOW() - 30d")
-	builder.AddWhere("app_id", "=", 0)
-	builder.AddGroupByTime("30m")
-	builder.SetFillNone()
-
-	resp, err := sql.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
-
-	var hc sql.HighChartsJson
-
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
-
-		hc = sql.InfluxResponseToHighCharts(resp.Results[0].Series[0])
-	}
-
-	b, err := json.Marshal(hc)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	err = returnJSON(w, r, b)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
 }
