@@ -10,7 +10,6 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/log"
-	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
@@ -32,35 +31,35 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.PlayersCount, err = mongo.CountPlayers()
-		log.Err(err, r)
-	}()
-
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.AppsCount, err = sql.CountApps()
-		log.Err(err, r)
-	}()
-
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.PackagesCount, err = sql.CountPackages()
-		log.Err(err, r)
-	}()
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	t.PlayersCount, err = mongo.CountPlayers()
+	// 	log.Err(err, r)
+	// }()
+	//
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	t.AppsCount, err = sql.CountApps()
+	// 	log.Err(err, r)
+	// }()
+	//
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	t.PackagesCount, err = sql.CountPackages()
+	// 	log.Err(err, r)
+	// }()
 
 	// Popular
 	wg.Add(1)
@@ -159,9 +158,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 type homeTemplate struct {
 	GlobalTemplate
-	AppsCount      int
-	PackagesCount  int
-	PlayersCount   int64
+	// AppsCount      int
+	// PackagesCount  int
+	// PlayersCount   int64
 	PopularApps    []sql.App
 	TrendingApps   []sql.App
 	RatedNewApps   []sql.App
