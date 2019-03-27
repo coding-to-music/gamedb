@@ -28,10 +28,9 @@ const (
 
 func siteMapRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", siteMapIndexHandler)
-	r.Get("/pages", siteMapPagesHandler)
-	r.Get("/games-by-score", siteMapGamesByScoreHandler)
-	r.Get("/games-by-players", siteMapGamesByPlayersHandler)
+	r.Get("/pages.xml", siteMapPagesHandler)
+	r.Get("/games-by-score.xml", siteMapGamesByScoreHandler)
+	r.Get("/games-by-players.xml", siteMapGamesByPlayersHandler)
 	return r
 }
 
@@ -52,9 +51,9 @@ func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 	sm := siteMapIndex{}
 	sm.Namespace = namespace
 	sm.SiteMaps = []siteMap{
-		{Location: urlBase + "/sitemaps/pages"},
-		{Location: urlBase + "/sitemaps/games-by-score"},
-		{Location: urlBase + "/sitemaps/games-by-players"},
+		{Location: urlBase + "/sitemap/pages.xml"},
+		{Location: urlBase + "/sitemap/games-by-score.xml"},
+		{Location: urlBase + "/sitemap/games-by-players.xml"},
 	}
 
 	b, err := xml.Marshal(sm)
@@ -156,7 +155,7 @@ func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	sm := urlSet{}
 	sm.Namespace = namespace
 
-	for _, v := range sitemapGetGames(r, "player_count desc") {
+	for _, v := range sitemapGetGames(r, "player_peak_week desc") {
 
 		sm.URLs = append(sm.URLs, sitemapURL{
 			Location:        urlBase + v.GetPath(),

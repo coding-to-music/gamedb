@@ -90,6 +90,7 @@ func Serve() error {
 	r.Get("/logout", logoutHandler)
 	r.Get("/publishers", statsPublishersHandler)
 	r.Get("/steam-api", steamAPIHandler)
+	r.Get("/sitemap.xml", siteMapIndexHandler)
 	r.Get("/tags", statsTagsHandler)
 	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
 
@@ -112,7 +113,7 @@ func Serve() error {
 	r.Mount("/product-keys", productKeysRouter())
 	r.Mount("/queues", queuesRouter())
 	r.Mount("/settings", settingsRouter())
-	r.Mount("/sitemap.xml", siteMapRouter())
+	r.Mount("/sitemap", siteMapRouter())
 	r.Mount("/stats", statsRouter())
 	r.Mount("/upcoming", upcomingRouter())
 
