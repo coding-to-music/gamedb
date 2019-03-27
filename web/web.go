@@ -159,7 +159,7 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 
 func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {
 
-	if duration == 0 {
+	if duration == 0 || config.Config.IsLocal() {
 		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 		w.Header().Set("Expires", "0")
 	} else {
