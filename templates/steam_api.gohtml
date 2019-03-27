@@ -94,38 +94,40 @@
                                             </div>
 
                                             {{ if gt (len $params) 0 }}
-                                                <table class="table table-borderless table-hover table-sm mb-0">
-                                                    <thead>
-                                                    <tr>
-                                                        <th scope="col" class="font-weight-bold">Value</th>
-                                                        <th scope="col" class="font-weight-bold">Name</th>
-                                                        <th scope="col" class="font-weight-bold">Type</th>
-                                                        <th scope="col" class="font-weight-bold">Required</th>
-                                                        <th scope="col" class="font-weight-bold">Description</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {{ range $paramName, $param := $params }}
-                                                        {{ if ne $paramName "key" }}
-                                                            <tr>
-                                                                <td>
-                                                                    {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
-                                                                        <input type="number" name="{{ $paramName }}">
-                                                                    {{ else if eq .Type "bool" }}
-                                                                        <input type="checkbox" name="{{ $paramName }}" value="1">
-                                                                    {{ else }}
-                                                                        <input type="text" name="{{ $paramName }}">
-                                                                    {{ end }}
-                                                                </td>
-                                                                <td>{{ $paramName }}</td>
-                                                                <td>{{ .Type }}</td>
-                                                                <td>{{ if .Optional }}<i class="fas fa-times"></i>{{ else }}<i class="fas fa-check"></i>{{ end }}</td>
-                                                                <td>{{ .Description }}</td>
-                                                            </tr>
+                                                <div class="table-responsive">
+                                                    <table class="table table-borderless table-hover table-sm mb-0">
+                                                        <thead>
+                                                        <tr>
+                                                            <th scope="col" class="font-weight-bold">Value</th>
+                                                            <th scope="col" class="font-weight-bold">Name</th>
+                                                            <th scope="col" class="font-weight-bold">Type</th>
+                                                            <th scope="col" class="font-weight-bold">Required</th>
+                                                            <th scope="col" class="font-weight-bold">Description</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {{ range $paramName, $param := $params }}
+                                                            {{ if ne $paramName "key" }}
+                                                                <tr>
+                                                                    <td>
+                                                                        {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
+                                                                            <input type="number" name="{{ $paramName }}">
+                                                                        {{ else if eq .Type "bool" }}
+                                                                            <input type="checkbox" name="{{ $paramName }}" value="1">
+                                                                        {{ else }}
+                                                                            <input type="text" name="{{ $paramName }}">
+                                                                        {{ end }}
+                                                                    </td>
+                                                                    <td>{{ $paramName }}</td>
+                                                                    <td>{{ .Type }}</td>
+                                                                    <td>{{ if .Optional }}<i class="fas fa-times"></i>{{ else }}<i class="fas fa-check"></i>{{ end }}</td>
+                                                                    <td nowrap="nowrap">{{ .Description }}</td>
+                                                                </tr>
+                                                            {{ end }}
                                                         {{ end }}
-                                                    {{ end }}
-                                                    </tbody>
-                                                </table>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             {{ end }}
                                         </div>
 
