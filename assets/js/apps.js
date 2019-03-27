@@ -150,7 +150,8 @@ if ($('#apps-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                     $(td).attr('data-app-id', rowData[0]);
-                }
+                },
+                "orderable": false,
             },
             // Type
             {
@@ -172,7 +173,8 @@ if ($('#apps-page').length > 0) {
                 "targets": 3,
                 "render": function (data, type, row) {
                     return row[6];
-                }
+                },
+                "orderSequence": ["desc"],
             },
             // Updated At
             {
@@ -182,7 +184,8 @@ if ($('#apps-page').length > 0) {
                         return '<span data-livestamp="' + row[7] + '"></span>';
                     }
                     return row[7];
-                }
+                },
+                "orderSequence": ["desc"],
             }
         ]
     }));
