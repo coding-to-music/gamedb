@@ -73,7 +73,7 @@ func main() {
 		c := cron.New()
 
 		// Daily
-		err = c.AddFunc("0 0 0 * * *", web.ClearUpcomingCache)
+		err = c.AddFunc("1 0 0 * * *", web.ClearUpcomingCache)
 		log.Critical(err)
 
 		err = c.AddFunc("0 0 0 * * *", web.CronRanks)
