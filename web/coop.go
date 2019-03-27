@@ -19,6 +19,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := coopTemplate{}
 	t.fill(w, r, "Co-op", "Find a game to play with friends.")
+	t.DefaultAvatar = helpers.DefaultAppIcon
 
 	// Get player ints
 	var playerInts []int64
@@ -134,8 +135,9 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 type coopTemplate struct {
 	GlobalTemplate
-	Players []mongo.Player
-	Games   []coopGameTemplate
+	Players       []mongo.Player
+	Games         []coopGameTemplate
+	DefaultAvatar string
 }
 
 type coopGameTemplate struct {
