@@ -117,6 +117,8 @@ if ($('#apps-page').length > 0) {
             delete data.length;
             delete data.search.regex;
 
+            // data.columns = $('#columns').val();
+
             data.search.tags = $('#tags').val();
             data.search.genres = $('#genres').val();
             data.search.developers = $('#developers').val();
