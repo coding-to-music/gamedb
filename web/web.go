@@ -104,8 +104,9 @@ func Serve() error {
 	r.Mount("/depots", depotsRouter())
 	r.Mount("/experience", experienceRouter())
 	r.Mount("/franchise", franchiseRouter())
-	r.Mount("/home", homeRouter())
+	// r.Mount("/home", homeRouter())
 	r.Mount("/login", loginRouter())
+	r.Mount("/new-releases", newReleasesRouter())
 	r.Mount("/news", newsRouter())
 	r.Mount("/packages", packagesRouter())
 	r.Mount("/players", playersRouter())
@@ -115,6 +116,7 @@ func Serve() error {
 	r.Mount("/settings", settingsRouter())
 	r.Mount("/sitemap", siteMapRouter())
 	r.Mount("/stats", statsRouter())
+	r.Mount("/trending", trendingRouter())
 	r.Mount("/upcoming", upcomingRouter())
 
 	// Files
@@ -193,6 +195,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	folder := config.Config.GameDBDirectory.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/templates/_apps_header.gohtml",
+		folder+"/templates/_current_apps.gohtml",
 		folder+"/templates/_flashes.gohtml",
 		folder+"/templates/_footer.gohtml",
 		folder+"/templates/_header.gohtml",
@@ -597,11 +600,12 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 
 // DataTablesQuery
 type DataTablesQuery struct {
-	Draw   string
-	Order  map[string]map[string]interface{}
-	Start  string
-	Search map[string]interface{}
-	Time   string `mapstructure:"_"`
+	Draw    string
+	Order   map[string]map[string]interface{}
+	Start   string
+	Search  map[string]interface{}
+	Time    string `mapstructure:"_"`
+	Columns []string
 }
 
 func (q *DataTablesQuery) fillFromURL(url url.Values) (err error) {

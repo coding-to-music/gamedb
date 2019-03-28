@@ -1,25 +1,20 @@
 package web
 
 import (
-	"encoding/json"
 	"net/http"
-	"strconv"
-	"strings"
 	"sync"
 	"time"
 
-	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
-	"github.com/go-chi/chi"
 )
 
-func homeRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Get("/charts.json", homeChartsAjaxHandler)
-	return r
-}
+// func homeRouter() http.Handler {
+// 	r := chi.NewRouter()
+// 	r.Get("/charts.json", homeChartsAjaxHandler)
+// 	return r
+// }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -166,56 +161,4 @@ type homeTemplate struct {
 	RatedNewApps   []sql.App
 	PopularNewApps []sql.App
 	Prices         map[int]string
-}
-
-func homeChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	apps, err := sql.TrendingApps()
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	if len(apps) == 0 {
-		return
-	}
-
-	var or []string
-	for _, v := range apps {
-		or = append(or, `"app_id" = '`+strconv.Itoa(v.ID)+`'`)
-	}
-
-	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom("GameDB", "alltime", "apps")
-	builder.AddWhere("time", ">", "NOW()-7d")
-	builder.AddWhereRaw("(" + strings.Join(or, " OR ") + ")")
-	builder.AddGroupByTime("30m")
-	builder.AddGroupBy("app_id")
-	builder.SetFillNone()
-
-	resp, err := sql.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
-
-	ret := map[string]sql.HighChartsJson{}
-	if len(resp.Results) > 0 {
-		for _, v := range resp.Results[0].Series {
-			ret[v.Tags["app_id"]] = sql.InfluxResponseToHighCharts(v)
-		}
-	}
-
-	b, err := json.Marshal(ret)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	err = returnJSON(w, r, b)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
 }
