@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
@@ -28,10 +27,6 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	apps, err := sql.PopularApps()
 	log.Err(err, r)
-
-	if config.Config.IsLocal() && len(apps) >= 3 {
-		apps = apps[0:3]
-	}
 
 	var appIDs []int
 	for _, v := range apps {
