@@ -62,8 +62,6 @@ if ($('#commits-page').length > 0) {
                         page = $table.DataTable().page.info().page;
                     }
 
-                    console.log(page);
-
                     if (row[2] || page > 0) {
                         return '<i class="fas fa-check"></i>';
                     } else {
