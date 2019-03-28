@@ -1,6 +1,14 @@
 if ($('#commits-page').length > 0) {
 
-    $('table#commits').DataTable($.extend(true, {}, dtDefaultOptions, {
+    const $table = $('table#commits');
+
+    let page = null;
+
+    $table.on('draw.dt', function () {
+        page = null;
+    });
+
+    $table.DataTable($.extend(true, {}, dtDefaultOptions, {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[3]);
@@ -49,7 +57,14 @@ if ($('#commits-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    if (row[2]) {
+
+                    if (page === null) {
+                        page = $table.DataTable().page.info().page;
+                    }
+
+                    console.log(page);
+
+                    if (row[2] || page > 0) {
                         return '<i class="fas fa-check"></i>';
                     } else {
                         return '<i class="fas fa-times"></i>';
