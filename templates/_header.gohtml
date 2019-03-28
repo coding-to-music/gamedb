@@ -82,36 +82,32 @@
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav mr-auto">
 
-                <li class="nav-item {{if startsWith .Path "/apps" }}active{{end}}">
-                    <a class="nav-link" href="/apps?types=game">Games</a>
-                </li>
-
-                <li class="nav-item dropdown dropdown-mini d-none d-lg-block">
-                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"></a>
+                <li class="nav-item dropdown {{if .IsAppsPage }}active{{end}}">
+                    <a class="nav-link dropdown-toggle" href="/apps?types=game" data-toggle="dropdown">Game DB</a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/packages">Packages</a>
                         <a class="dropdown-item" href="/bundles">Bundles</a>
                     </div>
                 </li>
 
-                <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
-                    <a class="nav-link" href="/players">Players</a>
-                </li>
-
-                <li class="nav-item {{if startsWith .Path "/upcoming" }}active{{end}}">
-                    <a class="nav-link" href="/upcoming/apps">Upcoming</a>
+                <li class="nav-item dropdown {{if .IsTrendingPage }}active{{end}}">
+                    <a class="nav-link dropdown-toggle" href="/trending" data-toggle="dropdown">Trending</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/upcoming">Upcoming</a>
+                        <a class="dropdown-item" href="/new-releases">New Releases</a>
+                    </div>
                 </li>
 
                 <li class="nav-item {{if startsWith .Path "/price-changes" }}active{{end}}">
                     <a class="nav-link" href="/price-changes">Price Changes</a>
                 </li>
 
-                <li class="nav-item {{if .IsStatsPage }}active{{end}}">
-                    <a class="nav-link" href="/stats">Stats</a>
+                <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
+                    <a class="nav-link" href="/players">Players</a>
                 </li>
 
-                <li class="nav-item dropdown dropdown-mini d-none d-lg-block">
-                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"></a>
+                <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
+                    <a class="nav-link dropdown-toggle" href="/stats" data-toggle="dropdown">Stats</a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/tags">Tags</a>
                         <a class="dropdown-item" href="/genres">Genres</a>

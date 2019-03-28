@@ -499,12 +499,20 @@ func (t GlobalTemplate) IsFromVarnish() bool {
 	return t.request.Header.Get("X-From-Varnish") == "true"
 }
 
+func (t GlobalTemplate) IsAppsPage() bool {
+	return helpers.SliceHasString([]string{"apps", "packages", "bundles"}, strings.TrimPrefix(t.Path, "/"))
+}
+
 func (t GlobalTemplate) IsStatsPage() bool {
 	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsMorePage() bool {
 	return helpers.SliceHasString([]string{"contact", "experience", "changes", "queues", "commits", "info", "coop", "chat", "steam-api"}, strings.TrimPrefix(t.Path, "/"))
+}
+
+func (t GlobalTemplate) IsTrendingPage() bool {
+	return helpers.SliceHasString([]string{"upcoming", "new-releases", "trending"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) isLoggedIn() bool {
