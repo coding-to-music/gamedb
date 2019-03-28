@@ -13,18 +13,18 @@ import (
 
 type Article struct {
 	ID         int64     `bson:"_id"`
-	Title      string    ``
-	URL        string    ``
-	IsExternal bool      ``
-	Author     string    ``
-	Contents   string    ``
-	Date       time.Time ``
-	FeedLabel  string    ``
-	FeedName   string    ``
-	FeedType   int8      ``
-	AppID      int       ``
-	AppName    string    ``
-	AppIcon    string    ``
+	Title      string    `bson:"title"`
+	URL        string    `bson:"url"`
+	IsExternal bool      `bson:"is_external"`
+	Author     string    `bson:"author"`
+	Contents   string    `bson:"contents"`
+	Date       time.Time `bson:"date"`
+	FeedLabel  string    `bson:"feed_label"`
+	FeedName   string    `bson:"feed_name"`
+	FeedType   int8      `bson:"feed_type"`
+	AppID      int       `bson:"app_id"`
+	AppName    string    `bson:"app_name"`
+	AppIcon    string    `bson:"app_icon"`
 }
 
 func (article Article) BSON() (ret interface{}) {
