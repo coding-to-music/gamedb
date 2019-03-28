@@ -3,6 +3,7 @@ package helpers
 import (
 	"math"
 	"strconv"
+	"strings"
 
 	"github.com/gamedb/website/log"
 )
@@ -10,6 +11,7 @@ import (
 func StringSliceToIntSlice(in []string) (ret []int) {
 
 	for _, v := range in {
+		v = strings.TrimSpace(v)
 		if v != "" {
 			i, err := strconv.Atoi(v)
 			log.Err(err)

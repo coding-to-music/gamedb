@@ -1,0 +1,35 @@
+{{define "trending"}} {{ template "_header" . }}
+
+<div class="container" id="trending-page">
+
+    <div class="jumbotron">
+
+        <h1><i class="fas fa-poll"></i> Trending</h1>
+        <small>Trend data is based on players over the last 7 days.</small>
+
+    </div>
+
+    <div class="card">
+        {{ template "_current_apps" . }}
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/trending/trending.json">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">App</th>
+                        <th scope="col">Price</th>
+                        <th scope="col" nowrap="nowrap" colspan="2">Trend Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{{ template "_footer" . }} {{end}}
