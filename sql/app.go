@@ -236,21 +236,6 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 	}
 }
 
-// Must be the same as package OutputForJSONUpcoming
-func (app App) OutputForJSONUpcoming(code steam.CountryCode) (output []interface{}) {
-
-	return []interface{}{
-		app.ID,
-		app.GetName(),
-		app.GetIcon(),
-		app.GetPath(),
-		app.GetType(),
-		GetPriceFormatted(app, code).Final,
-		app.GetDaysToRelease(),
-		app.GetReleaseDateNice(),
-	}
-}
-
 func (app App) GetReleaseState() (ret string) {
 
 	switch app.ReleaseState {
