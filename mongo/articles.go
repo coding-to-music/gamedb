@@ -81,6 +81,10 @@ func (article Article) OutputForJSON() (output []interface{}) {
 
 func GetArticlesByAppIDs(appIDs []int) (news []Article, err error) {
 
+	if len(appIDs) < 1 {
+		return news, nil
+	}
+
 	appsFilter := bson.A{}
 	for _, v := range appIDs {
 		appsFilter = append(appsFilter, v)
