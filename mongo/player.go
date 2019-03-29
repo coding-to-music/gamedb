@@ -350,6 +350,10 @@ func GetPlayer(id int64) (player Player, err error) {
 
 func GetPlayers(offset int64, limit int64, sort D, filter M) (players []Player, err error) {
 
+	if filter == nil {
+		filter = M{}
+	}
+
 	client, ctx, err := getMongo()
 	if err != nil {
 		return players, err
