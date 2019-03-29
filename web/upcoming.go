@@ -46,31 +46,34 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	var count int
-	var apps []sql.App
-
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-
 		log.Err(err, r)
-
-	} else {
-
-		gorm = gorm.Model(sql.App{})
-		gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
-		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
-		gorm = gorm.Order("release_date_unix asc, id asc")
-
-		// Count before limitting
-		gorm.Count(&count)
-		log.Err(gorm.Error, r)
-
-		gorm = gorm.Limit(100)
-		gorm = gorm.Offset(query.Start)
-
-		gorm = gorm.Find(&apps)
-		log.Err(gorm.Error, r)
+		return
 	}
+
+	columns := map[string]string{
+		"0": "name",
+		"2": "price",
+		"3": "release_date_unix",
+	}
+
+	gorm = gorm.Model(sql.App{})
+	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
+	gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
+	gorm = gorm.Order(query.getOrderSQL(columns, session.GetCountryCode(r)))
+
+	// Count before limitting
+	var count int
+	gorm.Count(&count)
+	log.Err(gorm.Error, r) // todo, memcache this
+
+	gorm = gorm.Limit(100)
+	gorm = gorm.Offset(query.Start)
+
+	var apps []sql.App
+	gorm = gorm.Find(&apps)
+	log.Err(gorm.Error, r)
 
 	var code = session.GetCountryCode(r)
 

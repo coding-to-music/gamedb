@@ -1,7 +1,7 @@
 if ($('#upcoming-page').length > 0) {
 
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
-        "order": [[3, 'desc']],
+        "order": [[3, 'asc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);
             $(row).attr('data-link', data[3]);
@@ -17,7 +17,6 @@ if ($('#upcoming-page').length > 0) {
                     $(td).addClass('img');
                     $(td).attr('data-app-id', rowData[0]);
                 },
-                "orderable": false
             },
             // App Type
             {
@@ -39,7 +38,6 @@ if ($('#upcoming-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
             },
             // Release Date
             {
@@ -50,8 +48,7 @@ if ($('#upcoming-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
-            }
+            },
         ]
     }));
 }
