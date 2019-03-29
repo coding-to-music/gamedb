@@ -72,7 +72,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm.Count(&count)
 	log.Err(gorm.Error, r)
 
-	gorm = gorm.Limit(100)
+	gorm = gorm.Limit(50)
 	gorm = gorm.Offset(query.getOffset())
 
 	gorm = gorm.Find(&apps)
