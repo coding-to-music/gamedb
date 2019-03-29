@@ -66,7 +66,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// gorm.Count(&count)
 	// log.Err(gorm.Error, r)
 
-	gorm = gorm.Limit(100)
+	gorm = gorm.Limit(50)
 	gorm = gorm.Offset(query.getOffset())
 
 	var apps []sql.App
@@ -106,8 +106,8 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(idsSlice) > 100 {
-		idsSlice = idsSlice[0:100]
+	if len(idsSlice) > 50 {
+		idsSlice = idsSlice[0:50]
 	}
 
 	var or []string

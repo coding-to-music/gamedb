@@ -3,6 +3,7 @@ if ($('#trending-page').length > 0) {
     const $table = $('table.table-datatable2');
 
     $table.DataTable($.extend(true, {}, dtDefaultOptions, {
+        "pageLength": 50,
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);
@@ -19,7 +20,7 @@ if ($('#trending-page').length > 0) {
                     $(td).addClass('img');
                     $(td).attr('data-app-id', rowData[0]);
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Price
             {
@@ -30,7 +31,7 @@ if ($('#trending-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Trend Value
             {
@@ -48,7 +49,7 @@ if ($('#trending-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('chart');
                 },
-                "orderable": false,
+                'orderData': [2],
             },
         ]
     }));
