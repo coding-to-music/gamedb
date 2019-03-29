@@ -256,3 +256,20 @@ td.chart {
         width: 210px;
     }
 }
+
+// NoUI Slider
+form .slider {
+
+    padding: 0 15px 0 15px;
+
+    label {
+        margin-left: -15px;
+        margin-bottom: 18px;
+    }
+
+    .noUi-base {
+        .noUi-connect {
+            background-color: $link-color;
+        }
+    }
+}

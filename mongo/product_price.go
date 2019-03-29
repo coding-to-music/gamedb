@@ -124,11 +124,7 @@ func GetPricesForProduct(productID int, productType helpers.ProductType, cc stea
 	return getProductPrices(filter, 0, 0, true)
 }
 
-func GetPrices(offset int64, cc steam.CountryCode) (prices []ProductPrice, err error) {
-
-	var filter = bson.M{
-		"currency": string(cc),
-	}
+func GetPrices(offset int64, filter M) (prices []ProductPrice, err error) {
 
 	return getProductPrices(filter, offset, 100, false)
 }

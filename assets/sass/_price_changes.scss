@@ -1,5 +1,4 @@
 #price-changes-page {
-
     table.table tbody {
         @for $i from 0 through 100 {
             tr.col-grad-#{$i} {

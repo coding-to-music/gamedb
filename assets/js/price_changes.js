@@ -1,7 +1,102 @@
 if ($('#price-changes-page').length > 0) {
 
+    const $chosens = $('select.form-control-chosen');
+    const $table = $('table.table-datatable2');
+    const $form = $('form');
+
+    // Set form fields from URL
+    if (window.location.search) {
+        $form.deserialize(window.location.search.substr(1));
+    }
+
+    // Setup drop downs
+    $chosens.chosen({
+        disable_search_threshold: 10,
+        allow_single_deselect: true,
+        rtl: false,
+        max_selected_options: 10
+    });
+
+    // Setup Sliders
+    const changeLow = $('#change-low').val();
+    const changeHigh = $('#change-high').val();
+    const changeElement = $('#change-slider')[0];
+    const changeMax = $(changeElement).attr('data-max');
+    const changeSlider = noUiSlider.create(changeElement, {
+        start: [
+            parseInt(changeLow ? changeLow : -100),
+            parseInt(changeHigh ? changeHigh : 100)
+        ],
+        connect: true,
+        step: 1,
+        range: {
+            'min': -100,
+            'max': 100
+        }
+    });
+
+    $chosens.on('change', redrawTable);
+    $form.on('submit', redrawTable);
+    changeSlider.on('set', onPercentChange);
+    changeSlider.on('update', updateLabels);
+
+    function onPercentChange(e) {
+
+        console.log('onPercentChange');
+
+        const percents = changeSlider.get();
+        $('#change-low').val(percents[0]);
+        $('#change-high').val(percents[1]);
+        redrawTable();
+    }
+
+    function redrawTable(e) {
+
+        // Filter out empty form fields
+        let formData = $form.serializeArray();
+        formData = $.grep(formData, function (v) {
+            return v.value !== "";
+        });
+
+        $table.DataTable().draw();
+        history.pushState({}, document.title, '/price-changes?' + $.param(formData));
+        updateLabels(e);
+        return false;
+    }
+
+    $(document).ready(updateLabels);
+
+    function updateLabels(e) {
+
+        const percents = changeSlider.get();
+
+        if (percents[0] === percents[1]) {
+            $('label#change-label').html('Price Change Percent (' + Math.round(percents[0]) + '%)');
+        } else {
+            $('label#change-label').html('Price Change Percent (' + Math.round(percents[0]) + '% - ' + Math.round(percents[1]) + '%)');
+        }
+    }
+
+    // Init table
     const options = $.extend(true, {}, dtDefaultOptions, {
         "order": [[4, 'desc']],
+        "ajax": function (data, callback, settings) {
+
+            delete data.columns;
+            delete data.length;
+            delete data.search.regex;
+
+            data.search.type = $('#type').val();
+            data.search.percents = changeSlider.get();
+
+            $.ajax({
+                url: $(this).attr('data-path'),
+                data: data,
+                success: callback,
+                dataType: 'json',
+                cache: true
+            });
+        },
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);
             $(row).attr('data-link', data[5]);
@@ -10,12 +105,6 @@ if ($('#price-changes-page').length > 0) {
             x += 100; // Get a range of 0 to 200
             x = x / 2; // Get a range of 0 to 100
             $(row).addClass('col-grad-' + Math.round(x));
-
-            // if (data[12] > 0) {
-            // $(row).addClass('table-danger');
-            // } else if (data[12] < 0) {
-            // $(row).addClass('table-success');
-            // }
         },
         "columnDefs": [
             // App/Package Name
@@ -25,7 +114,7 @@ if ($('#price-changes-page').length > 0) {
                     return '<img src="' + row[4] + '" class="rounded square" alt="' + row[3] + '"><span>' + row[3] + '</span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('img').attr('data-app-id', 0)
+                    $(td).addClass('img')
                 },
                 "orderable": false
             },
@@ -83,7 +172,7 @@ if ($('#price-changes-page').length > 0) {
         ]
     });
 
-    const $table = $('table.table-datatable2');
+    // Update table live
     const dt = $table.DataTable(options);
 
     websocketListener('prices', function (e) {
