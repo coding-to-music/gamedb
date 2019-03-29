@@ -24,6 +24,7 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newReleasesTemplate{}
 	t.fill(w, r, "New Releases", "")
+	t.addAssetHighCharts()
 
 	t.Apps, err = countUpcomingApps()
 	log.Err(err, r)

@@ -1,6 +1,7 @@
-if ($('#trending-page').length > 0) {
+const $trendingPage = $('#trending-page');
+const $table = $('table.table-datatable2');
 
-    const $table = $('table.table-datatable2');
+if ($trendingPage.length > 0) {
 
     $table.DataTable($.extend(true, {}, dtDefaultOptions, {
         "pageLength": 50,
@@ -53,6 +54,9 @@ if ($('#trending-page').length > 0) {
             },
         ]
     }));
+}
+
+if ($trendingPage.length > 0 || $('#new-releases-page').length > 0) {
 
     $table.on('draw.dt', function (e, settings, processing) {
         loadCharts();
@@ -136,11 +140,8 @@ if ($('#trending-page').length > 0) {
                             },
                         ],
                     });
-
                 });
-
             },
         });
-
     }
 }
