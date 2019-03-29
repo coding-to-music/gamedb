@@ -181,7 +181,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		price, err := sql.GetMostExpensiveApp(session.GetCountryCode(r))
 		log.Err(err, r)
 
-		// Convert cents to dollars
+		// Convert dollars to cents
 		t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
 
 		// Fallback
