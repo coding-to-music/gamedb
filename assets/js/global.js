@@ -39,7 +39,10 @@ $(document).on('mouseup', '[data-link]', function (e) {
 
     // Middle click
     if (e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2 || target === '_blank') {
-        window.open(link, '_blank');
+
+        if (!$(e.target).is("a")) {
+            window.open(link, '_blank');
+        }
         return true;
     }
 
