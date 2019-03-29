@@ -116,13 +116,13 @@ func main() {
 			//noinspection GoDeferInLoop
 			defer wg.Done()
 
-			sql, err := sql.GetMySQLClient()
+			client, err := sql.GetMySQLClient()
 			if err != nil {
 				log.Err(err)
 				return
 			}
 
-			err = sql.Close()
+			err = client.Close()
 			log.Err(err)
 
 			return
