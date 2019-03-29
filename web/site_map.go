@@ -6,6 +6,7 @@ import (
 
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
@@ -31,6 +32,8 @@ func siteMapRouter() http.Handler {
 	r.Get("/pages.xml", siteMapPagesHandler)
 	r.Get("/games-by-score.xml", siteMapGamesByScoreHandler)
 	r.Get("/games-by-players.xml", siteMapGamesByPlayersHandler)
+	r.Get("/players-by-level.xml", siteMapPlayersByLevel)
+	r.Get("/players-by-games.xml", siteMapPlayersByGamesCount)
 	return r
 }
 
@@ -54,6 +57,8 @@ func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 		{Location: urlBase + "/sitemap/pages.xml"},
 		{Location: urlBase + "/sitemap/games-by-score.xml"},
 		{Location: urlBase + "/sitemap/games-by-players.xml"},
+		{Location: urlBase + "/sitemap/players-by-level.xml"},
+		{Location: urlBase + "/sitemap/players-by-games.xml"},
 	}
 
 	b, err := xml.Marshal(sm)
@@ -121,9 +126,7 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := xml.Marshal(sm)
 	log.Err(err)
 
-	w.Header().Set("Content-Type", "application/xml")
-
-	_, err = w.Write([]byte(xml.Header + string(b)))
+	err = returnXML(w, r, b)
 	log.Err(err)
 }
 
@@ -144,9 +147,7 @@ func siteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := xml.Marshal(sm)
 	log.Err(err)
 
-	w.Header().Set("Content-Type", "application/xml")
-
-	_, err = w.Write([]byte(xml.Header + string(b)))
+	err = returnXML(w, r, b)
 	log.Err(err)
 }
 
@@ -167,9 +168,51 @@ func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := xml.Marshal(sm)
 	log.Err(err)
 
-	w.Header().Set("Content-Type", "application/xml")
+	err = returnXML(w, r, b)
+	log.Err(err)
+}
 
-	_, err = w.Write([]byte(xml.Header + string(b)))
+func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
+
+	sm := urlSet{}
+	sm.Namespace = namespace
+
+	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, nil)
+	for _, v := range players {
+
+		sm.URLs = append(sm.URLs, sitemapURL{
+			Location:        urlBase + v.GetPath(),
+			Priority:        0.5,
+			ChangeFrequency: frequencyWeekly,
+		})
+	}
+
+	b, err := xml.Marshal(sm)
+	log.Err(err)
+
+	err = returnXML(w, r, b)
+	log.Err(err)
+}
+
+func siteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
+
+	sm := urlSet{}
+	sm.Namespace = namespace
+
+	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"games_count", -1}}, nil)
+	for _, v := range players {
+
+		sm.URLs = append(sm.URLs, sitemapURL{
+			Location:        urlBase + v.GetPath(),
+			Priority:        0.5,
+			ChangeFrequency: frequencyWeekly,
+		})
+	}
+
+	b, err := xml.Marshal(sm)
+	log.Err(err)
+
+	err = returnXML(w, r, b)
 	log.Err(err)
 }
 

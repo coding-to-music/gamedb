@@ -3,6 +3,7 @@ package web
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"html/template"
 	"math"
 	"net/http"
@@ -177,6 +178,15 @@ func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error
 	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
 
 	_, err = w.Write(bytes)
+	return err
+}
+
+func returnXML(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
+
+	w.Header().Set("Content-Type", "application/xml")
+	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+
+	_, err = w.Write([]byte(xml.Header + string(bytes)))
 	return err
 }
 
