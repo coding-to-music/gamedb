@@ -4,6 +4,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -79,7 +80,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			min, err := strconv.ParseFloat(ranges[0], 64)
 			log.Err(err)
 			if err == nil {
-				filter["difference_percent"] = mongo.M{"$gt": min}
+				filter["difference_percent"] = mongo.M{"$gte": min}
 			}
 		}
 		if ranges[1] != "100.00" {
@@ -87,6 +88,24 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err)
 			if err == nil {
 				filter["difference_percent"] = mongo.M{"$lte": max}
+			}
+		}
+	}
+
+	prices := query.getSearchSlice("prices")
+	if len(prices) == 2 {
+		if prices[0] != "0.00" {
+			min, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
+			log.Err(err)
+			if err == nil {
+				filter["price_after"] = mongo.M{"$gte": min}
+			}
+		}
+		if prices[1] != "100.00" {
+			max, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
+			log.Err(err)
+			if err == nil {
+				filter["price_after"] = mongo.M{"$lte": max}
 			}
 		}
 	}

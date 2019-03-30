@@ -28,11 +28,11 @@
 
             <form class="mb-4">
                 <div class="row">
-                    <div class="col-sm-6 col-md-3">
+                    <div class="col-sm-6 col-md-4">
                         <div class="form-group">
                             <label for="type">Product Type</label>
                             <select data-placeholder="Choose Product Type" class="form-control form-control-chosen" id="type" name="type">
-                                <option value="all">Everything</option>
+                                <option value="all">Apps & Packages</option>
                                 <option value="apps">Apps Only</option>
                                 <option value="packages">Packages Only</option>
                             </select>
@@ -44,6 +44,14 @@
                             <div id="change-slider" data-max="{{ .ExpensiveApp }}"></div>
                             <input type="hidden" name="change-low" id="change-low">
                             <input type="hidden" name="change-high" id="change-high">
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group slider">
+                            <label id="price-label">Final Price</label>
+                            <div id="price-slider" data-max="{{ .ExpensiveApp }}"></div>
+                            <input type="hidden" name="price-low" id="price-low">
+                            <input type="hidden" name="price-high" id="price-high">
                         </div>
                     </div>
                 </div>
