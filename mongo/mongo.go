@@ -153,6 +153,8 @@ func InsertDocuments(collection collection, documents []Document) (resp *mongo.I
 
 func CountDocuments(collection collection, filter interface{}) (count int64, err error) {
 
+	// todo, build in cache by hashing the filter
+
 	client, ctx, err := getMongo()
 	if err != nil {
 		return count, err

@@ -66,6 +66,31 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"created_at": mongo.M{"$gt": dateLimit},
 	}
 
+	typex := query.getSearchString("type")
+	if typex == "apps" {
+		filter["app_id"] = mongo.M{"$gt": 0}
+	} else if typex == "packages" {
+		filter["package_id"] = mongo.M{"$gt": 0}
+	}
+
+	ranges := query.getSearchSlice("percents")
+	if len(ranges) == 2 {
+		if ranges[0] != "-100.00" {
+			min, err := strconv.ParseFloat(ranges[0], 64)
+			log.Err(err)
+			if err == nil {
+				filter["difference_percent"] = mongo.M{"$gt": min}
+			}
+		}
+		if ranges[1] != "100.00" {
+			max, err := strconv.ParseFloat(ranges[1], 64)
+			log.Err(err)
+			if err == nil {
+				filter["difference_percent"] = mongo.M{"$lte": max}
+			}
+		}
+	}
+
 	wg.Add(1)
 	go func(r *http.Request) {
 
@@ -97,6 +122,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, mongo.M{
+			"currency":   string(code),
 			"created_at": mongo.M{"$gt": dateLimit},
 		})
 		log.Err(err, r)
