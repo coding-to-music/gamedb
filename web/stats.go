@@ -18,11 +18,11 @@ import (
 func statsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", statsHandler)
+	r.Get("/client-players", statsClientPlayersHandler)
+	r.Get("/release-dates", statsDatesHandler)
 	r.Get("/app-scores", statsScoresHandler)
 	r.Get("/app-types", statsTypesHandler)
 	r.Get("/ranked-countries", statsCountriesHandler)
-	r.Get("/release-dates", statsDatesHandler)
-	r.Get("/client-players", statsClientPlayersHandler)
 	return r
 }
 
@@ -154,6 +154,44 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 		return
 	}
+}
+
+func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
+
+	gorm, err := sql.GetMySQLClient()
+	if err != nil {
+
+		log.Err(err, r)
+		return
+	}
+
+	var dates []statsAppReleaseDate
+
+	gorm = gorm.Select([]string{"count(*) as count", "release_date_unix as date"})
+	gorm = gorm.Table("apps")
+	gorm = gorm.Group("date")
+	gorm = gorm.Order("date desc")
+	gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(-1, 0, 0).Unix())
+	gorm = gorm.Where("release_date_unix < ?", time.Now().AddDate(0, 0, 1).Unix())
+	gorm = gorm.Find(&dates)
+
+	log.Err(gorm.Error, r)
+
+	var ret [][]int64
+	for _, v := range dates {
+		ret = append(ret, []int64{v.Date * 1000, int64(v.Count)})
+	}
+
+	bytes, err := json.Marshal(ret)
+	log.Err(err, r)
+
+	err = returnJSON(w, r, bytes)
+	log.Err(err, r)
+}
+
+type statsAppReleaseDate struct {
+	Date  int64
+	Count int
 }
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
@@ -290,42 +328,4 @@ func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	// err = returnJSON(w, r, bytes)
 	// log.Err(err, r)
-}
-
-func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
-
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-
-		log.Err(err, r)
-		return
-	}
-
-	var dates []statsAppReleaseDate
-
-	gorm = gorm.Select([]string{"count(*) as count", "release_date_unix as date"})
-	gorm = gorm.Table("apps")
-	gorm = gorm.Group("date")
-	gorm = gorm.Order("date desc")
-	gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(-1, 0, 0).Unix())
-	gorm = gorm.Where("release_date_unix < ?", time.Now().AddDate(0, 0, 1).Unix())
-	gorm = gorm.Find(&dates)
-
-	log.Err(gorm.Error, r)
-
-	var ret [][]int64
-	for _, v := range dates {
-		ret = append(ret, []int64{v.Date * 1000, int64(v.Count)})
-	}
-
-	bytes, err := json.Marshal(ret)
-	log.Err(err, r)
-
-	err = returnJSON(w, r, bytes)
-	log.Err(err, r)
-}
-
-type statsAppReleaseDate struct {
-	Date  int64
-	Count int
 }
