@@ -167,38 +167,6 @@ if ($('#stats-page').length > 0) {
 
     $.ajax({
         type: "GET",
-        url: '/stats/ranked-countries',
-        dataType: 'json',
-        success: function (data, textStatus, jqXHR) {
-
-            if (data === null) {
-                data = [];
-            }
-
-            Highcharts.chart('countries', $.extend(true, {}, defaultStatsChartOptions, {
-                xAxis: {
-                    tickInterval: 1,
-                },
-                tooltip: {
-                    formatter: function () {
-                        return this.y.toLocaleString() + ' ' + this.key + ' players';
-                    },
-                },
-                series: [{
-                    data: data,
-                    dataLabels: {
-                        enabled: true,
-                        formatter: function () {
-                            return this.y.toLocaleString();
-                        }
-                    }
-                }]
-            }));
-        },
-    });
-
-    $.ajax({
-        type: "GET",
         url: '/stats/release-dates',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {

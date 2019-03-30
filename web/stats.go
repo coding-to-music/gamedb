@@ -22,7 +22,6 @@ func statsRouter() http.Handler {
 	r.Get("/release-dates", statsDatesHandler)
 	r.Get("/app-scores", statsScoresHandler)
 	r.Get("/app-types", statsTypesHandler)
-	r.Get("/ranked-countries", statsCountriesHandler)
 	return r
 }
 
@@ -270,62 +269,4 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 type statsAppType struct {
 	Type  string
 	Count int
-}
-
-func statsCountriesHandler(w http.ResponseWriter, r *http.Request) {
-
-	// var ranks []mongo.PlayerRank
-	//
-	// client, ctx, err := db.GetDSClient()
-	// if err != nil {
-	// 	returnErrorTemplate(w, r, errorTemplate{Error: err, Code: 500, Message: "Something went wrong"})
-	// 	return
-	// }
-	//
-	// q := datastore.NewQuery(db.KindPlayerRank)
-	//
-	// if config.Config.IsLocal() {
-	// 	q = q.Limit(1000)
-	// }
-	//
-	// _, err = client.GetAll(ctx, q, &ranks)
-	// if err != nil {
-	// 	log.Err(err, r)
-	// }
-	//
-	// // Tally up
-	// tally := map[string]int{}
-	// for _, v := range ranks {
-	// 	if _, ok := tally[v.CountryCode]; ok {
-	// 		tally[v.CountryCode]++
-	// 	} else {
-	// 		tally[v.CountryCode] = 1
-	// 	}
-	// }
-	//
-	// // Filter
-	// for k, v := range tally {
-	// 	if v < 10 {
-	// 		delete(tally, k)
-	// 	}
-	// }
-	//
-	// var ret [][]interface{}
-	//
-	// for k, v := range tally {
-	// 	if k == "" {
-	// 		k = "??"
-	// 	}
-	// 	ret = append(ret, []interface{}{k, v})
-	// }
-	//
-	// sort.Slice(ret, func(i, j int) bool {
-	// 	return ret[i][1].(int) > ret[j][1].(int)
-	// })
-	//
-	// bytes, err := json.Marshal(ret)
-	// log.Err(err, r)
-	//
-	// err = returnJSON(w, r, bytes)
-	// log.Err(err, r)
 }
