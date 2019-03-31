@@ -2,8 +2,13 @@ package mongo
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
+	"encoding/json"
 
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -153,17 +158,30 @@ func InsertDocuments(collection collection, documents []Document) (resp *mongo.I
 
 func CountDocuments(collection collection, filter interface{}) (count int64, err error) {
 
-	// todo, build in cache by hashing the filter
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return count, err
-	}
-
 	if filter == nil {
 		filter = bson.M{}
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection.String())
-	return c.CountDocuments(ctx, filter, options.Count())
+	b, err := json.Marshal(filter)
+	log.Err(err)
+
+	h := md5.Sum(b)
+
+	key := hex.EncodeToString(h[:])
+
+	item := helpers.MemcacheMongoCount(key)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return count, err
+		}
+
+		c := client.Database(MongoDatabase).Collection(collection.String())
+
+		return c.CountDocuments(ctx, filter, options.Count())
+	})
+
+	return count, err
 }

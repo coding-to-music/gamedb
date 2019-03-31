@@ -25,7 +25,10 @@ var (
 	MemcacheUpcomingPackagesCount = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
 	MemcachePlayersCount          = memcache.Item{Key: "players-count", Expiration: 86400 * 7}
 	MemcachePricesCount           = memcache.Item{Key: "prices-count", Expiration: 86400 * 7}
-	MemcachePlayerEventsCount     = func(playerID int64) memcache.Item {
+	MemcacheMongoCount            = func(key string) memcache.Item {
+		return memcache.Item{Key: "mongo-count-" + key, Expiration: 60 * 60}
+	}
+	MemcachePlayerEventsCount = func(playerID int64) memcache.Item {
 		return memcache.Item{Key: "players-events-count-" + strconv.FormatInt(playerID, 10), Expiration: 86400}
 	}
 
