@@ -32,9 +32,25 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	client, ctx := helpers.GetGithub()
 
-	contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
-	for _, v := range contributors {
-		t.Total += v.GetTotal()
+	operation := func() (err error) {
+
+		contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
+		for _, v := range contributors {
+			t.Total += v.GetTotal()
+		}
+
+		if t.Total == 0 {
+			return errors.New("no commits found")
+		}
+
+		return nil
+	}
+
+	policy := backoff.NewExponentialBackOff()
+
+	err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err) })
+	if err != nil {
+		log.Critical(err, r)
 	}
 
 	err = returnTemplate(w, r, "commits", t)
