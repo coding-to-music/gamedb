@@ -5,7 +5,9 @@ import (
 	"strings"
 
 	"github.com/gamedb/website/helpers"
+	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
+	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -130,6 +132,30 @@ func saveChangesToMongo(changes map[int]*mongo.Change) (err error) {
 
 func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
 
+	var appIDs []int
+	var packageIDs []int
+	var appMap = map[int]string{}
+	var packageMap = map[int]string{}
+
+	for _, v := range changes {
+		appIDs = append(appIDs, v.Apps...)
+		packageIDs = append(packageIDs, v.Packages...)
+	}
+
+	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name"})
+	log.Err(err)
+
+	for _, v := range apps {
+		appMap[v.ID] = v.GetName()
+	}
+
+	packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
+	log.Err(err)
+
+	for _, v := range packages {
+		packageMap[v.ID] = v.GetName()
+	}
+
 	page, err := websockets.GetPage(websockets.PageChanges)
 	if err != nil {
 		return err
@@ -141,7 +167,7 @@ func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
 		var ws [][]interface{}
 		for _, v := range changes {
 
-			ws = append(ws, v.OutputForJSON())
+			ws = append(ws, v.OutputForJSON(appMap, packageMap))
 		}
 
 		page.Send(ws)

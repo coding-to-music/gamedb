@@ -5,6 +5,7 @@ import (
 
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
+	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -41,39 +42,34 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// var limit = 100
-	// var offset = query.getOffset()
-	//
-	// kinds, err := db.GetBufferRows(db.KindChange, limit, offset)
-	// if err != nil {
-	// 	log.Err(err, r)
-	// 	return
-	// }
-	// var changes = db.KindsToChanges(kinds)
-	//
-	// if len(changes) < limit {
-	//
-	// 	limit = limit - len(changes)
-	// 	offset = offset - len(changes)
-	//
-	// 	client, ctx, err := db.GetDSClient()
-	// 	if err != nil {
-	//
-	// 		log.Err(err, r)
-	//
-	// 	} else {
-	//
-	// 		q := datastore.NewQuery(db.KindChange).Order("-change_id").Limit(limit).Offset(offset)
-	//
-	// 		_, err := client.GetAll(ctx, q, &changes)
-	// 		log.Err(err, r)
-	// 	}
-	// }
-
 	changes, err := mongo.GetChanges(query.getOffset64())
 	if err != nil {
 		log.Err(err, r)
 		return
+	}
+
+	var appIDs []int
+	var packageIDs []int
+	var appMap = map[int]string{}
+	var packageMap = map[int]string{}
+
+	for _, v := range changes {
+		appIDs = append(appIDs, v.Apps...)
+		packageIDs = append(packageIDs, v.Packages...)
+	}
+
+	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name"})
+	log.Err(err)
+
+	for _, v := range apps {
+		appMap[v.ID] = v.GetName()
+	}
+
+	packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
+	log.Err(err)
+
+	for _, v := range packages {
+		packageMap[v.ID] = v.GetName()
 	}
 
 	response := DataTablesAjaxResponse{}
@@ -82,7 +78,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, v := range changes {
-		response.AddRow(v.OutputForJSON())
+		response.AddRow(v.OutputForJSON(appMap, packageMap))
 	}
 
 	response.output(w, r)

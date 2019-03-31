@@ -35,15 +35,16 @@ if ($('#changes-page').length > 0) {
                 "render": function (data, type, row) {
 
                     let apps = [];
-                    if (isIterable(row[3])) {
-                        row[3].sort(sortByProductName);
-                        for (const v of row[3]) {
+                    if (row[3] !== null) {
+                        for (let k in row[3]) {
+                            if (row[3].hasOwnProperty(k)) {
 
-                            if (v.name === '') {
-                                v.name = 'Unknown App';
+                                if (row[3][k] === '') {
+                                    row[3][k] = 'Unknown App';
+                                }
+
+                                apps.push('<a href="/apps/' + k + '">' + row[3][k] + '</a>');
                             }
-
-                            apps.push('<a href="/apps/' + v.id + '">' + v.name + '</a>');
                         }
                     }
 
@@ -57,18 +58,18 @@ if ($('#changes-page').length > 0) {
                 "render": function (data, type, row) {
 
                     let packages = [];
-                    if (isIterable(row[4])) {
-                        row[4].sort(sortByProductName);
-                        for (const v of row[4]) {
+                    if (row[4] !== null) {
+                        for (let k in row[4]) {
+                            if (row[4].hasOwnProperty(k)) {
 
-                            if (v.name === '') {
-                                v.name = 'Unknown Package'
+                                if (row[4][k] === '') {
+                                    row[4][k] = 'Unknown Package';
+                                }
+
+                                packages.push('<a href="/packages/' + k + '">' + row[4][k] + '</a>');
                             }
-
-                            packages.push('<a href="/packages/' + v.id + '">' + v.name + '</a>');
                         }
                     }
-
 
                     return packages.join('<br/>');
                 },

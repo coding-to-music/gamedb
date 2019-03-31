@@ -57,14 +57,29 @@ func (change Change) GetNiceDate() string {
 	return change.CreatedAt.Format(helpers.DateYearTime)
 }
 
-func (change Change) OutputForJSON() (output []interface{}) {
+func (change Change) OutputForJSON(allApps map[int]string, allPackages map[int]string) (output []interface{}) {
+
+	var apps = map[int]string{}
+	var packages = map[int]string{}
+
+	for _, v := range change.Apps {
+		if val, ok := allApps[v]; ok {
+			apps[v] = val
+		}
+	}
+
+	for _, v := range change.Packages {
+		if val, ok := allPackages[v]; ok {
+			packages[v] = val
+		}
+	}
 
 	return []interface{}{
 		change.ID,
 		change.CreatedAt.Unix(),
 		change.CreatedAt.Format(helpers.DateYearTime),
-		change.Apps,
-		change.Packages,
+		apps,
+		packages,
 		change.GetPath(),
 	}
 }
