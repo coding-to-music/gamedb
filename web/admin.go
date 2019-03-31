@@ -41,6 +41,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminQueueEveryApp()
 	case "refresh-all-packages":
 		go adminQueueEveryPackage()
+	case "refresh-all-players":
+		go adminQueueEveryPlayer()
 	case "refresh-genres":
 		go CronGenres()
 	case "refresh-tags":
@@ -88,7 +90,6 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		sql.ConfWipeMemcache + "-" + config.Config.Environment.Get(),
 		sql.ConfRunDevCode,
 		sql.ConfGarbageCollection,
-		sql.ConfFixBrokenPlayers,
 	})
 	log.Err(err, r)
 
@@ -243,6 +244,37 @@ func adminQueueEveryPackage() {
 	}
 
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
+}
+
+func adminQueueEveryPlayer() {
+
+	playerIDs, err := mongo.GetAllPlayerIDs()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	for _, v := range playerIDs {
+
+		err = queue.ProducePlayer(v)
+		if err != nil {
+			log.Err(err)
+			return
+		}
+	}
+
+	//
+	err = sql.SetConfig(sql.ConfAddedAllPlayers, strconv.FormatInt(time.Now().Unix(), 10))
+	log.Err(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+	log.Err(err)
+
+	if err == nil {
+		page.Send(adminWebsocket{sql.ConfAddedAllPlayers + " complete"})
+	}
+
+	log.Info(strconv.Itoa(len(playerIDs)) + " players added to rabbit")
 }
 
 func CronDonations() {

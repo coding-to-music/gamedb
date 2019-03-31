@@ -388,6 +388,40 @@ func GetPlayers(offset int64, limit int64, sort D, filter M) (players []Player, 
 	return players, cur.Err()
 }
 
+func GetAllPlayerIDs() (ids []int64, err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return ids, err
+	}
+
+	ops := options.Find().SetReturnKey(true)
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
+	cur, err := c.Find(ctx, M{}, ops)
+	if err != nil {
+		return ids, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var player Player
+		err := cur.Decode(&player)
+		if err != nil {
+			log.Err(err, player.ID)
+		}
+		ids = append(ids, player.ID)
+	}
+
+	return ids, cur.Err()
+
+}
+
 func GetPlayersByIDs(ids []int64) (players []Player, err error) {
 
 	if len(ids) < 1 {

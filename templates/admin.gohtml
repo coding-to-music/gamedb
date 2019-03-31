@@ -99,6 +99,12 @@
                             </a>
                         </div>
                         <div class="col col-xl-3">
+                            <a href="/admin/refresh-all-players" role="button" class="btn btn-danger btn-block mb-4">
+                                Refresh All Players<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-all-players").Value }}"></small>
+                            </a>
+                        </div>
+                        <div class="col col-xl-3">
                             <a href="/admin/run-dev-code" role="button" class="btn btn-danger btn-block mb-4">
                                 Run Dev Code<br/>
                                 <small data-livestamp="{{ (index .Configs "run-dev-code").Value }}"></small>

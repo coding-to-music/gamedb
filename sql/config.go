@@ -16,10 +16,10 @@ const (
 	ConfDonationsUpdated  = "refresh-donations"
 	ConfAddedAllApps      = "refresh-all-apps"
 	ConfAddedAllPackages  = "refresh-all-packages"
+	ConfAddedAllPlayers   = "refresh-all-players"
 	ConfWipeMemcache      = "wipe-memcache"
 	ConfRunDevCode        = "run-dev-code"
 	ConfGarbageCollection = "run-garbage-collection"
-	ConfFixBrokenPlayers  = "fix-broken-players"
 )
 
 type Config struct {
