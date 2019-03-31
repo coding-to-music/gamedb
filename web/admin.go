@@ -1082,7 +1082,7 @@ func adminDeleteBinLogs(r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name != "" {
 
-		gorm, err := sql.GetMySQLClient(true)
+		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err)
 			return
