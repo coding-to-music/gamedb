@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func priceChangeRouter() http.Handler {
@@ -62,16 +63,16 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var dateLimit = time.Now().AddDate(0, 0, -30)
 
-	var filter = mongo.M{
-		"currency":   string(code),
-		"created_at": mongo.M{"$gt": dateLimit},
+	var filter = mongo.D{
+		{"currency", string(code)},
+		{"created_at", mongo.M{"$gt": dateLimit}},
 	}
 
 	typex := query.getSearchString("type")
 	if typex == "apps" {
-		filter["app_id"] = mongo.M{"$gt": 0}
+		filter = append(filter, bson.E{Key: "app_id", Value: bson.M{"$gt": 0}})
 	} else if typex == "packages" {
-		filter["package_id"] = mongo.M{"$gt": 0}
+		filter = append(filter, bson.E{Key: "package_id", Value: bson.M{"$gt": 0}})
 	}
 
 	percents := query.getSearchSlice("percents")
@@ -80,14 +81,14 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			min, err := strconv.ParseFloat(percents[0], 64)
 			log.Err(err)
 			if err == nil {
-				filter["difference_percent"] = mongo.M{"$gte": min}
+				filter = append(filter, bson.E{Key: "difference_percent", Value: mongo.M{"$gte": min}})
 			}
 		}
 		if percents[1] != "100.00" {
 			max, err := strconv.ParseFloat(percents[1], 64)
 			log.Err(err)
 			if err == nil {
-				filter["difference_percent"] = mongo.M{"$lte": max}
+				filter = append(filter, bson.E{Key: "difference_percent", Value: mongo.M{"$lte": max}})
 			}
 		}
 	}
@@ -98,14 +99,14 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			min, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 			log.Err(err)
 			if err == nil {
-				filter["price_after"] = mongo.M{"$gte": min}
+				filter = append(filter, bson.E{Key: "price_after", Value: mongo.M{"$gte": min}})
 			}
 		}
 		if prices[1] != "100.00" {
 			max, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			log.Err(err)
 			if err == nil {
-				filter["price_after"] = mongo.M{"$lte": max}
+				filter = append(filter, bson.E{Key: "price_after", Value: mongo.M{"$lte": max}})
 			}
 		}
 	}
