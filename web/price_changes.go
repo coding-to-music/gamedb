@@ -74,17 +74,17 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter["package_id"] = mongo.M{"$gt": 0}
 	}
 
-	ranges := query.getSearchSlice("percents")
-	if len(ranges) == 2 {
-		if ranges[0] != "-100.00" {
-			min, err := strconv.ParseFloat(ranges[0], 64)
+	percents := query.getSearchSlice("percents")
+	if len(percents) == 2 {
+		if percents[0] != "-100.00" {
+			min, err := strconv.ParseFloat(percents[0], 64)
 			log.Err(err)
 			if err == nil {
 				filter["difference_percent"] = mongo.M{"$gte": min}
 			}
 		}
-		if ranges[1] != "100.00" {
-			max, err := strconv.ParseFloat(ranges[1], 64)
+		if percents[1] != "100.00" {
+			max, err := strconv.ParseFloat(percents[1], 64)
 			log.Err(err)
 			if err == nil {
 				filter["difference_percent"] = mongo.M{"$lte": max}
