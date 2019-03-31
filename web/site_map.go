@@ -97,7 +97,6 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		"/contact",
 		"/coop",
 		"/developers",
-		"/discounts",
 		"/donate",
 		"/experience",
 		"/apps",
