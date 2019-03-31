@@ -124,12 +124,16 @@ func GetPricesForProduct(productID int, productType helpers.ProductType, cc stea
 	return getProductPrices(filter, 0, 0, true)
 }
 
-func GetPrices(offset int64, filter M) (prices []ProductPrice, err error) {
+func GetPrices(offset int64, filter interface{}) (prices []ProductPrice, err error) {
 
 	return getProductPrices(filter, offset, 100, false)
 }
 
 func getProductPrices(filter interface{}, offset int64, limit int64, sortOrder bool) (prices []ProductPrice, err error) {
+
+	if filter == nil {
+		filter = D{}
+	}
 
 	client, ctx, err := getMongo()
 	if err != nil {
