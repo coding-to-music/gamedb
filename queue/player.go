@@ -152,13 +152,6 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// err = savePlayerToBuffer(player)
-	// if err != nil {
-	// 	logError(err, message.ID)
-	// 	payload.ackRetry(msg)
-	// 	return
-	// }
-
 	err = savePlayerToInflux(player)
 	if err != nil {
 		logError(err, message.ID)
