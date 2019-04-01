@@ -248,6 +248,8 @@ func adminQueueEveryPackage() {
 
 func adminQueueEveryPlayer() {
 
+	cronLogInfo("Queueing every player")
+
 	playerIDs, err := mongo.GetAllPlayerIDs()
 	if err != nil {
 		log.Err(err)
