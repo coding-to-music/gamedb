@@ -319,10 +319,10 @@ func (player Player) ShouldUpdate(userAgent string, updateType UpdateType) bool 
 	return false
 }
 
-func (player Player) OutputForJSON() (output []interface{}) {
+func (player Player) OutputForJSON(rank string) (output []interface{}) {
 
 	return []interface{}{
-		0,                                // Rank
+		rank,                             //
 		strconv.FormatInt(player.ID, 10), //
 		player.PersonaName,               //
 		player.GetAvatar(),               //

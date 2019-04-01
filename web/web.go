@@ -721,6 +721,24 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol st
 	return mongo.D{{fallbackCol, fallbackSort}}
 }
 
+func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) {
+
+	for _, v := range q.Order {
+
+		if col, ok := v["column"].(string); ok {
+			if ok {
+				if col, ok := columns[col]; ok {
+					if ok {
+						return col
+					}
+				}
+			}
+		}
+	}
+
+	return col
+}
+
 func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {
 
 	db = db.Order(q.getOrderSQL(columns, code))

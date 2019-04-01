@@ -108,7 +108,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get players
-	var players []mongo.Player
+	var playerRows []PlayerRow
 	wg.Add(1)
 	go func() {
 
@@ -122,26 +122,32 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"7": "friends_count",
 		}
 
-		var err error
-		players, err = mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, "level", -1), mongo.M{})
+		players, err := mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, "level", -1), mongo.M{})
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		// 	switch column {
-		// 	case "badges_rank":
-		// 		rank.Rank = humanize.Ordinal(rank.RankRow.BadgesRank)
-		// 	case "friends_rank":
-		// 		rank.Rank = humanize.Ordinal(rank.RankRow.FriendsRank)
-		// 	case "games_rank":
-		// 		rank.Rank = humanize.Ordinal(rank.RankRow.GamesRank)
-		// 	case "level_rank", "":
-		// 		rank.Rank = humanize.Ordinal(rank.RankRow.LevelRank)
-		// 	case "play_time_rank":
-		// 		rank.Rank = humanize.Ordinal(rank.RankRow.PlayTimeRank)
-		// 	}
+		for _, v := range players {
 
+			playerRow := PlayerRow{}
+			playerRow.Player = v
+
+			switch query.getOrderString(columns) {
+			case "badges_count":
+				playerRow.Rank = v.BadgesRank
+			case "friends_count":
+				playerRow.Rank = v.FriendsRank
+			case "games_count":
+				playerRow.Rank = v.GamesRank
+			case "level", "":
+				playerRow.Rank = v.LevelRank
+			case "play_time":
+				playerRow.Rank = v.PlayTimeRank
+			}
+
+			playerRows = append(playerRows, playerRow)
+		}
 	}()
 
 	// Get total
@@ -165,10 +171,24 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsFiltered = response.RecordsTotal // todo, update if we filter players by name
 	response.Draw = query.Draw
 
-	for _, v := range players {
+	for _, v := range playerRows {
 
-		response.AddRow(v.OutputForJSON())
+		response.AddRow(v.Player.OutputForJSON(v.GetRank()))
 	}
 
 	response.output(w, r)
+}
+
+type PlayerRow struct {
+	Player mongo.Player
+	Rank   int
+}
+
+func (pr PlayerRow) GetRank() string {
+
+	if pr.Rank == 0 {
+		return "-"
+	}
+
+	return humanize.Ordinal(pr.Rank)
 }
