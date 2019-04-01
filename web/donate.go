@@ -9,7 +9,7 @@ import (
 func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := GlobalTemplate{}
-	t.fill(w, r, "Donate", "Help pay for the server costs or just buy me a beer.")
+	t.fill(w, r, "Donate", "Databases take up a tonne of memory and space. Help pay for the server costs or just buy me a beer.")
 
 	err := returnTemplate(w, r, "donate", t)
 	log.Err(err, r)
