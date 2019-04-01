@@ -68,7 +68,11 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 		}
 
 		app, ok := appMap[appID]
-		if ok {
+		if ok || appID == 0 {
+
+			if appID == 0 {
+				app = sql.App{}
+			}
 
 			viewers, err := getAppTwitchStreamers(&app)
 			if err != nil {
@@ -99,12 +103,12 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 
 func getAppTwitchStreamers(app *sql.App) (viewers int, err error) {
 
-	client, err := helpers.GetTwitch()
-	if err != nil {
-		return 0, err
-	}
-
 	if app.TwitchID > 0 {
+
+		client, err := helpers.GetTwitch()
+		if err != nil {
+			return 0, err
+		}
 
 		var resp *helix.StreamsResponse
 
@@ -162,6 +166,10 @@ func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 }
 
 func updateAppPlayerInfoRow(app *sql.App) (err error) {
+
+	if app == nil || app.ID == 0 {
+		return nil
+	}
 
 	var resp *influx.Response
 
