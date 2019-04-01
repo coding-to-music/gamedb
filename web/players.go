@@ -122,7 +122,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"7": "friends_count",
 		}
 
-		players, err := mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, "level", -1), mongo.M{})
+		players, err := mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, nil), mongo.M{})
 		if err != nil {
 			log.Err(err)
 			return

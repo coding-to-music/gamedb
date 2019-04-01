@@ -1,24 +1,24 @@
 package mongo
 
 import (
-	"reflect"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type PlayerApp struct {
-	PlayerID     int64              ``
-	AppID        int                ``
-	AppName      string             ``
-	AppIcon      string             ``
-	AppTime      int                ``
-	AppPrices    map[string]int     ``
-	AppPriceHour map[string]float32 ``
+	PlayerID     int64              `bson:"player_id"`
+	AppID        int                `bson:"app_id"`
+	AppName      string             `bson:"app_name"`
+	AppIcon      string             `bson:"app_icon"`
+	AppTime      int                `bson:"app_time"`
+	AppPrices    map[string]int     `bson:"app_prices"`
+	AppPriceHour map[string]float32 `bson:"app_prices_hour"`
 }
 
 func (pa PlayerApp) BSON() (ret interface{}) {
@@ -34,7 +34,7 @@ func (pa PlayerApp) BSON() (ret interface{}) {
 	}
 
 	return bson.M{
-		"_id":             strconv.FormatInt(pa.PlayerID, 10) + "-" + strconv.Itoa(pa.AppID),
+		"_id":             pa.getKey(),
 		"player_id":       pa.PlayerID,
 		"app_id":          pa.AppID,
 		"app_name":        pa.AppName,
@@ -43,6 +43,10 @@ func (pa PlayerApp) BSON() (ret interface{}) {
 		"app_prices":      prices,
 		"app_prices_hour": pricesHour,
 	}
+}
+
+func (pa PlayerApp) getKey() string {
+	return strconv.FormatInt(pa.PlayerID, 10) + "-" + strconv.Itoa(pa.AppID)
 }
 
 func (pa PlayerApp) GetPath() string {
@@ -64,37 +68,34 @@ func (pa PlayerApp) GetTimeNice() string {
 
 func (pa PlayerApp) GetPriceFormatted(code steam.CountryCode) string {
 
-	s := reflect.Indirect(reflect.ValueOf(pa.AppPrices))
-	f := s.FieldByName(string(code))
+	val, ok := pa.AppPrices[string(code)]
+	if ok {
 
-	if f.IsNil() {
+		locale, err := helpers.GetLocaleFromCountry(code)
+		log.Err(err)
+		return locale.Format(val)
+
+	} else {
 		return ""
 	}
-
-	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Err(err)
-
-	return locale.Format(int(f.Elem().Int()))
 }
 
 func (pa PlayerApp) GetPriceHourFormatted(code steam.CountryCode) string {
 
-	s := reflect.Indirect(reflect.ValueOf(pa.AppPriceHour))
-	f := s.FieldByName(string(code))
+	val, ok := pa.AppPriceHour[string(code)]
+	if ok {
 
-	if f.IsNil() {
+		if val < 0 {
+			return "∞"
+		}
+
+		locale, err := helpers.GetLocaleFromCountry(code)
+		log.Err(err)
+		return locale.FormatFloat(float64(val))
+
+	} else {
 		return ""
 	}
-
-	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Err(err)
-
-	val := f.Elem().Float()
-	if val < 0 {
-		return "∞"
-	}
-
-	return locale.FormatFloat(val)
 }
 
 func (pa PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{}) {
@@ -161,4 +162,30 @@ func getPlayerApps(offset int64, limit int64, filter interface{}, sort D) (apps 
 	}
 
 	return apps, cur.Err()
+}
+
+func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	var writes []mongo.WriteModel
+	for _, v := range apps {
+
+		write := mongo.NewReplaceOneModel()
+		write.SetFilter(bson.M{"_id": v.getKey()})
+		write.SetReplacement(v.BSON())
+		write.SetUpsert(true)
+
+		writes = append(writes, write)
+	}
+
+	c := client.Database(MongoDatabase).Collection(CollectionPlayerApps.String())
+
+	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
+	log.Err(err)
+
+	return err
 }

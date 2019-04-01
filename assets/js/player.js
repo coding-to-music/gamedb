@@ -92,7 +92,6 @@ if ($playerPage.length > 0) {
                     "render": function (data, type, row) {
                         return row[5];
                     },
-                    "orderable": false
                 },
                 // Time
                 {
@@ -110,7 +109,6 @@ if ($playerPage.length > 0) {
                     "render": function (data, type, row) {
                         return row[6];
                     },
-                    "orderable": false
                 }
             ]
         }));

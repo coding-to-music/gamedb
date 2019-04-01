@@ -322,12 +322,13 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	code := session.GetCountryCode(r)
+
 	//
 	var wg sync.WaitGroup
 
 	// Get apps
 	var playerApps []mongo.PlayerApp
-
 	wg.Add(1)
 	go func() {
 
@@ -335,13 +336,20 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		columns := map[string]string{
 			"0": "app_name",
-			"1": "app_price",
+			"1": "app_prices",
 			"2": "app_time",
-			"3": "app_price_hour",
+			"3": "app_prices_hour",
+		}
+
+		colEdit := func(col string) string {
+			if col == "app_prices" || col == "app_prices_hour" {
+				col = col + "." + string(code)
+			}
+			return col
 		}
 
 		var err error
-		playerApps, err = mongo.GetPlayerAppsByPlayer(playerIDInt, query.getOffset64(), true, query.getOrderMongo(columns, "app_time", -1))
+		playerApps, err = mongo.GetPlayerAppsByPlayer(playerIDInt, query.getOffset64(), true, query.getOrderMongo(columns, colEdit))
 		log.Err(err)
 	}()
 
@@ -369,8 +377,6 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = strconv.Itoa(total)
 	response.RecordsFiltered = strconv.Itoa(total)
 	response.Draw = query.Draw
-
-	code := session.GetCountryCode(r)
 
 	for _, v := range playerApps {
 		response.AddRow(v.OutputForJSON(code))

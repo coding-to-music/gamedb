@@ -692,7 +692,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.Count
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol string, fallbackSort int8) mongo.D {
+func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(string) string) mongo.D {
 
 	for _, v := range q.Order {
 
@@ -704,6 +704,10 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol st
 
 						if col, ok := columns[col]; ok {
 							if ok {
+
+								if colEdit != nil {
+									col = colEdit(col)
+								}
 
 								if dir == "desc" {
 									return mongo.D{{col, -1}}
@@ -718,7 +722,7 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, fallbackCol st
 		}
 	}
 
-	return mongo.D{{fallbackCol, fallbackSort}}
+	return mongo.D{}
 }
 
 func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) {
