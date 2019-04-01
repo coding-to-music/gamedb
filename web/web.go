@@ -344,7 +344,11 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	t.request = r
 
-	t.Title = title + " - Game DB"
+	if helpers.IsBot(r.UserAgent()) {
+		t.Title = title + " - Game DB"
+	} else {
+		t.Title = title + " - 🅶🅰🅼🅴 🅳🅱"
+	}
 	t.Description = description
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
