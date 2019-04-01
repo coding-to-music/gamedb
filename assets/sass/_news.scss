@@ -10,9 +10,20 @@
 
         .card-body {
 
-            img {
-                max-width: 100%;
-                max-height: 300px;
+            > div {
+
+                img {
+                    max-width: 100%;
+                    max-height: 300px;
+                }
+
+                p:empty {
+                    display: none;
+                }
+
+                br:first-child {
+                    display: none;
+                }
             }
         }
 
@@ -22,7 +33,7 @@
 
             > div {
 
-                img, br, p:empty {
+                img, br {
                     display: none;
                 }
 
