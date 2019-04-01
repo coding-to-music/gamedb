@@ -79,7 +79,9 @@ func Serve() error {
 	}
 
 	// Pages
-	r.Get("/", homeHandler)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/apps?types=game", 302)
+	})
 	r.Get("/api", apiHandler)
 	r.Get("/coop", coopHandler)
 	r.Get("/developers", statsDevelopersHandler)
@@ -87,6 +89,7 @@ func Serve() error {
 	r.Get("/esi/header", headerHandler)
 	r.Get("/genres", statsGenresHandler)
 	r.Get("/health-check", healthCheckHandler)
+	r.Get("/home", homeHandler)
 	r.Get("/info", infoHandler)
 	r.Get("/logout", logoutHandler)
 	r.Get("/publishers", statsPublishersHandler)
