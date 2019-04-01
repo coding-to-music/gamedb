@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
+	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -606,34 +607,39 @@ func savePlayerMongo(player mongo.Player) error {
 
 func savePlayerToInflux(player mongo.Player) (err error) {
 
-	// ranks, err := db.GetRank(player.ID)
-	// if err != nil && err != db.ErrNoSuchEntity {
-	// 	return err
-	// }
-	//
-	// fields := map[string]interface{}{
-	// 	"level":    player.Level,
-	// 	"games":    player.GamesCount,
-	// 	"badges":   player.BadgesCount,
-	// 	"playtime": player.PlayTime,
-	// 	"friends":  player.FriendsCount,
-	//
-	// 	"level_rank":    ranks.LevelRank,
-	// 	"games_rank":    ranks.GamesRank,
-	// 	"badges_rank":   ranks.BadgesRank,
-	// 	"playtime_rank": ranks.PlayTimeRank,
-	// 	"friends_rank":  ranks.FriendsRank,
-	// }
-	//
-	// _, err = db.InfluxWrite(db.InfluxRetentionPolicyAllTime, influx.Point{
-	// 	Measurement: string(db.InfluxMeasurementPlayers),
-	// 	Tags: map[string]string{
-	// 		"player_id": strconv.FormatInt(player.ID, 10),
-	// 	},
-	// 	Fields:    fields,
-	// 	Time:      time.Now(),
-	// 	Precision: "m",
-	// })
+	fields := map[string]interface{}{
+		"level":    player.Level,
+		"games":    player.GamesCount,
+		"badges":   player.BadgesCount,
+		"playtime": player.PlayTime,
+		"friends":  player.FriendsCount,
+	}
+
+	if player.LevelRank > 0 {
+		fields["level_rank"] = player.LevelRank
+	}
+	if player.GamesRank > 0 {
+		fields["games_rank"] = player.GamesRank
+	}
+	if player.BadgesRank > 0 {
+		fields["badges_rank"] = player.BadgesRank
+	}
+	if player.PlayTimeRank > 0 {
+		fields["playtime_rank"] = player.PlayTimeRank
+	}
+	if player.FriendsRank > 0 {
+		fields["friends_rank"] = player.FriendsRank
+	}
+
+	_, err = sql.InfluxWrite(sql.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(sql.InfluxMeasurementPlayers),
+		Tags: map[string]string{
+			"player_id": strconv.FormatInt(player.ID, 10),
+		},
+		Fields:    fields,
+		Time:      time.Now(),
+		Precision: "m",
+	})
 
 	return err
 }
