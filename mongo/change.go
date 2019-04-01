@@ -13,8 +13,8 @@ import (
 type Change struct {
 	ID        int       `bson:"_id"`
 	CreatedAt time.Time `bson:"created_at"`
-	Apps      []int     ``
-	Packages  []int     ``
+	Apps      []int     `bson:"apps"`
+	Packages  []int     `bson:"packages"`
 }
 
 func (change Change) BSON() (ret interface{}) {

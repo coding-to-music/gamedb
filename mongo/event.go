@@ -20,11 +20,11 @@ const (
 )
 
 type Event struct {
-	CreatedAt time.Time
-	Type      string
-	PlayerID  int64
-	UserAgent string
-	IP        string
+	CreatedAt time.Time `bson:"created_at"`
+	Type      string    `bson:"type"`
+	PlayerID  int64     `bson:"player_id"`
+	UserAgent string    `bson:"user_agent"`
+	IP        string    `bson:"ip"`
 }
 
 func (event Event) BSON() (ret interface{}) {
