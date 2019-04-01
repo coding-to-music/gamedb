@@ -5,7 +5,7 @@ if ($trendingPage.length > 0) {
 
     $table.DataTable($.extend(true, {}, dtDefaultOptions, {
         "pageLength": 50,
-        "order": [[2, 'desc']],
+        "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);
             $(row).attr('data-link', data[3]);
@@ -34,23 +34,32 @@ if ($trendingPage.length > 0) {
                 },
                 "orderable": false,
             },
-            // Trend Value
+            // Players
             {
                 "targets": 2,
                 "render": function (data, type, row) {
+                    return row[6].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+            // Trend Value
+            {
+                "targets": 3,
+                "render": function (data, type, row) {
                     return row[5].toLocaleString();
                 },
+                "orderSequence": ["desc", "asc"],
             },
             // Chart
             {
-                "targets": 3,
+                "targets": 4,
                 "render": function (data, type, row) {
                     return '<div data-app-id="' + row[0] + '"><i class="fas fa-spinner fa-spin"></i></div>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('chart');
                 },
-                'orderData': [2],
+                "orderSequence": ["desc", "asc"],
             },
         ]
     }));

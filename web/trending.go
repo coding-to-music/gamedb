@@ -55,11 +55,13 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	columns := map[string]string{
-		"2": "player_trend",
+		"2": "player_peak_week",
+		"3": "player_trend",
+		"4": "player_trend",
 	}
 
 	gorm = gorm.Model(sql.App{})
-	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend"})
+	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
 	gorm = gorm.Order(query.getOrderSQL(columns, session.GetCountryCode(r)))
 
 	// Count before limitting
@@ -89,8 +91,9 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetName(),                          // 1
 			app.GetIcon(),                          // 2
 			app.GetPath(),                          // 3
-			sql.GetPriceFormatted(app, code).Final, // 5
-			app.PlayerTrend,                        // 6
+			sql.GetPriceFormatted(app, code).Final, // 4
+			app.PlayerTrend,                        // 5
+			app.PlayerPeakWeek,                     // 6
 		})
 	}
 

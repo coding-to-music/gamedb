@@ -2,6 +2,7 @@ div table.dataTable {
     border-collapse: separate !important;
 }
 
+// Border radius table corners
 table.table:not(.fixedHeader-floating) {
 
     thead {
@@ -32,6 +33,12 @@ table.table:not(.fixedHeader-floating) {
                 border-bottom-right-radius: 5px;
             }
         }
+    }
+}
+
+table.table-datatable, table.table-datatable2 {
+    th {
+        padding-right: 30px;
     }
 }
 
