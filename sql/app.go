@@ -216,23 +216,15 @@ func (app App) GetDaysToRelease() string {
 
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
-	var cnds string
-	cnd := app.ChangeNumberDate.Unix()
-	if cnd == -62167219200 {
-		cnds = "Unknown"
-	} else {
-		cnds = strconv.FormatInt(app.ChangeNumberDate.Unix(), 10)
-	}
-
 	return []interface{}{
-		app.ID,
-		app.GetName(),
-		app.GetIcon(),
-		app.GetPath(),
-		app.GetType(),
-		app.ReviewsScore,
-		GetPriceFormatted(app, code).Final,
-		cnds,
+		app.ID,                             // 0
+		app.GetName(),                      // 1
+		app.GetIcon(),                      // 2
+		app.GetPath(),                      // 3
+		app.GetType(),                      // 4
+		app.ReviewsScore,                   // 5
+		GetPriceFormatted(app, code).Final, // 6
+		app.PlayerPeakWeek,                 // 7
 	}
 }
 
