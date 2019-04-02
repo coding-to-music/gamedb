@@ -13,6 +13,8 @@
 
         .card-body {
 
+            cursor: ns-resize;
+
             > div {
 
                 h1, h2, h3 {
@@ -32,14 +34,25 @@
                 br:first-child {
                     display: none;
                 }
+
+                br + br + br {
+                    display: none
+                }
+
+                p:empty + p:empty {
+                    display: none;
+                }
             }
         }
 
         .card-body.minned {
-            cursor: ns-resize;
+
             box-shadow: 0px -10px 10px -10px #000 inset;
 
             > div {
+
+                max-height: 200px;
+                overflow-y: scroll;
 
                 h1, h2, h3 {
                     font-size: 1rem;
@@ -48,9 +61,6 @@
                 img, br, iframe {
                     display: none;
                 }
-
-                max-height: 200px;
-                overflow: hidden;
             }
         }
     }
