@@ -250,15 +250,15 @@ func adminQueueEveryPlayer() {
 
 	cronLogInfo("Queueing every player")
 
-	playerIDs, err := mongo.GetAllPlayerIDs()
+	players, err := mongo.GetPlayers(0, 0, mongo.D{{"_id", 1}}, mongo.M{"_id": 1})
 	if err != nil {
 		log.Err(err)
 		return
 	}
 
-	for _, v := range playerIDs {
+	for _, player := range players {
 
-		err = queue.ProducePlayer(v)
+		err = queue.ProducePlayer(player.ID)
 		if err != nil {
 			log.Err(err)
 			return
@@ -276,7 +276,7 @@ func adminQueueEveryPlayer() {
 		page.Send(adminWebsocket{sql.ConfAddedAllPlayers + " complete"})
 	}
 
-	log.Info(strconv.Itoa(len(playerIDs)) + " players added to rabbit")
+	log.Info(strconv.Itoa(len(players)) + " players added to rabbit")
 }
 
 func CronDonations() {

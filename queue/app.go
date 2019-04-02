@@ -784,15 +784,15 @@ func updateAppReviews(app *sql.App) error {
 	}
 
 	// Get players
-	players, err := mongo.GetPlayersByIDs(playersSlice)
+	players, err := mongo.GetPlayersByID(playersSlice, mongo.M{"_id": 1})
 	if err != nil {
 		return err
 	}
 
 	// Make map of players
 	var playersMap = map[int64]mongo.Player{}
-	for _, v := range players {
-		playersMap[v.ID] = v
+	for _, player := range players {
+		playersMap[player.ID] = player
 	}
 
 	// Make template slice

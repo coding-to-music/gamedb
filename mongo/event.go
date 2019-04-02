@@ -9,7 +9,6 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -29,7 +28,7 @@ type Event struct {
 
 func (event Event) BSON() (ret interface{}) {
 
-	return bson.M{
+	return M{
 		"created_at": event.CreatedAt,
 		"type":       event.Type,
 		"player_id":  event.PlayerID,
@@ -117,7 +116,7 @@ func GetEvents(playerID int64, offset int64) (events []Event, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents.String())
 
-	cur, err := c.Find(ctx, bson.M{"player_id": playerID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(bson.M{"created_at": -1}))
+	cur, err := c.Find(ctx, M{"player_id": playerID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(M{"created_at": -1}))
 	if err != nil {
 		return events, err
 	}
@@ -166,7 +165,7 @@ func CountEvents(playerID int64) (count int64, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionEvents, bson.M{"player_id": playerID})
+		return CountDocuments(CollectionEvents, M{"player_id": playerID})
 	})
 
 	return count, err

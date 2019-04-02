@@ -122,7 +122,24 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"7": "friends_count",
 		}
 
-		players, err := mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, nil), mongo.M{})
+		players, err := mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, nil), mongo.M{
+			"_id":          1,
+			"persona_name": 1,
+			"avatar":       1,
+			"country_code": 1,
+			//
+			"badges_count":  1,
+			"friends_count": 1,
+			"games_count":   1,
+			"level":         1,
+			"play_time":     1,
+			//
+			"badges_rank":    1,
+			"friends_rank":   1,
+			"games_rank":     1,
+			"level_rank":     1,
+			"play_time_rank": 1,
+		})
 		if err != nil {
 			log.Err(err)
 			return

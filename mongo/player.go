@@ -11,7 +11,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -63,7 +62,7 @@ type Player struct {
 
 func (player Player) BSON() (ret interface{}) {
 
-	return bson.M{
+	return M{
 		"_id":             player.ID,
 		"avatar":          player.Avatar,
 		"badges":          player.Badges,
@@ -368,7 +367,26 @@ func GetPlayer(id int64) (player Player, err error) {
 	return player, err
 }
 
-func GetPlayers(offset int64, limit int64, sort D, filter M) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, projection M) (players []Player, err error) {
+
+	return getPlayers(offset, limit, sort, nil, projection)
+}
+
+func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
+
+	if len(ids) < 1 {
+		return players, nil
+	}
+
+	var idsBSON A
+	for _, v := range ids {
+		idsBSON = append(idsBSON, v)
+	}
+
+	return getPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection)
+}
+
+func getPlayers(offset int64, limit int64, sort D, filter interface{}, projection M) (players []Player, err error) {
 
 	if filter == nil {
 		filter = M{}
@@ -379,9 +397,19 @@ func GetPlayers(offset int64, limit int64, sort D, filter M) (players []Player, 
 		return players, err
 	}
 
-	ops := options.Find().SetSkip(offset).SetSort(sort)
+	ops := options.Find()
+	if offset > 0 {
+		ops.SetSkip(offset)
+	}
 	if limit > 0 {
 		ops.SetLimit(limit)
+	}
+	if sort != nil {
+		ops.SetSort(sort)
+	}
+
+	if projection != nil {
+		ops.SetProjection(projection)
 	}
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
@@ -408,94 +436,21 @@ func GetPlayers(offset int64, limit int64, sort D, filter M) (players []Player, 
 	return players, cur.Err()
 }
 
-func GetAllPlayerIDs() (ids []int64, err error) {
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return ids, err
-	}
-
-	ops := options.Find().SetReturnKey(true)
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
-	cur, err := c.Find(ctx, M{}, ops)
-	if err != nil {
-		return ids, err
-	}
-
-	defer func() {
-		err = cur.Close(ctx)
-		log.Err(err)
-	}()
-
-	for cur.Next(ctx) {
-
-		var player Player
-		err := cur.Decode(&player)
-		if err != nil {
-			log.Err(err, player.ID)
-		}
-		ids = append(ids, player.ID)
-	}
-
-	return ids, cur.Err()
-
-}
-
-func GetPlayersByIDs(ids []int64) (players []Player, err error) {
-
-	if len(ids) < 1 {
-		return players, nil
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return players, err
-	}
-
-	var idsBSON bson.A
-	for _, v := range ids {
-		idsBSON = append(idsBSON, v)
-	}
-
-	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
-	cur, err := c.Find(ctx, bson.M{"_id": bson.M{"$in": idsBSON}}, options.Find())
-	if err != nil {
-		return players, err
-	}
-
-	defer func() {
-		err = cur.Close(ctx)
-		log.Err(err)
-	}()
-
-	for cur.Next(ctx) {
-
-		var player Player
-		err := cur.Decode(&player)
-		log.Err(err)
-		players = append(players, player)
-	}
-
-	return players, err
-}
-
 func CountPlayers() (count int64, err error) {
 
 	var item = helpers.MemcachePlayersCount
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionPlayers, bson.M{})
+		return CountDocuments(CollectionPlayers, M{})
 	})
 
 	return count, err
 }
 
-// todo, when we get more players, this should be batched
 func RankPlayers(col string, colToUpdate string) (err error) {
 
-	players, err := GetPlayers(0, 0, D{{col, -1}, {"_id", 1}}, M{col: bson.M{"$gt": 0}})
+	players, err := getPlayers(0, 0, D{{col, -1}}, M{col: M{"$gt": 0}}, M{"_id": 1})
 	if err != nil {
 		return err
 	}
@@ -509,8 +464,8 @@ func RankPlayers(col string, colToUpdate string) (err error) {
 	for k, v := range players {
 
 		write := mongo.NewUpdateOneModel()
-		write.SetFilter(bson.M{"_id": v.ID})
-		write.SetUpdate(bson.M{"$set": bson.M{colToUpdate: k + 1}})
+		write.SetFilter(M{"_id": v.ID})
+		write.SetUpdate(M{"$set": M{colToUpdate: k + 1}})
 		write.SetUpsert(false)
 
 		writes = append(writes, write)
@@ -519,7 +474,7 @@ func RankPlayers(col string, colToUpdate string) (err error) {
 	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
 
 	// Clear all current values
-	_, err = c.UpdateMany(ctx, bson.M{colToUpdate: bson.M{"$ne": 0}}, bson.M{"$set": bson.M{colToUpdate: 0}}, options.Update())
+	_, err = c.UpdateMany(ctx, M{colToUpdate: M{"$ne": 0}}, M{"$set": M{colToUpdate: 0}}, options.Update())
 	log.Err(err)
 
 	// Write in new values

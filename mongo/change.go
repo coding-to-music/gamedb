@@ -6,7 +6,6 @@ import (
 
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -20,19 +19,19 @@ type Change struct {
 func (change Change) BSON() (ret interface{}) {
 
 	// Apps
-	var apps bson.A
+	var apps A
 	for _, v := range change.Apps {
 		apps = append(apps, v)
 	}
 
 	// Packages
-	var packages bson.A
+	var packages A
 	for _, v := range change.Packages {
 		packages = append(packages, v)
 	}
 
 	// BSON
-	return bson.M{
+	return M{
 		"_id":        change.ID,
 		"created_at": change.CreatedAt,
 		"apps":       apps,
@@ -109,7 +108,7 @@ func GetChanges(offset int64) (changes []Change, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionChanges.String())
 
-	cur, err := c.Find(ctx, bson.M{}, options.Find().SetLimit(100).SetSkip(offset).SetSort(bson.M{"_id": -1}))
+	cur, err := c.Find(ctx, M{}, options.Find().SetLimit(100).SetSkip(offset).SetSort(M{"_id": -1}))
 	if err != nil {
 		return changes, err
 	}

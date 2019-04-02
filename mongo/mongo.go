@@ -94,7 +94,7 @@ func FindDocument(collection collection, col string, val interface{}, document D
 	}
 
 	c := client.Database(MongoDatabase).Collection(collection.String())
-	result := c.FindOne(ctx, bson.M{col: val}, options.FindOne())
+	result := c.FindOne(ctx, M{col: val}, options.FindOne())
 
 	return result.Decode(document)
 }
@@ -159,7 +159,7 @@ func InsertDocuments(collection collection, documents []Document) (resp *mongo.I
 func CountDocuments(collection collection, filter interface{}) (count int64, err error) {
 
 	if filter == nil {
-		filter = bson.M{}
+		filter = M{}
 	}
 
 	b, err := json.Marshal(filter)

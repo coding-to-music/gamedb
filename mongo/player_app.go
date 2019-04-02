@@ -6,7 +6,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -23,17 +22,17 @@ type PlayerApp struct {
 
 func (pa PlayerApp) BSON() (ret interface{}) {
 
-	var prices = bson.M{}
+	var prices = M{}
 	for k, v := range pa.AppPrices {
 		prices[k] = v
 	}
 
-	var pricesHour = bson.M{}
+	var pricesHour = M{}
 	for k, v := range pa.AppPriceHour {
 		pricesHour[k] = v
 	}
 
-	return bson.M{
+	return M{
 		"_id":             pa.getKey(),
 		"player_id":       pa.PlayerID,
 		"app_id":          pa.AppID,
@@ -114,17 +113,21 @@ func (pa PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{})
 
 func GetPlayerAppsByPlayers(playerIDs []int64) (apps []PlayerApp, err error) {
 
-	playersFilter := bson.A{}
+	if len(playerIDs) < 1 {
+		return apps, err
+	}
+
+	playersFilter := A{}
 	for _, v := range playerIDs {
 		playersFilter = append(playersFilter, v)
 	}
 
-	return getPlayerApps(0, 0, bson.M{"$or": playersFilter}, nil)
+	return getPlayerApps(0, 0, M{"$or": playersFilter}, nil)
 }
 
 func GetPlayerAppsByPlayer(playerID int64, offset int64, limit bool, sort D) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, 100, bson.M{"player_id": playerID}, sort)
+	return getPlayerApps(offset, 100, M{"player_id": playerID}, sort)
 }
 
 func getPlayerApps(offset int64, limit int64, filter interface{}, sort D) (apps []PlayerApp, err error) {
@@ -179,7 +182,7 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 	for _, v := range apps {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(bson.M{"_id": v.getKey()})
+		write.SetFilter(M{"_id": v.getKey()})
 		write.SetReplacement(v.BSON())
 		write.SetUpsert(true)
 

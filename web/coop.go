@@ -41,15 +41,15 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get players
 	var err error
-	t.Players, err = mongo.GetPlayersByIDs(playerInts)
+	t.Players, err = mongo.GetPlayersByID(playerInts, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1})
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
 		return
 	}
 
 	var foundPlayerIDs []int64
-	for _, v := range t.Players {
-		foundPlayerIDs = append(foundPlayerIDs, v.ID)
+	for _, player := range t.Players {
+		foundPlayerIDs = append(foundPlayerIDs, player.ID)
 	}
 
 	for _, v := range playerInts {

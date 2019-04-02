@@ -10,7 +10,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -29,7 +28,7 @@ type ProductPrice struct {
 
 func (price ProductPrice) BSON() (ret interface{}) {
 
-	return bson.M{
+	return M{
 		"created_at":         price.CreatedAt,
 		"app_id":             price.AppID,
 		"package_id":         price.PackageID,
@@ -97,7 +96,7 @@ func (price ProductPrice) OutputForJSON() (output []interface{}) {
 
 func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.CountryCode) (prices []ProductPrice, err error) {
 
-	var filter = bson.M{
+	var filter = M{
 		"currency": string(cc),
 	}
 
@@ -137,9 +136,9 @@ func getProductPrices(filter interface{}, offset int64, limit int64, sortOrder b
 	}
 
 	if sortOrder {
-		o.SetSort(bson.M{"created_at": 1})
+		o.SetSort(M{"created_at": 1})
 	} else {
-		o.SetSort(bson.M{"created_at": -1})
+		o.SetSort(M{"created_at": -1})
 	}
 
 	cur, err := c.Find(ctx, filter, o)

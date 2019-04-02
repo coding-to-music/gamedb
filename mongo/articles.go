@@ -7,7 +7,6 @@ import (
 
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -29,7 +28,7 @@ type Article struct {
 
 func (article Article) BSON() (ret interface{}) {
 
-	return bson.M{
+	return M{
 		"_id":         article.ID,
 		"title":       article.Title,
 		"url":         article.URL,
@@ -85,25 +84,29 @@ func GetArticlesByAppIDs(appIDs []int) (news []Article, err error) {
 		return news, nil
 	}
 
-	appsFilter := bson.A{}
+	appsFilter := A{}
 	for _, v := range appIDs {
 		appsFilter = append(appsFilter, v)
 	}
 
-	return getArticles(0, 3, bson.M{"app_id": bson.M{"$in": appsFilter}})
+	return getArticles(0, 3, M{"app_id": M{"$in": appsFilter}})
 }
 
 func GetArticlesByAppID(appID int, offset int64) (news []Article, err error) {
 
-	return getArticles(offset, 100, bson.M{"app_id": appID})
+	return getArticles(offset, 100, M{"app_id": appID})
 }
 
 func GetArticles(offset int64) (news []Article, err error) {
 
-	return getArticles(offset, 100, bson.M{})
+	return getArticles(offset, 100, nil)
 }
 
 func getArticles(offset int64, limit int64, filter interface{}) (news []Article, err error) {
+
+	if filter == nil {
+		filter = M{}
+	}
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -112,7 +115,7 @@ func getArticles(offset int64, limit int64, filter interface{}) (news []Article,
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppArticles.String())
 
-	cur, err := c.Find(ctx, filter, options.Find().SetLimit(limit).SetSkip(offset).SetSort(bson.M{"_id": -1}))
+	cur, err := c.Find(ctx, filter, options.Find().SetLimit(limit).SetSkip(offset).SetSort(M{"_id": -1}))
 	if err != nil {
 		return news, err
 	}

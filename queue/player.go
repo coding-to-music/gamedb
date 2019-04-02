@@ -491,7 +491,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 	}
 
 	// Get friends from DS
-	friendRows, err := mongo.GetPlayersByIDs(friendsSlice)
+	friendRows, err := mongo.GetPlayersByID(friendsSlice, nil)
 	if err != nil {
 		return err
 	}
@@ -505,12 +505,10 @@ func updatePlayerFriends(player *mongo.Player) error {
 			friendsMap[friend.ID].Name = friend.GetName()
 			friendsMap[friend.ID].Level = friend.Level
 			friendsMap[friend.ID].LoggedOff = friend.GetLogoffUnix()
-
 		}
 	}
 
-	// Make into map again, so it can be unmarshalled
-
+	// Make into map again, so it can be marshalled
 	var friends []mongo.ProfileFriend
 	for _, v := range friendsMap {
 		friends = append(friends, *v)
