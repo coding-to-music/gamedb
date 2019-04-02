@@ -1061,23 +1061,23 @@ func CronRanks() {
 
 	cronLogInfo("Level")
 	err := mongo.RankPlayers("level", "level_rank")
-	log.Err(err)
+	log.Warning(err)
 
 	cronLogInfo("Games")
 	err = mongo.RankPlayers("games_count", "games_rank")
-	log.Err(err)
+	log.Warning(err)
 
 	cronLogInfo("Badges")
 	err = mongo.RankPlayers("badges_count", "badges_rank")
-	log.Err(err)
+	log.Warning(err)
 
 	cronLogInfo("Time")
 	err = mongo.RankPlayers("play_time", "play_time_rank")
-	log.Err(err)
+	log.Warning(err)
 
 	cronLogInfo("Friends")
 	err = mongo.RankPlayers("friends_count", "friends_rank")
-	log.Err(err)
+	log.Warning(err)
 
 	// Update config
 	err = sql.SetConfig(sql.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
