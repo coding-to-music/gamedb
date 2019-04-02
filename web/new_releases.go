@@ -55,10 +55,11 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	columns := map[string]string{
 		"0": "name",
-		"2": "price",
-		"3": "reviews_score",
-		"4": "player_peak_week",
-		"5": "release_date_unix",
+		"1": "price",
+		"2": "reviews_score",
+		"3": "player_peak_week",
+		"4": "release_date_unix",
+		"5": "player_trend",
 	}
 
 	var code = session.GetCountryCode(r)

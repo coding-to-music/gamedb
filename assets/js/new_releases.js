@@ -2,7 +2,7 @@ if ($('#new-releases-page').length > 0) {
 
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "pageLength": 50,
-        "order": [[4, 'desc']],
+        "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[0]);
             $(row).attr('data-link', data[3]);
@@ -28,6 +28,7 @@ if ($('#new-releases-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
+                "orderSequence": ["desc", "asc"],
             },
             // Score
             {
@@ -38,6 +39,7 @@ if ($('#new-releases-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
+                "orderSequence": ["desc", "asc"],
             },
             // Players
             {
@@ -48,6 +50,7 @@ if ($('#new-releases-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
+                "orderSequence": ["desc", "asc"],
             },
             // Release Date
             {
@@ -69,7 +72,7 @@ if ($('#new-releases-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('chart');
                 },
-                "orderable": false,
+                "orderSequence": ["desc", "asc"],
             },
         ]
     }));
