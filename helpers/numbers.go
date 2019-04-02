@@ -3,6 +3,9 @@ package helpers
 import (
 	"math"
 	"strconv"
+	"strings"
+
+	"github.com/dustin/go-humanize"
 )
 
 func RoundIntTo2DP(i int) float64 {
@@ -19,4 +22,14 @@ func RoundFloatTo2DP(f float64) float64 {
 
 func FloatToString(f float64, decimals int) string {
 	return strconv.FormatFloat(f, 'f', decimals, 64)
+}
+
+func OrdinalComma(i int) string {
+
+	iString := strconv.Itoa(i)
+
+	ord := humanize.Ordinal(i)
+	ord = strings.Replace(ord, iString, "", 1)
+
+	return humanize.Comma(int64(i)) + ord
 }

@@ -177,7 +177,7 @@ func (player Player) GetBadgesRank() string {
 	if player.BadgesRank == 0 {
 		return "-"
 	}
-	return humanize.Ordinal(player.BadgesRank)
+	return helpers.OrdinalComma(player.BadgesRank)
 }
 
 func (player Player) GetFriendsRank() string {
@@ -185,7 +185,7 @@ func (player Player) GetFriendsRank() string {
 	if player.FriendsRank == 0 {
 		return "-"
 	}
-	return humanize.Ordinal(player.FriendsRank)
+	return helpers.OrdinalComma(player.FriendsRank)
 }
 
 func (player Player) GetGamesRank() string {
@@ -193,7 +193,7 @@ func (player Player) GetGamesRank() string {
 	if player.GamesRank == 0 {
 		return "-"
 	}
-	return humanize.Ordinal(player.GamesRank)
+	return helpers.OrdinalComma(player.GamesRank)
 }
 
 func (player Player) GetLevelRank() string {
@@ -201,7 +201,7 @@ func (player Player) GetLevelRank() string {
 	if player.LevelRank == 0 {
 		return "-"
 	}
-	return humanize.Ordinal(player.LevelRank)
+	return helpers.OrdinalComma(player.LevelRank)
 }
 
 func (player Player) GetPlaytimeRank() string {
@@ -209,7 +209,7 @@ func (player Player) GetPlaytimeRank() string {
 	if player.PlayTimeRank == 0 {
 		return "-"
 	}
-	return humanize.Ordinal(player.PlayTimeRank)
+	return helpers.OrdinalComma(player.PlayTimeRank)
 }
 
 //

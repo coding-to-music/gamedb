@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/sql"
@@ -207,5 +208,5 @@ func (pr PlayerRow) GetRank() string {
 		return "-"
 	}
 
-	return humanize.Ordinal(pr.Rank)
+	return helpers.OrdinalComma(pr.Rank)
 }
