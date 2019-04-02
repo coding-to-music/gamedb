@@ -52,10 +52,12 @@ func (article Article) GetBody() string {
 
 func (article Article) GetIcon() string {
 
-	if strings.HasPrefix(article.AppIcon, "http") {
+	if strings.HasPrefix(article.AppIcon, "http") || strings.HasPrefix(article.AppIcon, "/") {
 		return article.AppIcon
-	} else {
+	} else if article.AppIcon != "" {
 		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(article.AppID) + "/" + article.AppIcon + ".jpg"
+	} else {
+		return helpers.DefaultAppIcon
 	}
 }
 
