@@ -296,7 +296,9 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r, idx)
+	if err != nil {
+		log.Err(err, r, idx)
+	}
 
 	//
 	var wg sync.WaitGroup
