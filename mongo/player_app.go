@@ -166,6 +166,10 @@ func getPlayerApps(offset int64, limit int64, filter interface{}, sort D) (apps 
 
 func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 
+	if apps == nil || len(apps) == 0 {
+		return nil
+	}
+
 	client, ctx, err := getMongo()
 	if err != nil {
 		return err
@@ -185,7 +189,6 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 	c := client.Database(MongoDatabase).Collection(CollectionPlayerApps.String())
 
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
-	log.Err(err)
 
 	return err
 }
