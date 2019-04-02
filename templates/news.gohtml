@@ -32,12 +32,22 @@
                 {{/* Steam */}}
                 <div class="tab-pane show active" id="popular" role="tabpanel">
 
+                    <div class="alert alert-primary" role="alert">The last 7 days of articles from the 30 most played games.</div>
+
                     {{ range $key, $value := .Articles }}
 
                         <div class="card mb-3">
-                            <div class="card-header text-truncate">
-                                <img src="{{ .GetIcon }}" class="rounded" data-src="/assets/img/no-app-image-square.jpg">
-                                <a href="/apps/{{ .AppID }}">{{ .AppName }}</a> - <span title="{{ .Title }}">{{ .Title }}</span>
+                            <div class="card-header">
+
+                                <img src="{{ .GetIcon }}" class="rounded float-left" data-src="/assets/img/no-app-image-square.jpg">
+
+                                <div class="text-truncate">
+                                    <strong title="{{ .Title }}">{{ .Title }}</strong>
+                                </div>
+                                <div>
+                                    <a href="{{ .GetAppPath }}">{{ .AppName }}</a>
+                                    <span class="float-right">{{ .GetDate }}</span>
+                                </div>
                             </div>
                             <div class="card-body minned">
                                 <div>{{ html .Contents }}</div>

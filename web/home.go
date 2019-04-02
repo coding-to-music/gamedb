@@ -57,15 +57,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// }()
 
 	// Popular
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.PopularApps, err = sql.PopularApps()
-		log.Err(err, r)
-	}()
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	t.PopularApps, err = sql.PopularApps()
+	// 	log.Err(err, r)
+	// }()
 
 	// Trending
 	wg.Add(1)

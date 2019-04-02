@@ -50,6 +50,10 @@ func (article Article) GetBody() string {
 	return helpers.BBCodeCompiler.Compile(article.Contents)
 }
 
+func (article Article) GetDate() string {
+	return article.Date.Format(helpers.Date)
+}
+
 func (article Article) GetIcon() string {
 
 	if strings.HasPrefix(article.AppIcon, "http") || strings.HasPrefix(article.AppIcon, "/") {
@@ -59,6 +63,11 @@ func (article Article) GetIcon() string {
 	} else {
 		return helpers.DefaultAppIcon
 	}
+}
+
+func (article Article) GetAppPath() string {
+
+	return helpers.GetAppPath(article.AppID, article.AppName)
 }
 
 func (article Article) OutputForJSON() (output []interface{}) {
@@ -75,12 +84,12 @@ func (article Article) OutputForJSON() (output []interface{}) {
 		article.GetBody(),                     // 5
 		article.AppID,                         // 6
 		article.AppName,                       // 7
-		article.AppIcon,                       // 8
+		article.GetIcon(),                     // 8
 		path + "#news," + id,                  // 9
 	}
 }
 
-func GetArticlesByAppIDs(appIDs []int) (news []Article, err error) {
+func GetArticlesByApps(appIDs []int, afterDate time.Time) (news []Article, err error) {
 
 	if len(appIDs) < 1 {
 		return news, nil
@@ -91,10 +100,10 @@ func GetArticlesByAppIDs(appIDs []int) (news []Article, err error) {
 		appsFilter = append(appsFilter, v)
 	}
 
-	return getArticles(0, 3, M{"app_id": M{"$in": appsFilter}})
+	return getArticles(0, 0, M{"app_id": M{"$in": appsFilter}, "date": M{"$gte": afterDate}})
 }
 
-func GetArticlesByAppID(appID int, offset int64) (news []Article, err error) {
+func GetArticlesByApp(appID int, offset int64) (news []Article, err error) {
 
 	return getArticles(offset, 100, M{"app_id": appID})
 }

@@ -33,7 +33,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 		appIDs = append(appIDs, v.ID)
 	}
 
-	t.Articles, err = mongo.GetArticlesByAppIDs(appIDs)
+	t.Articles, err = mongo.GetArticlesByApps(appIDs, time.Now().AddDate(0, 0, -7))
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "news", t)

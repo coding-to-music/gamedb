@@ -312,7 +312,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		articles, err = mongo.GetArticlesByAppID(idx, query.getOffset64())
+		articles, err = mongo.GetArticlesByApp(idx, query.getOffset64())
 		if err != nil {
 			log.Err(err, r, idx)
 			return
