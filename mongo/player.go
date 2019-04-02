@@ -174,22 +174,42 @@ func (player Player) GetTimeLong() (ret string) {
 
 //
 func (player Player) GetBadgesRank() string {
+
+	if player.BadgesRank == 0 {
+		return "-"
+	}
 	return humanize.Ordinal(player.BadgesRank)
 }
 
 func (player Player) GetFriendsRank() string {
+
+	if player.FriendsRank == 0 {
+		return "-"
+	}
 	return humanize.Ordinal(player.FriendsRank)
 }
 
 func (player Player) GetGamesRank() string {
+
+	if player.GamesRank == 0 {
+		return "-"
+	}
 	return humanize.Ordinal(player.GamesRank)
 }
 
 func (player Player) GetLevelRank() string {
+
+	if player.LevelRank == 0 {
+		return "-"
+	}
 	return humanize.Ordinal(player.LevelRank)
 }
 
 func (player Player) GetPlaytimeRank() string {
+
+	if player.PlayTimeRank == 0 {
+		return "-"
+	}
 	return humanize.Ordinal(player.PlayTimeRank)
 }
 
