@@ -95,18 +95,6 @@ func (price ProductPrice) OutputForJSON() (output []interface{}) {
 	}
 }
 
-func CountPrices() (count int64, err error) {
-
-	var item = helpers.MemcachePricesCount
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		return CountDocuments(CollectionProductPrices, bson.M{})
-	})
-
-	return count, err
-}
-
 func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.CountryCode) (prices []ProductPrice, err error) {
 
 	var filter = bson.M{
