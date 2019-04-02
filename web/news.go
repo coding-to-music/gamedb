@@ -2,6 +2,8 @@ package web
 
 import (
 	"net/http"
+	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gamedb/website/helpers"
@@ -53,15 +55,39 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	articles, err := mongo.GetArticles(query.getOffset64())
+	var wg sync.WaitGroup
 
-	for k, v := range articles {
-		articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
-	}
+	var articles []mongo.Article
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		articles, err = mongo.GetArticles(query.getOffset64())
+		log.Err(err)
+
+		for k, v := range articles {
+			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
+		}
+	}()
+
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil)
+		log.Err(err)
+	}()
+
+	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = "10000"
-	response.RecordsFiltered = "10000"
+	response.RecordsTotal = strconv.FormatInt(count, 10)
+	response.RecordsFiltered = response.RecordsTotal
 	response.Draw = query.Draw
 
 	for _, v := range articles {
