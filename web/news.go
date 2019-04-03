@@ -38,6 +38,9 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Articles, err = mongo.GetArticlesByApps(appIDs, time.Now().AddDate(0, 0, -7))
 	log.Err(err, r)
 
+	t.Count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil)
+	log.Err(err, r)
+
 	err = returnTemplate(w, r, "news", t)
 	log.Err(err, r)
 }
@@ -45,6 +48,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 type newsTemplate struct {
 	GlobalTemplate
 	Articles []mongo.Article
+	Count    int64
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
