@@ -349,7 +349,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		playerApps, err = mongo.GetPlayerAppsByPlayer(playerIDInt, query.getOffset64(), true, query.getOrderMongo(columns, colEdit))
+		playerApps, err = mongo.GetPlayerAppsByPlayer(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns, colEdit))
 		log.Err(err)
 	}()
 

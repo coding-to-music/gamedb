@@ -20,12 +20,7 @@ func appsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", appsHandler)
 	r.Get("/apps.json", appsAjaxHandler)
-	r.Get("/{id}", appHandler)
-	r.Get("/{id}/news.json", appNewsAjaxHandler)
-	r.Get("/{id}/prices.json", appPricesAjaxHandler)
-	r.Get("/{id}/players.json", appPlayersAjaxHandler)
-	r.Get("/{id}/reviews.json", appReviewsAjaxHandler)
-	r.Get("/{id}/{slug}", appHandler)
+	r.Mount("/{id}", appRouter())
 	return r
 }
 

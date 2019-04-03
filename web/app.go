@@ -18,6 +18,18 @@ import (
 	"github.com/go-chi/chi"
 )
 
+func appRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", appHandler)
+	r.Get("/news.json", appNewsAjaxHandler)
+	r.Get("/prices.json", appPricesAjaxHandler)
+	r.Get("/players.json", appPlayersAjaxHandler)
+	r.Get("/reviews.json", appReviewsAjaxHandler)
+	r.Get("/time.json", appTimeAjaxHandler)
+	r.Get("/{slug}", appHandler)
+	return r
+}
+
 func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
@@ -408,6 +420,59 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 		return
 	}
+}
+
+// To players for this app by time
+func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	// id := chi.URLParam(r, "id")
+	// if id == "" {
+	// 	log.Err("invalid id", r)
+	// 	return
+	// }
+	//
+	// idx, err := strconv.Atoi(id)
+	// if err != nil {
+	// 	log.Err(err, r)
+	// 	return
+	// }
+	//
+	// playerApps, err := mongo.GetPlayerAppsByApp(idx)
+	// if err != nil {
+	// 	log.Err(err, r)
+	// 	return
+	// }
+	//
+	// var playerIDs = map[int64]int{}
+	// var playerIDsSlice []int64
+	// for _, v := range playerApps {
+	// 	playerIDs[v.PlayerID] = v.AppTime
+	// 	playerIDsSlice = append(playerIDsSlice, v.PlayerID)
+	// }
+	//
+	// players, err := mongo.GetPlayersByID(playerIDsSlice, mongo.M{}) // todo projection
+	// if err != nil {
+	// 	log.Err(err, r)
+	// 	return
+	// }
+	//
+	// b, err := json.Marshal(hc)
+	// if err != nil {
+	// 	log.Err(err, r)
+	// 	return
+	// }
+	//
+	// err = returnJSON(w, r, b)
+	// if err != nil {
+	// 	log.Err(err, r)
+	// 	return
+	// }
+}
+
+type appTimeAjax struct {
+	ID   int64
+	Name string
+	Time int
 }
 
 func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {

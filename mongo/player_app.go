@@ -111,6 +111,16 @@ func (pa PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{})
 	}
 }
 
+func GetPlayerAppsByApp(appID int) (apps []PlayerApp, err error) {
+
+	return getPlayerApps(0, 100, M{"app_id": appID}, M{"app_time": -1}, M{"_id": -1, "player_id": 1, "app_time": 1})
+}
+
+func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort D) (apps []PlayerApp, err error) {
+
+	return getPlayerApps(offset, limit, M{"player_id": playerID}, sort, nil)
+}
+
 func GetPlayerAppsByPlayers(playerIDs []int64) (apps []PlayerApp, err error) {
 
 	if len(playerIDs) < 1 {
@@ -122,22 +132,27 @@ func GetPlayerAppsByPlayers(playerIDs []int64) (apps []PlayerApp, err error) {
 		playersFilter = append(playersFilter, v)
 	}
 
-	return getPlayerApps(0, 0, M{"$or": playersFilter}, nil)
+	return getPlayerApps(0, 0, M{"$or": playersFilter}, nil, M{"_id": -1, "player_id": 1, "app_id": 1})
 }
 
-func GetPlayerAppsByPlayer(playerID int64, offset int64, limit bool, sort D) (apps []PlayerApp, err error) {
+func getPlayerApps(offset int64, limit int64, filter interface{}, sort interface{}, projection interface{}) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, 100, M{"player_id": playerID}, sort)
-}
-
-func getPlayerApps(offset int64, limit int64, filter interface{}, sort D) (apps []PlayerApp, err error) {
+	if filter == nil {
+		filter = M{}
+	}
 
 	client, ctx, err := getMongo()
 	if err != nil {
 		return apps, err
 	}
 
-	ops := options.Find().SetSort(sort)
+	ops := options.Find()
+	if sort != nil {
+		ops.SetSort(sort)
+	}
+	if projection != nil {
+		ops.SetProjection(projection)
+	}
 	if offset > 0 {
 		ops.SetSkip(offset)
 	}
