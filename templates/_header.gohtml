@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=f1d1d8aca9">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=fb50014bc4">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -85,7 +85,7 @@
             <ul class="navbar-nav mr-auto">
 
                 <li class="nav-item dropdown {{if .IsAppsPage }}active{{end}}">
-                    <a class="nav-link dropdown-toggle" href="#" data-link="/apps?types=game" data-toggle="dropdown">Game DB</a>
+                    <span class="nav-link dropdown-toggle" data-link="/apps?types=game" data-toggle="dropdown">Game DB</span>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/packages">Packages</a>
                         <a class="dropdown-item" href="/bundles">Bundles</a>
@@ -93,7 +93,7 @@
                 </li>
 
                 <li class="nav-item dropdown {{if .IsTrendingPage }}active{{end}}">
-                    <a class="nav-link dropdown-toggle" href="#" data-link="/trending" data-toggle="dropdown">Trending</a>
+                    <span class="nav-link dropdown-toggle" data-link="/trending" data-toggle="dropdown">Trending</span>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/upcoming">Upcoming</a>
                         <a class="dropdown-item" href="/new-releases">New Releases</a>
@@ -109,7 +109,7 @@
                 </li>
 
                 <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
-                    <a class="nav-link dropdown-toggle" href="#" data-link="/stats" data-toggle="dropdown">Stats</a>
+                    <span class="nav-link dropdown-toggle" data-link="/stats" data-toggle="dropdown">Stats</span>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/tags">Tags</a>
                         <a class="dropdown-item" href="/genres">Genres</a>
@@ -140,7 +140,7 @@
                 </li>
 
                 <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
-                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
+                    <span class="nav-link dropdown-toggle" data-toggle="dropdown">More</span>
                     <div class="dropdown-menu" id="header-settings">
                         <a class="dropdown-item" href="/experience">Experience</a>
                         <a class="dropdown-item" href="/coop">Co-op</a>
