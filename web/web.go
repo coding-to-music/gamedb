@@ -7,7 +7,6 @@ import (
 	"html/template"
 	"math"
 	"net/http"
-	"net/http/pprof"
 	"net/url"
 	"strconv"
 	"strings"
@@ -68,16 +67,6 @@ func Serve() error {
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middlewareLog)
 
-	// Profiling
-	if config.Config.IsLocal() {
-		r.Get("/debug/pprof/", pprof.Index)
-		r.Get("/debug/pprof/cmdline", pprof.Cmdline)
-		r.Get("/debug/pprof/profile", pprof.Profile)
-		r.Get("/debug/pprof/symbol", pprof.Symbol)
-		r.Get("/debug/pprof/trace", pprof.Trace)
-		r.Get("/debug/pprof/heap", pprof.Trace)
-	}
-
 	// Pages
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/apps?types=game", 302)
@@ -122,6 +111,10 @@ func Serve() error {
 	r.Mount("/stats", statsRouter())
 	r.Mount("/trending", trendingRouter())
 	r.Mount("/upcoming", upcomingRouter())
+
+	if config.Config.IsLocal() {
+		r.Mount("/debug", middleware.Profiler())
+	}
 
 	// Files
 	r.Get("/browserconfig.xml", rootFileHandler)
