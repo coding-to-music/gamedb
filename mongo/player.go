@@ -22,6 +22,12 @@ var (
 	ErrInvalidPlayerName = errors.New("invalid name")
 )
 
+// Text Index
+// {
+//   "persona_name": "text",
+//   "vanity_url": "text",
+// }
+
 type Player struct {
 	ID               int64     `bson:"_id"`             //
 	Avatar           string    `bson:"avatar"`          //
@@ -367,9 +373,9 @@ func GetPlayer(id int64) (player Player, err error) {
 	return player, err
 }
 
-func GetPlayers(offset int64, limit int64, sort D, projection M) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, filter M, projection M) (players []Player, err error) {
 
-	return getPlayers(offset, limit, sort, nil, projection)
+	return getPlayers(offset, limit, sort, filter, projection)
 }
 
 func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {

@@ -176,7 +176,7 @@ func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 	sm := urlSet{}
 	sm.Namespace = namespace
 
-	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, mongo.M{"_id": 1, "name": 1})
+	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, nil, mongo.M{"_id": 1, "name": 1})
 	for _, player := range players {
 
 		sm.URLs = append(sm.URLs, sitemapURL{
@@ -198,7 +198,7 @@ func siteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 	sm := urlSet{}
 	sm.Namespace = namespace
 
-	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"games_count", -1}}, mongo.M{"_id": 1, "name": 1})
+	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"games_count", -1}}, nil, mongo.M{"_id": 1, "name": 1})
 	for _, v := range players {
 
 		sm.URLs = append(sm.URLs, sitemapURL{

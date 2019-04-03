@@ -105,6 +105,26 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	var columns = map[string]string{
+		"3": "level",
+		"4": "games_count",
+		"5": "badges_count",
+		"6": "play_time",
+		"7": "friends_count",
+	}
+
+	var sort = query.getOrderMongo(columns, nil)
+	var filter = mongo.M{}
+
+	search := query.getSearchString("search")
+	if len(search) >= 2 {
+		sort = nil
+		filter["$or"] = mongo.A{
+			mongo.M{"$text": mongo.M{"$search": search}},
+			mongo.M{"_id": search},
+		}
+	}
+
 	//
 	var wg sync.WaitGroup
 
@@ -115,15 +135,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		columns := map[string]string{
-			"3": "level",
-			"4": "games_count",
-			"5": "badges_count",
-			"6": "play_time",
-			"7": "friends_count",
-		}
-
-		players, err := mongo.GetPlayers(query.getOffset64(), 100, query.getOrderMongo(columns, nil), mongo.M{
+		players, err := mongo.GetPlayers(query.getOffset64(), 100, sort, filter, mongo.M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
@@ -178,7 +190,18 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		total, err = mongo.CountPlayers()
 		log.Err(err, r)
+	}()
 
+	// Get total
+	var filtered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		filtered, err = mongo.CountDocuments(mongo.CollectionPlayers, filter)
+		log.Err(err, r)
 	}()
 
 	// Wait
@@ -186,7 +209,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = strconv.FormatInt(total, 10)
-	response.RecordsFiltered = response.RecordsTotal // todo, update if we filter players by name
+	response.RecordsFiltered = strconv.FormatInt(filtered, 10)
 	response.Draw = query.Draw
 
 	for _, v := range playerRows {

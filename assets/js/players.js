@@ -1,6 +1,28 @@
 if ($('#ranks-page').length > 0) {
 
+    $('form').on('submit', function (e) {
+
+        $table.DataTable().draw();
+        return false;
+    });
+
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        "ajax": function (data, callback, settings) {
+
+            delete data.columns;
+            delete data.length;
+            delete data.search.regex;
+
+            data.search.search = $('#search').val();
+
+            $.ajax({
+                url: $(this).attr('data-path'),
+                data: data,
+                success: callback,
+                dataType: 'json',
+                cache: true
+            });
+        },
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[1]);

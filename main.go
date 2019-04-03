@@ -5,8 +5,6 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
-	"runtime"
-	"strconv"
 	"sync"
 	"syscall"
 	"time"

@@ -250,7 +250,7 @@ func adminQueueEveryPlayer() {
 
 	cronLogInfo("Queueing every player")
 
-	players, err := mongo.GetPlayers(0, 0, mongo.D{{"_id", 1}}, mongo.M{"_id": 1})
+	players, err := mongo.GetPlayers(0, 0, mongo.D{{"_id", 1}}, nil, mongo.M{"_id": 1})
 	if err != nil {
 		log.Err(err)
 		return
