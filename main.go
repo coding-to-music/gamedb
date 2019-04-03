@@ -58,15 +58,6 @@ func main() {
 		}()
 	}
 
-	// Log number of goroutines
-	go func() {
-		log.Info("Logging goroutines")
-		for {
-			time.Sleep(time.Minute * 10)
-			log.Info("Goroutines running: "+strconv.Itoa(runtime.NumGoroutine()), log.SeverityInfo, log.ServiceGoogle)
-		}
-	}()
-
 	// Prod crons
 	if config.Config.IsProd() {
 
