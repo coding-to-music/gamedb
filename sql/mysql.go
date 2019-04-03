@@ -16,94 +16,63 @@ var (
 	ErrRecordNotFound = gorm.ErrRecordNotFound
 
 	gormConnection      *gorm.DB
-	gormConnectionDebug *gorm.DB
-
-	SQLMutex sync.Mutex
+	gormConnectionMutex sync.Mutex
 )
 
-func GetMySQLClient(debug ...bool) (conn *gorm.DB, err error) {
+func GetMySQLClient() (conn *gorm.DB, err error) {
 
-	SQLMutex.Lock()
-	defer SQLMutex.Unlock()
+	gormConnectionMutex.Lock()
+	defer gormConnectionMutex.Unlock()
 
-	// Retrying as this call can fail
-	operation := func() (err error) {
+	if gormConnection == nil {
 
-		if len(debug) == 0 {
-			if gormConnection == nil {
-				gormConnection, err = getMySQLConnection()
-				if err != nil {
-					return err
-				}
-				gormConnection.SetLogger(mySQLLogger{})
+		// Retrying as this call can fail
+		operation := func() (err error) {
+
+			log.Info("Connecting to MySQL")
+
+			options := url.Values{}
+			options.Set("parseTime", "true")
+			options.Set("charset", "utf8mb4")
+			options.Set("collation", "utf8mb4_unicode_ci")
+
+			conn, err := gorm.Open("mysql", config.Config.MySQLDNS()+"?"+options.Encode())
+			if err != nil {
+				return err
 			}
-			conn = gormConnection
-		} else {
-			if gormConnectionDebug == nil {
-				gormConnectionDebug, err = getMySQLConnection()
-				if err != nil {
-					return err
-				}
-				gormConnectionDebug.SetLogger(mySQLLoggerDebug{})
+			conn = conn.LogMode(false)
+			conn = conn.Set("gorm:association_autoupdate", false)
+			conn = conn.Set("gorm:association_autocreate", false)
+			conn = conn.Set("gorm:association_save_reference", false)
+			conn = conn.Set("gorm:save_associations", false)
+			conn.SetLogger(mySQLLogger{})
+
+			// test ping
+			conn = conn.Exec("SELECT VERSION()")
+			if conn.Error != nil {
+				return conn.Error
 			}
-			conn = gormConnectionDebug
+
+			gormConnection = conn
+
+			return err
 		}
 
-		return pingMySQL(gormConnection)
+		policy := backoff.NewExponentialBackOff()
+
+		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+		if err != nil {
+			log.Critical(err)
+		}
 	}
 
-	policy := backoff.NewExponentialBackOff()
-
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
-	if err != nil {
-		log.Critical(err)
-	}
-
-	return conn, err
-}
-
-func getMySQLConnection() (*gorm.DB, error) {
-
-	log.Info("Connecting to MySQL")
-
-	options := url.Values{}
-	options.Set("parseTime", "true")
-	options.Set("charset", "utf8mb4")
-	options.Set("collation", "utf8mb4_unicode_ci")
-
-	db, err := gorm.Open("mysql", config.Config.MySQLDNS()+"?"+options.Encode())
-	if err != nil {
-
-		return nil, err
-	}
-	db = db.LogMode(true)
-	db = db.Set("gorm:association_autoupdate", false)
-	db = db.Set("gorm:association_autocreate", false)
-	db = db.Set("gorm:association_save_reference", false)
-	db = db.Set("gorm:save_associations", false)
-
-	return db, err
-}
-
-func pingMySQL(gorm *gorm.DB) error {
-	gorm = gorm.Exec("SELECT VERSION()")
-	return gorm.Error
+	return gormConnection, err
 }
 
 type mySQLLogger struct {
 }
 
 func (logger mySQLLogger) Print(v ...interface{}) {
-
-	s := helpers.JoinInterface(v)
-	log.Debug(s, log.LogNameSQL, log.ServiceGoogle)
-}
-
-type mySQLLoggerDebug struct {
-}
-
-func (logger mySQLLoggerDebug) Print(v ...interface{}) {
-
 	s := helpers.JoinInterface(v)
 	log.Debug(s, log.LogNameSQL, log.ServiceLocal)
 }
