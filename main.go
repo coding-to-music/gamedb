@@ -56,9 +56,9 @@ func main() {
 		}()
 	}
 
-	// Prod crons
 	if config.Config.IsProd() {
 
+		// Crons
 		c := cron.New()
 
 		// Daily
@@ -87,10 +87,16 @@ func main() {
 		log.Critical(err)
 
 		// Every 3 hours
-		err = c.AddFunc("0 0 */3 * * *", checkForPlayers)
+		err = c.AddFunc("0 0 */3 * * *", web.CronCheckForPlayers)
 		log.Critical(err)
 
 		c.Start()
+
+		// Scan for app players after deploy
+		go func() {
+			time.Sleep(time.Minute)
+			web.CronCheckForPlayers()
+		}()
 	}
 
 	// Block forever for goroutines to run
@@ -119,46 +125,4 @@ func main() {
 	}(wg)
 
 	wg.Wait()
-}
-
-// This is here because you can't queue things from db package
-func checkForPlayers() {
-
-	log.Info("Queueing apps for player checks")
-
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-		log.Critical(err)
-		return
-	}
-
-	gorm = gorm.Select([]string{"id"})
-	gorm = gorm.Order("id ASC")
-	gorm = gorm.Model(&[]sql.App{})
-
-	var appIDs []int
-	gorm = gorm.Pluck("id", &appIDs)
-	if gorm.Error != nil {
-		log.Critical(gorm.Error)
-	}
-
-	appIDs = append(appIDs, 0) // Steam client
-
-	// Chunk appIDs
-	var chunks [][]int
-	for i := 0; i < len(appIDs); i += 10 {
-		end := i + 10
-
-		if end > len(appIDs) {
-			end = len(appIDs)
-		}
-
-		chunks = append(chunks, appIDs[i:end])
-	}
-
-	for _, chunk := range chunks {
-
-		err = queue.ProduceAppPlayers(chunk)
-		log.Err(err)
-	}
 }

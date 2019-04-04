@@ -43,6 +43,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go adminQueueEveryPackage()
 	case "refresh-all-players":
 		go adminQueueEveryPlayer()
+	case "refresh-app-players":
+		go CronCheckForPlayers()
 	case "refresh-genres":
 		go CronGenres()
 	case "refresh-tags":
@@ -90,6 +92,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		sql.ConfWipeMemcache + "-" + config.Config.Environment.Get(),
 		sql.ConfRunDevCode,
 		sql.ConfGarbageCollection,
+		sql.ConfAddedAllAppPlayers,
 	})
 	log.Err(err, r)
 
@@ -1091,6 +1094,47 @@ func CronRanks() {
 
 	//
 	// cronLogInfo("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
+}
+
+func CronCheckForPlayers() {
+
+	log.Info("Queueing apps for player checks")
+
+	gorm, err := sql.GetMySQLClient()
+	if err != nil {
+		log.Critical(err)
+		return
+	}
+
+	gorm = gorm.Select([]string{"id"})
+	gorm = gorm.Order("id ASC")
+	gorm = gorm.Model(&[]sql.App{})
+
+	var appIDs []int
+	gorm = gorm.Pluck("id", &appIDs)
+	if gorm.Error != nil {
+		log.Critical(gorm.Error)
+	}
+
+	appIDs = append(appIDs, 0) // Steam client
+
+	// Chunk appIDs
+	var chunks [][]int
+	for i := 0; i < len(appIDs); i += 10 {
+		end := i + 10
+
+		if end > len(appIDs) {
+			end = len(appIDs)
+		}
+
+		chunks = append(chunks, appIDs[i:end])
+	}
+
+	for _, chunk := range chunks {
+
+		err = queue.ProduceAppPlayers(chunk)
+		log.Err(err)
+	}
 }
 
 func adminMemcache() {

@@ -76,6 +76,12 @@
                                 <small data-livestamp="{{ (index .Configs "refresh-ranks").Value }}"></small>
                             </a>
                         </div>
+                        <div class="col col-xl-3">
+                            <a href="/admin/refresh-app-players" role="button" class="btn btn-success btn-block mb-4">
+                                Refresh App Players<br/>
+                                <small data-livestamp="{{ (index .Configs "refresh-all-app-players").Value }}"></small>
+                            </a>
+                        </div>
                     </div>
 
                     <h5>Actions</h5>
