@@ -33,8 +33,8 @@ import (
 
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if config.Config.IsProd() {
-			log.Info(log.ServiceGoogle, log.LogNameRequests, r.Method+" "+r.URL.Path)
+		if config.Config.IsLocal() {
+			// log.Info(log.LogNameRequests, r.Method+" "+r.URL.Path)
 		}
 		next.ServeHTTP(w, r)
 	})

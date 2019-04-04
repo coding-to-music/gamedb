@@ -30,6 +30,7 @@ type steamLogger struct {
 }
 
 func (l steamLogger) Write(i steam.Log) {
-
-	log.Info(i.String(), log.ServiceGoogle, log.LogNameSteam)
+	if config.Config.IsLocal() {
+		log.Info(i.String(), log.LogNameSteam)
+	}
 }

@@ -35,14 +35,6 @@ const (
 	SeverityWarning  Severity = "warning"
 	SeverityError    Severity = "error" // Default
 	SeverityCritical Severity = "critical"
-
-	// Services
-	ServiceGoogle Service = "google" // Default
-	ServiceLocal  Service = "local"  // Default
-
-	// Options
-	OptionStack Option = iota
-	OptionLogNil
 )
 
 type LogName string
@@ -164,47 +156,33 @@ func log(interfaces ...interface{}) {
 		return
 	}
 
-	if len(loggingServices) == 0 {
-		if config.Config.IsLocal() {
-			loggingServices = append(loggingServices, ServiceLocal)
-		} else {
-			loggingServices = append(loggingServices, ServiceLocal, ServiceGoogle)
-		}
-	}
+	if config.Config.IsLocal() {
 
-	// Send entry
-	for _, v := range loggingServices {
-
-		// Local
-		if v == ServiceLocal {
-
-			switch entry.severity {
-			case SeverityCritical:
-				logger.Println(aurora.Red(aurora.Bold(entry.toText(true))))
-			case SeverityError:
-				logger.Println(aurora.Red(entry.toText(true)))
-			case SeverityWarning:
-				logger.Println(aurora.Brown(entry.toText(false)))
-			case SeverityInfo:
-				logger.Println(entry.toText(false))
-			case SeverityDebug:
-				logger.Println(aurora.Green(entry.toText(false)))
-			default:
-				logger.Println(entry.toText(false))
-			}
+		switch entry.severity {
+		case SeverityCritical:
+			logger.Println(aurora.Red(aurora.Bold(entry.toText(true))))
+		case SeverityError:
+			logger.Println(aurora.Red(entry.toText(true)))
+		case SeverityWarning:
+			logger.Println(aurora.Brown(entry.toText(false)))
+		case SeverityInfo:
+			logger.Println(entry.toText(false))
+		case SeverityDebug:
+			logger.Println(aurora.Green(entry.toText(false)))
+		default:
+			logger.Println(entry.toText(false))
 		}
 
-		// Google
-		if v == ServiceGoogle {
-			googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
-				Severity:  entry.severity.toGoole(),
-				Timestamp: entry.timestamp,
-				Payload:   entry.toText(true),
-				Labels: map[string]string{
-					"env": config.Config.Environment.Get(),
-				},
-			})
-		}
+	} else {
+
+		googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
+			Severity:  entry.severity.toGoole(),
+			Timestamp: entry.timestamp,
+			Payload:   entry.toText(true),
+			Labels: map[string]string{
+				"env": config.Config.Environment.Get(),
+			},
+		})
 	}
 }
 

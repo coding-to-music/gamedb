@@ -396,7 +396,7 @@ func adminQueues(r *http.Request) {
 
 func CronGenres() {
 
-	cronLogInfo(log.ServiceLocal, "Genres updating")
+	cronLogInfo("Genres updating")
 
 	// Get current genres, to delete old ones
 	currentGenres, err := sql.GetAllGenres()
@@ -562,7 +562,7 @@ func CronGenres() {
 
 func CronPublishers() {
 
-	cronLogInfo(log.ServiceLocal, "Publishers updating")
+	cronLogInfo("Publishers updating")
 
 	// Get current publishers, to delete old ones
 	allPublishers, err := sql.GetAllPublishers()
@@ -728,7 +728,7 @@ func CronPublishers() {
 
 func CronDevelopers() {
 
-	cronLogInfo(log.ServiceLocal, "Developers updating")
+	cronLogInfo("Developers updating")
 
 	// Get current developers, to delete old ones
 	allDevelopers, err := sql.GetAllDevelopers([]string{"id", "name"})
