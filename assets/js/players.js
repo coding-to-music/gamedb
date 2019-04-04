@@ -101,7 +101,7 @@ if ($('#ranks-page').length > 0) {
                 "targets": 6,
                 "render": function (data, type, row) {
 
-                    if (row[8] === '0m') {
+                    if (row[8] === '-') {
                         return $lockIcon;
                     }
 
@@ -122,7 +122,7 @@ if ($('#ranks-page').length > 0) {
                 "targets": 7,
                 "render": function (data, type, row) {
 
-                    if (row[8] === 0) {
+                    if (row[10] === 0) {
                         return $lockIcon;
                     }
 
