@@ -7,6 +7,14 @@ import (
 	"github.com/gosimple/slug"
 )
 
+func GetPlayerFlagPath(code string) string {
+
+	if code == "" {
+		return ""
+	}
+	return "/assets/img/flags/" + strings.ToLower(code) + ".png"
+}
+
 func GetPlayerPath(id int64, name string) string {
 
 	p := "/players/" + strconv.FormatInt(id, 10)

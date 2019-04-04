@@ -149,10 +149,7 @@ func (player Player) GetAvatar() string {
 }
 
 func (player Player) GetFlag() string {
-	if player.CountryCode == "" {
-		return ""
-	}
-	return "/assets/img/flags/" + strings.ToLower(player.CountryCode) + ".png"
+	return helpers.GetPlayerFlagPath(player.CountryCode)
 }
 
 func (player Player) GetCountry() string {

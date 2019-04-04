@@ -132,6 +132,7 @@ if ($appPage.length > 0) {
             if (!to.attr('loaded')) {
                 to.attr('loaded', 1);
                 loadAppPlayersChart();
+                loadAppPlayerTimes();
             }
         }
         if (to.attr('href') === '#reviews') {
@@ -177,7 +178,7 @@ if ($appPage.length > 0) {
     // News data table
     function loadNews() {
 
-        $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        $('#news-table').DataTable($.extend(true, {}, dtDefaultOptions, {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
@@ -403,5 +404,62 @@ if ($appPage.length > 0) {
 
             },
         });
+    }
+
+    function loadAppPlayerTimes() {
+
+        $('#top-players-table').DataTable($.extend(true, {}, dtDefaultOptions, {
+            "order": [[3, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-id', data[0]);
+                $(row).attr('data-link', data[6]);
+            },
+            "columnDefs": [
+                // Rank
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return row[4];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('font-weight-bold')
+                    },
+                    "orderable": false,
+                },
+                // Flag
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        if (row[3]) {
+                            return '<img data-toggle="tooltip" data-placement="left" title="' + row[7] + '" src="' + row[3] + '" class="rounded" alt="' + row[7] + '">';
+                        }
+                        return '';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderable": false,
+                },
+                // Player
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return '<img src="' + row[5] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img')
+                    },
+                    "orderable": false,
+                },
+                // Time
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[2];
+                    },
+                    "orderable": false,
+                },
+            ]
+        }));
     }
 }

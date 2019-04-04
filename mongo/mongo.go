@@ -169,7 +169,7 @@ func CountDocuments(collection collection, filter interface{}) (count int64, err
 
 	key := hex.EncodeToString(h[:])
 
-	item := helpers.MemcacheMongoCount(key)
+	item := helpers.MemcacheMongoCount(collection.String() + "-" + key)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 

@@ -2,8 +2,10 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -425,54 +427,126 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 // To players for this app by time
 func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	// id := chi.URLParam(r, "id")
-	// if id == "" {
-	// 	log.Err("invalid id", r)
-	// 	return
-	// }
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id", r)
+		return
+	}
+
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := DataTablesQuery{}
+	err = query.fillFromURL(r.URL.Query())
+	log.Err(err, r)
+
+	playerApps, err := mongo.GetPlayerAppsByApp(idx, query.getOffset64())
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	if len(playerApps) < 1 {
+		return
+	}
+
+	var playerIDsMap = map[int64]int{}
+	var playerIDsSlice []int64
+	for _, v := range playerApps {
+		playerIDsMap[v.PlayerID] = v.AppTime
+		playerIDsSlice = append(playerIDsSlice, v.PlayerID)
+	}
+
 	//
-	// idx, err := strconv.Atoi(id)
-	// if err != nil {
-	// 	log.Err(err, r)
-	// 	return
-	// }
-	//
-	// playerApps, err := mongo.GetPlayerAppsByApp(idx)
-	// if err != nil {
-	// 	log.Err(err, r)
-	// 	return
-	// }
-	//
-	// var playerIDs = map[int64]int{}
-	// var playerIDsSlice []int64
-	// for _, v := range playerApps {
-	// 	playerIDs[v.PlayerID] = v.AppTime
-	// 	playerIDsSlice = append(playerIDsSlice, v.PlayerID)
-	// }
-	//
-	// players, err := mongo.GetPlayersByID(playerIDsSlice, mongo.M{}) // todo projection
-	// if err != nil {
-	// 	log.Err(err, r)
-	// 	return
-	// }
-	//
-	// b, err := json.Marshal(hc)
-	// if err != nil {
-	// 	log.Err(err, r)
-	// 	return
-	// }
-	//
-	// err = returnJSON(w, r, b)
-	// if err != nil {
-	// 	log.Err(err, r)
-	// 	return
-	// }
+	var wg sync.WaitGroup
+
+	// Get players
+	var playersAppRows []appTimeAjax
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		players, err := mongo.GetPlayersByID(playerIDsSlice, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		for _, player := range players {
+
+			if _, ok := playerIDsMap[player.ID]; !ok {
+				continue
+			}
+
+			fmt.Println(player.Avatar+".")
+
+			playersAppRows = append(playersAppRows, appTimeAjax{
+				ID:      player.ID,
+				Name:    player.PersonaName,
+				Avatar:  player.Avatar,
+				Time:    playerIDsMap[player.ID],
+				Country: player.CountryCode,
+			})
+		}
+
+		sort.Slice(playersAppRows, func(i, j int) bool {
+			return playersAppRows[i].Time > playersAppRows[j].Time
+		})
+
+		for k := range playersAppRows {
+			playersAppRows[k].Rank = query.getOffset() + k + 1
+		}
+	}()
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, mongo.M{"app_time": mongo.M{"$gt": 0}})
+		log.Err(err, r)
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.FormatInt(total, 10)
+	response.RecordsFiltered = response.RecordsTotal
+	response.Draw = query.Draw
+
+	for _, v := range playersAppRows {
+
+		response.AddRow([]interface{}{
+			strconv.FormatInt(v.ID, 10),          // 0
+			v.Name,                               // 1
+			helpers.GetTimeLong(v.Time, 3),       // 2
+			helpers.GetPlayerFlagPath(v.Country), // 3
+			helpers.OrdinalComma(v.Rank),         // 4
+			v.Avatar,                             // 5
+			helpers.GetPlayerPath(v.ID, v.Name),  // 6
+			helpers.CountryCodeToName(v.Country), // 7
+		})
+	}
+
+	response.output(w, r)
 }
 
 type appTimeAjax struct {
-	ID   int64
-	Name string
-	Time int
+	ID      int64
+	Name    string
+	Avatar  string
+	Time    int
+	Rank    int
+	Country string
 }
 
 func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
