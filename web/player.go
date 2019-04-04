@@ -201,7 +201,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.GameStats = gameStats
 	t.Bans = bans
 	t.toasts = toasts
-	t.DefaultAvatar = mongo.DefaultPlayerAvatar
+	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 
 	err = returnTemplate(w, r, "player", t)
 	log.Err(err, r)

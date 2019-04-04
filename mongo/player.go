@@ -15,8 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const DefaultPlayerAvatar = "/assets/img/no-player-image.jpg"
-
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
@@ -139,13 +137,7 @@ func (player Player) GetMaxFriends() int {
 }
 
 func (player Player) GetAvatar() string {
-	if strings.HasPrefix(player.Avatar, "http") {
-		return player.Avatar
-	} else if player.Avatar != "" {
-		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/" + player.Avatar
-	} else {
-		return DefaultPlayerAvatar
-	}
+	return helpers.GetPlayerAvatar(player.Avatar)
 }
 
 func (player Player) GetFlag() string {

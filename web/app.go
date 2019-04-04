@@ -530,7 +530,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			helpers.GetTimeLong(v.Time, 3),       // 2
 			helpers.GetPlayerFlagPath(v.Country), // 3
 			helpers.OrdinalComma(v.Rank),         // 4
-			v.Avatar,                             // 5
+			helpers.GetPlayerAvatar(v.Avatar),    // 5
 			helpers.GetPlayerPath(v.ID, v.Name),  // 6
 			helpers.CountryCodeToName(v.Country), // 7
 		})
