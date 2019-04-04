@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 	"sort"
@@ -443,7 +442,9 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	playerApps, err := mongo.GetPlayerAppsByApp(idx, query.getOffset64())
+	playerAppFilter := mongo.M{"app_id": idx, "app_time": mongo.M{"$gt": 0}}
+
+	playerApps, err := mongo.GetPlayerAppsByApp(idx, query.getOffset64(), playerAppFilter)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -483,8 +484,6 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			fmt.Println(player.Avatar+".")
-
 			playersAppRows = append(playersAppRows, appTimeAjax{
 				ID:      player.ID,
 				Name:    player.PersonaName,
@@ -511,7 +510,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, mongo.M{"app_time": mongo.M{"$gt": 0}})
+		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, playerAppFilter)
 		log.Err(err, r)
 	}()
 

@@ -111,9 +111,9 @@ func (pa PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{})
 	}
 }
 
-func GetPlayerAppsByApp(appID int, offset int64) (apps []PlayerApp, err error) {
+func GetPlayerAppsByApp(appID int, offset int64, filter interface{}) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, 100, M{"app_id": appID, "app_time": M{"$gt": 0}}, M{"app_time": -1}, M{"_id": -1, "player_id": 1, "app_time": 1})
+	return getPlayerApps(offset, 100, filter, M{"app_time": -1}, M{"_id": -1, "player_id": 1, "app_time": 1})
 }
 
 func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort D) (apps []PlayerApp, err error) {
