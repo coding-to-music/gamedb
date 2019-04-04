@@ -17,9 +17,9 @@ func GetSteam() *steam.Steam {
 		steamClient = new(steam.Steam)
 		steamClient.SetKey(config.Config.SteamAPIKey)
 		steamClient.SetUserAgent("http://gamedb.online")
-		steamClient.SetLogger(steamLogger{})
 		steamClient.SetAPIRateLimit(time.Millisecond*1000, 10)
 		steamClient.SetStoreRateLimit(time.Millisecond*1600, 10)
+		// steamClient.SetLogger(steamLogger{})
 
 	}
 
