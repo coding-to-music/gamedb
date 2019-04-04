@@ -358,7 +358,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 
 			twitter := social.GetTwitter()
 
-			_, _, err = twitter.Statuses.Update("Free game! Down from $"+helpers.FloatToString(float64(oldPrice/100), 2)+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
+			_, _, err = twitter.Statuses.Update("Free game! Down from $"+helpers.FloatToString(float64(oldPrice)/100, 2)+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 			if err != nil {
 				if !strings.Contains(err.Error(), "Status is a duplicate") {
 					logCritical(err)
