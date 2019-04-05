@@ -57,6 +57,8 @@ func getDiscord(r *http.Request) (discord *discordgo.Session, err error) {
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 
+	setCacheHeaders(w, time.Hour*24)
+
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {

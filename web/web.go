@@ -156,22 +156,37 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 	}))
 }
 
+func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
+
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
+
+	setCacheHeaders(w, time.Hour*24)
+}
+
 func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {
 
-	if duration == 0 || config.Config.IsLocal() {
-		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-		w.Header().Set("Expires", "0")
-	} else {
-		w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
-		w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
-	}
+	if w.Header().Get("Cache-Control") == "" || w.Header().Get("Expires") == "" {
 
+		if duration == 0 || config.Config.IsLocal() {
+
+			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			w.Header().Set("Expires", "0")
+
+		} else {
+
+			w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
+			w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
+		}
+	}
 }
 
 func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+	setAllHeaders(w, r, "application/json")
 
 	_, err = w.Write(bytes)
 	return err
@@ -179,8 +194,7 @@ func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error
 
 func returnXML(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
 
-	w.Header().Set("Content-Type", "application/xml")
-	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+	setAllHeaders(w, r, "application/xml")
 
 	_, err = w.Write([]byte(xml.Header + string(bytes)))
 	return err
@@ -188,15 +202,7 @@ func returnXML(w http.ResponseWriter, r *http.Request, bytes []byte) (err error)
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
-	w.Header().Set("Content-Type", "text/html")                   //
-	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
-	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
-
-	if w.Header().Get("Cache-Control") == "" || w.Header().Get("Expires") == "" {
-		setCacheHeaders(w, time.Hour*24)
-	}
+	setAllHeaders(w, r, "text/html")
 
 	folder := config.Config.GameDBDirectory.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(

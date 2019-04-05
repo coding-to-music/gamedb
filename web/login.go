@@ -62,9 +62,11 @@ var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
+	setCacheHeaders(w, 0)
+
 	// Stop brute forces
 	time.Sleep(time.Second / 2)
-	
+
 	err := func() (err error) {
 
 		// Parse form
@@ -165,6 +167,8 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	setCacheHeaders(w, 0)
 
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {

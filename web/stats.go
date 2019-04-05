@@ -122,6 +122,8 @@ type statsAppTypeTotalsRow struct {
 
 func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
+	setCacheHeaders(w, time.Hour*24)
+
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom("GameDB", "alltime", "apps")
@@ -156,6 +158,8 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
+
+	setCacheHeaders(w, time.Hour*24)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -195,6 +199,8 @@ type statsAppReleaseDate struct {
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
+	setCacheHeaders(w, time.Hour*24)
+
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 
@@ -233,6 +239,8 @@ type statsAppScore struct {
 }
 
 func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
+
+	setCacheHeaders(w, time.Hour*24)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {

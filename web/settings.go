@@ -138,6 +138,8 @@ type settingsTemplate struct {
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
+	setCacheHeaders(w, 0)
+
 	// Get user
 	user, err := getUser(r, 0)
 	if err != nil {
