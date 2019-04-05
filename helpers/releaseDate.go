@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"errors"
+	"math"
 	"time"
 
 	"github.com/jinzhu/now"
@@ -44,11 +45,11 @@ func GetDaysToRelease(unix int64) string {
 
 	release := time.Unix(unix, 0)
 
-	days := release.Sub(now.BeginningOfDay()).Hours() / 24
+	days := math.Floor(release.Sub(now.BeginningOfDay()).Hours() / 24)
 
 	if days == 0 {
 		return "Today"
 	}
 
-	return "In " + GetTimeLong(int(release.Sub(now.BeginningOfDay()).Minutes()), 2)
+	return "In " + GetTimeLong(int(days)*24*60, 2)
 }
