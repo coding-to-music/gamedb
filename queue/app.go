@@ -5,7 +5,6 @@ import (
 	"errors"
 	"html/template"
 	"io/ioutil"
-	"math"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -816,11 +815,10 @@ func updateAppReviews(app *sql.App) error {
 
 	} else {
 
-		total := float64(reviews.Positive + reviews.Negative)
-		average := float64(reviews.Positive) / total
-		score := average - (average-0.5)*math.Pow(2, -math.Log10(total + 1))
-
-		app.ReviewsScore = helpers.RoundFloatTo2DP(score * 100)
+		// https://planspace.org/2014/08/17/how-to-sort-by-average-rating/
+		var a = 1
+		var b = 2
+		app.ReviewsScore = float64(reviews.Positive+a) / float64(reviews.Positive+reviews.Negative+b)
 	}
 
 	// Sort by upvotes
