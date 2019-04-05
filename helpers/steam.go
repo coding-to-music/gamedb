@@ -38,6 +38,7 @@ func HandleSteamStoreErr(err error, bytes []byte, allowedCodes []int) error {
 
 	if err == steam.ErrHTMLResponse {
 		log.Err(err, string(bytes))
+		time.Sleep(time.Second * 30)
 	}
 
 	err2, ok := err.(steam.Error)
