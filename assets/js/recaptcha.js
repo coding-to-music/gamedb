@@ -10,6 +10,6 @@ function recaptchaCallback(code) {
     if (inputs.length > 0) {
         inputs.get(0).focus();
     } else {
-        $('form[data-recaptcha]').submit();
+        // $('form[data-recaptcha]').submit();
     }
 }
