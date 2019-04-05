@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/sql"
 	influx "github.com/influxdata/influxdb1-client"
@@ -133,12 +135,20 @@ func getAppTwitchStreamers(app *sql.App) (viewers int, err error) {
 	return viewers, nil
 }
 
+var appPlayerSteamClient *steam.Steam
+
 func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 
-	s := helpers.GetSteam()
-	sx := *s
-	sx.SetAPIRateLimit(time.Millisecond*600, 10)
-	count, b, err := sx.GetNumberOfCurrentPlayers(app.ID)
+	if appPlayerSteamClient == nil {
+
+		appPlayerSteamClient = &steam.Steam{}
+		appPlayerSteamClient.SetKey(config.Config.SteamAPIKey)
+		appPlayerSteamClient.SetUserAgent("gamedb.online#GetNumberOfCurrentPlayers")
+		// appPlayerSteamClient.SetAPIRateLimit(time.Millisecond*1000, 10)
+		// appPlayerSteamClient.SetStoreRateLimit(time.Millisecond*1600, 10)
+	}
+
+	count, b, err := appPlayerSteamClient.GetNumberOfCurrentPlayers(app.ID)
 	err = helpers.HandleSteamStoreErr(err, b, []int{404})
 	if err != nil {
 		return err
