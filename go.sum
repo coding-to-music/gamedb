@@ -23,6 +23,8 @@ github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89 h1:oxgneM6VUEW
 github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83 h1:u+ekQU2p89s6sgUhl8MkK6Ii7lCmdNmcKeXjlrTj/0U=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83/go.mod h1:VKGCTl3nRL0ILsYBflxYMYgTMXueYetss2Q30fKpjpE=
+github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50 h1:QkHMYi6HhE8HxBFROlbltZaAKRHU5cQ7UPsuT7M64ZY=
+github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50/go.mod h1:6XUIBoc/yO+w//k1YvVfZY6bsiG4Z/7l31B54EeSh/c=
 github.com/Jleagle/steam-go v0.0.0-20190313125813-b17e40b361dc h1:LXgHAM/oBIgailwO7nT5nf0tUV0IAZZslB9TVs2vivE=
 github.com/Jleagle/steam-go v0.0.0-20190313125813-b17e40b361dc/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
 github.com/Jleagle/unmarshal-go v0.0.0-20190127220637-8ab9c10d2f0a h1:G5x66H0pfUAElcx6zz+rJFZ3pbTtamIWSnIomJD3y9U=

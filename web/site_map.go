@@ -1,9 +1,10 @@
 package web
 
 import (
-	"encoding/xml"
 	"net/http"
+	"time"
 
+	"github.com/Jleagle/sitemap-go/sitemap"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
@@ -11,21 +12,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-type ChangeFrequency string
-
-//noinspection GoUnusedConst
-const (
-	urlBase   = "https://gamedb.online"
-	namespace = "http://www.sitemaps.org/schemas/sitemap/0.9"
-
-	frequencyAlways  ChangeFrequency = "always"
-	frequencyHourly                  = "hourly"
-	frequencyDaily                   = "daily"
-	frequencyWeekly                  = "weekly"
-	frequencyMonthly                 = "monthly"
-	frequencyYearly                  = "yearly"
-	frequencyNever                   = "never"
-)
+const urlBase = "https://gamedb.online"
 
 func siteMapRouter() http.Handler {
 	r := chi.NewRouter()
@@ -37,57 +24,29 @@ func siteMapRouter() http.Handler {
 	return r
 }
 
-type siteMapIndex struct {
-	XMLName   xml.Name  `xml:"sitemapindex"`
-	Namespace string    `xml:"xmlns,attr"`
-	SiteMaps  []siteMap `xml:"sitemap"`
-}
-
-type siteMap struct {
-	Location     string `xml:"loc"`
-	LastModified string `xml:"lastmod,omitempty"` // https://www.w3.org/TR/NOTE-datetime
-}
-
 //noinspection GoUnusedParameter
 func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 
-	sm := siteMapIndex{}
-	sm.Namespace = namespace
-	sm.SiteMaps = []siteMap{
-		{Location: urlBase + "/sitemap/pages.xml"},
-		{Location: urlBase + "/sitemap/games-by-score.xml"},
-		{Location: urlBase + "/sitemap/games-by-players.xml"},
-		{Location: urlBase + "/sitemap/players-by-level.xml"},
-		{Location: urlBase + "/sitemap/players-by-games.xml"},
+	var sitemaps = []string{
+		"/sitemap/pages.xml",
+		"/sitemap/games-by-score.xml",
+		"/sitemap/games-by-players.xml",
+		"/sitemap/players-by-level.xml",
+		"/sitemap/players-by-games.xml",
 	}
 
-	b, err := xml.Marshal(sm)
+	sm := sitemap.NewSiteMapIndex()
+
+	for _, v := range sitemaps {
+		sm.AddSitemap(urlBase+v, time.Time{})
+	}
+
+	_, err := sm.Write(w)
 	log.Err(err)
-
-	w.Header().Set("Content-Type", "application/xml")
-
-	_, err = w.Write([]byte(xml.Header + string(b)))
-	log.Err(err)
-}
-
-type urlSet struct {
-	XMLName   xml.Name     `xml:"urlset"`
-	Namespace string       `xml:"xmlns,attr"`
-	URLs      []sitemapURL `xml:"url"`
-}
-
-type sitemapURL struct {
-	Location        string          `xml:"loc"`
-	LastModified    string          `xml:"lastmod,omitempty"` // https://www.w3.org/TR/NOTE-datetime
-	ChangeFrequency ChangeFrequency `xml:"changefreq,omitempty"`
-	Priority        float32         `xml:"priority,omitempty"`
 }
 
 //noinspection GoUnusedParameter
 func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
-
-	sm := urlSet{}
-	sm.Namespace = namespace
 
 	var pages = []string{
 		"/",
@@ -115,103 +74,65 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		"/upcoming",
 	}
 
+	sm := sitemap.NewSitemap()
+
 	for _, v := range pages {
-		sm.URLs = append(sm.URLs, sitemapURL{
-			Location: v,
-			Priority: 1,
-		})
+		sm.AddLocation(urlBase+v, time.Time{}, sitemap.FrequencyDaily, 1)
 	}
 
-	b, err := xml.Marshal(sm)
-	log.Err(err)
-
-	err = returnXML(w, r, b)
+	_, err := sm.Write(w)
 	log.Err(err)
 }
 
 func siteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
-	sm := urlSet{}
-	sm.Namespace = namespace
+	sm := sitemap.NewSitemap()
 
 	for _, v := range sitemapGetGames(r, "reviews_score desc") {
-
-		sm.URLs = append(sm.URLs, sitemapURL{
-			Location:        urlBase + v.GetPath(),
-			Priority:        0.5,
-			ChangeFrequency: frequencyWeekly,
-		})
+		sm.AddLocation(urlBase+v.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.5)
 	}
 
-	b, err := xml.Marshal(sm)
-	log.Err(err)
-
-	err = returnXML(w, r, b)
+	_, err := sm.Write(w)
 	log.Err(err)
 }
 
 func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
-	sm := urlSet{}
-	sm.Namespace = namespace
+	sm := sitemap.NewSitemap()
 
 	for _, v := range sitemapGetGames(r, "player_peak_week desc") {
-
-		sm.URLs = append(sm.URLs, sitemapURL{
-			Location:        urlBase + v.GetPath(),
-			Priority:        0.5,
-			ChangeFrequency: frequencyWeekly,
-		})
+		sm.AddLocation(urlBase+v.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.5)
 	}
 
-	b, err := xml.Marshal(sm)
-	log.Err(err)
-
-	err = returnXML(w, r, b)
+	_, err := sm.Write(w)
 	log.Err(err)
 }
 
+//noinspection GoUnusedParameter
 func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
-	sm := urlSet{}
-	sm.Namespace = namespace
+	sm := sitemap.NewSitemap()
 
 	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, nil, mongo.M{"_id": 1, "name": 1})
-	for _, player := range players {
-
-		sm.URLs = append(sm.URLs, sitemapURL{
-			Location:        urlBase + player.GetPath(),
-			Priority:        0.5,
-			ChangeFrequency: frequencyWeekly,
-		})
+	for _, v := range players {
+		sm.AddLocation(urlBase+v.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.5)
 	}
 
-	b, err := xml.Marshal(sm)
-	log.Err(err)
-
-	err = returnXML(w, r, b)
+	_, err = sm.Write(w)
 	log.Err(err)
 }
 
+//noinspection GoUnusedParameter
 func siteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 
-	sm := urlSet{}
-	sm.Namespace = namespace
+	sm := sitemap.NewSitemap()
 
 	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"games_count", -1}}, nil, mongo.M{"_id": 1, "name": 1})
 	for _, v := range players {
-
-		sm.URLs = append(sm.URLs, sitemapURL{
-			Location:        urlBase + v.GetPath(),
-			Priority:        0.5,
-			ChangeFrequency: frequencyWeekly,
-		})
+		sm.AddLocation(urlBase+v.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.5)
 	}
 
-	b, err := xml.Marshal(sm)
-	log.Err(err)
-
-	err = returnXML(w, r, b)
+	_, err = sm.Write(w)
 	log.Err(err)
 }
 
@@ -229,7 +150,7 @@ func sitemapGetGames(r *http.Request, sort string) (apps []sql.App) {
 	if config.Config.IsLocal() {
 		gorm = gorm.Limit(10)
 	} else {
-		gorm = gorm.Limit(10000) // Max: 50,000
+		gorm = gorm.Limit(1000) // Max: 50,000
 	}
 
 	gorm = gorm.Order(sort)
