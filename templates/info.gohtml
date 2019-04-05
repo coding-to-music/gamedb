@@ -10,47 +10,94 @@
         <div class="card-header">
 
             <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#info" role="tab">Info</a></li>
-                {{/*<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#faqs" role="tab">FAQs</a></li>*/}}
+                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#questions" role="tab">FAQs</a></li>
                 <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#links" role="tab">Links</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#terms" role="tab">Terms</a></li>
+                {{/*<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#terms" role="tab">Terms</a></li>*/}}
             </ul>
 
         </div>
         <div class="card-body">
 
             <div class="tab-content">
-                <div class="tab-pane show active" id="info" role="tabpanel">
 
-                    <h5>Open Source</h5>
-                    <p>Game DB is open sourced on <a target="_blank" href="https://github.com/gamedb">GitHub</a> to see exactly what's going on under the hood.</p>
+                <div class="tab-pane show active" id="questions" role="tabpanel">
 
-                    <h5>Social Links</h5>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Facebook">
-                        <a target="_blank" href="https://www.facebook.com/Steam-Authority-113148936171513">
-                            <i class="fab fa-facebook-square facebook"></i>
-                        </a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Twitter">
-                        <a target="_blank" href="https://twitter.com/gamedbonline">
-                            <i class="fab fa-twitter-square twitter"></i>
-                        </a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Steam">
-                        <a target="_blank" href="https://steamcommunity.com/groups/gamedb">
-                            <i class="fab fa-steam-square steam"></i>
-                        </a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Discord">
-                        <a target="_blank" href="https://discord.gg/c5zrcus">
-                            <i class="fab fa-discord discord"></i>
-                        </a>
+                    <h5>Where else can I find Game DB?</h5>
+                    <div class="clearfix mb-2">
+                        <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Facebook">
+                            <a target="_blank" href="https://www.facebook.com/gamedb.online/"><i class="fab fa-facebook-square facebook"></i></a>
+                        </div>
+                        <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Twitter">
+                            <a target="_blank" href="https://twitter.com/gamedbonline"><i class="fab fa-twitter-square twitter"></i></a>
+                        </div>
+                        <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Steam">
+                            <a target="_blank" href="https://steamcommunity.com/groups/gamedb"><i class="fab fa-steam-square steam"></i></a>
+                        </div>
+                        <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Discord">
+                            <a target="_blank" href="https://discord.gg/c5zrcus"><i class="fab fa-discord discord"></i></a>
+                        </div>
+
+                        <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Github">
+                            <a target="_blank" href="https://github.com/gamedb"><i class="fab fa-github-square github"></i></a>
+                        </div>
                     </div>
 
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Github">
-                        <a target="_blank" href="https://github.com/gamedb">
-                            <i class="fab fa-github-square github"></i>
-                        </a>
+                    <h5>Why did I make Game DB?</h5>
+                    <p>Game DB was created as a way to learn certain technologies involved in making websites and goes back to 2015. Originally it was to track players and rank them.
+                        Then I started to track other bits of information that the <a href="/steam-api">Steam APIs</a> gave.
+                        Then started to track as much as I could, all to display in a friendly manner for gamers.</p>
+
+                    <h5>How can I contact you?</h5>
+                    <p>Game DB is not affiliated with Steam, please contact them <a href="https://help.steampowered.com/en/" target="_blank">here</a>.
+                        <br>Otherwise, use our <a href="/chat">chat</a> or <a href="/contact">contact</a> pages.</p>
+
+                    <h5>Why is a player missing?</h5>
+                    <p>Game DB only knows about players that are added manually. If you are missing, you can add your profile or login to do it automatically.</p>
+
+                    <h5>Why does a player have no rank?</h5>
+                    <p>
+                        Ranks get updated daily, so please check back tomorrow. If it has been longer, it may be because your privacy settings stop us from seeing your information.
+                        You can allow access by updating your <a target="_blank" href="https://steamcommunity.com/my/edit/settings">privacy settings</a>.
+                    </p>
+
+                    <h5>Where do we get the data from?</h5>
+                    <p>Either from a <a href="/steam-api">Steam API</a> or by pretending to be a Steam client using <a href="https://github.com/SteamRE/SteamKit" target="_blank">SteamKit</a>.</p>
+
+                    <h5>How are app scores calculated?</h5>
+                    <p>Using <a href="https://en.wikipedia.org/wiki/Additive_smoothing" target="_blank">Additive Smoothing</a></p>
+
+                    <h5>Can I see the Game DB source code</h5>
+                    <p>Game DB is fully open sourced on <a target="_blank" href="https://github.com/gamedb">GitHub</a> to see exactly what's going on under the hood.</p>
+
+                </div>
+
+                <div class="tab-pane" id="links" role="tabpanel">
+
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <h5>Players</h5>
+                            <ul>
+                                <li><a target="_blank" href="https://astats.astats.nl">astats.astats.nl</a></li>
+                                <li><a target="_blank" href="https://levels.gg/">levels.gg</a></li>
+                                <li><a target="_blank" href="https://lorenzostanco.com/lab/steam/">lorenzostanco.com</a></li>
+                                <li><a target="_blank" href="https://steam.madjoki.com/">steam.madjoki.com</a></li>
+                                <li><a target="_blank" href="https://steamcharts.com/">steamcharts.com</a></li>
+                                <li><a target="_blank" href="https://steamcompanion.com/">steamcompanion.com</a></li>
+                                <li><a target="_blank" href="https://steamdb.info/">steamdb.info</a></li>
+                                <li><a target="_blank" href="https://steamladder.com/">steamladder.com</a></li>
+                                <li><a target="_blank" href="https://steamprices.com/">steamprices.com</a></li>
+                                <li><a target="_blank" href="https://steamspy.com/">steamspy.com</a></li>
+                                <li><a target="_blank" href="https://steamstat.us/">steamstat.us</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-12 col-lg-6">
+                            <h5>Traders</h5>
+                            <ul>
+                                <li><a target="_blank" href="https://barter.vg/">barter.vg</a></li>
+                                <li><a target="_blank" href="https://scrap.tf/">scrap.tf</a></li>
+                                <li><a target="_blank" href="https://steamcardexchange.net/">steamcardexchange.net</a></li>
+                            </ul>
+                        </div>
                     </div>
 
                 </div>
@@ -67,64 +114,6 @@
 
                 </div>
 
-                <div class="tab-pane" id="faqs" role="tabpanel">
-
-                    <h5>I can not find a player</h5>
-                    <p>Game DB can only find out about players when they get searched for or via a friend already in our database.</p>
-
-                    <h5>A player exists but does not have a rank</h5>
-                    <p>Ranks are not live and get calculated at midnight (GMT), so new players may not have a rank right away.
-                        <br/>Game DB may not have access to your stats, you can allow access by updating your
-                        <a target="_blank" href="https://steamcommunity.com/my/edit/settings">privacy settings</a>.</p>
-
-                    <h5>How can I help out?</h5>
-                    <p>Programmers can submit
-                        <a target="_blank" href="https://github.com/gamedb">pull requests</a>.
-                        <a href="/donate">Donations</a> are always welome for everyone else.</p>
-
-                    <h5>How does Game DB gather user data?</h5>
-                    <p>Steam has <a href="/steam-api">dozens of APIs</a> we can call to get data from them. Everything on Game DB is also availible using the steam app.</p>
-
-                    <h5>I found a website bug</h5>
-                    <p>Please file an issue on
-                        <a href="https://github.com/gamedb/website/issues/new">GitHub</a>. Or
-                        <a href="/contact">send me an email</a>.</p>
-
-                    <h5>How are review scores calculated?</h5>
-                    <p>Take a read of this: <a href="https://planspace.org/2014/08/17/how-to-sort-by-average-rating/">https://planspace.org/2014/08/17/how-to-sort-by-average-rating/</a></p>
-
-                </div>
-
-                <div class="tab-pane" id="links" role="tabpanel">
-
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-6">
-                            <h5>Players</h5>
-                            <ul>
-                                <li><a target="_blank" href="https://steamprices.com/">https://steamprices.com/</a></li>
-                                <li><a target="_blank" href="https://steamcharts.com/">https://steamcharts.com/</a></li>
-                                <li><a target="_blank" href="https://steamstat.us/">https://steamstat.us/</a></li>
-                                <li><a target="_blank" href="https://steamcompanion.com/">https://steamcompanion.com/</a></li>
-                                <li><a target="_blank" href="https://steamdb.info/">https://steamdb.info/</a></li>
-                                <li><a target="_blank" href="https://steamladder.com/">https://steamladder.com/</a></li>
-                                <li><a target="_blank" href="https://steamspy.com/">https://steamspy.com/</a></li>
-                                <li><a target="_blank" href="https://astats.astats.nl">https://astats.astats.nl/</a></li>
-                                <li><a target="_blank" href="https://steam.madjoki.com/">https://steam.madjoki.com/</a></li>
-                                <li><a target="_blank" href="https://levels.gg/">https://levels.gg/</a></li>
-                                <li><a target="_blank" href="https://www.lorenzostanco.com/lab/steam/">https://www.lorenzostanco.com/lab/steam/</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-sm-12 col-lg-6">
-                            <h5>Traders</h5>
-                            <ul>
-                                <li><a target="_blank" href="https://barter.vg/">http://barter.vg/</a></li>
-                                <li><a target="_blank" href="https://www.steamcardexchange.net/">https://www.steamcardexchange.net/</a></li>
-                                <li><a target="_blank" href="https://scrap.tf/">https://scrap.tf/</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                </div>
             </div>
 
         </div>
