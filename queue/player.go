@@ -167,7 +167,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	err = mongo.CreateEvent(new(http.Request), player.ID, mongo.EventRefresh)
+	err = mongo.CreateEvent(&http.Request{}, player.ID, mongo.EventRefresh)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -222,7 +222,8 @@ type RabbitMessageProfilePICS struct {
 
 func updatePlayerSummary(player *mongo.Player) error {
 
-	summary, _, err := helpers.GetSteam().GetPlayer(player.ID)
+	summary, b, err := helpers.GetSteam().GetPlayer(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -251,7 +252,8 @@ func updatePlayerSummary(player *mongo.Player) error {
 func updatePlayerGames(player *mongo.Player) error {
 
 	// Grab games from Steam
-	resp, _, err := helpers.GetSteam().GetOwnedGames(player.ID)
+	resp, b, err := helpers.GetSteam().GetOwnedGames(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -333,7 +335,7 @@ func updatePlayerGames(player *mongo.Player) error {
 		}
 	}
 
-	b, err := json.Marshal(gameStats)
+	b, err = json.Marshal(gameStats)
 	if err != nil {
 		return err
 	}
@@ -345,7 +347,8 @@ func updatePlayerGames(player *mongo.Player) error {
 
 func updatePlayerRecentGames(player *mongo.Player) error {
 
-	recentResponse, _, err := helpers.GetSteam().GetRecentlyPlayedGames(player.ID)
+	recentResponse, b, err := helpers.GetSteam().GetRecentlyPlayedGames(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -362,7 +365,7 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 		})
 	}
 
-	b, err := json.Marshal(games)
+	b, err = json.Marshal(games)
 	if err != nil {
 		return err
 	}
@@ -384,7 +387,8 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 
 func updatePlayerBadges(player *mongo.Player) error {
 
-	response, _, err := helpers.GetSteam().GetBadges(player.ID)
+	response, b, err := helpers.GetSteam().GetBadges(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -401,7 +405,7 @@ func updatePlayerBadges(player *mongo.Player) error {
 		PercentOfLevel:             response.GetPercentOfLevel(),
 	}
 
-	b, err := json.Marshal(stats)
+	b, err = json.Marshal(stats)
 	if err != nil {
 		return err
 	}
@@ -464,13 +468,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 func updatePlayerFriends(player *mongo.Player) error {
 
-	resp, _, err := helpers.GetSteam().GetFriendList(player.ID)
-
-	// This endpoint seems to error if the player is private, so it's probably fine.
-	err2, ok := err.(steam.Error)
-	if ok && (err2.Code == 401) {
-		return nil
-	}
+	resp, b, err := helpers.GetSteam().GetFriendList(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, []int{401})
 	if err != nil {
 		return err
 	}
@@ -515,7 +514,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 	}
 
 	// Encode to JSON bytes
-	b, err := json.Marshal(friends)
+	b, err = json.Marshal(friends)
 	if err != nil {
 		return err
 	}
@@ -537,7 +536,8 @@ func updatePlayerFriends(player *mongo.Player) error {
 
 func updatePlayerLevel(player *mongo.Player) error {
 
-	level, _, err := helpers.GetSteam().GetSteamLevel(player.ID)
+	level, b, err := helpers.GetSteam().GetSteamLevel(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -549,10 +549,12 @@ func updatePlayerLevel(player *mongo.Player) error {
 
 func updatePlayerBans(player *mongo.Player) error {
 
-	response, _, err := helpers.GetSteam().GetPlayerBans(player.ID)
+	response, b, err := helpers.GetSteam().GetPlayerBans(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err == steam.ErrNoUserFound {
 		return nil
-	} else if err != nil {
+	}
+	if err != nil {
 		return err
 	}
 
@@ -568,7 +570,7 @@ func updatePlayerBans(player *mongo.Player) error {
 	bans.EconomyBan = response.EconomyBan
 
 	// Encode to JSON bytes
-	b, err := json.Marshal(bans)
+	b, err = json.Marshal(bans)
 	if err != nil {
 		return err
 	}
@@ -580,13 +582,8 @@ func updatePlayerBans(player *mongo.Player) error {
 
 func updatePlayerGroups(player *mongo.Player) error {
 
-	resp, _, err := helpers.GetSteam().GetUserGroupList(player.ID)
-
-	// This endpoint seems to error if the player is private, so it's probably fine.
-	err2, ok := err.(steam.Error)
-	if ok && (err2.Code == 403) {
-		return nil
-	}
+	resp, b, err := helpers.GetSteam().GetUserGroupList(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, []int{403})
 	if err != nil {
 		return err
 	}

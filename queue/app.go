@@ -393,10 +393,11 @@ func updateAppDetails(app *sql.App) error {
 
 		// Get app details
 		response, b, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
-		if err != nil && err != steam.ErrAppNotFound {
-
-			log.Debug(log.LogNameDebug, err, string(b))
-
+		err = helpers.HandleSteamStoreErr(err, b, nil)
+		if err == steam.ErrAppNotFound {
+			continue
+		}
+		if err != nil {
 			return err
 		}
 
@@ -621,13 +622,8 @@ func updateAppDetails(app *sql.App) error {
 
 func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
-	resp, _, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
-
-	// This endpoint seems to error if the app has no achievement data, so it's probably fine.
-	err2, ok := err.(steam.Error)
-	if ok && (err2.Code == 403 || err2.Code == 500) {
-		return nil
-	}
+	resp, b, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
+	err = helpers.HandleSteamStoreErr(err, b, []int{403, 500})
 	if err != nil {
 		return err
 	}
@@ -658,7 +654,7 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 		})
 	}
 
-	b, err := json.Marshal(achievements)
+	b, err = json.Marshal(achievements)
 	if err != nil {
 		return err
 	}
@@ -670,13 +666,8 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
 func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 
-	resp, _, err := helpers.GetSteam().GetSchemaForGame(app.ID)
-
-	// This endpoint seems to error if the app has no schema, so it's probably fine.
-	err2, ok := err.(steam.Error)
-	if ok && (err2.Code == 403 || err2.Code == 400) {
-		return schema, nil
-	}
+	resp, b, err := helpers.GetSteam().GetSchemaForGame(app.ID)
+	err = helpers.HandleSteamStoreErr(err, b, []int{400, 403})
 	if err != nil {
 		return schema, err
 	}
@@ -690,7 +681,7 @@ func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 		})
 	}
 
-	b, err := json.Marshal(stats)
+	b, err = json.Marshal(stats)
 	if err != nil {
 		return schema, err
 	}
@@ -703,13 +694,8 @@ func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 
 func updateAppNews(app *sql.App) error {
 
-	resp, _, err := helpers.GetSteam().GetNews(app.ID, 10000)
-
-	// This endpoint seems to error if the app has no news, so it's probably fine.
-	err2, ok := err.(steam.Error)
-	if ok && (err2.Code == 403) {
-		return nil
-	}
+	resp, b, err := helpers.GetSteam().GetNews(app.ID, 10000)
+	err = helpers.HandleSteamStoreErr(err, b, []int{403})
 	if err != nil {
 		return err
 	}
@@ -756,7 +742,7 @@ func updateAppNews(app *sql.App) error {
 	}
 
 	// Update app column
-	b, err := json.Marshal(helpers.Unique64(ids))
+	b, err = json.Marshal(helpers.Unique64(ids))
 	if err != nil {
 		return err
 	}
@@ -767,7 +753,8 @@ func updateAppNews(app *sql.App) error {
 
 func updateAppReviews(app *sql.App) error {
 
-	resp, _, err := helpers.GetSteam().GetReviews(app.ID)
+	resp, b, err := helpers.GetSteam().GetReviews(app.ID)
+	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -842,7 +829,7 @@ func updateAppReviews(app *sql.App) error {
 	})
 
 	// Save to App
-	b, err := json.Marshal(reviews)
+	b, err = json.Marshal(reviews)
 	if err != nil {
 		return err
 	}

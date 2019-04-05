@@ -298,11 +298,11 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 
 		// Get package details
 		response, b, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
-
-		if err != nil && err != steam.ErrPackageNotFound {
-
-			log.Debug(log.LogNameDebug, err, string(b))
-
+		err = helpers.HandleSteamStoreErr(err, b, nil)
+		if err == steam.ErrPackageNotFound {
+			continue
+		}
+		if err != nil {
 			return err
 		}
 

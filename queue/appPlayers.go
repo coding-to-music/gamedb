@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/sql"
@@ -139,12 +138,8 @@ func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 	s := helpers.GetSteam()
 	sx := *s
 	sx.SetAPIRateLimit(time.Millisecond*600, 10)
-	count, _, err := sx.GetNumberOfCurrentPlayers(app.ID)
-
-	steamErr, ok := err.(steam.Error)
-	if ok && (steamErr.Code == 404) {
-		err = nil
-	}
+	count, b, err := sx.GetNumberOfCurrentPlayers(app.ID)
+	err = helpers.HandleSteamStoreErr(err, b, []int{404})
 	if err != nil {
 		return err
 	}

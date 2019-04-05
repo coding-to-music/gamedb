@@ -49,7 +49,8 @@ func (t steamAPITemplate) Count() (count int) {
 
 func (t *steamAPITemplate) addDocumented(w http.ResponseWriter, r *http.Request) {
 
-	steamResp, _, err := helpers.GetSteam().GetSupportedAPIList()
+	steamResp, b, err := helpers.GetSteam().GetSupportedAPIList()
+	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't talk to Steam"})
 		return
