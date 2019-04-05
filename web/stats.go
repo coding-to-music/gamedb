@@ -18,10 +18,10 @@ import (
 func statsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", statsHandler)
-	r.Get("/client-players", statsClientPlayersHandler)
-	r.Get("/release-dates", statsDatesHandler)
-	r.Get("/app-scores", statsScoresHandler)
-	r.Get("/app-types", statsTypesHandler)
+	r.Get("/client-players.json", statsClientPlayersHandler)
+	r.Get("/release-dates.json", statsDatesHandler)
+	r.Get("/app-scores.json", statsScoresHandler)
+	r.Get("/app-types.json", statsTypesHandler)
 	return r
 }
 

@@ -41,7 +41,7 @@ if ($('#stats-page').length > 0) {
 
     $.ajax({
         type: "GET",
-        url: '/stats/client-players',
+        url: '/stats/client-players.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
@@ -83,7 +83,7 @@ if ($('#stats-page').length > 0) {
 
     $.ajax({
         type: "GET",
-        url: '/stats/app-scores',
+        url: '/stats/app-scores.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
@@ -121,7 +121,7 @@ if ($('#stats-page').length > 0) {
 
     $.ajax({
         type: "GET",
-        url: '/stats/app-types',
+        url: '/stats/app-types.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
@@ -167,7 +167,7 @@ if ($('#stats-page').length > 0) {
 
     $.ajax({
         type: "GET",
-        url: '/stats/release-dates',
+        url: '/stats/release-dates.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
