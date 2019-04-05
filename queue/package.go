@@ -135,7 +135,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
-		} else if err == nil && pack.HasDefaultName() {
+		} else if err == nil && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID)) {
 			pack.Name = app.Name
 			pack.Icon = app.GetIcon()
 		}

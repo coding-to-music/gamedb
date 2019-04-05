@@ -120,10 +120,6 @@ func (pack Package) GetName() (name string) {
 	return pack.Name
 }
 
-func (pack Package) HasDefaultName() bool {
-	return pack.Name == strconv.FormatInt(int64(pack.ID), 10)
-}
-
 func (pack Package) GetCreatedNice() string {
 	return pack.CreatedAt.Format(helpers.DateYearTime)
 }
