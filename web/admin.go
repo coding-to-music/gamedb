@@ -1085,7 +1085,7 @@ func CronRanks() {
 	err = mongo.RankPlayers("friends_count", "friends_rank")
 	log.Warning(err)
 
-	// Update config
+	//
 	err = sql.SetConfig(sql.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
@@ -1095,8 +1095,7 @@ func CronRanks() {
 		page.Send(adminWebsocket{sql.ConfRanksUpdated + " complete"})
 	}
 
-	//
-	// cronLogInfo("Ranks updated in " + strconv.FormatInt(time.Now().Unix()-timeStart, 10) + " seconds")
+	cronLogInfo("Ranks updated")
 }
 
 func CronCheckForPlayers() {
