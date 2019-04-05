@@ -37,7 +37,7 @@ func SetConfig(id string, value string) (err error) {
 		return err
 	}
 
-	config := new(Config)
+	config := &Config{}
 	config.ID = id
 
 	db = db.Assign(Config{Value: value}).FirstOrInit(config)

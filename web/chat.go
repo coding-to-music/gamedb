@@ -317,7 +317,7 @@ func getDiscordOauth(r *http.Request) (discordDeref discordgo.Session, err error
 
 	if tokenString != "" {
 
-		var token = new(oauth2.Token)
+		var token = &oauth2.Token{}
 		err = json.Unmarshal([]byte(tokenString), token)
 		if err != nil {
 			return

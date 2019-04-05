@@ -139,7 +139,7 @@ func GetEvents(playerID int64, offset int64) (events []Event, err error) {
 
 func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) {
 
-	event := new(Event)
+	event := &Event{}
 	event.CreatedAt = time.Now()
 	event.PlayerID = playerID
 	event.Type = eventType
