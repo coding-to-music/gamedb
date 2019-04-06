@@ -818,7 +818,7 @@ func updateAppReviews(app *sql.App) error {
 		// https://planspace.org/2014/08/17/how-to-sort-by-average-rating/
 		var a = 1
 		var b = 2
-		app.ReviewsScore = float64(reviews.Positive+a) / float64(reviews.Positive+reviews.Negative+b)
+		app.ReviewsScore = (float64(reviews.Positive+a) / float64(reviews.Positive+reviews.Negative+b)) * 100
 	}
 
 	// Sort by upvotes
