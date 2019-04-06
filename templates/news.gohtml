@@ -36,7 +36,7 @@
 
                     {{ range $key, $value := .Articles }}
 
-                        <div class="card mb-3">
+                        <div class="card mb-3" id="{{ .ID }}">
                             <div class="card-header">
 
                                 <img src="{{ .GetIcon }}" class="rounded float-left" data-src="/assets/img/no-app-image-square.jpg">
