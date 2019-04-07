@@ -86,7 +86,7 @@
 
                         {{ range $key, $value := .News }}
                             <li class="media mb-2" data-link="{{ .Link }}">
-                                <div style="background-image: url({{ .Image }});" class="mr-3 img rounded"></div>
+                                <img src="{{ .Image }}" alt="{{ .Title }}" class="mr-3 mb-2 img rounded">
                                 <div class="media-body">
                                     <h5 class="mt-0 mb-1">{{ .Title }}</h5>
                                     {{ .Contents }}

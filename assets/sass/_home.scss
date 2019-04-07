@@ -10,17 +10,29 @@
 
     #news {
 
-        div.img {
-            width: 150px;
-            min-width: 150px;
-            height: 70px;
+        .media {
+            display: block;
 
-            background-size: cover;
-            background-position: center;
+            img {
+                width: 100%;
+                height: auto;
+            }
+
+            .media-body {
+                overflow: auto;
+            }
         }
 
-        .media-body {
-            overflow: auto;
+        @include media-breakpoint-up(sm) {
+            .media {
+                display: flex;
+
+                img {
+                    width: 150px;
+                    min-width: 150px;
+                    height: 70px;
+                }
+            }
         }
     }
 
