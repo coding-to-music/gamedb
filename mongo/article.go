@@ -89,7 +89,7 @@ func (article Article) OutputForJSON() (output []interface{}) {
 	}
 }
 
-func GetArticlesByApps(appIDs []int, afterDate time.Time) (news []Article, err error) {
+func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []Article, err error) {
 
 	if len(appIDs) < 1 {
 		return news, nil
@@ -100,7 +100,15 @@ func GetArticlesByApps(appIDs []int, afterDate time.Time) (news []Article, err e
 		appsFilter = append(appsFilter, v)
 	}
 
-	return getArticles(0, 0, M{"app_id": M{"$in": appsFilter}, "date": M{"$gte": afterDate}})
+	filter := M{
+		"app_id": M{"$in": appsFilter},
+	}
+
+	if !afterDate.IsZero() {
+		filter["date"] = M{"$gte": afterDate}
+	}
+
+	return getArticles(0, limit, filter)
 }
 
 func GetArticlesByApp(appID int, offset int64) (news []Article, err error) {
@@ -126,7 +134,15 @@ func getArticles(offset int64, limit int64, filter interface{}) (news []Article,
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppArticles.String())
 
-	cur, err := c.Find(ctx, filter, options.Find().SetLimit(limit).SetSkip(offset).SetSort(M{"date": -1}))
+	ops := options.Find().SetSort(M{"date": -1})
+	if limit > 0 {
+		ops.SetLimit(limit)
+	}
+	if offset > 0 {
+		ops.SetSkip(offset)
+	}
+
+	cur, err := c.Find(ctx, filter, ops)
 	if err != nil {
 		return news, err
 	}

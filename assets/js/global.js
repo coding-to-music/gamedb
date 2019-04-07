@@ -177,13 +177,14 @@ function websocketListener(page, onMessage) {
 
         socket.onmessage = onMessage;
 
-        $badge.on('click', function (e) {
-            if ($(this).hasClass('cursor-pointer')) {
-                socket.close(1000);
-                $badge.addClass('badge-danger').removeClass('badge-secondary badge-success cursor-pointer');
-                toast(false, 'Live functionality has stopped');
-            }
-        });
+        // Click to close websocket manually
+        // $badge.on('click', function (e) {
+        //     if ($(this).hasClass('cursor-pointer')) {
+        //         socket.close(1000);
+        //         $badge.addClass('badge-danger').removeClass('badge-secondary badge-success cursor-pointer');
+        //         toast(false, 'Live functionality has stopped');
+        //     }
+        // });
     }
 }
 

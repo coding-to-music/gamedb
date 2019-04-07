@@ -3,8 +3,6 @@ package mongo
 import (
 	"errors"
 	"math"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -54,13 +52,7 @@ func (price ProductPrice) GetPath() string {
 }
 
 func (price ProductPrice) GetIcon() string {
-	if price.Icon == "" {
-		return helpers.DefaultAppIcon
-	} else if strings.HasPrefix(price.Icon, "/") || strings.HasPrefix(price.Icon, "http") {
-		return price.Icon
-	} else {
-		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(price.AppID) + "/" + price.Icon + ".jpg"
-	}
+	return helpers.GetAppIcon(price.AppID, price.Icon)
 }
 
 func (price ProductPrice) GetPercentChange() float64 {
@@ -111,9 +103,9 @@ func GetPricesForProduct(productID int, productType helpers.ProductType, cc stea
 	return getProductPrices(filter, 0, 0, true)
 }
 
-func GetPrices(offset int64, filter interface{}) (prices []ProductPrice, err error) {
+func GetPrices(offset int64, limit int64, filter interface{}) (prices []ProductPrice, err error) {
 
-	return getProductPrices(filter, offset, 100, false)
+	return getProductPrices(filter, offset, limit, false)
 }
 
 func getProductPrices(filter interface{}, offset int64, limit int64, sortOrder bool) (prices []ProductPrice, err error) {

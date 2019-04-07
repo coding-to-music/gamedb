@@ -117,7 +117,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		priceChanges, err = mongo.GetPrices(query.getOffset64(), filter)
+		priceChanges, err = mongo.GetPrices(query.getOffset64(), 100, filter)
 		log.Err(err, r)
 	}(r)
 

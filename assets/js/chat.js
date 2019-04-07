@@ -7,11 +7,11 @@ if ($('#chat-page').length > 0) {
         dataType: 'json',
         cache: false,
         success: function (data, textStatus, jqXHR) {
+
             $('.fa-spin').remove();
+
             if (isIterable(data)) {
-                for (const v of data) {
-                    chatRow(v, false);
-                }
+                chatRow(data, false);
             }
         },
     });

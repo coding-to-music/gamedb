@@ -660,7 +660,7 @@ func PopularApps() (apps []App, err error) {
 			return apps, err
 		}
 
-		db = db.Select([]string{"id", "name", "icon", "player_peak_week"})
+		db = db.Select([]string{"id", "image_header"})
 		db = db.Where("type = ?", "game")
 		db = db.Order("player_peak_week desc")
 		db = db.Limit(30)

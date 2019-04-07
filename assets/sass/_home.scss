@@ -1,43 +1,39 @@
 #home-page {
 
-    table .text-truncate {
-        max-width: 235px;
+    #players {
+
     }
 
-    table#trending .text-truncate {
-        max-width: 160px;
+    #prices {
+
     }
 
-    @include media-breakpoint-up(md) {
+    #news {
+        .img {
+            width: 150px;
+            min-width: 150px;
+            height: 70px;
 
-        table .text-truncate {
-            max-width: 420px;
-        }
-
-        table#trending .text-truncate {
-            max-width: 300px;
-        }
-    }
-
-    @include media-breakpoint-up(lg) {
-
-        table .text-truncate {
-            max-width: 195px;
-        }
-
-        table#trending .text-truncate {
-            max-width: 120px;
+            background-size: cover;
+            background-position: center;
         }
     }
 
-    @include media-breakpoint-up(xl) {
+    #new-releases {
 
-        table .text-truncate {
-            max-width: 285px;
+        .card {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
         }
 
-        table#trending .text-truncate {
-            max-width: 210px;
+        img {
+            width: 100%;
+        }
+
+        a:last-child {
+            img {
+                margin-bottom: 0;
+            }
         }
     }
 }

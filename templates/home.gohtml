@@ -5,148 +5,101 @@
     <div class="jumbotron">
 
         <h1 class="display-4">Game DB</h1>
-        <p class="lead">{{ .Description }}</p>
+        {{/*<p class="lead">{{ .Description }}</p>*/}}
 
         <h5 class="mt-4">Under Construction</h5>
         <p class="mb-0">Game DB is still in beta, expect missing information.
             Please consider <a href="/donate">donating</a> to help pay server bills and improve website accuracy.</p>
     </div>
 
-    {{/*    <div class="row">*/}}
-    {{/*        <div class="col-4 mb-3">*/}}
-    {{/*            <a href="/apps" role="button" class="btn btn-success btn-block">Apps<br/>{{ comma .AppsCount }}</a>*/}}
-    {{/*        </div>*/}}
-    {{/*        <div class="col-4 mb-3">*/}}
-    {{/*            <a href="/packages" role="button" class="btn btn-success btn-block">Packages<br/>{{ comma .PackagesCount }}</a>*/}}
-    {{/*        </div>*/}}
-    {{/*        <div class="col-4 mb-3">*/}}
-    {{/*            <a href="/players" role="button" class="btn btn-success btn-block">Players<br/>{{ comma64 .PlayersCount }}</a>*/}}
-    {{/*        </div>*/}}
-    {{/*    </div>*/}}
+    <div class="row">
+        <div class="col-12 col-md-8">
 
-    <div class="card mb-3">
-        <div class="card-header">All Games <span class="float-right font-italic">Data from the last 7 days</span></div>
-        <div class="card-body">
-
-            <div class="row">
-                <div class="col-12 col-lg-6">
-
-                    <div class="table-responsive mb-4 mb-lg-0">
-                        <table class="table table-hover table-striped mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Popular</th>
-                                <th scope="col">Players</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {{ range $key, $value := .PopularApps }}
-                                <tr data-link="{{ .GetPath }}">
-                                    <td class="img">
-                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                        <span class="text-truncate">{{ .GetName }}</span>
-                                    </td>
-                                    <td>{{ comma .PlayerPeakWeek }}</td>
-                                </tr>
-                            {{ end }}
-                            </tbody>
-                        </table>
-                    </div>
-
+            <div class="card mb-3" id="players">
+                <div class="card-header">
+                    Top players
+                    <h5 class="float-right mb-0">
+                        <span class="badge badge-success cursor-pointer" data-sort="level">Level</span>
+                        <span class="badge cursor-pointer" data-sort="games">Games</span>
+                        <span class="badge cursor-pointer" data-sort="badges">Badges</span>
+                        <span class="badge cursor-pointer" data-sort="time">Time</span>
+                    </h5>
                 </div>
-                <div class="col-12 col-lg-6">
+                <div class="card-body">
+
+                    <i class="fas fa-spinner fa-spin"></i>
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0" id="trending">
+                        <table class="table table-hover table-striped mb-0 d-none">
                             <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Trending</th>
-                                <th scope="col" colspan="2">Players</th>
-                            </tr>
+                            <th width="1%">Rank</th>
+                            <th>Player</th>
+                            <th>Value</th>
                             </thead>
                             <tbody>
-                            {{ range $key, $value := .TrendingApps }}
-                                <tr data-link="{{ .GetPath }}" data-trending="{{ .PlayerTrend }}">
-                                    <td class="img">
-                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                        <span class="text-truncate">{{ .GetName }}</span>
-                                    </td>
-                                    <td>{{ comma .PlayerPeakWeek }}</td>
-                                    <td class="chart">
-                                        <div data-app-id="{{ .ID }}"></div>
-                                    </td>
-                                </tr>
-                            {{ end }}
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
 
+            <div class="card mb-3" id="prices">
+                <div class="card-header">
+                    Price Drops
+                    <h5 class="float-right mb-0">
+                        <span class="badge badge-secondary cursor-pointer" id="live-badge">Live</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+
+                    <i class="fas fa-spinner fa-spin"></i>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0 d-none">
+                            <thead class="thead-light">
+                            <th>Game</th>
+                            <th>Before</th>
+                            <th>After</th>
+                            <th>Time</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3" id="news">
+                <div class="card-header">Popular Game News</div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+
+                        {{ range $key, $value := .News }}
+                            <li class="media mb-2" data-link="{{ .Link }}">
+                                <div style="background-image: url({{ .Image }});" class="mr-3 img rounded"></div>
+                                <div class="media-body">
+                                    <h5 class="mt-0 mb-1">{{ .Title }}</h5>
+                                    {{ .Contents }}
+                                </div>
+                            </li>
+                        {{ end }}
+
+                    </ul>
+                </div>
             </div>
 
         </div>
-    </div>
+        <div class="col-12 col-md-4" id="new-releases">
 
-    <div class="card mb-3">
-        <div class="card-header">New Releases <span class="float-right font-italic">Data from the last 7 days</span></div>
-        <div class="card-body">
-
-            <div class="row">
-                <div class="col-12 col-lg-6">
-
-                    <div class="table-responsive mb-4 mb-lg-0">
-                        <table class="table table-hover table-striped mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Popular</th>
-                                <th scope="col">Players</th>
-                                <th scope="col">Price</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {{ range $key, $value := .PopularNewApps }}
-                                <tr data-link="{{ .GetPath }}">
-                                    <td class="img">
-                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                        <span class="text-truncate">{{ .GetName }}</span>
-                                    </td>
-                                    <td>{{ comma .PlayerPeakWeek }}</td>
-                                    <td nowrap="nowrap">{{ index $.Prices .ID }}</td>
-                                </tr>
-                            {{ end }}
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-                <div class="col-12 col-lg-6">
-
-                    <div class="table-responsive mb-0">
-                        <table class="table table-hover table-striped mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Highest Rated</th>
-                                <th scope="col">Score</th>
-                                <th scope="col">Price</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {{ range $key, $value := .RatedNewApps }}
-                                <tr data-link="{{ .GetPath }}">
-                                    <td class="img">
-                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                        <span class="text-truncate">{{ .GetName }}</span>
-                                    </td>
-                                    <td>{{ .ReviewsScore }}%</td>
-                                    <td nowrap="nowrap">{{ index $.Prices .ID }}</td>
-                                </tr>
-                            {{ end }}
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
+            <div class="card">
+                <div class="card-header">Popular New Releases</div>
             </div>
+
+            {{ range $key, $value := .Games }}
+                <a href="{{ .GetPath }}">
+                    <img src="{{ .HeaderImage }}" alt="{{ .GetName }}" class="rounded mb-1">
+                </a>
+            {{ end }}
 
         </div>
     </div>

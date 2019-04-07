@@ -3,7 +3,6 @@ package web
 import (
 	"bytes"
 	"encoding/json"
-	"encoding/xml"
 	"html/template"
 	"math"
 	"net/http"
@@ -68,9 +67,7 @@ func Serve() error {
 	r.Use(middlewareLog)
 
 	// Pages
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/apps?types=game", 302)
-	})
+	r.Get("/", homeHandler)
 	r.Get("/api", apiHandler)
 	r.Get("/coop", coopHandler)
 	r.Get("/developers", statsDevelopersHandler)
@@ -78,7 +75,6 @@ func Serve() error {
 	r.Get("/esi/header", headerHandler)
 	r.Get("/genres", statsGenresHandler)
 	r.Get("/health-check", healthCheckHandler)
-	r.Get("/home", homeHandler)
 	r.Get("/info", infoHandler)
 	r.Get("/logout", logoutHandler)
 	r.Get("/publishers", statsPublishersHandler)
@@ -97,7 +93,7 @@ func Serve() error {
 	r.Mount("/depots", depotsRouter())
 	r.Mount("/experience", experienceRouter())
 	r.Mount("/franchise", franchiseRouter())
-	// r.Mount("/home", homeRouter())
+	r.Mount("/home", homeRouter())
 	r.Mount("/login", loginRouter())
 	r.Mount("/new-releases", newReleasesRouter())
 	r.Mount("/news", newsRouter())
@@ -189,14 +185,6 @@ func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error
 	setAllHeaders(w, r, "application/json")
 
 	_, err = w.Write(bytes)
-	return err
-}
-
-func returnXML(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
-
-	setAllHeaders(w, r, "application/xml")
-
-	_, err = w.Write([]byte(xml.Header + string(bytes)))
 	return err
 }
 

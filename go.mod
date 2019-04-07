@@ -53,6 +53,7 @@ require (
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nicklaw5/helix v0.5.1
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
@@ -76,10 +77,10 @@ require (
 	github.com/yohcop/openid-go v0.0.0-20170901155220-cfc72ed89575
 	go.mongodb.org/mongo-driver v1.0.0
 	go.opencensus.io v0.19.1 // indirect
-	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-	golang.org/x/net v0.0.0-20190311183353-d8887717615a // indirect
+	golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5
+	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3 // indirect
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
-	golang.org/x/sys v0.0.0-20190312061237-fead79001313 // indirect
+	golang.org/x/sys v0.0.0-20190405154228-4b34438f7a67 // indirect
 	google.golang.org/genproto v0.0.0-20190307195333-5fe7a883aa19 // indirect
 	google.golang.org/grpc v1.19.0
 )

@@ -31,11 +31,11 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	var appIDs []int
-	for _, v := range apps {
-		appIDs = append(appIDs, v.ID)
+	for _, app := range apps {
+		appIDs = append(appIDs, app.ID)
 	}
 
-	t.Articles, err = mongo.GetArticlesByApps(appIDs, time.Now().AddDate(0, 0, -7))
+	t.Articles, err = mongo.GetArticlesByApps(appIDs, 0, time.Now().AddDate(0, 0, -7))
 	log.Err(err, r)
 
 	t.Count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil)
