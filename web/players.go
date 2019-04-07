@@ -17,7 +17,8 @@ import (
 func playersRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", playersHandler)
-	// r.Post("/", playerIDHandler)
+	r.Get("/add", playerAddHandler)
+	r.Post("/add", playerAddHandler)
 	r.Get("/players.json", playersAjaxHandler)
 	r.Get("/{id:[0-9]+}", playerHandler)
 	r.Get("/{id:[0-9]+}/games.json", playerGamesAjaxHandler)
@@ -76,28 +77,6 @@ type playersTemplate struct {
 	PlayersCount int64
 	Date         string
 }
-
-// func playerIDHandler(w http.ResponseWriter, r *http.Request) {
-//
-// 	post := r.PostFormValue("id")
-// 	post = path.Base(post)
-//
-// 	id64, err := helpers.GetSteam().GetID(post)
-// 	if err != nil {
-//
-// 		player, err := db.GetPlayerByName(post)
-// 		if err != nil || player.PlayerID == 0 {
-//
-// 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Title: "Can't find user: " + post, Message: "You can use your Steam ID or login to add your profile.", Error: err})
-// 			return
-// 		}
-//
-// 		http.Redirect(w, r, helpers.GetPlayerPath(player.PlayerID, player.PersonaName), 302)
-// 		return
-// 	}
-//
-// 	http.Redirect(w, r, "/players/"+strconv.FormatInt(id64, 10), 302)
-// }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 

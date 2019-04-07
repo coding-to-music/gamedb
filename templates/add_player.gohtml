@@ -1,0 +1,52 @@
+{{define "add_player"}} {{ template "_header" . }}
+
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
+<div class="container" id="add-player-page">
+
+    <div class="jumbotron">
+        <h1 class="display-4">Add Player</h1>
+        <p class="lead">{{ .Description }}</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ template "_flashes" . }}
+
+            <form action="/contact" method="post" data-recaptcha>
+                <div class="row">
+                    <div class="col-sm-6">
+
+                        <div class="form-group">
+                            <label for="id">Search</label>
+                            <input type="text" class="form-control" placeholder="Search" id="id" name="id" autofocus required>
+                        </div>
+
+                        <label for="message">Captcha</label>
+                        <div class="g-recaptcha mb-3" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
+
+                        <button type="submit" class="btn btn-success">Send</button>
+
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Accepted formats</label>
+                        <ul>
+                            <li>vanityurl</li>
+                            <li>12345678901234567</li>
+                            <li>STEAM_0:0:12345</li>
+                            <li>[U:1:12345]</li>
+                            <li>https://steamcommunity.com/id/vanityurl/</li>
+                            <li>https://steamcommunity.com/profiles/12345678901234567/</li>
+                            <li>https://steamcommunity.com/profiles/[U:1:12345]/</li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" . }} {{end}}

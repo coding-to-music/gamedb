@@ -23,6 +23,9 @@ if ($('#ranks-page').length > 0) {
                 cache: true
             });
         },
+        "language": {
+            "zeroRecords": "No players found <a href='/players/add'>Add a Player</a>",
+        },
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-id', data[1]);
