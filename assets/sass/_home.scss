@@ -9,7 +9,8 @@
     }
 
     #news {
-        .img {
+
+        div.img {
             width: 150px;
             min-width: 150px;
             height: 70px;
@@ -17,22 +18,34 @@
             background-size: cover;
             background-position: center;
         }
+
+        .media-body {
+            overflow: auto;
+        }
     }
 
     #new-releases {
 
-        .card {
+        .card.top {
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
 
-        img {
-            width: 100%;
+        .card.bottom {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
         }
 
-        a:last-child {
+        a {
             img {
-                margin-bottom: 0;
+                //margin-bottom: 0.5rem;
+                width: 100%;
+            }
+        }
+
+        a:last-of-type {
+            img {
+                //margin-bottom: 0;
             }
         }
     }

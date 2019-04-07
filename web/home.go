@@ -92,6 +92,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 				Link:     "/news#" + strconv.FormatInt(v.ID, 10),
 				Image:    template.HTMLAttr(appIDmap[v.AppID].GetHeaderImage()),
 			})
+
+			t.NewsID = v.ID
 		}
 	}()
 
@@ -106,6 +108,7 @@ type homeTemplate struct {
 	GlobalTemplate
 	Games   []sql.App
 	News    []homeNews
+	NewsID  int64
 	Players []mongo.Player
 }
 
