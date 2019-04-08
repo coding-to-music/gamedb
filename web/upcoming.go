@@ -52,23 +52,12 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	columns := map[string]string{
-		"0": "name",
-		"2": "price",
-		"3": "release_date_unix",
-	}
-
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
 	gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
-	gorm = gorm.Order(query.getOrderSQL(columns, session.GetCountryCode(r)))
+	gorm = gorm.Order("release_date_unix ASC")
 
-	// Count before limitting
-	var count int
-	gorm.Count(&count)
-	log.Err(gorm.Error, r) // todo, memcache this
-
-	gorm = gorm.Limit(100)
+	gorm = gorm.Limit(10000)
 	gorm = gorm.Offset(query.Start)
 
 	var apps []sql.App
@@ -76,6 +65,9 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(gorm.Error, r)
 
 	var code = session.GetCountryCode(r)
+
+	count, err := countUpcomingApps()
+	log.Err(err)
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = strconv.Itoa(count)
