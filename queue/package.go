@@ -121,24 +121,11 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Set package name to app name
-	if pack.AppsCount == 1 {
-
-		appIDs, err := pack.GetAppIDs()
-		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
-			return
-		}
-
-		app, err := sql.GetApp(appIDs[0], []string{})
-		if err != nil && err != sql.ErrRecordNotFound {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
-			return
-		} else if err == nil && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID)) {
-			pack.Name = app.Name
-			pack.Icon = app.GetIcon()
-		}
+	err = updatePackageNameFromApp(&pack)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
 	}
 
 	// Save price changes
@@ -184,6 +171,31 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	payload.ack(msg)
+}
+
+func updatePackageNameFromApp(pack *sql.Package) (err error) {
+
+	if pack.AppsCount == 1 {
+
+		appIDs, err := pack.GetAppIDs()
+		if err != nil {
+			return err
+		}
+
+		app, err := sql.GetApp(appIDs[0], []string{})
+		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
+
+			pack.Name = app.GetName()
+			pack.Icon = app.GetIcon()
+
+		} else if err == sql.ErrRecordNotFound {
+			return nil
+		} else {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packageMessage) (err error) {
