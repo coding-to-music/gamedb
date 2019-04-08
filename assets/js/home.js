@@ -90,7 +90,7 @@ if ($('#home-page').length > 0) {
         $container.json2html(
             data,
             {
-                '<>': 'tr', 'data-id': '${id}', 'data-link': '${link}', 'html': [
+                '<>': 'tr', 'data-link': '${link}', 'html': [
                     {
                         '<>': 'td', 'class': 'text-truncate img', 'html': [
                             {

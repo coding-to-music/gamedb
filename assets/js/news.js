@@ -59,7 +59,7 @@ if ($('#news-page').length > 0) {
         $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
-                $(row).attr('data-id', data[0]);
+                $(row).attr('data-app-id', data[6]);
             },
             "columnDefs": [
                 // Game
@@ -74,7 +74,7 @@ if ($('#news-page').length > 0) {
                             row[8] = 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/' + row[6] + '/' + row[8] + '.jpg';
                         }
 
-                        return '<img src="' + row[8] + '" class="rounded square" alt="' + row[7] + '"><span data-app-id="' + row[6] + '">' + row[7] + '</span>';
+                        return '<img src="' + row[8] + '" class="rounded square" alt="' + row[7] + '"><span>' + row[7] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

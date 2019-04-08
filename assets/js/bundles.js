@@ -18,7 +18,6 @@ if ($('#bundles-page').length > 0) {
         },
         "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-id', data[0]);
             $(row).attr('data-link', data[2]);
         },
         "columnDefs": [

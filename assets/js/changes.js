@@ -3,7 +3,6 @@ if ($('#changes-page').length > 0) {
     const options = $.extend(true, {}, dtDefaultOptions, {
         "order": [[0, 'desc']],
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-id', data[0]);
             $(row).attr('data-link', data[5]);
         },
         "columnDefs": [

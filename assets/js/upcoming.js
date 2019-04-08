@@ -3,7 +3,7 @@ if ($('#upcoming-page').length > 0) {
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "order": [[3, 'asc']],
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-id', data[0]);
+            $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
         },
         "columnDefs": [
@@ -15,7 +15,6 @@ if ($('#upcoming-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
-                    $(td).attr('data-app-id', rowData[0]);
                 },
             },
             // App Type
@@ -27,7 +26,7 @@ if ($('#upcoming-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Price
             {

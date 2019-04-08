@@ -28,7 +28,6 @@ if ($('#ranks-page').length > 0) {
         },
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-id', data[1]);
             $(row).attr('data-link', '/players/' + data[1]);
         },
         "columnDefs": [

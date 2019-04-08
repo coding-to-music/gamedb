@@ -7,7 +7,7 @@ if ($trendingPage.length > 0) {
         "pageLength": 50,
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-id', data[0]);
+            $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
         },
         "columnDefs": [
@@ -19,7 +19,6 @@ if ($trendingPage.length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
-                    $(td).attr('data-app-id', rowData[0]);
                 },
                 "orderable": false,
             },
