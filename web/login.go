@@ -178,7 +178,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	var url string
 	var domain = config.Config.GameDBDomain.Get()
-	url, err = openid.RedirectURL("https://steamcommunity.com/openid", domain+"/login/callback", domain+"/")
+	url, err = openid.RedirectURL("https://steamcommunity.com/openid/login", domain+"/login/callback", domain+"/")
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong sending you to Steam.", Error: err})
 		return
