@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
@@ -94,8 +95,8 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetType(),                          // 4
 			sql.GetPriceFormatted(app, code).Final, // 5
 			app.GetReleaseDateNice(),               // 6
-			app.ReviewsScore,                       // 7
-			app.PlayerPeakWeek,                     // 8
+			helpers.RoundFloatTo2DP(app.ReviewsScore), // 7
+			app.PlayerPeakWeek,                        // 8
 		})
 	}
 
