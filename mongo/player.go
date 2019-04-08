@@ -70,29 +70,38 @@ func (player Player) BSON() (ret interface{}) {
 		"_id":             player.ID,
 		"avatar":          player.Avatar,
 		"badges":          player.Badges,
-		"badges_count":    player.BadgesCount,
 		"badge_stats":     player.BadgeStats,
 		"bans":            player.Bans,
 		"country_code":    player.CountryCode,
 		"donated":         player.Donated,
 		"friends":         player.Friends,
-		"friends_count":   player.FriendsCount,
-		"games_count":     player.GamesCount,
 		"games_recent":    player.GamesRecent,
 		"game_stats":      player.GameStats,
 		"groups":          player.Groups,
 		"time_logged_off": player.LastLogOff,
-		"level":           player.Level,
 		"bans_game":       player.NumberOfGameBans,
 		"bans_cav":        player.NumberOfVACBans,
 		"persona_name":    player.PersonaName,
-		"play_time":       player.PlayTime,
 		"primary_clan_id": player.PrimaryClanID,
 		"real_name":       player.RealName,
 		"status_code":     player.StateCode,
 		"time_created":    player.TimeCreated,
 		"updated_at":      time.Now(),
 		"vanity_url":      player.VanintyURL,
+
+		// Ranked
+		"badges_count":  player.BadgesCount,
+		"friends_count": player.FriendsCount,
+		"games_count":   player.GamesCount,
+		"level":         player.Level,
+		"play_time":     player.PlayTime,
+
+		// Ranks
+		"badges_rank":    player.BadgesRank,
+		"friends_rank":   player.FriendsRank,
+		"games_rank":     player.GamesRank,
+		"level_rank":     player.LevelRank,
+		"play_time_rank": player.PlayTimeRank,
 	}
 }
 
