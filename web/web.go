@@ -98,6 +98,7 @@ func Serve() error {
 	r.Mount("/new-releases", newReleasesRouter())
 	r.Mount("/news", newsRouter())
 	r.Mount("/packages", packagesRouter())
+	r.Mount("/patreon", patreonRouter())
 	r.Mount("/players", playersRouter())
 	r.Mount("/price-changes", priceChangeRouter())
 	r.Mount("/product-keys", productKeysRouter())
