@@ -13,10 +13,6 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
-func init() {
-	recaptcha.SetSecret(config.Config.RecaptchaPrivate)
-}
-
 func contactRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", contactHandler)

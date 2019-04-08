@@ -20,10 +20,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func init() {
-	recaptcha.SetSecret(config.Config.RecaptchaPrivate)
-}
-
 func loginRouter() http.Handler {
 
 	r := chi.NewRouter()

@@ -1,7 +1,6 @@
 package web
 
 import (
-	"errors"
 	"net/http"
 	"path"
 	"strconv"
@@ -11,11 +10,8 @@ import (
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/session"
 )
-
-func init() {
-	recaptcha.SetSecret(config.Config.RecaptchaPrivate)
-}
 
 func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -23,15 +19,19 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 
-		err := func() (err error) {
+		message := func() string {
 
 			// Parse form
-			err = r.ParseForm()
+			err := r.ParseForm()
 			if err != nil {
-				return err
+				return err.Error()
 			}
 
-			search := r.PostFormValue("id")
+			search := r.PostFormValue("search")
+			if search == "" {
+				return "Please enter a search term"
+			}
+
 			search = path.Base(search)
 
 			steam := helpers.GetSteam()
@@ -40,7 +40,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			if err == nil && id > 0 {
 
 				http.Redirect(w, r, "/players/"+strconv.FormatInt(id, 10), 302)
-				return
+				return ""
 			}
 
 			// Recaptcha
@@ -48,10 +48,10 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 
 				if err == recaptcha.ErrNotChecked {
-					return errors.New("please check the captcha")
+					return "Please check the captcha"
 				}
 
-				return err
+				return err.Error()
 			}
 
 			resp, b, err := steam.ResolveVanityURL(search, 1)
@@ -60,13 +60,18 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			if err == nil && resp.Success > 0 && resp.SteamID > 0 {
 
 				http.Redirect(w, r, "/players/"+strconv.FormatInt(int64(resp.SteamID), 10), 302)
-				return
+				return ""
 			}
 
-			return errors.New("player not found")
+			return "Player " + search + "not found on Steam"
 		}()
 
-		log.Err(err)
+		if message != "" {
+			err := session.SetBadFlash(w, r, message)
+			log.Err(err)
+			http.Redirect(w, r, "/players/add", 302)
+			return
+		}
 	}
 
 	t := addPlayerTemplate{}

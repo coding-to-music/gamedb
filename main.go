@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -26,6 +27,8 @@ var version string
 func main() {
 
 	config.Config.CommitHash = version
+
+	recaptcha.SetSecret(config.Config.RecaptchaPrivate)
 
 	rand.Seed(time.Now().UnixNano())
 
