@@ -55,7 +55,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
 	gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
-	gorm = gorm.Order("release_date_unix ASC")
+	gorm = gorm.Order("release_date_unix ASC, name ASC")
 
 	gorm = gorm.Limit(10000)
 	gorm = gorm.Offset(query.Start)
@@ -82,8 +82,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetPath(),
 			app.GetType(),
 			sql.GetPriceFormatted(app, code).Final,
-			app.GetDaysToRelease(),
-			app.GetReleaseDateNice(),
+			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")",
 		})
 	}
 
