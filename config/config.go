@@ -63,6 +63,10 @@ func init() {
 	Config.TwitterConsumerKey = os.Getenv(prefix + "TWITTER_CONSUMER_KEY")
 	Config.TwitterConsumerSecret = os.Getenv(prefix + "TWITTER_CONSUMER_SECRET")
 
+	Config.PatreonSecret = os.Getenv(prefix + "PATREON_WEBOOK_SECRET")
+	Config.PatreonClientID = os.Getenv(prefix + "PATREON_CLIENT_ID")
+	Config.PatreonClientSecret = os.Getenv(prefix + "PATREON_CLIENT_SECRET")
+
 	Config.DiscordClientID = os.Getenv(prefix + "DISCORD_CLIENT_ID")
 	Config.DiscordSescret = os.Getenv(prefix + "DISCORD_SECRET")
 	Config.DiscordBotToken = os.Getenv(prefix + "DISCORD_BOT_TOKEN")
@@ -95,6 +99,7 @@ func init() {
 	case EnvLocal:
 
 		Config.MemcacheDSN.SetDefault("localhost:11211")
+		Config.PatreonSecret = "bmxpAFwyR_-Shmf43OIzJLjLG_8RNXwRjVPsYIy9ADEjBezW-WAwqrovsSRlE_rJ"
 
 	case EnvConsumer:
 
@@ -112,32 +117,16 @@ type BaseConfig struct {
 	AdminPassword string
 	AdminUsername string
 
-	RabbitUsername      ConfigItem
-	RabbitPassword      ConfigItem
-	RabbitHost          string
-	RabbitPort          string
-	RabbitManagmentPort string
-
-	SessionAuthentication string
-	SessionEncryption     string
-
-	TwitchClientID     string
-	TwitchClientSecret string
-
-	InstagramPassword ConfigItem
-	InstagramUsername ConfigItem
-
-	RecaptchaPrivate string
-	RecaptchaPublic  string
-
-	TwitterAccessToken       string
-	TwitterAccessTokenSecret string
-	TwitterConsumerKey       string
-	TwitterConsumerSecret    string
+	DiscordClientID string
+	DiscordSescret  string
+	DiscordBotToken string
 
 	InfluxURL      string
 	InfluxPassword string
 	InfluxUsername string
+
+	InstagramPassword ConfigItem
+	InstagramUsername ConfigItem
 
 	MongoHost     string
 	MongoPort     string
@@ -151,9 +140,29 @@ type BaseConfig struct {
 	MySQLPassword ConfigItem
 	MySQLDatabase ConfigItem
 
-	DiscordClientID string
-	DiscordSescret  string
-	DiscordBotToken string
+	RabbitUsername      ConfigItem
+	RabbitPassword      ConfigItem
+	RabbitHost          string
+	RabbitPort          string
+	RabbitManagmentPort string
+
+	RecaptchaPrivate string
+	RecaptchaPublic  string
+
+	SessionAuthentication string
+	SessionEncryption     string
+
+	TwitchClientID     string
+	TwitchClientSecret string
+
+	TwitterAccessToken       string
+	TwitterAccessTokenSecret string
+	TwitterConsumerKey       string
+	TwitterConsumerSecret    string
+
+	PatreonSecret       string
+	PatreonClientID     string
+	PatreonClientSecret string
 
 	Environment     ConfigItem
 	GameDBDirectory ConfigItem

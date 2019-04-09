@@ -42,12 +42,13 @@ func (c collection) String() string {
 }
 
 const (
-	CollectionAppArticles   collection = "app_articles"
-	CollectionChanges       collection = "changes"
-	CollectionEvents        collection = "events"
-	CollectionPlayers       collection = "players"
-	CollectionPlayerApps    collection = "player_apps"
-	CollectionProductPrices collection = "product_prices"
+	CollectionAppArticles     collection = "app_articles"
+	CollectionChanges         collection = "changes"
+	CollectionEvents          collection = "events"
+	CollectionPatreonWebhooks collection = "patreon_webhooks"
+	CollectionPlayers         collection = "players"
+	CollectionPlayerApps      collection = "player_apps"
+	CollectionProductPrices   collection = "product_prices"
 )
 
 func getMongo() (client *mongo.Client, ctx context.Context, err error) {
