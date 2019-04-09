@@ -87,15 +87,20 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
-func FindDocument(collection collection, col string, val interface{}, document Document) (err error) {
+func FindDocument(collection collection, col string, val interface{}, projection M, document Document) (err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
 		return err
 	}
 
+	ops := options.FindOne()
+	if projection != nil {
+		ops.SetProjection(projection)
+	}
+
 	c := client.Database(MongoDatabase).Collection(collection.String())
-	result := c.FindOne(ctx, M{col: val}, options.FindOne())
+	result := c.FindOne(ctx, M{col: val}, ops)
 
 	return result.Decode(document)
 }
