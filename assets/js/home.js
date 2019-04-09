@@ -92,12 +92,12 @@ if ($('#home-page').length > 0) {
             {
                 '<>': 'tr', 'data-link': '${link}', 'html': [
                     {
-                        '<>': 'td', 'class': 'text-truncate img', 'html': [
+                        '<>': 'td', 'class': 'img', 'html': [
                             {
-                                '<>': 'img', 'src': '${avatar}', 'class': 'rounded'
+                                '<>': 'img', 'src': '${avatar}', 'class': 'rounded',
                             },
                             {
-                                '<>': 'span', 'html': '${name}'
+                                '<>': 'span', 'html': '${name}', 'class': 'text-truncate',
                             },
                         ]
                     },
