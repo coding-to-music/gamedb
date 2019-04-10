@@ -18,9 +18,7 @@ func packagesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", packagesHandler)
 	r.Get("/packages.json", packagesAjaxHandler)
-	r.Get("/{id}", packageHandler)
-	r.Get("/{id}/prices.json", packagePricesAjaxHandler)
-	r.Get("/{id}/{slug}", packageHandler)
+	r.Mount("/{id}", packageRouter())
 	return r
 }
 

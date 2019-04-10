@@ -11,6 +11,14 @@ import (
 	"github.com/go-chi/chi"
 )
 
+func bundleRouter() http.Handler {
+
+	r := chi.NewRouter()
+	r.Get("/", bundleHandler)
+	r.Get("/{slug}", bundleHandler)
+	return r
+}
+
 func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})

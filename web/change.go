@@ -11,6 +11,12 @@ import (
 	"github.com/go-chi/chi"
 )
 
+func changeRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", changeHandler)
+	return r
+}
+
 func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)

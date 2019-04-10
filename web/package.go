@@ -14,6 +14,14 @@ import (
 	"github.com/go-chi/chi"
 )
 
+func packageRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", packageHandler)
+	r.Get("/prices.json", packagePricesAjaxHandler)
+	r.Get("/{slug}", packageHandler)
+	return r
+}
+
 func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})

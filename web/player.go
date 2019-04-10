@@ -18,6 +18,16 @@ import (
 	"github.com/go-chi/chi"
 )
 
+func playerRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", playerHandler)
+	r.Get("/games.json", playerGamesAjaxHandler)
+	r.Get("/update.json", playersUpdateAjaxHandler)
+	r.Get("/history.json", playersHistoryAjaxHandler)
+	r.Get("/{slug}", playerHandler)
+	return r
+}
+
 func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})

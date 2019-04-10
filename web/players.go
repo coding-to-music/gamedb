@@ -21,11 +21,7 @@ func playersRouter() http.Handler {
 	r.Get("/add", playerAddHandler)
 	r.Post("/add", playerAddHandler)
 	r.Get("/players.json", playersAjaxHandler)
-	r.Get("/{id:[0-9]+}", playerHandler)
-	r.Get("/{id:[0-9]+}/games.json", playerGamesAjaxHandler)
-	r.Get("/{id:[0-9]+}/update.json", playersUpdateAjaxHandler)
-	r.Get("/{id:[0-9]+}/history.json", playersHistoryAjaxHandler)
-	r.Get("/{id:[0-9]+}/{slug}", playerHandler)
+	r.Mount("/{id:[0-9]+}", playerRouter())
 	return r
 }
 
