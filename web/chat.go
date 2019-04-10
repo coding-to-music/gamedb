@@ -183,7 +183,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, 0)
+	setCacheHeaders(w, time.Second*10)
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
