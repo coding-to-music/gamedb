@@ -1,7 +1,7 @@
 if ($('#changes-page').length > 0) {
 
     const options = $.extend(true, {}, dtDefaultOptions, {
-        "order": [[0, 'desc']],
+        "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[5]);
         },
