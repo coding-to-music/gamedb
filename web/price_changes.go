@@ -25,6 +25,13 @@ func priceChangeRouter() http.Handler {
 
 func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
+
 	t := priceChangesTemplate{}
 	t.fill(w, r, "Price Changes", "Pick up a bargain.")
 	t.addAssetChosen()
@@ -46,6 +53,11 @@ type priceChangesTemplate struct {
 }
 
 func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw","order[0][column]","order[0][dir]","start","search[value]","search[type]","search[percents][]","search[percents][]","search[prices][]","search[prices][]"})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, 0)
 

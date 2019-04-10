@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
@@ -18,9 +19,23 @@ func franchiseRouter() http.Handler {
 
 func franchisesHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
+
 }
 
 func franchiseHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour)
 
 	// Get publisher
 	id := chi.URLParam(r, "id")

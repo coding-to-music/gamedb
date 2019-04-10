@@ -13,6 +13,11 @@ import (
 
 func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid bundle ID."})

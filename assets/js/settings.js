@@ -30,6 +30,20 @@ if ($('#settings-page').length > 0) {
 
     // Data tables
     $('#events table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        "ajax": function (data, callback, settings) {
+
+            delete data.columns;
+            delete data.length;
+            delete data.search;
+
+            $.ajax({
+                url: $(this).attr('data-path'),
+                data: data,
+                success: callback,
+                dataType: 'json',
+                cache: $(this).attr('data-cache') !== "false"
+            });
+        },
         "order": [[0, 'desc']],
         "columnDefs": [
             // Time

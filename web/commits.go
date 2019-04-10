@@ -27,6 +27,11 @@ func commitsRouter() http.Handler {
 
 func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
 
@@ -63,6 +68,11 @@ type commitsTemplate struct {
 }
 
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw", "start"})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, time.Minute*10)
 

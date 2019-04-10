@@ -15,6 +15,11 @@ import (
 
 func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
 	setCacheHeaders(w, time.Hour*24)
 
 	if r.Method == http.MethodPost {

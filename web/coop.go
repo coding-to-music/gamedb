@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -16,6 +17,13 @@ const (
 )
 
 func coopHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"p"})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*12)
 
 	t := coopTemplate{}
 	t.fill(w, r, "Co-op", "Find a game to play with friends.")

@@ -2,6 +2,7 @@ package web
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
@@ -9,6 +10,13 @@ import (
 )
 
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	// Get config
 	config, err := sql.GetConfig(sql.ConfTagsUpdated)

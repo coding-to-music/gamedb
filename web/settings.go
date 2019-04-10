@@ -31,6 +31,11 @@ func settingsRouter() http.Handler {
 
 func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
 	setCacheHeaders(w, 0)
 
 	player, err := getPlayer(r)
@@ -217,6 +222,11 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw", "start"})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, 0)
 

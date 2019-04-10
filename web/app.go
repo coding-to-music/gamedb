@@ -33,6 +33,13 @@ func appRouter() http.Handler {
 
 func appHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour)
+
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID."})
@@ -295,6 +302,11 @@ func (t appTemplate) GetReleaseDate() string {
 
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{"draw", "start", "order[0][dir]", "order[0][column]"})
+	if ret {
+		return
+	}
+
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID."})
@@ -377,10 +389,24 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"code"})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*3)
+
 	productPricesAjaxHandler(w, r, helpers.ProductTypeApp)
 }
 
+// Player counts chart
 func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -423,8 +449,13 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// To players for this app by time
+// Player ranks table
 func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw", "start"})
+	if ret {
+		return
+	}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -548,7 +579,13 @@ type appTimeAjax struct {
 	Country string
 }
 
+// Review score over time chart
 func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {

@@ -22,6 +22,11 @@ func newsRouter() http.Handler {
 
 func newsHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
 	setCacheHeaders(w, time.Hour)
 
 	t := newsTemplate{}
@@ -52,6 +57,11 @@ type newsTemplate struct {
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw", "start"})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, time.Hour*1)
 

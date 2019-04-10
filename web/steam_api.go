@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
@@ -17,6 +18,13 @@ import (
 var addMutex sync.Mutex
 
 func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	t := steamAPITemplate{}
 	t.fill(w, r, "Steam API", "")

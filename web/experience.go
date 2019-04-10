@@ -25,7 +25,12 @@ func experienceRouter() http.Handler {
 
 func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
-	setCacheHeaders(w, time.Hour*24*30)
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	var rows []level
 	xp := 0

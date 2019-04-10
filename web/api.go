@@ -9,7 +9,12 @@ import (
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 
-	setCacheHeaders(w, time.Hour*24*7)
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	t := apiTemplate{}
 	t.fill(w, r, "API", "")

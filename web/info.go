@@ -9,7 +9,12 @@ import (
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
 
-	setCacheHeaders(w, time.Hour*24*7)
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	t := GlobalTemplate{}
 	t.fill(w, r, "Info", "")

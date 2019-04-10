@@ -13,11 +13,13 @@ import (
 
 func patreonRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Post("/webhooks", webhookHandler)
+	r.Post("/webhooks", patreonWebhookPostHandler)
 	return r
 }
 
-func webhookHandler(w http.ResponseWriter, r *http.Request) {
+func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	setCacheHeaders(w, 0)
 
 	b, event, err := patreon.ValidateRequest(r, config.Config.PatreonSecret)
 	if err != nil {

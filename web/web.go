@@ -153,6 +153,32 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 	}))
 }
 
+func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string) (redirect bool) {
+
+	if allowed == nil {
+		allowed = []string{}
+	}
+
+	allowed = append(allowed, "_") // jQuery caching
+
+	query := r.URL.Query()
+	oldPath := query.Encode()
+
+	for k := range query {
+		if !helpers.SliceHasString(allowed, k) {
+			query.Del(k)
+		}
+	}
+
+	newPath := query.Encode()
+	if oldPath != newPath {
+		http.Redirect(w, r, r.URL.Path+"?"+newPath, http.StatusTemporaryRedirect)
+		return true
+	}
+
+	return false
+}
+
 func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)
@@ -161,7 +187,7 @@ func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
 
-	setCacheHeaders(w, time.Hour*24)
+	setCacheHeaders(w, time.Hour*24) // Default cache headers
 }
 
 func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {

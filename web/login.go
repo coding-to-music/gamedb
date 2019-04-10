@@ -32,6 +32,13 @@ func loginRouter() http.Handler {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour)
+
 	_, err := getPlayer(r)
 	if err == nil {
 		http.Redirect(w, r, "/settings", http.StatusTemporaryRedirect)
@@ -57,6 +64,11 @@ var ErrInvalidCreds = errors.New("invalid username or password")
 var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, 0)
 
@@ -164,6 +176,11 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
 	setCacheHeaders(w, 0)
 
 	loggedIn, err := session.IsLoggedIn(r)
@@ -268,6 +285,13 @@ func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user sql
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, 0)
 
 	id, err := getPlayerIDFromSession(r)
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)

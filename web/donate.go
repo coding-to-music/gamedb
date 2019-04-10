@@ -2,11 +2,19 @@ package web
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gamedb/website/log"
 )
 
 func donateHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	t := GlobalTemplate{}
 	t.fill(w, r, "Donate", "Databases take up a tonne of memory and space. Help pay for the server costs or just buy me a beer.")

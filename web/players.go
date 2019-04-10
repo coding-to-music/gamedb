@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/helpers"
@@ -29,6 +30,13 @@ func playersRouter() http.Handler {
 }
 
 func playersHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	// Template
 	t := playersTemplate{}
@@ -79,6 +87,13 @@ type playersTemplate struct {
 }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*3)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

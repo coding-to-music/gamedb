@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/website/log"
@@ -25,6 +26,13 @@ func packagesRouter() http.Handler {
 
 func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
+
 	total, err := sql.CountPackages()
 	log.Err(err, r)
 
@@ -41,6 +49,11 @@ type packagesTemplate struct {
 }
 
 func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, 0)
 

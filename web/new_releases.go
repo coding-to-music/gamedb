@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
@@ -20,6 +21,13 @@ func newReleasesRouter() http.Handler {
 }
 
 func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour)
 
 	var err error
 
@@ -40,6 +48,13 @@ type newReleasesTemplate struct {
 }
 
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

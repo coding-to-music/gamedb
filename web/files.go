@@ -4,12 +4,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/log"
 )
 
 func rootFileHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 

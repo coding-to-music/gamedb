@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/log"
@@ -22,6 +23,13 @@ func trendingRouter() http.Handler {
 }
 
 func trendingHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	var err error
 
@@ -43,6 +51,13 @@ type trendingTemplate struct {
 }
 
 func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*1)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
@@ -101,6 +116,13 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	retu := setAllowedQueries(w, r, []string{"ids"})
+	if retu {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour/2)
 
 	idsString := r.URL.Query().Get("ids")
 	idsSlice := strings.Split(idsString, ",")

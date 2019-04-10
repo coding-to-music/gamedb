@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
@@ -27,6 +28,11 @@ func homeRouter() http.Handler {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, time.Hour)
 
@@ -121,6 +127,11 @@ type homeNews struct {
 
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
 	setCacheHeaders(w, time.Minute)
 
 	var filter = mongo.D{
@@ -171,6 +182,11 @@ type homePrice struct {
 }
 
 func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, time.Hour*6)
 

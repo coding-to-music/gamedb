@@ -22,6 +22,13 @@ func upcomingRouter() http.Handler {
 
 func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*12)
+
 	var err error
 
 	// Template
@@ -41,6 +48,13 @@ type upcomingTemplate struct {
 }
 
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"draw"})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*1)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

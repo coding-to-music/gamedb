@@ -57,6 +57,11 @@ func getDiscord(r *http.Request) (discord *discordgo.Session, err error) {
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
 	setCacheHeaders(w, time.Hour*24)
 
 	// Get ID from URL
@@ -172,6 +177,11 @@ type chatTemplate struct {
 }
 
 func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"x"})
+	if ret {
+		return
+	}
 
 	setCacheHeaders(w, 0)
 

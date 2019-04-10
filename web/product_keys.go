@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -20,6 +21,13 @@ func productKeysRouter() http.Handler {
 }
 
 func productKeysHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{"type", "key", "value"})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, time.Hour*24)
 
 	q := r.URL.Query()
 
