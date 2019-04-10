@@ -8,6 +8,8 @@ import (
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
+	setCacheHeaders(w, 0)
+
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 

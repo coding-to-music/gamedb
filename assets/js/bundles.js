@@ -6,7 +6,7 @@ if ($('#bundles-page').length > 0) {
 
             delete data.columns;
             delete data.length;
-            delete data.search.regex;
+            delete data.search;
 
             $.ajax({
                 url: $(this).attr('data-path'),
