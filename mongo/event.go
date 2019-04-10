@@ -16,6 +16,7 @@ const (
 	EventLogin   = "login"
 	EventLogout  = "logout"
 	EventRefresh = "refresh"
+	EventPatreon = "patreon"
 )
 
 type Event struct {

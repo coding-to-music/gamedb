@@ -34,7 +34,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := getPlayer(r)
 	if err == nil {
-		http.Redirect(w, r, "/settings", 302)
+		http.Redirect(w, r, "/settings", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -151,14 +151,14 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err = session.SetGoodFlash(w, r, err.Error())
 		log.Err(err, r)
 
-		http.Redirect(w, r, "/login", 302)
+		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 
 	} else {
 
 		err = session.SetGoodFlash(w, r, "Login successful")
 		log.Err(err, r)
 
-		http.Redirect(w, r, "/settings", 302)
+		http.Redirect(w, r, "/settings", http.StatusTemporaryRedirect)
 	}
 }
 
@@ -172,7 +172,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if loggedIn {
-		http.Redirect(w, r, "/settings", 303)
+		http.Redirect(w, r, "/settings", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -184,7 +184,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, url, 303)
+	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 // todo
@@ -245,7 +245,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/settings", 302)
+	http.Redirect(w, r, "/settings", http.StatusTemporaryRedirect)
 }
 
 func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user sql.User) (err error) {
@@ -279,5 +279,5 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.Clear(w, r)
 	log.Err(err, r)
 
-	http.Redirect(w, r, "/", 303)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }

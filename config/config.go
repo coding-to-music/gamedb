@@ -99,7 +99,7 @@ func init() {
 	case EnvLocal:
 
 		Config.MemcacheDSN.SetDefault("localhost:11211")
-		Config.PatreonSecret = "9k_GUuN6HHfr8AFuVsTbbkUG8Jk9GCztkAqWorBNNFNM2rTjoJtEJ5Tve2Hk9aF3"
+		Config.PatreonSecret = "EZTRjtID_1LUmgnQ4_WWuWIQbfj4QA1JtqYMq4prcq_kDvNdEXlgj2K7JyLwNXfd"
 
 	case EnvConsumer:
 

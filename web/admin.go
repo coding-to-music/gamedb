@@ -77,7 +77,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect away after action
 	if option != "" {
-		http.Redirect(w, r, "/admin?"+option, 302)
+		http.Redirect(w, r, "/admin?"+option, http.StatusTemporaryRedirect)
 		return
 	}
 

@@ -62,7 +62,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		http.Redirect(w, r, "/chat/"+generalChannelID, 302)
+		http.Redirect(w, r, "/chat/"+generalChannelID, http.StatusTemporaryRedirect)
 		return
 	}
 
