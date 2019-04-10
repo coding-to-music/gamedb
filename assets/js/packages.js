@@ -14,7 +14,6 @@ if ($('#packages-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
-                    $(td).attr('nowrap', 'nowrap');
                 },
             },
             // Coming Soon
