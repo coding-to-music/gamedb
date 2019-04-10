@@ -19,10 +19,12 @@ import (
 	"github.com/gamedb/website/sql"
 	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 func adminRouter() http.Handler {
 	r := chi.NewRouter()
+	r.Use(middleware.NoCache)
 	r.Use(basicauth.New("Steam", map[string][]string{
 		config.Config.AdminUsername: {config.Config.AdminPassword},
 	}))
