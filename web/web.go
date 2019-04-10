@@ -103,7 +103,7 @@ func Serve() error {
 	r.Mount("/tags", tagsRouter())
 	r.Mount("/trending", trendingRouter())
 	r.Mount("/upcoming", upcomingRouter())
-	r.Mount("/websockets", websocketsRouter())
+	r.Mount("/websocket", websocketsRouter())
 
 	// Profiling
 	if config.Config.IsLocal() {
