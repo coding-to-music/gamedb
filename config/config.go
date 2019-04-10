@@ -89,6 +89,7 @@ func init() {
 	Config.EnableWebserver.SetDefault("1")
 	Config.EnableConsumers.SetDefault("1")
 	Config.GameDBDirectory.SetDefault("/root")
+	Config.NewReleaseDays = 14
 
 	switch Config.Environment.Get() {
 	case EnvProd:
@@ -178,6 +179,7 @@ type BaseConfig struct {
 	EnableWebserver ConfigItem
 	EnableConsumers ConfigItem
 	CommitHash      string
+	NewReleaseDays  int
 }
 
 func (c BaseConfig) RabbitDSN() string {

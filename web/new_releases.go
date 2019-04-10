@@ -68,7 +68,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})
 	gorm = gorm.Where("release_date_unix < ?", time.Now().Unix())
-	gorm = gorm.Where("release_date_unix > ?", time.Now().Add(time.Hour * 24 * 7 * -1).Unix())
+	gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays).Unix())
 	gorm = gorm.Order(query.getOrderSQL(columns, code))
 
 	// Count before limitting
