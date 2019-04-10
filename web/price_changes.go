@@ -25,7 +25,7 @@ func priceChangeRouter() http.Handler {
 
 func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
+	ret := setAllowedQueries(w, r, []string{"type", "change-low", "change-high", "price-low", "price-high"})
 	if ret {
 		return
 	}
@@ -54,7 +54,7 @@ type priceChangesTemplate struct {
 
 func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"draw","order[0][column]","order[0][dir]","start","search[value]","search[type]","search[percents][]","search[percents][]","search[prices][]","search[prices][]"})
+	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start", "search[value]", "search[type]", "search[percents][]", "search[percents][]", "search[prices][]", "search[prices][]"})
 	if ret {
 		return
 	}
