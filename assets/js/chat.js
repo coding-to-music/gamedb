@@ -11,7 +11,9 @@ if ($('#chat-page').length > 0) {
             $('.fa-spin').remove();
 
             if (isIterable(data)) {
-                chatRow(data, false);
+                for (const v of data) {
+                    chatRow(v, false);
+                }
             }
         },
     });
