@@ -811,7 +811,7 @@ func updateAppReviews(app *sql.App) error {
 	// Set score
 	if reviews.Positive == 0 && reviews.Negative == 0 {
 
-		app.ReviewsScore = 0.5
+		app.ReviewsScore = 0
 
 	} else {
 
