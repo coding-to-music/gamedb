@@ -460,6 +460,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 
 	return string(b)
 }
+
 func (t GlobalTemplate) GetMetaImage() (text string) {
 
 	if t.MetaImage == "" {
@@ -467,6 +468,11 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	}
 
 	return t.MetaImage
+}
+
+func (t GlobalTemplate) GetCanonical() (text string) {
+
+	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
 }
 
 func (t GlobalTemplate) GetFooterText() (text template.HTML) {
