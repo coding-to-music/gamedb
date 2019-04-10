@@ -72,7 +72,9 @@ if ($('#home-page').length > 0) {
             $('#prices .fa-spin').remove();
             $('#prices table').removeClass('d-none');
             if (isIterable(data)) {
-                addPriceRow(data, false);
+                for (const v of data) {
+                    addPriceRow(v, false);
+                }
             }
         },
     });
