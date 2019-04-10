@@ -7,9 +7,16 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
+	"github.com/go-chi/chi"
 )
 
-func statsGenresHandler(w http.ResponseWriter, r *http.Request) {
+func genresRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", genresHandler)
+	return r
+}
+
+func genresHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})
 	if ret {

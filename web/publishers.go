@@ -7,9 +7,16 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
+	"github.com/go-chi/chi"
 )
 
-func statsPublishersHandler(w http.ResponseWriter, r *http.Request) {
+func publishersRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", publishersHandler)
+	return r
+}
+
+func publishersHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})
 	if ret {

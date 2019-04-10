@@ -4,7 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gamedb/website/log"
+	"github.com/go-chi/chi"
 )
+
+func healthCheckRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", healthCheckHandler)
+	return r
+}
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 

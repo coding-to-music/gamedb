@@ -5,7 +5,14 @@ import (
 	"time"
 
 	"github.com/gamedb/website/log"
+	"github.com/go-chi/chi"
 )
+
+func donateRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", donateHandler)
+	return r
+}
 
 func donateHandler(w http.ResponseWriter, r *http.Request) {
 

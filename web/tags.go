@@ -7,7 +7,14 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
+	"github.com/go-chi/chi"
 )
+
+func tagsRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", statsTagsHandler)
+	return r
+}
 
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 

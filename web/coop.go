@@ -10,11 +10,18 @@ import (
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/queue"
 	"github.com/gamedb/website/sql"
+	"github.com/go-chi/chi"
 )
 
 const (
 	maxPlayers = 10
 )
+
+func coopRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", coopHandler)
+	return r
+}
 
 func coopHandler(w http.ResponseWriter, r *http.Request) {
 

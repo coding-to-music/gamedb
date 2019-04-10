@@ -27,6 +27,7 @@ func loginRouter() http.Handler {
 	r.Post("/", loginPostHandler)
 	r.Get("/openid", loginOpenIDHandler)
 	r.Get("/callback", loginOpenIDCallbackHandler)
+	r.Get("/logout", logoutHandler)
 	return r
 }
 

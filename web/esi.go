@@ -4,7 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gamedb/website/log"
+	"github.com/go-chi/chi"
 )
+
+func esiRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/header", headerHandler)
+	return r
+}
 
 func headerHandler(w http.ResponseWriter, r *http.Request) {
 

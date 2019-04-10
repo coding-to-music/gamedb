@@ -16,6 +16,7 @@ const urlBase = "https://gamedb.online"
 
 func siteMapRouter() http.Handler {
 	r := chi.NewRouter()
+	r.Get("/index.xml", siteMapIndexHandler)
 	r.Get("/pages.xml", siteMapPagesHandler)
 	r.Get("/games-by-score.xml", siteMapGamesByScoreHandler)
 	r.Get("/games-by-players.xml", siteMapGamesByPlayersHandler)

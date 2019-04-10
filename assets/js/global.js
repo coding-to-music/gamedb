@@ -236,7 +236,7 @@ if (user.isLoggedIn) {
     $headerUser.html('<a class="nav-link" href="/players/' + user.userID + '">' + user.userName + '</a>');
 
     $headerSettings.prepend('<div class="dropdown-divider"></div>');
-    $headerSettings.prepend('<a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>');
+    $headerSettings.prepend('<a class="dropdown-item" href="/login/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>');
     $headerSettings.prepend('<a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i> Settings</a>');
 } else {
     $headerUser.html('<a class="nav-link" href="/login">Login</a>');

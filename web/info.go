@@ -5,7 +5,14 @@ import (
 	"time"
 
 	"github.com/gamedb/website/log"
+	"github.com/go-chi/chi"
 )
+
+func infoRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", infoHandler)
+	return r
+}
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
 

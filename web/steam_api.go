@@ -12,8 +12,15 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
+	"github.com/go-chi/chi"
 	"github.com/google/go-github/github"
 )
+
+func steamAPIRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", steamAPIHandler)
+	return r
+}
 
 var addMutex sync.Mutex
 

@@ -20,7 +20,6 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
-	"github.com/gamedb/website/websockets"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -68,32 +67,25 @@ func Serve() error {
 
 	// Pages
 	r.Get("/", homeHandler)
-	r.Get("/api", apiHandler)
-	r.Get("/coop", coopHandler)
-	r.Get("/developers", statsDevelopersHandler)
-	r.Get("/donate", donateHandler)
-	r.Get("/esi/header", headerHandler)
-	r.Get("/genres", statsGenresHandler)
-	r.Get("/health-check", healthCheckHandler)
-	r.Get("/info", infoHandler)
-	r.Get("/logout", logoutHandler)
-	r.Get("/publishers", statsPublishersHandler)
-	r.Get("/steam-api", steamAPIHandler)
-	r.Get("/sitemap.xml", siteMapIndexHandler)
-	r.Get("/tags", statsTagsHandler)
-	r.Get("/websocket/{id:[a-z]+}", websockets.WebsocketsHandler)
-
 	r.Mount("/admin", adminRouter())
+	r.Mount("/api", apiRouter())
 	r.Mount("/apps", appsRouter())
 	r.Mount("/bundles", bundlesRouter())
 	r.Mount("/changes", changesRouter())
 	r.Mount("/chat", chatRouter())
 	r.Mount("/commits", commitsRouter())
 	r.Mount("/contact", contactRouter())
+	r.Mount("/coop", coopRouter())
 	r.Mount("/depots", depotsRouter())
+	r.Mount("/developers", developersRouter())
+	r.Mount("/donate", donateRouter())
+	r.Mount("/esi", esiRouter())
 	r.Mount("/experience", experienceRouter())
 	r.Mount("/franchise", franchiseRouter())
+	r.Mount("/genres", genresRouter())
+	r.Mount("/health-check", healthCheckRouter())
 	r.Mount("/home", homeRouter())
+	r.Mount("/info", infoRouter())
 	r.Mount("/login", loginRouter())
 	r.Mount("/new-releases", newReleasesRouter())
 	r.Mount("/news", newsRouter())
@@ -102,13 +94,18 @@ func Serve() error {
 	r.Mount("/players", playersRouter())
 	r.Mount("/price-changes", priceChangeRouter())
 	r.Mount("/product-keys", productKeysRouter())
+	r.Mount("/publishers", publishersRouter())
 	r.Mount("/queues", queuesRouter())
 	r.Mount("/settings", settingsRouter())
 	r.Mount("/sitemap", siteMapRouter())
 	r.Mount("/stats", statsRouter())
+	r.Mount("/steam-api", steamAPIRouter())
+	r.Mount("/tags", tagsRouter())
 	r.Mount("/trending", trendingRouter())
 	r.Mount("/upcoming", upcomingRouter())
+	r.Mount("/websockets", websocketsRouter())
 
+	// Profiling
 	if config.Config.IsLocal() {
 		r.Mount("/debug", middleware.Profiler())
 	}
