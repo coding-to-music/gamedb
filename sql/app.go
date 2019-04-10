@@ -217,14 +217,14 @@ func (app App) GetDaysToRelease() string {
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 
 	return []interface{}{
-		app.ID,                             // 0
-		app.GetName(),                      // 1
-		app.GetIcon(),                      // 2
-		app.GetPath(),                      // 3
-		app.GetType(),                      // 4
-		app.ReviewsScore,                   // 5
-		GetPriceFormatted(app, code).Final, // 6
-		app.PlayerPeakWeek,                 // 7
+		app.ID,        // 0
+		app.GetName(), // 1
+		app.GetIcon(), // 2
+		app.GetPath(), // 3
+		app.GetType(), // 4
+		helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
+		GetPriceFormatted(app, code).Final,        // 6
+		app.PlayerPeakWeek,                        // 7
 	}
 }
 
