@@ -12,10 +12,10 @@ require (
 	github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c
 	github.com/Jleagle/influxql v0.0.0-20190326222351-022d7e9bc683
 	github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89
+	github.com/Jleagle/patreon-go v0.0.0-20190410080127-713ac5bb667d
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
 	github.com/Jleagle/steam-go v0.0.0-20190407204527-e1ba167dd5af
-	github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/antchfx/htmlquery v1.0.0 // indirect
 	github.com/antchfx/xmlquery v1.0.0 // indirect
@@ -49,7 +49,6 @@ require (
 	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a // indirect
 	github.com/jinzhu/now v1.0.0
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/kr/pretty v0.1.0
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e
