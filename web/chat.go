@@ -178,7 +178,7 @@ type chatTemplate struct {
 
 func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"x"})
+	ret := setAllowedQueries(w, r, []string{})
 	if ret {
 		return
 	}
