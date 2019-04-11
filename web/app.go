@@ -101,19 +101,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	// Get achievements
-	wg.Add(1)
-	go func(app sql.App) {
-
-		defer wg.Done()
-
-		var achievements []sql.AppAchievement
-
-		err := helpers.Unmarshal([]byte(app.Achievements), &achievements)
-		log.Err(err, r)
-
-	}(app)
-
 	// Tags
 	wg.Add(1)
 	go func(app sql.App) {
