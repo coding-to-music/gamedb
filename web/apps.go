@@ -1,8 +1,8 @@
 package web
 
 import (
+	"fmt"
 	"html/template"
-	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -175,25 +175,6 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Get most expensive app
-	wg.Add(1)
-	go func(r *http.Request) {
-
-		defer wg.Done()
-
-		price, err := sql.GetMostExpensiveApp(session.GetCountryCode(r))
-		log.Err(err, r)
-
-		// Convert dollars to cents
-		t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
-
-		// Fallback
-		if t.ExpensiveApp == 0 {
-			t.ExpensiveApp = 500
-		}
-
-	}(r)
-
 	// Wait
 	wg.Wait()
 
@@ -205,14 +186,13 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 type appsTemplate struct {
 	GlobalTemplate
-	Count        int
-	ExpensiveApp int
-	Types        []sql.AppType
-	Tags         []sql.Tag
-	Genres       []sql.Genre
-	Publishers   []sql.Publisher
-	Developers   []sql.Developer
-	Columns      []TableColumn
+	Count      int
+	Types      []sql.AppType
+	Tags       []sql.Tag
+	Genres     []sql.Genre
+	Publishers []sql.Publisher
+	Developers []sql.Developer
+	Columns    []TableColumn
 }
 
 type TableColumn struct {
@@ -359,17 +339,13 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		prices := query.getSearchSlice("prices")
 		if len(prices) == 2 {
 
-			maxPrice, err := sql.GetMostExpensiveApp(session.GetCountryCode(r))
-			log.Err(err, r)
-
-			// Round up to dollar
-			maxPrice = int(math.Ceil(float64(maxPrice)/100) * 100)
-
 			low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 			log.Err(err, r)
 
 			high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			log.Err(err, r)
+
+			fmt.Println(high)
 
 			var column string
 			if code == steam.CountryUS {
@@ -381,7 +357,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if low > 0 {
 				gorm = gorm.Where("COALESCE("+column+", 0) >= ?", low)
 			}
-			if high < maxPrice {
+			if high < 100*100 {
 				gorm = gorm.Where("COALESCE("+column+", 0) <= ?", high)
 			}
 

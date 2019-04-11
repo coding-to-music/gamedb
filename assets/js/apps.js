@@ -23,7 +23,6 @@ if ($('#apps-page').length > 0) {
     const priceLow = $('#price-low').val();
     const priceHigh = $('#price-high').val();
     const priceElement = $('#price-slider')[0];
-    const priceMax = $(priceElement).attr('data-max');
     const priceSlider = noUiSlider.create(priceElement, {
         start: [
             parseInt(priceLow ? priceLow : 0),
@@ -33,7 +32,7 @@ if ($('#apps-page').length > 0) {
         step: 1,
         range: {
             'min': 0,
-            'max': parseInt(priceMax ? priceMax : 101) // Default if can't read the real max
+            'max': 100,
         }
     });
 
