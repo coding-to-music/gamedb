@@ -770,7 +770,7 @@ func updateAppReviews(app *sql.App) error {
 	}
 
 	// Get players
-	players, err := mongo.GetPlayersByID(playersSlice, mongo.M{"_id": 1})
+	players, err := mongo.GetPlayersByID(playersSlice, mongo.M{"_id": 1, "persona_name": 1})
 	if err != nil {
 		return err
 	}
