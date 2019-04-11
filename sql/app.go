@@ -886,34 +886,6 @@ func CountApps() (count int, err error) {
 	return count, err
 }
 
-func GetMostExpensiveApp(code steam.CountryCode) (price int, err error) {
-
-	var item = helpers.MemcacheMostExpensiveApp(code)
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &price, func() (interface{}, error) {
-
-		var count int
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		var countSlice []int
-		db.Model(&App{}).Pluck("max(prices->\"$."+string(code)+".final\")", &countSlice)
-		if db.Error != nil {
-			return count, db.Error
-		}
-		if len(countSlice) != 1 {
-			return count, errors.New("query failed")
-		}
-
-		return countSlice[0], nil
-	})
-
-	return price, err
-}
-
 type AppImage struct {
 	PathFull      string `json:"f"`
 	PathThumbnail string `json:"t"`

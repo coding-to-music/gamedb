@@ -1,7 +1,6 @@
 package web
 
 import (
-	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,7 +10,6 @@ import (
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/mongo"
 	"github.com/gamedb/website/session"
-	"github.com/gamedb/website/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -37,19 +35,12 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetChosen()
 	t.addAssetSlider()
 
-	price, err := sql.GetMostExpensiveApp(session.GetCountryCode(r))
-	log.Err(err, r)
-
-	// Convert dollars to cents
-	t.ExpensiveApp = int(math.Ceil(float64(price) / 100))
-
-	err = returnTemplate(w, r, "price_changes", t)
+	err := returnTemplate(w, r, "price_changes", t)
 	log.Err(err, r)
 }
 
 type priceChangesTemplate struct {
 	GlobalTemplate
-	ExpensiveApp int
 }
 
 func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {

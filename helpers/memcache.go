@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/memcache-go/memcache"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/config"
 )
 
@@ -50,9 +49,6 @@ var (
 	}
 
 	// Other
-	MemcacheMostExpensiveApp = func(code steam.CountryCode) memcache.Item {
-		return memcache.Item{Key: "most-expensive-app-" + string(code), Expiration: 86400 * 7}
-	}
 	MemcacheQueues       = memcache.Item{Key: "queues", Expiration: 10}
 	MemcachePopularApps  = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
 	MemcacheTrendingApps = memcache.Item{Key: "trending-apps", Expiration: 60 * 3}

@@ -21,7 +21,6 @@ if ($('#price-changes-page').length > 0) {
     const changeLow = $('#change-low').val();
     const changeHigh = $('#change-high').val();
     const changeElement = $('#change-slider')[0];
-    const changeMax = $(changeElement).attr('data-max');
     const changeSlider = noUiSlider.create(changeElement, {
         start: [
             parseInt(changeLow ? changeLow : -100),
@@ -38,7 +37,6 @@ if ($('#price-changes-page').length > 0) {
     const priceLow = $('#price-low').val();
     const priceHigh = $('#price-high').val();
     const priceElement = $('#price-slider')[0];
-    const priceMax = $(priceElement).attr('data-max');
     const priceSlider = noUiSlider.create(priceElement, {
         start: [
             parseInt(priceLow ? priceLow : -100),
