@@ -29,6 +29,7 @@ func adminRouter() http.Handler {
 		config.Config.AdminUsername: {config.Config.AdminPassword},
 	}))
 	r.Get("/", adminHandler)
+	r.Post("/", adminHandler)
 	r.Get("/{option}", adminHandler)
 	r.Post("/{option}", adminHandler)
 	return r
