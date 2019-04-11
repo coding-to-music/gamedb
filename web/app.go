@@ -79,8 +79,14 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
 
+	//
+	var wg sync.WaitGroup
+
 	// Update news, reviews etc
-	func() {
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
 
 		if helpers.IsBot(r.UserAgent()) {
 			return
@@ -97,9 +103,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})
 		}
 	}()
-
-	//
-	var wg sync.WaitGroup
 
 	// Tags
 	wg.Add(1)
