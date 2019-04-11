@@ -35,7 +35,7 @@
                         <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                     </li>
                 {{end}}
-                {{if gt (len .DLC) 0}}
+                {{if gt (len .DLCs) 0}}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC</a>
                     </li>
@@ -305,7 +305,7 @@
                 {{/* DLC */}}
                 <div class="tab-pane" id="dlc" role="tabpanel">
 
-                    {{if gt (len .DLC) 0}}
+                    {{if gt (len .DLCs) 0}}
 
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-datatable mb-0">
@@ -315,7 +315,7 @@
                                     <th scope="col" data-sort="desc">Release</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .DLC }}
+                                {{ range $key, $value := .DLCs }}
                                     <tr data-link="{{.GetPath}}">
                                         <td class="img">
                                             <img class="rounded square" src="{{ .GetIcon }}" alt="{{.GetName}}">
