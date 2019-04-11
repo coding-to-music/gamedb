@@ -26,7 +26,7 @@ if ($('#apps-page').length > 0) {
     const priceSlider = noUiSlider.create(priceElement, {
         start: [
             parseInt(priceLow ? priceLow : 0),
-            parseInt(priceHigh ? priceHigh : priceMax)
+            parseInt(priceHigh ? priceHigh : 100)
         ],
         connect: true,
         step: 1,
