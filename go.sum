@@ -23,6 +23,8 @@ github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89 h1:oxgneM6VUEW
 github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
 github.com/Jleagle/patreon-go v0.0.0-20190410080127-713ac5bb667d h1:ius46PaBvgGf8lOzx65FFi/Rcithj8ahWKqzfJPV7Us=
 github.com/Jleagle/patreon-go v0.0.0-20190410080127-713ac5bb667d/go.mod h1:vieJKSf3M8fjjl0NMIxV0tjylhHkhEZz9Hlw9dtgqeQ=
+github.com/Jleagle/patreon-go v0.0.0-20190411072229-d54884f92a68 h1:bWCMw8FqArU7ZjckYNsdNb7fZ66VofP2NUsjXpRfZbc=
+github.com/Jleagle/patreon-go v0.0.0-20190411072229-d54884f92a68/go.mod h1:vieJKSf3M8fjjl0NMIxV0tjylhHkhEZz9Hlw9dtgqeQ=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83 h1:u+ekQU2p89s6sgUhl8MkK6Ii7lCmdNmcKeXjlrTj/0U=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83/go.mod h1:VKGCTl3nRL0ILsYBflxYMYgTMXueYetss2Q30fKpjpE=
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50 h1:QkHMYi6HhE8HxBFROlbltZaAKRHU5cQ7UPsuT7M64ZY=
