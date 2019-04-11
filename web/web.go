@@ -535,7 +535,7 @@ func (t GlobalTemplate) IsCacheHit() bool {
 }
 
 func (t GlobalTemplate) IsFromVarnish() bool {
-	return t.request.Header.Get("X-From-Varnish") == "true"
+	return t.request.Header.Get("X-Cache") != ""
 }
 
 func (t GlobalTemplate) IsAppsPage() bool {
