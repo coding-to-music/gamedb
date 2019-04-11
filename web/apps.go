@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -344,8 +343,6 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			log.Err(err, r)
-
-			fmt.Println(high)
 
 			var column string
 			if code == steam.CountryUS {
