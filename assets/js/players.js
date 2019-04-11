@@ -11,8 +11,9 @@ if ($('#ranks-page').length > 0) {
 
             delete data.columns;
             delete data.length;
-            delete data.search.regex;
+            delete data.search;
 
+            data.search = {};
             data.search.search = $('#search').val();
 
             $.ajax({

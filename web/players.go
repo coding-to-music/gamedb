@@ -84,7 +84,7 @@ type playersTemplate struct {
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
+	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "search[search]", "start"})
 	if ret {
 		return
 	}
