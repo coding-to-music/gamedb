@@ -131,7 +131,7 @@ if ($('#price-changes-page').length > 0) {
             });
         },
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-id', data[0]);
+            $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[5]);
 
             let x;
