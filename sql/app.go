@@ -209,6 +209,11 @@ func (app App) GetType() (ret string) {
 	}
 }
 
+func (app App) GetReviewScore() string {
+
+	return helpers.FloatToString(app.ReviewsScore, 2) + "%"
+}
+
 func (app App) GetDaysToRelease() string {
 
 	return helpers.GetDaysToRelease(app.ReleaseDateUnix)

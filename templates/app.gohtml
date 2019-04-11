@@ -104,7 +104,7 @@
                         <tr>
                             <th scope="row" nowrap="nowrap" width="1%">Review Score</th>
                             <td>
-                                {{ .App.ReviewsScore }}%
+                                {{ .App.GetReviewScore }}%
                                 <small>
                                     ({{ comma .Reviews.Positive }}<i class="fas fa-angle-up"></i>
                                     {{ comma .Reviews.Negative }}<i class="fas fa-angle-down"></i>)
@@ -485,7 +485,7 @@
                             <tbody>
                             <tr>
                                 <th scope="row" width="15%">Score</th>
-                                <td>{{ .App.ReviewsScore }}% <a href="/info#app-scores"><i class="fas fa-question"></i></a></td>
+                                <td>{{ .App.GetReviewScore }}% <a href="/info#app-scores"><i class="fas fa-question"></i></a></td>
                             </tr>
                             <tr>
                                 <th scope="row" width="20%">Positive / Negative</th>
