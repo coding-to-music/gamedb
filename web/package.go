@@ -122,7 +122,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := packageTemplate{}
 	t.fill(w, r, pack.GetName(), "")
-	t.MetaImage = pack.GetMetaImage()
+	t.metaImage = pack.GetMetaImage()
 	t.addAssetHighCharts()
 	t.Package = pack
 	t.Apps = apps

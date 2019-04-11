@@ -73,7 +73,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := appTemplate{}
 	t.fill(w, r, app.GetName(), "")
-	t.MetaImage = app.GetMetaImage()
+	t.metaImage = app.GetMetaImage()
 	t.addAssetCarousel()
 	t.addAssetHighCharts()
 	t.App = app
@@ -110,7 +110,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Tags, err = app.GetTags()
 		log.Err(err, r)
-
 	}(app)
 
 	// Genres
@@ -122,7 +121,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Genres, err = app.GetGenres()
 		log.Err(err, r)
-
 	}(app)
 
 	// Bundles
@@ -139,10 +137,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm = gorm.Where("JSON_CONTAINS(app_ids, '[" + strconv.Itoa(app.ID) + "]')")
 		gorm = gorm.Find(&t.Bundles)
-		if gorm.Error != nil {
-			log.Err(gorm.Error, r)
-			return
-		}
+
+		log.Err(gorm.Error, r)
 	}()
 
 	// Get packages
@@ -154,7 +150,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Packages, err = sql.GetPackagesAppIsIn(app.ID)
 		log.Err(err, r)
-
 	}()
 
 	// Get demos
@@ -187,7 +182,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 			t.Demos = demos
 		}
-
 	}()
 
 	// Get DLC
@@ -197,9 +191,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.DLC, err = sql.GetDLC(app, []string{"id", "name"})
+		t.DLCs, err = sql.GetDLC(app, []string{"id", "name"})
 		log.Err(err, r)
-
 	}()
 
 	// Wait
@@ -261,7 +254,7 @@ type appTemplate struct {
 	Bundles      []sql.Bundle
 	Demos        []sql.App
 	Developers   []sql.Developer
-	DLC          []sql.App
+	DLCs         []sql.App
 	Genres       []sql.Genre
 	Movies       []sql.AppVideo
 	NewsIDs      []int64

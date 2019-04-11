@@ -325,7 +325,6 @@ type GlobalTemplate struct {
 	Env                string        // Environment
 	CSSFiles           []Asset
 	JSFiles            []Asset
-	MetaImage          string
 	UserCountry        steam.CountryCode
 	UserCurrencySymbol string
 
@@ -347,8 +346,9 @@ type GlobalTemplate struct {
 	contactPage       map[string]string
 	loginPage         map[string]string
 
-	//
-	request *http.Request // Internal
+	// Internal
+	request   *http.Request
+	metaImage string
 }
 
 func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
@@ -488,11 +488,11 @@ func (t GlobalTemplate) GetUserJSON() string {
 
 func (t GlobalTemplate) GetMetaImage() (text string) {
 
-	if t.MetaImage == "" {
+	if t.metaImage == "" {
 		return "https://gamedb.online/assets/img/sa-bg-500x500.png"
 	}
 
-	return t.MetaImage
+	return t.metaImage
 }
 
 func (t GlobalTemplate) GetCanonical() (text string) {
