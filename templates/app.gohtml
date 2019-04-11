@@ -507,6 +507,8 @@
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
 
+                        <h5>A selection of the {{ comma .Reviews.GetTotal }} reviews</h5>
+
                         {{ range $key, $value := .Reviews.Reviews }}
 
                             <div class="card mt-3">
