@@ -136,19 +136,19 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get filtered
 	var filtered int64
 	wg.Add(1)
-	go func() {
+	go func(r *http.Request) {
 
 		defer wg.Done()
 
 		var err error
 		filtered, err = mongo.CountDocuments(mongo.CollectionProductPrices, filter)
 		log.Err(err, r)
-	}()
+	}(r)
 
 	// Get total
 	var total int64
 	wg.Add(1)
-	go func() {
+	go func(r *http.Request) {
 
 		defer wg.Done()
 
@@ -158,7 +158,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"created_at": mongo.M{"$gt": dateLimit},
 		})
 		log.Err(err, r)
-	}()
+	}(r)
 
 	// Wait
 	wg.Wait()
