@@ -409,7 +409,7 @@ func CronGenres() {
 	cronLogInfo("Genres updating")
 
 	// Get current genres, to delete old ones
-	currentGenres, err := sql.GetAllGenres()
+	currentGenres, err := sql.GetAllGenres(true)
 	if err != nil {
 		cronLogErr(err)
 		return
@@ -426,7 +426,7 @@ func CronGenres() {
 	}
 
 	// Get apps from mysql
-	appsWithGenres, err := sql.GetAppsWithColumnDepth("genres", 3, []string{"genres", "prices", "reviews_score"})
+	appsWithGenres, err := sql.GetAppsWithColumnDepth("genres", 2, []string{"genres", "prices", "reviews_score"})
 	cronLogErr(err)
 
 	cronLogInfo("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
@@ -564,6 +564,7 @@ func CronGenres() {
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheGenreKeyNames.Key)
+	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	cronLogErr(err)
 
 	//

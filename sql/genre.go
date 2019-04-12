@@ -35,14 +35,18 @@ func (g Genre) GetMeanScore() string {
 	return helpers.FloatToString(g.MeanScore, 2) + "%"
 }
 
-func GetAllGenres() (genres []Genre, err error) {
+func GetAllGenres(includeDeleted bool) (genres []Genre, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
 		return genres, err
 	}
 
-	db.Find(&genres)
+	if includeDeleted {
+		db = db.Unscoped()
+	}
+
+	db = db.Find(&genres)
 	if db.Error != nil {
 		return genres, db.Error
 	}
