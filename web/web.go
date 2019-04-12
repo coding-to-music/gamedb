@@ -320,6 +320,7 @@ func getTemplateFuncMap() map[string]interface{} {
 type GlobalTemplate struct {
 	// These variables can be used in templates and cached
 	Title              string        // Page title
+	TitleWithIcons     string        // Page title
 	Description        template.HTML // Page description
 	Path               string        // URL path
 	Env                string        // Environment
@@ -358,10 +359,13 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.request = r
 
 	if helpers.IsBot(r.UserAgent()) {
-		t.Title = title + " - Game DB"
+		t.Title = title
+		t.TitleWithIcons = title
 	} else {
-		t.Title = title + " - 🅶🅰🅼🅴 🅳🅱"
+		t.Title = title + " - Game DB"
+		t.TitleWithIcons = title + " - 🅶🅰🅼🅴 🅳🅱"
 	}
+
 	t.Description = description
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
