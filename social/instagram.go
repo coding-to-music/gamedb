@@ -4,8 +4,10 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/ahmdrz/goinsta/v2"
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -95,9 +97,17 @@ func UploadInstagram() {
 		return
 	}
 
-	_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+") https://gamedb.online/apps/"+strconv.Itoa(app.ID)+" #steamgames #steam #gaming "+helpers.GetHashTag(app.GetName()), 0, 0)
+	operation := func() (err error) {
+
+		_, err = ig.UploadPhoto(resp.Body, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+") https://gamedb.online/apps/"+strconv.Itoa(app.ID)+" #steamgames #steam #gaming "+helpers.GetHashTag(app.GetName()), 0, 0)
+		return err
+	}
+
+	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second * 10
+
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
-		log.Err(err)
-		return
+		log.Critical(err)
 	}
 }
