@@ -43,7 +43,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		if err == errNotLoggedIn {
 			err := session.SetBadFlash(w, r, "please login")
 			log.Err(err, r)
-			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
@@ -167,7 +167,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		if len(password) < 8 {
 			err := session.SetBadFlash(w, r, "Password must be at least 8 characters long")
 			log.Err(err, r)
-			http.Redirect(w, r, "/settings", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, "/settings", http.StatusFound)
 			return
 		}
 
@@ -176,7 +176,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 			err := session.SetBadFlash(w, r, "Something went wrong encrypting your password")
 			log.Err(err, r)
-			http.Redirect(w, r, "/settings", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, "/settings", http.StatusFound)
 			return
 		}
 
@@ -218,7 +218,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	})
 	log.Err(err, r)
 
-	http.Redirect(w, r, "/settings", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {

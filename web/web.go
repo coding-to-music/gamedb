@@ -140,7 +140,7 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 	fs := http.StripPrefix(path, http.FileServer(root))
 
 	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", http.StatusTemporaryRedirect).ServeHTTP)
+		r.Get(path, http.RedirectHandler(path+"/", http.StatusFound).ServeHTTP)
 		path += "/"
 	}
 	path += "*"
@@ -169,7 +169,7 @@ func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string)
 
 	newPath := query.Encode()
 	if oldPath != newPath {
-		http.Redirect(w, r, r.URL.Path+"?"+newPath, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, r.URL.Path+"?"+newPath, http.StatusFound)
 		return true
 	}
 

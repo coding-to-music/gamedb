@@ -44,7 +44,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
 			if err == nil && id > 0 {
 
-				http.Redirect(w, r, "/players/"+strconv.FormatInt(id, 10), http.StatusTemporaryRedirect)
+				http.Redirect(w, r, "/players/"+strconv.FormatInt(id, 10), http.StatusFound)
 				return ""
 			}
 
@@ -64,7 +64,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
 			if err == nil && resp.Success > 0 && resp.SteamID > 0 {
 
-				http.Redirect(w, r, "/players/"+strconv.FormatInt(int64(resp.SteamID), 10), http.StatusTemporaryRedirect)
+				http.Redirect(w, r, "/players/"+strconv.FormatInt(int64(resp.SteamID), 10), http.StatusFound)
 				return ""
 			}
 
@@ -74,7 +74,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 		if message != "" {
 			err := session.SetBadFlash(w, r, message)
 			log.Err(err)
-			http.Redirect(w, r, "/players/add", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, "/players/add", http.StatusFound)
 			return
 		}
 	}
