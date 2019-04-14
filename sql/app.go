@@ -966,11 +966,15 @@ func (r AppReviewSummary) GetNegativePercent() float64 {
 }
 
 type AppReview struct {
-	Review     template.HTML `json:"r"`
-	Vote       bool          `json:"v"`
-	VotesGood  int           `json:"g"`
-	VotesFunny int           `json:"f"`
-	Created    string        `json:"c"`
-	PlayerPath string        `json:"p"`
-	PlayerName string        `json:"n"`
+	Review     string `json:"r"`
+	Vote       bool   `json:"v"`
+	VotesGood  int    `json:"g"`
+	VotesFunny int    `json:"f"`
+	Created    string `json:"c"`
+	PlayerPath string `json:"p"`
+	PlayerName string `json:"n"`
+}
+
+func (ar AppReview) HTML() template.HTML {
+	return template.HTML(ar.Review)
 }

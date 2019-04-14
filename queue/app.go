@@ -3,7 +3,6 @@ package queue
 import (
 	"encoding/json"
 	"errors"
-	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -798,7 +797,7 @@ func updateAppReviews(app *sql.App) error {
 		v.Review = regex.ReplaceAllString(v.Review, "\n\n")
 
 		reviews.Reviews = append(reviews.Reviews, sql.AppReview{
-			Review:     template.HTML(helpers.BBCodeCompiler.Compile(v.Review)),
+			Review:     helpers.BBCodeCompiler.Compile(v.Review),
 			PlayerPath: player.GetPath(),
 			PlayerName: player.PersonaName,
 			Created:    time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
