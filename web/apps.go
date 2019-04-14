@@ -146,7 +146,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				// Convert to int
 				developerID, err := strconv.Atoi(v)
 				if err != nil {
-					log.Err(err, r)
+					log.Info(err, r)
 					continue
 				}
 
