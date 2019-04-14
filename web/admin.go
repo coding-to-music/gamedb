@@ -338,12 +338,19 @@ func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("player-id"); val != "" {
 
-		playerID, err := strconv.ParseInt(val, 10, 64)
-		log.Err(err, r)
-		if err == nil {
+		vals := strings.Split(val, ",")
 
-			err = queue.ProducePlayer(playerID)
+		for _, val := range vals {
+
+			val = strings.TrimSpace(val)
+
+			playerID, err := strconv.ParseInt(val, 10, 64)
 			log.Err(err, r)
+			if err == nil {
+
+				err = queue.ProducePlayer(playerID)
+				log.Err(err, r)
+			}
 		}
 	}
 
