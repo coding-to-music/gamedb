@@ -70,6 +70,7 @@ func init() {
 	Config.DiscordClientID = os.Getenv(prefix + "DISCORD_CLIENT_ID")
 	Config.DiscordSescret = os.Getenv(prefix + "DISCORD_SECRET")
 	Config.DiscordBotToken = os.Getenv(prefix + "DISCORD_BOT_TOKEN")
+	Config.DiscordRelayToken = os.Getenv(prefix + "DISCORD_RELAY_TOKEN")
 
 	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
@@ -118,9 +119,10 @@ type BaseConfig struct {
 	AdminPassword string
 	AdminUsername string
 
-	DiscordClientID string
-	DiscordSescret  string
-	DiscordBotToken string
+	DiscordClientID   string
+	DiscordSescret    string
+	DiscordRelayToken string
+	DiscordBotToken   string
 
 	InfluxURL      string
 	InfluxPassword string

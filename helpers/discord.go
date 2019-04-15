@@ -19,7 +19,7 @@ func GetDiscord(handlers ...interface{}) (session *discordgo.Session, err error)
 
 	if discordSession == nil {
 
-		discord, err := discordgo.New("Bot " + config.Config.DiscordBotToken)
+		discord, err := discordgo.New("Bot " + config.Config.DiscordRelayToken)
 		if err != nil {
 			return discord, err
 		}
