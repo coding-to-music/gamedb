@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/website/chat_bot"
 	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
@@ -59,9 +60,14 @@ func main() {
 		}()
 	}
 
+	// Chat Bot
+	if config.Config.IsProd() || config.Config.IsLocal() {
+		chat_bot.Init()
+	}
+
+	// Crons
 	if config.Config.IsProd() {
 
-		// Crons
 		c := cron.New()
 
 		// Daily

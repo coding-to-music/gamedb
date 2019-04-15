@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gamedb/website/chat_bot"
 	"github.com/gamedb/website/log"
 	"github.com/go-chi/chi"
 )
@@ -30,6 +31,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := chatBotTemplate{}
 	t.fill(w, r, "Chat", "The Game DB community.")
+	t.Commands = chat_bot.CommandRegister
 
 	err := returnTemplate(w, r, "chat_bot", t)
 	log.Err(err, r)
@@ -37,6 +39,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 
 type chatBotTemplate struct {
 	GlobalTemplate
+	Commands []chat_bot.Command
 }
 
 func (cbt chatBotTemplate) AddBotLink() string {

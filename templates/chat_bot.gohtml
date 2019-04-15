@@ -13,7 +13,26 @@
     <div class="card">
         <div class="card-body">
 
-            x
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable mb-3" data-sort="[[0, 'asc']]" id="bin-logs">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Example</th>
+                        <th scope="col">Regex</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                    </thead>
+                    <tbody class="tags-list">
+                    {{ range $key, $value := .Commands }}
+                        <tr>
+                            <td>{{ .Example }}</td>
+                            <td>{{ .Regex }}</td>
+                            <td>{{ .Description }}</td>
+                        </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     </div>
