@@ -73,6 +73,7 @@ func Serve() error {
 	r.Mount("/bundles", bundlesRouter())
 	r.Mount("/changes", changesRouter())
 	r.Mount("/chat", chatRouter())
+	r.Mount("/chat-bot", chatBotRouter())
 	r.Mount("/commits", commitsRouter())
 	r.Mount("/contact", contactRouter())
 	r.Mount("/coop", coopRouter())
