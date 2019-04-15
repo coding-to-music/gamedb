@@ -222,7 +222,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var messages []chatWebsocketPayload
 	for _, v := range messagesResponse {
-		if !v.Author.Bot && v.Type == discordgo.MessageTypeDefault {
+		if v.Type == discordgo.MessageTypeDefault {
 
 			messages = append(messages, chatWebsocketPayload{
 				AuthorID:     v.Author.ID,
