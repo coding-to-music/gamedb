@@ -93,6 +93,9 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 			discord, err := getDiscord(r)
 			if err != nil {
+				if strings.Contains(err.Error(), "Authentication failed") {
+					err = backoff.Permanent(err)
+				}
 				return err
 			}
 
@@ -134,6 +137,9 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 			discord, err := getDiscord(r)
 			if err != nil {
+				if strings.Contains(err.Error(), "Authentication failed") {
+					err = backoff.Permanent(err)
+				}
 				return err
 			}
 
@@ -196,6 +202,9 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		discord, err := getDiscord(r)
 		if err != nil {
+			if strings.Contains(err.Error(), "Authentication failed") {
+				err = backoff.Permanent(err)
+			}
 			return err
 		}
 
