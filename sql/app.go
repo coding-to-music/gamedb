@@ -803,6 +803,38 @@ func GetApp(id int, columns []string) (app App, err error) {
 	return app, nil
 }
 
+func SearchApp(s string, columns []string) (app App, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return app, err
+	}
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+		if db.Error != nil {
+			return app, db.Error
+		}
+	}
+
+	i, _ := strconv.Atoi(s)
+	if helpers.IsValidAppID(i) {
+		db = db.First(&app, "id = ?", s)
+	} else {
+		db = db.First(&app, "name = ?", s)
+	}
+
+	if db.Error != nil {
+		return app, db.Error
+	}
+
+	if app.ID == 0 {
+		return app, ErrRecordNotFound
+	}
+
+	return app, nil
+}
+
 func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 
 	if len(ids) == 0 {

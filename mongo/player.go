@@ -371,6 +371,33 @@ func GetPlayer(id int64) (player Player, err error) {
 	return player, err
 }
 
+func SearchPlayer(s string) (player Player, err error) {
+
+	if s == "" {
+		return player, ErrInvalidPlayerID
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return player, err
+	}
+
+	var filter M
+
+	i, _ := strconv.ParseInt(s, 10, 64)
+	if helpers.IsValidPlayerID(i) {
+		filter = M{"_id": s}
+	} else {
+		filter = M{"$text": M{"$search": s}}
+	}
+
+	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
+	result := c.FindOne(ctx, filter, options.FindOne())
+
+	err = result.Decode(&player)
+	return player, err
+}
+
 func GetPlayers(offset int64, limit int64, sort D, filter M, projection M) (players []Player, err error) {
 
 	return getPlayers(offset, limit, sort, filter, projection)

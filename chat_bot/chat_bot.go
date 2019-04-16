@@ -8,6 +8,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/website/config"
+	"github.com/gamedb/website/log"
+	"github.com/gamedb/website/mongo"
 )
 
 func Init() {
@@ -19,6 +21,8 @@ func Init() {
 	}
 
 	discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+		fmt.Println(m.Message.Content)
 
 		if config.Config.IsLocal() && m.Author.ID != "145456943912189952" {
 			return
@@ -32,7 +36,7 @@ func Init() {
 
 			if v.Regex().MatchString(m.Message.Content) {
 
-				private, err := isPrivate(s, m)
+				private, err := isPrivateChannel(s, m)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -73,7 +77,7 @@ func Init() {
 	wg.Wait()
 }
 
-func isPrivate(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
+func isPrivateChannel(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
 	channel, err := s.State.Channel(m.ChannelID)
 	if err != nil {
 		if channel, err = s.Channel(m.ChannelID); err != nil {
@@ -102,15 +106,27 @@ type CommandGetPlayer struct {
 }
 
 func (CommandGetPlayer) Description() string {
-	return "Links to a list of commands"
+	return "Get info on a player"
 }
 
 func (CommandGetPlayer) Regex() *regexp.Regexp {
-	return regexp.MustCompile("^.player [a-zA-Z0-9]+")
+	return regexp.MustCompile("^.(player|user) ((.*)+)")
 }
 
-func (CommandGetPlayer) Output(input string) string {
-	return "" // todo
+func (c CommandGetPlayer) Output(input string) string {
+
+	matches := c.Regex().FindAllStringSubmatch(input, -1)
+
+	fmt.Println(input)
+	fmt.Println(matches)
+
+	player, err := mongo.SearchPlayer(input)
+	if err != nil {
+		log.Err(err)
+		return ""
+	}
+
+	return player.GetName()
 }
 
 func (CommandGetPlayer) Example() string {
