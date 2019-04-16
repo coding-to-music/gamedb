@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/memcache-go/memcache"
+	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
@@ -71,7 +72,12 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
 	gorm = gorm.Order("release_date_unix ASC, name ASC")
 
-	gorm = gorm.Limit(10000)
+	if config.Config.IsLocal() {
+		gorm = gorm.Limit(100)
+	} else {
+		gorm = gorm.Limit(10000)
+	}
+
 	gorm = gorm.Offset(query.Start)
 
 	var apps []sql.App

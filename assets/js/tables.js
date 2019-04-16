@@ -165,7 +165,7 @@ const dtDefaultOptions = {
 };
 
 // Server side events
-$('table.table-datatable2').on('page.dt search.dt', function (e, settings, processing) {
+$('table.table-datatable2:not(.table-no-fade)').on('page.dt search.dt', function (e, settings, processing) {
 
     $(this).fadeTo(500, 0.3);
 

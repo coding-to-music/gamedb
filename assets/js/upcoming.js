@@ -1,8 +1,29 @@
 if ($('#upcoming-page').length > 0) {
 
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    const $table = $('table.table-datatable2');
+
+    const dt = $table.DataTable($.extend(true, {}, dtDefaultOptions, {
         // "order": [[3, 'asc']],
         // "pageLength": 2000,
+        "serverSide": false,
+        "ajax": function (data, callback, settings) {
+
+            delete data.columns;
+            delete data.length;
+            delete data.search;
+            delete data.order;
+            delete data.start;
+            delete data.search;
+            delete data.start;
+
+            $.ajax({
+                url: $(this).attr('data-path'),
+                data: data,
+                success: callback,
+                dataType: 'json',
+                cache: $(this).attr('data-cache') !== "false"
+            });
+        },
         "paging": false,
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -70,4 +91,8 @@ if ($('#upcoming-page').length > 0) {
             // },
         ]
     }));
+
+    $('#search').on('keyup', function () {
+        dt.search(this.value).draw();
+    });
 }
