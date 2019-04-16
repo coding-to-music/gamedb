@@ -85,7 +85,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	var allApps = map[int]bool{}
 	var allAppsByPlayer = map[int64][]int{}
 
-	playerApps, err := mongo.GetPlayerAppsByPlayers(foundPlayerIDs)
+	playerApps, err := mongo.GetPlayersApps(foundPlayerIDs)
 	for _, playerApp := range playerApps {
 
 		allApps[playerApp.AppID] = true

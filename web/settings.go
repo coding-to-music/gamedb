@@ -75,7 +75,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		playerApps, err := mongo.GetPlayerAppsByPlayer(player.ID, 0, 0, mongo.D{})
+		playerApps, err := mongo.GetPlayerApps(player.ID, 0, 0, mongo.D{})
 		if err != nil {
 			log.Err(err, r)
 			return

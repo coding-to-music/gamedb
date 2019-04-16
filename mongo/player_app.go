@@ -116,12 +116,12 @@ func GetPlayerAppsByApp(appID int, offset int64, filter interface{}) (apps []Pla
 	return getPlayerApps(offset, 100, filter, M{"app_time": -1}, M{"_id": -1, "player_id": 1, "app_time": 1})
 }
 
-func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort D) (apps []PlayerApp, err error) {
+func GetPlayerApps(playerID int64, offset int64, limit int64, sort D) (apps []PlayerApp, err error) {
 
 	return getPlayerApps(offset, limit, M{"player_id": playerID}, sort, nil)
 }
 
-func GetPlayerAppsByPlayers(playerIDs []int64) (apps []PlayerApp, err error) {
+func GetPlayersApps(playerIDs []int64) (apps []PlayerApp, err error) {
 
 	if len(playerIDs) < 1 {
 		return apps, err
@@ -132,7 +132,7 @@ func GetPlayerAppsByPlayers(playerIDs []int64) (apps []PlayerApp, err error) {
 		playersFilter = append(playersFilter, v)
 	}
 
-	return getPlayerApps(0, 0, M{"$or": playersFilter}, nil, M{"_id": -1, "player_id": 1, "app_id": 1})
+	return getPlayerApps(0, 0, M{"player_id": M{"$in": playersFilter}}, nil, M{"_id": -1, "player_id": 1, "app_id": 1})
 }
 
 func getPlayerApps(offset int64, limit int64, filter interface{}, sort interface{}, projection interface{}) (apps []PlayerApp, err error) {
