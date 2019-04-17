@@ -31,7 +31,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
+	setCacheHeaders(w, time.Hour*24*7)
 
 	t := steamAPITemplate{}
 	t.fill(w, r, "Steam API", "")
