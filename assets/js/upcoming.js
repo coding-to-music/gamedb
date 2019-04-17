@@ -3,26 +3,27 @@ if ($('#upcoming-page').length > 0) {
     const $table = $('table.table-datatable2');
 
     const dt = $table.DataTable($.extend(true, {}, dtDefaultOptions, {
-        // "order": [[3, 'asc']],
-        // "pageLength": 2000,
-        "serverSide": false,
+        "order": [],
+        "pageLength": 100,
         "ajax": function (data, callback, settings) {
 
-            delete data.columns;
-            delete data.length;
-            delete data.search;
-            delete data.order;
-            delete data.start;
+            data = {
+                draw: data.draw,
+                order: data.order,
+                start: data.start,
+                search: {
+                    search: $('#search').val(),
+                },
+            };
 
             $.ajax({
-                url: $(this).attr('data-path'),
+                url: '/upcoming/upcoming.json',
                 data: data,
                 success: callback,
                 dataType: 'json',
                 cache: $(this).attr('data-cache') !== "false"
             });
         },
-        "paging": false,
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
@@ -76,21 +77,12 @@ if ($('#upcoming-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Release Date
-            // {
-            //     "targets": 3,
-            //     "render": function (data, type, row) {
-            //         return row[6];
-            //     },
-            //     "createdCell": function (td, cellData, rowData, row, col) {
-            //         $(td).attr('nowrap', 'nowrap');
-            //     },
-            //     "orderable": false,
-            // },
         ]
     }));
 
-    $('#search').on('keyup', function () {
-        dt.search(this.value).draw();
+    $('form').on('submit', function (e) {
+
+        e.preventDefault();
+        dt.search($('#search').val()).draw();
     });
 }

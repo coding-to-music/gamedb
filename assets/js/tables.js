@@ -1,5 +1,6 @@
 // Local
 const $dataTables = $('table.table-datatable');
+const $dataTables2 = $('table.table-datatable2');
 
 $dataTables.each(function (i) {
 
@@ -100,6 +101,7 @@ $searchField.on('keyup', function (e) {
     if ($(this).val() && e.key === "Escape") {
         $(this).val('');
         $dataTables.DataTable().search($(this).val()).draw();
+        $dataTables2.DataTable().search($(this).val()).draw();
     }
 });
 
@@ -156,7 +158,7 @@ const dtDefaultOptions = {
     },
     "initComplete": function (settings, json) {
 
-        $('table.table-datatable2').on('order.dt', function (e, settings, processing) {
+        $dataTables2.on('order.dt', function (e, settings, processing) {
 
             $('#live-badge').trigger('click');
 

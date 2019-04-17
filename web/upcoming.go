@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/memcache-go/memcache"
-	"github.com/gamedb/website/config"
 	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
@@ -50,12 +49,12 @@ type upcomingTemplate struct {
 
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"draw"})
+	ret := setAllowedQueries(w, r, []string{"draw", "start", "search[search]"})
 	if ret {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*1)
+	setCacheHeaders(w, time.Hour*6)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
@@ -67,18 +66,20 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	search := query.getSearchString("search")
+	filtered := 0
+
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
 	gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
-	gorm = gorm.Order("release_date_unix ASC, name ASC")
-
-	if config.Config.IsLocal() {
-		gorm = gorm.Limit(100)
-	} else {
-		gorm = gorm.Limit(10000)
+	if search != "" {
+		gorm = gorm.Where("name LIKE ?", "%"+search+"%")
+		gorm = gorm.Count(&filtered)
+		log.Err(gorm.Error, r)
 	}
-
-	gorm = gorm.Offset(query.Start)
+	gorm = gorm.Order("release_date_unix ASC, name ASC")
+	gorm = gorm.Limit(100)
+	gorm = gorm.Offset(query.getOffset())
 
 	var apps []sql.App
 	gorm = gorm.Find(&apps)
@@ -91,7 +92,10 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = strconv.Itoa(count)
-	response.RecordsFiltered = strconv.Itoa(count)
+	response.RecordsFiltered = response.RecordsTotal
+	if search != "" {
+		response.RecordsFiltered = strconv.Itoa(filtered)
+	}
 	response.Draw = query.Draw
 
 	for _, app := range apps {
@@ -123,7 +127,7 @@ func countUpcomingApps() (count int, err error) {
 		}
 
 		gorm = gorm.Model(sql.App{})
-		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -1).Unix())
+		gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
 		gorm = gorm.Count(&count)
 
 		return count, gorm.Error

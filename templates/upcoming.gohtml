@@ -11,12 +11,14 @@
             </div>
             <div class="col-sm-12 col-lg-6">
 
-                <div class="input-group input-group-lg mt-1 mb-2">
-                    <input class="form-control" type="text" placeholder="Search for a Game" id="search" autofocus>
-                    <div class="input-group-append">
-                        <input type="submit" value="Search" class="input-group-text">
+                <form action="/upcoming" method="get">
+                    <div class="input-group input-group-lg mt-1 mb-2">
+                        <input class="form-control" type="text" placeholder="Search for a Game" id="search" autofocus>
+                        <div class="input-group-append">
+                            <input type="submit" value="Search" class="input-group-text">
+                        </div>
                     </div>
-                </div>
+                </form>
 
             </div>
             <div class="col-12">
@@ -32,7 +34,7 @@
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-no-fade table-datatable2 mb-0" data-path="/upcoming/upcoming.json">
+                <table class="table table-hover table-striped table-datatable2 mb-0">
                     <thead class="thead-light">
                     <tr>
                         <th scope="col">App</th>
