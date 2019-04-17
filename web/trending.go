@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/website/helpers"
 	"github.com/gamedb/website/log"
 	"github.com/gamedb/website/session"
 	"github.com/gamedb/website/sql"
@@ -38,7 +39,7 @@ func trendingHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Trending", "")
 	t.addAssetHighCharts()
 
-	t.Apps, err = countUpcomingApps()
+	t.Apps, err = countTrendingApps()
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "trending", t)
@@ -77,12 +78,8 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
+	gorm = gorm.Where("player_trend >= 100 OR player_trend <= -100")
 	gorm = gorm.Order(query.getOrderSQL(columns, session.GetCountryCode(r)))
-
-	// Count before limitting
-	// gorm.Count(&count)
-	// log.Err(gorm.Error, r)
-
 	gorm = gorm.Limit(50)
 	gorm = gorm.Offset(query.getOffset())
 
@@ -92,7 +89,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var code = session.GetCountryCode(r)
 
-	count, err := sql.CountApps()
+	count, err := countTrendingApps()
 	log.Err(err)
 
 	response := DataTablesAjaxResponse{}
@@ -113,6 +110,29 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
+}
+
+func countTrendingApps() (count int, err error) {
+
+	var item = helpers.MemcacheTrendingAppsCount
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		var count int
+
+		gorm, err := sql.GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		gorm = gorm.Model(sql.App{})
+		gorm = gorm.Where("player_trend >= 100 OR player_trend <= -100")
+		gorm = gorm.Count(&count)
+
+		return count, gorm.Error
+	})
+
+	return count, err
 }
 
 func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
