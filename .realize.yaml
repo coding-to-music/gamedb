@@ -1,40 +1,79 @@
-settings:
-  files:
-    outputs:
-      status: false
-      path: ""
-      name: logs.txt
-    logs:
-      status: false
-      path: ""
-      name: logs.txt
-    errors:
-      status: false
-      path: ""
-      name: logs.txt
-  legacy:
-    force: false
-    interval: 0s
-server:
-  status: false
-  open: false
-  port: 5001
-  host: "localhost"
 schema:
-  - name: Steam
-    path: .
+  - name: Web Site
+    path: cmd/web_server
     commands:
       install:
         status: true
-      build:
-        status: false
       run:
         status: true
+      build:
+        status: false
     watcher:
       paths:
-        - /
+        - ../../
       extensions:
         - go
       ignored_paths:
         - .git
         - node_modules
+        - vendor
+        - assets
+  - name: Consumer
+    path: cmd/consumers
+    commands:
+      install:
+        status: true
+      run:
+        status: true
+      build:
+        status: false
+    watcher:
+      paths:
+        - ../../
+      extensions:
+        - go
+      ignored_paths:
+        - .git
+        - node_modules
+        - vendor
+        - assets
+  - name: Chat Bot
+    path: cmd/chat_bot
+    commands:
+      install:
+        status: true
+      run:
+        status: true
+      build:
+        status: false
+    watcher:
+      preview: true
+      paths:
+        - ../../
+      extensions:
+        - go
+      ignored_paths:
+        - .git
+        - node_modules
+        - vendor
+        - assets
+  - name: CronJobs
+    path: cmd/crons
+    commands:
+      install:
+        status: true
+      run:
+        status: true
+      build:
+        status: false
+    watcher:
+      preview: true
+      paths:
+        - ../../
+      extensions:
+        - go
+      ignored_paths:
+        - .git
+        - node_modules
+        - vendor
+        - assets

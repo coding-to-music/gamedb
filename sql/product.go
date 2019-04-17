@@ -76,9 +76,6 @@ type PICSAppDepotBranches struct {
 }
 
 //
-
-
-//
 type ProductPrices map[steam.CountryCode]ProductPriceStruct
 
 func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam.PackageDetailsBody) {
