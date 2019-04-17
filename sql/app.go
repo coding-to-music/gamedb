@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/Jleagle/influxql"
@@ -669,34 +668,6 @@ func PopularApps() (apps []App, err error) {
 		db = db.Where("type = ?", "game")
 		db = db.Order("player_peak_week desc")
 		db = db.Limit(30)
-		db = db.Find(&apps)
-
-		return apps, err
-	})
-
-	return apps, err
-}
-
-var trendingMutex sync.Mutex
-
-func TrendingApps() (apps []App, err error) {
-
-	trendingMutex.Lock()
-	defer trendingMutex.Unlock()
-
-	var item = helpers.MemcacheTrendingApps
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return apps, err
-		}
-
-		db = db.Select([]string{"id", "name", "icon", "player_peak_week", "player_trend"})
-		db = db.Where("type = ?", "game")
-		db = db.Order("player_trend desc")
-		db = db.Limit(15)
 		db = db.Find(&apps)
 
 		return apps, err

@@ -34,8 +34,9 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	t := newReleasesTemplate{}
 	t.fill(w, r, "New Releases", "")
 	t.addAssetHighCharts()
+	t.Days = config.Config.NewReleaseDays
 
-	t.Apps, err = countUpcomingApps()
+	t.Apps, err = countNewReleaseApps()
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "new_releases", t)
@@ -45,6 +46,7 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 type newReleasesTemplate struct {
 	GlobalTemplate
 	Apps int
+	Days int
 }
 
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -116,4 +118,28 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
+}
+
+func countNewReleaseApps() (count int, err error) {
+
+	var item = helpers.MemcacheNewReleaseAppsCount
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		var count int
+
+		gorm, err := sql.GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		gorm = gorm.Model(sql.App{})
+		gorm = gorm.Where("release_date_unix < ?", time.Now().Unix())
+		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays).Unix())
+		gorm = gorm.Count(&count)
+
+		return count, gorm.Error
+	})
+
+	return count, err
 }
