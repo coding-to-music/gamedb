@@ -13,8 +13,6 @@ if ($('#upcoming-page').length > 0) {
             delete data.search;
             delete data.order;
             delete data.start;
-            delete data.search;
-            delete data.start;
 
             $.ajax({
                 url: $(this).attr('data-path'),
