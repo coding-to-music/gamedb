@@ -29,7 +29,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
 	t.fill(w, r, "Contact", "Get in touch with Game DB.")
-	t.RecaptchaPublic = config.Config.RecaptchaPublic
+	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 
 	err := returnTemplate(w, r, "contact", t)
 	log.Err(err, r)
@@ -90,11 +90,11 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		message := mail.NewSingleEmail(
 			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
 			"Game DB Contact Form",
-			mail.NewEmail(config.Config.AdminName, config.Config.AdminEmail),
+			mail.NewEmail(config.Config.AdminName.Get(), config.Config.AdminEmail.Get()),
 			r.PostForm.Get("message"),
 			r.PostForm.Get("message"),
 		)
-		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey)
+		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
 
 		_, err = client.Send(message)
 		if err != nil {

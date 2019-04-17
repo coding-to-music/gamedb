@@ -19,7 +19,7 @@ var (
 	mongoClient *mongo.Client
 	mongoCtx    context.Context
 
-	MongoDatabase = config.Config.MongoDatabase
+	MongoDatabase = config.Config.MongoDatabase.Get()
 
 	ErrNoDocuments = mongo.ErrNoDocuments
 )
@@ -59,8 +59,8 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 
 		creds := options.Credential{
 			AuthSource:  MongoDatabase,
-			Username:    config.Config.MongoUsername,
-			Password:    config.Config.MongoPassword,
+			Username:    config.Config.MongoUsername.Get(),
+			Password:    config.Config.MongoPassword.Get(),
 			PasswordSet: true,
 		}
 

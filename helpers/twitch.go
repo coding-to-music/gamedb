@@ -17,7 +17,7 @@ func GetTwitch() (client *helix.Client, err error) {
 
 	if twitchClient == nil {
 		twitchClient, err = helix.NewClient(&helix.Options{
-			ClientID: config.Config.TwitchClientID,
+			ClientID: config.Config.TwitchClientID.Get(),
 		})
 	}
 

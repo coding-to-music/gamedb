@@ -48,7 +48,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := loginTemplate{}
 	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
-	t.RecaptchaPublic = config.Config.RecaptchaPublic
+	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 	t.Domain = config.Config.GameDBDomain.Get()
 
 	err = returnTemplate(w, r, "login", t)

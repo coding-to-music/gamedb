@@ -21,7 +21,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	b, event, err := patreon.ValidateRequest(r, config.Config.PatreonSecret)
+	b, event, err := patreon.ValidateRequest(r, config.Config.PatreonSecret.Get())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Err(err)

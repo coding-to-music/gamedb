@@ -21,7 +21,7 @@ func IsStorageLocaion(x string) bool {
 func Upload(path string, data []byte) (err error) {
 
 	payload := gcs.UploadPayload{}
-	payload.Bucket = config.Config.GoogleBucket
+	payload.Bucket = config.Config.GoogleBucket.Get()
 	payload.Path = path
 	payload.Transformer = gcs.TransformerSnappyEncode
 	payload.Data = data
@@ -33,7 +33,7 @@ func Upload(path string, data []byte) (err error) {
 func Download(path string) (data []byte, err error) {
 
 	payload := gcs.DownloadPayload{}
-	payload.Bucket = config.Config.GoogleBucket
+	payload.Bucket = config.Config.GoogleBucket.Get()
 	payload.Path = path
 	payload.Transformer = gcs.TransformerSnappyDecode
 

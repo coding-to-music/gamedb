@@ -20,8 +20,8 @@ const (
 
 var writeMutex sync.Mutex
 var store = sessions.NewCookieStore(
-	[]byte(config.Config.SessionAuthentication),
-	[]byte(config.Config.SessionEncryption),
+	[]byte(config.Config.SessionAuthentication.Get()),
+	[]byte(config.Config.SessionEncryption.Get()),
 )
 
 func getSession(r *http.Request) (*sessions.Session, error) {

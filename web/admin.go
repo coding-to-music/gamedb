@@ -26,7 +26,7 @@ func adminRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.NoCache)
 	r.Use(basicauth.New("Steam", map[string][]string{
-		config.Config.AdminUsername: {config.Config.AdminPassword},
+		config.Config.AdminUsername.Get(): {config.Config.AdminPassword.Get()},
 	}))
 	r.Get("/", adminHandler)
 	r.Post("/", adminHandler)

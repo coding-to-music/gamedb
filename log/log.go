@@ -103,7 +103,7 @@ var (
 
 func init() {
 	var err error
-	googleClient, err = logging.NewClient(context.Background(), config.Config.GoogleProject)
+	googleClient, err = logging.NewClient(context.Background(), config.Config.GoogleProject.Get())
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -181,7 +181,7 @@ func log(interfaces ...interface{}) {
 			Payload:   entry.toText(true),
 			Labels: map[string]string{
 				"env": config.Config.Environment.Get(),
-				"key": config.Config.SteamAPIKey[0:5],
+				"key": config.Config.SteamAPIKey.Get()[0:5],
 			},
 		})
 	}

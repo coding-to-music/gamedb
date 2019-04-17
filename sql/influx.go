@@ -44,15 +44,15 @@ func GetInfluxClient() (client *influx.Client, err error) {
 	if influxClient == nil {
 
 		var host *url.URL
-		host, err = url.Parse(config.Config.InfluxURL)
+		host, err = url.Parse(config.Config.InfluxURL.Get())
 		if err != nil {
 			return
 		}
 
 		conf := influx.Config{
 			URL:      *host,
-			Username: config.Config.InfluxUsername,
-			Password: config.Config.InfluxPassword,
+			Username: config.Config.InfluxUsername.Get(),
+			Password: config.Config.InfluxPassword.Get(),
 		}
 
 		influxClient, err = influx.NewClient(conf)

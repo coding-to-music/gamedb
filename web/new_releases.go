@@ -34,7 +34,7 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	t := newReleasesTemplate{}
 	t.fill(w, r, "New Releases", "")
 	t.addAssetHighCharts()
-	t.Days = config.Config.NewReleaseDays
+	t.Days = config.Config.NewReleaseDays.GetInt()
 
 	t.Apps, err = countNewReleaseApps()
 	log.Err(err, r)
@@ -85,7 +85,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})
 	gorm = gorm.Where("release_date_unix < ?", time.Now().Unix())
-	gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays).Unix())
+	gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
 	gorm = gorm.Order(query.getOrderSQL(columns, code))
 
 	// Count before limitting
@@ -135,7 +135,7 @@ func countNewReleaseApps() (count int, err error) {
 
 		gorm = gorm.Model(sql.App{})
 		gorm = gorm.Where("release_date_unix < ?", time.Now().Unix())
-		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays).Unix())
+		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
 		gorm = gorm.Count(&count)
 
 		return count, gorm.Error

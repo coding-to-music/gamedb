@@ -18,19 +18,19 @@ var Config BaseConfig
 func init() {
 
 	// Set configs from environment variables
-	Config.AdminUsername = os.Getenv(prefix + "ADMIN_USER")
-	Config.AdminPassword = os.Getenv(prefix + "ADMIN_PASS")
-	Config.AdminName = os.Getenv(prefix + "ADMIN_NAME")
-	Config.AdminEmail = os.Getenv(prefix + "ADMIN_EMAIL")
+	Config.AdminUsername.Set("ADMIN_USER")
+	Config.AdminPassword.Set("ADMIN_PASS")
+	Config.AdminName.Set("ADMIN_NAME")
+	Config.AdminEmail.Set("ADMIN_EMAIL")
 
 	Config.RabbitUsername.Set("RABBIT_USER")
 	Config.RabbitPassword.Set("RABBIT_PASS")
-	Config.RabbitHost = os.Getenv(prefix + "RABBIT_HOST")
-	Config.RabbitPort = os.Getenv(prefix + "RABBIT_PORT")
-	Config.RabbitManagmentPort = os.Getenv(prefix + "RABBIT_MANAGEMENT_PORT")
+	Config.RabbitHost.Set("RABBIT_HOST")
+	Config.RabbitPort.Set("RABBIT_PORT")
+	Config.RabbitManagmentPort.Set("RABBIT_MANAGEMENT_PORT")
 
-	Config.SessionAuthentication = os.Getenv(prefix + "SESSION_AUTHENTICATION")
-	Config.SessionEncryption = os.Getenv(prefix + "SESSION_ENCRYPTION")
+	Config.SessionAuthentication.Set("SESSION_AUTHENTICATION")
+	Config.SessionEncryption.Set("SESSION_ENCRYPTION")
 
 	Config.InstagramUsername.Set("INSTAGRAM_USERNAME")
 	Config.InstagramPassword.Set("INSTAGRAM_PASSWORD")
@@ -41,44 +41,44 @@ func init() {
 	Config.MySQLPassword.Set("MYSQL_PASSWORD")
 	Config.MySQLDatabase.Set("MYSQL_DATABASE")
 
-	Config.RecaptchaPublic = os.Getenv(prefix + "RECAPTCHA_PUBLIC")
-	Config.RecaptchaPrivate = os.Getenv(prefix + "RECAPTCHA_PRIVATE")
+	Config.RecaptchaPublic.Set("RECAPTCHA_PUBLIC")
+	Config.RecaptchaPrivate.Set("RECAPTCHA_PRIVATE")
 
-	Config.TwitchClientID = os.Getenv(prefix + "TWITCH_CLIENT_ID")
-	Config.TwitchClientSecret = os.Getenv(prefix + "TWITCH_CLIENT_SECRET")
+	Config.TwitchClientID.Set("TWITCH_CLIENT_ID")
+	Config.TwitchClientSecret.Set("TWITCH_CLIENT_SECRET")
 
-	Config.InfluxURL = os.Getenv(prefix + "INFLUX_URL")
-	Config.InfluxUsername = os.Getenv(prefix + "INFLUX_USERNAME")
-	Config.InfluxPassword = os.Getenv(prefix + "INFLUX_PASSWORD")
+	Config.InfluxURL.Set("INFLUX_URL")
+	Config.InfluxUsername.Set("INFLUX_USERNAME")
+	Config.InfluxPassword.Set("INFLUX_PASSWORD")
 
-	Config.MongoHost = os.Getenv(prefix + "MONGO_HOST")
-	Config.MongoPort = os.Getenv(prefix + "MONGO_PORT")
-	Config.MongoUsername = os.Getenv(prefix + "MONGO_USERNAME")
-	Config.MongoPassword = os.Getenv(prefix + "MONGO_PASSWORD")
-	Config.MongoDatabase = os.Getenv(prefix + "MONGO_DATABASE")
+	Config.MongoHost.Set("MONGO_HOST")
+	Config.MongoPort.Set("MONGO_PORT")
+	Config.MongoUsername.Set("MONGO_USERNAME")
+	Config.MongoPassword.Set("MONGO_PASSWORD")
+	Config.MongoDatabase.Set("MONGO_DATABASE")
 
-	Config.TwitterAccessToken = os.Getenv(prefix + "TWITTER_ACCESS_TOKEN")
-	Config.TwitterAccessTokenSecret = os.Getenv(prefix + "TWITTER_ACCESS_TOKEN_SECRET")
-	Config.TwitterConsumerKey = os.Getenv(prefix + "TWITTER_CONSUMER_KEY")
-	Config.TwitterConsumerSecret = os.Getenv(prefix + "TWITTER_CONSUMER_SECRET")
+	Config.TwitterAccessToken.Set("TWITTER_ACCESS_TOKEN")
+	Config.TwitterAccessTokenSecret.Set("TWITTER_ACCESS_TOKEN_SECRET")
+	Config.TwitterConsumerKey.Set("TWITTER_CONSUMER_KEY")
+	Config.TwitterConsumerSecret.Set("TWITTER_CONSUMER_SECRET")
 
-	Config.PatreonSecret = os.Getenv(prefix + "PATREON_WEBOOK_SECRET")
-	Config.PatreonClientID = os.Getenv(prefix + "PATREON_CLIENT_ID")
-	Config.PatreonClientSecret = os.Getenv(prefix + "PATREON_CLIENT_SECRET")
+	Config.PatreonSecret.Set("PATREON_WEBOOK_SECRET")
+	Config.PatreonClientID.Set("PATREON_CLIENT_ID")
+	Config.PatreonClientSecret.Set("PATREON_CLIENT_SECRET")
 
-	Config.DiscordClientID = os.Getenv(prefix + "DISCORD_CLIENT_ID")
-	Config.DiscordSescret = os.Getenv(prefix + "DISCORD_SECRET")
-	Config.DiscordBotToken = os.Getenv(prefix + "DISCORD_BOT_TOKEN")
-	Config.DiscordRelayToken = os.Getenv(prefix + "DISCORD_RELAY_TOKEN")
+	Config.DiscordClientID.Set("DISCORD_CLIENT_ID")
+	Config.DiscordSescret.Set("DISCORD_SECRET")
+	Config.DiscordBotToken.Set("DISCORD_BOT_TOKEN")
+	Config.DiscordRelayToken.Set("DISCORD_RELAY_TOKEN")
 
 	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
-	Config.GithubToken = os.Getenv(prefix + "GITHUB_TOKEN")
-	Config.GoogleBucket = os.Getenv(prefix + "GOOGLE_BUCKET")
-	Config.GoogleProject = os.Getenv(prefix + "GOOGLE_PROJECT")
+	Config.GithubToken.Set("GITHUB_TOKEN")
+	Config.GoogleBucket.Set("GOOGLE_BUCKET")
+	Config.GoogleProject.Set("GOOGLE_PROJECT")
 	Config.GameDBDirectory.Set("PATH")
-	Config.SendGridAPIKey = os.Getenv(prefix + "SENDGRID")
-	Config.SteamAPIKey = os.Getenv(prefix + "API_KEY")
+	Config.SendGridAPIKey.Set("SENDGRID")
+	Config.SteamAPIKey.Set("API_KEY")
 	Config.WebserverPort.Set("PORT")
 
 	// Defaults
@@ -88,7 +88,7 @@ func init() {
 	Config.EnableWebserver.SetDefault("1")
 	Config.EnableConsumers.SetDefault("1")
 	Config.GameDBDirectory.SetDefault("/root")
-	Config.NewReleaseDays = 14
+	Config.NewReleaseDays.SetDefault("14")
 
 	switch Config.Environment.Get() {
 	case EnvProd:
@@ -99,7 +99,7 @@ func init() {
 	case EnvLocal:
 
 		Config.MemcacheDSN.SetDefault("localhost:11211")
-		Config.PatreonSecret = "EZTRjtID_1LUmgnQ4_WWuWIQbfj4QA1JtqYMq4prcq_kDvNdEXlgj2K7JyLwNXfd"
+		Config.PatreonSecret.SetDefault("EZTRjtID_1LUmgnQ4_WWuWIQbfj4QA1JtqYMq4prcq_kDvNdEXlgj2K7JyLwNXfd")
 
 	case EnvConsumer:
 
@@ -112,28 +112,28 @@ func init() {
 }
 
 type BaseConfig struct {
-	AdminEmail    string
-	AdminName     string
-	AdminPassword string
-	AdminUsername string
+	AdminEmail    ConfigItem
+	AdminName     ConfigItem
+	AdminPassword ConfigItem
+	AdminUsername ConfigItem
 
-	DiscordClientID   string
-	DiscordSescret    string
-	DiscordRelayToken string
-	DiscordBotToken   string
+	DiscordClientID   ConfigItem
+	DiscordSescret    ConfigItem
+	DiscordRelayToken ConfigItem
+	DiscordBotToken   ConfigItem
 
-	InfluxURL      string
-	InfluxPassword string
-	InfluxUsername string
+	InfluxURL      ConfigItem
+	InfluxPassword ConfigItem
+	InfluxUsername ConfigItem
 
 	InstagramPassword ConfigItem
 	InstagramUsername ConfigItem
 
-	MongoHost     string
-	MongoPort     string
-	MongoUsername string
-	MongoPassword string
-	MongoDatabase string
+	MongoHost     ConfigItem
+	MongoPort     ConfigItem
+	MongoUsername ConfigItem
+	MongoPassword ConfigItem
+	MongoDatabase ConfigItem
 
 	MySQLHost     ConfigItem
 	MySQLPort     ConfigItem
@@ -143,47 +143,47 @@ type BaseConfig struct {
 
 	RabbitUsername      ConfigItem
 	RabbitPassword      ConfigItem
-	RabbitHost          string
-	RabbitPort          string
-	RabbitManagmentPort string
+	RabbitHost          ConfigItem
+	RabbitPort          ConfigItem
+	RabbitManagmentPort ConfigItem
 
-	RecaptchaPrivate string
-	RecaptchaPublic  string
+	RecaptchaPrivate ConfigItem
+	RecaptchaPublic  ConfigItem
 
-	SessionAuthentication string
-	SessionEncryption     string
+	SessionAuthentication ConfigItem
+	SessionEncryption     ConfigItem
 
-	TwitchClientID     string
-	TwitchClientSecret string
+	TwitchClientID     ConfigItem
+	TwitchClientSecret ConfigItem
 
-	TwitterAccessToken       string
-	TwitterAccessTokenSecret string
-	TwitterConsumerKey       string
-	TwitterConsumerSecret    string
+	TwitterAccessToken       ConfigItem
+	TwitterAccessTokenSecret ConfigItem
+	TwitterConsumerKey       ConfigItem
+	TwitterConsumerSecret    ConfigItem
 
-	PatreonSecret       string
-	PatreonClientID     string
-	PatreonClientSecret string
+	PatreonSecret       ConfigItem
+	PatreonClientID     ConfigItem
+	PatreonClientSecret ConfigItem
 
 	Environment     ConfigItem
 	GameDBDirectory ConfigItem
 	GameDBDomain    ConfigItem
 	GameDBShortName ConfigItem
-	GithubToken     string
-	GoogleBucket    string
-	GoogleProject   string
+	GithubToken     ConfigItem
+	GoogleBucket    ConfigItem
+	GoogleProject   ConfigItem
 	MemcacheDSN     ConfigItem
-	SendGridAPIKey  string
-	SteamAPIKey     string
+	SendGridAPIKey  ConfigItem
+	SteamAPIKey     ConfigItem
 	WebserverPort   ConfigItem
 	EnableWebserver ConfigItem
 	EnableConsumers ConfigItem
-	CommitHash      string
-	NewReleaseDays  int
+	CommitHash      ConfigItem
+	NewReleaseDays  ConfigItem
 }
 
 func (c BaseConfig) RabbitDSN() string {
-	return "amqp://" + c.RabbitUsername.Get() + ":" + c.RabbitPassword.Get() + "@" + c.RabbitHost + ":" + c.RabbitPort
+	return "amqp://" + c.RabbitUsername.Get() + ":" + c.RabbitPassword.Get() + "@" + c.RabbitHost.Get() + ":" + c.RabbitPort.Get()
 }
 
 func (c BaseConfig) MySQLDNS() string {
@@ -191,11 +191,11 @@ func (c BaseConfig) MySQLDNS() string {
 }
 
 func (c BaseConfig) MongoDSN() string {
-	return "mongodb://" + c.MongoHost + ":" + c.MongoPort
+	return "mongodb://" + c.MongoHost.Get() + ":" + c.MongoPort.Get()
 }
 
 func (c BaseConfig) RabbitAPI(values url.Values) string {
-	return "http://" + c.RabbitHost + ":" + c.RabbitManagmentPort + "/api/overview?" + values.Encode()
+	return "http://" + c.RabbitHost.Get() + ":" + c.RabbitManagmentPort.Get() + "/api/overview?" + values.Encode()
 }
 
 func (c BaseConfig) ListenOn() string {

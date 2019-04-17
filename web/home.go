@@ -56,7 +56,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm = gorm.Select([]string{"id", "name", "image_header"})
 		gorm = gorm.Where("type = ?", "game")
-		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays).Unix())
+		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
 		gorm = gorm.Order("player_peak_week desc")
 		gorm = gorm.Limit(20)
 		gorm = gorm.Find(&t.Games)

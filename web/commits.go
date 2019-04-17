@@ -102,7 +102,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var deployed bool
 	for _, v := range commits {
 
-		if v.GetSHA() == config.Config.CommitHash {
+		if v.GetSHA() == config.Config.CommitHash.Get() {
 			deployed = true
 		}
 
@@ -111,7 +111,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			Time:      v.Commit.Author.Date.Unix(),
 			Deployed:  deployed,
 			Link:      v.GetHTMLURL(),
-			Highlight: v.GetSHA() == config.Config.CommitHash,
+			Highlight: v.GetSHA() == config.Config.CommitHash.Get(),
 			Hash:      v.GetSHA()[0:7],
 		})
 	}
