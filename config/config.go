@@ -78,7 +78,6 @@ func init() {
 	Config.GoogleProject = os.Getenv(prefix + "GOOGLE_PROJECT")
 	Config.GameDBDirectory.Set("PATH")
 	Config.SendGridAPIKey = os.Getenv(prefix + "SENDGRID")
-	Config.GameDBShortName.Set("SHORT_NAME")
 	Config.SteamAPIKey = os.Getenv(prefix + "API_KEY")
 	Config.WebserverPort.Set("PORT")
 
@@ -228,7 +227,7 @@ type ConfigItem struct {
 func (ci *ConfigItem) Set(environment string) {
 	env, b := os.LookupEnv(prefix + environment)
 	if !b {
-		fmt.Println("MISSING ENV: " + env)
+		fmt.Println("MISSING ENV: " + environment)
 	}
 	ci.value = env
 }
