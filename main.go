@@ -62,7 +62,9 @@ func main() {
 
 	// Chat Bot
 	if config.Config.IsProd() || config.Config.IsLocal() {
-		chat_bot.Init()
+		go func() {
+			chat_bot.Init()
+		}()
 	}
 
 	// Crons
