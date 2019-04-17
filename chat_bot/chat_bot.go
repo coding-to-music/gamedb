@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"sync"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/website/config"
@@ -12,9 +11,11 @@ import (
 	"github.com/gamedb/website/mongo"
 )
 
+const adminAuthorID = "145456943912189952"
+
 func Init() {
 
-	discord, err := discordgo.New("Bot " + config.Config.DiscordBotToken)
+	discord, err := discordgo.New("Bot " + config.Config.DiscordBotToken.Get())
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -22,12 +23,11 @@ func Init() {
 
 	discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-		fmt.Println(m.Message.Content)
-
-		if config.Config.IsLocal() && m.Author.ID != "145456943912189952" {
+		if config.Config.IsLocal() && m.Author.ID != adminAuthorID {
 			return
 		}
 
+		// Don't reply to bots
 		if m.Author.Bot {
 			return
 		}
@@ -71,10 +71,6 @@ func Init() {
 		fmt.Println(err)
 		return
 	}
-
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	wg.Wait()
 }
 
 func isPrivateChannel(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
@@ -110,17 +106,14 @@ func (CommandGetPlayer) Description() string {
 }
 
 func (CommandGetPlayer) Regex() *regexp.Regexp {
-	return regexp.MustCompile("^.(player|user) ((.*)+)")
+	return regexp.MustCompile("^.(player|user) (.*)")
 }
 
 func (c CommandGetPlayer) Output(input string) string {
 
-	matches := c.Regex().FindAllStringSubmatch(input, -1)
+	matches := c.Regex().FindStringSubmatch(input)
 
-	fmt.Println(input)
-	fmt.Println(matches)
-
-	player, err := mongo.SearchPlayer(input)
+	player, err := mongo.SearchPlayer(matches[2])
 	if err != nil {
 		log.Err(err)
 		return ""
