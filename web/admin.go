@@ -356,34 +356,52 @@ func adminQueues(r *http.Request) {
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
-		appID, err := strconv.Atoi(val)
-		log.Err(err, r)
-		if err == nil {
+		vals := strings.Split(val, ",")
 
-			err = queue.ProduceApp(appID)
-			log.Err(err, r)
+		for _, val := range vals {
+
+			val = strings.TrimSpace(val)
+
+			appID, err := strconv.Atoi(val)
+			if err == nil {
+
+				err = queue.ProduceApp(appID)
+				log.Err(err, r)
+			}
 		}
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
-		packageID, err := strconv.Atoi(val)
-		log.Err(err, r)
-		if err == nil {
+		vals := strings.Split(val, ",")
 
-			err = queue.ProducePackage(packageID)
-			log.Err(err, r)
+		for _, val := range vals {
+
+			val = strings.TrimSpace(val)
+
+			packageID, err := strconv.Atoi(val)
+			if err == nil {
+
+				err = queue.ProducePackage(packageID)
+				log.Err(err, r)
+			}
 		}
 	}
 
 	if val := r.PostForm.Get("bundle-id"); val != "" {
 
-		bundleID, err := strconv.Atoi(val)
-		log.Err(err, r)
-		if err == nil {
+		vals := strings.Split(val, ",")
 
-			err = queue.ProduceBundle(bundleID, 0)
-			log.Err(err, r)
+		for _, val := range vals {
+
+			val = strings.TrimSpace(val)
+
+			bundleID, err := strconv.Atoi(val)
+			if err == nil {
+
+				err = queue.ProduceBundle(bundleID, 0)
+				log.Err(err, r)
+			}
 		}
 	}
 
