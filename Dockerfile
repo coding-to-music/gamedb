@@ -10,7 +10,7 @@ FROM alpine:3.8 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/website ./
 COPY package.json ./package.json
-COPY templates ./templates
+COPY cmd/web_server/templates ./templates
 COPY assets ./assets
 COPY health-check.sh ./health-check.sh
 RUN ["chmod", "+x", "health-check.sh"]
