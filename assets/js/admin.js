@@ -19,6 +19,7 @@ if ($('#admin-page').length > 0) {
             data: $(this).serialize(),
             success: function (data, textStatus, jqXHR) {
                 toast(true, 'Queued');
+                queuesForm.trigger("reset");
             },
         });
     });
