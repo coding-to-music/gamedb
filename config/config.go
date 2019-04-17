@@ -96,7 +96,7 @@ func init() {
 	case EnvProd:
 
 		Config.MemcacheDSN.SetDefault("memcache:11211")
-		// Config.EnableConsumers.SetDefault("0")
+		Config.EnableConsumers.SetDefault("0")
 
 	case EnvLocal:
 
