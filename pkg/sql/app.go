@@ -676,6 +676,28 @@ func PopularApps() (apps []App, err error) {
 	return apps, err
 }
 
+func TrendingApps() (apps []App, err error) {
+
+	var item = helpers.MemcacheTrendingApps
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return apps, err
+		}
+
+		db = db.Select([]string{"id", "name"})
+		db = db.Order("player_trend desc")
+		db = db.Limit(10)
+		db = db.Find(&apps)
+
+		return apps, err
+	})
+
+	return apps, err
+}
+
 type SteamSpyAppResponse struct {
 	Appid     int    `json:"appid"`
 	Name      string `json:"name"`

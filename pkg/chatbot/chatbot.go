@@ -6,6 +6,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+var author = &discordgo.MessageEmbedAuthor{
+	Name:    "gamedb.online",
+	URL:     "https://gamedb.online/",
+	IconURL: "https://gamedb.online/assets/img/sa-bg-32x32.png",
+}
+
 var CommandRegister = []Command{
 	CommandHelp{},
 	CommandPlayer{},
