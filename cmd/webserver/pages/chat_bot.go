@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/gamedb/website/pkg/chatbot"
@@ -32,6 +33,10 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	t := chatBotTemplate{}
 	t.fill(w, r, "Chat", "The Game DB community.")
 	t.Commands = chatbot.CommandRegister
+
+	sort.Slice(t.Commands, func(i, j int) bool {
+		return t.Commands[i].Example() > t.Commands[j].Example()
+	})
 
 	err := returnTemplate(w, r, "chat_bot", t)
 	log.Err(err, r)
