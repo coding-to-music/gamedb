@@ -9,8 +9,12 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	main2 "github.com/gamedb/website/cmd/consumers"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/influx"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/queue"
+	"github.com/gamedb/website/pkg/session"
 	"github.com/go-chi/chi"
 )
 
@@ -44,17 +48,17 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !pkg.IsValidPlayerID(idx) {
+	if !helpers.IsValidPlayerID(idx) {
 		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid Player ID: " + id})
 		return
 	}
 
 	// Find the player row
-	player, err := pkg.GetPlayer(idx)
+	player, err := mongo.GetPlayer(idx)
 	if err != nil {
-		if err == pkg.ErrNoDocuments {
+		if err == mongo.ErrNoDocuments {
 
-			err = main2.ProducePlayer(idx)
+			err = queue.ProducePlayer(idx)
 			log.Err(err, r)
 
 			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now.", DataID: idx}
@@ -68,8 +72,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue profile for a refresh
-	if player.ShouldUpdate(r.UserAgent(), pkg.PlayerUpdateAuto) {
-		err = main2.ProducePlayer(player.ID)
+	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
+		err = queue.ProducePlayer(player.ID)
 		log.Err(err, r)
 		t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 	}
@@ -77,9 +81,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get friends
-	var friends []pkg.ProfileFriend
+	var friends []mongo.ProfileFriend
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -92,20 +96,20 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Number of players
 	var players int64
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
 		var err error
-		players, err = pkg.CountPlayers()
+		players, err = mongo.CountPlayers()
 		log.Err(err, r)
 
 	}(player)
 
 	// Get badges
-	var badges []pkg.ProfileBadge
+	var badges []mongo.ProfileBadge
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -118,7 +122,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Get recent games
 	var recentGames []RecentlyPlayedGame
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -135,12 +139,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			game.AppID = v.AppID
 			game.Name = v.Name
 			game.Weeks = v.PlayTime2Weeks
-			game.WeeksNice = pkg.GetTimeShort(v.PlayTime2Weeks, 2)
+			game.WeeksNice = helpers.GetTimeShort(v.PlayTime2Weeks, 2)
 			game.AllTime = v.PlayTimeForever
-			game.AllTimeNice = pkg.GetTimeShort(v.PlayTimeForever, 2)
+			game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
 
 			if v.ImgIconURL == "" {
-				game.Icon = pkg.DefaultAppIcon
+				game.Icon = helpers.DefaultAppIcon
 			} else {
 				game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
 			}
@@ -151,9 +155,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get bans
-	var bans pkg.PlayerBans
+	var bans mongo.PlayerBans
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -168,9 +172,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get badge stats
-	var badgeStats pkg.ProfileBadgeStats
+	var badgeStats mongo.ProfileBadgeStats
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -183,10 +187,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	player.VanintyURL = pkg.TruncateString(player.VanintyURL, 14)
+	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14)
 
 	// Game stats
-	gameStats, err := player.GetGameStats(pkg.GetCountryCode(r))
+	gameStats, err := player.GetGameStats(session.GetCountryCode(r))
 	// log.Err(err, r) // Disable for now, too many logs
 
 	// Make banners
@@ -208,14 +212,14 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetHighCharts()
 	t.Player = player
 	t.Friends = friends
-	t.Apps = []pkg.PlayerApp{}
+	t.Apps = []mongo.PlayerApp{}
 	t.Badges = badges
 	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames
 	t.GameStats = gameStats
 	t.Bans = bans
 	t.toasts = toasts
-	t.DefaultAvatar = pkg.DefaultPlayerAvatar
+	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 
 	err = returnTemplate(w, r, "player", t)
 	log.Err(err, r)
@@ -223,14 +227,14 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 type playerTemplate struct {
 	GlobalTemplate
-	Apps       []pkg.PlayerApp
-	Badges     []pkg.ProfileBadge
-	BadgeStats pkg.ProfileBadgeStats
+	Apps       []mongo.PlayerApp
+	Badges     []mongo.ProfileBadge
+	BadgeStats mongo.ProfileBadgeStats
 	Banners    map[string][]string
-	Bans       pkg.PlayerBans
-	Friends    []pkg.ProfileFriend
-	GameStats  pkg.PlayerAppStatsTemplate
-	Player     pkg.Player
+	Bans       mongo.PlayerBans
+	Friends    []mongo.ProfileFriend
+	GameStats  mongo.PlayerAppStatsTemplate
+	Player     mongo.Player
 	// Ranks       playerRanksTemplate
 	RecentGames   []RecentlyPlayedGame
 	DefaultAvatar string
@@ -343,13 +347,13 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	code := pkg.GetCountryCode(r)
+	code := session.GetCountryCode(r)
 
 	//
 	var wg sync.WaitGroup
 
 	// Get apps
-	var playerApps []pkg.PlayerApp
+	var playerApps []mongo.PlayerApp
 	wg.Add(1)
 	go func() {
 
@@ -370,7 +374,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		playerApps, err = pkg.GetPlayerApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns, colEdit))
+		playerApps, err = mongo.GetPlayerApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns, colEdit))
 		log.Err(err)
 	}()
 
@@ -381,7 +385,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		player, err := pkg.GetPlayer(playerIDInt)
+		player, err := mongo.GetPlayer(playerIDInt)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -418,7 +422,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	message, err, success := func(r *http.Request) (string, error, bool) {
 
-		if pkg.IsBot(r.UserAgent()) {
+		if helpers.IsBot(r.UserAgent()) {
 			return "Bots can't update players", nil, false
 		}
 
@@ -427,33 +431,33 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Invalid Player ID", err, false
 		}
 
-		if !pkg.IsValidPlayerID(idx) {
+		if !helpers.IsValidPlayerID(idx) {
 			return "Invalid Player ID", err, false
 		}
 
 		var message string
 
-		player, err := pkg.GetPlayer(idx)
+		player, err := mongo.GetPlayer(idx)
 		if err == nil {
 			message = "Updating player!"
-		} else if err == pkg.ErrNoDocuments {
+		} else if err == mongo.ErrNoDocuments {
 			message = "Looking for new player!"
 		} else {
 			log.Err(err, r)
 			return "Error looking for player", err, false
 		}
 
-		updateType := pkg.PlayerUpdateManual
+		updateType := mongo.PlayerUpdateManual
 		if isAdmin(r) {
 			message = "Admin update!"
-			updateType = pkg.PlayerUpdateAdmin
+			updateType = mongo.PlayerUpdateAdmin
 		}
 
 		if !player.ShouldUpdate(r.UserAgent(), updateType) {
 			return "Player can't be updated yet", nil, false
 		}
 
-		err = main2.ProducePlayer(player.ID)
+		err = queue.ProducePlayer(player.ID)
 		if err != nil {
 			log.Err(err, r)
 			return "Something has gone wrong", err, false
@@ -507,17 +511,17 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := pkg.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc pkg.HighChartsJson
+	var hc influx.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = pkg.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)

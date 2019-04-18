@@ -5,7 +5,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
 )
 
 var ErrUnMarshalNonPointer = errors.New("trying to unmarshal a non-pointer")
@@ -39,7 +39,7 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 		if len(data) > 1000 {
 			data = data[0:1000]
 		}
-		pkg.Info(err.Error() + ": " + string(data) + "...")
+		log.Info(err.Error() + ": " + string(data) + "...")
 	default:
 		log.Err(err)
 	}

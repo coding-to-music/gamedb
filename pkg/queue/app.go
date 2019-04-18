@@ -1,4 +1,4 @@
-package main
+package queue
 
 import (
 	"encoding/json"
@@ -18,6 +18,7 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
+	influx2 "github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
 	"github.com/gamedb/website/pkg/sql"
@@ -979,8 +980,8 @@ func saveAppToInflux(app sql.App) (err error) {
 		return err
 	}
 
-	_, err = sql.InfluxWrite(sql.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(sql.InfluxMeasurementApps),
+	_, err = influx2.InfluxWrite(influx2.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influx2.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},

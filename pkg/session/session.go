@@ -5,7 +5,8 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/log"
 	"github.com/gorilla/sessions"
 )
 

@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -24,17 +26,17 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, time.Hour*24)
 
 	// Get config
-	config, err := pkg.GetConfig(pkg.ConfDevelopersUpdated)
+	config, err := sql.GetConfig(sql.ConfDevelopersUpdated)
 	log.Err(err, r)
 
 	// Get developers
-	developers, err := pkg.GetAllDevelopers([]string{})
+	developers, err := sql.GetAllDevelopers([]string{})
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the developers.", Error: err})
 		return
 	}
 
-	code := pkg.GetCountryCode(r)
+	code := session.GetCountryCode(r)
 	prices := map[int]string{}
 	for _, v := range developers {
 		price, err := v.GetMeanPrice(code)

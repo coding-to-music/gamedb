@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
 	"github.com/go-chi/chi"
 )
 
@@ -50,7 +52,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func saveWebhookToMongo(event string, pwr patreon.Webhook, body []byte) (err error) {
 
-	_, err = pkg.InsertDocument(pkg.CollectionPatreonWebhooks, pkg.PatreonWebhook{
+	_, err = mongo.InsertDocument(mongo.CollectionPatreonWebhooks, mongo.PatreonWebhook{
 		CreatedAt:               time.Now(),
 		RequestBody:             string(body),
 		Event:                   event,
@@ -67,16 +69,16 @@ func saveWebhookToMongo(event string, pwr patreon.Webhook, body []byte) (err err
 func saveWebhookEvent(r *http.Request, event string, pwr patreon.Webhook) (err error) {
 
 	if pwr.User.Attributes.Email != "" {
-		player := pkg.Player{}
-		err = pkg.FindDocument(pkg.CollectionPlayers, "email", pwr.User.Attributes.Email, pkg.M{"_id": 1}, &player)
-		if err == pkg.ErrNoDocuments {
+		player := mongo.Player{}
+		err = mongo.FindDocument(mongo.CollectionPlayers, "email", pwr.User.Attributes.Email, mongo.M{"_id": 1}, &player)
+		if err == mongo.ErrNoDocuments {
 			return nil
 		}
 		if err != nil {
 			return err
 		}
 
-		return pkg.CreateEvent(r, player.ID, pkg.EventPatreon+"-"+event)
+		return mongo.CreateEvent(r, player.ID, mongo.EventPatreon+"-"+event)
 	}
 
 	return nil

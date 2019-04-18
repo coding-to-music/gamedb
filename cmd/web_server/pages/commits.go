@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/github"
 )
@@ -33,7 +35,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
 
-	client, ctx := pkg.GetGithub()
+	client, ctx := helpers.GetGithub()
 
 	operation := func() (err error) {
 
@@ -51,9 +53,9 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { pkg.Info(err) })
+	err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
-		pkg.Critical(err, r)
+		log.Critical(err, r)
 	}
 
 	err = returnTemplate(w, r, "commits", t)
@@ -80,7 +82,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.getOffset()
 
-	client, ctx := pkg.GetGithub()
+	client, ctx := helpers.GetGithub()
 
 	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
@@ -130,7 +132,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 2), func(err error, t time.Duration) { pkg.Info(err) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 2), func(err error, t time.Duration) { log.Info(err) })
 	log.Err(err)
 
 	//

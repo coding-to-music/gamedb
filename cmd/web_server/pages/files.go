@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/log"
 )
 
 func rootFileHandler(w http.ResponseWriter, r *http.Request) {

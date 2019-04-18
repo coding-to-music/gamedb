@@ -1,4 +1,4 @@
-package main
+package queue
 
 import (
 	"encoding/json"
@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
 )
 
 type rabbitMessageProduct struct {
@@ -73,9 +75,9 @@ func (i rabbitMessageProductKeyValues) ToNestedMaps() (ret map[string]interface{
 	return m
 }
 
-func (i rabbitMessageProductKeyValues) GetExtended() (extended pkg.PICSExtended) {
+func (i rabbitMessageProductKeyValues) GetExtended() (extended sql.PICSExtended) {
 
-	extended = pkg.PICSExtended{}
+	extended = sql.PICSExtended{}
 	for _, v := range i.Children {
 		if v.Value == nil {
 			b, err := json.Marshal(v.ToNestedMaps())
@@ -88,9 +90,9 @@ func (i rabbitMessageProductKeyValues) GetExtended() (extended pkg.PICSExtended)
 	return extended
 }
 
-func (i rabbitMessageProductKeyValues) GetAppConfig() (config pkg.PICSAppConfig, launch []pkg.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) GetAppConfig() (config sql.PICSAppConfig, launch []sql.PICSAppConfigLaunchItem) {
 
-	config = pkg.PICSAppConfig{}
+	config = sql.PICSAppConfig{}
 	for _, v := range i.Children {
 		if v.Name == "launch" {
 			launch = v.GetAppLaunch()
@@ -106,7 +108,7 @@ func (i rabbitMessageProductKeyValues) GetAppConfig() (config pkg.PICSAppConfig,
 	return config, launch
 }
 
-func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pkg.PICSDepots) {
+func (i rabbitMessageProductKeyValues) GetAppDepots() (depots sql.PICSDepots) {
 
 	depots.Extra = map[string]string{}
 
@@ -131,7 +133,7 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pkg.PICSDepots) {
 			continue
 		}
 
-		depot := pkg.PICSAppDepotItem{}
+		depot := sql.PICSAppDepotItem{}
 		depot.ID = id
 
 		for _, vv := range v.Children {
@@ -194,11 +196,11 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pkg.PICSDepots) {
 	return depots
 }
 
-func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []pkg.PICSAppDepotBranches) {
+func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []sql.PICSAppDepotBranches) {
 
 	for _, v := range i.Children {
 
-		branch := pkg.PICSAppDepotBranches{}
+		branch := sql.PICSAppDepotBranches{}
 		branch.Name = v.Name
 
 		for _, vv := range v.Children {
@@ -237,11 +239,11 @@ func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []pkg.PIC
 	return branches
 }
 
-func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []pkg.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []sql.PICSAppConfigLaunchItem) {
 
 	for _, v := range i.Children {
 
-		item := pkg.PICSAppConfigLaunchItem{}
+		item := sql.PICSAppConfigLaunchItem{}
 		item.Order = v.Name
 
 		v.getAppLaunchItem(&item)
@@ -252,7 +254,7 @@ func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []pkg.PICSAppConfig
 	return items
 }
 
-func (i rabbitMessageProductKeyValues) getAppLaunchItem(launchItem *pkg.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) getAppLaunchItem(launchItem *sql.PICSAppConfigLaunchItem) {
 
 	for _, v := range i.Children {
 
@@ -293,10 +295,10 @@ func (i rabbitMessageProductKeyValues) getAppLaunchItem(launchItem *pkg.PICSAppC
 	}
 }
 
-func savePriceChanges(before pkg.ProductInterface, after pkg.ProductInterface) (err error) {
+func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (err error) {
 
 	var prices sql.ProductPrices
-	var price sql.ProductPricestruct
+	var price sql.ProductPriceStruct
 	var documents []mongo.Document
 
 	for code := range steam.Countries {
@@ -328,11 +330,11 @@ func savePriceChanges(before pkg.ProductInterface, after pkg.ProductInterface) (
 
 		if oldPrice != newPrice {
 
-			price := pkg.ProductPrice{}
+			price := mongo.ProductPrice{}
 
 			if after.GetProductType() == helpers.ProductTypeApp {
 				price.AppID = after.GetID()
-			} else if after.GetProductType() == pkg.ProductTypePackage {
+			} else if after.GetProductType() == helpers.ProductTypePackage {
 				price.PackageID = after.GetID()
 			} else {
 				panic("Invalid productType")
@@ -353,9 +355,9 @@ func savePriceChanges(before pkg.ProductInterface, after pkg.ProductInterface) (
 		// Tweet free US products
 		if code == steam.CountryUS && before.GetProductType() == helpers.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
 
-			twitter := pkg.GetTwitter()
+			twitter := helpers.GetTwitter()
 
-			_, _, err = twitter.Statuses.Update("Free game! Down from $"+helpers.FloatToString(float64(oldPrice)/100, 2)+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+pkg.GetHashTag(before.GetName()), nil)
+			_, _, err = twitter.Statuses.Update("Free game! Down from $"+helpers.FloatToString(float64(oldPrice)/100, 2)+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 			if err != nil {
 				if !strings.Contains(err.Error(), "Status is a duplicate") {
 					logCritical(err)
@@ -364,6 +366,6 @@ func savePriceChanges(before pkg.ProductInterface, after pkg.ProductInterface) (
 		}
 	}
 
-	_, err = pkg.InsertDocuments(pkg.CollectionProductPrices, documents)
+	_, err = mongo.InsertDocuments(mongo.CollectionProductPrices, documents)
 	return err
 }

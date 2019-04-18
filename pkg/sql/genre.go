@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
 )
 
 type Genre struct {
@@ -28,7 +28,7 @@ func (g Genre) GetName() string {
 }
 
 func (g Genre) GetMeanPrice(code steam.CountryCode) (string, error) {
-	return pkg.GetMeanPrice(code, g.MeanPrice)
+	return helpers.GetMeanPrice(code, g.MeanPrice)
 }
 
 func (g Genre) GetMeanScore() string {
@@ -56,9 +56,9 @@ func GetAllGenres(includeDeleted bool) (genres []Genre, err error) {
 
 func GetGenresForSelect() (genres []Genre, err error) {
 
-	var item = pkg.MemcacheGenreKeyNames
+	var item = helpers.MemcacheGenreKeyNames
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
 
 		var genres []Genre
 

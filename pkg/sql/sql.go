@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"github.com/jinzhu/gorm"
 )
 
@@ -27,7 +29,7 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 		// Retrying as this call can fail
 		operation := func() (err error) {
 
-			pkg.Info("Connecting to MySQL")
+			log.Info("Connecting to MySQL")
 
 			options := url.Values{}
 			options.Set("parseTime", "true")
@@ -58,9 +60,9 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { pkg.Info(err) })
+		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
-			pkg.Critical(err)
+			log.Critical(err)
 		}
 	}
 
@@ -71,6 +73,6 @@ type mySQLLogger struct {
 }
 
 func (logger mySQLLogger) Print(v ...interface{}) {
-	s := pkg.JoinInterface(v)
-	pkg.Debug(s, pkg.LogNameSQL)
+	s := helpers.JoinInterface(v)
+	log.Debug(s, log.LogNameSQL)
 }

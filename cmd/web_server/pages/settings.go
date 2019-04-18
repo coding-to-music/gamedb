@@ -8,7 +8,11 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -37,7 +41,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	player, err := getPlayer(r)
 	if err != nil {
 		if err == errNotLoggedIn {
-			err := pkg.SetBadFlash(w, r, "please login")
+			err := session.SetBadFlash(w, r, "please login")
 			log.Err(err, r)
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
@@ -51,9 +55,9 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get donations
-	var donations []pkg.Donation
+	var donations []sql.Donation
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -67,11 +71,11 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get games
 	var games string
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
-		playerApps, err := pkg.GetPlayerApps(player.ID, 0, 0, pkg.D{})
+		playerApps, err := mongo.GetPlayerApps(player.ID, 0, 0, mongo.D{})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -82,14 +86,14 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			appIDs = append(appIDs, v.AppID)
 		}
 
-		games = string(pkg.MarshalLog(appIDs))
+		games = string(helpers.MarshalLog(appIDs))
 
 	}(player)
 
 	// Get User
-	var user pkg.User
+	var user sql.User
 	wg.Add(1)
-	go func(player pkg.Player) {
+	go func(player mongo.Player) {
 
 		defer wg.Done()
 
@@ -129,9 +133,9 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 type settingsTemplate struct {
 	GlobalTemplate
-	Player    pkg.Player
-	User      pkg.User
-	Donations []pkg.Donation
+	Player    mongo.Player
+	User      sql.User
+	Donations []sql.Donation
 	Games     string
 	Messages  []interface{}
 	Countries [][]string
@@ -161,7 +165,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	if len(password) > 0 {
 
 		if len(password) < 8 {
-			err := pkg.SetBadFlash(w, r, "Password must be at least 8 characters long")
+			err := session.SetBadFlash(w, r, "Password must be at least 8 characters long")
 			log.Err(err, r)
 			http.Redirect(w, r, "/settings", http.StatusFound)
 			return
@@ -170,7 +174,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 		if err != nil {
 			log.Err(err, r)
-			err := pkg.SetBadFlash(w, r, "Something went wrong encrypting your password")
+			err := session.SetBadFlash(w, r, "Something went wrong encrypting your password")
 			log.Err(err, r)
 			http.Redirect(w, r, "/settings", http.StatusFound)
 			return
@@ -201,16 +205,16 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	err = user.Save()
 	log.Err(err, r)
 	if err != nil {
-		err = pkg.SetBadFlash(w, r, "Something went wrong saving settings")
+		err = session.SetBadFlash(w, r, "Something went wrong saving settings")
 		log.Err(err, r)
 	} else {
-		err = pkg.SetGoodFlash(w, r, "Settings saved")
+		err = session.SetGoodFlash(w, r, "Settings saved")
 		log.Err(err, r)
 	}
 
 	// Update session
-	err = pkg.WriteMany(w, r, map[string]string{
-		pkg.UserCountry: user.CountryCode,
+	err = session.WriteMany(w, r, map[string]string{
+		session.UserCountry: user.CountryCode,
 	})
 	log.Err(err, r)
 
@@ -240,13 +244,13 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get events
-	var events []pkg.Event
+	var events []mongo.Event
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		events, err = pkg.GetEvents(playerID, query.getOffset64())
+		events, err = mongo.GetEvents(playerID, query.getOffset64())
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -261,7 +265,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		total, err = pkg.CountEvents(playerID)
+		total, err = mongo.CountEvents(playerID)
 		log.Err(err, r)
 
 	}(r)
@@ -283,7 +287,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 
 	// Check if logged in
-	loggedIn, err := pkg.IsLoggedIn(r)
+	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
 		return playerID, errNotLoggedIn
 	}
@@ -293,7 +297,7 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	}
 
 	// Get session
-	id, err := pkg.Read(r, pkg.PlayerID)
+	id, err := session.Read(r, session.PlayerID)
 	if err != nil {
 		return playerID, err
 	}
@@ -302,17 +306,17 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	return strconv.ParseInt(id, 10, 64)
 }
 
-func getPlayer(r *http.Request) (player pkg.Player, err error) {
+func getPlayer(r *http.Request) (player mongo.Player, err error) {
 
 	playerID, err := getPlayerIDFromSession(r)
 	if err != nil {
 		return player, err
 	}
 
-	return pkg.GetPlayer(playerID)
+	return mongo.GetPlayer(playerID)
 }
 
-func getUser(r *http.Request, playerID int64) (user pkg.User, err error) {
+func getUser(r *http.Request, playerID int64) (user sql.User, err error) {
 
 	if playerID == 0 {
 		playerID, err = getPlayerIDFromSession(r)
@@ -321,7 +325,7 @@ func getUser(r *http.Request, playerID int64) (user pkg.User, err error) {
 		}
 	}
 
-	user, err = pkg.GetUser(playerID)
+	user, err = sql.GetUser(playerID)
 	if err != nil {
 		return user, err
 	}

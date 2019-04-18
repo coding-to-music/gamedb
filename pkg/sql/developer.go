@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
 )
 
 type Developer struct {
@@ -29,7 +29,7 @@ func (d Developer) GetName() (name string) {
 }
 
 func (d Developer) GetMeanPrice(code steam.CountryCode) (string, error) {
-	return pkg.GetMeanPrice(code, d.MeanPrice)
+	return helpers.GetMeanPrice(code, d.MeanPrice)
 }
 
 func (d Developer) GetMeanScore() string {
@@ -80,9 +80,9 @@ func GetAllDevelopers(fields []string) (developers []Developer, err error) {
 
 func GetDevelopersForSelect() (devs []Developer, err error) {
 
-	var item = pkg.MemcacheDeveloperKeyNames
+	var item = helpers.MemcacheDeveloperKeyNames
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &devs, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &devs, func() (interface{}, error) {
 
 		var devs []Developer
 

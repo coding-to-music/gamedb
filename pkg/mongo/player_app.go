@@ -4,7 +4,8 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,17 +22,17 @@ type PlayerApp struct {
 
 func (pa PlayerApp) BSON() (ret interface{}) {
 
-	var prices = pkg.M{}
+	var prices = M{}
 	for k, v := range pa.AppPrices {
 		prices[k] = v
 	}
 
-	var pricesHour = pkg.M{}
+	var pricesHour = M{}
 	for k, v := range pa.AppPriceHour {
 		pricesHour[k] = v
 	}
 
-	return pkg.M{
+	return M{
 		"_id":             pa.getKey(),
 		"player_id":       pa.PlayerID,
 		"app_id":          pa.AppID,
@@ -61,7 +62,7 @@ func (pa PlayerApp) GetIcon() string {
 
 func (pa PlayerApp) GetTimeNice() string {
 
-	return pkg.GetTimeShort(pa.AppTime, 2)
+	return helpers.GetTimeShort(pa.AppTime, 2)
 }
 
 func (pa PlayerApp) GetPriceFormatted(code steam.CountryCode) string {
@@ -69,7 +70,7 @@ func (pa PlayerApp) GetPriceFormatted(code steam.CountryCode) string {
 	val, ok := pa.AppPrices[string(code)]
 	if ok {
 
-		locale, err := pkg.GetLocaleFromCountry(code)
+		locale, err := helpers.GetLocaleFromCountry(code)
 		log.Err(err)
 		return locale.Format(val)
 
@@ -87,7 +88,7 @@ func (pa PlayerApp) GetPriceHourFormatted(code steam.CountryCode) string {
 			return "∞"
 		}
 
-		locale, err := pkg.GetLocaleFromCountry(code)
+		locale, err := helpers.GetLocaleFromCountry(code)
 		log.Err(err)
 		return locale.FormatFloat(float64(val))
 
@@ -112,12 +113,12 @@ func (pa PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{})
 
 func GetPlayerAppsByApp(appID int, offset int64, filter interface{}) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, 100, filter, pkg.M{"app_time": -1}, pkg.M{"_id": -1, "player_id": 1, "app_time": 1})
+	return getPlayerApps(offset, 100, filter, M{"app_time": -1}, M{"_id": -1, "player_id": 1, "app_time": 1})
 }
 
-func GetPlayerApps(playerID int64, offset int64, limit int64, sort pkg.D) (apps []PlayerApp, err error) {
+func GetPlayerApps(playerID int64, offset int64, limit int64, sort D) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, limit, pkg.M{"player_id": playerID}, sort, nil)
+	return getPlayerApps(offset, limit, M{"player_id": playerID}, sort, nil)
 }
 
 func GetPlayersApps(playerIDs []int64) (apps []PlayerApp, err error) {
@@ -126,21 +127,21 @@ func GetPlayersApps(playerIDs []int64) (apps []PlayerApp, err error) {
 		return apps, err
 	}
 
-	playersFilter := pkg.A{}
+	playersFilter := A{}
 	for _, v := range playerIDs {
 		playersFilter = append(playersFilter, v)
 	}
 
-	return getPlayerApps(0, 0, pkg.M{"player_id": pkg.M{"$in": playersFilter}}, nil, pkg.M{"_id": -1, "player_id": 1, "app_id": 1})
+	return getPlayerApps(0, 0, M{"player_id": M{"$in": playersFilter}}, nil, M{"_id": -1, "player_id": 1, "app_id": 1})
 }
 
 func getPlayerApps(offset int64, limit int64, filter interface{}, sort interface{}, projection interface{}) (apps []PlayerApp, err error) {
 
 	if filter == nil {
-		filter = pkg.M{}
+		filter = M{}
 	}
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return apps, err
 	}
@@ -159,7 +160,7 @@ func getPlayerApps(offset int64, limit int64, filter interface{}, sort interface
 		ops.SetLimit(limit)
 	}
 
-	c := client.Database(pkg.MongoDatabase, options.Database()).Collection(pkg.CollectionPlayerApps.String())
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String())
 	cur, err := c.Find(ctx, filter, ops)
 	if err != nil {
 		return apps, err
@@ -187,7 +188,7 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 		return nil
 	}
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return err
 	}
@@ -196,14 +197,14 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 	for _, v := range apps {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(pkg.M{"_id": v.getKey()})
+		write.SetFilter(M{"_id": v.getKey()})
 		write.SetReplacement(v.BSON())
 		write.SetUpsert(true)
 
 		writes = append(writes, write)
 	}
 
-	c := client.Database(pkg.MongoDatabase).Collection(pkg.CollectionPlayerApps.String())
+	c := client.Database(MongoDatabase).Collection(CollectionPlayerApps.String())
 
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 

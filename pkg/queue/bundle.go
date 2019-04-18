@@ -1,4 +1,4 @@
-package main
+package queue
 
 import (
 	"encoding/json"
@@ -11,7 +11,10 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	influx2 "github.com/gamedb/website/pkg/influx"
+	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/website/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
@@ -63,8 +66,8 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	bundle := pkg.Bundle{}
-	gorm = gorm.FirstOrInit(&bundle, pkg.Bundle{ID: message.ID})
+	bundle := sql.Bundle{}
+	gorm = gorm.FirstOrInit(&bundle, sql.Bundle{ID: message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
@@ -78,7 +81,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	if message.AppID > 0 && pkg.SliceHasInt(appIDs, message.AppID) {
+	if message.AppID > 0 && helpers.SliceHasInt(appIDs, message.AppID) {
 		logInfo("Skipping, bundle already has app")
 		payload.ack(msg)
 		return
@@ -108,7 +111,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page, err := pkg.GetPage(pkg.PageBundle)
+	page, err := websockets.GetPage(websockets.PageBundle)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -117,7 +120,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		page.Send(message.ID)
 	}
 
-	page, err = pkg.GetPage(pkg.PageBundles)
+	page, err = websockets.GetPage(websockets.PageBundles)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -131,7 +134,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func updateBundle(bundle *pkg.Bundle) (err error) {
+func updateBundle(bundle *sql.Bundle) (err error) {
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
@@ -221,10 +224,10 @@ func updateBundle(bundle *pkg.Bundle) (err error) {
 	return nil
 }
 
-func saveBundleToInflux(bundle pkg.Bundle) (err error) {
+func saveBundleToInflux(bundle sql.Bundle) (err error) {
 
-	_, err = pkg.InfluxWrite(pkg.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(pkg.InfluxMeasurementApps),
+	_, err = influx2.InfluxWrite(influx2.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influx2.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"bundle_id": strconv.Itoa(bundle.ID),
 		},

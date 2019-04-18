@@ -5,7 +5,6 @@ import (
 	"math"
 	"time"
 
-	"github.com/gamedb/website/pkg"
 	"github.com/jinzhu/now"
 )
 
@@ -52,5 +51,5 @@ func GetDaysToRelease(unix int64) string {
 		return "Today"
 	}
 
-	return "In " + pkg.GetTimeLong(int(days)*24*60, 2)
+	return "In " + GetTimeLong(int(days)*24*60, 2)
 }

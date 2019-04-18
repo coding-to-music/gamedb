@@ -8,7 +8,10 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -43,7 +46,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		config, err := pkg.GetConfig(pkg.ConfRanksUpdated)
+		config, err := sql.GetConfig(sql.ConfRanksUpdated)
 		log.Err(err, r)
 
 		if err == nil {
@@ -59,7 +62,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PlayersCount, err = pkg.CountPlayers()
+		t.PlayersCount, err = mongo.CountPlayers()
 		log.Err(err, r)
 
 	}()
@@ -101,14 +104,14 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var sort = query.getOrderMongo(columns, nil)
-	var filter = pkg.M{}
+	var filter = mongo.M{}
 
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
 		sort = nil
-		filter["$or"] = pkg.A{
-			pkg.M{"$text": pkg.M{"$search": search}},
-			pkg.M{"_id": search},
+		filter["$or"] = mongo.A{
+			mongo.M{"$text": mongo.M{"$search": search}},
+			mongo.M{"_id": search},
 		}
 	}
 
@@ -122,7 +125,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		players, err := pkg.GetPlayers(query.getOffset64(), 100, sort, filter, pkg.M{
+		players, err := mongo.GetPlayers(query.getOffset64(), 100, sort, filter, mongo.M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
@@ -175,7 +178,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = pkg.CountPlayers()
+		total, err = mongo.CountPlayers()
 		log.Err(err, r)
 	}()
 
@@ -187,7 +190,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		filtered, err = pkg.CountDocuments(pkg.CollectionPlayers, filter)
+		filtered, err = mongo.CountDocuments(mongo.CollectionPlayers, filter)
 		log.Err(err, r)
 	}()
 
@@ -208,7 +211,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type PlayerRow struct {
-	Player pkg.Player
+	Player mongo.Player
 	Rank   int
 }
 
@@ -218,5 +221,5 @@ func (pr PlayerRow) GetRank() string {
 		return "-"
 	}
 
-	return pkg.OrdinalComma(pr.Rank)
+	return helpers.OrdinalComma(pr.Rank)
 }

@@ -7,7 +7,8 @@ import (
 	"sync"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -27,7 +28,7 @@ func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	total, err := pkg.CountBundles()
+	total, err := sql.CountBundles()
 	log.Err(err, r)
 
 	// Template
@@ -59,7 +60,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var bundles []pkg.Bundle
+	var bundles []sql.Bundle
 
 	wg.Add(1)
 	go func(r *http.Request) {
@@ -73,7 +74,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		gorm = gorm.Model(&pkg.Bundle{})
+		gorm = gorm.Model(&sql.Bundle{})
 		gorm = gorm.Select([]string{"id", "name", "updated_at", "discount", "app_ids", "package_ids"})
 
 		gorm = query.setOrderOffsetGorm(gorm, "", map[string]string{
@@ -99,7 +100,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = pkg.CountBundles()
+		count, err = sql.CountBundles()
 		log.Err(err, r)
 
 	}()

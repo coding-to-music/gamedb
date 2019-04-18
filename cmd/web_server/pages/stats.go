@@ -7,7 +7,12 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/influx"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -43,7 +48,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PlayersCount, err = pkg.CountPlayers()
+		t.PlayersCount, err = mongo.CountPlayers()
 		log.Err(err, r)
 	}()
 
@@ -53,7 +58,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.AppsCount, err = pkg.CountApps()
+		t.AppsCount, err = sql.CountApps()
 		log.Err(err, r)
 	}()
 
@@ -63,7 +68,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PackagesCount, err = pkg.CountPackages()
+		t.PackagesCount, err = sql.CountPackages()
 		log.Err(err, r)
 	}()
 
@@ -81,7 +86,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var code = pkg.GetCountryCode(r)
+		var code = session.GetCountryCode(r)
 		var rows []statsAppTypeTotalsRow
 
 		gorm = gorm.Select([]string{"type", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
@@ -95,7 +100,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 			for _, v := range rows {
 
-				locale, err := pkg.GetLocaleFromCountry(code)
+				locale, err := helpers.GetLocaleFromCountry(code)
 				log.Err(err, r)
 				if err == nil {
 					t.Totals[v.Type] = locale.Format(int(v.Total))
@@ -139,17 +144,17 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhere("app_id", "=", 0)
 	builder.AddGroupByTime("30m")
 	builder.SetFillLinear()
-	resp, err := pkg.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc pkg.HighChartsJson
+	var hc influx.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = pkg.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)

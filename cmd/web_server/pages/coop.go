@@ -5,8 +5,11 @@ import (
 	"strconv"
 	"time"
 
-	main2 "github.com/gamedb/website/cmd/consumers"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/queue"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -31,7 +34,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := coopTemplate{}
 	t.fill(w, r, "Co-op", "Find a game to play with friends.")
-	t.DefaultAvatar = pkg.DefaultAppIcon
+	t.DefaultAvatar = helpers.DefaultAppIcon
 
 	// Get player ints
 	var playerInts []int64
@@ -43,7 +46,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		playerInts = append(playerInts, i)
 	}
 
-	playerInts = pkg.Unique64(playerInts)
+	playerInts = helpers.Unique64(playerInts)
 
 	// Check for max number of players
 	if len(playerInts) > maxPlayers {
@@ -53,7 +56,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get players
 	var err error
-	t.Players, err = pkg.GetPlayersByID(playerInts, pkg.M{"_id": 1, "persona_name": 1, "avatar": 1})
+	t.Players, err = mongo.GetPlayersByID(playerInts, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1})
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
 		return
@@ -67,9 +70,9 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range playerInts {
 
 		// If we couldnt find player
-		if !pkg.SliceHasInt64(foundPlayerIDs, v) {
+		if !helpers.SliceHasInt64(foundPlayerIDs, v) {
 
-			err = main2.ProducePlayer(v)
+			err = queue.ProducePlayer(v)
 			if err != nil {
 				log.Err(err, r)
 			}
@@ -82,7 +85,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	var allApps = map[int]bool{}
 	var allAppsByPlayer = map[int64][]int{}
 
-	playerApps, err := pkg.GetPlayersApps(foundPlayerIDs)
+	playerApps, err := mongo.GetPlayersApps(foundPlayerIDs)
 	for _, playerApp := range playerApps {
 
 		allApps[playerApp.AppID] = true
@@ -107,7 +110,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		// Loop each user
 		for _, gamesSlice := range allAppsByPlayer {
 
-			if !pkg.SliceHasInt(gamesSlice, appID) {
+			if !helpers.SliceHasInt(gamesSlice, appID) {
 				remove = true
 				break
 			}
@@ -124,7 +127,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		appsSlice = append(appsSlice, k)
 	}
 
-	games, err := pkg.GetAppsByID(appsSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
+	games, err := sql.GetAppsByID(appsSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
 	if err != nil {
 		log.Err(err, r)
 	}
@@ -147,7 +150,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 type coopTemplate struct {
 	GlobalTemplate
-	Players       []pkg.Player
+	Players       []mongo.Player
 	Games         []coopGameTemplate
 	DefaultAvatar string
 }

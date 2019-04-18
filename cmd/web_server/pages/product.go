@@ -8,12 +8,16 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
 // Get prices ajax
-func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productType pkg.ProductType) {
+func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productType helpers.ProductType) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -28,12 +32,12 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	// Get product
-	var product pkg.ProductInterface
+	var product sql.ProductInterface
 
 	if productType == helpers.ProductTypeApp {
-		product, err = pkg.GetApp(idx, []string{})
+		product, err = sql.GetApp(idx, []string{})
 	} else {
-		product, err = pkg.GetPackage(idx, []string{"id", "product_type", "prices"})
+		product, err = sql.GetPackage(idx, []string{"id", "product_type", "prices"})
 	}
 	if err != nil {
 		log.Err(err, r)
@@ -43,7 +47,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	// Get code
 	code := steam.CountryCode(r.URL.Query().Get("code"))
 	if code == "" {
-		code = pkg.GetCountryCode(r)
+		code = session.GetCountryCode(r)
 	}
 
 	if code == "" {
@@ -52,14 +56,14 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	// Get prices
-	pricesResp, err := pkg.GetPricesForProduct(product.GetID(), product.GetProductType(), code)
+	pricesResp, err := mongo.GetPricesForProduct(product.GetID(), product.GetProductType(), code)
 	if err != nil {
 		log.Err(err, r)
 		return
 	}
 
 	// Get locale
-	locale, err := pkg.GetLocaleFromCountry(code)
+	locale, err := helpers.GetLocaleFromCountry(code)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -75,7 +79,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 
 	// Add current price
 	price, err := product.GetPrice(code)
-	err = helpers.IgnoreErrors(err, pkg.ErrMissingCountryCode)
+	err = helpers.IgnoreErrors(err, sql.ErrMissingCountryCode)
 	if err != nil {
 		log.Err(err, r)
 		return

@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/log"
 )
 
 var steamClient *steam.Steam
@@ -42,7 +43,7 @@ func HandleSteamStoreErr(err error, bytes []byte, allowedCodes []int) error {
 
 	err2, ok := err.(steam.Error)
 	if ok {
-		if allowedCodes != nil && pkg.SliceHasInt(allowedCodes, err2.Code) {
+		if allowedCodes != nil && SliceHasInt(allowedCodes, err2.Code) {
 			return nil
 		}
 	}

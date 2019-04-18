@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -29,7 +31,7 @@ func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, time.Hour*24)
 
-	total, err := pkg.CountPackages()
+	total, err := sql.CountPackages()
 	log.Err(err, r)
 
 	// Template
@@ -58,11 +60,11 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	//
-	var code = pkg.GetCountryCode(r)
+	var code = session.GetCountryCode(r)
 	var wg sync.WaitGroup
 
 	// Get apps
-	var packages []pkg.Package
+	var packages []sql.Package
 
 	wg.Add(1)
 	go func(r *http.Request) {
@@ -76,7 +78,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		gorm = gorm.Model(&pkg.Package{})
+		gorm = gorm.Model(&sql.Package{})
 		gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon", "icon"})
 
 		gorm = query.setOrderOffsetGorm(gorm, code, map[string]string{
@@ -101,7 +103,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = pkg.CountPackages()
+		count, err = sql.CountPackages()
 		log.Err(err, r)
 
 	}()

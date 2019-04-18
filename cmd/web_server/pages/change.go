@@ -5,7 +5,9 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -23,9 +25,9 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	change, err := pkg.GetChange(id)
+	change, err := mongo.GetChange(id)
 	if err != nil {
-		if err == pkg.ErrNoDocuments {
+		if err == mongo.ErrNoDocuments {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "We don't have this change in the database."})
 			return
 		}
@@ -39,7 +41,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, change.GetName(), "")
 	t.Change = change
 	t.Apps = map[int]sql.App{}
-	t.Packages = map[int]pkg.Package{}
+	t.Packages = map[int]sql.Package{}
 
 	//
 	var wg sync.WaitGroup
@@ -50,7 +52,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		appsSlice, err := pkg.GetAppsByID(change.Apps, []string{"id", "icon", "type", "name"})
+		appsSlice, err := sql.GetAppsByID(change.Apps, []string{"id", "icon", "type", "name"})
 		if err != nil {
 
 			log.Err(err, r)
@@ -69,7 +71,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		packagesSlice, err := pkg.GetPackages(change.Packages, []string{})
+		packagesSlice, err := sql.GetPackages(change.Packages, []string{})
 		if err != nil {
 
 			log.Err(err, r)
@@ -91,7 +93,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 type changeTemplate struct {
 	GlobalTemplate
-	Change   pkg.Change
+	Change   mongo.Change
 	Apps     map[int]sql.App
-	Packages map[int]pkg.Package
+	Packages map[int]sql.Package
 }

@@ -10,8 +10,13 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	main2 "github.com/gamedb/website/cmd/consumers"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/influx"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/queue"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -48,16 +53,16 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !pkg.IsValidAppID(idx) {
+	if !helpers.IsValidAppID(idx) {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
 		return
 	}
 
 	// Get app
-	app, err := pkg.GetApp(idx, []string{})
+	app, err := sql.GetApp(idx, []string{})
 	if err != nil {
 
-		if err == pkg.ErrRecordNotFound {
+		if err == sql.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this app."})
 			return
 		}
@@ -84,7 +89,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		if pkg.IsBot(r.UserAgent()) {
+		if helpers.IsBot(r.UserAgent()) {
 			return
 		}
 
@@ -92,7 +97,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = main2.ProduceApp(app.ID)
+		err = queue.ProduceApp(app.ID)
 		if err != nil {
 			log.Err(err, r)
 		} else {
@@ -147,7 +152,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Packages, err = pkg.GetPackagesAppIsIn(app.ID)
+		t.Packages, err = sql.GetPackagesAppIsIn(app.ID)
 		log.Err(err, r)
 	}()
 
@@ -190,7 +195,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.DLCs, err = pkg.GetDLC(app, []string{"id", "name"})
+		t.DLCs, err = sql.GetDLC(app, []string{"id", "name"})
 		log.Err(err, r)
 	}()
 
@@ -198,7 +203,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Get price
-	t.Price = pkg.GetPriceFormatted(app, pkg.GetCountryCode(r))
+	t.Price = sql.GetPriceFormatted(app, session.GetCountryCode(r))
 
 	// Functions that get called multiple times in the template
 	t.Achievements, err = t.App.GetAchievements()
@@ -250,22 +255,22 @@ type appTemplate struct {
 	Achievements []sql.AppAchievement
 	App          sql.App
 	Banners      map[string][]string
-	Bundles      []pkg.Bundle
+	Bundles      []sql.Bundle
 	Demos        []sql.App
 	Developers   []sql.Developer
 	DLCs         []sql.App
 	Genres       []sql.Genre
 	Movies       []sql.AppVideo
 	NewsIDs      []int64
-	Packages     []pkg.Package
-	Price        pkg.ProductPriceFormattedStruct
+	Packages     []sql.Package
+	Price        sql.ProductPriceFormattedStruct
 	Prices       sql.ProductPrices
-	Publishers   []pkg.Publisher
+	Publishers   []sql.Publisher
 	Reviews      sql.AppReviewSummary
 	Screenshots  []sql.AppImage
 	SteamSpy     sql.AppSteamSpy
 	Stats        []sql.AppStat
-	Tags         []pkg.Tag
+	Tags         []sql.Tag
 }
 
 func (t appTemplate) GetReleaseDate() string {
@@ -308,7 +313,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get events
-	var articles []pkg.Article
+	var articles []mongo.Article
 
 	wg.Add(1)
 	go func(r *http.Request) {
@@ -316,14 +321,14 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		articles, err = pkg.GetArticlesByApp(idx, query.getOffset64())
+		articles, err = mongo.GetArticlesByApp(idx, query.getOffset64())
 		if err != nil {
 			log.Err(err, r, idx)
 			return
 		}
 
 		for k, v := range articles {
-			articles[k].Contents = pkg.BBCodeCompiler.Compile(v.Contents)
+			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
 		}
 
 	}(r)
@@ -336,7 +341,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		app, err := pkg.GetApp(idx, []string{})
+		app, err := sql.GetApp(idx, []string{})
 		if err != nil {
 			log.Err(err, r, idx)
 			return
@@ -402,17 +407,17 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("10m")
 	builder.SetFillNone()
 
-	resp, err := pkg.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc pkg.HighChartsJson
+	var hc influx.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = pkg.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)
@@ -452,9 +457,9 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	playerAppFilter := pkg.M{"app_id": idx, "app_time": pkg.M{"$gt": 0}}
+	playerAppFilter := mongo.M{"app_id": idx, "app_time": mongo.M{"$gt": 0}}
 
-	playerApps, err := pkg.GetPlayerAppsByApp(idx, query.getOffset64(), playerAppFilter)
+	playerApps, err := mongo.GetPlayerAppsByApp(idx, query.getOffset64(), playerAppFilter)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -482,7 +487,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		players, err := pkg.GetPlayersByID(playerIDsSlice, pkg.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
+		players, err := mongo.GetPlayersByID(playerIDsSlice, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
 		if err != nil {
 			log.Err(err)
 			return
@@ -520,7 +525,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = pkg.CountDocuments(pkg.CollectionPlayerApps, playerAppFilter)
+		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, playerAppFilter)
 		log.Err(err, r)
 	}()
 
@@ -535,14 +540,14 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range playersAppRows {
 
 		response.AddRow([]interface{}{
-			strconv.FormatInt(v.ID, 10),      // 0
-			v.Name,                           // 1
-			pkg.GetTimeLong(v.Time, 3),       // 2
-			pkg.GetPlayerFlagPath(v.Country), // 3
-			pkg.OrdinalComma(v.Rank),         // 4
-			pkg.GetPlayerAvatar(v.Avatar),    // 5
-			pkg.GetPlayerPath(v.ID, v.Name),  // 6
-			pkg.CountryCodeToName(v.Country), // 7
+			strconv.FormatInt(v.ID, 10),          // 0
+			v.Name,                               // 1
+			helpers.GetTimeLong(v.Time, 3),       // 2
+			helpers.GetPlayerFlagPath(v.Country), // 3
+			helpers.OrdinalComma(v.Rank),         // 4
+			helpers.GetPlayerAvatar(v.Avatar),    // 5
+			helpers.GetPlayerPath(v.ID, v.Name),  // 6
+			helpers.CountryCodeToName(v.Country), // 7
 		})
 	}
 
@@ -582,17 +587,17 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := pkg.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc pkg.HighChartsJson
+	var hc influx.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = pkg.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)

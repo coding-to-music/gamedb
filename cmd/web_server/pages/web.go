@@ -15,7 +15,11 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/session"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -126,11 +130,11 @@ func Serve() error {
 func fileServer(r chi.Router, path string, root http.FileSystem) {
 
 	if strings.ContainsAny(path, "{}*") {
-		pkg.Info("Invalid URL " + path)
+		log.Info("Invalid URL " + path)
 		return
 	}
 	if strings.Contains(path, "..") {
-		pkg.Info("Invalid URL " + path)
+		log.Info("Invalid URL " + path)
 		return
 	}
 
@@ -176,10 +180,10 @@ func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string)
 func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Language", string(pkg.GetCountryCode(r))) // Used for varnish hash
-	w.Header().Set("X-Content-Type-Options", "nosniff")       // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")       // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")           // Protection from clickjacking
+	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
 
 	setCacheHeaders(w, time.Hour*24) // Default cache headers
 }
@@ -217,15 +221,15 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	folder := config.Config.GameDBDirectory.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
-		folder+"/templates/_apps_header.gohtml",
-		folder+"/templates/_current_apps.gohtml",
-		folder+"/templates/_flashes.gohtml",
-		folder+"/templates/_footer.gohtml",
-		folder+"/templates/_header.gohtml",
-		folder+"/templates/_header_esi.gohtml",
-		folder+"/templates/_stats_header.gohtml",
-		folder+"/templates/_social.gohtml",
-		folder+"/templates/"+page+".gohtml",
+		folder+"/cmd/web_server/templates/_apps_header.gohtml",
+		folder+"/cmd/web_server/templates/_current_apps.gohtml",
+		folder+"/cmd/web_server/templates/_flashes.gohtml",
+		folder+"/cmd/web_server/templates/_footer.gohtml",
+		folder+"/cmd/web_server/templates/_header.gohtml",
+		folder+"/cmd/web_server/templates/_header_esi.gohtml",
+		folder+"/cmd/web_server/templates/_stats_header.gohtml",
+		folder+"/cmd/web_server/templates/_social.gohtml",
+		folder+"/cmd/web_server/templates/"+page+".gohtml",
 	)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Something has gone wrong!", Error: err})
@@ -308,7 +312,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
 		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
-		"html":       func(html string) template.HTML { return pkg.RenderHTMLAndBBCode(html) },
+		"html":       func(html string) template.HTML { return helpers.RenderHTMLAndBBCode(html) },
 		"json":       func(v interface{}) (string, error) { b, err := json.Marshal(v); log.Err(err); return string(b), err },
 	}
 }
@@ -355,7 +359,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	t.request = r
 
-	if pkg.IsBot(r.UserAgent()) {
+	if helpers.IsBot(r.UserAgent()) {
 		t.Title = title
 		t.TitleWithIcons = title
 	} else {
@@ -368,7 +372,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Path = r.URL.Path
 
 	// User ID
-	id, err := pkg.Read(r, pkg.PlayerID)
+	id, err := session.Read(r, session.PlayerID)
 	log.Err(err, r)
 
 	if id == "" {
@@ -379,7 +383,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	// User name
-	t.userName, err = pkg.Read(r, pkg.PlayerName)
+	t.userName, err = session.Read(r, session.PlayerName)
 	log.Err(err, r)
 
 	// Country
@@ -387,26 +391,26 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// Check if valid country
 	if _, ok := steam.Countries[t.UserCountry]; !ok {
-		t.UserCountry = pkg.GetCountryCode(r)
+		t.UserCountry = session.GetCountryCode(r)
 	}
 
 	// Default country to session
 	if t.UserCountry == "" {
-		t.UserCountry = pkg.GetCountryCode(r)
+		t.UserCountry = session.GetCountryCode(r)
 	}
 
 	// Currency
-	locale, err := pkg.GetLocaleFromCountry(t.UserCountry)
+	locale, err := helpers.GetLocaleFromCountry(t.UserCountry)
 	log.Err(err, r)
 	if err == nil {
 		t.UserCurrencySymbol = locale.CurrencySymbol
 	}
 
 	// Flashes
-	t.flashesGood, err = pkg.GetGoodFlashes(w, r)
+	t.flashesGood, err = session.GetGoodFlashes(w, r)
 	log.Err(err, r)
 
-	t.flashesBad, err = pkg.GetBadFlashes(w, r)
+	t.flashesBad, err = session.GetBadFlashes(w, r)
 	log.Err(err, r)
 
 	// Pages
@@ -414,11 +418,11 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	case "/contact":
 
 		// Details from form
-		contactName, err := pkg.Read(r, "contact-name")
+		contactName, err := session.Read(r, "contact-name")
 		log.Err(err)
-		contactEmail, err := pkg.Read(r, "contact-email")
+		contactEmail, err := session.Read(r, "contact-email")
 		log.Err(err)
-		contactMessage, err := pkg.Read(r, "contact-message")
+		contactMessage, err := session.Read(r, "contact-message")
 		log.Err(err)
 
 		t.contactPage = map[string]string{
@@ -428,12 +432,12 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		}
 
 		// Email from logged in user
-		t.userEmail, err = pkg.Read(r, pkg.UserEmail)
+		t.userEmail, err = session.Read(r, session.UserEmail)
 		log.Err(err, r)
 
 	case "/login":
 
-		loginEmail, err := pkg.Read(r, "login-email")
+		loginEmail, err := session.Read(r, "login-email")
 		log.Err(err)
 
 		t.loginPage = map[string]string{
@@ -442,13 +446,13 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	case "/chat":
 
-		discord, err := pkg.Read(r, "discord_token")
+		discord, err := session.Read(r, "discord_token")
 		log.Err(err, r)
 		t.loggedIntoDiscord = discord != ""
 
 	case "/experience":
 
-		level, err := pkg.Read(r, pkg.PlayerLevel)
+		level, err := session.Read(r, session.PlayerLevel)
 		log.Err(err, r)
 
 		if level == "" {
@@ -560,7 +564,7 @@ func (t GlobalTemplate) isLoggedIn() bool {
 }
 
 func (t GlobalTemplate) isLocal() bool {
-	return t.Env == string(pkg.EnvLocal)
+	return t.Env == string(config.EnvLocal)
 }
 
 func (t GlobalTemplate) isAdmin() bool {
@@ -719,7 +723,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.Count
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(string) string) pkg.D {
+func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(string) string) mongo.D {
 
 	for _, v := range q.Order {
 
@@ -737,9 +741,9 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 								}
 
 								if dir == "desc" {
-									return pkg.D{{col, -1}}
+									return mongo.D{{col, -1}}
 								} else {
-									return pkg.D{{col, 1}}
+									return mongo.D{{col, 1}}
 								}
 							}
 						}
@@ -749,7 +753,7 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 		}
 	}
 
-	return pkg.D{}
+	return mongo.D{}
 }
 
 func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) {
@@ -810,7 +814,7 @@ type Toast struct {
 
 func isAdmin(r *http.Request) bool {
 
-	id, err := pkg.Read(r, pkg.PlayerID)
+	id, err := session.Read(r, session.PlayerID)
 	log.Err(err)
 
 	return r.Header.Get("Authorization") != "" || id == "76561197968626192"

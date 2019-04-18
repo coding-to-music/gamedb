@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"sync"
 
-	main2 "github.com/gamedb/website/cmd/consumers"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/queue"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -43,10 +44,10 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// Get bundle
-	bundle, err := pkg.GetBundle(idx, []string{})
+	bundle, err := sql.GetBundle(idx, []string{})
 	if err != nil {
 
-		if err == pkg.ErrRecordNotFound {
+		if err == sql.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Sorry but we can not find this bundle."})
 			return
 		}
@@ -65,7 +66,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get apps
 	wg.Add(1)
-	go func(bundle pkg.Bundle) {
+	go func(bundle sql.Bundle) {
 
 		defer wg.Done()
 
@@ -75,7 +76,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		t.Apps, err = pkg.GetAppsByID(appIDs, []string{})
+		t.Apps, err = sql.GetAppsByID(appIDs, []string{})
 		log.Err(err, r)
 
 		// Queue missing apps
@@ -90,7 +91,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if !found {
-					err = main2.ProduceApp(v)
+					err = queue.ProduceApp(v)
 					log.Err()
 				}
 			}
@@ -110,7 +111,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		t.Packages, err = pkg.GetPackages(appIDs, []string{})
+		t.Packages, err = sql.GetPackages(appIDs, []string{})
 		log.Err(err, r)
 
 	}()
@@ -124,7 +125,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 type bundleTemplate struct {
 	GlobalTemplate
-	Bundle   pkg.Bundle
+	Bundle   sql.Bundle
 	Apps     []sql.App
-	Packages []pkg.Package
+	Packages []sql.Package
 }

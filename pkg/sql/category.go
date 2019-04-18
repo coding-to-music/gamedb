@@ -3,8 +3,6 @@ package sql
 import (
 	"strconv"
 	"time"
-
-	"github.com/gamedb/website/pkg"
 )
 
 type Category struct {

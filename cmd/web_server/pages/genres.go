@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -24,17 +26,17 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, time.Hour*24)
 
 	// Get config
-	config, err := pkg.GetConfig(pkg.ConfGenresUpdated)
+	config, err := sql.GetConfig(sql.ConfGenresUpdated)
 	log.Err(err, r)
 
 	// Get genres
-	genres, err := pkg.GetAllGenres(false)
+	genres, err := sql.GetAllGenres(false)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the genres.", Error: err})
 		return
 	}
 
-	code := pkg.GetCountryCode(r)
+	code := session.GetCountryCode(r)
 	prices := map[int]string{}
 	for _, v := range genres {
 		price, err := v.GetMeanPrice(code)

@@ -1,4 +1,4 @@
-package main
+package queue
 
 import (
 	"encoding/json"
@@ -9,7 +9,11 @@ import (
 
 	"github.com/Jleagle/go-durationfmt"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/streadway/amqp"
 )
 
@@ -365,19 +369,19 @@ type steamKitJob struct {
 }
 
 func logInfo(interfaces ...interface{}) {
-	pkg.Info(append(interfaces, pkg.LogNameConsumers)...)
+	log.Info(append(interfaces, log.LogNameConsumers)...)
 }
 
 func logError(interfaces ...interface{}) {
-	log.Err(append(interfaces, pkg.LogNameConsumers)...)
+	log.Err(append(interfaces, log.LogNameConsumers)...)
 }
 
 func logWarning(interfaces ...interface{}) {
-	pkg.Warning(append(interfaces, pkg.LogNameConsumers)...)
+	log.Warning(append(interfaces, log.LogNameConsumers)...)
 }
 
 func logCritical(interfaces ...interface{}) {
-	pkg.Critical(append(interfaces, pkg.LogNameConsumers)...)
+	log.Critical(append(interfaces, log.LogNameConsumers)...)
 }
 
 func ProduceBundle(ID int, appID int) (err error) {
@@ -392,8 +396,8 @@ func ProduceBundle(ID int, appID int) (err error) {
 
 func ProduceApp(ID int) (err error) {
 
-	if !pkg.IsValidAppID(ID) {
-		return pkg.ErrInvalidAppID
+	if !helpers.IsValidAppID(ID) {
+		return sql.ErrInvalidAppID
 	}
 
 	return produce(baseMessage{
@@ -405,8 +409,8 @@ func ProduceApp(ID int) (err error) {
 
 func ProducePackage(ID int) (err error) {
 
-	if !pkg.IsValidPackageID(ID) {
-		return pkg.ErrInvalidPackageID
+	if !sql.IsValidPackageID(ID) {
+		return sql.ErrInvalidPackageID
 	}
 
 	return produce(baseMessage{
@@ -418,8 +422,8 @@ func ProducePackage(ID int) (err error) {
 
 func ProducePlayer(ID int64) (err error) {
 
-	if !pkg.IsValidPlayerID(ID) {
-		return pkg.ErrInvalidPlayerID
+	if !helpers.IsValidPlayerID(ID) {
+		return mongo.ErrInvalidPlayerID
 	}
 
 	return produce(baseMessage{

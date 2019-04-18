@@ -4,7 +4,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
@@ -104,7 +106,7 @@ func GetBundle(id int, columns []string) (bundle Bundle, err error) {
 	}
 
 	if bundle.ID == 0 {
-		return bundle, pkg.ErrRecordNotFound
+		return bundle, ErrRecordNotFound
 	}
 
 	return bundle, nil
@@ -112,9 +114,9 @@ func GetBundle(id int, columns []string) (bundle Bundle, err error) {
 
 func CountBundles() (count int, err error) {
 
-	var item = pkg.MemcacheBundlesCount
+	var item = helpers.MemcacheBundlesCount
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

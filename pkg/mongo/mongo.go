@@ -6,7 +6,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -174,9 +176,9 @@ func CountDocuments(collection collection, filter interface{}) (count int64, err
 
 	key := hex.EncodeToString(h[:])
 
-	item := pkg.MemcacheMongoCount(collection.String() + "-" + key)
+	item := helpers.MemcacheMongoCount(collection.String() + "-" + key)
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

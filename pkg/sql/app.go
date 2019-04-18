@@ -11,6 +11,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/jinzhu/gorm"
 )
@@ -215,7 +216,7 @@ func (app App) GetReviewScore() string {
 
 func (app App) GetDaysToRelease() string {
 
-	return pkg.GetDaysToRelease(app.ReleaseDateUnix)
+	return helpers.GetDaysToRelease(app.ReleaseDateUnix)
 }
 
 func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
@@ -227,7 +228,7 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.GetPath(), // 3
 		app.GetType(), // 4
 		helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
-		pkg.GetPriceFormatted(app, code).Final,    // 6
+		GetPriceFormatted(app, code).Final,        // 6
 		app.PlayerPeakWeek,                        // 7
 	}
 }
@@ -254,7 +255,7 @@ func (app App) GetReleaseDateNice() string {
 		return app.ReleaseDate
 	}
 
-	return time.Unix(app.ReleaseDateUnix, 0).Format(pkg.DateYear)
+	return time.Unix(app.ReleaseDateUnix, 0).Format(helpers.DateYear)
 }
 
 func (app App) GetUpdatedNice() string {
@@ -283,7 +284,7 @@ func (app App) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-func (app App) GetPrice(code steam.CountryCode) (price ProductPricestruct, err error) {
+func (app App) GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error) {
 
 	prices, err := app.GetPrices()
 	if err != nil {
@@ -303,41 +304,41 @@ func (app App) GetNewsIDs() (ids []int64, err error) {
 	return ids, err
 }
 
-func (app App) GetExtended() (extended pkg.PICSExtended, err error) {
+func (app App) GetExtended() (extended PICSExtended, err error) {
 
-	extended = pkg.PICSExtended{}
+	extended = PICSExtended{}
 
 	err = helpers.Unmarshal([]byte(app.Extended), &extended)
 	log.Err(err)
 	return extended, err
 }
 
-func (app App) GetCommon() (common pkg.PICSAppCommon, err error) {
+func (app App) GetCommon() (common PICSAppCommon, err error) {
 
-	common = pkg.PICSAppCommon{}
+	common = PICSAppCommon{}
 
 	err = helpers.Unmarshal([]byte(app.Common), &common)
 	log.Err(err)
 	return common, err
 }
 
-func (app App) GetConfig() (config pkg.PICSAppConfig, err error) {
+func (app App) GetConfig() (config PICSAppConfig, err error) {
 
-	config = pkg.PICSAppConfig{}
+	config = PICSAppConfig{}
 
 	err = helpers.Unmarshal([]byte(app.Config), &config)
 	log.Err(err)
 	return config, err
 }
 
-func (app App) GetDepots() (depots pkg.PICSDepots, err error) {
+func (app App) GetDepots() (depots PICSDepots, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Depots), &depots)
 	log.Err(err)
 	return depots, err
 }
 
-func (app App) GetLaunch() (items []pkg.PICSAppConfigLaunchItem, err error) {
+func (app App) GetLaunch() (items []PICSAppConfigLaunchItem, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Launch), &items)
 	log.Err(err)
@@ -371,9 +372,9 @@ func (app App) GetSystemRequirements() (systemRequirements map[string]interface{
 	return systemRequirements, err
 }
 
-func (app App) GetUFS() (ufs pkg.PICSAppUFS, err error) {
+func (app App) GetUFS() (ufs PICSAppUFS, err error) {
 
-	ufs = pkg.PICSAppUFS{}
+	ufs = PICSAppUFS{}
 
 	err = helpers.Unmarshal([]byte(app.UFS), &ufs)
 	log.Err(err)
@@ -382,9 +383,9 @@ func (app App) GetUFS() (ufs pkg.PICSAppUFS, err error) {
 
 func (app App) GetOnlinePlayers() (players int, err error) {
 
-	var item = pkg.MemcacheAppPlayersRow(app.ID)
+	var item = helpers.MemcacheAppPlayersRow(app.ID)
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("player_count", "")
@@ -393,9 +394,9 @@ func (app App) GetOnlinePlayers() (players int, err error) {
 		builder.AddOrderBy("time", false)
 		builder.SetLimit(1)
 
-		resp, err := pkg.InfluxQuery(builder.String())
+		resp, err := influx.InfluxQuery(builder.String())
 
-		return pkg.GetFirstInfluxInt(resp), err
+		return influx.GetFirstInfluxInt(resp), err
 	})
 
 	return players, err
@@ -589,14 +590,14 @@ func (app App) GetTagIDs() (tags []int, err error) {
 	return tags, err
 }
 
-func (app App) GetTags() (tags []pkg.Tag, err error) {
+func (app App) GetTags() (tags []Tag, err error) {
 
 	ids, err := app.GetTagIDs()
 	if err != nil {
 		return tags, err
 	}
 
-	return pkg.GetTagsByID(ids, []string{"id", "name"})
+	return GetTagsByID(ids, []string{"id", "name"})
 }
 
 func (app App) GetDeveloperIDs() (developers []int, err error) {
@@ -613,7 +614,7 @@ func (app App) GetDevelopers() (developers []Developer, err error) {
 		return developers, err
 	}
 
-	return pkg.GetDevelopersByID(ids, []string{"id", "name"})
+	return GetDevelopersByID(ids, []string{"id", "name"})
 }
 
 func (app App) GetPublisherIDs() (publishers []int, err error) {
@@ -634,7 +635,7 @@ func (app App) GetPublishers() (publishers []Publisher, err error) {
 }
 
 func (app App) GetName() (name string) {
-	return pkg.GetAppName(app.ID, app.Name)
+	return helpers.GetAppName(app.ID, app.Name)
 }
 
 func (app App) GetMetaImage() string {
@@ -655,9 +656,9 @@ func (app *App) SetNameIfEmpty(name string) {
 
 func PopularApps() (apps []App, err error) {
 
-	var item = pkg.MemcachePopularApps
+	var item = helpers.MemcachePopularApps
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -768,7 +769,7 @@ func GetApp(id int, columns []string) (app App, err error) {
 	}
 
 	if app.ID == 0 {
-		return app, pkg.ErrRecordNotFound
+		return app, ErrRecordNotFound
 	}
 
 	return app, nil
@@ -789,7 +790,7 @@ func SearchApp(s string, columns []string) (app App, err error) {
 	}
 
 	i, _ := strconv.Atoi(s)
-	if pkg.IsValidAppID(i) {
+	if helpers.IsValidAppID(i) {
 		db = db.First(&app, "id = ?", s)
 	} else {
 		db = db.First(&app, "name = ?", s)
@@ -800,7 +801,7 @@ func SearchApp(s string, columns []string) (app App, err error) {
 	}
 
 	if app.ID == 0 {
-		return app, pkg.ErrRecordNotFound
+		return app, ErrRecordNotFound
 	}
 
 	return app, nil
@@ -812,7 +813,7 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 		return apps, nil
 	}
 
-	ids = pkg.Unique(ids)
+	ids = helpers.Unique(ids)
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -875,9 +876,9 @@ func GetDLC(app App, columns []string) (apps []App, err error) {
 
 func CountApps() (count int, err error) {
 
-	var item = pkg.MemcacheAppsCount
+	var item = helpers.MemcacheAppsCount
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 
@@ -916,7 +917,7 @@ func (a AppAchievement) GetIcon() string {
 	if strings.HasSuffix(a.Icon, ".jpg") {
 		return a.Icon
 	}
-	return pkg.DefaultAppIcon
+	return helpers.DefaultAppIcon
 }
 
 type AppStat struct {
@@ -935,19 +936,19 @@ type AppSteamSpy struct {
 }
 
 func (ss AppSteamSpy) GetSSAveragePlaytimeTwoWeeks() float64 {
-	return pkg.RoundFloatTo1DP(float64(ss.SSAveragePlaytimeTwoWeeks) / 60)
+	return helpers.RoundFloatTo1DP(float64(ss.SSAveragePlaytimeTwoWeeks) / 60)
 }
 
 func (ss AppSteamSpy) GetSSAveragePlaytimeForever() float64 {
-	return pkg.RoundFloatTo1DP(float64(ss.SSAveragePlaytimeForever) / 60)
+	return helpers.RoundFloatTo1DP(float64(ss.SSAveragePlaytimeForever) / 60)
 }
 
 func (ss AppSteamSpy) GetSSMedianPlaytimeTwoWeeks() float64 {
-	return pkg.RoundFloatTo1DP(float64(ss.SSMedianPlaytimeTwoWeeks) / 60)
+	return helpers.RoundFloatTo1DP(float64(ss.SSMedianPlaytimeTwoWeeks) / 60)
 }
 
 func (ss AppSteamSpy) GetSSMedianPlaytimeForever() float64 {
-	return pkg.RoundFloatTo1DP(float64(ss.SSMedianPlaytimeForever) / 60)
+	return helpers.RoundFloatTo1DP(float64(ss.SSMedianPlaytimeForever) / 60)
 }
 
 type AppReviewSummary struct {

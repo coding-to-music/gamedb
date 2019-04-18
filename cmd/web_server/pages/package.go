@@ -6,8 +6,11 @@ import (
 	"sync"
 	"time"
 
-	main2 "github.com/gamedb/website/cmd/consumers"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/queue"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -37,10 +40,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get package
-	pack, err := pkg.GetPackage(idx, []string{})
+	pack, err := sql.GetPackage(idx, []string{})
 	if err != nil {
 
-		if err == pkg.ErrRecordNotFound {
+		if err == sql.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this package."})
 			return
 		}
@@ -69,7 +72,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			apps[v] = sql.App{ID: v}
 		}
 
-		appRows, err := pkg.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
+		appRows, err := sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -81,7 +84,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	var bundles []pkg.Bundle
+	var bundles []sql.Bundle
 	wg.Add(1)
 	go func() {
 
@@ -128,7 +131,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	// Update news, reviews etc
 	func() {
 
-		if pkg.IsBot(r.UserAgent()) {
+		if helpers.IsBot(r.UserAgent()) {
 			return
 		}
 
@@ -136,7 +139,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = main2.ProducePackage(pack.ID)
+		err = queue.ProducePackage(pack.ID)
 		if err != nil {
 			log.Err(err, r)
 		} else {
@@ -145,7 +148,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get price
-	t.Price = pkg.GetPriceFormatted(pack, pkg.GetCountryCode(r))
+	t.Price = sql.GetPriceFormatted(pack, session.GetCountryCode(r))
 
 	t.Prices, err = t.Package.GetPrices()
 	log.Err(err)
@@ -166,13 +169,13 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 type packageTemplate struct {
 	GlobalTemplate
 	Apps       map[int]sql.App
-	Bundles    []pkg.Bundle
+	Bundles    []sql.Bundle
 	Banners    map[string][]string
-	Controller pkg.PICSController
+	Controller sql.PICSController
 	DepotIDs   []int
-	Extended   pkg.PICSExtended
-	Package    pkg.Package
-	Price      pkg.ProductPriceFormattedStruct
+	Extended   sql.PICSExtended
+	Package    sql.Package
+	Price      sql.ProductPriceFormattedStruct
 	Prices     sql.ProductPrices
 }
 
@@ -190,5 +193,5 @@ func packagePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, time.Hour*3)
 
-	productPricesAjaxHandler(w, r, pkg.ProductTypePackage)
+	productPricesAjaxHandler(w, r, helpers.ProductTypePackage)
 }

@@ -9,7 +9,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/microcosm-cc/bluemonday"
 	"go.mongodb.org/mongo-driver/bson"
@@ -65,7 +70,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		apps, err := pkg.PopularApps()
+		apps, err := sql.PopularApps()
 		log.Err(err, r)
 
 		var appIDs []int
@@ -75,16 +80,16 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			appIDmap[app.ID] = app
 		}
 
-		news, err := pkg.GetArticlesByApps(appIDs, 20, time.Time{})
+		news, err := mongo.GetArticlesByApps(appIDs, 20, time.Time{})
 		log.Err(err, r)
 
 		p := bluemonday.StrictPolicy() // Strip all tags
 
 		for _, v := range news {
 
-			contents := string(pkg.RenderHTMLAndBBCode(v.Contents))
+			contents := string(helpers.RenderHTMLAndBBCode(v.Contents))
 			contents = p.Sanitize(contents)
-			contents = pkg.TruncateString(contents, 300)
+			contents = helpers.TruncateString(contents, 300)
 			contents = strings.TrimSpace(contents)
 
 			t.News = append(t.News, homeNews{
@@ -110,7 +115,7 @@ type homeTemplate struct {
 	Games   []sql.App
 	News    []homeNews
 	NewsID  int64
-	Players []pkg.Player
+	Players []mongo.Player
 }
 
 type homeNews struct {
@@ -129,16 +134,16 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, time.Minute)
 
-	var filter = pkg.D{
-		{"currency", string(pkg.GetCountryCode(r))},
+	var filter = mongo.D{
+		{"currency", string(session.GetCountryCode(r))},
 		{"app_id", bson.M{"$gt": 0}},
 		{"difference", bson.M{"$lt": 0}},
 	}
 
-	priceChanges, err := pkg.GetPrices(0, 15, filter)
+	priceChanges, err := mongo.GetPrices(0, 15, filter)
 	log.Err(err, r)
 
-	locale, err := pkg.GetLocaleFromCountry(pkg.GetCountryCode(r))
+	locale, err := helpers.GetLocaleFromCountry(session.GetCountryCode(r))
 	log.Err(err)
 
 	var prices []homePrice
@@ -209,7 +214,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		value = "play_time"
 	}
 
-	projection := pkg.M{
+	projection := mongo.M{
 		"_id":          1,
 		"persona_name": 1,
 		"avatar":       1,
@@ -217,7 +222,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		value:          1,
 	}
 
-	players, err := pkg.GetPlayers(0, 10, pkg.D{{sort, 1}}, pkg.M{sort: pkg.M{"$gt": 0}}, projection)
+	players, err := mongo.GetPlayers(0, 10, mongo.D{{sort, 1}}, mongo.M{sort: mongo.M{"$gt": 0}}, projection)
 	if err != nil {
 		log.Err(err)
 		return

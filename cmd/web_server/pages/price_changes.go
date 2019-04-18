@@ -7,7 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/session"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -58,15 +60,15 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get ranks
-	var priceChanges []pkg.ProductPrice
+	var priceChanges []mongo.ProductPrice
 
-	var code = pkg.GetCountryCode(r)
+	var code = session.GetCountryCode(r)
 
 	var dateLimit = time.Now().AddDate(0, 0, -30)
 
-	var filter = pkg.D{
+	var filter = mongo.D{
 		{"currency", string(code)},
-		{"created_at", pkg.M{"$gt": dateLimit}},
+		{"created_at", mongo.M{"$gt": dateLimit}},
 	}
 
 	typex := query.getSearchString("type")
@@ -82,14 +84,14 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			min, err := strconv.ParseFloat(percents[0], 64)
 			log.Err(err)
 			if err == nil {
-				filter = append(filter, bson.E{Key: "difference_percent", Value: pkg.M{"$gte": min}})
+				filter = append(filter, bson.E{Key: "difference_percent", Value: mongo.M{"$gte": min}})
 			}
 		}
 		if percents[1] != "100.00" {
 			max, err := strconv.ParseFloat(percents[1], 64)
 			log.Err(err)
 			if err == nil {
-				filter = append(filter, bson.E{Key: "difference_percent", Value: pkg.M{"$lte": max}})
+				filter = append(filter, bson.E{Key: "difference_percent", Value: mongo.M{"$lte": max}})
 			}
 		}
 	}
@@ -100,14 +102,14 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			min, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 			log.Err(err)
 			if err == nil {
-				filter = append(filter, bson.E{Key: "price_after", Value: pkg.M{"$gte": min}})
+				filter = append(filter, bson.E{Key: "price_after", Value: mongo.M{"$gte": min}})
 			}
 		}
 		if prices[1] != "100.00" {
 			max, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			log.Err(err)
 			if err == nil {
-				filter = append(filter, bson.E{Key: "price_after", Value: pkg.M{"$lte": max}})
+				filter = append(filter, bson.E{Key: "price_after", Value: mongo.M{"$lte": max}})
 			}
 		}
 	}
@@ -118,7 +120,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		priceChanges, err = pkg.GetPrices(query.getOffset64(), 100, filter)
+		priceChanges, err = mongo.GetPrices(query.getOffset64(), 100, filter)
 		log.Err(err, r)
 	}(r)
 
@@ -130,7 +132,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		filtered, err = pkg.CountDocuments(pkg.CollectionProductPrices, filter)
+		filtered, err = mongo.CountDocuments(mongo.CollectionProductPrices, filter)
 		log.Err(err, r)
 	}(r)
 
@@ -142,9 +144,9 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = pkg.CountDocuments(pkg.CollectionProductPrices, pkg.M{
+		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, mongo.M{
 			"currency":   string(code),
-			"created_at": pkg.M{"$gt": dateLimit},
+			"created_at": mongo.M{"$gt": dateLimit},
 		})
 		log.Err(err, r)
 	}(r)

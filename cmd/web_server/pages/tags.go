@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -24,17 +26,17 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, time.Hour*24)
 
 	// Get config
-	config, err := pkg.GetConfig(pkg.ConfTagsUpdated)
+	config, err := sql.GetConfig(sql.ConfTagsUpdated)
 	log.Err(err, r)
 
 	// Get tags
-	tags, err := pkg.GetAllTags()
+	tags, err := sql.GetAllTags()
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the tags.", Error: err})
 		return
 	}
 
-	code := pkg.GetCountryCode(r)
+	code := session.GetCountryCode(r)
 	prices := map[int]string{}
 	for _, v := range tags {
 		price, err := v.GetMeanPrice(code)
@@ -55,7 +57,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsTagsTemplate struct {
 	GlobalTemplate
-	Tags   []pkg.Tag
+	Tags   []sql.Tag
 	Date   string
 	Prices map[int]string
 }

@@ -5,7 +5,10 @@ import (
 	"time"
 
 	"github.com/Jleagle/sitemap-go/sitemap"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -147,7 +150,7 @@ func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := pkg.GetPlayers(0, 1000, pkg.D{{"level", -1}}, nil, pkg.M{"_id": 1, "name": 1})
+	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, nil, mongo.M{"_id": 1, "name": 1})
 	for _, v := range players {
 		sm.AddLocation(urlBase+v.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.5)
 	}
@@ -168,7 +171,7 @@ func siteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := pkg.GetPlayers(0, 1000, pkg.D{{"games_count", -1}}, nil, pkg.M{"_id": 1, "name": 1})
+	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"games_count", -1}}, nil, mongo.M{"_id": 1, "name": 1})
 	for _, v := range players {
 		sm.AddLocation(urlBase+v.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.5)
 	}

@@ -1,4 +1,4 @@
-package main
+package queue
 
 import (
 	"encoding/json"
@@ -8,7 +8,12 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	influx2 "github.com/gamedb/website/pkg/influx"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/website/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -51,7 +56,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming package " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
-	if !pkg.IsValidPackageID(message.ID) {
+	if !sql.IsValidPackageID(message.ID) {
 		logError(errors.New("invalid package ID: " + strconv.Itoa(message.ID)))
 		payload.ack(msg)
 		return
@@ -65,8 +70,8 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	pack := pkg.Package{}
-	gorm = gorm.FirstOrInit(&pack, pkg.Package{ID: message.ID})
+	pack := sql.Package{}
+	gorm = gorm.FirstOrInit(&pack, sql.Package{ID: message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error, message.ID)
 		payload.ackRetry(msg)
@@ -149,7 +154,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page, err := pkg.GetPage(pkg.PagePackage)
+	page, err := websockets.GetPage(websockets.PagePackage)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -162,14 +167,14 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 
 	// Clear caches
 	if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
-		err = pkg.GetMemcache().Delete(pkg.MemcacheUpcomingPackagesCount.Key)
+		err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingPackagesCount.Key)
 		log.Err(err)
 	}
 
 	payload.ack(msg)
 }
 
-func updatePackageNameFromApp(pack *pkg.Package) (err error) {
+func updatePackageNameFromApp(pack *sql.Package) (err error) {
 
 	if pack.AppsCount == 1 {
 
@@ -178,13 +183,13 @@ func updatePackageNameFromApp(pack *pkg.Package) (err error) {
 			return err
 		}
 
-		app, err := pkg.GetApp(appIDs[0], []string{})
+		app, err := sql.GetApp(appIDs[0], []string{})
 		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
 
 			pack.Name = app.GetName()
 			pack.Icon = app.GetIcon()
 
-		} else if err == pkg.ErrRecordNotFound {
+		} else if err == sql.ErrRecordNotFound {
 			return nil
 		} else {
 			return err
@@ -194,7 +199,7 @@ func updatePackageNameFromApp(pack *pkg.Package) (err error) {
 	return nil
 }
 
-func updatePackageFromPICS(pack *pkg.Package, payload baseMessage, message packageMessage) (err error) {
+func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packageMessage) (err error) {
 
 	if pack.ChangeNumber > message.PICSPackageInfo.ChangeNumber {
 		return nil
@@ -298,11 +303,11 @@ func updatePackageFromPICS(pack *pkg.Package, payload baseMessage, message packa
 	return nil
 }
 
-func updatePackageFromStore(pack *pkg.Package) (err error) {
+func updatePackageFromStore(pack *sql.Package) (err error) {
 
 	prices := sql.ProductPrices{}
 
-	for _, code := range pkg.GetActiveCountries() {
+	for _, code := range helpers.GetActiveCountries() {
 
 		// Get package details
 		response, b, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
@@ -319,7 +324,7 @@ func updatePackageFromStore(pack *pkg.Package) (err error) {
 		if code == steam.CountryUS {
 
 			// Controller
-			var controller = pkg.PICSController{}
+			var controller = sql.PICSController{}
 			for k, v := range response.Data.Controller {
 				controller[k] = v
 			}
@@ -391,7 +396,7 @@ func updatePackageFromStore(pack *pkg.Package) (err error) {
 
 			//
 			pack.ReleaseDate = response.Data.ReleaseDate.Date
-			pack.ReleaseDateUnix = pkg.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
+			pack.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
 			pack.Name = response.Data.Name
 		}
@@ -407,15 +412,15 @@ func updatePackageFromStore(pack *pkg.Package) (err error) {
 	return nil
 }
 
-func savePackageToInflux(pack pkg.Package) error {
+func savePackageToInflux(pack sql.Package) error {
 
 	price, err := pack.GetPrice(steam.CountryUS)
-	if err != nil && err != pkg.ErrMissingCountryCode {
+	if err != nil && err != sql.ErrMissingCountryCode {
 		return err
 	}
 
-	_, err = pkg.InfluxWrite(pkg.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(pkg.InfluxMeasurementPackages),
+	_, err = influx2.InfluxWrite(influx2.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influx2.InfluxMeasurementPackages),
 		Tags: map[string]string{
 			"package_id": strconv.Itoa(pack.ID),
 		},

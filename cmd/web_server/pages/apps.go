@@ -10,7 +10,9 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -34,7 +36,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := appsTemplate{}
 	t.fill(w, r, "Apps", "") // Description gets set later
-	t.Types = pkg.GetTypesForSelect()
+	t.Types = sql.GetTypesForSelect()
 	t.addAssetChosen()
 	t.addAssetSlider()
 
@@ -48,7 +50,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Count, err = pkg.CountApps()
+		t.Count, err = sql.CountApps()
 		t.Description = "A live database of " + template.HTML(humanize.Comma(int64(t.Count))) + " Steam games."
 		log.Err(err, r)
 
@@ -61,7 +63,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Tags, err = pkg.GetTagsForSelect()
+		t.Tags, err = sql.GetTagsForSelect()
 		log.Err(err, r)
 
 	}()
@@ -73,7 +75,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Genres, err = pkg.GetGenresForSelect()
+		t.Genres, err = sql.GetGenresForSelect()
 		log.Err(err, r)
 
 	}()
@@ -85,7 +87,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Publishers, err = pkg.GetPublishersForSelect()
+		t.Publishers, err = sql.GetPublishersForSelect()
 		log.Err(err, r)
 
 		// Check if we need to fetch any more to add to the list
@@ -116,7 +118,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			publishers, err := pkg.GetPublishersByID(publishersToLoad, []string{"id", "name"})
+			publishers, err := sql.GetPublishersByID(publishersToLoad, []string{"id", "name"})
 			log.Err(err, r)
 			if err == nil {
 				t.Publishers = append(t.Publishers, publishers...)
@@ -132,7 +134,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Developers, err = pkg.GetDevelopersForSelect()
+		t.Developers, err = sql.GetDevelopersForSelect()
 		log.Err(err, r)
 
 		// Check if we need to fetch any more to add to the list
@@ -144,7 +146,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				// Convert to int
 				developerID, err := strconv.Atoi(v)
 				if err != nil {
-					pkg.Info(err, r)
+					log.Info(err, r)
 					continue
 				}
 
@@ -163,7 +165,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			developers, err := pkg.GetDevelopersByID(developersToLoad, []string{"id", "name"})
+			developers, err := sql.GetDevelopersByID(developersToLoad, []string{"id", "name"})
 			log.Err(err, r)
 			if err == nil {
 				t.Developers = append(t.Developers, developers...)
@@ -185,9 +187,9 @@ type appsTemplate struct {
 	GlobalTemplate
 	Count      int
 	Types      []sql.AppType
-	Tags       []pkg.Tag
+	Tags       []sql.Tag
 	Genres     []sql.Genre
-	Publishers []pkg.Publisher
+	Publishers []sql.Publisher
 	Developers []sql.Developer
 	Columns    []TableColumn
 }
@@ -235,7 +237,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	//
-	var code = pkg.GetCountryCode(r)
+	var code = session.GetCountryCode(r)
 	var wg sync.WaitGroup
 
 	// Get apps
@@ -410,7 +412,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = pkg.CountApps()
+		count, err = sql.CountApps()
 		log.Err(err, r)
 
 	}()

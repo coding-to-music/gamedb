@@ -1,4 +1,4 @@
-package main
+package queue
 
 import (
 	"encoding/json"
@@ -8,7 +8,10 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	influx2 "github.com/gamedb/website/pkg/influx"
+	"github.com/gamedb/website/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/nicklaw5/helix"
@@ -49,7 +52,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 
 	// Get apps
 	appMap := map[int]sql.App{}
-	apps, err := pkg.GetAppsByID(message.IDs, []string{"id", "twitch_id"})
+	apps, err := sql.GetAppsByID(message.IDs, []string{"id", "twitch_id"})
 	if err != nil {
 		logError(err)
 		payload.ackRetry(msg)
@@ -104,7 +107,7 @@ func getAppTwitchStreamers(app *sql.App) (viewers int, err error) {
 
 	if app.TwitchID > 0 {
 
-		client, err := pkg.GetTwitch()
+		client, err := helpers.GetTwitch()
 		if err != nil {
 			return 0, err
 		}
@@ -152,8 +155,8 @@ func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 		return err
 	}
 
-	_, err = pkg.InfluxWrite(pkg.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(pkg.InfluxMeasurementApps),
+	_, err = influx2.InfluxWrite(influx2.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influx2.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},
@@ -181,7 +184,7 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 		SELECT difference(last("player_count")) FROM "GameDB"."alltime"."apps" WHERE "app_id" = '` + strconv.Itoa(app.ID) + `' AND time >= now() - 7d GROUP BY time(1h)
 	)`
 
-	resp, err = pkg.InfluxQuery(query)
+	resp, err = influx2.InfluxQuery(query)
 	if err != nil {
 		return err
 	}
@@ -212,12 +215,12 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.SetFillNone()
 
-	resp, err = pkg.InfluxQuery(builder.String())
+	resp, err = influx2.InfluxQuery(builder.String())
 	if err != nil {
 		return err
 	}
 
-	var week = pkg.GetFirstInfluxInt(resp)
+	var week = influx2.GetFirstInfluxInt(resp)
 
 	// All time
 	builder = influxql.NewBuilder()
@@ -226,12 +229,12 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.SetFillNone()
 
-	resp, err = pkg.InfluxQuery(builder.String())
+	resp, err = influx2.InfluxQuery(builder.String())
 	if err != nil {
 		return err
 	}
 
-	var alltime = pkg.GetFirstInfluxInt(resp)
+	var alltime = influx2.GetFirstInfluxInt(resp)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {

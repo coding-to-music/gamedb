@@ -5,7 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -27,7 +28,7 @@ type Article struct {
 
 func (article Article) BSON() (ret interface{}) {
 
-	return pkg.M{
+	return M{
 		"_id":         article.ID,
 		"title":       article.Title,
 		"url":         article.URL,
@@ -46,11 +47,11 @@ func (article Article) BSON() (ret interface{}) {
 }
 
 func (article Article) GetBody() string {
-	return pkg.BBCodeCompiler.Compile(article.Contents)
+	return helpers.BBCodeCompiler.Compile(article.Contents)
 }
 
 func (article Article) GetDate() string {
-	return article.Date.Format(pkg.Date)
+	return article.Date.Format(helpers.Date)
 }
 
 func (article Article) GetIcon() string {
@@ -60,7 +61,7 @@ func (article Article) GetIcon() string {
 	} else if article.AppIcon != "" {
 		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(article.AppID) + "/" + article.AppIcon + ".jpg"
 	} else {
-		return pkg.DefaultAppIcon
+		return helpers.DefaultAppIcon
 	}
 }
 
@@ -75,16 +76,16 @@ func (article Article) OutputForJSON() (output []interface{}) {
 	var path = helpers.GetAppPath(article.AppID, article.AppName)
 
 	return []interface{}{
-		id,                                // 0
-		article.Title,                     // 1
-		article.Author,                    // 2
-		article.Date.Unix(),               // 3
-		article.Date.Format(pkg.DateYear), // 4
-		article.GetBody(),                 // 5
-		article.AppID,                     // 6
-		article.AppName,                   // 7
-		article.GetIcon(),                 // 8
-		path + "#news," + id,              // 9
+		id,                                    // 0
+		article.Title,                         // 1
+		article.Author,                        // 2
+		article.Date.Unix(),                   // 3
+		article.Date.Format(helpers.DateYear), // 4
+		article.GetBody(),                     // 5
+		article.AppID,                         // 6
+		article.AppName,                       // 7
+		article.GetIcon(),                     // 8
+		path + "#news," + id,                  // 9
 	}
 }
 
@@ -94,17 +95,17 @@ func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []A
 		return news, nil
 	}
 
-	appsFilter := pkg.A{}
+	appsFilter := A{}
 	for _, v := range appIDs {
 		appsFilter = append(appsFilter, v)
 	}
 
-	filter := pkg.M{
-		"app_id": pkg.M{"$in": appsFilter},
+	filter := M{
+		"app_id": M{"$in": appsFilter},
 	}
 
 	if !afterDate.IsZero() {
-		filter["date"] = pkg.M{"$gte": afterDate}
+		filter["date"] = M{"$gte": afterDate}
 	}
 
 	return getArticles(0, limit, filter)
@@ -112,7 +113,7 @@ func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []A
 
 func GetArticlesByApp(appID int, offset int64) (news []Article, err error) {
 
-	return getArticles(offset, 100, pkg.M{"app_id": appID})
+	return getArticles(offset, 100, M{"app_id": appID})
 }
 
 func GetArticles(offset int64) (news []Article, err error) {
@@ -123,17 +124,17 @@ func GetArticles(offset int64) (news []Article, err error) {
 func getArticles(offset int64, limit int64, filter interface{}) (news []Article, err error) {
 
 	if filter == nil {
-		filter = pkg.M{}
+		filter = M{}
 	}
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return news, err
 	}
 
-	c := client.Database(pkg.MongoDatabase, options.Database()).Collection(pkg.CollectionAppArticles.String())
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppArticles.String())
 
-	ops := options.Find().SetSort(pkg.M{"date": -1})
+	ops := options.Find().SetSort(M{"date": -1})
 	if limit > 0 {
 		ops.SetLimit(limit)
 	}

@@ -6,7 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -58,7 +61,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	//
-	var code = pkg.GetCountryCode(r)
+	var code = session.GetCountryCode(r)
 	var wg sync.WaitGroup
 	var productType = query.getSearchString("type")
 
@@ -122,7 +125,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = pkg.CountApps()
+		count, err = sql.CountApps()
 		log.Err(err, r)
 
 	}()
@@ -156,12 +159,12 @@ type extendedRow struct {
 }
 
 func (e extendedRow) GetIcon() string {
-	return pkg.GetAppIcon(e.ID, e.Icon)
+	return helpers.GetAppIcon(e.ID, e.Icon)
 }
 
 func (e extendedRow) GetPath(productType string) string {
 	if productType == "app" {
 		return helpers.GetAppPath(e.ID, e.Name)
 	}
-	return pkg.GetPackagePath(e.ID, e.Name)
+	return helpers.GetPackagePath(e.ID, e.Name)
 }

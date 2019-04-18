@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/memcache-go/memcache"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -27,7 +29,7 @@ type Event struct {
 
 func (event Event) BSON() (ret interface{}) {
 
-	return pkg.M{
+	return M{
 		"created_at": event.CreatedAt,
 		"type":       event.Type,
 		"player_id":  event.PlayerID,
@@ -52,7 +54,7 @@ func (event Event) OutputForJSON(ip string) (output []interface{}) {
 }
 
 func (event Event) GetCreatedNice() (t string) {
-	return event.CreatedAt.Format(pkg.DateTime)
+	return event.CreatedAt.Format(helpers.DateTime)
 }
 
 func (event Event) GetUserAgentShort() (t string) {
@@ -108,14 +110,14 @@ func (event Event) GetIcon() string {
 
 func GetEvents(playerID int64, offset int64) (events []Event, err error) {
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return events, err
 	}
 
-	c := client.Database(pkg.MongoDatabase, options.Database()).Collection(pkg.CollectionEvents.String())
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents.String())
 
-	cur, err := c.Find(ctx, pkg.M{"player_id": playerID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(pkg.M{"created_at": -1}))
+	cur, err := c.Find(ctx, M{"player_id": playerID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(M{"created_at": -1}))
 	if err != nil {
 		return events, err
 	}
@@ -145,13 +147,13 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 	event.UserAgent = r.Header.Get("User-Agent")
 	event.IP = r.RemoteAddr
 
-	_, err = pkg.InsertDocument(pkg.CollectionEvents, event)
+	_, err = InsertDocument(CollectionEvents, event)
 	if err != nil {
 		return err
 	}
 
 	if config.Config.HasMemcache() {
-		err = pkg.GetMemcache().Delete(pkg.MemcachePlayerEventsCount(playerID).Key)
+		err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID).Key)
 		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 	}
 
@@ -160,11 +162,11 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 
 func CountEvents(playerID int64) (count int64, err error) {
 
-	var item = pkg.MemcachePlayerEventsCount(playerID)
+	var item = helpers.MemcachePlayerEventsCount(playerID)
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return pkg.CountDocuments(pkg.CollectionEvents, pkg.M{"player_id": playerID})
+		return CountDocuments(CollectionEvents, M{"player_id": playerID})
 	})
 
 	return count, err

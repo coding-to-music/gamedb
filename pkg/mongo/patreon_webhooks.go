@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -23,7 +23,7 @@ type PatreonWebhook struct {
 
 func (pw PatreonWebhook) BSON() (ret interface{}) {
 
-	return pkg.M{
+	return M{
 		"created_at":                pw.CreatedAt,
 		"request_body":              pw.RequestBody,
 		"event":                     pw.Event,
@@ -42,13 +42,13 @@ func (pw PatreonWebhook) Raw() (raw patreon.Webhook, err error) {
 	return raw, err
 }
 
-func GetPatreonWebhooks(offset int64, limit int64, sort bool, filter interface{}, projection pkg.M) (webhooks []PatreonWebhook, err error) {
+func GetPatreonWebhooks(offset int64, limit int64, sort bool, filter interface{}, projection M) (webhooks []PatreonWebhook, err error) {
 
 	if filter == nil {
-		filter = pkg.M{}
+		filter = M{}
 	}
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return webhooks, err
 	}
@@ -61,16 +61,16 @@ func GetPatreonWebhooks(offset int64, limit int64, sort bool, filter interface{}
 		ops.SetLimit(limit)
 	}
 	if sort {
-		ops.SetSort(pkg.M{"created_at": 1})
+		ops.SetSort(M{"created_at": 1})
 	} else {
-		ops.SetSort(pkg.M{"created_at": -1})
+		ops.SetSort(M{"created_at": -1})
 	}
 
 	if projection != nil {
 		ops.SetProjection(projection)
 	}
 
-	c := client.Database(pkg.MongoDatabase, options.Database()).Collection(pkg.CollectionPatreonWebhooks.String())
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPatreonWebhooks.String())
 	cur, err := c.Find(ctx, filter, ops)
 	if err != nil {
 		return webhooks, err

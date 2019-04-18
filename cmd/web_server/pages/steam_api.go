@@ -10,7 +10,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/github"
 )
@@ -94,7 +95,7 @@ type Param struct {
 
 func (t *steamAPITemplate) addUndocumented() {
 
-	client, ctx := pkg.GetGithub()
+	client, ctx := helpers.GetGithub()
 	_, dir, _, err := client.Repositories.GetContents(ctx, "SteamDatabase", "SteamTracking", "API", nil)
 	log.Err(err)
 

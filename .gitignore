@@ -9,6 +9,8 @@ assets/css/sass/
 assets/concatenate.css
 
 # Binaries
-website
 debug
-main
+cmd/chat_bot/chat_bot
+cmd/chat_bot/consumers
+cmd/chat_bot/crons
+cmd/chat_bot/web_servers

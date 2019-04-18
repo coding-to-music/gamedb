@@ -3,7 +3,9 @@ package pages
 import (
 	"net/http"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -40,7 +42,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	changes, err := pkg.GetChanges(query.getOffset64())
+	changes, err := mongo.GetChanges(query.getOffset64())
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -56,14 +58,14 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		packageIDs = append(packageIDs, v.Packages...)
 	}
 
-	apps, err := pkg.GetAppsByID(appIDs, []string{"id", "name"})
+	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name"})
 	log.Err(err)
 
 	for _, v := range apps {
 		appMap[v.ID] = v.GetName()
 	}
 
-	packages, err := pkg.GetPackages(packageIDs, []string{"id", "name"})
+	packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
 	log.Err(err)
 
 	for _, v := range packages {

@@ -9,7 +9,8 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -65,7 +66,7 @@ type Player struct {
 
 func (player Player) BSON() (ret interface{}) {
 
-	return pkg.M{
+	return M{
 		"_id":             player.ID,
 		"avatar":          player.Avatar,
 		"badges":          player.Badges,
@@ -105,11 +106,11 @@ func (player Player) BSON() (ret interface{}) {
 }
 
 func (player Player) GetPath() string {
-	return pkg.GetPlayerPath(player.ID, player.GetName())
+	return helpers.GetPlayerPath(player.ID, player.GetName())
 }
 
 func (player Player) GetName() string {
-	return pkg.GetPlayerName(player.ID, player.PersonaName)
+	return helpers.GetPlayerName(player.ID, player.PersonaName)
 }
 
 func (player Player) GetSteamTimeUnix() int64 {
@@ -117,7 +118,7 @@ func (player Player) GetSteamTimeUnix() int64 {
 }
 
 func (player Player) GetSteamTimeNice() string {
-	return player.TimeCreated.Format(pkg.DateYear)
+	return player.TimeCreated.Format(helpers.DateYear)
 }
 
 func (player Player) GetLogoffUnix() int64 {
@@ -133,7 +134,7 @@ func (player Player) GetUpdatedUnix() int64 {
 }
 
 func (player Player) GetUpdatedNice() string {
-	return player.UpdatedAt.Format(pkg.DateTime)
+	return player.UpdatedAt.Format(helpers.DateTime)
 }
 
 func (player Player) GetSteamCommunityLink() string {
@@ -141,19 +142,19 @@ func (player Player) GetSteamCommunityLink() string {
 }
 
 func (player Player) GetMaxFriends() int {
-	return pkg.GetPlayerMaxFriends(player.Level)
+	return helpers.GetPlayerMaxFriends(player.Level)
 }
 
 func (player Player) GetAvatar() string {
-	return pkg.GetPlayerAvatar(player.Avatar)
+	return helpers.GetPlayerAvatar(player.Avatar)
 }
 
 func (player Player) GetFlag() string {
-	return pkg.GetPlayerFlagPath(player.CountryCode)
+	return helpers.GetPlayerFlagPath(player.CountryCode)
 }
 
 func (player Player) GetCountry() string {
-	return pkg.CountryCodeToName(player.CountryCode)
+	return helpers.CountryCodeToName(player.CountryCode)
 }
 
 func (player Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
@@ -163,15 +164,15 @@ func (player Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
 }
 
 func (player Player) GetAvatar2() string {
-	return pkg.GetAvatar2(player.Level)
+	return helpers.GetAvatar2(player.Level)
 }
 
 func (player Player) GetTimeShort() (ret string) {
-	return pkg.GetTimeShort(player.PlayTime, 2)
+	return helpers.GetTimeShort(player.PlayTime, 2)
 }
 
 func (player Player) GetTimeLong() (ret string) {
-	return pkg.GetTimeLong(player.PlayTime, 5)
+	return helpers.GetTimeLong(player.PlayTime, 5)
 }
 
 //
@@ -180,7 +181,7 @@ func (player Player) GetBadgesRank() string {
 	if player.BadgesRank == 0 {
 		return "-"
 	}
-	return pkg.OrdinalComma(player.BadgesRank)
+	return helpers.OrdinalComma(player.BadgesRank)
 }
 
 func (player Player) GetFriendsRank() string {
@@ -188,7 +189,7 @@ func (player Player) GetFriendsRank() string {
 	if player.FriendsRank == 0 {
 		return "-"
 	}
-	return pkg.OrdinalComma(player.FriendsRank)
+	return helpers.OrdinalComma(player.FriendsRank)
 }
 
 func (player Player) GetGamesRank() string {
@@ -196,7 +197,7 @@ func (player Player) GetGamesRank() string {
 	if player.GamesRank == 0 {
 		return "-"
 	}
-	return pkg.OrdinalComma(player.GamesRank)
+	return helpers.OrdinalComma(player.GamesRank)
 }
 
 func (player Player) GetLevelRank() string {
@@ -204,7 +205,7 @@ func (player Player) GetLevelRank() string {
 	if player.LevelRank == 0 {
 		return "-"
 	}
-	return pkg.OrdinalComma(player.LevelRank)
+	return helpers.OrdinalComma(player.LevelRank)
 }
 
 func (player Player) GetPlaytimeRank() string {
@@ -212,7 +213,7 @@ func (player Player) GetPlaytimeRank() string {
 	if player.PlayTimeRank == 0 {
 		return "-"
 	}
-	return pkg.OrdinalComma(player.PlayTimeRank)
+	return helpers.OrdinalComma(player.PlayTimeRank)
 }
 
 //
@@ -224,9 +225,9 @@ func (player Player) GetBadges() (badges []ProfileBadge, err error) {
 
 	var bytes []byte
 
-	if pkg.IsStorageLocaion(player.Badges) {
+	if helpers.IsStorageLocaion(player.Badges) {
 
-		bytes, err = pkg.Download(pkg.PathBadges(player.ID))
+		bytes, err = helpers.Download(helpers.PathBadges(player.ID))
 		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
 		if err != nil {
 			return badges, err
@@ -247,9 +248,9 @@ func (player Player) GetFriends() (friends []ProfileFriend, err error) {
 
 	var bytes []byte
 
-	if pkg.IsStorageLocaion(player.Friends) {
+	if helpers.IsStorageLocaion(player.Friends) {
 
-		bytes, err = pkg.Download(pkg.PathFriends(player.ID))
+		bytes, err = helpers.Download(helpers.PathFriends(player.ID))
 		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
 		if err != nil {
 			return friends, err
@@ -270,9 +271,9 @@ func (player Player) GetRecentGames() (games []ProfileRecentGame, err error) {
 
 	var bytes []byte
 
-	if pkg.IsStorageLocaion(player.GamesRecent) {
+	if helpers.IsStorageLocaion(player.GamesRecent) {
 
-		bytes, err = pkg.Download(pkg.PathRecentGames(player.ID))
+		bytes, err = helpers.Download(helpers.PathRecentGames(player.ID))
 		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
 		if err != nil {
 			return games, err
@@ -315,7 +316,7 @@ func (player Player) ShouldUpdate(userAgent string, updateType UpdateType) bool 
 		return false
 	}
 
-	if pkg.IsBot(userAgent) {
+	if helpers.IsBot(userAgent) {
 		return false
 	}
 
@@ -366,7 +367,7 @@ func GetPlayer(id int64) (player Player, err error) {
 		return player, ErrInvalidPlayerID
 	}
 
-	err = pkg.FindDocument(pkg.CollectionPlayers, "_id", id, nil, &player)
+	err = FindDocument(CollectionPlayers, "_id", id, nil, &player)
 	return player, err
 }
 
@@ -376,53 +377,53 @@ func SearchPlayer(s string) (player Player, err error) {
 		return player, ErrInvalidPlayerID
 	}
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return player, err
 	}
 
-	var filter pkg.M
+	var filter M
 
 	i, _ := strconv.ParseInt(s, 10, 64)
-	if pkg.IsValidPlayerID(i) {
-		filter = pkg.M{"_id": s}
+	if IsValidPlayerID(i) {
+		filter = M{"_id": s}
 	} else {
-		filter = pkg.M{"$text": pkg.M{"$search": s}}
+		filter = M{"$text": M{"$search": s}}
 	}
 
-	c := client.Database(pkg.MongoDatabase).Collection(pkg.CollectionPlayers.String())
+	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
 	result := c.FindOne(ctx, filter, options.FindOne())
 
 	err = result.Decode(&player)
 	return player, err
 }
 
-func GetPlayers(offset int64, limit int64, sort pkg.D, filter pkg.M, projection pkg.M) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, filter M, projection M) (players []Player, err error) {
 
 	return getPlayers(offset, limit, sort, filter, projection)
 }
 
-func GetPlayersByID(ids []int64, projection pkg.M) (players []Player, err error) {
+func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
 
 	if len(ids) < 1 {
 		return players, nil
 	}
 
-	var idsBSON pkg.A
+	var idsBSON A
 	for _, v := range ids {
 		idsBSON = append(idsBSON, v)
 	}
 
-	return getPlayers(0, 0, nil, pkg.M{"_id": pkg.M{"$in": idsBSON}}, projection)
+	return getPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection)
 }
 
-func getPlayers(offset int64, limit int64, sort pkg.D, filter interface{}, projection pkg.M) (players []Player, err error) {
+func getPlayers(offset int64, limit int64, sort D, filter interface{}, projection M) (players []Player, err error) {
 
 	if filter == nil {
-		filter = pkg.M{}
+		filter = M{}
 	}
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return players, err
 	}
@@ -442,7 +443,7 @@ func getPlayers(offset int64, limit int64, sort pkg.D, filter interface{}, proje
 		ops.SetProjection(projection)
 	}
 
-	c := client.Database(pkg.MongoDatabase, options.Database()).Collection(pkg.CollectionPlayers.String())
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
 	cur, err := c.Find(ctx, filter, ops)
 	if err != nil {
 		return players, err
@@ -468,11 +469,11 @@ func getPlayers(offset int64, limit int64, sort pkg.D, filter interface{}, proje
 
 func CountPlayers() (count int64, err error) {
 
-	var item = pkg.MemcachePlayersCount
+	var item = helpers.MemcachePlayersCount
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return pkg.CountDocuments(pkg.CollectionPlayers, pkg.M{})
+		return CountDocuments(CollectionPlayers, M{})
 	})
 
 	return count, err
@@ -480,12 +481,12 @@ func CountPlayers() (count int64, err error) {
 
 func RankPlayers(col string, colToUpdate string) (err error) {
 
-	players, err := getPlayers(0, 0, pkg.D{{col, -1}}, pkg.M{col: pkg.M{"$gt": 0}}, pkg.M{"_id": 1})
+	players, err := getPlayers(0, 0, D{{col, -1}}, M{col: M{"$gt": 0}}, M{"_id": 1})
 	if err != nil {
 		return err
 	}
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return err
 	}
@@ -494,17 +495,17 @@ func RankPlayers(col string, colToUpdate string) (err error) {
 	for k, v := range players {
 
 		write := mongo.NewUpdateOneModel()
-		write.SetFilter(pkg.M{"_id": v.ID})
-		write.SetUpdate(pkg.M{"$set": pkg.M{colToUpdate: k + 1}})
+		write.SetFilter(M{"_id": v.ID})
+		write.SetUpdate(M{"$set": M{colToUpdate: k + 1}})
 		write.SetUpsert(false)
 
 		writes = append(writes, write)
 	}
 
-	c := client.Database(pkg.MongoDatabase).Collection(pkg.CollectionPlayers.String())
+	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
 
 	// Clear all current values
-	_, err = c.UpdateMany(ctx, pkg.M{colToUpdate: pkg.M{"$ne": 0}}, pkg.M{"$set": pkg.M{colToUpdate: 0}}, options.Update())
+	_, err = c.UpdateMany(ctx, M{colToUpdate: M{"$ne": 0}}, M{"$set": M{colToUpdate: 0}}, options.Update())
 	log.Err(err)
 
 	// Write in new values
@@ -549,7 +550,7 @@ func (p ProfileFriend) Scanned() bool {
 }
 
 func (p ProfileFriend) GetPath() string {
-	return pkg.GetPlayerPath(p.SteamID, p.Name)
+	return helpers.GetPlayerPath(p.SteamID, p.Name)
 }
 
 func (p ProfileFriend) GetLoggedOff() string {
@@ -564,7 +565,7 @@ func (p ProfileFriend) GetFriendSince() string {
 }
 
 func (p ProfileFriend) GetName() string {
-	return pkg.GetPlayerName(p.SteamID, p.Name)
+	return helpers.GetPlayerName(p.SteamID, p.Name)
 }
 
 func (p ProfileFriend) GetLevel() string {
@@ -598,12 +599,12 @@ func (p ProfileBadge) GetAppName() string {
 	if p.AppID == 0 {
 		return "No App"
 	}
-	return pkg.GetAppName(p.AppID, p.AppName)
+	return helpers.GetAppName(p.AppID, p.AppName)
 }
 
 func (p ProfileBadge) GetIcon() string {
 	if p.AppIcon == "" {
-		return pkg.DefaultAppIcon
+		return helpers.DefaultAppIcon
 	}
 	return p.AppIcon
 }
@@ -683,9 +684,9 @@ func (p playerAppStatsInnerTemplate) GetAveragePriceHour() float64 {
 	return helpers.RoundFloatTo2DP(p.PriceHour[p.Code] / float64(p.Count))
 }
 func (p playerAppStatsInnerTemplate) GetAverageTime() string {
-	return pkg.GetTimeShort(int(float64(p.Time)/float64(p.Count)), 2)
+	return helpers.GetTimeShort(int(float64(p.Time)/float64(p.Count)), 2)
 }
 
 func (p playerAppStatsInnerTemplate) GetTotalTime() string {
-	return pkg.GetTimeShort(p.Time, 2)
+	return helpers.GetTimeShort(p.Time, 2)
 }

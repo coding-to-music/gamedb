@@ -8,8 +8,13 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	main2 "github.com/gamedb/website/cmd/consumers"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/queue"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
@@ -80,7 +85,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Save email so they don't need to keep typing it
-		err = pkg.Write(w, r, "login-email", r.PostForm.Get("email"))
+		err = session.Write(w, r, "login-email", r.PostForm.Get("email"))
 		log.Err(err, r)
 
 		// Recaptcha
@@ -105,7 +110,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get users that match the email
-		users, err := pkg.GetUsersByEmail(email)
+		users, err := sql.GetUsersByEmail(email)
 		if err != nil {
 			return err
 		}
@@ -115,7 +120,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check password matches
-		var user pkg.User
+		var user sql.User
 		var success bool
 		for _, v := range users {
 
@@ -132,7 +137,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Get player from user
-		player, err := pkg.GetPlayer(user.PlayerID)
+		player, err := mongo.GetPlayer(user.PlayerID)
 		if err != nil {
 			return errors.New("no corresponding player")
 		}
@@ -144,7 +149,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove form prefill on success
-		err = pkg.Write(w, r, "login-email", "")
+		err = session.Write(w, r, "login-email", "")
 		log.Err(err, r)
 
 		return nil
@@ -156,14 +161,14 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err2 := helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
 		log.Err(err2)
 
-		err = pkg.SetGoodFlash(w, r, err.Error())
+		err = session.SetGoodFlash(w, r, err.Error())
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 
 	} else {
 
-		err = pkg.SetGoodFlash(w, r, "Login successful")
+		err = session.SetGoodFlash(w, r, "Login successful")
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
@@ -179,7 +184,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	loggedIn, err := pkg.IsLoggedIn(r)
+	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
 		log.Err(err, r)
 	}
@@ -228,16 +233,16 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if we have the player
-	player, err := pkg.GetPlayer(idInt)
+	player, err := mongo.GetPlayer(idInt)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return
 	}
 
 	// Queue for an update
-	if player.ShouldUpdate(r.UserAgent(), pkg.PlayerUpdateAuto) {
+	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
 
-		err = main2.ProducePlayer(player.ID)
+		err = queue.ProducePlayer(player.ID)
 		log.Err(err, r)
 	}
 
@@ -248,7 +253,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user pkg.User
+	var user sql.User
 	gorm = gorm.First(&user, idInt)
 	log.Err(gorm.Error)
 
@@ -261,15 +266,15 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
-func login(w http.ResponseWriter, r *http.Request, player pkg.Player, user pkg.User) (err error) {
+func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user sql.User) (err error) {
 
 	// Save session
-	err = pkg.WriteMany(w, r, map[string]string{
-		pkg.PlayerID:    strconv.FormatInt(player.ID, 10),
-		pkg.PlayerName:  player.PersonaName,
-		pkg.PlayerLevel: strconv.Itoa(player.Level),
-		pkg.UserEmail:   user.Email,
-		pkg.UserCountry: user.CountryCode,
+	err = session.WriteMany(w, r, map[string]string{
+		session.PlayerID:    strconv.FormatInt(player.ID, 10),
+		session.PlayerName:  player.PersonaName,
+		session.PlayerLevel: strconv.Itoa(player.Level),
+		session.UserEmail:   user.Email,
+		session.UserCountry: user.CountryCode,
 	})
 
 	if err != nil {
@@ -277,7 +282,7 @@ func login(w http.ResponseWriter, r *http.Request, player pkg.Player, user pkg.U
 	}
 
 	// Create login record
-	return pkg.CreateEvent(r, player.ID, pkg.EventLogin)
+	return mongo.CreateEvent(r, player.ID, mongo.EventLogin)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -293,10 +298,10 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)
 	log.Err(err, r)
 
-	err = pkg.CreateEvent(r, id, pkg.EventLogout)
+	err = mongo.CreateEvent(r, id, mongo.EventLogout)
 	log.Err(err, r)
 
-	err = pkg.Clear(w, r)
+	err = session.Clear(w, r)
 	log.Err(err, r)
 
 	http.Redirect(w, r, "/", http.StatusFound)

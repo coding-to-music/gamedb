@@ -5,7 +5,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -76,7 +80,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"5": "player_trend",
 	}
 
-	var code = pkg.GetCountryCode(r)
+	var code = session.GetCountryCode(r)
 
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})
@@ -106,10 +110,10 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetIcon(),                          // 2
 			app.GetPath(),                          // 3
 			app.GetType(),                          // 4
-			pkg.GetPriceFormatted(app, code).Final, // 5
+			sql.GetPriceFormatted(app, code).Final, // 5
 			app.GetReleaseDateNice(),               // 6
-			helpers.RoundFloatTo2DP(app.ReviewsScore),  // 7
-			app.PlayerPeakWeek,                     // 8
+			helpers.RoundFloatTo2DP(app.ReviewsScore), // 7
+			app.PlayerPeakWeek,                        // 8
 		})
 	}
 
@@ -118,9 +122,9 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func countNewReleaseApps() (count int, err error) {
 
-	var item = pkg.MemcacheNewReleaseAppsCount
+	var item = helpers.MemcacheNewReleaseAppsCount
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

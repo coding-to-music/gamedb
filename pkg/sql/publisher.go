@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
 	"github.com/gamedb/website/pkg/helpers"
 )
 
@@ -30,7 +29,7 @@ func (p Publisher) GetName() (name string) {
 }
 
 func (p Publisher) GetMeanPrice(code steam.CountryCode) (string, error) {
-	return pkg.GetMeanPrice(code, p.MeanPrice)
+	return helpers.GetMeanPrice(code, p.MeanPrice)
 }
 
 func (p Publisher) GetMeanScore() string {
@@ -93,9 +92,9 @@ func GetAllPublishers() (publishers []Publisher, err error) {
 
 func GetPublishersForSelect() (pubs []Publisher, err error) {
 
-	var item = pkg.MemcachePublisherKeyNames
+	var item = helpers.MemcachePublisherKeyNames
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &pubs, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &pubs, func() (interface{}, error) {
 
 		var pubs []Publisher
 

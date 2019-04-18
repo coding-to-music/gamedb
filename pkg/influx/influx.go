@@ -1,4 +1,4 @@
-package sql
+package influx
 
 import (
 	"encoding/json"
@@ -9,7 +9,8 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/influxdata/influxdb1-client/models"
 )
@@ -90,7 +91,7 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 		return err
 	}
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { pkg.Info(err) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
 	return resp, err
 }
 
@@ -157,7 +158,7 @@ func GetFirstInfluxInt(resp *influx.Response) int {
 			log.Err(err)
 			return int(i)
 		default:
-			pkg.Warning("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
+			log.Warning("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
 		}
 	}
 

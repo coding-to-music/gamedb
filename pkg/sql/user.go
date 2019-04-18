@@ -2,8 +2,6 @@ package sql
 
 import (
 	"time"
-
-	"github.com/gamedb/website/pkg"
 )
 
 type User struct {

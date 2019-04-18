@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/websockets"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
 )
@@ -27,10 +28,10 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	page, err := pkg.GetPage(pkg.WebsocketPage(id))
+	page, err := websockets.GetPage(websockets.WebsocketPage(id))
 	if err != nil {
 
-		bytes, err := json.Marshal(pkg.WebsocketPayload{Error: "Invalid page"})
+		bytes, err := json.Marshal(websockets.WebsocketPayload{Error: "Invalid page"})
 		log.Err(err)
 
 		_, err = w.Write(bytes)

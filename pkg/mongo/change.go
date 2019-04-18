@@ -4,7 +4,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -18,19 +19,19 @@ type Change struct {
 func (change Change) BSON() (ret interface{}) {
 
 	// Apps
-	var apps pkg.A
+	var apps A
 	for _, v := range change.Apps {
 		apps = append(apps, v)
 	}
 
 	// Packages
-	var packages pkg.A
+	var packages A
 	for _, v := range change.Packages {
 		packages = append(packages, v)
 	}
 
 	// BSON
-	return pkg.M{
+	return M{
 		"_id":        change.ID,
 		"created_at": change.CreatedAt,
 		"apps":       apps,
@@ -84,13 +85,13 @@ func (change Change) OutputForJSON(allApps map[int]string, allPackages map[int]s
 
 func GetChange(id int64) (change Change, err error) {
 
-	var item = pkg.MemcacheChangeRow(id)
+	var item = helpers.MemcacheChangeRow(id)
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &change, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &change, func() (interface{}, error) {
 
 		var change Change
 
-		err = pkg.FindDocument(pkg.CollectionChanges, "_id", id, nil, &change)
+		err = FindDocument(CollectionChanges, "_id", id, nil, &change)
 
 		return change, err
 	})
@@ -100,14 +101,14 @@ func GetChange(id int64) (change Change, err error) {
 
 func GetChanges(offset int64) (changes []Change, err error) {
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return changes, err
 	}
 
-	c := client.Database(pkg.MongoDatabase, options.Database()).Collection(pkg.CollectionChanges.String())
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionChanges.String())
 
-	cur, err := c.Find(ctx, pkg.M{}, options.Find().SetLimit(100).SetSkip(offset).SetSort(pkg.M{"_id": -1}))
+	cur, err := c.Find(ctx, M{}, options.Find().SetLimit(100).SetSkip(offset).SetSort(M{"_id": -1}))
 	if err != nil {
 		return changes, err
 	}

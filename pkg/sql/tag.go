@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 )
 
 type Tag struct {
@@ -33,7 +34,7 @@ func (tag Tag) GetName() (name string) {
 }
 
 func (tag Tag) GetMeanPrice(code steam.CountryCode) (string, error) {
-	return pkg.GetMeanPrice(code, tag.MeanPrice)
+	return helpers.GetMeanPrice(code, tag.MeanPrice)
 }
 
 func (tag Tag) GetMeanScore() string {
@@ -57,9 +58,9 @@ func GetAllTags() (tags []Tag, err error) {
 
 func GetTagsForSelect() (tags []Tag, err error) {
 
-	var item = pkg.MemcacheTagKeyNames
+	var item = helpers.MemcacheTagKeyNames
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 
 		var tags []Tag
 
@@ -100,7 +101,7 @@ func GetTagsByID(ids []int, columns []string) (tags []Tag, err error) {
 
 func DeleteTags(ids []int) (err error) {
 
-	pkg.Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
+	log.Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
 
 	if len(ids) == 0 {
 		return nil

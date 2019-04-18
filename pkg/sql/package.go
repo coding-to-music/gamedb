@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
 	"github.com/jinzhu/gorm"
 )
 
@@ -86,7 +86,7 @@ func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 }
 
 func (pack Package) GetPath() string {
-	return pkg.GetPackagePath(pack.ID, pack.GetName())
+	return helpers.GetPackagePath(pack.ID, pack.GetName())
 }
 
 func (pack Package) GetID() int {
@@ -100,13 +100,13 @@ func (pack Package) GetType() string {
 
 func (pack Package) GetIcon() string {
 	if pack.Icon == "" {
-		return pkg.DefaultAppIcon
+		return helpers.DefaultAppIcon
 	}
 	return pack.Icon
 }
 
-func (pack Package) GetProductType() pkg.ProductType {
-	return pkg.ProductTypePackage
+func (pack Package) GetProductType() helpers.ProductType {
+	return helpers.ProductTypePackage
 }
 
 func (pack Package) GetName() (name string) {
@@ -153,7 +153,7 @@ func (pack Package) GetReleaseDateNice() string {
 		return pack.ReleaseDate
 	}
 
-	return time.Unix(pack.ReleaseDateUnix, 0).Format(pkg.DateYear)
+	return time.Unix(pack.ReleaseDateUnix, 0).Format(helpers.DateYear)
 }
 
 func (pack Package) GetBillingType() string {
@@ -266,7 +266,7 @@ func (pack Package) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-func (pack Package) GetPrice(code steam.CountryCode) (price ProductPricestruct, err error) {
+func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error) {
 
 	prices, err := pack.GetPrices()
 	if err != nil {
@@ -276,17 +276,17 @@ func (pack Package) GetPrice(code steam.CountryCode) (price ProductPricestruct, 
 	return prices.Get(code)
 }
 
-func (pack Package) GetExtended() (extended pkg.PICSExtended, err error) {
+func (pack Package) GetExtended() (extended PICSExtended, err error) {
 
-	extended = pkg.PICSExtended{}
+	extended = PICSExtended{}
 
 	err = helpers.Unmarshal([]byte(pack.Extended), &extended)
 	return extended, err
 }
 
-func (pack Package) GetController() (controller pkg.PICSController, err error) {
+func (pack Package) GetController() (controller PICSController, err error) {
 
-	controller = pkg.PICSController{}
+	controller = PICSController{}
 
 	err = helpers.Unmarshal([]byte(pack.Controller), &controller)
 	return controller, err
@@ -339,7 +339,7 @@ func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{})
 		pack.GetName(),
 		pack.GetComingSoon(),
 		pack.AppsCount,
-		pkg.GetPriceFormatted(pack, code).Final,
+		GetPriceFormatted(pack, code).Final,
 		pack.ChangeNumberDate.Unix(),
 		pack.ChangeNumberDate.Format(helpers.DateYearTime),
 		pack.GetIcon(),
@@ -355,7 +355,7 @@ func (pack Package) OutputForJSONUpcoming(code steam.CountryCode) (output []inte
 		pack.GetIcon(),
 		pack.GetPath(),
 		pack.AppsCount,
-		pkg.GetPriceFormatted(pack, code).Final,
+		GetPriceFormatted(pack, code).Final,
 		pack.GetDaysToRelease(),
 		pack.GetReleaseDateNice(),
 	}
@@ -363,7 +363,7 @@ func (pack Package) OutputForJSONUpcoming(code steam.CountryCode) (output []inte
 
 func (pack Package) GetDaysToRelease() string {
 
-	return pkg.GetDaysToRelease(pack.ReleaseDateUnix)
+	return helpers.GetDaysToRelease(pack.ReleaseDateUnix)
 }
 
 func IsValidPackageID(id int) bool {
@@ -390,7 +390,7 @@ func GetPackage(id int, columns []string) (pack Package, err error) {
 	}
 
 	if pack.ID == 0 {
-		return pack, pkg.ErrRecordNotFound
+		return pack, ErrRecordNotFound
 	}
 
 	return pack, nil
@@ -434,9 +434,9 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 func CountPackages() (count int, err error) {
 
-	var item = pkg.MemcachePackagesCount
+	var item = helpers.MemcachePackagesCount
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

@@ -8,7 +8,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/influx"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -76,7 +80,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
 	gorm = gorm.Where("player_trend >= 100 OR player_trend <= -100")
-	gorm = gorm.Order(query.getOrderSQL(columns, pkg.GetCountryCode(r)))
+	gorm = gorm.Order(query.getOrderSQL(columns, session.GetCountryCode(r)))
 	gorm = gorm.Limit(50)
 	gorm = gorm.Offset(query.getOffset())
 
@@ -84,7 +88,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
 
-	var code = pkg.GetCountryCode(r)
+	var code = session.GetCountryCode(r)
 
 	count, err := countTrendingApps()
 	log.Err(err)
@@ -100,7 +104,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetName(),                          // 1
 			app.GetIcon(),                          // 2
 			app.GetPath(),                          // 3
-			pkg.GetPriceFormatted(app, code).Final, // 4
+			sql.GetPriceFormatted(app, code).Final, // 4
 			app.PlayerTrend,                        // 5
 			app.PlayerPeakWeek,                     // 6
 		})
@@ -111,9 +115,9 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func countTrendingApps() (count int, err error) {
 
-	var item = pkg.MemcacheTrendingAppsCount
+	var item = helpers.MemcacheTrendingAppsCount
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 
@@ -169,16 +173,16 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
-	resp, err := pkg.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	ret := map[string]pkg.HighChartsJson{}
+	ret := map[string]influx.HighChartsJson{}
 	if len(resp.Results) > 0 {
 		for _, v := range resp.Results[0].Series {
-			ret[v.Tags["app_id"]] = pkg.InfluxResponseToHighCharts(v)
+			ret[v.Tags["app_id"]] = influx.InfluxResponseToHighCharts(v)
 		}
 	}
 

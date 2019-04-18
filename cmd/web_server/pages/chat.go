@@ -9,7 +9,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/websockets"
 	"github.com/go-chi/chi"
 )
 
@@ -28,13 +30,13 @@ func chatRouter() http.Handler {
 
 func getDiscord(r *http.Request) (discord *discordgo.Session, err error) {
 
-	return pkg.GetDiscord(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	return helpers.GetDiscord(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		if m.Author.Bot {
 			return
 		}
 
-		page, err := pkg.GetPage(pkg.PageChat)
+		page, err := websockets.GetPage(websockets.PageChat)
 		if err != nil {
 			log.Err(err)
 			return
@@ -103,10 +105,10 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { pkg.Info(err) })
+		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
 			discordErr = err
-			pkg.Critical(err, r)
+			log.Critical(err, r)
 		}
 
 		for _, v := range channelsResponse {
@@ -147,10 +149,10 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { pkg.Info(err) })
+		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
 			discordErr = err
-			pkg.Critical(err, r)
+			log.Critical(err, r)
 		}
 
 		for _, v := range membersResponse {
@@ -212,9 +214,9 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { pkg.Info(err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
-		pkg.Critical(err, r)
+		log.Critical(err, r)
 		return
 	}
 

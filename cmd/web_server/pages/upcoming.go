@@ -5,8 +5,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/memcache-go/memcache"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -82,7 +84,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
 
-	var code = pkg.GetCountryCode(r)
+	var code = session.GetCountryCode(r)
 
 	count, err := countUpcomingApps()
 	log.Err(err)
@@ -102,7 +104,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetIcon(),
 			app.GetPath(),
 			app.GetType(),
-			pkg.GetPriceFormatted(app, code).Final,
+			sql.GetPriceFormatted(app, code).Final,
 			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")",
 		})
 	}
@@ -112,9 +114,9 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func countUpcomingApps() (count int, err error) {
 
-	var item = pkg.MemcacheUpcomingAppsCount
+	var item = helpers.MemcacheUpcomingAppsCount
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 
@@ -131,18 +133,4 @@ func countUpcomingApps() (count int, err error) {
 	})
 
 	return count, err
-}
-
-func ClearUpcomingCache() {
-
-	var mc = pkg.GetMemcache()
-	var err error
-
-	err = mc.Delete(pkg.MemcacheUpcomingAppsCount.Key)
-	err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
-	log.Err(err)
-
-	err = mc.Delete(pkg.MemcacheUpcomingPackagesCount.Key)
-	err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
-	log.Err(err)
 }

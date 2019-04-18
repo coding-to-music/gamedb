@@ -3,7 +3,7 @@ package sql
 import (
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
 )
 
 type Donation struct {
@@ -15,7 +15,7 @@ type Donation struct {
 }
 
 func (d Donation) GetCreatedNice() (ret string) {
-	return d.CreatedAt.Format(pkg.DateYear)
+	return d.CreatedAt.Format(helpers.DateYear)
 }
 
 func (d Donation) GetCreatedUnix() int64 {

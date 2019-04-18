@@ -1,4 +1,4 @@
-package main
+package queue
 
 import (
 	"encoding/json"
@@ -9,7 +9,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	influx2 "github.com/gamedb/website/pkg/influx"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/website/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -73,8 +77,8 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Update player
-	player, err := pkg.GetPlayer(id64)
-	err = helpers.IgnoreErrors(err, pkg.ErrNoDocuments)
+	player, err := mongo.GetPlayer(id64)
+	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ack(msg)
@@ -164,7 +168,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	err = pkg.CreateEvent(&http.Request{}, player.ID, pkg.EventRefresh)
+	err = mongo.CreateEvent(&http.Request{}, player.ID, mongo.EventRefresh)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -172,7 +176,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page, err := pkg.GetPage(pkg.PageProfile)
+	page, err := websockets.GetPage(websockets.PageProfile)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -217,7 +221,7 @@ type RabbitMessageProfilePICS struct {
 	JobID       steamKitJob `json:"JobID"`
 }
 
-func updatePlayerSummary(player *pkg.Player) error {
+func updatePlayerSummary(player *mongo.Player) error {
 
 	summary, b, err := helpers.GetSteam().GetPlayer(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
@@ -246,7 +250,7 @@ func updatePlayerSummary(player *pkg.Player) error {
 	return err
 }
 
-func updatePlayerGames(player *pkg.Player) error {
+func updatePlayerGames(player *mongo.Player) error {
 
 	// Grab games from Steam
 	resp, b, err := helpers.GetSteam().GetOwnedGames(player.ID)
@@ -259,7 +263,7 @@ func updatePlayerGames(player *pkg.Player) error {
 	player.GamesCount = len(resp.Games)
 
 	// Start creating PlayerApp's
-	var playerApps = map[int]*pkg.PlayerApp{}
+	var playerApps = map[int]*mongo.PlayerApp{}
 	var appPrices = map[int]map[string]int{}
 	var appPriceHour = map[int]map[string]float64{}
 	var appIDs []int
@@ -267,7 +271,7 @@ func updatePlayerGames(player *pkg.Player) error {
 	for _, v := range resp.Games {
 		playtime = playtime + v.PlaytimeForever
 		appIDs = append(appIDs, v.AppID)
-		playerApps[v.AppID] = &pkg.PlayerApp{
+		playerApps[v.AppID] = &mongo.PlayerApp{
 			PlayerID: player.ID,
 			AppID:    v.AppID,
 			AppName:  v.Name,
@@ -282,7 +286,7 @@ func updatePlayerGames(player *pkg.Player) error {
 	player.PlayTime = playtime
 
 	// Getting missing price info from MySQL
-	gameRows, err := pkg.GetAppsByID(appIDs, []string{"id", "prices"})
+	gameRows, err := sql.GetAppsByID(appIDs, []string{"id", "prices"})
 	if err != nil {
 		return err
 	}
@@ -317,13 +321,13 @@ func updatePlayerGames(player *pkg.Player) error {
 	}
 
 	// Save playerApps to Datastore
-	err = pkg.UpdatePlayerApps(playerApps)
+	err = mongo.UpdatePlayerApps(playerApps)
 	if err != nil {
 		return err
 	}
 
 	// Save stats to player
-	var gameStats = pkg.PlayerAppStatsTemplate{}
+	var gameStats = mongo.PlayerAppStatsTemplate{}
 	for _, v := range playerApps {
 
 		gameStats.All.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
@@ -342,7 +346,7 @@ func updatePlayerGames(player *pkg.Player) error {
 	return nil
 }
 
-func updatePlayerRecentGames(player *pkg.Player) error {
+func updatePlayerRecentGames(player *mongo.Player) error {
 
 	recentResponse, b, err := helpers.GetSteam().GetRecentlyPlayedGames(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
@@ -350,9 +354,9 @@ func updatePlayerRecentGames(player *pkg.Player) error {
 		return err
 	}
 
-	var games []pkg.ProfileRecentGame
+	var games []mongo.ProfileRecentGame
 	for _, v := range recentResponse.Games {
-		games = append(games, pkg.ProfileRecentGame{
+		games = append(games, mongo.ProfileRecentGame{
 			AppID:           v.AppID,
 			Name:            v.Name,
 			PlayTime2Weeks:  v.PlayTime2Weeks,
@@ -369,8 +373,8 @@ func updatePlayerRecentGames(player *pkg.Player) error {
 
 	// Upload
 	if len(b) > maxBytesToStore {
-		storagePath := pkg.PathRecentGames(player.ID)
-		err = pkg.Upload(storagePath, b)
+		storagePath := helpers.PathRecentGames(player.ID)
+		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
 		}
@@ -382,7 +386,7 @@ func updatePlayerRecentGames(player *pkg.Player) error {
 	return nil
 }
 
-func updatePlayerBadges(player *pkg.Player) error {
+func updatePlayerBadges(player *mongo.Player) error {
 
 	response, b, err := helpers.GetSteam().GetBadges(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
@@ -394,7 +398,7 @@ func updatePlayerBadges(player *pkg.Player) error {
 	player.BadgesCount = len(response.Badges)
 
 	// Save stats
-	stats := pkg.ProfileBadgeStats{
+	stats := mongo.ProfileBadgeStats{
 		PlayerXP:                   response.PlayerXP,
 		PlayerLevel:                response.PlayerLevel,
 		PlayerXPNeededToLevelUp:    response.PlayerXPNeededToLevelUp,
@@ -410,11 +414,11 @@ func updatePlayerBadges(player *pkg.Player) error {
 	player.BadgeStats = string(b)
 
 	// Start badges slice
-	var badgeSlice []pkg.ProfileBadge
+	var badgeSlice []mongo.ProfileBadge
 	var appIDSlice []int
 	for _, v := range response.Badges {
 		appIDSlice = append(appIDSlice, v.AppID)
-		badgeSlice = append(badgeSlice, pkg.ProfileBadge{
+		badgeSlice = append(badgeSlice, mongo.ProfileBadge{
 			BadgeID:        v.BadgeID,
 			AppID:          v.AppID,
 			Level:          v.Level,
@@ -423,11 +427,11 @@ func updatePlayerBadges(player *pkg.Player) error {
 			Scarcity:       v.Scarcity,
 		})
 	}
-	appIDSlice = pkg.Unique(appIDSlice)
+	appIDSlice = helpers.Unique(appIDSlice)
 
 	// Make map of app rows
 	var appRowsMap = map[int]sql.App{}
-	appRows, err := pkg.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
+	appRows, err := sql.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
 	logError(err)
 
 	for _, v := range appRows {
@@ -450,8 +454,8 @@ func updatePlayerBadges(player *pkg.Player) error {
 
 	// Upload
 	if len(b) > maxBytesToStore {
-		storagePath := pkg.PathBadges(player.ID)
-		err = pkg.Upload(storagePath, b)
+		storagePath := helpers.PathBadges(player.ID)
+		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
 		}
@@ -463,7 +467,7 @@ func updatePlayerBadges(player *pkg.Player) error {
 	return nil
 }
 
-func updatePlayerFriends(player *pkg.Player) error {
+func updatePlayerFriends(player *mongo.Player) error {
 
 	resp, b, err := helpers.GetSteam().GetFriendList(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, []int{401})
@@ -474,20 +478,20 @@ func updatePlayerFriends(player *pkg.Player) error {
 	player.FriendsCount = len(resp.Friends)
 
 	// Make friend ID slice & map
-	var friendsMap = map[int64]*pkg.ProfileFriend{}
+	var friendsMap = map[int64]*mongo.ProfileFriend{}
 	var friendsSlice []int64
 	for _, v := range resp.Friends {
 
 		friendsSlice = append(friendsSlice, int64(v.SteamID))
 
-		friendsMap[int64(v.SteamID)] = &pkg.ProfileFriend{
+		friendsMap[int64(v.SteamID)] = &mongo.ProfileFriend{
 			SteamID:     int64(v.SteamID),
 			FriendSince: v.FriendSince,
 		}
 	}
 
 	// Get friends from DS
-	friendRows, err := pkg.GetPlayersByID(friendsSlice, nil)
+	friendRows, err := mongo.GetPlayersByID(friendsSlice, nil)
 	if err != nil {
 		return err
 	}
@@ -505,7 +509,7 @@ func updatePlayerFriends(player *pkg.Player) error {
 	}
 
 	// Make into map again, so it can be marshalled
-	var friends []pkg.ProfileFriend
+	var friends []mongo.ProfileFriend
 	for _, v := range friendsMap {
 		friends = append(friends, *v)
 	}
@@ -518,8 +522,8 @@ func updatePlayerFriends(player *pkg.Player) error {
 
 	// Upload
 	if len(b) > maxBytesToStore {
-		storagePath := pkg.PathFriends(player.ID)
-		err = pkg.Upload(storagePath, b)
+		storagePath := helpers.PathFriends(player.ID)
+		err = helpers.Upload(storagePath, b)
 		if err != nil {
 			return err
 		}
@@ -531,7 +535,7 @@ func updatePlayerFriends(player *pkg.Player) error {
 	return nil
 }
 
-func updatePlayerLevel(player *pkg.Player) error {
+func updatePlayerLevel(player *mongo.Player) error {
 
 	level, b, err := helpers.GetSteam().GetSteamLevel(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
@@ -544,7 +548,7 @@ func updatePlayerLevel(player *pkg.Player) error {
 	return nil
 }
 
-func updatePlayerBans(player *pkg.Player) error {
+func updatePlayerBans(player *mongo.Player) error {
 
 	response, b, err := helpers.GetSteam().GetPlayerBans(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
@@ -558,7 +562,7 @@ func updatePlayerBans(player *pkg.Player) error {
 	player.NumberOfGameBans = response.NumberOfGameBans
 	player.NumberOfVACBans = response.NumberOfVACBans
 
-	var bans pkg.PlayerBans
+	var bans mongo.PlayerBans
 	bans.CommunityBanned = response.CommunityBanned
 	bans.VACBanned = response.VACBanned
 	bans.NumberOfVACBans = response.NumberOfVACBans
@@ -577,7 +581,7 @@ func updatePlayerBans(player *pkg.Player) error {
 	return nil
 }
 
-func updatePlayerGroups(player *pkg.Player) error {
+func updatePlayerGroups(player *mongo.Player) error {
 
 	resp, b, err := helpers.GetSteam().GetUserGroupList(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, []int{403})
@@ -590,14 +594,14 @@ func updatePlayerGroups(player *pkg.Player) error {
 	return nil
 }
 
-func savePlayerMongo(player pkg.Player) error {
+func savePlayerMongo(player mongo.Player) error {
 
-	_, err := pkg.ReplaceDocument(pkg.CollectionPlayers, pkg.M{"_id": player.ID}, player)
+	_, err := mongo.ReplaceDocument(mongo.CollectionPlayers, mongo.M{"_id": player.ID}, player)
 
 	return err
 }
 
-func savePlayerToInflux(player pkg.Player) (err error) {
+func savePlayerToInflux(player mongo.Player) (err error) {
 
 	fields := map[string]interface{}{
 		"level":    player.Level,
@@ -623,8 +627,8 @@ func savePlayerToInflux(player pkg.Player) (err error) {
 		fields["friends_rank"] = player.FriendsRank
 	}
 
-	_, err = pkg.InfluxWrite(pkg.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(pkg.InfluxMeasurementPlayers),
+	_, err = influx2.InfluxWrite(influx2.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influx2.InfluxMeasurementPlayers),
 		Tags: map[string]string{
 			"player_id": strconv.FormatInt(player.ID, 10),
 		},

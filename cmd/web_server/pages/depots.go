@@ -4,7 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -57,7 +58,7 @@ func depotHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := depotTemplate{}
 	t.fill(w, r, "Depot", "")
-	t.Depot = pkg.Depot{}
+	t.Depot = sql.Depot{}
 	t.Depot.ID = idx
 
 	err = returnTemplate(w, r, "depot", t)
@@ -66,5 +67,5 @@ func depotHandler(w http.ResponseWriter, r *http.Request) {
 
 type depotTemplate struct {
 	GlobalTemplate
-	Depot pkg.Depot
+	Depot sql.Depot
 }

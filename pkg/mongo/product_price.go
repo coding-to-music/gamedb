@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -25,7 +26,7 @@ type ProductPrice struct {
 
 func (price ProductPrice) BSON() (ret interface{}) {
 
-	return pkg.M{
+	return M{
 		"created_at":         price.CreatedAt,
 		"app_id":             price.AppID,
 		"package_id":         price.PackageID,
@@ -44,14 +45,14 @@ func (price ProductPrice) GetPath() string {
 	if price.AppID != 0 {
 		return helpers.GetAppPath(price.AppID, price.Name)
 	} else if price.PackageID != 0 {
-		return pkg.GetPackagePath(price.PackageID, price.Name)
+		return helpers.GetPackagePath(price.PackageID, price.Name)
 	}
 
 	return ""
 }
 
 func (price ProductPrice) GetIcon() string {
-	return pkg.GetAppIcon(price.AppID, price.Icon)
+	return helpers.GetAppIcon(price.AppID, price.Icon)
 }
 
 func (price ProductPrice) GetPercentChange() float64 {
@@ -65,35 +66,35 @@ func (price ProductPrice) GetPercentChange() float64 {
 
 func (price ProductPrice) OutputForJSON() (output []interface{}) {
 
-	locale, err := pkg.GetLocaleFromCountry(price.Currency)
+	locale, err := helpers.GetLocaleFromCountry(price.Currency)
 	log.Err(err)
 
 	return []interface{}{
-		price.AppID,                          // 0
-		price.PackageID,                      // 1
-		price.Currency,                       // 2
-		price.Name,                           // 3
-		price.GetIcon(),                      // 4
-		price.GetPath(),                      // 5
-		locale.Format(price.PriceBefore),     // 6
-		locale.Format(price.PriceAfter),      // 7
-		locale.Format(price.Difference),      // 8
-		price.GetPercentChange(),             // 9
-		price.CreatedAt.Format(pkg.DateTime), // 10
-		price.CreatedAt.Unix(),               // 11
-		price.Difference,                     // 12 Raw difference
+		price.AppID,                              // 0
+		price.PackageID,                          // 1
+		price.Currency,                           // 2
+		price.Name,                               // 3
+		price.GetIcon(),                          // 4
+		price.GetPath(),                          // 5
+		locale.Format(price.PriceBefore),         // 6
+		locale.Format(price.PriceAfter),          // 7
+		locale.Format(price.Difference),          // 8
+		price.GetPercentChange(),                 // 9
+		price.CreatedAt.Format(helpers.DateTime), // 10
+		price.CreatedAt.Unix(),                   // 11
+		price.Difference,                         // 12 Raw difference
 	}
 }
 
-func GetPricesForProduct(productID int, productType pkg.ProductType, cc steam.CountryCode) (prices []ProductPrice, err error) {
+func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.CountryCode) (prices []ProductPrice, err error) {
 
-	var filter = pkg.M{
+	var filter = M{
 		"currency": string(cc),
 	}
 
 	if productType == helpers.ProductTypeApp {
 		filter["app_id"] = productID
-	} else if productType == pkg.ProductTypePackage {
+	} else if productType == helpers.ProductTypePackage {
 		filter["package_id"] = productID
 	} else {
 		return prices, errors.New("invalid product type")
@@ -110,15 +111,15 @@ func GetPrices(offset int64, limit int64, filter interface{}) (prices []ProductP
 func getProductPrices(filter interface{}, offset int64, limit int64, sortOrder bool) (prices []ProductPrice, err error) {
 
 	if filter == nil {
-		filter = pkg.D{}
+		filter = D{}
 	}
 
-	client, ctx, err := pkg.getMongo()
+	client, ctx, err := getMongo()
 	if err != nil {
 		return prices, err
 	}
 
-	c := client.Database(pkg.MongoDatabase, options.Database()).Collection(pkg.CollectionProductPrices.String())
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionProductPrices.String())
 
 	o := options.Find()
 	o.SetSkip(offset)
@@ -127,9 +128,9 @@ func getProductPrices(filter interface{}, offset int64, limit int64, sortOrder b
 	}
 
 	if sortOrder {
-		o.SetSort(pkg.M{"created_at": 1})
+		o.SetSort(M{"created_at": 1})
 	} else {
-		o.SetSort(pkg.M{"created_at": -1})
+		o.SetSort(M{"created_at": -1})
 	}
 
 	cur, err := c.Find(ctx, filter, o)

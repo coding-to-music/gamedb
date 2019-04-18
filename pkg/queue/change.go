@@ -1,10 +1,14 @@
-package main
+package queue
 
 import (
 	"strconv"
 	"strings"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/website/pkg/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -47,13 +51,13 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Group products by change ID
-	changes := map[int]*pkg.Change{}
+	changes := map[int]*mongo.Change{}
 
 	for _, v := range message.PICSChanges.AppChanges {
 		if _, ok := changes[v.ChangeNumber]; ok {
 			changes[v.ChangeNumber].Apps = append(changes[v.ChangeNumber].Apps, v.ID)
 		} else {
-			changes[v.ChangeNumber] = &pkg.Change{
+			changes[v.ChangeNumber] = &mongo.Change{
 				CreatedAt: payload.FirstSeen,
 				ID:        v.ChangeNumber,
 				Apps:      []int{v.ID},
@@ -65,7 +69,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 		if _, ok := changes[v.ChangeNumber]; ok {
 			changes[v.ChangeNumber].Packages = append(changes[v.ChangeNumber].Packages, v.ID)
 		} else {
-			changes[v.ChangeNumber] = &pkg.Change{
+			changes[v.ChangeNumber] = &mongo.Change{
 				CreatedAt: payload.FirstSeen,
 				ID:        v.ChangeNumber,
 				Packages:  []int{v.ID},
@@ -109,12 +113,12 @@ type RabbitMessageChangesPICS struct {
 	JobID steamKitJob `json:"JobID"`
 }
 
-func saveChangesToMongo(changes map[int]*pkg.Change) (err error) {
+func saveChangesToMongo(changes map[int]*mongo.Change) (err error) {
 
 	var changesDocuments []mongo.Document
 	for _, v := range changes {
 
-		changesDocuments = append(changesDocuments, pkg.Change{
+		changesDocuments = append(changesDocuments, mongo.Change{
 			ID:        v.ID,
 			CreatedAt: v.CreatedAt,
 			Apps:      v.Apps,
@@ -122,11 +126,11 @@ func saveChangesToMongo(changes map[int]*pkg.Change) (err error) {
 		})
 	}
 
-	_, err = pkg.InsertDocuments(pkg.CollectionChanges, changesDocuments)
+	_, err = mongo.InsertDocuments(mongo.CollectionChanges, changesDocuments)
 	return err
 }
 
-func sendChangesWebsocket(changes map[int]*pkg.Change) (err error) {
+func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
 
 	var appIDs []int
 	var packageIDs []int
@@ -138,21 +142,21 @@ func sendChangesWebsocket(changes map[int]*pkg.Change) (err error) {
 		packageIDs = append(packageIDs, v.Packages...)
 	}
 
-	apps, err := pkg.GetAppsByID(appIDs, []string{"id", "name"})
+	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name"})
 	log.Err(err)
 
 	for _, v := range apps {
 		appMap[v.ID] = v.GetName()
 	}
 
-	packages, err := pkg.GetPackages(packageIDs, []string{"id", "name"})
+	packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
 	log.Err(err)
 
 	for _, v := range packages {
 		packageMap[v.ID] = v.GetName()
 	}
 
-	page, err := pkg.GetPage(pkg.PageChanges)
+	page, err := websockets.GetPage(websockets.PageChanges)
 	if err != nil {
 		return err
 	}

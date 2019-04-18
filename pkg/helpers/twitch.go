@@ -3,7 +3,7 @@ package helpers
 import (
 	"sync"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
 	"github.com/nicklaw5/helix"
 )
 

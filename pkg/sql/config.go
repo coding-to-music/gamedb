@@ -3,7 +3,7 @@ package sql
 import (
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
 )
 
 const (
@@ -51,16 +51,16 @@ func SetConfig(id string, value string) (err error) {
 	}
 
 	// Save to memcache
-	item := pkg.MemcacheConfigRow(id)
+	item := helpers.MemcacheConfigRow(id)
 
-	return pkg.GetMemcache().SetInterface(item.Key, config, item.Expiration)
+	return helpers.GetMemcache().SetInterface(item.Key, config, item.Expiration)
 }
 
 func GetConfig(id string) (config Config, err error) {
 
-	var item = pkg.MemcacheConfigRow(id)
+	var item = helpers.MemcacheConfigRow(id)
 
-	err = pkg.GetMemcache().GetSetInterface(item.Key, item.Expiration, &config, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &config, func() (interface{}, error) {
 
 		var config Config
 

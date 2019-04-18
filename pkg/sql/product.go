@@ -6,12 +6,13 @@ import (
 	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
 )
 
 type ProductInterface interface {
 	GetID() int
-	GetProductType() pkg.ProductType
+	GetProductType() helpers.ProductType
 	GetName() string
 	GetIcon() string
 	GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error)
@@ -81,7 +82,7 @@ func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam
 
 	if prices.Data.Price.Currency == "" {
 
-		locale, err := pkg.GetLocaleFromCountry(code)
+		locale, err := helpers.GetLocaleFromCountry(code)
 		log.Err(err)
 
 		prices.Data.Price.Currency = string(locale.CurrencyCode)
@@ -100,7 +101,7 @@ func (p *ProductPrices) AddPriceFromApp(code steam.CountryCode, prices steam.App
 
 	if prices.Data.PriceOverview.Currency == "" {
 
-		locale, err := pkg.GetLocaleFromCountry(code)
+		locale, err := helpers.GetLocaleFromCountry(code)
 		log.Err(err)
 
 		prices.Data.PriceOverview.Currency = string(locale.CurrencyCode)
@@ -132,10 +133,10 @@ type ProductPriceStruct struct {
 
 func (p ProductPriceStruct) GetInitial() string {
 
-	code, err := pkg.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
+	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
 	log.Err(err)
 
-	locale, err := pkg.GetLocaleFromCountry(code.CountryCode)
+	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
 	log.Err(err)
 
 	return locale.Format(p.Initial)
@@ -143,10 +144,10 @@ func (p ProductPriceStruct) GetInitial() string {
 
 func (p ProductPriceStruct) GetFinal() string {
 
-	code, err := pkg.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
+	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
 	log.Err(err)
 
-	locale, err := pkg.GetLocaleFromCountry(code.CountryCode)
+	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
 	log.Err(err)
 
 	return locale.Format(p.Final)
@@ -158,17 +159,17 @@ func (p ProductPriceStruct) GetDiscountPercent() string {
 
 func (p ProductPriceStruct) GetIndividual() string {
 
-	code, err := pkg.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
+	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
 	log.Err(err)
 
-	locale, err := pkg.GetLocaleFromCountry(code.CountryCode)
+	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
 	log.Err(err)
 
 	return locale.Format(p.Individual)
 }
 
 func (p ProductPriceStruct) GetCountryName(code steam.CountryCode) string {
-	locale, err := pkg.GetLocaleFromCountry(code)
+	locale, err := helpers.GetLocaleFromCountry(code)
 	log.Err(err)
 	return locale.CountryName
 }
@@ -191,7 +192,7 @@ func GetPriceFormatted(product ProductInterface, code steam.CountryCode) (ret Pr
 	price, err := product.GetPrice(code)
 	if err == nil {
 
-		locale, err := pkg.GetLocaleFromCountry(code)
+		locale, err := helpers.GetLocaleFromCountry(code)
 		if err == nil {
 			ret = ProductPriceFormattedStruct{
 				Initial:         locale.Format(price.Initial),

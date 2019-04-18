@@ -6,7 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -29,7 +32,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t := newsTemplate{}
 	t.fill(w, r, "News", "All the news from all the games, all in one place.")
 
-	apps, err := pkg.PopularApps()
+	apps, err := sql.PopularApps()
 	log.Err(err, r)
 
 	var appIDs []int
@@ -37,10 +40,10 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 		appIDs = append(appIDs, app.ID)
 	}
 
-	t.Articles, err = pkg.GetArticlesByApps(appIDs, 0, time.Now().AddDate(0, 0, -7))
+	t.Articles, err = mongo.GetArticlesByApps(appIDs, 0, time.Now().AddDate(0, 0, -7))
 	log.Err(err, r)
 
-	t.Count, err = pkg.CountDocuments(pkg.CollectionAppArticles, nil)
+	t.Count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil)
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "news", t)
@@ -49,7 +52,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 type newsTemplate struct {
 	GlobalTemplate
-	Articles []pkg.Article
+	Articles []mongo.Article
 	Count    int64
 }
 
@@ -68,18 +71,18 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	var articles []pkg.Article
+	var articles []mongo.Article
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		articles, err = pkg.GetArticles(query.getOffset64())
+		articles, err = mongo.GetArticles(query.getOffset64())
 		log.Err(err)
 
 		for k, v := range articles {
-			articles[k].Contents = pkg.BBCodeCompiler.Compile(v.Contents)
+			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
 		}
 	}()
 
@@ -90,7 +93,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = pkg.CountDocuments(pkg.CollectionAppArticles, nil)
+		count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil)
 		log.Err(err)
 	}()
 

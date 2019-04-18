@@ -1,10 +1,10 @@
-package main
+package queue
 
 import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/helpers"
 	"github.com/streadway/amqp"
 )
 

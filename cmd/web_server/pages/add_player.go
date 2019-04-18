@@ -7,7 +7,10 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/website/pkg"
+	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/website/pkg/session"
 )
 
 func playerAddHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +72,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 		}()
 
 		if message != "" {
-			err := pkg.SetBadFlash(w, r, message)
+			err := session.SetBadFlash(w, r, message)
 			log.Err(err)
 			http.Redirect(w, r, "/players/add", http.StatusFound)
 			return
