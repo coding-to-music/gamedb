@@ -15,7 +15,6 @@ if ($('#new-releases-page').length > 0) {
                 cache: $(this).attr('data-cache') !== "false"
             });
         },
-        "pageLength": 50,
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);

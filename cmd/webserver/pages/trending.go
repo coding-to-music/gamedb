@@ -81,7 +81,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
 	gorm = gorm.Where("player_trend >= 100 OR player_trend <= -100")
 	gorm = gorm.Order(query.getOrderSQL(columns, session.GetCountryCode(r)))
-	gorm = gorm.Limit(50)
+	gorm = gorm.Limit(100)
 	gorm = gorm.Offset(query.getOffset())
 
 	var apps []sql.App

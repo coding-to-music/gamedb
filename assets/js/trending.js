@@ -4,7 +4,6 @@ const $table = $('table.table-datatable2');
 if ($trendingPage.length > 0) {
 
     $table.DataTable($.extend(true, {}, dtDefaultOptions, {
-        "pageLength": 50,
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
