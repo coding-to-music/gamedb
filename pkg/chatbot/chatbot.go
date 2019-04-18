@@ -20,6 +20,7 @@ var CommandRegister = []Command{
 	CommandPlayers{},
 	CommandPopular{},
 	CommandRecent{},
+	CommandRecent{},
 	CommandTrending{},
 }
 
