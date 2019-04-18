@@ -14,7 +14,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func packageRouter() http.Handler {
+func PackageRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", packageHandler)
 	r.Get("/prices.json", packagePricesAjaxHandler)

@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func esiRouter() http.Handler {
+func ESIRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/header", headerHandler)
 	return r

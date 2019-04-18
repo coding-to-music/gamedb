@@ -18,7 +18,7 @@ const (
 	commitsLimit = 100
 )
 
-func commitsRouter() http.Handler {
+func CommitsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", commitsHandler)
 	r.Get("/commits.json", commitsAjaxHandler)

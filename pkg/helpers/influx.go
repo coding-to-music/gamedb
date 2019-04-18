@@ -1,4 +1,4 @@
-package influx
+package helpers
 
 import (
 	"encoding/json"

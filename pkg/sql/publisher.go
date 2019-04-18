@@ -29,7 +29,7 @@ func (p Publisher) GetName() (name string) {
 }
 
 func (p Publisher) GetMeanPrice(code steam.CountryCode) (string, error) {
-	return helpers.GetMeanPrice(code, p.MeanPrice)
+	return GetMeanPrice(code, p.MeanPrice)
 }
 
 func (p Publisher) GetMeanScore() string {

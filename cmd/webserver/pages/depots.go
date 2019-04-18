@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func depotsRouter() http.Handler {
+func DepotsRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", depotsHandler)

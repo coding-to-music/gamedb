@@ -10,7 +10,7 @@ import (
 	"github.com/gamedb/website/pkg/log"
 )
 
-func rootFileHandler(w http.ResponseWriter, r *http.Request) {
+func RootFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})
 	if ret {

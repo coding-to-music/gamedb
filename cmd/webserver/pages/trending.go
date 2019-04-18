@@ -9,14 +9,13 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
-func trendingRouter() http.Handler {
+func TrendingRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", trendingHandler)
 	r.Get("/trending.json", trendingAjaxHandler)
@@ -173,16 +172,16 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := helpers.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	ret := map[string]influx.HighChartsJson{}
+	ret := map[string]helpers.HighChartsJson{}
 	if len(resp.Results) > 0 {
 		for _, v := range resp.Results[0].Series {
-			ret[v.Tags["app_id"]] = influx.InfluxResponseToHighCharts(v)
+			ret[v.Tags["app_id"]] = helpers.InfluxResponseToHighCharts(v)
 		}
 	}
 

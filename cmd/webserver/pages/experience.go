@@ -16,7 +16,7 @@ const (
 	chunkRows = 100
 )
 
-func experienceRouter() http.Handler {
+func ExperienceRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", experienceHandler)
 	r.Get("/{id}", experienceHandler)
@@ -116,5 +116,5 @@ func (l level) GetFriends() int {
 }
 
 func (l level) GetAvatar2() string {
-	return helpers.GetAvatar2(l.Level)
+	return helpers.GetPlayerAvatar2(l.Level)
 }

@@ -10,7 +10,6 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
 	"github.com/gamedb/website/pkg/queue"
@@ -18,7 +17,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func playerRouter() http.Handler {
+func PlayerRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", playerHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
@@ -511,17 +510,17 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := helpers.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc influx.HighChartsJson
+	var hc helpers.HighChartsJson
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	b, err := json.Marshal(hc)

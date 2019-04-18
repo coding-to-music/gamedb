@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func patreonRouter() http.Handler {
+func PatreonRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Post("/webhooks", patreonWebhookPostHandler)
 	return r

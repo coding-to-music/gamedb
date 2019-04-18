@@ -18,7 +18,7 @@ var (
 	}
 )
 
-func websocketsRouter() http.Handler {
+func WebsocketsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/{id:[a-z]+}", websocketsHandler)
 	return r

@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func tagsRouter() http.Handler {
+func TagsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", statsTagsHandler)
 	return r

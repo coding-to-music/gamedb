@@ -10,7 +10,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
-	influx2 "github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/gamedb/website/pkg/websockets"
@@ -419,8 +418,8 @@ func savePackageToInflux(pack sql.Package) error {
 		return err
 	}
 
-	_, err = influx2.InfluxWrite(influx2.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(influx2.InfluxMeasurementPackages),
+	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(helpers.InfluxMeasurementPackages),
 		Tags: map[string]string{
 			"package_id": strconv.Itoa(pack.ID),
 		},

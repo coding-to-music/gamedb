@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/website/pkg/chat_bot"
+	"github.com/gamedb/website/pkg/chatbot"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
@@ -35,13 +35,13 @@ func main() {
 			return
 		}
 
-		for _, v := range chat_bot.CommandRegister {
+		for _, v := range chatbot.CommandRegister {
 
 			if v.Regex().MatchString(m.Message.Content) {
 
 				private, err := isPrivateChannel(s, m)
 				if err != nil {
-					fmt.Println(err)
+					log.Warning(err)
 					return
 				}
 
@@ -51,16 +51,22 @@ func main() {
 
 					st, err := s.UserChannelCreate(m.Author.ID)
 					if err != nil {
-						fmt.Println(err)
+						log.Warning(err)
 						return
 					}
 
 					chanID = st.ID
 				}
 
-				_, err = s.ChannelMessageSend(chanID, v.Output(m.Message.Content))
+				message, err := v.Output(m.Message.Content)
 				if err != nil {
-					fmt.Println(err)
+					log.Warning(err)
+					return
+				}
+
+				_, err = s.ChannelMessageSendComplex(chanID, &message)
+				if err != nil {
+					log.Warning(err)
 					return
 				}
 

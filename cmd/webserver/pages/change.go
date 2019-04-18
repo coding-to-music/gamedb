@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func changeRouter() http.Handler {
+func ChangeRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", changeHandler)
 	return r

@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func priceChangeRouter() http.Handler {
+func PriceChangeRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", priceChangesHandler)
 	r.Get("/price-changes.json", priceChangesAjaxHandler)

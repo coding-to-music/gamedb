@@ -12,7 +12,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/website/pkg/helpers"
-	influx2 "github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/gamedb/website/pkg/websockets"
 	"github.com/gocolly/colly"
@@ -226,8 +225,8 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 
 func saveBundleToInflux(bundle sql.Bundle) (err error) {
 
-	_, err = influx2.InfluxWrite(influx2.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(influx2.InfluxMeasurementApps),
+	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(helpers.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"bundle_id": strconv.Itoa(bundle.ID),
 		},

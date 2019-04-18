@@ -16,11 +16,11 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func appsRouter() http.Handler {
+func AppsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", appsHandler)
 	r.Get("/apps.json", appsAjaxHandler)
-	r.Mount("/{id}", appRouter())
+	r.Mount("/{id}", AppRouter())
 	return r
 }
 

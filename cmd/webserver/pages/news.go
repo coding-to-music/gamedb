@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func newsRouter() http.Handler {
+func NewsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", newsHandler)
 	r.Get("/news.json", newsAjaxHandler)

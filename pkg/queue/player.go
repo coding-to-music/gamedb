@@ -10,7 +10,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/pkg/helpers"
-	influx2 "github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/mongo"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/gamedb/website/pkg/websockets"
@@ -627,8 +626,8 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 		fields["friends_rank"] = player.FriendsRank
 	}
 
-	_, err = influx2.InfluxWrite(influx2.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(influx2.InfluxMeasurementPlayers),
+	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(helpers.InfluxMeasurementPlayers),
 		Tags: map[string]string{
 			"player_id": strconv.FormatInt(player.ID, 10),
 		},

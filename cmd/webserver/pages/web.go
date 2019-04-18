@@ -20,136 +20,11 @@ import (
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
 	"github.com/gamedb/website/pkg/session"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/cors"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
 )
-
-func middlewareLog(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if config.Config.IsLocal() {
-			// log.Info(log.LogNameRequests, r.Method+" "+r.URL.Path)
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
-func middlewareTime(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		r.Header.Set("start-time", strconv.FormatInt(time.Now().UnixNano(), 10))
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-func middlewareCors() func(next http.Handler) http.Handler {
-	return cors.New(cors.Options{
-		AllowedOrigins: []string{config.Config.GameDBDomain.Get()}, // Use this to allow specific origin hosts
-		AllowedMethods: []string{"GET", "POST"},
-	}).Handler
-}
-
-func Serve() error {
-
-	r := chi.NewRouter()
-
-	r.Use(middlewareTime)
-	r.Use(middlewareCors())
-	r.Use(middleware.RealIP)
-	r.Use(middleware.DefaultCompress)
-	r.Use(middleware.RedirectSlashes)
-	r.Use(middlewareLog)
-
-	// Pages
-	r.Get("/", homeHandler)
-	r.Mount("/admin", adminRouter())
-	r.Mount("/api", apiRouter())
-	r.Mount("/apps", appsRouter())
-	r.Mount("/bundles", bundlesRouter())
-	r.Mount("/changes", changesRouter())
-	r.Mount("/chat", chatRouter())
-	r.Mount("/chat-bot", chatBotRouter())
-	r.Mount("/commits", commitsRouter())
-	r.Mount("/contact", contactRouter())
-	r.Mount("/coop", coopRouter())
-	r.Mount("/depots", depotsRouter())
-	r.Mount("/developers", developersRouter())
-	r.Mount("/donate", donateRouter())
-	r.Mount("/esi", esiRouter())
-	r.Mount("/experience", experienceRouter())
-	r.Mount("/franchise", franchiseRouter())
-	r.Mount("/genres", genresRouter())
-	r.Mount("/health-check", healthCheckRouter())
-	r.Mount("/home", homeRouter())
-	r.Mount("/info", infoRouter())
-	r.Mount("/login", loginRouter())
-	r.Mount("/new-releases", newReleasesRouter())
-	r.Mount("/news", newsRouter())
-	r.Mount("/packages", packagesRouter())
-	r.Mount("/patreon", patreonRouter())
-	r.Mount("/players", playersRouter())
-	r.Mount("/price-changes", priceChangeRouter())
-	r.Mount("/product-keys", productKeysRouter())
-	r.Mount("/publishers", publishersRouter())
-	r.Mount("/queues", queuesRouter())
-	r.Mount("/settings", settingsRouter())
-	r.Mount("/sitemap", siteMapRouter())
-	r.Mount("/stats", statsRouter())
-	r.Mount("/steam-api", steamAPIRouter())
-	r.Mount("/tags", tagsRouter())
-	r.Mount("/trending", trendingRouter())
-	r.Mount("/upcoming", upcomingRouter())
-	r.Mount("/websocket", websocketsRouter())
-
-	// Profiling
-	if config.Config.IsLocal() {
-		r.Mount("/debug", middleware.Profiler())
-	}
-
-	// Files
-	r.Get("/browserconfig.xml", rootFileHandler)
-	r.Get("/robots.txt", rootFileHandler)
-	r.Get("/site.webmanifest", rootFileHandler)
-
-	// File server
-	fileServer(r, "/assets", http.Dir("assets"))
-
-	// 404
-	r.NotFound(error404Handler)
-
-	return http.ListenAndServe(config.Config.ListenOn(), r)
-}
-
-// FileServer conveniently sets up a http.FileServer handler to serve
-// static files from a http.FileSystem.
-func fileServer(r chi.Router, path string, root http.FileSystem) {
-
-	if strings.ContainsAny(path, "{}*") {
-		log.Info("Invalid URL " + path)
-		return
-	}
-	if strings.Contains(path, "..") {
-		log.Info("Invalid URL " + path)
-		return
-	}
-
-	fs := http.StripPrefix(path, http.FileServer(root))
-
-	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", http.StatusFound).ServeHTTP)
-		path += "/"
-	}
-	path += "*"
-
-	r.Get(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fs.ServeHTTP(w, r)
-	}))
-}
 
 func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string) (redirect bool) {
 
@@ -221,15 +96,15 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	folder := config.Config.GameDBDirectory.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
-		folder+"/cmd/web_server/templates/_apps_header.gohtml",
-		folder+"/cmd/web_server/templates/_current_apps.gohtml",
-		folder+"/cmd/web_server/templates/_flashes.gohtml",
-		folder+"/cmd/web_server/templates/_footer.gohtml",
-		folder+"/cmd/web_server/templates/_header.gohtml",
-		folder+"/cmd/web_server/templates/_header_esi.gohtml",
-		folder+"/cmd/web_server/templates/_stats_header.gohtml",
-		folder+"/cmd/web_server/templates/_social.gohtml",
-		folder+"/cmd/web_server/templates/"+page+".gohtml",
+		folder+"/cmd/webserver/templates/_apps_header.gohtml",
+		folder+"/cmd/webserver/templates/_current_apps.gohtml",
+		folder+"/cmd/webserver/templates/_flashes.gohtml",
+		folder+"/cmd/webserver/templates/_footer.gohtml",
+		folder+"/cmd/webserver/templates/_header.gohtml",
+		folder+"/cmd/webserver/templates/_header_esi.gohtml",
+		folder+"/cmd/webserver/templates/_stats_header.gohtml",
+		folder+"/cmd/webserver/templates/_social.gohtml",
+		folder+"/cmd/webserver/templates/"+page+".gohtml",
 	)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Something has gone wrong!", Error: err})

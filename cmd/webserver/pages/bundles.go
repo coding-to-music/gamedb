@@ -12,12 +12,12 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func bundlesRouter() http.Handler {
+func BundlesRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", bundlesHandler)
 	r.Get("/bundles.json", bundlesAjaxHandler)
-	r.Mount("/{id}", bundleRouter())
+	r.Mount("/{id}", BundleRouter())
 	return r
 }
 

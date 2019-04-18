@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func developersRouter() http.Handler {
+func DevelopersRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", developersHandler)
 	return r

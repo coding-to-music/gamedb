@@ -10,10 +10,10 @@ assets/concatenate.css
 
 # Binaries
 debug
-cmd/chatbot/chat_bot
+cmd/chatbot/chatbot
 cmd/chatbot/consumers
 cmd/chatbot/crons
-cmd/chatbot/web_servers
+cmd/chatbot/webservers
 
 # Meta
 index.yaml

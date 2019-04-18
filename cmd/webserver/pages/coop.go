@@ -17,7 +17,7 @@ const (
 	maxPlayers = 10
 )
 
-func coopRouter() http.Handler {
+func CoopRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", coopHandler)
 	return r

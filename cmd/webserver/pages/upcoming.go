@@ -12,7 +12,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func upcomingRouter() http.Handler {
+func UpcomingRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", upcomingHandler)
 	r.Get("/upcoming.json", upcomingAjaxHandler)

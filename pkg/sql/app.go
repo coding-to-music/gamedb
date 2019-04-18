@@ -11,7 +11,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/jinzhu/gorm"
 )
@@ -394,9 +393,9 @@ func (app App) GetOnlinePlayers() (players int, err error) {
 		builder.AddOrderBy("time", false)
 		builder.SetLimit(1)
 
-		resp, err := influx.InfluxQuery(builder.String())
+		resp, err := helpers.InfluxQuery(builder.String())
 
-		return influx.GetFirstInfluxInt(resp), err
+		return helpers.GetFirstInfluxInt(resp), err
 	})
 
 	return players, err
@@ -665,7 +664,7 @@ func PopularApps() (apps []App, err error) {
 			return apps, err
 		}
 
-		db = db.Select([]string{"id", "image_header"})
+		db = db.Select([]string{"id", "name", "image_header"})
 		db = db.Where("type = ?", "game")
 		db = db.Order("player_peak_week desc")
 		db = db.Limit(30)

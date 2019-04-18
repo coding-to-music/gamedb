@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func newReleasesRouter() http.Handler {
+func NewReleasesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", newReleasesHandler)
 	r.Get("/new-releases.json", newReleasesAjaxHandler)

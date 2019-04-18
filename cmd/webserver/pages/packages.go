@@ -14,11 +14,11 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func packagesRouter() http.Handler {
+func PackagesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", packagesHandler)
 	r.Get("/packages.json", packagesAjaxHandler)
-	r.Mount("/{id}", packageRouter())
+	r.Mount("/{id}", PackageRouter())
 	return r
 }
 

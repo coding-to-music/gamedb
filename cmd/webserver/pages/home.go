@@ -20,14 +20,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func homeRouter() http.Handler {
+func HomeRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/prices.json", homePricesHandler)
 	r.Get("/{sort}/players.json", homePlayersHandler)
 	return r
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})
 	if ret {

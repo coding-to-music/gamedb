@@ -34,9 +34,9 @@ func getInstagram() (*goinsta.Instagram, error) {
 	return instagram, nil
 }
 
-func UploadInstagram(url string, message string) (err error) {
+func UploadInstagram(imageURL string, message string) (err error) {
 
-	resp, err := http.Get(url)
+	resp, err := http.Get(imageURL)
 	if err != nil {
 		return err
 	}

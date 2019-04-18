@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func donateRouter() http.Handler {
+func DonateRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", donateHandler)
 	return r

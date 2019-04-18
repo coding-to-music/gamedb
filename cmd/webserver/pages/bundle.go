@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func bundleRouter() http.Handler {
+func BundleRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", bundleHandler)

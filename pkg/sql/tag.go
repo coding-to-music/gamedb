@@ -34,7 +34,7 @@ func (tag Tag) GetName() (name string) {
 }
 
 func (tag Tag) GetMeanPrice(code steam.CountryCode) (string, error) {
-	return helpers.GetMeanPrice(code, tag.MeanPrice)
+	return GetMeanPrice(code, tag.MeanPrice)
 }
 
 func (tag Tag) GetMeanScore() string {

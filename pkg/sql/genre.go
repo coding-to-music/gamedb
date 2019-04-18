@@ -28,7 +28,7 @@ func (g Genre) GetName() string {
 }
 
 func (g Genre) GetMeanPrice(code steam.CountryCode) (string, error) {
-	return helpers.GetMeanPrice(code, g.MeanPrice)
+	return GetMeanPrice(code, g.MeanPrice)
 }
 
 func (g Genre) GetMeanScore() string {

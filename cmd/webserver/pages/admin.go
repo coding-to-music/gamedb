@@ -21,7 +21,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
-func adminRouter() http.Handler {
+func AdminRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.NoCache)
 	r.Use(basicauth.New("Steam", map[string][]string{

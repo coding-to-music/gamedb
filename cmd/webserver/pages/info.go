@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func infoRouter() http.Handler {
+func InfoRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", infoHandler)
 	return r

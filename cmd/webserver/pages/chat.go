@@ -20,7 +20,7 @@ const (
 	generalChannelID = "407493777058693121"
 )
 
-func chatRouter() http.Handler {
+func ChatRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", chatHandler)
 	r.Get("/{id}", chatHandler)

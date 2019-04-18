@@ -14,7 +14,7 @@ import (
 
 const urlBase = "https://gamedb.online"
 
-func siteMapRouter() http.Handler {
+func SiteMapRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/index.xml", siteMapIndexHandler)
 	r.Get("/pages.xml", siteMapPagesHandler)

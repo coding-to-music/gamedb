@@ -13,7 +13,7 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
-func contactRouter() http.Handler {
+func ContactRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", contactHandler)
 	r.Post("/", postContactHandler)

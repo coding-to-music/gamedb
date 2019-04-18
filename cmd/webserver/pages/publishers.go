@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func publishersRouter() http.Handler {
+func PublishersRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", publishersHandler)
 	return r

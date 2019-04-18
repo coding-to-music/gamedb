@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func genresRouter() http.Handler {
+func GenresRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", genresHandler)
 	return r

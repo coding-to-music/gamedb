@@ -15,13 +15,13 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func playersRouter() http.Handler {
+func PlayersRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", playersHandler)
 	r.Get("/add", playerAddHandler)
 	r.Post("/add", playerAddHandler)
 	r.Get("/players.json", playersAjaxHandler)
-	r.Mount("/{id:[0-9]+}", playerRouter())
+	r.Mount("/{id:[0-9]+}", PlayerRouter())
 	return r
 }
 

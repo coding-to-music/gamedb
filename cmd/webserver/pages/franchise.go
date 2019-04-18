@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func franchiseRouter() http.Handler {
+func FranchiseRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", franchisesHandler)
 	r.Get("/{id}", franchiseHandler)

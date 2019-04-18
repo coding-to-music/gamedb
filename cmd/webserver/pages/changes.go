@@ -9,11 +9,11 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func changesRouter() http.Handler {
+func ChangesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", changesHandler)
 	r.Get("/changes.json", changesAjaxHandler)
-	r.Mount("/{id}", changeRouter())
+	r.Mount("/{id}", ChangeRouter())
 	return r
 }
 

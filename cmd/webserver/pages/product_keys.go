@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func productKeysRouter() http.Handler {
+func ProductKeysRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", productKeysHandler)
 	r.Get("/product-keys.json", productKeysAjaxHandler)

@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func error404Handler(w http.ResponseWriter, r *http.Request) {
+func Error404Handler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 

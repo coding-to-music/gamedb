@@ -164,7 +164,7 @@ func (player Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
 }
 
 func (player Player) GetAvatar2() string {
-	return helpers.GetAvatar2(player.Level)
+	return helpers.GetPlayerAvatar2(player.Level)
 }
 
 func (player Player) GetTimeShort() (ret string) {

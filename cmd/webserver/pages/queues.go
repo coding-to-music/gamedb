@@ -8,12 +8,11 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/influx"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/go-chi/chi"
 )
 
-func queuesRouter() http.Handler {
+func QueuesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", queuesHandler)
 	r.Get("/queues.json", queuesAjaxHandler)
@@ -51,7 +50,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, time.Second*10)
 
 	var item = helpers.MemcacheQueues
-	var highcharts = map[string]influx.HighChartsJson{}
+	var highcharts = map[string]helpers.HighChartsJson{}
 
 	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
@@ -64,16 +63,16 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddGroupBy("queue")
 		builder.SetFillNone()
 
-		resp, err := influx.InfluxQuery(builder.String())
+		resp, err := helpers.InfluxQuery(builder.String())
 		if err != nil {
 			log.Err(builder.String(), r)
 			return highcharts, err
 		}
 
-		ret := map[string]influx.HighChartsJson{}
+		ret := map[string]helpers.HighChartsJson{}
 		if len(resp.Results) > 0 {
 			for _, v := range resp.Results[0].Series {
-				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = influx.InfluxResponseToHighCharts(v)
+				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = helpers.InfluxResponseToHighCharts(v)
 			}
 		}
 

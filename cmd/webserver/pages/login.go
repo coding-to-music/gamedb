@@ -20,7 +20,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func loginRouter() http.Handler {
+func LoginRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", loginHandler)

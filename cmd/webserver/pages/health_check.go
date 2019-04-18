@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func healthCheckRouter() http.Handler {
+func HealthCheckRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", healthCheckHandler)
 	return r

@@ -21,7 +21,7 @@ var (
 	errNotLoggedIn = errors.New("not logged in")
 )
 
-func settingsRouter() http.Handler {
+func SettingsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", settingsHandler)
 	r.Post("/", settingsPostHandler)

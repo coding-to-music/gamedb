@@ -16,7 +16,7 @@ import (
 	"github.com/google/go-github/github"
 )
 
-func steamAPIRouter() http.Handler {
+func SteamAPIRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", steamAPIHandler)
 	return r

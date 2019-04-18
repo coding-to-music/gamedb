@@ -17,20 +17,20 @@ func GetMemcache() *memcache.Memcache {
 
 var (
 	// Counts
-	MemcacheAppsCount             = memcache.Item{Key: "apps-Count", Expiration: 86400}
-	MemcachePackagesCount         = memcache.Item{Key: "packages-Count", Expiration: 86400}
-	MemcacheBundlesCount          = memcache.Item{Key: "bundles-Count", Expiration: 86400}
-	MemcacheUpcomingAppsCount     = memcache.Item{Key: "upcoming-apps-Count", Expiration: 86400}
-	MemcacheTrendingAppsCount     = memcache.Item{Key: "upcoming-apps-Count", Expiration: 86400}
-	MemcacheNewReleaseAppsCount   = memcache.Item{Key: "upcoming-apps-Count", Expiration: 86400}
-	MemcacheUpcomingPackagesCount = memcache.Item{Key: "upcoming-packages-Count", Expiration: 86400}
-	MemcachePlayersCount          = memcache.Item{Key: "players-Count", Expiration: 86400 * 1}
-	MemcachePricesCount           = memcache.Item{Key: "prices-Count", Expiration: 86400 * 7}
+	MemcacheAppsCount             = memcache.Item{Key: "apps-count", Expiration: 86400}
+	MemcachePackagesCount         = memcache.Item{Key: "packages-count", Expiration: 86400}
+	MemcacheBundlesCount          = memcache.Item{Key: "bundles-count", Expiration: 86400}
+	MemcacheUpcomingAppsCount     = memcache.Item{Key: "upcoming-apps-count", Expiration: 86400}
+	MemcacheTrendingAppsCount     = memcache.Item{Key: "trending-apps-count", Expiration: 86400}
+	MemcacheNewReleaseAppsCount   = memcache.Item{Key: "newly-released-apps-count", Expiration: 86400}
+	MemcacheUpcomingPackagesCount = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
+	MemcachePlayersCount          = memcache.Item{Key: "players-count", Expiration: 86400 * 1}
+	MemcachePricesCount           = memcache.Item{Key: "prices-count", Expiration: 86400 * 7}
 	MemcacheMongoCount            = func(key string) memcache.Item {
-		return memcache.Item{Key: "mongo-Count-" + key, Expiration: 60 * 60}
+		return memcache.Item{Key: "mongo-count-" + key, Expiration: 60 * 60}
 	}
 	MemcachePlayerEventsCount = func(playerID int64) memcache.Item {
-		return memcache.Item{Key: "players-events-Count-" + strconv.FormatInt(playerID, 10), Expiration: 86400}
+		return memcache.Item{Key: "players-events-count-" + strconv.FormatInt(playerID, 10), Expiration: 86400}
 	}
 
 	// Dropdowns

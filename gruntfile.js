@@ -60,7 +60,7 @@ module.exports = function (grunt) {
                     replacement: 'md5',
                 },
                 files: {
-                    src: ['templates/_header.gohtml', 'templates/_footer.gohtml']
+                    src: ['cmd/webserver/templates/_header.gohtml', 'cmd/webserver/templates/_footer.gohtml']
                 }
             }
         },
