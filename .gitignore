@@ -10,7 +10,7 @@ assets/concatenate.css
 
 # Binaries
 debug
-cmd/chat_bot/chat_bot
-cmd/chat_bot/consumers
-cmd/chat_bot/crons
-cmd/chat_bot/web_servers
+cmd/chatbot/chat_bot
+cmd/chatbot/consumers
+cmd/chatbot/crons
+cmd/chatbot/web_servers

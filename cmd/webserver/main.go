@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/website/cmd/web_server/pages"
+	"github.com/gamedb/website/cmd/webserver/pages"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
