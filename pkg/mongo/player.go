@@ -371,7 +371,7 @@ func GetPlayer(id int64) (player Player, err error) {
 	return player, err
 }
 
-func SearchPlayer(s string) (player Player, err error) {
+func SearchPlayer(s string, projection M) (player Player, err error) {
 
 	if s == "" {
 		return player, ErrInvalidPlayerID
@@ -391,8 +391,13 @@ func SearchPlayer(s string) (player Player, err error) {
 		filter = M{"$text": M{"$search": s}}
 	}
 
+	ops := options.FindOne()
+	if projection != nil {
+		ops.SetProjection(projection)
+	}
+
 	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
-	result := c.FindOne(ctx, filter, options.FindOne())
+	result := c.FindOne(ctx, filter, ops)
 
 	err = result.Decode(&player)
 	return player, err

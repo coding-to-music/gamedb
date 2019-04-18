@@ -18,7 +18,7 @@ func (c CommandPlayer) Output(input string) (message discordgo.MessageSend, err 
 
 	matches := c.Regex().FindStringSubmatch(input)
 
-	player, err := mongo.SearchPlayer(matches[2])
+	player, err := mongo.SearchPlayer(matches[2], nil)
 	if err != nil {
 		return message, err
 	}

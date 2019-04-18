@@ -15,6 +15,8 @@ var author = &discordgo.MessageEmbedAuthor{
 var CommandRegister = []Command{
 	CommandHelp{},
 	CommandPlayer{},
+	CommandLevel{},
+	CommandGames{},
 	CommandPlayers{},
 	CommandPopular{},
 	CommandRecent{},
