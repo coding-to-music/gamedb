@@ -50,7 +50,7 @@ var (
 	consumerCloseChannel = make(chan *amqp.Error)
 	producerCloseChannel = make(chan *amqp.Error)
 
-	queues = map[queueName]baseQueue{
+	QueueRegister = map[queueName]baseQueue{
 		queueGoApps: {
 			queue: &appQueue{},
 		},
@@ -160,7 +160,7 @@ type queueInterface interface {
 
 type baseQueue struct {
 	queue       queueInterface
-	name        queueName
+	Name        queueName
 	qos         int
 	batchSize   int
 	maxAttempts int
@@ -185,7 +185,7 @@ func (q baseQueue) getMaxTime() time.Duration {
 	return time.Hour * 24 * 7
 }
 
-func (q baseQueue) consumeMessages() {
+func (q baseQueue) ConsumeMessages() {
 
 	var err error
 
@@ -216,7 +216,7 @@ func (q baseQueue) consumeMessages() {
 		}
 
 		//
-		ch, qu, err := getQueue(consumerConnection, q.name, q.getQOS())
+		ch, qu, err := getQueue(consumerConnection, q.Name, q.getQOS())
 		if err != nil {
 			logError(err)
 			return
@@ -254,13 +254,6 @@ func (q baseQueue) consumeMessages() {
 
 		err = ch.Close()
 		logError(err)
-	}
-}
-
-func RunConsumers() {
-	for queueName, queue := range queues {
-		queue.name = queueName
-		go queue.consumeMessages()
 	}
 }
 
@@ -305,7 +298,7 @@ func produce(payload baseMessage, queue queueName) (err error) {
 	}
 
 	//
-	ch, qu, err := getQueue(producerConnection, queue, queues[queue].getQOS())
+	ch, qu, err := getQueue(producerConnection, queue, QueueRegister[queue].getQOS())
 	if err != nil {
 		return err
 	}
