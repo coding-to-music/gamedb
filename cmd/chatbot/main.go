@@ -26,10 +26,6 @@ func main() {
 
 	discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-		if config.Config.IsLocal() && m.Author.ID != debugAuthorID {
-			return
-		}
-
 		// Don't reply to bots
 		if m.Author.Bot {
 			return
@@ -39,23 +35,26 @@ func main() {
 
 			if v.Regex().MatchString(m.Message.Content) {
 
-				private, err := isPrivateChannel(s, m)
-				if err != nil {
-					log.Warning(err)
-					return
-				}
-
 				chanID := m.ChannelID
 
-				if private {
+				if m.Author.ID == debugAuthorID {
 
-					st, err := s.UserChannelCreate(m.Author.ID)
+					private, err := isPrivateChannel(s, m)
 					if err != nil {
 						log.Warning(err)
 						return
 					}
 
-					chanID = st.ID
+					if private {
+
+						st, err := s.UserChannelCreate(m.Author.ID)
+						if err != nil {
+							log.Warning(err)
+							return
+						}
+
+						chanID = st.ID
+					}
 				}
 
 				message, err := v.Output(m.Message.Content)
