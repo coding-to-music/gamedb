@@ -165,7 +165,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = checkmail.ValidateFormat(r.PostForm.Get("email"))
 	if err != nil {
-		err = session.SetBadFlash(w, r, "Password must be at least 8 characters long")
+		err = session.SetBadFlash(w, r, "Invalid email address")
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
 	}
