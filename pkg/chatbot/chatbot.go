@@ -13,10 +13,10 @@ var author = &discordgo.MessageEmbedAuthor{
 }
 
 var CommandRegister = []Command{
+	CommandApp{},
 	CommandHelp{},
 	CommandPlayer{},
 	CommandLevel{},
-	CommandGames{},
 	CommandPlayers{},
 	CommandPopular{},
 	CommandRecent{},
@@ -30,9 +30,3 @@ type Command interface {
 	Example() string
 	Description() string
 }
-
-// .game 123 |.app half life
-// .user 123 |.user jimeagle
-// .recent 123|jimeagle
-// .trending - top 10
-// .popular - top 10 based on players
