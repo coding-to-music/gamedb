@@ -181,7 +181,7 @@ func log(interfaces ...interface{}) {
 			Payload:   entry.toText(true),
 			Labels: map[string]string{
 				"env": config.Config.Environment.Get(),
-				"key": config.Config.SteamAPIKey.Get()[0:5],
+				"key": config.Config.GetSteamKeyTag(),
 			},
 		})
 	}

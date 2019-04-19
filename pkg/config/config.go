@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const EnvProd = "production"
@@ -216,6 +217,16 @@ func (c BaseConfig) IsProd() bool {
 
 func (c BaseConfig) IsConsumer() bool {
 	return c.Environment.Get() == EnvConsumer
+}
+
+func (c BaseConfig) GetSteamKeyTag() string {
+
+	key := c.SteamAPIKey.Get()
+	if len(key) > 5 {
+		key = key[0:5]
+	}
+
+	return strings.ToUpper(key)
 }
 
 // ConfigItem

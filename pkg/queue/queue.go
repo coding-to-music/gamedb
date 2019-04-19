@@ -222,7 +222,9 @@ func (q baseQueue) ConsumeMessages() {
 			return
 		}
 
-		msgs, err := ch.Consume(qu.Name, "", false, false, false, false, nil)
+		tag := config.Config.Environment.Get() + "-" + config.Config.GetSteamKeyTag()
+
+		msgs, err := ch.Consume(qu.Name, tag, false, false, false, false, nil)
 		if err != nil {
 			logError(err)
 			return
