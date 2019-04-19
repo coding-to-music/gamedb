@@ -9,7 +9,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a
 FROM alpine:3.8 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/crons ./
-COPY health-check.sh ./health-check.sh
+COPY ./cmd/crons/health-check.sh ./health-check.sh
 RUN ["chmod", "+x", "health-check.sh"]
 RUN touch ./google-auth.json
 RUN apk update && apk add ca-certificates curl bash
