@@ -17,7 +17,7 @@ import (
 	"github.com/gamedb/website/pkg/websockets"
 )
 
-func AutoUpdateProfiles() {
+func AutoPlayerRefreshes() {
 
 	cronLogInfo("Running auto profile updates")
 
@@ -91,7 +91,7 @@ func Instagram() {
 	log.Critical(err)
 }
 
-func CronDonations() {
+func Donations() {
 
 	// donations, err := db.GetDonations(0, 0)
 	// if err != nil {
@@ -137,7 +137,7 @@ func CronDonations() {
 	// cronLogInfo("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
 
-func CronGenres() {
+func Genres() {
 
 	cronLogInfo("Genres updating")
 
@@ -304,7 +304,7 @@ func CronGenres() {
 	cronLogInfo("Genres updated")
 }
 
-func CronPublishers() {
+func Publishers() {
 
 	cronLogInfo("Publishers updating")
 
@@ -470,7 +470,7 @@ func CronPublishers() {
 	cronLogInfo("Publishers updated")
 }
 
-func CronDevelopers() {
+func Developers() {
 
 	cronLogInfo("Developers updating")
 
@@ -635,7 +635,7 @@ func CronDevelopers() {
 	cronLogInfo("Developers updated")
 }
 
-func CronTags() {
+func Tags() {
 
 	// Get current tags, to delete old ones
 	tags, err := sql.GetAllTags()
@@ -795,7 +795,7 @@ func CronTags() {
 	cronLogInfo("Tags updated")
 }
 
-func CronRanks() {
+func PlayerRanks() {
 
 	cronLogInfo("Ranks updated started")
 
@@ -832,7 +832,7 @@ func CronRanks() {
 	cronLogInfo("Ranks updated")
 }
 
-func CronCheckForPlayers() {
+func AppPlayers() {
 
 	log.Info("Queueing apps for player checks")
 

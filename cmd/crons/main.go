@@ -19,33 +19,33 @@ func main() {
 	err = c.AddFunc("1 0 0 * * *", crons.ClearUpcomingCache)
 	log.Critical(err)
 
-	err = c.AddFunc("0 0 0 * * *", crons.CronRanks)
+	err = c.AddFunc("0 0 0 * * *", crons.PlayerRanks)
 	log.Critical(err)
 
-	err = c.AddFunc("0 0 1 * * *", crons.CronGenres)
+	err = c.AddFunc("0 0 1 * * *", crons.Genres)
 	log.Critical(err)
 
-	err = c.AddFunc("0 0 2 * * *", crons.CronTags)
+	err = c.AddFunc("0 0 2 * * *", crons.Tags)
 	log.Critical(err)
 
-	err = c.AddFunc("0 0 3 * * *", crons.CronPublishers)
+	err = c.AddFunc("0 0 3 * * *", crons.Publishers)
 	log.Critical(err)
 
-	err = c.AddFunc("0 0 4 * * *", crons.CronDevelopers)
+	err = c.AddFunc("0 0 4 * * *", crons.Developers)
 	log.Critical(err)
 
-	err = c.AddFunc("0 0 5 * * *", crons.CronDonations)
+	err = c.AddFunc("0 0 5 * * *", crons.Donations)
 	log.Critical(err)
 
 	err = c.AddFunc("0 0 12 * * *", crons.Instagram)
 	log.Critical(err)
 
 	// Every 3 hours
-	err = c.AddFunc("0 0 */3 * * *", crons.CronCheckForPlayers)
+	err = c.AddFunc("0 0 */3 * * *", crons.AppPlayers)
 	log.Critical(err)
 
 	// Every 6 hours
-	err = c.AddFunc("0 0 */6 * * *", crons.AutoUpdateProfiles)
+	err = c.AddFunc("0 0 */6 * * *", crons.AutoPlayerRefreshes)
 	log.Critical(err)
 
 	c.Start()
@@ -53,7 +53,7 @@ func main() {
 	// Scan for app players after deploy
 	go func() {
 		time.Sleep(time.Minute)
-		crons.CronCheckForPlayers()
+		crons.AppPlayers()
 	}()
 
 	helpers.KeepAlive()

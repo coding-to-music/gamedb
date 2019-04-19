@@ -48,19 +48,19 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	case "refresh-all-players":
 		go adminQueueEveryPlayer()
 	case "refresh-app-players":
-		go crons.CronCheckForPlayers()
+		go crons.AppPlayers()
 	case "refresh-genres":
-		go crons.CronGenres()
+		go crons.Genres()
 	case "refresh-tags":
-		go crons.CronTags()
+		go crons.Tags()
 	case "refresh-developers":
-		go crons.CronDevelopers()
+		go crons.Developers()
 	case "refresh-publishers":
-		go crons.CronPublishers()
+		go crons.Publishers()
 	case "refresh-donations":
-		go crons.CronDonations()
+		go crons.Donations()
 	case "refresh-ranks":
-		go crons.CronRanks()
+		go crons.PlayerRanks()
 	case "wipe-memcache":
 		go adminMemcache()
 	case "delete-bin-logs":
