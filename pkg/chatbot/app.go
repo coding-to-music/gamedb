@@ -3,6 +3,7 @@ package chatbot
 import (
 	"regexp"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/website/pkg/sql"
 )
@@ -21,6 +22,28 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 	app, err := sql.SearchApp(matches[2], nil)
 	if err != nil {
 		return message, err
+	}
+
+	price, err := app.GetPrice(steam.CountryUS)
+
+	message.Embed = &discordgo.MessageEmbed{
+		Title:  app.GetName(),
+		URL:    "https://gamedb.online" + app.GetPath(),
+		Author: author,
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:  "Release Date",
+				Value: app.GetReleaseDateNice(),
+			},
+			{
+				Name:  "Price",
+				Value: price.GetFinal(),
+			},
+			{
+				Name:  "Review Score",
+				Value: app.GetReviewScore(),
+			},
+		},
 	}
 
 	message.Content = app.GetName()
