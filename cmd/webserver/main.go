@@ -42,7 +42,7 @@ func main() {
 	r.Use(middlewareTime)
 	r.Use(middlewareCors())
 	r.Use(middleware.RealIP)
-	r.Use(middleware.DefaultCompress)
+	// r.Use(middleware.DefaultCompress) // http: superfluous response.WriteHeader call from github.com/go-chi/chi/middleware.(*compressResponseWriter).Write (compress.go:228)
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middlewareLog)
 
