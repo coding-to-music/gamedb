@@ -7,16 +7,16 @@ import (
 )
 
 type User struct {
-	CreatedAt    time.Time `gorm:"not null"`
-	UpdatedAt    time.Time `gorm:"not null"`
-	PlayerID     int64     `gorm:"not null;primary_key"`
-	Email        string    `gorm:"not null;index:email"`
-	Verified     bool      `gorm:"not null"`
-	Password     string    `gorm:"not null"`
-	HideProfile  int8      `gorm:"not null"`
-	ShowAlerts   int8      `gorm:"not null"`
-	CountryCode  string    `gorm:"not null"`
-	PatreonLevel int8      `gorm:"not null"`
+	CreatedAt    time.Time `gorm:"not null;column:created_at"`
+	UpdatedAt    time.Time `gorm:"not null;column:updated_at"`
+	PlayerID     int64     `gorm:"not null;column:player_id;primary_key"`
+	Email        string    `gorm:"not null;column:email;index:email"`
+	Verified     bool      `gorm:"not null;column:verified"`
+	Password     string    `gorm:"not null;column:password"`
+	HideProfile  int8      `gorm:"not null;column:hide_profile"`
+	ShowAlerts   int8      `gorm:"not null;column:show_alerts"`
+	CountryCode  string    `gorm:"not null;column:country_code"`
+	PatreonLevel int8      `gorm:"not null;column:patreon_level"`
 }
 
 func (u User) Save() error {
