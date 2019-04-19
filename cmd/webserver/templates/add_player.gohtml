@@ -9,10 +9,10 @@
         <p class="lead">{{ .Description }}</p>
     </div>
 
+    {{ template "_flashes" . }}
+
     <div class="card">
         <div class="card-body">
-
-            {{ template "_flashes" . }}
 
             <form action="/players/add" method="post" data-recaptcha>
                 <div class="row">
