@@ -122,6 +122,8 @@ func CountryCodeToName(code string) string {
 		return code
 	} else if code == "BQ" {
 		return "Bonaire, Sint Eustatius and Saba"
+	} else if code == "SH" {
+		return "Saint Helena"
 	} else if code == "XK" {
 		return "Kosovo"
 	}
