@@ -226,14 +226,14 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert to int
-	idInt, err := strconv.ParseInt(path.Base(openID), 10, 64)
+	ID, err := strconv.ParseInt(path.Base(openID), 10, 64)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return
 	}
 
 	// Check if we have the player
-	player, err := mongo.GetPlayer(idInt)
+	player, err := mongo.GetPlayer(ID)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return
@@ -247,15 +247,11 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user
-	gorm, err := sql.GetMySQLClient()
+	user, err := sql.GetUser(ID)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
 		return
 	}
-
-	var user sql.User
-	gorm = gorm.First(&user, idInt)
-	log.Err(gorm.Error)
 
 	err = login(w, r, player, user)
 	if err != nil {
