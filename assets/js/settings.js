@@ -88,7 +88,7 @@ if ($('#settings-page').length > 0) {
                     return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '">' + row[5] + '</span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
-                    //$(td).attr('nowrap', 'nowrap');
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 "orderable": false
             }
