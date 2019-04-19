@@ -20,6 +20,7 @@ import (
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
 	"github.com/gamedb/website/pkg/session"
+	"github.com/gamedb/website/pkg/sql"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify"
@@ -687,10 +688,54 @@ type Toast struct {
 	Timeout int    `json:"timeout"`
 }
 
+//
 func isAdmin(r *http.Request) bool {
 
 	id, err := session.Read(r, session.PlayerID)
 	log.Err(err)
 
 	return r.Header.Get("Authorization") != "" || id == "76561197968626192"
+}
+
+//
+func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
+
+	// Check if logged in
+	loggedIn, err := session.IsLoggedIn(r)
+	if err != nil {
+		return playerID, errNotLoggedIn
+	}
+
+	if !loggedIn {
+		return playerID, errNotLoggedIn
+	}
+
+	// Get session
+	id, err := session.Read(r, session.PlayerID)
+	if err != nil {
+		return playerID, err
+	}
+
+	// Convert ID
+	return strconv.ParseInt(id, 10, 64)
+}
+
+func getPlayerFromSession(r *http.Request) (player mongo.Player, err error) {
+
+	playerID, err := getPlayerIDFromSession(r)
+	if err != nil {
+		return player, err
+	}
+
+	return mongo.GetPlayer(playerID)
+}
+
+func getUserFromSession(r *http.Request) (user sql.User, err error) {
+
+	playerID, err := getPlayerIDFromSession(r)
+	if err != nil {
+		return user, err
+	}
+
+	return sql.GetUser(playerID)
 }
