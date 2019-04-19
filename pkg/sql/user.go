@@ -2,6 +2,8 @@ package sql
 
 import (
 	"time"
+
+	"github.com/Jleagle/steam-go/steam"
 )
 
 type User struct {
@@ -53,7 +55,7 @@ func GetUser(playerID int64) (user User, err error) {
 		return user, err
 	}
 
-	db.FirstOrCreate(&user, User{PlayerID: playerID})
+	db.Attrs(User{CountryCode: string(steam.CountryUS)}).FirstOrCreate(&user, User{PlayerID: playerID})
 	if db.Error != nil {
 		return user, db.Error
 	}
