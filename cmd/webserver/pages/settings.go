@@ -3,7 +3,6 @@ package pages
 import (
 	"errors"
 	"net/http"
-	"sort"
 	"strconv"
 	"sync"
 
@@ -39,44 +38,37 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	player, err := getPlayerFromSession(r)
-	if err != nil {
-		if err == errNotLoggedIn {
-			err := session.SetBadFlash(w, r, "please login")
-			log.Err(err, r)
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
+	loggedIn, err := session.IsLoggedIn(r)
+	log.Err(err)
 
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving your data.", Error: err})
+	if !loggedIn {
+		err := session.SetBadFlash(w, r, "Please login")
+		log.Err(err, r)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
 	//
+	t := settingsTemplate{}
+	t.fill(w, r, "Settings", "")
+	t.addAssetPasswordStrength()
+
+	//
 	var wg sync.WaitGroup
 
-	// Get donations
-	var donations []sql.Donation
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		// if player.Donated > 0 {
-		// 	donations, err = db.GetDonations(player.ID, 10)
-		// 	log.Err(err, r)
-		// }
-
-	}(player)
-
 	// Get games
-	var games string
 	wg.Add(1)
-	go func(player mongo.Player) {
+	go func() {
 
 		defer wg.Done()
 
-		playerApps, err := mongo.GetPlayerApps(player.ID, 0, 0, mongo.D{})
+		id, err := getPlayerIDFromSession(r)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		playerApps, err := mongo.GetPlayerApps(id, 0, 0, mongo.D{})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -87,47 +79,41 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			appIDs = append(appIDs, v.AppID)
 		}
 
-		games = string(helpers.MarshalLog(appIDs))
+		t.Games = string(helpers.MarshalLog(appIDs))
 
-	}(player)
+	}()
 
 	// Get User
-	var user sql.User
 	wg.Add(1)
-	go func(player mongo.Player) {
+	go func() {
 
 		defer wg.Done()
 
-		user, err = getUserFromSession(r, 0)
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
+		var err error
+		t.User, err = getUserFromSession(r)
+		log.Err(err)
+	}()
 
-	}(player)
+	// Get Player
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Player, err = getPlayerFromSession(r)
+		log.Err(err)
+	}()
 
 	// Wait
 	wg.Wait()
 
 	// Countries
-	var countries [][]string
 	for _, v := range helpers.GetActiveCountries() {
-		countries = append(countries, []string{string(v), steam.Countries[v]})
+		t.Countries = append(t.Countries, []string{string(v), steam.Countries[v]})
 	}
-	sort.Slice(countries, func(i, j int) bool {
-		return countries[i][1] < countries[j][1]
-	})
 
 	// Template
-	t := settingsTemplate{}
-	t.fill(w, r, "Settings", "")
-	t.addAssetPasswordStrength()
-	t.Player = player
-	t.User = user
-	t.Donations = donations
-	t.Games = games
-	t.Countries = countries
-
 	err = returnTemplate(w, r, "settings", t)
 	log.Err(err, r)
 }
@@ -136,7 +122,6 @@ type settingsTemplate struct {
 	GlobalTemplate
 	Player    mongo.Player
 	User      sql.User
-	Donations []sql.Donation
 	Games     string
 	Messages  []interface{}
 	Countries [][]string
@@ -147,7 +132,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, 0)
 
 	// Get user
-	user, err := getUserFromSession(r, 0)
+	user, err := getUserFromSession(r)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an eror saving your information.", Error: err})
 		return
@@ -162,15 +147,17 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Email
 	email := r.PostForm.Get("email")
+	if email != "" {
 
-	err = checkmail.ValidateFormat(r.PostForm.Get("email"))
-	if err != nil {
-		err = session.SetBadFlash(w, r, "Invalid email address")
-		http.Redirect(w, r, "/settings", http.StatusFound)
-		return
+		err = checkmail.ValidateFormat(r.PostForm.Get("email"))
+		if err != nil {
+			err = session.SetBadFlash(w, r, "Invalid email address")
+			http.Redirect(w, r, "/settings", http.StatusFound)
+			return
+		}
+
+		user.Email = r.PostForm.Get("email")
 	}
-
-	user.Email = r.PostForm.Get("email")
 
 	// Password
 	password := r.PostForm.Get("password")
@@ -179,7 +166,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		user.Verified = false
 	}
 
-	if len(password) > 0 {
+	if password != "" {
 
 		if len(password) < 8 {
 			err := session.SetBadFlash(w, r, "Password must be at least 8 characters long")
@@ -218,9 +205,26 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save user
-	err = user.Save()
-	log.Err(err, r)
+
+	db, err := sql.GetMySQLClient()
 	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an eror saving your information.", Error: err})
+		return
+	}
+
+	// Have to save as a map because gorm does not save empty values otherwise
+	db = db.Model(&user).Updates(map[string]interface{}{
+		"email":        user.Email,
+		"verified":     user.Verified,
+		"password":     user.Password,
+		"hide_profile": user.HideProfile,
+		"show_alerts":  user.ShowAlerts,
+		"country_code": user.CountryCode,
+	})
+
+	log.Err(db.Error, r)
+
+	if db.Error != nil {
 		err = session.SetBadFlash(w, r, "Something went wrong saving settings")
 		log.Err(err, r)
 	} else {
@@ -332,19 +336,12 @@ func getPlayerFromSession(r *http.Request) (player mongo.Player, err error) {
 	return mongo.GetPlayer(playerID)
 }
 
-func getUserFromSession(r *http.Request, playerID int64) (user sql.User, err error) {
+func getUserFromSession(r *http.Request) (user sql.User, err error) {
 
-	if playerID == 0 {
-		playerID, err = getPlayerIDFromSession(r)
-		if err != nil {
-			return user, err
-		}
-	}
-
-	user, err = sql.GetUser(playerID)
+	playerID, err := getPlayerIDFromSession(r)
 	if err != nil {
 		return user, err
 	}
 
-	return user, nil
+	return sql.GetUser(playerID)
 }

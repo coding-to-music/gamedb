@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -88,6 +89,11 @@ func GetActiveCountries() (ret []steam.CountryCode) {
 			ret = append(ret, v.CountryCode)
 		}
 	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		return steam.Countries[ret[i]] < steam.Countries[ret[j]]
+	})
+
 	return ret
 }
 

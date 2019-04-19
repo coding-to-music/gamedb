@@ -19,21 +19,6 @@ type User struct {
 	PatreonLevel int8      `gorm:"not null;column:patreon_level"`
 }
 
-func (u User) Save() error {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	db = db.Assign(u).FirstOrCreate(&u)
-	if db.Error != nil {
-		return db.Error
-	}
-
-	return nil
-}
-
 func GetUsersByEmail(email string) (users []User, err error) {
 
 	db, err := GetMySQLClient()
