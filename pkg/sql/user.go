@@ -13,6 +13,7 @@ type User struct {
 	HideProfile int8      `gorm:"not null"`
 	ShowAlerts  int8      `gorm:"not null"`
 	CountryCode string    `gorm:"not null"`
+	AutoUpdates bool      `gorm:"not null"`
 }
 
 func (u User) Save() error {

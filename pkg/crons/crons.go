@@ -17,6 +17,32 @@ import (
 	"github.com/gamedb/website/pkg/websockets"
 )
 
+func AutoUpdateProfiles() {
+
+	cronLogInfo("Running auto profile updates")
+
+	gorm, err := sql.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	gorm = gorm.Select([]string{"player_id"})
+	gorm = gorm.Where("auto_updates = ?", 1)
+
+	var users []sql.User
+	gorm = gorm.Find(&users)
+	if gorm.Error != nil {
+		log.Err(gorm.Error)
+		return
+	}
+
+	for _, v := range users {
+		err := queue.ProducePlayer(v.PlayerID)
+		log.Err(err)
+	}
+}
+
 func Instagram() {
 
 	log.Info("Running IG")
