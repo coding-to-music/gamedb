@@ -40,7 +40,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, time.Hour)
 
-	_, err := getPlayer(r)
+	_, err := getPlayerFromSession(r)
 	if err == nil {
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return

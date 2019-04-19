@@ -39,7 +39,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	player, err := getPlayer(r)
+	player, err := getPlayerFromSession(r)
 	if err != nil {
 		if err == errNotLoggedIn {
 			err := session.SetBadFlash(w, r, "please login")
@@ -98,7 +98,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		user, err = getUser(r, 0)
+		user, err = getUserFromSession(r, 0)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -111,8 +111,8 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Countries
 	var countries [][]string
-	for k, v := range steam.Countries {
-		countries = append(countries, []string{string(k), v})
+	for _, v := range helpers.GetActiveCountries() {
+		countries = append(countries, []string{string(v), steam.Countries[v]})
 	}
 	sort.Slice(countries, func(i, j int) bool {
 		return countries[i][1] < countries[j][1]
@@ -147,7 +147,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, 0)
 
 	// Get user
-	user, err := getUser(r, 0)
+	user, err := getUserFromSession(r, 0)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an eror saving your information.", Error: err})
 		return
@@ -322,7 +322,7 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	return strconv.ParseInt(id, 10, 64)
 }
 
-func getPlayer(r *http.Request) (player mongo.Player, err error) {
+func getPlayerFromSession(r *http.Request) (player mongo.Player, err error) {
 
 	playerID, err := getPlayerIDFromSession(r)
 	if err != nil {
@@ -332,7 +332,7 @@ func getPlayer(r *http.Request) (player mongo.Player, err error) {
 	return mongo.GetPlayer(playerID)
 }
 
-func getUser(r *http.Request, playerID int64) (user sql.User, err error) {
+func getUserFromSession(r *http.Request, playerID int64) (user sql.User, err error) {
 
 	if playerID == 0 {
 		playerID, err = getPlayerIDFromSession(r)
