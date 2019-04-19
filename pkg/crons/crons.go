@@ -871,6 +871,18 @@ func AppPlayers() {
 		err = queue.ProduceAppPlayers(chunk)
 		log.Err(err)
 	}
+
+	//
+	err = sql.SetConfig(sql.ConfAddedAllAppPlayers, strconv.FormatInt(time.Now().Unix(), 10))
+	cronLogErr(err)
+
+	page, err := websockets.GetPage(websockets.PageAdmin)
+
+	if err == nil {
+		page.Send(helpers.AdminWebsocket{Message: sql.ConfAddedAllAppPlayers + " complete"})
+	}
+
+	cronLogInfo("App players cron complete")
 }
 
 func ClearUpcomingCache() {
