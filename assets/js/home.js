@@ -16,6 +16,8 @@ if ($('#home-page').length > 0) {
         $('[data-sort]').removeClass('badge-success');
         $('[data-sort="' + sort + '"]').addClass('badge-success');
 
+        $('#column').html(sort);
+
         $.ajax({
             url: '/home/' + sort + '/players.json',
             dataType: 'json',
