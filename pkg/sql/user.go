@@ -7,15 +7,16 @@ import (
 )
 
 type User struct {
-	PlayerID    int64     `gorm:"not null;primary_key"`
-	CreatedAt   time.Time `gorm:"not null"`
-	UpdatedAt   time.Time `gorm:"not null"`
-	Email       string    `gorm:"not null;index:email"`
-	Password    string    `gorm:"not null"`
-	HideProfile int8      `gorm:"not null"`
-	ShowAlerts  int8      `gorm:"not null"`
-	CountryCode string    `gorm:"not null"`
-	AutoUpdates bool      `gorm:"not null"`
+	CreatedAt    time.Time `gorm:"not null"`
+	UpdatedAt    time.Time `gorm:"not null"`
+	PlayerID     int64     `gorm:"not null;primary_key"`
+	Email        string    `gorm:"not null;index:email"`
+	Verified     bool      `gorm:"not null"`
+	Password     string    `gorm:"not null"`
+	HideProfile  int8      `gorm:"not null"`
+	ShowAlerts   int8      `gorm:"not null"`
+	CountryCode  string    `gorm:"not null"`
+	PatreonLevel int8      `gorm:"not null"`
 }
 
 func (u User) Save() error {
@@ -56,9 +57,6 @@ func GetUser(playerID int64) (user User, err error) {
 	}
 
 	db.Attrs(User{CountryCode: string(steam.CountryUS)}).FirstOrCreate(&user, User{PlayerID: playerID})
-	if db.Error != nil {
-		return user, db.Error
-	}
 
-	return user, nil
+	return user, db.Error
 }

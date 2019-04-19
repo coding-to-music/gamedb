@@ -28,7 +28,7 @@ func AutoUpdateProfiles() {
 	}
 
 	gorm = gorm.Select([]string{"player_id"})
-	gorm = gorm.Where("auto_updates = ?", 1)
+	gorm = gorm.Where("patreon_level >= ?", 3)
 
 	var users []sql.User
 	gorm = gorm.Find(&users)

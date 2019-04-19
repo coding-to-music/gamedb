@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/badoux/checkmail"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
@@ -159,8 +160,24 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Save password
+	// Email
+	email := r.PostForm.Get("email")
+
+	err = checkmail.ValidateFormat(r.PostForm.Get("email"))
+	if err != nil {
+		err = session.SetBadFlash(w, r, "Password must be at least 8 characters long")
+		http.Redirect(w, r, "/settings", http.StatusFound)
+		return
+	}
+
+	user.Email = r.PostForm.Get("email")
+
+	// Password
 	password := r.PostForm.Get("password")
+
+	if email != user.Email {
+		user.Verified = false
+	}
 
 	if len(password) > 0 {
 
@@ -183,8 +200,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		user.Password = string(passwordBytes)
 	}
 
-	// Save email
-	user.Email = r.PostForm.Get("email")
+	// Country code
 	user.CountryCode = r.PostForm.Get("country_code")
 
 	// Save hidden
