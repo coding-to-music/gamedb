@@ -175,16 +175,8 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page, err := websockets.GetPage(websockets.PageProfile)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	if page.HasConnections() {
-		page.Send(strconv.FormatInt(player.ID, 10))
-	}
+	page := websockets.GetPage(websockets.PageProfile)
+	page.Send(strconv.FormatInt(player.ID, 10))
 
 	payload.ack(msg)
 }

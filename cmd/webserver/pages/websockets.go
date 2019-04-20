@@ -28,8 +28,8 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	page, err := websockets.GetPage(websockets.WebsocketPage(id))
-	if err != nil {
+	page := websockets.GetPage(websockets.WebsocketPage(id))
+	if page.GetName() == "" {
 
 		bytes, err := json.Marshal(websockets.WebsocketPayload{Error: "Invalid page"})
 		log.Err(err)
@@ -48,7 +48,7 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = page.SetConnection(connection)
+	err = page.AddConnection(connection)
 	if err != nil {
 		log.Err(err)
 	}

@@ -199,12 +199,8 @@ func adminQueueEveryApp() {
 	err = sql.SetConfig(sql.ConfAddedAllApps, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{sql.ConfAddedAllApps + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllApps + " complete"})
 
 	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
@@ -244,12 +240,8 @@ func adminQueueEveryPackage() {
 	err = sql.SetConfig(sql.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{sql.ConfAddedAllPackages + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllPackages + " complete"})
 
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
 }
@@ -277,12 +269,8 @@ func adminQueueEveryPlayer() {
 	err = sql.SetConfig(sql.ConfAddedAllPlayers, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{sql.ConfAddedAllPlayers + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllPlayers + " complete"})
 
 	log.Info(strconv.Itoa(len(players)) + " players added to rabbit")
 }
@@ -390,12 +378,8 @@ func adminMemcache() {
 	err = sql.SetConfig(sql.ConfWipeMemcache+"-"+config.Config.Environment.Get(), strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{sql.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: sql.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
 
 	log.Info("Memcache wiped")
 }
@@ -425,11 +409,8 @@ func adminDev() {
 	err = sql.SetConfig(sql.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{sql.ConfRunDevCode + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: sql.ConfRunDevCode + " complete"})
 
 	log.Info("Dev code run")
 }

@@ -156,20 +156,15 @@ func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
 		packageMap[v.ID] = v.GetName()
 	}
 
-	page, err := websockets.GetPage(websockets.PageChanges)
-	if err != nil {
-		return err
+	// Make websocket
+	var ws [][]interface{}
+	for _, v := range changes {
+
+		ws = append(ws, v.OutputForJSON(appMap, packageMap))
 	}
 
-	if page.HasConnections() {
-
-		// Make websocket
-		var ws [][]interface{}
-		for _, v := range changes {
-
-			ws = append(ws, v.OutputForJSON(appMap, packageMap))
-		}
-
+	if len(ws) > 0 {
+		page := websockets.GetPage(websockets.PageChanges)
 		page.Send(ws)
 	}
 

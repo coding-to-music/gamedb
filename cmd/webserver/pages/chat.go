@@ -28,7 +28,7 @@ func ChatRouter() http.Handler {
 	return r
 }
 
-func getDiscord(r *http.Request) (discord *discordgo.Session, err error) {
+func getDiscord() (discord *discordgo.Session, err error) {
 
 	return helpers.GetDiscord(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
@@ -36,22 +36,14 @@ func getDiscord(r *http.Request) (discord *discordgo.Session, err error) {
 			return
 		}
 
-		page, err := websockets.GetPage(websockets.PageChat)
-		if err != nil {
-			log.Err(err)
-			return
-		}
-
-		if page.HasConnections() {
-
-			page.Send(chatWebsocketPayload{
-				AuthorID:     m.Author.ID,
-				AuthorUser:   m.Author.Username,
-				AuthorAvatar: m.Author.Avatar,
-				Content:      m.Content,
-				Channel:      m.ChannelID,
-			})
-		}
+		page := websockets.GetPage(websockets.PageChat)
+		page.Send(websockets.ChatPayload{
+			AuthorID:     m.Author.ID,
+			AuthorUser:   m.Author.Username,
+			AuthorAvatar: m.Author.Avatar,
+			Content:      m.Content,
+			Channel:      m.ChannelID,
+		})
 	})
 }
 
@@ -91,7 +83,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		operation := func() (err error) {
 
-			discord, err := getDiscord(r)
+			discord, err := getDiscord()
 			if err != nil {
 				if strings.Contains(err.Error(), "Authentication failed") {
 					err = backoff.Permanent(err)
@@ -135,7 +127,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		operation := func() (err error) {
 
-			discord, err := getDiscord(r)
+			discord, err := getDiscord()
 			if err != nil {
 				if strings.Contains(err.Error(), "Authentication failed") {
 					err = backoff.Permanent(err)
@@ -200,7 +192,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	operation := func() (err error) {
 
-		discord, err := getDiscord(r)
+		discord, err := getDiscord()
 		if err != nil {
 			if strings.Contains(err.Error(), "Authentication failed") {
 				err = backoff.Permanent(err)
@@ -220,11 +212,11 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var messages []chatWebsocketPayload
+	var messages []websockets.ChatPayload
 	for _, v := range messagesResponse {
 		if v.Type == discordgo.MessageTypeDefault {
 
-			messages = append(messages, chatWebsocketPayload{
+			messages = append(messages, websockets.ChatPayload{
 				AuthorID:     v.Author.ID,
 				AuthorUser:   v.Author.Username,
 				AuthorAvatar: v.Author.Avatar,
@@ -239,12 +231,4 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = returnJSON(w, r, bytes)
 	log.Err(err, r)
-}
-
-type chatWebsocketPayload struct {
-	AuthorID     string `json:"author_id"`
-	AuthorUser   string `json:"author_user"`
-	AuthorAvatar string `json:"author_avatar"`
-	Content      string `json:"content"`
-	Channel      string `json:"channel"`
 }

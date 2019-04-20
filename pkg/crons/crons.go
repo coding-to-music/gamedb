@@ -127,12 +127,8 @@ func Donations() {
 	err := sql.SetConfig(sql.ConfDonationsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	log.Err(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{Message: sql.ConfDonationsUpdated + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: sql.ConfDonationsUpdated + " complete"})
 
 	// cronLogInfo("Updated " + strconv.Itoa(len(counts)) + " player donation counts")
 }
@@ -287,13 +283,8 @@ func Genres() {
 	err = sql.SetConfig(sql.ConfGenresUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
-	//
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	cronLogErr(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{Message: sql.ConfGenresUpdated + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin) //
+	page.Send(websockets.AdminPayload{Message: sql.ConfGenresUpdated + " complete"})
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheGenreKeyNames.Key)
@@ -454,13 +445,8 @@ func Publishers() {
 	err = sql.SetConfig(sql.ConfPublishersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
-	//
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	cronLogErr(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{Message: sql.ConfPublishersUpdated + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin) //
+	page.Send(websockets.AdminPayload{Message: sql.ConfPublishersUpdated + " complete"})
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcachePublisherKeyNames.Key)
@@ -619,13 +605,8 @@ func Developers() {
 	err = sql.SetConfig(sql.ConfDevelopersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
-	//
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	cronLogErr(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{Message: sql.ConfDevelopersUpdated + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin) //
+	page.Send(websockets.AdminPayload{Message: sql.ConfDevelopersUpdated + " complete"})
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheDeveloperKeyNames.Key)
@@ -779,13 +760,8 @@ func Tags() {
 	err = sql.SetConfig(sql.ConfTagsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
-	//
-	page, err := websockets.GetPage(websockets.PageAdmin)
-	cronLogErr(err)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{Message: sql.ConfTagsUpdated + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin) //
+	page.Send(websockets.AdminPayload{Message: sql.ConfTagsUpdated + " complete"})
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheTagKeyNames.Key)
@@ -823,11 +799,8 @@ func PlayerRanks() {
 	err = sql.SetConfig(sql.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
-	page, err := websockets.GetPage(websockets.PageAdmin)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{Message: sql.ConfRanksUpdated + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: sql.ConfRanksUpdated + " complete"})
 
 	cronLogInfo("Ranks updated")
 }
@@ -876,11 +849,8 @@ func AppPlayers() {
 	err = sql.SetConfig(sql.ConfAddedAllAppPlayers, strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
-	page, err := websockets.GetPage(websockets.PageAdmin)
-
-	if err == nil {
-		page.Send(helpers.AdminWebsocket{Message: sql.ConfAddedAllAppPlayers + " complete"})
-	}
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllAppPlayers + " complete"})
 
 	cronLogInfo("App players cron complete")
 }

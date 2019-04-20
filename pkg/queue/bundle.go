@@ -110,25 +110,11 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page, err := websockets.GetPage(websockets.PageBundle)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	} else if page.HasConnections() {
-		page.Send(message.ID)
-	}
+	page := websockets.GetPage(websockets.PageBundle)
+	page.Send(message.ID)
 
-	page, err = websockets.GetPage(websockets.PageBundles)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	if page.HasConnections() {
-		page.Send(message.ID)
-	}
+	page = websockets.GetPage(websockets.PageBundles)
+	page.Send(message.ID)
 
 	payload.ack(msg)
 }

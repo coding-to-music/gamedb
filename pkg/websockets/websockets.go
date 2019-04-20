@@ -32,7 +32,19 @@ var (
 
 func init() {
 
-	pagesSlice := []WebsocketPage{PageChanges, PageChat, PageNews, PagePrices, PageAdmin, PageApp, PagePackage, PagePackages, PageProfile, PageBundle, PageBundles}
+	pagesSlice := []WebsocketPage{
+		PageChanges,
+		PageChat,
+		PageNews,
+		PagePrices,
+		PageAdmin,
+		PageApp,
+		PagePackage,
+		PagePackages,
+		PageProfile,
+		PageBundle,
+		PageBundles,
+	}
 	for _, v := range pagesSlice {
 		pages[v] = Page{
 			name:        v,
@@ -41,12 +53,13 @@ func init() {
 	}
 }
 
-func GetPage(page WebsocketPage) (p Page, err error) {
+func GetPage(page WebsocketPage) (ret Page) {
 
 	if val, ok := pages[page]; ok {
-		return val, nil
+		return val
 	}
-	return p, ErrInvalidPage
+
+	return ret
 }
 
 type Page struct {
@@ -54,11 +67,15 @@ type Page struct {
 	connections map[uuid.UUID]*websocket.Conn
 }
 
+func (p Page) GetName() WebsocketPage {
+	return p.name
+}
+
 func (p Page) HasConnections() bool {
 	return len(p.connections) > 0
 }
 
-func (p *Page) SetConnection(conn *websocket.Conn) error {
+func (p *Page) AddConnection(conn *websocket.Conn) error {
 
 	id := uuid.NewV4()
 

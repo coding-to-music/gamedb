@@ -153,16 +153,8 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page, err := websockets.GetPage(websockets.PagePackage)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	if page.HasConnections() {
-		page.Send(pack.ID)
-	}
+	page := websockets.GetPage(websockets.PagePackage)
+	page.Send(pack.ID)
 
 	// Clear caches
 	if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
