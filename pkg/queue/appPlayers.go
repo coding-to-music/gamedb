@@ -144,8 +144,8 @@ func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 		appPlayerSteamClient = &steam.Steam{}
 		appPlayerSteamClient.SetKey(config.Config.SteamAPIKey.Get())
 		appPlayerSteamClient.SetUserAgent("gamedb.online#GetNumberOfCurrentPlayers")
-		// appPlayerSteamClient.SetAPIRateLimit(time.Millisecond*1000, 10)
-		// appPlayerSteamClient.SetStoreRateLimit(time.Millisecond*1600, 10)
+		appPlayerSteamClient.SetAPIRateLimit(time.Millisecond*1000, 10)
+		appPlayerSteamClient.SetStoreRateLimit(time.Millisecond*1600, 10)
 	}
 
 	count, b, err := appPlayerSteamClient.GetNumberOfCurrentPlayers(app.ID)
