@@ -24,7 +24,7 @@ func (CommandPlayers) Output(input string) (message discordgo.MessageSend, err e
 }
 
 func (CommandPlayers) Example() string {
-	return ".player {playerName}"
+	return ".players {playerName}"
 }
 
 func (CommandPlayers) Description() string {
