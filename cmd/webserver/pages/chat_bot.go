@@ -29,6 +29,10 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, time.Hour*24)
 
+	// get amount of guilds
+	// client, err := helpers.GetDiscord()
+	// guild, err := client.UserGuilds()
+
 	// Template
 	t := chatBotTemplate{}
 	t.fill(w, r, "Chat", "The Game DB community.")
