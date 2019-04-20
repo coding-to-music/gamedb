@@ -72,12 +72,15 @@ func init() {
 	Config.DiscordBotToken.Set("DISCORD_BOT_TOKEN")
 	Config.DiscordRelayToken.Set("DISCORD_RELAY_TOKEN")
 
+	Config.Path.Set("PATH")
+	Config.AssetsPath.Set("ASSETS_PATH")
+	Config.TemplatesPath.Set("TEMPLATES_PATH")
+
 	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
 	Config.GithubToken.Set("GITHUB_TOKEN")
 	Config.GoogleBucket.Set("GOOGLE_BUCKET")
 	Config.GoogleProject.Set("GOOGLE_PROJECT")
-	Config.GameDBDirectory.Set("PATH")
 	Config.SendGridAPIKey.Set("SENDGRID")
 	Config.SteamAPIKey.Set("API_KEY")
 	Config.WebserverPort.Set("PORT")
@@ -88,7 +91,6 @@ func init() {
 	Config.WebserverPort.SetDefault("8081")
 	Config.EnableWebserver.SetDefault("1")
 	Config.EnableConsumers.SetDefault("1")
-	Config.GameDBDirectory.SetDefault("/root")
 	Config.NewReleaseDays.SetDefault("14")
 
 	switch Config.Environment.Get() {
@@ -166,8 +168,11 @@ type BaseConfig struct {
 	PatreonClientID     ConfigItem
 	PatreonClientSecret ConfigItem
 
+	Path          ConfigItem
+	AssetsPath    ConfigItem
+	TemplatesPath ConfigItem
+
 	Environment     ConfigItem
-	GameDBDirectory ConfigItem
 	GameDBDomain    ConfigItem
 	GameDBShortName ConfigItem
 	GithubToken     ConfigItem

@@ -95,17 +95,17 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	setAllHeaders(w, r, "text/html")
 
-	folder := config.Config.GameDBDirectory.Get()
+	folder := config.Config.TemplatesPath.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
-		folder+"/cmd/webserver/templates/_apps_header.gohtml",
-		folder+"/cmd/webserver/templates/_current_apps.gohtml",
-		folder+"/cmd/webserver/templates/_flashes.gohtml",
-		folder+"/cmd/webserver/templates/_footer.gohtml",
-		folder+"/cmd/webserver/templates/_header.gohtml",
-		folder+"/cmd/webserver/templates/_header_esi.gohtml",
-		folder+"/cmd/webserver/templates/_stats_header.gohtml",
-		folder+"/cmd/webserver/templates/_social.gohtml",
-		folder+"/cmd/webserver/templates/"+page+".gohtml",
+		folder+"/_apps_header.gohtml",
+		folder+"/_current_apps.gohtml",
+		folder+"/_flashes.gohtml",
+		folder+"/_footer.gohtml",
+		folder+"/_header.gohtml",
+		folder+"/_header_esi.gohtml",
+		folder+"/_stats_header.gohtml",
+		folder+"/_social.gohtml",
+		folder+"/"+page+".gohtml",
 	)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Something has gone wrong!", Error: err})

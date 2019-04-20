@@ -98,11 +98,7 @@ func main() {
 	r.Get("/site.webmanifest", pages.RootFileHandler)
 
 	// File server
-	if config.Config.IsLocal() {
-		fileServer(r, "/assets", http.Dir("../../assets"))
-	} else if config.Config.IsProd() {
-		fileServer(r, "/assets", http.Dir("assets"))
-	}
+	fileServer(r, "/assets", http.Dir(config.Config.AssetsPath.Get()))
 
 	// 404
 	r.NotFound(pages.Error404Handler)
