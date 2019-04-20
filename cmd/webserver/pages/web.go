@@ -161,7 +161,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 
 	data.fill(w, r, "Error", "Something has gone wrong!")
 
-	w.WriteHeader(data.Code)
+	// w.WriteHeader(data.Code) // Disable for now
 
 	err := returnTemplate(w, r, "error", data)
 	log.Err(err, r)
