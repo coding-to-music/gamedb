@@ -160,9 +160,9 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			logInfo(err, message.ID)
 		} else {
 			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
 		}
-		payload.ackRetry(msg)
-		return
 	}
 
 	err = updateBundles(&app)
