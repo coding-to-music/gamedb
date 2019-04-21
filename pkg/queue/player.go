@@ -36,6 +36,8 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		Message: playerMessage{},
 	}
 
+	payload.OriginalQueue = queueGoPlayers
+
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		logError(err)

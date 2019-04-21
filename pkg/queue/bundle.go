@@ -38,6 +38,8 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		Message: bundleMessage{},
 	}
 
+	payload.OriginalQueue = queueGoBundles
+
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
 		logError(err)

@@ -33,7 +33,7 @@ const (
 	queueGoChanges   queueName = "GameDB_Go_Changes"
 	queueGoDelays    queueName = "GameDB_Go_Delays"
 	queueGoPackages  queueName = "GameDB_Go_Packages"
-	queueGoProfiles  queueName = "GameDB_Go_Profiles"
+	queueGoPlayers   queueName = "GameDB_Go_Profiles"
 	queueGoFailed    queueName = "GameDB_Go_Failed"
 
 	//
@@ -66,7 +66,7 @@ var (
 		queueGoPackages: {
 			queue: &packageQueue{},
 		},
-		queueGoProfiles: {
+		queueGoPlayers: {
 			queue: &playerQueue{},
 		},
 		queueGoAppPlayer: {
