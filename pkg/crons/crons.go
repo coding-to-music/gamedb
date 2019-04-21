@@ -450,6 +450,7 @@ func Publishers() {
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcachePublisherKeyNames.Key)
+	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	cronLogErr(err)
 
 	//
@@ -610,6 +611,7 @@ func Developers() {
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheDeveloperKeyNames.Key)
+	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	cronLogErr(err)
 
 	//
@@ -765,6 +767,7 @@ func Tags() {
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheTagKeyNames.Key)
+	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	cronLogErr(err)
 
 	//
