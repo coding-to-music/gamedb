@@ -11,6 +11,8 @@ import (
 
 func main() {
 
+	log.Info("Starting crons")
+
 	var err error
 
 	c := cron.New()

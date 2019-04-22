@@ -14,6 +14,8 @@ const debugAuthorID = "145456943912189952"
 
 func main() {
 
+	log.Info("Starting chatbot")
+
 	if !config.Config.IsProd() && !config.Config.IsLocal() {
 		log.Err("Prod & local only")
 	}

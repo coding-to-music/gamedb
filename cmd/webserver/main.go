@@ -24,7 +24,7 @@ var version string
 
 func main() {
 
-	log.Info("Starting web server")
+	log.Info("Starting webserver")
 
 	config.Config.CommitHash.SetDefault(version)
 
