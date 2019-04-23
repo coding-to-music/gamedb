@@ -85,7 +85,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if !config.Config.IsLocal() {
+	if !config.IsLocal() {
 		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
 			if pack.ChangeNumber >= message.PICSPackageInfo.ChangeNumber {
 				logInfo("Skipping package, updated in last day")

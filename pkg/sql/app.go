@@ -664,7 +664,7 @@ func PopularApps() (apps []App, err error) {
 			return apps, err
 		}
 
-		db = db.Select([]string{"id", "name", "image_header"})
+		db = db.Select([]string{"id", "name", "image_header", "player_peak_week"})
 		db = db.Where("type = ?", "game")
 		db = db.Order("player_peak_week desc")
 		db = db.Limit(30)
@@ -687,7 +687,7 @@ func TrendingApps() (apps []App, err error) {
 			return apps, err
 		}
 
-		db = db.Select([]string{"id", "name"})
+		db = db.Select([]string{"id", "name", "player_trend"})
 		db = db.Order("player_trend desc")
 		db = db.Limit(10)
 		db = db.Find(&apps)

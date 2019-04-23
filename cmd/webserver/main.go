@@ -88,7 +88,7 @@ func main() {
 	r.Mount("/websocket", pages.WebsocketsRouter())
 
 	// Profiling
-	if config.Config.IsLocal() {
+	if config.IsLocal() {
 		r.Mount("/debug", middleware.Profiler())
 	}
 
@@ -103,7 +103,7 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	err := http.ListenAndServe(config.Config.ListenOn(), r)
+	err := http.ListenAndServe(config.ListenOn(), r)
 	log.Critical(err)
 
 	helpers.KeepAlive()
@@ -111,7 +111,7 @@ func main() {
 
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if config.Config.IsLocal() {
+		if config.IsLocal() {
 			// log.Info(log.LogNameRequests, r.Method+" "+r.URL.Path)
 		}
 		next.ServeHTTP(w, r)

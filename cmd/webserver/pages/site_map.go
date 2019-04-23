@@ -191,7 +191,7 @@ func sitemapGetGames(r *http.Request, sort string) (apps []sql.App) {
 
 	gorm = gorm.Select([]string{"id", "name"})
 
-	if config.Config.IsLocal() {
+	if config.IsLocal() {
 		gorm = gorm.Limit(10)
 	} else {
 		gorm = gorm.Limit(1000) // Max: 50,000

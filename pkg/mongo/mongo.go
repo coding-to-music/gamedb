@@ -64,7 +64,7 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 			PasswordSet: true,
 		}
 
-		client, err = mongo.NewClient(options.Client().SetAuth(creds).ApplyURI(config.Config.MongoDSN()))
+		client, err = mongo.NewClient(options.Client().SetAuth(creds).ApplyURI(config.MongoDSN()))
 
 		if err != nil {
 			return client, ctx, err

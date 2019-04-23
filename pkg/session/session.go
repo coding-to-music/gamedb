@@ -32,7 +32,7 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 
 	session, err := store.Get(r, "gamedb-session")
 	if err == nil {
-		if config.Config.IsProd() {
+		if config.IsProd() {
 			session.Options = &sessions.Options{
 				MaxAge:   86400,
 				Domain:   "gamedb.online",

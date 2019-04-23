@@ -38,7 +38,7 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 			options.Set("charset", "utf8mb4")
 			options.Set("collation", "utf8mb4_unicode_ci")
 
-			conn, err := gorm.Open("mysql", config.Config.MySQLDNS()+"?"+options.Encode())
+			conn, err := gorm.Open("mysql", config.MySQLDNS()+"?"+options.Encode())
 			if err != nil {
 				return err
 			}

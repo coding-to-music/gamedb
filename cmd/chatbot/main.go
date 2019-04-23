@@ -16,7 +16,7 @@ func main() {
 
 	log.Info("Starting chatbot")
 
-	if !config.Config.IsProd() && !config.Config.IsLocal() {
+	if !config.IsProd() && !config.IsLocal() {
 		log.Err("Prod & local only")
 	}
 

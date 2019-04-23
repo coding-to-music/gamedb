@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -188,52 +187,6 @@ type BaseConfig struct {
 	NewReleaseDays  ConfigItem
 }
 
-func (c BaseConfig) RabbitDSN() string {
-	return "amqp://" + c.RabbitUsername.Get() + ":" + c.RabbitPassword.Get() + "@" + c.RabbitHost.Get() + ":" + c.RabbitPort.Get()
-}
-
-func (c BaseConfig) MySQLDNS() string {
-	return c.MySQLUsername.Get() + ":" + c.MySQLPassword.Get() + "@tcp(" + c.MySQLHost.Get() + ":" + c.MySQLPort.Get() + ")/" + c.MySQLDatabase.Get()
-}
-
-func (c BaseConfig) MongoDSN() string {
-	return "mongodb://" + c.MongoHost.Get() + ":" + c.MongoPort.Get()
-}
-
-func (c BaseConfig) RabbitAPI(values url.Values) string {
-	return "http://" + c.RabbitHost.Get() + ":" + c.RabbitManagmentPort.Get() + "/api/overview?" + values.Encode()
-}
-
-func (c BaseConfig) ListenOn() string {
-	return "0.0.0.0:" + c.WebserverPort.Get()
-}
-
-func (c BaseConfig) HasMemcache() bool {
-	return c.MemcacheDSN.Get() != ""
-}
-
-func (c BaseConfig) IsLocal() bool {
-	return c.Environment.Get() == EnvLocal
-}
-
-func (c BaseConfig) IsProd() bool {
-	return c.Environment.Get() == EnvProd
-}
-
-func (c BaseConfig) IsConsumer() bool {
-	return c.Environment.Get() == EnvConsumer
-}
-
-func (c BaseConfig) GetSteamKeyTag() string {
-
-	key := c.SteamAPIKey.Get()
-	if len(key) > 5 {
-		key = key[0:5]
-	}
-
-	return strings.ToUpper(key)
-}
-
 // ConfigItem
 type ConfigItem struct {
 	value        string
@@ -273,4 +226,51 @@ func (ci ConfigItem) GetInt() int {
 		fmt.Println(err)
 	}
 	return i
+}
+
+//
+func RabbitDSN() string {
+	return "amqp://" + Config.RabbitUsername.Get() + ":" + Config.RabbitPassword.Get() + "@" + Config.RabbitHost.Get() + ":" + Config.RabbitPort.Get()
+}
+
+func MySQLDNS() string {
+	return Config.MySQLUsername.Get() + ":" + Config.MySQLPassword.Get() + "@tcp(" + Config.MySQLHost.Get() + ":" + Config.MySQLPort.Get() + ")/" + Config.MySQLDatabase.Get()
+}
+
+func MongoDSN() string {
+	return "mongodb://" + Config.MongoHost.Get() + ":" + Config.MongoPort.Get()
+}
+
+// func RabbitAPI(values url.Values) string {
+// 	return "http://" + Config.RabbitHost.Get() + ":" + Config.RabbitManagmentPort.Get() + "/api/overview?" + values.Encode()
+// }
+
+func ListenOn() string {
+	return "0.0.0.0:" + Config.WebserverPort.Get()
+}
+
+func HasMemcache() bool {
+	return Config.MemcacheDSN.Get() != ""
+}
+
+func IsLocal() bool {
+	return Config.Environment.Get() == EnvLocal
+}
+
+func IsProd() bool {
+	return Config.Environment.Get() == EnvProd
+}
+
+// func IsConsumer() bool {
+// 	return Config.Environment.Get() == EnvConsumer
+// }
+
+func GetSteamKeyTag() string {
+
+	key := Config.SteamAPIKey.Get()
+	if len(key) > 5 {
+		key = key[0:5]
+	}
+
+	return strings.ToUpper(key)
 }

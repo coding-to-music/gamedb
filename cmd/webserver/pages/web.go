@@ -68,7 +68,7 @@ func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {
 
 	if w.Header().Get("Cache-Control") == "" || w.Header().Get("Expires") == "" {
 
-		if duration == 0 || config.Config.IsLocal() {
+		if duration == 0 || config.IsLocal() {
 
 			w.Header().Set("Cache-Control", "no-cache, no-store, no-transform, must-revalidate, private, max-age=0")
 			w.Header().Set("Expires", time.Unix(0, 0).Format(time.RFC1123))
@@ -120,7 +120,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		return err
 	}
 
-	if config.Config.IsProd() {
+	if config.IsProd() {
 
 		m := minify.New()
 		m.Add("text/html", &html.Minifier{
@@ -392,7 +392,7 @@ func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 	}
 
 	// Page load time
-	if config.Config.IsLocal() {
+	if config.IsLocal() {
 
 		startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
 		log.Err(err)

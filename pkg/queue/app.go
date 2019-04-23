@@ -98,7 +98,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if !config.Config.IsLocal() {
+	if !config.IsLocal() {
 		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
 			if app.ChangeNumber >= message.PICSAppInfo.ChangeNumber {
 				logInfo("Skipping app, updated in last day")
@@ -212,7 +212,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	page.Send(message.ID)
 
 	// Clear caches
-	if config.Config.HasMemcache() && app.ReleaseDateUnix > time.Now().Unix() && newApp {
+	if config.HasMemcache() && app.ReleaseDateUnix > time.Now().Unix() && newApp {
 		err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingAppsCount.Key)
 		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 		log.Err(err)

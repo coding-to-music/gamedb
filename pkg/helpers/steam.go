@@ -29,7 +29,7 @@ type steamLogger struct {
 }
 
 func (l steamLogger) Write(i steam.Log) {
-	if config.Config.IsLocal() {
+	if config.IsLocal() {
 		// log.Info(i.String(), log.LogNameSteam)
 	}
 }

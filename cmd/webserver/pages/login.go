@@ -89,7 +89,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 
 		// Recaptcha
-		if config.Config.IsProd() {
+		if config.IsProd() {
 			err = recaptcha.CheckFromRequest(r)
 			if err != nil {
 

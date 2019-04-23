@@ -156,7 +156,7 @@ func log(interfaces ...interface{}) {
 		return
 	}
 
-	if config.Config.IsLocal() {
+	if config.IsLocal() {
 
 		switch entry.severity {
 		case SeverityCritical:
@@ -181,7 +181,7 @@ func log(interfaces ...interface{}) {
 			Payload:   entry.toText(true),
 			Labels: map[string]string{
 				"env": config.Config.Environment.Get(),
-				"key": config.Config.GetSteamKeyTag(),
+				"key": config.GetSteamKeyTag(),
 			},
 		})
 	}

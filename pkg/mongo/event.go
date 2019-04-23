@@ -152,7 +152,7 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 		return err
 	}
 
-	if config.Config.HasMemcache() {
+	if config.HasMemcache() {
 		err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID).Key)
 		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 	}

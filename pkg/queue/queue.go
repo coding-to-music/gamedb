@@ -222,7 +222,7 @@ func (q baseQueue) ConsumeMessages() {
 			return
 		}
 
-		tag := config.Config.Environment.Get() + "-" + config.Config.GetSteamKeyTag()
+		tag := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
 
 		msgs, err := ch.Consume(qu.Name, tag, false, false, false, false, nil)
 		if err != nil {
@@ -323,7 +323,7 @@ func makeAConnection() (conn *amqp.Connection, err error) {
 
 		logInfo("Connecting to Rabbit")
 
-		conn, err = amqp.Dial(config.Config.RabbitDSN())
+		conn, err = amqp.Dial(config.RabbitDSN())
 		logError(err) // Logging here as no max elasped time
 		return err
 	}
