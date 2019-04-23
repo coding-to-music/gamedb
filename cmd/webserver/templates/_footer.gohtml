@@ -2,7 +2,10 @@
 
     <footer>
         <div class="container">
-            <small class="text-muted text-center small-print">Game DB is not affiliated with Steam. All copyrights reserved to their respective owners.</small>
+            <small class="text-muted text-center small-print">
+                Game DB is not affiliated with Steam. All copyrights reserved to their respective owners.<br/>
+                {{ .GetFooterText }}
+            </small>
         </div>
 
         {{/* Scroll to top link */}}
