@@ -51,7 +51,8 @@ var (
 	}
 
 	// Other
-	MemcacheQueues       = memcache.Item{Key: "queues", Expiration: 10}
-	MemcachePopularApps  = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
-	MemcacheTrendingApps = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
+	MemcacheQueues         = memcache.Item{Key: "queues", Expiration: 10}
+	MemcachePopularApps    = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
+	MemcachePopularNewApps = memcache.Item{Key: "popular-new-apps", Expiration: 60}
+	MemcacheTrendingApps   = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
 )

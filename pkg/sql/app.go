@@ -676,6 +676,30 @@ func PopularApps() (apps []App, err error) {
 	return apps, err
 }
 
+func PopularNewApps() (apps []App, err error) {
+
+	var item = helpers.MemcachePopularNewApps
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return apps, err
+		}
+
+		db = db.Select([]string{"id", "name", "image_header", "player_peak_week"})
+		db = db.Where("type = ?", "game")
+		db = db.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
+		db = db.Order("player_peak_week desc")
+		db = db.Limit(20)
+		db = db.Find(&apps)
+
+		return apps, err
+	})
+
+	return apps, err
+}
+
 func TrendingApps() (apps []App, err error) {
 
 	var item = helpers.MemcacheTrendingApps

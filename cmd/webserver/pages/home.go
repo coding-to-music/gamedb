@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
@@ -48,19 +47,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-			log.Err(err)
-			return
-		}
-
-		gorm = gorm.Select([]string{"id", "name", "image_header"})
-		gorm = gorm.Where("type = ?", "game")
-		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
-		gorm = gorm.Order("player_peak_week desc")
-		gorm = gorm.Limit(20)
-		gorm = gorm.Find(&t.Games)
-
+		var err error
+		t.Games, err = sql.PopularNewApps()
 		log.Err(err, r)
 	}()
 
