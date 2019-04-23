@@ -27,3 +27,7 @@ func (CommandHelp) Example() string {
 func (CommandHelp) Description() string {
 	return "Links to this list of commands"
 }
+
+func (CommandHelp) Type() CommandType {
+	return TypeOther
+}

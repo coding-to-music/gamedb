@@ -59,3 +59,7 @@ func (CommandApp) Example() string {
 func (CommandApp) Description() string {
 	return "Get info on a game"
 }
+
+func (CommandApp) Type() CommandType {
+	return TypeGame
+}

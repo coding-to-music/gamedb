@@ -36,3 +36,7 @@ func (CommandPlayerPlaytime) Example() string {
 func (CommandPlayerPlaytime) Description() string {
 	return "Get the playtime of a player"
 }
+
+func (CommandPlayerPlaytime) Type() CommandType {
+	return TypePlayer
+}

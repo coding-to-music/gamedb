@@ -63,3 +63,7 @@ func (CommandAppsNew) Example() string {
 func (CommandAppsNew) Description() string {
 	return "Returns the most popular newly released apps"
 }
+
+func (CommandAppsNew) Type() CommandType {
+	return TypeGames
+}

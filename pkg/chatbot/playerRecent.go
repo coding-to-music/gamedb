@@ -12,7 +12,7 @@ import (
 type CommandPlayerRecent struct {
 }
 
-func (c CommandPlayerRecent) Regex() *regexp.Regexp {
+func (CommandPlayerRecent) Regex() *regexp.Regexp {
 	return regexp.MustCompile("^.recent (.*)")
 }
 
@@ -69,10 +69,14 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 	return message, nil
 }
 
-func (c CommandPlayerRecent) Example() string {
+func (CommandPlayerRecent) Example() string {
 	return ".recent {player_name}"
 }
 
-func (c CommandPlayerRecent) Description() string {
+func (CommandPlayerRecent) Description() string {
 	return "Returns the last 10 games played by user"
+}
+
+func (CommandPlayerRecent) Type() CommandType {
+	return TypePlayer
 }

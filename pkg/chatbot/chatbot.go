@@ -6,11 +6,21 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+type CommandType string
+
+var (
+	TypeGame   CommandType = "game"
+	TypeGames  CommandType = "games"
+	TypePlayer CommandType = "player"
+	TypeOther  CommandType = "Other"
+)
+
 type Command interface {
 	Regex() *regexp.Regexp
 	Output(input string) (discordgo.MessageSend, error)
 	Example() string
 	Description() string
+	Type() CommandType
 }
 
 var CommandRegister = []Command{
