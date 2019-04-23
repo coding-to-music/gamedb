@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gamedb/website/pkg/chatbot"
+	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/go-chi/chi"
 )
@@ -29,17 +30,46 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, time.Hour*24)
 
-	// get amount of guilds
-	// client, err := helpers.GetDiscord()
-	// guild, err := client.UserGuilds()
-
 	// Template
 	t := chatBotTemplate{}
 	t.fill(w, r, "Chat", "The Game DB community.")
 	t.Commands = chatbot.CommandRegister
 
+	// Get amount of guilds
+	func() {
+
+		client, err := helpers.GetDiscord()
+		if err != nil {
+			log.Warning(err)
+			return
+		}
+
+		after := ""
+		more := true
+
+		for more {
+
+			guilds, err := client.UserGuilds(100, "", after)
+			if err != nil {
+				log.Warning(err)
+				return
+			}
+
+			if len(guilds) < 100 {
+				more = false
+			}
+
+			for _, v := range guilds {
+				after = v.ID
+			}
+
+			t.Guilds = t.Guilds + len(guilds)
+		}
+	}()
+
+	//
 	sort.Slice(t.Commands, func(i, j int) bool {
-		return t.Commands[i].Example() > t.Commands[j].Example()
+		return t.Commands[i].Example() < t.Commands[j].Example()
 	})
 
 	err := returnTemplate(w, r, "chat_bot", t)
@@ -49,6 +79,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 type chatBotTemplate struct {
 	GlobalTemplate
 	Commands []chatbot.Command
+	Guilds   int
 }
 
 func (cbt chatBotTemplate) AddBotLink() string {
