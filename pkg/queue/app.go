@@ -156,13 +156,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = updateAppSteamSpy(&app)
 	if err != nil {
-		if err == errSteamSpyDown {
-			logInfo(err, message.ID)
-		} else {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
-			return
-		}
+		logInfo(err, message.ID)
 	}
 
 	err = updateBundles(&app)
@@ -837,6 +831,7 @@ func updateAppSteamSpy(app *sql.App) error {
 
 	// Create request
 	client := &http.Client{}
+	client.Timeout = time.Second * 5
 
 	req, err := http.NewRequest("GET", "https://steamspy.com/api.php?"+query.Encode(), nil)
 	if err != nil {
