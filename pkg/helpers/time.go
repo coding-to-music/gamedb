@@ -44,7 +44,7 @@ func formatTime(minutes int, pieces int, format string, addSpaces bool) string {
 	var ret []string
 	for _, v := range ts {
 
-		if len(ret) >= pieces {
+		if pieces > 0 && len(ret) >= pieces {
 			break
 		}
 

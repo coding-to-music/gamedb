@@ -13,7 +13,7 @@ const (
 	ProductTypeApp     ProductType = "product"
 	ProductTypePackage ProductType = "package"
 
-	DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
+	DefaultAppIcon = "https://gamedb.online/assets/img/no-app-image-square.jpg" // Absolute for Discord to hotlink
 )
 
 func IsValidAppID(id int) bool {

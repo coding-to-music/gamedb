@@ -8,14 +8,14 @@ import (
 	"github.com/gamedb/website/pkg/mongo"
 )
 
-type CommandGames struct {
+type CommandPlayerApps struct {
 }
 
-func (CommandGames) Regex() *regexp.Regexp {
+func (CommandPlayerApps) Regex() *regexp.Regexp {
 	return regexp.MustCompile("^.(games|apps) (.*)")
 }
 
-func (c CommandGames) Output(input string) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerApps) Output(input string) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(input)
 
@@ -24,15 +24,15 @@ func (c CommandGames) Output(input string) (message discordgo.MessageSend, err e
 		return message, err
 	}
 
-	message.Content = player.GetName() + ": " + strconv.Itoa(player.GamesCount)
+	message.Content = player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** apps"
 
 	return message, nil
 }
 
-func (CommandGames) Example() string {
-	return ".games {playerName}"
+func (CommandPlayerApps) Example() string {
+	return ".games {player_name}"
 }
 
-func (CommandGames) Description() string {
+func (CommandPlayerApps) Description() string {
 	return "Get the amount of games a player has in their library"
 }

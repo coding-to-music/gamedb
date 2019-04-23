@@ -8,14 +8,14 @@ import (
 	"github.com/gamedb/website/pkg/mongo"
 )
 
-type CommandLevel struct {
+type CommandPlayerLevel struct {
 }
 
-func (CommandLevel) Regex() *regexp.Regexp {
+func (CommandPlayerLevel) Regex() *regexp.Regexp {
 	return regexp.MustCompile("^.level (.*)")
 }
 
-func (c CommandLevel) Output(input string) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerLevel) Output(input string) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(input)
 
@@ -24,15 +24,15 @@ func (c CommandLevel) Output(input string) (message discordgo.MessageSend, err e
 		return message, err
 	}
 
-	message.Content = player.GetName() + ": " + strconv.Itoa(player.Level)
+	message.Content = player.GetName() + " is level **" + strconv.Itoa(player.Level) + "**"
 
 	return message, nil
 }
 
-func (CommandLevel) Example() string {
-	return ".level {playerName}"
+func (CommandPlayerLevel) Example() string {
+	return ".level {player_name}"
 }
 
-func (CommandLevel) Description() string {
+func (CommandPlayerLevel) Description() string {
 	return "Get the level of a player"
 }

@@ -1,4 +1,38 @@
 package chatbot
 
-// .playtime jimeagle 440
-// gets users playtime
+import (
+	"regexp"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/website/pkg/mongo"
+)
+
+type CommandPlayerPlaytime struct {
+}
+
+func (CommandPlayerPlaytime) Regex() *regexp.Regexp {
+	return regexp.MustCompile("^.playtime (.*)")
+}
+
+func (c CommandPlayerPlaytime) Output(input string) (message discordgo.MessageSend, err error) {
+
+	matches := c.Regex().FindStringSubmatch(input)
+
+	player, err := mongo.SearchPlayer(matches[1], mongo.M{"_id": 1, "persona_name": 1, "play_time": 1})
+	if err != nil {
+		return message, err
+	}
+
+	message.Content = player.GetName() + " has played for **" + helpers.GetTimeLong(player.PlayTime, 0) + "**"
+
+	return message, nil
+}
+
+func (CommandPlayerPlaytime) Example() string {
+	return ".playtime {player_name}"
+}
+
+func (CommandPlayerPlaytime) Description() string {
+	return "Get the playtime of a player"
+}

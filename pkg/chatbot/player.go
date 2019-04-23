@@ -4,6 +4,8 @@ import (
 	"regexp"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/dustin/go-humanize"
+	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/mongo"
 )
 
@@ -23,13 +25,38 @@ func (c CommandPlayer) Output(input string) (message discordgo.MessageSend, err 
 		return message, err
 	}
 
-	message.Content = player.GetName()
+	message.Embed = &discordgo.MessageEmbed{
+		Title:  player.GetName(),
+		URL:    "https://gamedb.online" + player.GetPath(),
+		Author: author,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: player.GetAvatar(),
+		},
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:  "Level",
+				Value: humanize.Comma(int64(player.Level)),
+			},
+			{
+				Name:  "Games",
+				Value: humanize.Comma(int64(player.GamesCount)),
+			},
+			{
+				Name:  "Playtime",
+				Value: helpers.GetTimeLong(player.PlayTime, 3),
+			},
+			{
+				Name:  "Friends",
+				Value: humanize.Comma(int64(player.FriendsCount)),
+			},
+		},
+	}
 
 	return message, nil
 }
 
 func (CommandPlayer) Example() string {
-	return ".player {playerName}"
+	return ".player {player_name}"
 }
 
 func (CommandPlayer) Description() string {

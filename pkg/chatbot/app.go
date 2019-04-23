@@ -30,6 +30,9 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 		Title:  app.GetName(),
 		URL:    "https://gamedb.online" + app.GetPath(),
 		Author: author,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: app.GetHeaderImage(),
+		},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Release Date",
@@ -45,8 +48,6 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 			},
 		},
 	}
-
-	message.Content = app.GetName()
 
 	return message, nil
 }

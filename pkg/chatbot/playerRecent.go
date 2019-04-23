@@ -2,20 +2,21 @@ package chatbot
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/mongo"
 )
 
-type CommandRecent struct {
+type CommandPlayerRecent struct {
 }
 
-func (c CommandRecent) Regex() *regexp.Regexp {
+func (c CommandPlayerRecent) Regex() *regexp.Regexp {
 	return regexp.MustCompile("^.recent (.*)")
 }
 
-func (c CommandRecent) Output(input string) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(input)
 
@@ -24,29 +25,43 @@ func (c CommandRecent) Output(input string) (message discordgo.MessageSend, err 
 		return message, err
 	}
 
-	message.Embed = &discordgo.MessageEmbed{
-		Title:  "Recent Games",
-		URL:    "https://gamedb.online" + player.GetPath() + "#games",
-		Author: author,
-	}
-
 	recent, err := player.GetRecentGames()
 	if err != nil {
 		return message, err
 	}
 
+	if len(recent) > 10 {
+		recent = recent[0:10]
+	}
+
 	if len(recent) > 0 {
-		if len(recent) > 10 {
-			recent = recent[0:10]
+
+		message.Embed = &discordgo.MessageEmbed{
+			Title:  "Recent Games",
+			URL:    "https://gamedb.online" + player.GetPath() + "#games",
+			Author: author,
 		}
 
-		for k, v := range recent {
+		var code []string
 
-			message.Embed.Fields = append(message.Embed.Fields, &discordgo.MessageEmbedField{
-				Name:  helpers.OrdinalComma(k + 1),
-				Value: v.Name,
-			})
+		for k, app := range recent {
+
+			if k == 0 {
+				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
+					URL: helpers.GetAppIcon(app.AppID, app.ImgIconURL),
+				}
+			}
+
+			space := ""
+			if k < 9 && len(recent) > 9 {
+				space = " "
+			}
+
+			code = append(code, "- "+space+app.Name+" - "+helpers.GetTimeShort(app.PlayTime2Weeks, 2))
 		}
+
+		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
+
 	} else {
 		message.Content = "None" // todo, dont do as content
 	}
@@ -54,10 +69,10 @@ func (c CommandRecent) Output(input string) (message discordgo.MessageSend, err 
 	return message, nil
 }
 
-func (c CommandRecent) Example() string {
-	return ".recent {playerName}"
+func (c CommandPlayerRecent) Example() string {
+	return ".recent {player_name}"
 }
 
-func (c CommandRecent) Description() string {
+func (c CommandPlayerRecent) Description() string {
 	return "Returns the last 10 games played by user"
 }

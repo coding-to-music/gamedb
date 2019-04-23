@@ -2,31 +2,42 @@ package chatbot
 
 import (
 	"regexp"
-	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/dustin/go-humanize"
+	"github.com/gamedb/website/pkg/sql"
 )
 
-type CommandPlayers struct {
+type CommandAppPlayers struct {
 }
 
-func (CommandPlayers) Regex() *regexp.Regexp {
-	return regexp.MustCompile("^.players [a-zA-Z0-9]+")
+func (CommandAppPlayers) Regex() *regexp.Regexp {
+	return regexp.MustCompile("^.players ([a-zA-Z0-9]+)")
 }
 
-func (CommandPlayers) Output(input string) (message discordgo.MessageSend, err error) {
+func (c CommandAppPlayers) Output(input string) (message discordgo.MessageSend, err error) {
 
-	input = strings.TrimPrefix(input, ".players ")
+	matches := c.Regex().FindStringSubmatch(input)
 
-	message.Content = ""
+	app, err := sql.SearchApp(matches[1], nil)
+	if err != nil {
+		return message, err
+	}
+
+	i, err := app.GetOnlinePlayers()
+	if err != nil {
+		return message, err
+	}
+
+	message.Content = app.GetName() + " has **" + humanize.Comma(int64(i)) + "** players"
 
 	return message, nil
 }
 
-func (CommandPlayers) Example() string {
-	return ".players {playerName}"
+func (CommandAppPlayers) Example() string {
+	return ".players {app_name}"
 }
 
-func (CommandPlayers) Description() string {
+func (CommandAppPlayers) Description() string {
 	return "Gets the number of people playing."
 }
