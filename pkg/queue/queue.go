@@ -324,7 +324,6 @@ func makeAConnection() (conn *amqp.Connection, err error) {
 		logInfo("Connecting to Rabbit")
 
 		conn, err = amqp.Dial(config.RabbitDSN())
-		logError(err) // Logging here as no max elasped time
 		return err
 	}
 
@@ -332,7 +331,7 @@ func makeAConnection() (conn *amqp.Connection, err error) {
 	policy.MaxElapsedTime = 0
 	policy.InitialInterval = 5 * time.Second
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logError(err) })
 
 	return conn, err
 }
