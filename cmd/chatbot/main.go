@@ -33,9 +33,11 @@ func main() {
 			return
 		}
 
-		for _, v := range chatbot.CommandRegister {
+		for _, command := range chatbot.CommandRegister {
 
-			if v.Regex().MatchString(m.Message.Content) {
+			msg := m.Message.Content
+
+			if command.Regex().MatchString(msg) {
 
 				chanID := m.ChannelID
 
@@ -43,7 +45,7 @@ func main() {
 
 					private, err := isPrivateChannel(s, m)
 					if err != nil {
-						log.Warning(err)
+						log.Warning(err, msg)
 						return
 					}
 
@@ -51,7 +53,7 @@ func main() {
 
 						st, err := s.UserChannelCreate(m.Author.ID)
 						if err != nil {
-							log.Warning(err)
+							log.Warning(err, msg)
 							return
 						}
 
@@ -59,15 +61,15 @@ func main() {
 					}
 				}
 
-				message, err := v.Output(m.Message.Content)
+				message, err := command.Output(msg)
 				if err != nil {
-					log.Warning(err)
+					log.Warning(err, msg)
 					return
 				}
 
 				_, err = s.ChannelMessageSendComplex(chanID, &message)
 				if err != nil {
-					log.Warning(err)
+					log.Warning(err, msg)
 					return
 				}
 
