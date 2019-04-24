@@ -475,6 +475,19 @@ func getPlayers(offset int64, limit int64, sort D, filter interface{}, projectio
 	return players, cur.Err()
 }
 
+func DeletePlayer(id int64) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
+
+	_, err = c.DeleteOne(ctx, M{"_id": id}, options.Delete())
+	return err
+}
+
 func CountPlayers() (count int64, err error) {
 
 	var item = helpers.MemcachePlayersCount

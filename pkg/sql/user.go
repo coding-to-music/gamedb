@@ -45,3 +45,15 @@ func GetOrCreateUser(playerID int64) (user User, err error) {
 
 	return user, db.Error
 }
+
+func DeleteUser(id int64) (err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	db = db.Where("player_id = ?", id).Delete(&User{})
+
+	return db.Error
+}

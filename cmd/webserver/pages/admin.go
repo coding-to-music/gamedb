@@ -405,6 +405,12 @@ func adminDev() {
 
 	log.Info("Started dev code")
 
+	err = mongo.DeletePlayer(76561198955574187)
+	log.Err(err)
+
+	err = sql.DeleteUser(76561198955574187)
+	log.Err(err)
+
 	//
 	err = sql.SetConfig(sql.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
