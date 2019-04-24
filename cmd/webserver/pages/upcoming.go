@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -84,7 +84,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
 
-	var code = session.GetCountryCode(r)
+	var code = session2.GetCountryCode(r)
 
 	count, err := countUpcomingApps()
 	log.Err(err)

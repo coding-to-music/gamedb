@@ -9,10 +9,10 @@ import (
 	"sync"
 	"time"
 
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/microcosm-cc/bluemonday"
@@ -123,7 +123,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, time.Minute)
 
 	var filter = mongo.D{
-		{"currency", string(session.GetCountryCode(r))},
+		{"currency", string(session2.GetCountryCode(r))},
 		{"app_id", bson.M{"$gt": 0}},
 		{"difference", bson.M{"$lt": 0}},
 	}
@@ -131,7 +131,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
 	log.Err(err, r)
 
-	locale, err := helpers.GetLocaleFromCountry(session.GetCountryCode(r))
+	locale, err := helpers.GetLocaleFromCountry(session2.GetCountryCode(r))
 	log.Err(err)
 
 	var prices []homePrice

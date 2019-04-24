@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -36,7 +36,7 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := session.GetCountryCode(r)
+	code := session2.GetCountryCode(r)
 	prices := map[int]string{}
 	for _, v := range developers {
 		price, err := v.GetMeanPrice(code)

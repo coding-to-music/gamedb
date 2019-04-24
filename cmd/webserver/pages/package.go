@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/queue"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -148,7 +148,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get price
-	t.Price = sql.GetPriceFormatted(pack, session.GetCountryCode(r))
+	t.Price = sql.GetPriceFormatted(pack, session2.GetCountryCode(r))
 
 	t.Prices, err = t.Package.GetPrices()
 	log.Err(err)

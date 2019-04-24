@@ -15,11 +15,11 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -56,10 +56,10 @@ func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string)
 func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
-	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
+	w.Header().Set("Language", string(session2.GetCountryCode(r))) // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")            // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")            // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")                // Protection from clickjacking
 
 	if !strings.HasPrefix(r.URL.Path, "/esi") {
 		w.Header().Set("Surrogate-Control", "ESI/1.0") // Enable ESI
@@ -252,7 +252,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Path = r.URL.Path
 
 	// User ID
-	id, err := session.Read(r, session.PlayerID)
+	id, err := session2.Read(r, session2.PlayerID)
 	log.Err(err, r)
 
 	if id == "" {
@@ -263,7 +263,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	// User name
-	t.userName, err = session.Read(r, session.PlayerName)
+	t.userName, err = session2.Read(r, session2.PlayerName)
 	log.Err(err, r)
 
 	// Country
@@ -271,12 +271,12 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// Check if valid country
 	if _, ok := steam.Countries[t.UserCountry]; !ok {
-		t.UserCountry = session.GetCountryCode(r)
+		t.UserCountry = session2.GetCountryCode(r)
 	}
 
 	// Default country to session
 	if t.UserCountry == "" {
-		t.UserCountry = session.GetCountryCode(r)
+		t.UserCountry = session2.GetCountryCode(r)
 	}
 
 	// Currency
@@ -287,10 +287,10 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	// Flashes
-	t.flashesGood, err = session.GetGoodFlashes(w, r)
+	t.flashesGood, err = session2.GetGoodFlashes(w, r)
 	log.Err(err, r)
 
-	t.flashesBad, err = session.GetBadFlashes(w, r)
+	t.flashesBad, err = session2.GetBadFlashes(w, r)
 	log.Err(err, r)
 
 	// Pages
@@ -298,11 +298,11 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	case "/contact":
 
 		// Details from form
-		contactName, err := session.Read(r, "contact-name")
+		contactName, err := session2.Read(r, "contact-name")
 		log.Err(err)
-		contactEmail, err := session.Read(r, "contact-email")
+		contactEmail, err := session2.Read(r, "contact-email")
 		log.Err(err)
-		contactMessage, err := session.Read(r, "contact-message")
+		contactMessage, err := session2.Read(r, "contact-message")
 		log.Err(err)
 
 		t.contactPage = map[string]string{
@@ -312,12 +312,12 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		}
 
 		// Email from logged in user
-		t.userEmail, err = session.Read(r, session.UserEmail)
+		t.userEmail, err = session2.Read(r, session2.UserEmail)
 		log.Err(err, r)
 
 	case "/login":
 
-		loginEmail, err := session.Read(r, "login-email")
+		loginEmail, err := session2.Read(r, "login-email")
 		log.Err(err)
 
 		t.loginPage = map[string]string{
@@ -326,13 +326,13 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	case "/chat":
 
-		discord, err := session.Read(r, "discord_token")
+		discord, err := session2.Read(r, "discord_token")
 		log.Err(err, r)
 		t.loggedIntoDiscord = discord != ""
 
 	case "/experience":
 
-		level, err := session.Read(r, session.PlayerLevel)
+		level, err := session2.Read(r, session2.PlayerLevel)
 		log.Err(err, r)
 
 		if level == "" {
@@ -700,7 +700,7 @@ type Toast struct {
 //
 func isAdmin(r *http.Request) bool {
 
-	id, err := session.Read(r, session.PlayerID)
+	id, err := session2.Read(r, session2.PlayerID)
 	log.Err(err)
 
 	return r.Header.Get("Authorization") != "" || id == "76561197968626192"
@@ -710,7 +710,7 @@ func isAdmin(r *http.Request) bool {
 func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 
 	// Check if logged in
-	loggedIn, err := session.IsLoggedIn(r)
+	loggedIn, err := session2.IsLoggedIn(r)
 	if err != nil {
 		return playerID, errNotLoggedIn
 	}
@@ -720,7 +720,7 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	}
 
 	// Get session
-	id, err := session.Read(r, session.PlayerID)
+	id, err := session2.Read(r, session2.PlayerID)
 	if err != nil {
 		return playerID, err
 	}

@@ -8,10 +8,10 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 	"golang.org/x/crypto/bcrypt"
@@ -39,11 +39,11 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	loggedIn, err := session.IsLoggedIn(r)
+	loggedIn, err := session2.IsLoggedIn(r)
 	log.Err(err)
 
 	if !loggedIn {
-		err := session.SetBadFlash(w, r, "Please login")
+		err := session2.SetBadFlash(w, r, "Please login")
 		log.Err(err, r)
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
@@ -137,11 +137,11 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	loggedIn, err := session.IsLoggedIn(r)
+	loggedIn, err := session2.IsLoggedIn(r)
 	log.Err(err)
 
 	if !loggedIn {
-		err := session.SetBadFlash(w, r, "Please login")
+		err := session2.SetBadFlash(w, r, "Please login")
 		log.Err(err, r)
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
@@ -150,7 +150,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse form
 	err = r.ParseForm()
 	if err != nil {
-		err := session.SetBadFlash(w, r, "There was an eror saving your information.")
+		err := session2.SetBadFlash(w, r, "There was an eror saving your information.")
 		log.Err(err, r)
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
@@ -158,7 +158,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := getUserFromSession(r)
 	if err != nil {
-		err := session.SetBadFlash(w, r, "There was an eror saving your information.")
+		err := session2.SetBadFlash(w, r, "There was an eror saving your information.")
 		log.Err(err, r)
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
@@ -166,10 +166,10 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.PostForm.Get("id") == strconv.FormatInt(user.PlayerID, 10) {
 
-		err = session.Clear(w, r)
+		err = session2.Clear(w, r)
 		log.Err(err, r)
 
-		err = session.SetGoodFlash(w, r, "Your account has been deleted")
+		err = session2.SetGoodFlash(w, r, "Your account has been deleted")
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -177,7 +177,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetBadFlash(w, r, "Invalid player ID.")
+		err := session2.SetBadFlash(w, r, "Invalid player ID.")
 		log.Err(err, r)
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
@@ -208,7 +208,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = checkmail.ValidateFormat(r.PostForm.Get("email"))
 		if err != nil {
-			err = session.SetBadFlash(w, r, "Invalid email address")
+			err = session2.SetBadFlash(w, r, "Invalid email address")
 			http.Redirect(w, r, "/settings", http.StatusFound)
 			return
 		}
@@ -226,7 +226,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	if password != "" {
 
 		if len(password) < 8 {
-			err := session.SetBadFlash(w, r, "Password must be at least 8 characters long")
+			err := session2.SetBadFlash(w, r, "Password must be at least 8 characters long")
 			log.Err(err, r)
 			http.Redirect(w, r, "/settings", http.StatusFound)
 			return
@@ -235,7 +235,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 		if err != nil {
 			log.Err(err, r)
-			err := session.SetBadFlash(w, r, "Something went wrong encrypting your password")
+			err := session2.SetBadFlash(w, r, "Something went wrong encrypting your password")
 			log.Err(err, r)
 			http.Redirect(w, r, "/settings", http.StatusFound)
 			return
@@ -282,16 +282,16 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(db.Error, r)
 
 	if db.Error != nil {
-		err = session.SetBadFlash(w, r, "Something went wrong saving settings")
+		err = session2.SetBadFlash(w, r, "Something went wrong saving settings")
 		log.Err(err, r)
 	} else {
-		err = session.SetGoodFlash(w, r, "Settings saved")
+		err = session2.SetGoodFlash(w, r, "Settings saved")
 		log.Err(err, r)
 	}
 
 	// Update session
-	err = session.WriteMany(w, r, map[string]string{
-		session.UserCountry: user.CountryCode,
+	err = session2.WriteMany(w, r, map[string]string{
+		session2.UserCountry: user.CountryCode,
 	})
 	log.Err(err, r)
 

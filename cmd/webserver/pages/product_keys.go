@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -61,7 +61,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	//
-	var code = session.GetCountryCode(r)
+	var code = session2.GetCountryCode(r)
 	var wg sync.WaitGroup
 	var productType = query.getSearchString("type")
 

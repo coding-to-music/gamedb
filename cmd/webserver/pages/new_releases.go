@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -80,7 +80,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"5": "player_trend",
 	}
 
-	var code = session.GetCountryCode(r)
+	var code = session2.GetCountryCode(r)
 
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})

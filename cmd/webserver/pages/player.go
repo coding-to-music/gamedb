@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
 	"github.com/gamedb/website/pkg/queue"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/go-chi/chi"
 )
 
@@ -189,7 +189,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14)
 
 	// Game stats
-	gameStats, err := player.GetGameStats(session.GetCountryCode(r))
+	gameStats, err := player.GetGameStats(session2.GetCountryCode(r))
 	// log.Err(err, r) // Disable for now, too many logs
 
 	// Make banners
@@ -346,7 +346,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	code := session.GetCountryCode(r)
+	code := session2.GetCountryCode(r)
 
 	//
 	var wg sync.WaitGroup

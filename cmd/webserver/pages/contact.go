@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
+	session2 "github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/session"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -56,7 +56,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Backup
-		err = session.WriteMany(w, r, map[string]string{
+		err = session2.WriteMany(w, r, map[string]string{
 			"contact-name":    r.PostForm.Get("name"),
 			"contact-email":   r.PostForm.Get("email"),
 			"contact-message": r.PostForm.Get("message"),
@@ -103,7 +103,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove backup
-		err = session.WriteMany(w, r, map[string]string{
+		err = session2.WriteMany(w, r, map[string]string{
 			"contact-name":    "",
 			"contact-email":   "",
 			"contact-message": "",
@@ -115,9 +115,9 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	if err != nil {
-		err = session.SetGoodFlash(w, r, err.Error())
+		err = session2.SetGoodFlash(w, r, err.Error())
 	} else {
-		err = session.SetGoodFlash(w, r, "Message sent!")
+		err = session2.SetGoodFlash(w, r, "Message sent!")
 	}
 
 	log.Err(err, r)
