@@ -61,6 +61,10 @@ func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
 
+	if !strings.HasPrefix(r.URL.Path, "/esi") {
+		w.Header().Set("Surrogate-Control", "ESI/1.0") // Enable ESI
+	}
+
 	setCacheHeaders(w, time.Hour*24) // Default cache headers
 }
 
