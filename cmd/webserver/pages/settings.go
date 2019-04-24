@@ -25,6 +25,7 @@ func SettingsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", settingsHandler)
 	r.Post("/", settingsPostHandler)
+	// r.Post("/delete", deletePostHandler)
 	r.Get("/events.json", settingsEventsAjaxHandler)
 	return r
 }
@@ -125,6 +126,62 @@ type settingsTemplate struct {
 	Games     string
 	Messages  []interface{}
 	Countries [][]string
+}
+
+func deletePostHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	setCacheHeaders(w, 0)
+
+	loggedIn, err := session.IsLoggedIn(r)
+	log.Err(err)
+
+	if !loggedIn {
+		err := session.SetBadFlash(w, r, "Please login")
+		log.Err(err, r)
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	// Parse form
+	err = r.ParseForm()
+	if err != nil {
+		err := session.SetBadFlash(w, r, "There was an eror saving your information.")
+		log.Err(err, r)
+		http.Redirect(w, r, "/settings", http.StatusFound)
+		return
+	}
+
+	user, err := getUserFromSession(r)
+	if err != nil {
+		err := session.SetBadFlash(w, r, "There was an eror saving your information.")
+		log.Err(err, r)
+		http.Redirect(w, r, "/settings", http.StatusFound)
+		return
+	}
+
+	if r.PostForm.Get("id") == strconv.FormatInt(user.PlayerID, 10) {
+
+		err = session.Clear(w, r)
+		log.Err(err, r)
+
+		err = session.SetGoodFlash(w, r, "Your account has been deleted")
+		log.Err(err, r)
+
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+
+	} else {
+
+		err := session.SetBadFlash(w, r, "Invalid player ID.")
+		log.Err(err, r)
+		http.Redirect(w, r, "/settings", http.StatusFound)
+		return
+	}
 }
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
