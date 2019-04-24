@@ -9,11 +9,10 @@ assets/css/sass/
 assets/concatenate.css
 
 # Binaries
-debug
 cmd/chatbot/chatbot
-cmd/chatbot/consumers
-cmd/chatbot/crons
-cmd/chatbot/webservers
+cmd/consumers/consumers
+cmd/crons/crons
+cmd/webserver/webserver
 
 # Meta
 index.yaml
