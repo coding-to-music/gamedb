@@ -234,7 +234,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if we have the player
 	player, err := mongo.GetPlayer(ID)
-	if err != nil {
+	if err != nil && err != mongo.ErrNoDocuments {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
 		return
 	}
@@ -247,7 +247,7 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user
-	user, err := sql.GetUser(ID)
+	user, err := sql.GetOrCreateUser(ID)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
 		return

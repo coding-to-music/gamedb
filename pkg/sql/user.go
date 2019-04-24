@@ -34,7 +34,7 @@ func GetUsersByEmail(email string) (users []User, err error) {
 	return users, nil
 }
 
-func GetUser(playerID int64) (user User, err error) {
+func GetOrCreateUser(playerID int64) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {

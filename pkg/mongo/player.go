@@ -368,6 +368,9 @@ func GetPlayer(id int64) (player Player, err error) {
 	}
 
 	err = FindDocument(CollectionPlayers, "_id", id, nil, &player)
+
+	player.ID = id
+
 	return player, err
 }
 

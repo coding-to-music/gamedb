@@ -746,5 +746,5 @@ func getUserFromSession(r *http.Request) (user sql.User, err error) {
 		return user, err
 	}
 
-	return sql.GetUser(playerID)
+	return sql.GetOrCreateUser(playerID)
 }
