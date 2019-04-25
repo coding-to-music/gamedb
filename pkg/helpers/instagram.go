@@ -58,5 +58,5 @@ func UploadInstagram(imageURL string, message string) (err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second * 10
 
-	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, "url: "+imageURL) })
 }
