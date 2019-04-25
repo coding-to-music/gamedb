@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
@@ -50,6 +50,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 	t.Domain = config.Config.GameDBDomain.Get()
+	t.setFlashes(w, r, true)
 
 	err = returnTemplate(w, r, "login", t)
 	log.Err(err, r)
@@ -85,7 +86,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Save email so they don't need to keep typing it
-		err = session2.Write(w, r, "login-email", r.PostForm.Get("email"))
+		err = session.Write(r, "login-email", r.PostForm.Get("email"))
 		log.Err(err, r)
 
 		// Recaptcha
@@ -149,30 +150,37 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove form prefill on success
-		err = session2.Write(w, r, "login-email", "")
+		err = session.Write(r, "login-email", "")
 		log.Err(err, r)
 
 		return nil
 	}()
 
 	// Redirect
+	var redirect string
+
 	if err != nil {
 
-		err2 := helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
-		log.Err(err2)
+		err := helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
+		log.Err(err)
 
-		err = session2.SetGoodFlash(w, r, err.Error())
+		err = session.SetBadFlash(w, r, err.Error())
 		log.Err(err, r)
 
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirect = "/login"
 
 	} else {
 
-		err = session2.SetGoodFlash(w, r, "Login successful")
+		err = session.SetGoodFlash(w, r, "Login successful")
 		log.Err(err, r)
 
-		http.Redirect(w, r, "/settings", http.StatusFound)
+		redirect = "/settings"
 	}
+
+	err = session.Save(w, r)
+	log.Err(err)
+
+	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
 func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -184,7 +192,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	loggedIn, err := session2.IsLoggedIn(r)
+	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
 		log.Err(err, r)
 	}
@@ -259,20 +267,25 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = session.Save(w, r)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
+		return
+	}
+
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
 func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user sql.User) (err error) {
 
 	// Save session
-	err = session2.WriteMany(w, r, map[string]string{
-		session2.PlayerID:    strconv.FormatInt(player.ID, 10),
-		session2.PlayerName:  player.PersonaName,
-		session2.PlayerLevel: strconv.Itoa(player.Level),
-		session2.UserEmail:   user.Email,
-		session2.UserCountry: user.CountryCode,
+	err = session.WriteMany(w, r, map[string]string{
+		session.PlayerID:    strconv.FormatInt(player.ID, 10),
+		session.PlayerName:  player.PersonaName,
+		session.PlayerLevel: strconv.Itoa(player.Level),
+		session.UserEmail:   user.Email,
+		session.UserCountry: user.CountryCode,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -297,10 +310,13 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = mongo.CreateEvent(r, id, mongo.EventLogout)
 	log.Err(err, r)
 
-	err = session2.Clear(w, r)
+	err = session.Clear(r)
 	log.Err(err, r)
 
-	err = session2.SetGoodFlash(w, r, "You have been logged out")
+	err = session.SetGoodFlash(w, r, "You have been logged out")
+	log.Err(err, r)
+
+	err = session.Save(w, r)
 	log.Err(err, r)
 
 	http.Redirect(w, r, "/", http.StatusFound)

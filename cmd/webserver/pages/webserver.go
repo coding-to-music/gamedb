@@ -15,7 +15,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
@@ -56,10 +56,10 @@ func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string)
 func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Language", string(session2.GetCountryCode(r))) // Used for varnish hash
-	w.Header().Set("X-Content-Type-Options", "nosniff")            // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")            // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")                // Protection from clickjacking
+	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
 
 	if !strings.HasPrefix(r.URL.Path, "/esi") {
 		w.Header().Set("Surrogate-Control", "ESI/1.0") // Enable ESI
@@ -165,7 +165,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 
 	data.fill(w, r, "Error", "Something has gone wrong!")
 
-	// w.WriteHeader(data.Code) // Disable for now
+	w.WriteHeader(data.Code)
 
 	err := returnTemplate(w, r, "error", data)
 	log.Err(err, r)
@@ -212,12 +212,10 @@ type GlobalTemplate struct {
 
 	// These variables can't!
 	// Session
-	userName  string
-	userEmail string
-	userID    int
-	userLevel int
-
-	// Session
+	userName    string
+	userEmail   string
+	userID      int
+	userLevel   int
 	flashesGood []interface{}
 	flashesBad  []interface{}
 	session     map[string]string
@@ -252,7 +250,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Path = r.URL.Path
 
 	// User ID
-	id, err := session2.Read(r, session2.PlayerID)
+	id, err := session.Read(r, session.PlayerID)
 	log.Err(err, r)
 
 	if id == "" {
@@ -263,7 +261,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	// User name
-	t.userName, err = session2.Read(r, session2.PlayerName)
+	t.userName, err = session.Read(r, session.PlayerName)
 	log.Err(err, r)
 
 	// Country
@@ -271,12 +269,12 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	// Check if valid country
 	if _, ok := steam.Countries[t.UserCountry]; !ok {
-		t.UserCountry = session2.GetCountryCode(r)
+		t.UserCountry = session.GetCountryCode(r)
 	}
 
 	// Default country to session
 	if t.UserCountry == "" {
-		t.UserCountry = session2.GetCountryCode(r)
+		t.UserCountry = session.GetCountryCode(r)
 	}
 
 	// Currency
@@ -286,23 +284,16 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		t.UserCurrencySymbol = locale.CurrencySymbol
 	}
 
-	// Flashes
-	t.flashesGood, err = session2.GetGoodFlashes(w, r)
-	log.Err(err, r)
-
-	t.flashesBad, err = session2.GetBadFlashes(w, r)
-	log.Err(err, r)
-
 	// Pages
 	switch t.Path {
 	case "/contact":
 
 		// Details from form
-		contactName, err := session2.Read(r, "contact-name")
+		contactName, err := session.Read(r, "contact-name")
 		log.Err(err)
-		contactEmail, err := session2.Read(r, "contact-email")
+		contactEmail, err := session.Read(r, "contact-email")
 		log.Err(err)
-		contactMessage, err := session2.Read(r, "contact-message")
+		contactMessage, err := session.Read(r, "contact-message")
 		log.Err(err)
 
 		t.contactPage = map[string]string{
@@ -312,12 +303,12 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		}
 
 		// Email from logged in user
-		t.userEmail, err = session2.Read(r, session2.UserEmail)
+		t.userEmail, err = session.Read(r, session.UserEmail)
 		log.Err(err, r)
 
 	case "/login":
 
-		loginEmail, err := session2.Read(r, "login-email")
+		loginEmail, err := session.Read(r, "login-email")
 		log.Err(err)
 
 		t.loginPage = map[string]string{
@@ -326,13 +317,13 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	case "/chat":
 
-		discord, err := session2.Read(r, "discord_token")
+		discord, err := session.Read(r, "discord_token")
 		log.Err(err, r)
 		t.loggedIntoDiscord = discord != ""
 
 	case "/experience":
 
-		level, err := session2.Read(r, session2.PlayerLevel)
+		level, err := session.Read(r, session.PlayerLevel)
 		log.Err(err, r)
 
 		if level == "" {
@@ -492,6 +483,22 @@ func (t *GlobalTemplate) addAssetCarousel() {
 
 func (t *GlobalTemplate) addAssetPasswordStrength() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.2/pwstrength-bootstrap.min.js", Integrity: "sha256-BPKP4P2AbrV7hf80SHJAJkIvjt7X7MKFEPpA99uU6uQ="})
+}
+
+func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save bool) {
+
+	var err error
+
+	t.flashesGood, err = session.GetGoodFlashes(w, r)
+	log.Err(err, r)
+
+	t.flashesBad, err = session.GetBadFlashes(w, r)
+	log.Err(err, r)
+
+	if save {
+		err = session.Save(w, r)
+		log.Err(err)
+	}
 }
 
 type Asset struct {
@@ -700,7 +707,7 @@ type Toast struct {
 //
 func isAdmin(r *http.Request) bool {
 
-	id, err := session2.Read(r, session2.PlayerID)
+	id, err := session.Read(r, session.PlayerID)
 	log.Err(err)
 
 	return r.Header.Get("Authorization") != "" || id == "76561197968626192"
@@ -710,7 +717,7 @@ func isAdmin(r *http.Request) bool {
 func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 
 	// Check if logged in
-	loggedIn, err := session2.IsLoggedIn(r)
+	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
 		return playerID, errNotLoggedIn
 	}
@@ -720,7 +727,7 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	}
 
 	// Get session
-	id, err := session2.Read(r, session2.PlayerID)
+	id, err := session.Read(r, session.PlayerID)
 	if err != nil {
 		return playerID, err
 	}

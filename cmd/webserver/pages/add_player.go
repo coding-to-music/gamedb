@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
@@ -74,8 +74,13 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 		}()
 
 		if message != "" {
-			err := session2.SetBadFlash(w, r, message)
+
+			err := session.SetBadFlash(w, r, message)
 			log.Err(err)
+
+			err = session.Save(w, r)
+			log.Err(err)
+
 			http.Redirect(w, r, "/players/add", http.StatusFound)
 			return
 		}
@@ -84,6 +89,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 	t := addPlayerTemplate{}
 	t.fill(w, r, "Add Player", "Add yourself to the Steam DB.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
+	t.setFlashes(w, r, true)
 
 	//
 	err := returnTemplate(w, r, "add_player", t)

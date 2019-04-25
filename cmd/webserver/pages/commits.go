@@ -32,6 +32,8 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setCacheHeaders(w, time.Hour*1)
+
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
 

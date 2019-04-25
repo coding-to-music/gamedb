@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/sql"
 	"github.com/go-chi/chi"
@@ -36,7 +36,7 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := session2.GetCountryCode(r)
+	code := session.GetCountryCode(r)
 	prices := map[int]string{}
 	for _, v := range publishers {
 		price, err := v.GetMeanPrice(code)

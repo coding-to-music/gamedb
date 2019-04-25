@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
@@ -38,6 +38,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	t := homeTemplate{}
 	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
+	t.setFlashes(w, r, true)
 
 	var wg sync.WaitGroup
 
@@ -123,7 +124,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w, time.Minute)
 
 	var filter = mongo.D{
-		{"currency", string(session2.GetCountryCode(r))},
+		{"currency", string(session.GetCountryCode(r))},
 		{"app_id", bson.M{"$gt": 0}},
 		{"difference", bson.M{"$lt": 0}},
 	}
@@ -131,7 +132,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
 	log.Err(err, r)
 
-	locale, err := helpers.GetLocaleFromCountry(session2.GetCountryCode(r))
+	locale, err := helpers.GetLocaleFromCountry(session.GetCountryCode(r))
 	log.Err(err)
 
 	var prices []homePrice

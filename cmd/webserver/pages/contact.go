@@ -3,9 +3,10 @@ package pages
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/config"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/go-chi/chi"
@@ -27,9 +28,12 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	setCacheHeaders(w, time.Hour*24*7)
+
 	t := contactTemplate{}
 	t.fill(w, r, "Contact", "Get in touch with Game DB.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
+	t.setFlashes(w, r, true)
 
 	err := returnTemplate(w, r, "contact", t)
 	log.Err(err, r)
@@ -56,7 +60,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Backup
-		err = session2.WriteMany(w, r, map[string]string{
+		err = session.WriteMany(w, r, map[string]string{
 			"contact-name":    r.PostForm.Get("name"),
 			"contact-email":   r.PostForm.Get("email"),
 			"contact-message": r.PostForm.Get("message"),
@@ -105,7 +109,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove backup
-		err = session2.WriteMany(w, r, map[string]string{
+		err = session.WriteMany(w, r, map[string]string{
 			"contact-name":    "",
 			"contact-email":   "",
 			"contact-message": "",
@@ -117,10 +121,13 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	if err != nil {
-		err = session2.SetGoodFlash(w, r, err.Error())
+		err = session.SetGoodFlash(w, r, err.Error())
 	} else {
-		err = session2.SetGoodFlash(w, r, "Message sent!")
+		err = session.SetGoodFlash(w, r, "Message sent!")
 	}
+
+	err = session.Save(w, r)
+	log.Err(err)
 
 	log.Err(err, r)
 	http.Redirect(w, r, "/contact", http.StatusFound)

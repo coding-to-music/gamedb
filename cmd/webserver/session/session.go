@@ -11,11 +11,12 @@ import (
 )
 
 const (
-	PlayerID    = "id"
-	PlayerName  = "name"
-	UserEmail   = "email"
-	PlayerLevel = "level"
-	UserCountry = "country"
+	PlayerID       = "id"
+	PlayerLevel    = "level"
+	PlayerName     = "name"
+	UserCountry    = "country"
+	UserEmail      = "email"
+	UserShowAlerts = "show-alerts"
 )
 
 var writeMutex sync.Mutex
@@ -65,17 +66,6 @@ func Read(r *http.Request, key string) (value string, err error) {
 	return session.Values[key].(string), nil
 }
 
-func GetCountryCode(r *http.Request) steam.CountryCode {
-
-	val, err := Read(r, UserCountry)
-	if err != nil || val == "" {
-		log.Err(err)
-		return steam.CountryUS
-	}
-
-	return steam.CountryCode(val)
-}
-
 func ReadAll(r *http.Request) (ret map[string]string, err error) {
 
 	ret = map[string]string{}
@@ -92,7 +82,7 @@ func ReadAll(r *http.Request) (ret map[string]string, err error) {
 	return ret, err
 }
 
-func Write(w http.ResponseWriter, r *http.Request, name string, value string) (err error) {
+func Write(r *http.Request, name string, value string) (err error) {
 
 	session, err := getSession(r)
 	if err != nil {
@@ -101,7 +91,7 @@ func Write(w http.ResponseWriter, r *http.Request, name string, value string) (e
 
 	session.Values[name] = value
 
-	return session.Save(r, w)
+	return nil
 }
 
 func WriteMany(w http.ResponseWriter, r *http.Request, values map[string]string) (err error) {
@@ -115,10 +105,10 @@ func WriteMany(w http.ResponseWriter, r *http.Request, values map[string]string)
 		session.Values[k] = v
 	}
 
-	return session.Save(r, w)
+	return nil
 }
 
-func Clear(w http.ResponseWriter, r *http.Request) (err error) {
+func Clear(r *http.Request) (err error) {
 
 	session, err := getSession(r)
 	if err != nil {
@@ -127,7 +117,7 @@ func Clear(w http.ResponseWriter, r *http.Request) (err error) {
 
 	session.Values = make(map[interface{}]interface{})
 
-	return session.Save(r, w)
+	return nil
 }
 
 func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes []interface{}, err error) {
@@ -138,8 +128,6 @@ func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes [
 	}
 
 	flashes = session.Flashes(group)
-
-	err = session.Save(r, w)
 
 	return flashes, err
 }
@@ -161,7 +149,7 @@ func setFlash(w http.ResponseWriter, r *http.Request, flash string, group string
 
 	session.AddFlash(flash, group)
 
-	return session.Save(r, w)
+	return nil
 }
 
 func SetGoodFlash(w http.ResponseWriter, r *http.Request, flash string) (err error) {
@@ -172,7 +160,28 @@ func SetBadFlash(w http.ResponseWriter, r *http.Request, flash string) (err erro
 	return setFlash(w, r, flash, "bad")
 }
 
+func Save(w http.ResponseWriter, r *http.Request) (err error) {
+
+	session, err := getSession(r)
+	if err != nil {
+		return err
+	}
+
+	return session.Save(r, w)
+}
+
 func IsLoggedIn(r *http.Request) (val bool, err error) {
 	read, err := Read(r, PlayerID)
 	return read != "", err
+}
+
+func GetCountryCode(r *http.Request) steam.CountryCode {
+
+	val, err := Read(r, UserCountry)
+	if err != nil || val == "" {
+		log.Err(err)
+		return steam.CountryUS
+	}
+
+	return steam.CountryCode(val)
 }

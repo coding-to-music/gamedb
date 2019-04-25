@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/sql"
@@ -79,7 +79,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
 	gorm = gorm.Where("player_trend >= 100 OR player_trend <= -100")
-	gorm = gorm.Order(query.getOrderSQL(columns, session2.GetCountryCode(r)))
+	gorm = gorm.Order(query.getOrderSQL(columns, session.GetCountryCode(r)))
 	gorm = gorm.Limit(100)
 	gorm = gorm.Offset(query.getOffset())
 
@@ -87,7 +87,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
 
-	var code = session2.GetCountryCode(r)
+	var code = session.GetCountryCode(r)
 
 	count, err := countTrendingApps()
 	log.Err(err)

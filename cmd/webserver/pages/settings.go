@@ -8,7 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
@@ -39,11 +39,11 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	loggedIn, err := session2.IsLoggedIn(r)
+	loggedIn, err := session.IsLoggedIn(r)
 	log.Err(err)
 
 	if !loggedIn {
-		err := session2.SetBadFlash(w, r, "Please login")
+		err := session.SetBadFlash(w, r, "Please login")
 		log.Err(err, r)
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
@@ -53,6 +53,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t := settingsTemplate{}
 	t.fill(w, r, "Settings", "")
 	t.addAssetPasswordStrength()
+	t.setFlashes(w, r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -103,6 +104,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Player, err = getPlayerFromSession(r)
+		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		log.Err(err)
 	}()
 
@@ -137,165 +139,190 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	loggedIn, err := session2.IsLoggedIn(r)
+	var err error
+
+	redirect, good, bad := func() (redirect string, good string, bad string) {
+
+		loggedIn, err := session.IsLoggedIn(r)
+		log.Err(err)
+
+		if !loggedIn {
+			return "/login", "", "Please login"
+		}
+
+		// Parse form
+		err = r.ParseForm()
+		if err != nil {
+			log.Err(err)
+			return "/settings", "", "There was an eror saving your information."
+		}
+
+		user, err := getUserFromSession(r)
+		if err != nil {
+			return "/settings", "", "There was an eror saving your information."
+		}
+
+		if r.PostForm.Get("id") == strconv.FormatInt(user.PlayerID, 10) {
+
+			err = session.Clear(r)
+			log.Err(err)
+			return "/", "Your account has been deleted", ""
+
+		} else {
+			return "/settings", "", "Invalid player ID."
+		}
+	}()
+
+	if good != "" {
+		err = session.SetGoodFlash(w, r, good)
+		log.Err(err)
+	}
+	if bad != "" {
+		err = session.SetBadFlash(w, r, bad)
+		log.Err(err)
+	}
+
+	err = session.Save(w, r)
 	log.Err(err)
 
-	if !loggedIn {
-		err := session2.SetBadFlash(w, r, "Please login")
-		log.Err(err, r)
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
-
-	// Parse form
-	err = r.ParseForm()
-	if err != nil {
-		err := session2.SetBadFlash(w, r, "There was an eror saving your information.")
-		log.Err(err, r)
-		http.Redirect(w, r, "/settings", http.StatusFound)
-		return
-	}
-
-	user, err := getUserFromSession(r)
-	if err != nil {
-		err := session2.SetBadFlash(w, r, "There was an eror saving your information.")
-		log.Err(err, r)
-		http.Redirect(w, r, "/settings", http.StatusFound)
-		return
-	}
-
-	if r.PostForm.Get("id") == strconv.FormatInt(user.PlayerID, 10) {
-
-		err = session2.Clear(w, r)
-		log.Err(err, r)
-
-		err = session2.SetGoodFlash(w, r, "Your account has been deleted")
-		log.Err(err, r)
-
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-
-	} else {
-
-		err := session2.SetBadFlash(w, r, "Invalid player ID.")
-		log.Err(err, r)
-		http.Redirect(w, r, "/settings", http.StatusFound)
-		return
-	}
+	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, 0)
 
-	// Get user
-	user, err := getUserFromSession(r)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an eror saving your information.", Error: err})
-		return
-	}
+	var err error
 
-	// Parse form
-	err = r.ParseForm()
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an eror saving your information.", Error: err})
-		return
-	}
+	redirect, good, bad := func() (redirect string, good string, bad string) {
 
-	// Email
-	email := r.PostForm.Get("email")
-	if email != "" {
+		loggedIn, err := session.IsLoggedIn(r)
+		log.Err(err)
+		if !loggedIn || err != nil {
+			return "/login", "", "Please login"
+		}
 
-		err = checkmail.ValidateFormat(r.PostForm.Get("email"))
+		// Get user
+		user, err := getUserFromSession(r)
+		log.Err(err)
 		if err != nil {
-			err = session2.SetBadFlash(w, r, "Invalid email address")
-			http.Redirect(w, r, "/settings", http.StatusFound)
-			return
+			return "/settings", "", "User not found"
 		}
 
-		user.Email = r.PostForm.Get("email")
-	}
-
-	// Password
-	password := r.PostForm.Get("password")
-
-	if email != user.Email {
-		user.Verified = false
-	}
-
-	if password != "" {
-
-		if len(password) < 8 {
-			err := session2.SetBadFlash(w, r, "Password must be at least 8 characters long")
-			log.Err(err, r)
-			http.Redirect(w, r, "/settings", http.StatusFound)
-			return
-		}
-
-		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+		// Parse form
+		err = r.ParseForm()
+		log.Err(err)
 		if err != nil {
-			log.Err(err, r)
-			err := session2.SetBadFlash(w, r, "Something went wrong encrypting your password")
-			log.Err(err, r)
-			http.Redirect(w, r, "/settings", http.StatusFound)
-			return
+			return "/settings", "", "Could not read form data"
 		}
 
-		user.Password = string(passwordBytes)
-	}
+		// Email
+		email := r.PostForm.Get("email")
 
-	// Country code
-	user.CountryCode = r.PostForm.Get("country_code")
+		if email != "" && email != user.Email {
 
-	// Save hidden
-	if r.PostForm.Get("hide") == "1" {
-		user.HideProfile = 1
-	} else {
-		user.HideProfile = 0
-	}
+			err = checkmail.ValidateFormat(r.PostForm.Get("email"))
+			if err != nil {
+				return "/settings", "", "Invalid email address"
+			}
 
-	// Save alerts
-	if r.PostForm.Get("alerts") == "1" {
-		user.ShowAlerts = 1
-	} else {
-		user.ShowAlerts = 0
-	}
+			user.Email = r.PostForm.Get("email")
+		}
 
-	// Save user
+		// Password
+		password := r.PostForm.Get("password")
 
-	db, err := sql.GetMySQLClient()
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an eror saving your information.", Error: err})
-		return
-	}
+		if email != user.Email {
+			user.Verified = false
+		}
 
-	// Have to save as a map because gorm does not save empty values otherwise
-	db = db.Model(&user).Updates(map[string]interface{}{
-		"email":        user.Email,
-		"verified":     user.Verified,
-		"password":     user.Password,
-		"hide_profile": user.HideProfile,
-		"show_alerts":  user.ShowAlerts,
-		"country_code": user.CountryCode,
-	})
+		if password != "" {
 
-	log.Err(db.Error, r)
+			if len(password) < 8 {
+				return "/settings", "", "Password must be at least 8 characters long"
+			}
 
-	if db.Error != nil {
-		err = session2.SetBadFlash(w, r, "Something went wrong saving settings")
+			passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+			log.Err(err, r)
+			if err != nil {
+				return "/settings", "", "Something went wrong encrypting your password"
+			}
+
+			user.Password = string(passwordBytes)
+		}
+
+		// Country code
+		code := r.PostForm.Get("country_code")
+
+		if _, ok := steam.Countries[steam.CountryCode(code)]; ok {
+			user.CountryCode = code
+		} else {
+			user.CountryCode = string(steam.CountryUS)
+		}
+
+		// Save hidden
+		if r.PostForm.Get("hide") == "1" {
+			user.HideProfile = 1
+		} else {
+			user.HideProfile = 0
+		}
+
+		// Save alerts
+		if r.PostForm.Get("alerts") == "1" {
+			user.ShowAlerts = 1
+		} else {
+			user.ShowAlerts = 0
+		}
+
+		// Save user
+		db, err := sql.GetMySQLClient()
+		log.Err(err)
+		if err != nil {
+			return "/settings", "", "We had trouble saving your settings"
+		}
+
+		// Have to save as a map because gorm does not save empty values otherwise
+		db = db.Model(&user).Updates(map[string]interface{}{
+			"email":        user.Email,
+			"verified":     user.Verified,
+			"password":     user.Password,
+			"hide_profile": user.HideProfile,
+			"show_alerts":  user.ShowAlerts,
+			"country_code": user.CountryCode,
+		})
+
+		log.Err(db.Error, r)
+		if db.Error != nil {
+			return "/settings", "", "Something went wrong saving your settings"
+		}
+
+		// Update session
+		err = session.WriteMany(w, r, map[string]string{
+			session.UserCountry:    user.CountryCode,
+			session.UserEmail:      user.Email,
+			session.UserShowAlerts: strconv.Itoa(int(user.ShowAlerts)),
+		})
 		log.Err(err, r)
-	} else {
-		err = session2.SetGoodFlash(w, r, "Settings saved")
-		log.Err(err, r)
+		if err != nil {
+			return "/settings", "", "Something went wrong saving your settings"
+		}
+
+		return "/settings", "Settings saved", ""
+	}()
+
+	if good != "" {
+		err = session.SetGoodFlash(w, r, good)
+		log.Err(err)
+	}
+	if bad != "" {
+		err = session.SetBadFlash(w, r, bad)
+		log.Err(err)
 	}
 
-	// Update session
-	err = session2.WriteMany(w, r, map[string]string{
-		session2.UserCountry: user.CountryCode,
-	})
-	log.Err(err, r)
+	err = session.Save(w, r)
+	log.Err(err)
 
-	http.Redirect(w, r, "/settings", http.StatusFound)
+	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {

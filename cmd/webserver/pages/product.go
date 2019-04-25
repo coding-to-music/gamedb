@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	session2 "github.com/gamedb/website/cmd/webserver/session"
+	"github.com/gamedb/website/cmd/webserver/session"
 	"github.com/gamedb/website/pkg/helpers"
 	"github.com/gamedb/website/pkg/log"
 	"github.com/gamedb/website/pkg/mongo"
@@ -47,7 +47,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	// Get code
 	code := steam.CountryCode(r.URL.Query().Get("code"))
 	if code == "" {
-		code = session2.GetCountryCode(r)
+		code = session.GetCountryCode(r)
 	}
 
 	if code == "" {
