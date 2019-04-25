@@ -74,15 +74,15 @@ func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {
 
 		if duration == 0 || config.IsLocal() {
 
-			w.Header().Set("Cache-Control", "no-cache, no-store, no-transform, must-revalidate, private, max-age=0")
-			w.Header().Set("Expires", time.Unix(0, 0).Format(time.RFC1123))
-			w.Header().Set("Pragma", "no-cache")
-			w.Header().Set("X-Accel-Expires", "0")
+			// w.Header().Set("Cache-Control", "no-cache, no-store, no-transform, must-revalidate, private, max-age=0")
+			w.Header().Set("Cache-Control", "Cache-Control: public, max-age=0, s-max-age=0")
+			// w.Header().Set("Expires", time.Unix(0, 0).Format(time.RFC1123))
 
 		} else {
 
-			w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
-			w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
+			w.Header().Set("Cache-Control", "Cache-Control: public, max-age=0, s-max-age="+strconv.Itoa(int(duration.Seconds())))
+			// w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
+			// w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
 		}
 	}
 }
