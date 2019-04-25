@@ -75,15 +75,17 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Recaptcha
-		err = recaptcha.CheckFromRequest(r)
-		if err != nil {
+		if config.IsProd() {
+			err = recaptcha.CheckFromRequest(r)
+			if err != nil {
 
-			if err == recaptcha.ErrNotChecked {
-				return errors.New("please check the captcha")
+				if err == recaptcha.ErrNotChecked {
+					return errors.New("please check the captcha")
+				}
+
+				log.Err(err, r)
+				return ErrSomething
 			}
-
-			log.Err(err, r)
-			return ErrSomething
 		}
 
 		// Send

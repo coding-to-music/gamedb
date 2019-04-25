@@ -49,14 +49,16 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Recaptcha
-			err = recaptcha.CheckFromRequest(r)
-			if err != nil {
+			if config.IsProd() {
+				err = recaptcha.CheckFromRequest(r)
+				if err != nil {
 
-				if err == recaptcha.ErrNotChecked {
-					return "Please check the captcha"
+					if err == recaptcha.ErrNotChecked {
+						return "Please check the captcha"
+					}
+
+					return err.Error()
 				}
-
-				return err.Error()
 			}
 
 			resp, b, err := steam.ResolveVanityURL(search, 1)
