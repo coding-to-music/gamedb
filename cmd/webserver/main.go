@@ -84,6 +84,7 @@ func main() {
 	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
 	r.Mount("/trending", pages.TrendingRouter())
+	r.Mount("/twitter", pages.TwitterRouter())
 	r.Mount("/upcoming", pages.UpcomingRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
 

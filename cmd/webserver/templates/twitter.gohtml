@@ -1,0 +1,25 @@
+{{define "twitter"}} {{ template "_header" . }}
+
+<div class="container" id="twitter-page">
+
+    <div class="jumbotron">
+        <a href="https://twitter.com/gamedbonline" target="_blank">
+            <i class="fab fa-twitter-square twitter float-right"></i>
+        </a>
+        <h1><i class="fab fa-github"></i> Tweets</h1>
+        <p class="lead">x</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ range $key, $value := .Tweets }}
+                <p>{{ .Text }}</p>
+            {{ end }}
+
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" . }} {{end}}
