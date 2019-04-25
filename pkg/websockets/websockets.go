@@ -71,8 +71,8 @@ func (p Page) GetName() WebsocketPage {
 	return p.name
 }
 
-func (p Page) HasConnections() bool {
-	return len(p.connections) > 0
+func (p Page) CountConnections() int {
+	return len(p.connections)
 }
 
 func (p *Page) AddConnection(conn *websocket.Conn) error {
@@ -86,27 +86,26 @@ func (p *Page) AddConnection(conn *websocket.Conn) error {
 
 func (p *Page) Send(data interface{}) {
 
-	if !p.HasConnections() {
-		return
-	}
+	if p.CountConnections() > 0 {
 
-	payload := WebsocketPayload{}
-	payload.Page = p.name
-	payload.Data = data
+		payload := WebsocketPayload{}
+		payload.Page = p.name
+		payload.Data = data
 
-	for k, v := range p.connections {
-		err := v.WriteJSON(payload)
-		if err != nil {
+		for k, v := range p.connections {
+			err := v.WriteJSON(payload)
+			if err != nil {
 
-			if strings.Contains(err.Error(), "broken pipe") {
+				if strings.Contains(err.Error(), "broken pipe") {
 
-				// Clean up old connections
-				err := v.Close()
-				log.Err(err)
-				delete(p.connections, k)
+					// Clean up old connections
+					err := v.Close()
+					log.Err(err)
+					delete(p.connections, k)
 
-			} else {
-				log.Err(err)
+				} else {
+					log.Err(err)
+				}
 			}
 		}
 	}
