@@ -105,6 +105,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Admin", "")
 	t.Configs = configs
 	t.Goroutines = runtime.NumGoroutine()
+	t.Websockets = websockets.Pages
 
 	//
 	gorm, err := sql.GetMySQLClient()
@@ -134,6 +135,7 @@ type adminTemplate struct {
 	Goroutines int
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
+	Websockets map[websockets.WebsocketPage]websockets.Page
 }
 
 type adminQuery struct {

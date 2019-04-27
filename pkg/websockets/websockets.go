@@ -1,7 +1,6 @@
 package websockets
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/gamedb/website/pkg/log"
@@ -26,8 +25,7 @@ const (
 )
 
 var (
-	ErrInvalidPage = errors.New("invalid page")
-	pages          = map[WebsocketPage]Page{}
+	Pages = map[WebsocketPage]Page{}
 )
 
 func init() {
@@ -46,7 +44,7 @@ func init() {
 		PageBundles,
 	}
 	for _, v := range pagesSlice {
-		pages[v] = Page{
+		Pages[v] = Page{
 			name:        v,
 			connections: map[uuid.UUID]*websocket.Conn{},
 		}
@@ -55,7 +53,7 @@ func init() {
 
 func GetPage(page WebsocketPage) (ret Page) {
 
-	if val, ok := pages[page]; ok {
+	if val, ok := Pages[page]; ok {
 		return val
 	}
 
