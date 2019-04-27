@@ -151,8 +151,8 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(idsSlice) > 50 {
-		idsSlice = idsSlice[0:50]
+	if len(idsSlice) > 100 {
+		idsSlice = idsSlice[0:100]
 	}
 
 	var or []string
