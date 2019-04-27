@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/go-durationfmt"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
@@ -373,35 +372,31 @@ func (t GlobalTemplate) GetCanonical() (text string) {
 
 func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 
-	if t.isAdmin() {
+	// Page created time
+	text += template.HTML(`Page created <span data-livestamp="` + strconv.FormatInt(time.Now().Unix(), 10) + `"></span>.`)
 
-		// Page created time
-		text += template.HTML(`Page created <span data-livestamp="` + strconv.FormatInt(time.Now().Unix(), 10) + `"></span>`)
-
-		// From cache
-		if t.IsCacheHit() {
-			text += " from cache"
-		} else {
-			text += " from DB"
-		}
-
-		// Page load time
-		startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
-		log.Err(err)
-
-		durStr, err := durationfmt.Format(time.Duration(time.Now().UnixNano()-startTimeInt), "%ims")
-		log.Err(err)
-
-		text += template.HTML(" in " + durStr + ".")
-
-		// Deployed commit hash
-		if len(config.Config.CommitHash.Get()) >= 7 {
-			text += template.HTML(` <a href="/commits">v` + config.Config.CommitHash.Get()[0:7] + `</a>.`)
-		}
-	}
-
-	//
 	text += " All times UTC."
+
+	// From cache
+	// if t.IsCacheHit() {
+	// 	text += " from cache"
+	// } else {
+	// 	text += " from DB"
+	// }
+	//
+	// // Page load time
+	// startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
+	// log.Err(err)
+	//
+	// durStr, err := durationfmt.Format(time.Duration(time.Now().UnixNano()-startTimeInt), "%ims")
+	// log.Err(err)
+	//
+	// text += template.HTML(" in " + durStr + ".")
+
+	// Deployed commit hash
+	if len(config.Config.CommitHash.Get()) >= 7 {
+		text += template.HTML(` <a href="/commits">v` + config.Config.CommitHash.Get()[0:7] + `</a>.`)
+	}
 
 	return text
 }
