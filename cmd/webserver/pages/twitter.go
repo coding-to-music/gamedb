@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
 

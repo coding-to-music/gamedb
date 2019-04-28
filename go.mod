@@ -1,4 +1,4 @@
-module github.com/gamedb/website
+module github.com/gamedb/gamedb
 
 // These two lines are here because ahmdrz/goinsta needs to tag their repo after a fix
 replace github.com/ahmdrz/goinsta/v2 => github.com/krylovsk/goinsta/v2 v2.4.0

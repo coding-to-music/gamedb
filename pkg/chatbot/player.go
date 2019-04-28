@@ -5,8 +5,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 type CommandPlayer struct {

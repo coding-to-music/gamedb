@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/website/cmd/webserver/session"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/gamedb/cmd/webserver/session"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
 

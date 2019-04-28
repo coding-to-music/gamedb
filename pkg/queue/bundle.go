@@ -11,9 +11,9 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/sql"
-	"github.com/gamedb/website/pkg/websockets"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"

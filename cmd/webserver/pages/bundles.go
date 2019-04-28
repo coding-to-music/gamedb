@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
 

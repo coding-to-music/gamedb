@@ -9,11 +9,11 @@ import (
 
 	"github.com/Jleagle/go-durationfmt"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg/config"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/mongo"
-	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
 )
 

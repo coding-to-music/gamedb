@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/leekchan/accounting"
 	"github.com/pariz/gountries"
 )

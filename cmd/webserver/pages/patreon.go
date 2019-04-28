@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
-	"github.com/gamedb/website/pkg/config"
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 )
 

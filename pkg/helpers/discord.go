@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/gamedb/pkg/config"
 )
 
 var (

@@ -3,7 +3,7 @@ package helpers
 import (
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
-	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/gamedb/pkg/config"
 )
 
 var twitterClient *twitter.Client

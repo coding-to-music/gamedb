@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
 type Genre struct {

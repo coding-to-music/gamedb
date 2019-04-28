@@ -5,7 +5,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 var ErrUnMarshalNonPointer = errors.New("trying to unmarshal a non-pointer")

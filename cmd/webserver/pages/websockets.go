@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/websockets"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
 )

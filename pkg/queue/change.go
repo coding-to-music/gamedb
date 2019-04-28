@@ -4,11 +4,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/mongo"
-	"github.com/gamedb/website/pkg/sql"
-	"github.com/gamedb/website/pkg/websockets"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )

@@ -9,9 +9,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/websockets"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 )
 

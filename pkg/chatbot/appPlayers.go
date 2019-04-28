@@ -5,7 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 type CommandAppPlayers struct {

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 const (

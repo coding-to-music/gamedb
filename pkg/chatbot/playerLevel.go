@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 type CommandPlayerLevel struct {

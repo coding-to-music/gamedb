@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gamedb/website/pkg/config"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func RootFileHandler(w http.ResponseWriter, r *http.Request) {

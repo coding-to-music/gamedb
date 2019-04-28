@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func StringSliceToIntSlice(in []string) (ret []int) {

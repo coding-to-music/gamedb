@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 

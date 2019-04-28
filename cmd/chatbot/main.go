@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/website/pkg/chatbot"
-	"github.com/gamedb/website/pkg/config"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/chatbot"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 const debugAuthorID = "145456943912189952"

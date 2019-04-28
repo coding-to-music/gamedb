@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg/config"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/influxdata/influxdb1-client/models"
 )

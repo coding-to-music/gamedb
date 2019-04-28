@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/memcache-go/memcache"
-	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/gamedb/pkg/config"
 )
 
 var ErrCacheMiss = memcache.ErrCacheMiss

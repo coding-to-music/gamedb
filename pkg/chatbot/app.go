@@ -5,7 +5,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 type CommandApp struct {

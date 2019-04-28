@@ -6,8 +6,8 @@ import (
 
 	"github.com/ahmdrz/goinsta/v2"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg/config"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 var (

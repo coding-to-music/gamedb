@@ -3,7 +3,7 @@ package websockets
 import (
 	"strings"
 
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gorilla/websocket"
 	"github.com/satori/go.uuid"
 )

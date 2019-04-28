@@ -3,7 +3,7 @@ package pages
 import (
 	"net/http"
 
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
 

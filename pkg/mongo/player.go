@@ -9,8 +9,8 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

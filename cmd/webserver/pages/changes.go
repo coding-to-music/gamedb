@@ -3,9 +3,9 @@ package pages
 import (
 	"net/http"
 
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/mongo"
-	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
 

@@ -3,7 +3,7 @@ package sql
 import (
 	"time"
 
-	"github.com/gamedb/website/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
 

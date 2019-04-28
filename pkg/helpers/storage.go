@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/Jleagle/google-cloud-storage-go/gcs"
-	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/gamedb/pkg/config"
 )
 
 var (

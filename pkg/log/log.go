@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/logging"
-	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/logrusorgru/aurora"
 )
 

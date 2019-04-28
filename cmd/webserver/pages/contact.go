@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/website/cmd/webserver/session"
-	"github.com/gamedb/website/pkg/config"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/cmd/webserver/session"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"

@@ -7,9 +7,9 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/website/pkg/config"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )

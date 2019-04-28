@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/gamedb/website/pkg/config"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )

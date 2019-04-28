@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/website/cmd/webserver/session"
-	"github.com/gamedb/website/pkg/log"
-	"github.com/gamedb/website/pkg/mongo"
+	"github.com/gamedb/gamedb/cmd/webserver/session"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )

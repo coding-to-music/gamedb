@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
 

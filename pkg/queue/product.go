@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/mongo"
-	"github.com/gamedb/website/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 type rabbitMessageProduct struct {

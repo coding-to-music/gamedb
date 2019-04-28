@@ -5,9 +5,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/gamedb/website/pkg/chatbot"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/chatbot"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
 

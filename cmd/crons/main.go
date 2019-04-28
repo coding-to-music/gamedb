@@ -3,9 +3,9 @@ package main
 import (
 	"time"
 
-	"github.com/gamedb/website/pkg/crons"
-	"github.com/gamedb/website/pkg/helpers"
-	"github.com/gamedb/website/pkg/log"
+	"github.com/gamedb/gamedb/pkg/crons"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/robfig/cron"
 )
 
