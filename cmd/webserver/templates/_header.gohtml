@@ -62,13 +62,6 @@
     <meta name="fb:admins" content="537840742">
     <meta name="fb:app_id" content="2539079269452708">
 
-    {{if .IsFromVarnish }}
-        <!--suppress XmlUnboundNsPrefix -->
-        <esi:include src="/esi/header"/>
-    {{else}}
-        {{ template "_header_esi" . }}
-    {{end}}
-
 </head>
 <body{{ if eq .Path "/steam-api" }} data-spy="scroll" data-target="#sidebar"{{ end }}>
 

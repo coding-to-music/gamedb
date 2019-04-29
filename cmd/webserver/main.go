@@ -48,6 +48,7 @@ func main() {
 
 	// Pages
 	r.Get("/", pages.HomeHandler)
+	r.Get("/session.json", pages.SessionHandler)
 	r.Mount("/admin", pages.AdminRouter())
 	r.Mount("/api", pages.APIRouter())
 	r.Mount("/apps", pages.AppsRouter())
@@ -61,7 +62,6 @@ func main() {
 	r.Mount("/depots", pages.DepotsRouter())
 	r.Mount("/developers", pages.DevelopersRouter())
 	r.Mount("/donate", pages.DonateRouter())
-	r.Mount("/esi", pages.ESIRouter())
 	r.Mount("/experience", pages.ExperienceRouter())
 	r.Mount("/franchise", pages.FranchiseRouter())
 	r.Mount("/genres", pages.GenresRouter())

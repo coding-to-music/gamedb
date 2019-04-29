@@ -1,6 +1,18 @@
 const $document = $(document);
 const $body = $("body");
 
+// get session JSON
+let user = {};
+$.ajax({
+    type: 'GET',
+    url: "/session.json",
+    async: false,
+    dataType: 'json',
+    success: function (data, textStatus, jqXHR) {
+        user = data;
+    },
+});
+
 // Data links
 let dataLinkDrag = false;
 let dataLinkX = 0;

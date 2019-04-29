@@ -100,7 +100,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/_flashes.gohtml",
 		folder+"/_footer.gohtml",
 		folder+"/_header.gohtml",
-		folder+"/_header_esi.gohtml",
 		folder+"/_stats_header.gohtml",
 		folder+"/_social.gohtml",
 		folder+"/"+page+".gohtml",
@@ -309,12 +308,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 			"email": loginEmail,
 		}
 
-	case "/chat":
-
-		discord, err := session.Read(r, "discord_token")
-		log.Err(err, r)
-		t.loggedIntoDiscord = discord != ""
-
 	case "/experience":
 
 		level, err := session.Read(r, session.PlayerLevel)
@@ -327,33 +320,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 			log.Err(err, r)
 		}
 	}
-}
-
-func (t GlobalTemplate) GetUserJSON() string {
-
-	stringMap := map[string]interface{}{
-		"contactPage":        t.contactPage,
-		"flashesBad":         t.flashesBad,
-		"flashesGood":        t.flashesGood,
-		"isAdmin":            t.isAdmin(),
-		"isLocal":            t.isLocal(),
-		"isLoggedIn":         t.isLoggedIn(),
-		"loggedIntoDiscord":  t.loggedIntoDiscord,
-		"loginPage":          t.loginPage,
-		"showAds":            t.showAds(),
-		"toasts":             t.toasts,
-		"userCountry":        t.UserCountry,
-		"userCurrencySymbol": t.UserCurrencySymbol,
-		"userEmail":          t.userEmail,
-		"userID":             strconv.Itoa(t.userID), // Too long for JS int
-		"userLevel":          t.userLevel,
-		"userName":           t.userName,
-	}
-
-	b, err := json.Marshal(stringMap)
-	log.Err(err)
-
-	return string(b)
 }
 
 func (t GlobalTemplate) GetMetaImage() (text string) {
@@ -377,13 +343,6 @@ func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 
 	text += " All times UTC."
 
-	// From cache
-	// if t.IsCacheHit() {
-	// 	text += " from cache"
-	// } else {
-	// 	text += " from DB"
-	// }
-	//
 	// // Page load time
 	// startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
 	// log.Err(err)
