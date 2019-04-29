@@ -22,6 +22,7 @@ func init() {
 	Config.AdminPassword.Set("ADMIN_PASS")
 	Config.AdminName.Set("ADMIN_NAME")
 	Config.AdminEmail.Set("ADMIN_EMAIL")
+	Config.AdminSteamID.Set("ADMIN_STEAM_ID")
 
 	Config.RabbitUsername.Set("RABBIT_USER")
 	Config.RabbitPassword.Set("RABBIT_PASS")
@@ -118,6 +119,7 @@ type BaseConfig struct {
 	AdminName     ConfigItem
 	AdminPassword ConfigItem
 	AdminUsername ConfigItem
+	AdminSteamID  ConfigItem
 
 	DiscordClientID   ConfigItem
 	DiscordSescret    ConfigItem

@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/99designs/basicauth-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/crons"
@@ -24,9 +23,6 @@ import (
 func AdminRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.NoCache)
-	r.Use(basicauth.New("Steam", map[string][]string{
-		config.Config.AdminUsername.Get(): {config.Config.AdminPassword.Get()},
-	}))
 	r.Get("/", adminHandler)
 	r.Post("/", adminHandler)
 	r.Get("/{option}", adminHandler)

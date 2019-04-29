@@ -659,7 +659,7 @@ func isAdmin(r *http.Request) bool {
 	id, err := session.Read(r, session.PlayerID)
 	log.Err(err)
 
-	return r.Header.Get("Authorization") != "" || id == "76561197968626192"
+	return id == config.Config.AdminSteamID.Get()
 }
 
 //
