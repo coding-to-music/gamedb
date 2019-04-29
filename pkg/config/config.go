@@ -17,9 +17,6 @@ var Config BaseConfig
 
 func init() {
 
-	// Set configs from environment variables
-	Config.AdminUsername.Set("ADMIN_USER")
-	Config.AdminPassword.Set("ADMIN_PASS")
 	Config.AdminName.Set("ADMIN_NAME")
 	Config.AdminEmail.Set("ADMIN_EMAIL")
 	Config.AdminSteamID.Set("ADMIN_STEAM_ID")
@@ -87,39 +84,29 @@ func init() {
 
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
-	Config.InstagramUsername.SetDefault("gamedb.online")
-	Config.WebserverPort.SetDefault("8081")
-	Config.EnableWebserver.SetDefault("1")
-	Config.EnableConsumers.SetDefault("1")
 	Config.NewReleaseDays.SetDefault("14")
 
 	switch Config.Environment.Get() {
 	case EnvProd:
 
 		Config.MemcacheDSN.SetDefault("memcache:11211")
-		Config.EnableConsumers.SetDefault("0")
 
 	case EnvLocal:
 
 		Config.MemcacheDSN.SetDefault("localhost:11211")
-		Config.PatreonSecret.SetDefault("EZTRjtID_1LUmgnQ4_WWuWIQbfj4QA1JtqYMq4prcq_kDvNdEXlgj2K7JyLwNXfd")
 
 	case EnvConsumer:
 
-		Config.EnableWebserver.SetDefault("0")
-
 	default:
-		fmt.Println("Missing env")
+		fmt.Println("Unknown environment")
 		os.Exit(1)
 	}
 }
 
 type BaseConfig struct {
-	AdminEmail    ConfigItem
-	AdminName     ConfigItem
-	AdminPassword ConfigItem
-	AdminUsername ConfigItem
-	AdminSteamID  ConfigItem
+	AdminName    ConfigItem
+	AdminEmail   ConfigItem
+	AdminSteamID ConfigItem
 
 	DiscordClientID   ConfigItem
 	DiscordSescret    ConfigItem
@@ -183,8 +170,6 @@ type BaseConfig struct {
 	SendGridAPIKey  ConfigItem
 	SteamAPIKey     ConfigItem
 	WebserverPort   ConfigItem
-	EnableWebserver ConfigItem
-	EnableConsumers ConfigItem
 	CommitHash      ConfigItem
 	NewReleaseDays  ConfigItem
 }
