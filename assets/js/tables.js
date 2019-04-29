@@ -2,47 +2,9 @@
 const $dataTables = $('table.table-datatable');
 const $dataTables2 = $('table.table-datatable2');
 
+const $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
+
 $dataTables.each(function (i) {
-
-    let order = [[0, 'asc']];
-    let pageLength = 100;
-    let paging = true;
-    let ordering = true;
-
-    // Limit
-    const limit = $(this).attr('data-limit');
-    if (limit > 0) {
-        pageLength = Number(limit);
-    }
-
-    // Ordering
-    const noSort = $(this).attr('data-no-sort');
-    if (noSort) {
-        ordering = false;
-    }
-
-    // Paging
-    if ($(this).find('tbody tr').length <= pageLength) {
-        paging = false;
-    }
-
-    // Sort
-    const tableSort = $(this).attr('data-sort');
-    if (tableSort) {
-
-        order = eval(tableSort);
-
-    } else {
-
-        const $column = $(this).find('thead tr th[data-sort]');
-        if ($column.length > 0) {
-
-            const index = $column.index();
-            const sort = $column.attr('data-sort');
-
-            order = [[index, sort]];
-        }
-    }
 
     // Find
     const disabled = [];
@@ -52,10 +14,9 @@ $dataTables.each(function (i) {
 
     // Init
     $(this).DataTable({
-        "pageLength": pageLength,
-        "order": order,
-        "paging": paging,
-        "ordering": ordering,
+        "pageLength": 100,
+        "paging": true,
+        "ordering": true,
         "fixedHeader": true,
         "info": false,
         "searching": true,
@@ -183,9 +144,6 @@ $('table.table-datatable2:not(.table-no-fade)').on('page.dt search.dt', function
     highLightOwnedGames();
 
 });
-
-// Lock icon
-const $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
 
 //
 function addDataTablesRow(options, data, limit, $table) {

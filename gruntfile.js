@@ -32,6 +32,7 @@ module.exports = function (grunt) {
                 src: [
                     'assets/js/third-party/*.js',
                     'assets/js/_helpers.js',
+                    'assets/js/global.js',
                     'assets/js/tabs.js',
                     'assets/js/tables.js',
                     'assets/js/product.js',

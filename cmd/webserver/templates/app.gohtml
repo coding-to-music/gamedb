@@ -193,7 +193,7 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-no-sort="1">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col">Country</th>
@@ -308,11 +308,11 @@
                     {{if gt (len .DLCs) 0}}
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-datatable mb-0">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[ 1, "desc" ]]'>
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
-                                    <th scope="col" data-sort="desc">Release</th>
+                                    <th scope="col">Release</th>
                                 </tr>
                                 </thead>
                                 {{ range $key, $value := .DLCs }}
@@ -341,12 +341,12 @@
                     {{if gt (len .Achievements) 0}}
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-datatable mb-0">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "desc"]]'>
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Description</th>
-                                    <th scope="col" data-sort="desc">Completed</th>
+                                    <th scope="col">Completed</th>
                                 </tr>
                                 </thead>
                                 {{ range $key, $value := .Achievements }}
@@ -415,10 +415,10 @@
                     {{if gt (len .Packages) 0}}
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-datatable mb-0">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                 <thead class="thead-light">
                                 <tr>
-                                    <th scope="col" data-sort="asc">Package ID</th>
+                                    <th scope="col">Package ID</th>
                                     <th scope="col">Billing</th>
                                     <th scope="col">License</th>
                                     <th scope="col">Status</th>
@@ -449,10 +449,10 @@
 
                     {{/* Bundles */}}
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" data-sort="asc">Name</th>
+                                <th scope="col">Name</th>
                                 <th scope="col">Discount</th>
                                 <th scope="col">Apps</th>
                                 <th scope="col">Packages</th>
@@ -643,10 +643,10 @@
                                 <div class="tab-pane show active" id="dev-details" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -677,10 +677,10 @@
                                 <div class="tab-pane" id="dev-extended" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -699,10 +699,10 @@
                                 <div class="tab-pane" id="dev-common" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -731,10 +731,10 @@
                                     {{ if gt (len .App.GetDepots.Depots) 0 }}
                                         <h5>Depots</h5>
                                         <div class="table-responsive mb-4">
-                                            <table class="table table-hover table-striped table-datatable mb-0">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                                 <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col" data-sort="asc">ID</th>
+                                                    <th scope="col">ID</th>
                                                     <th scope="col">Name</th>
                                                     <th scope="col">Configs</th>
                                                     <th scope="col">Manifests</th>
@@ -775,10 +775,10 @@
                                     {{ if gt (len .App.GetDepots.Branches) 0 }}
                                         <h5>Branches</h5>
                                         <div class="table-responsive mb-4">
-                                            <table class="table table-hover table-striped table-datatable mb-0">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                                 <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col" data-sort="asc">Name</th>
+                                                    <th scope="col">Name</th>
                                                     <th scope="col">Description</th>
                                                     <th scope="col">Build ID</th>
                                                     <th scope="col">Time Updated</th>
@@ -807,10 +807,10 @@
                                     {{ if gt (len .App.GetDepots.Extra) 0 }}
                                         <h5>Extra</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-striped table-datatable mb-0">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                                 <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col" data-sort="asc">Key</th>
+                                                    <th scope="col">Key</th>
                                                     <th scope="col">Value</th>
                                                 </tr>
                                                 </thead>
@@ -830,10 +830,10 @@
                                 <div class="tab-pane" id="dev-config" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -853,10 +853,10 @@
 
                                     <h5>User File System</h5>
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -875,10 +875,10 @@
                                 <div class="tab-pane" id="dev-launch" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Order</th>
+                                                <th scope="col">Order</th>
                                                 <th scope="col">Executable</th>
                                                 <th scope="col">Arguments</th>
                                                 <th scope="col">Description</th>
@@ -917,10 +917,10 @@
                                 <div class="tab-pane" id="dev-install" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -939,10 +939,10 @@
                                 <div class="tab-pane" id="dev-localisation" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -961,10 +961,10 @@
                                 <div class="tab-pane" id="dev-stats" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Name</th>
+                                                <th scope="col">Name</th>
                                                 <th scope="col">Default</th>
                                                 <th scope="col">Display</th>
                                             </tr>

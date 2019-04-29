@@ -125,12 +125,12 @@
 
                     {{/* Apps in Package */}}
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" data-sort="asc">Name</th>
+                                <th scope="col">Name</th>
                                 <th scope="col">Type</th>
-                                <th scope="col">Platforms</th>
+                                <th scope="col" data-disabled>Platforms</th>
                                 <th scope="col">DLC #</th>
                             </tr>
                             </thead>
@@ -141,7 +141,7 @@
                                         <span>{{.GetName}}</span>
                                     </td>
                                     <td>{{ .GetType }}</td>
-                                    <td class="platforms" data-disabled>{{ .GetPlatformImages }}</td>
+                                    <td class="platforms">{{ .GetPlatformImages }}</td>
                                     <td>{{ comma (len .GetDLC) }}</td>
                                 </tr>
                             {{ end }}
@@ -154,10 +154,10 @@
 
                     {{/* Bundles */}}
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" data-sort="asc">Name</th>
+                                <th scope="col">Name</th>
                                 <th scope="col">Discount</th>
                                 <th scope="col">Apps</th>
                                 <th scope="col">Packages</th>
@@ -189,7 +189,7 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-no-sort="1">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col">Country</th>
@@ -251,10 +251,10 @@
                                 <div class="tab-pane show active" id="dev-details" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -275,10 +275,10 @@
                                 <div class="tab-pane" id="dev-extended" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -297,10 +297,10 @@
                                 <div class="tab-pane" id="dev-controller" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">Key</th>
+                                                <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
@@ -319,10 +319,10 @@
                                 <div class="tab-pane" id="dev-depots" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" data-sort="asc">ID</th>
+                                                <th scope="col">ID</th>
                                             </tr>
                                             </thead>
                                             {{ range $key, $value := .DepotIDs }}

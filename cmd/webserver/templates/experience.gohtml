@@ -32,10 +32,10 @@
             {{/* XP Table */}}
             <div class="table-responsive">
                 {{ range $key, $value := .Chunks }}
-                    <table class="table table-hover table-striped mb-0">
+                    <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
                         <thead class="thead-light">
                         <tr>
-                            <th scope="col" width="20%" data-sort="asc">Level</th>
+                            <th scope="col" width="20%">Level</th>
                             <th scope="col" width="20%">Start XP</th>
                             <th scope="col" width="20%">End XP</th>
                             <th scope="col" width="20%">For Next Level</th>
