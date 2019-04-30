@@ -35,7 +35,7 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 	if err == nil {
 		if config.IsProd() {
 			session.Options = &sessions.Options{
-				MaxAge:   86400,
+				MaxAge:   2592000, // 30 days
 				Domain:   "gamedb.online",
 				Path:     "/",
 				Secure:   true,
@@ -43,7 +43,7 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 			}
 		} else {
 			session.Options = &sessions.Options{
-				MaxAge: 0,
+				MaxAge:   2592000, // 30 days
 				Path:   "/",
 			}
 		}
