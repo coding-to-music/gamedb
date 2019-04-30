@@ -58,6 +58,9 @@ table.table {
     }
 
     td {
+        img{
+            max-width: 100%;
+        }
         div.progress {
             height: 24px;
         }
