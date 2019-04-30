@@ -88,7 +88,7 @@ func Instagram() {
 	}
 
 	err = helpers.UploadInstagram(url, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+") https://gamedb.online/apps/"+strconv.Itoa(app.ID)+" #steamgames #steam #gaming "+helpers.GetHashTag(app.GetName()))
-	log.Critical(err)
+	log.Critical(err, url)
 }
 
 func Donations() {
