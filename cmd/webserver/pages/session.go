@@ -33,7 +33,6 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 		"isAdmin":            t.isAdmin(),
 		"isLocal":            t.isLocal(),
 		"isLoggedIn":         t.isLoggedIn(),
-		"loggedIntoDiscord":  t.loggedIntoDiscord,
 		"loginPage":          t.loginPage,
 		"showAds":            t.showAds(),
 		"toasts":             t.toasts,

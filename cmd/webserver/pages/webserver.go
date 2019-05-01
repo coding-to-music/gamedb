@@ -214,10 +214,9 @@ type GlobalTemplate struct {
 	session     map[string]string
 
 	//
-	toasts            []Toast
-	loggedIntoDiscord bool
-	contactPage       map[string]string
-	loginPage         map[string]string
+	toasts      []Toast
+	contactPage map[string]string
+	loginPage   map[string]string
 
 	// Internal
 	request   *http.Request

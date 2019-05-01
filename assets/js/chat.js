@@ -18,10 +18,6 @@ if ($('#chat-page').length > 0) {
         },
     });
 
-    // if (user.loggedIntoDiscord) {
-    //     $('#reply').removeClass('d-none');
-    // }
-
     $('#reply form').on('submit', function (e) {
 
         e.preventDefault();
