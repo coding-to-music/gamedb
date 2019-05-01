@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ahmdrz/goinsta/v2"
@@ -52,6 +53,9 @@ func UploadInstagram(imageURL string, message string) (err error) {
 	operation := func() (err error) {
 
 		_, err = ig.UploadPhoto(resp.Body, message, 0, 0)
+		if err != nil && strings.Contains(err.Error(), "image: unknown format") {
+			return backoff.Permanent(err)
+		}
 		return err
 	}
 
