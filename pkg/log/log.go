@@ -19,7 +19,7 @@ import (
 //noinspection GoUnusedConst
 const (
 	// Log names
-	LogNameConsumers LogName = "consumersx"
+	LogNameConsumers LogName = "consumers"
 	LogNameCron      LogName = "crons"
 	LogNameDatastore LogName = "datastore"
 	LogNameMongo     LogName = "mongo"
