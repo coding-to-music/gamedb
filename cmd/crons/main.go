@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/gamedb/gamedb/pkg/crons"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -56,11 +54,11 @@ func main() {
 
 	c.Start()
 
-	// Scan for app players after deploy
-	go func() {
-		time.Sleep(time.Minute)
-		crons.AppPlayers()
-	}()
+	// // Scan for app players after deploy
+	// go func() {
+	// 	time.Sleep(time.Minute)
+	// 	crons.AppPlayers()
+	// }()
 
 	helpers.KeepAlive()
 }
