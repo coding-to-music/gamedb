@@ -16,7 +16,7 @@ func main() {
 	c := cron.New()
 
 	// Every 10 minutes
-	err = c.AddFunc("0 */10 * * * *", crons.SteamPlayers)
+	err = c.AddFunc("0 */10 * * * *", crons.SteamClientPlayers)
 	log.Critical(err)
 
 	// Every 3 hours
@@ -44,9 +44,6 @@ func main() {
 	log.Critical(err)
 
 	err = c.AddFunc("0 0 4 * * *", crons.Developers)
-	log.Critical(err)
-
-	err = c.AddFunc("0 0 5 * * *", crons.Donations)
 	log.Critical(err)
 
 	err = c.AddFunc("0 0 12 * * *", crons.Instagram)

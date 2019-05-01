@@ -53,8 +53,6 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		go crons.Developers()
 	case "refresh-publishers":
 		go crons.Publishers()
-	case "refresh-donations":
-		go crons.Donations()
 	case "refresh-ranks":
 		go crons.PlayerRanks()
 	case "wipe-memcache":
