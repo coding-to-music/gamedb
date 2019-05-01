@@ -882,15 +882,24 @@ func SteamPlayers() {
 		return
 	}
 
+	online := sp.int(sp.Online)
+	inGame := sp.int(sp.InGame)
+
+	fields := map[string]interface{}{
+		"player_online": online,
+	}
+
+	// Sometimes ingames shows up as something close to online
+	if inGame < online-1000000 {
+		fields["player_count"] = inGame
+	}
+
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(helpers.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": "0",
 		},
-		Fields: map[string]interface{}{
-			"player_count":  sp.int(sp.InGame),
-			"player_online": sp.int(sp.Online),
-		},
+		Fields:    fields,
 		Time:      time.Now(),
 		Precision: "m",
 	})
