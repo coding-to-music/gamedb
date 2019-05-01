@@ -1,6 +1,7 @@
 // Local
 const $dataTables = $('table.table-datatable');
 const $dataTables2 = $('table.table-datatable2');
+let dataTables = [];
 
 const $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>';
 
@@ -13,7 +14,7 @@ $dataTables.each(function (i) {
     });
 
     // Init
-    $(this).DataTable({
+    const dt = $(this).DataTable({
         "pageLength": 100,
         "paging": true,
         "ordering": true,
@@ -50,6 +51,8 @@ $dataTables.each(function (i) {
         }
     });
 
+    dataTables.push(dt);
+
 });
 
 // Local search
@@ -69,9 +72,15 @@ $searchField.on('keyup', function (e) {
 // Local events
 $dataTables.on('page.dt', function (e, settings, processing) {
 
-    const top = $(this).prev().offset().top - 15;
-    $('html, body').animate({scrollTop: top}, 200);
+    let padding = 15;
 
+    if ($('.fixedHeader-floating').length > 0) {
+        padding = padding + 48;
+    }
+
+    $('html, body').animate({
+        scrollTop: $(this).prev().offset().top - padding
+    }, 200);
 });
 
 // Server side

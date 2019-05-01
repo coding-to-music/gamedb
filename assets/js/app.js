@@ -58,17 +58,12 @@ if ($appPage.length > 0) {
         if (from.attr('href') === '#media') {
             resetVideos();
         }
-    });
 
-    $(document).on('keydown', function (e) {
-        if ($('a.active[href="#media"]').length > 0) {
-            if (e.keyCode === 37) {
-                $carousel1.slick('slickPrev');
-            }
-            if (e.keyCode === 39) {
-                $carousel1.slick('slickNext');
-            }
-        }
+        // On any tab
+        $.each(dataTables, function (index, value) {
+            // noinspection JSUnresolvedFunction
+            value.fixedHeader.adjust();
+        });
     });
 
     function resetVideos() {
@@ -93,6 +88,7 @@ if ($appPage.length > 0) {
         const $carousel1 = $('#carousel1');
         const $carousel2 = $('#carousel2');
 
+        // noinspection JSUnresolvedFunction
         $carousel1.slick({
             waitForAnimate: false,
             arrows: false,
@@ -103,6 +99,7 @@ if ($appPage.length > 0) {
             lazyLoad: 'ondemand',
         });
 
+        // noinspection JSUnresolvedFunction
         $carousel2.slick({
             waitForAnimate: false,
             arrows: false,
@@ -125,6 +122,19 @@ if ($appPage.length > 0) {
             const $video = $carousel1.find('div[data-slick-index=' + currentSlide + '] video');
             if ($video.length > 0) {
                 $video[0].play();
+            }
+        });
+
+        $(document).on('keydown', function (e) {
+            if ($('a.active[href="#media"]').length > 0) {
+                if (e.keyCode === 37) {
+                    // noinspection JSUnresolvedFunction
+                    $carousel1.slick('slickPrev');
+                }
+                if (e.keyCode === 39) {
+                    // noinspection JSUnresolvedFunction
+                    $carousel1.slick('slickNext');
+                }
             }
         });
 
@@ -187,10 +197,13 @@ if ($appPage.length > 0) {
             ]
         }));
 
+        dataTables.push(table);
+
         $newstable.on('click', 'tr[role=row]', function () {
 
             const row = table.row($(this));
 
+            // noinspection JSUnresolvedFunction
             if (row.child.isShown()) {
 
                 row.child.hide();
@@ -403,7 +416,7 @@ if ($appPage.length > 0) {
 
     function loadAppPlayerTimes() {
 
-        $('#top-players-table').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const table = $('#top-players-table').DataTable($.extend(true, {}, dtDefaultOptions, {
             "order": [[3, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
@@ -456,5 +469,7 @@ if ($appPage.length > 0) {
                 },
             ]
         }));
+
+        dataTables.push(table);
     }
 }

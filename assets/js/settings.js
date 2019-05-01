@@ -42,11 +42,16 @@ if ($('#settings-page').length > 0) {
                 loadEvents();
             }
         }
+
+        // On any tab
+        $.each(dataTables, function (index, value) {
+            value.fixedHeader.adjust();
+        });
     });
 
     function loadEvents() {
 
-        $('#events table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const table = $('#events table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
             "ajax": function (data, callback, settings) {
 
                 delete data.columns;
@@ -111,5 +116,7 @@ if ($('#settings-page').length > 0) {
                 }
             ]
         }));
+
+        dataTables.push(table);
     }
 }

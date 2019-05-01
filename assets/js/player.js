@@ -55,6 +55,11 @@ if ($playerPage.length > 0) {
                 loadPlayerGames();
             }
         }
+
+        // On any tab
+        $.each(dataTables, function (index, value) {
+            value.fixedHeader.adjust();
+        });
     });
 
     // Websockets
@@ -69,7 +74,7 @@ if ($playerPage.length > 0) {
 
     function loadPlayerGames() {
 
-        $('#games table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const dt = $('#games table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
@@ -112,6 +117,8 @@ if ($playerPage.length > 0) {
                 }
             ]
         }));
+
+        dataTables.push(dt);
     }
 
     function loadPlayerCharts() {

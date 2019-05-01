@@ -16,6 +16,11 @@ if ($('#news-page').length > 0) {
                 loadNewsAjax();
             }
         }
+
+        // On any tab
+        $.each(dataTables, function (index, value) {
+            value.fixedHeader.adjust();
+        });
     });
 
     // Show more article
@@ -75,6 +80,8 @@ if ($('#news-page').length > 0) {
                 }
             ]
         }));
+
+        dataTables.push(table);
 
         $table.on('click', 'tr[role=row] td.article-title', function () {
 
