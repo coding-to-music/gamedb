@@ -2,7 +2,9 @@ package crons
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"math/rand"
+	"net/http"
 	"strconv"
 	"strings"
 	"sync"
@@ -15,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
+	influx "github.com/influxdata/influxdb1-client"
 )
 
 func AutoPlayerRefreshes() {
@@ -854,6 +857,57 @@ func AppPlayers() {
 	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllAppPlayers + " complete"})
 
 	cronLogInfo("App players cron complete")
+}
+
+func SteamPlayers() {
+
+	log.Info("Cron running: Steam users")
+
+	resp, err := http.Get("https://www.valvesoftware.com/en/about/stats")
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	sp := steamPlayersStruct{}
+	err = helpers.Unmarshal(b, &sp)
+	if err != nil {
+		log.Err("www.valvesoftware.com/en/about/stats down")
+		return
+	}
+
+	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(helpers.InfluxMeasurementApps),
+		Tags: map[string]string{
+			"app_id": "0",
+		},
+		Fields: map[string]interface{}{
+			"player_count":  sp.int(sp.InGame),
+			"player_online": sp.int(sp.Online),
+		},
+		Time:      time.Now(),
+		Precision: "m",
+	})
+
+	log.Warning(err)
+}
+
+type steamPlayersStruct struct {
+	Online string `json:"users_online"`
+	InGame string `json:"users_ingame"`
+}
+
+func (sp steamPlayersStruct) int(s string) int {
+	s = strings.ReplaceAll(s, ",", "")
+	i, err := strconv.Atoi(s)
+	log.Warning(err)
+	return i
 }
 
 func ClearUpcomingCache() {

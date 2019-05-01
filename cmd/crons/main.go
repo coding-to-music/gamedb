@@ -17,8 +17,20 @@ func main() {
 
 	c := cron.New()
 
-	// Daily
-	err = c.AddFunc("1 0 0 * * *", crons.ClearUpcomingCache)
+	// Every 10 minutes
+	err = c.AddFunc("0 */10 * * * *", crons.SteamPlayers)
+	log.Critical(err)
+
+	// Every 3 hours
+	err = c.AddFunc("0 0 */3 * * *", crons.AppPlayers)
+	log.Critical(err)
+
+	// Every 6 hours
+	err = c.AddFunc("0 0 */6 * * *", crons.AutoPlayerRefreshes)
+	log.Critical(err)
+
+	// Every 24 hours
+	err = c.AddFunc("0 1 0 * * *", crons.ClearUpcomingCache)
 	log.Critical(err)
 
 	err = c.AddFunc("0 0 0 * * *", crons.PlayerRanks)
@@ -40,14 +52,6 @@ func main() {
 	log.Critical(err)
 
 	err = c.AddFunc("0 0 12 * * *", crons.Instagram)
-	log.Critical(err)
-
-	// Every 3 hours
-	err = c.AddFunc("0 0 */3 * * *", crons.AppPlayers)
-	log.Critical(err)
-
-	// Every 6 hours
-	err = c.AddFunc("0 0 */6 * * *", crons.AutoPlayerRefreshes)
 	log.Critical(err)
 
 	c.Start()
