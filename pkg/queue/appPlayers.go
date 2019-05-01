@@ -71,11 +71,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 		}
 
 		app, ok := appMap[appID]
-		if ok || appID == 0 {
-
-			if appID == 0 {
-				app = sql.App{}
-			}
+		if ok {
 
 			viewers, err := getAppTwitchStreamers(&app)
 			if err != nil {
@@ -172,10 +168,6 @@ func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 }
 
 func updateAppPlayerInfoRow(app *sql.App) (err error) {
-
-	if app == nil || app.ID == 0 {
-		return nil
-	}
 
 	var resp *influx.Response
 

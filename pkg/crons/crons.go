@@ -828,8 +828,6 @@ func AppPlayers() {
 		log.Critical(gorm.Error)
 	}
 
-	appIDs = append(appIDs, 0) // Steam client
-
 	// Chunk appIDs
 	var chunks [][]int
 	for i := 0; i < len(appIDs); i += 10 {
