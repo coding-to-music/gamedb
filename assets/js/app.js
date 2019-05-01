@@ -4,12 +4,6 @@ if ($appPage.length > 0) {
 
     const $modal = $('#news-modal');
 
-    // Background
-    const background = $('.container[data-bg]').attr('data-bg');
-    if (background !== '') {
-        $('body').css("background-image", 'url(' + background + ')');
-    }
-
     // Detials image click
     const $detailsImage = $('#details img');
 
