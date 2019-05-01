@@ -84,10 +84,12 @@ if ($('#stats-page').length > 0) {
                 series: [
                     {
                         name: 'ingame',
+                        marker: {symbol: 'circle'},
                         data: data['max_player_count'],
                     },
                     {
                         name: 'online',
+                        marker: {symbol: 'circle'},
                         color: '#007bff',
                         data: data['max_player_online'],
                         type: 'line',
