@@ -138,6 +138,7 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("max(player_online)", "max_player_online")
 	builder.SetFrom("GameDB", "alltime", "apps")
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", "0")

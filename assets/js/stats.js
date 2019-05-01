@@ -59,7 +59,14 @@ if ($('#stats-page').length > 0) {
                 },
                 tooltip: {
                     formatter: function () {
-                        return this.y.toLocaleString() + ' people logged into steam on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+
+                        const time = moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+
+                        if (this.series.name === 'ingame') {
+                            return this.y.toLocaleString() + ' people in a game on ' + time;
+                        } else {
+                            return this.y.toLocaleString() + ' people online on ' + time;
+                        }
                     },
                 },
                 plotOptions: {
@@ -74,9 +81,18 @@ if ($('#stats-page').length > 0) {
                         }
                     }
                 },
-                series: [{
-                    data: data['max_player_count']
-                }]
+                series: [
+                    {
+                        name: 'ingame',
+                        data: data['max_player_count'],
+                    },
+                    {
+                        name: 'online',
+                        color: '#007bff',
+                        data: data['max_player_online'],
+                        type: 'line',
+                    },
+                ]
             }));
         },
     });
