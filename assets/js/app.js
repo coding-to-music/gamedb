@@ -10,31 +10,6 @@ if ($appPage.length > 0) {
         $('body').css("background-image", 'url(' + background + ')');
     }
 
-    // Fix links
-    $('#news a').each(function () {
-
-        const href = $(this).attr('href');
-        if (href && !(href.startsWith('http'))) {
-            $(this).attr('href', 'http://' + href);
-        }
-    });
-
-    // Add hash when clicking row
-    $('#news table.table').on('click', 'td', function (e) {
-        history.pushState(undefined, undefined, '#news,' + $(this).closest('tr').attr('data-id'));
-        showArt();
-    });
-
-    // Remove hash when closing modal
-    $modal.on('hidden.bs.modal', function (e) {
-        history.pushState("", document.title, "#news");
-        showArt();
-    });
-
-    // News modal
-    $(window).on('hashchange', showArt);
-    $(document).on('draw.dt', showArt);
-
     // Detials image click
     const $detailsImage = $('#details img');
 
@@ -44,62 +19,6 @@ if ($appPage.length > 0) {
     $detailsImage.on("error", function () {
         $(this).attr('src', '/assets/img/no-app-image-banner.jpg');
         $(this).hide();
-    });
-
-    function showArt() {
-
-        const split = window.location.hash.split(',');
-
-        // If the hash has a news ID
-        if (split.length === 2 && (split[0] === 'news' || split[0] === '#news') && split[1]) {
-
-            let $art = $('tr[data-id=' + split[1] + ']').find('.d-none').html();
-            $art = $("<div />").html($art).text(); // Decode HTML
-            $modal.find('.modal-body').html($art);
-            $modal.modal('show');
-
-        } else {
-            $modal.modal('hide');
-        }
-    }
-
-    // Media carousel
-    const $carousel1 = $('#carousel1');
-    const $carousel2 = $('#carousel2');
-
-    $carousel1.slick({
-        waitForAnimate: false,
-        arrows: false,
-        autoplay: false,
-        dots: false,
-        asNavFor: $carousel2,
-        adaptiveHeight: true,
-        lazyLoad: 'ondemand',
-    });
-
-    $carousel2.slick({
-        waitForAnimate: false,
-        arrows: false,
-        slidesToShow: 15,
-        autoplay: false,
-        dots: false,
-        variableWidth: true,
-        asNavFor: $carousel1,
-        focusOnSelect: true,
-        centerMode: true,
-        infinite: true,
-    });
-
-    $carousel1.on('afterChange', function (event, slick, currentSlide) {
-
-        // Stop all videos
-        resetVideos();
-
-        // Auto play current video
-        const $video = $carousel1.find('div[data-slick-index=' + currentSlide + '] video');
-        if ($video.length > 0) {
-            $video[0].play();
-        }
     });
 
     // On tab change
@@ -112,8 +31,7 @@ if ($appPage.length > 0) {
         if (to.attr('href') === '#media') {
             if (!to.attr('loaded')) {
                 to.attr('loaded', 1);
-                $carousel1.slick('setPosition');
-                $carousel2.slick('setPosition');
+                loadMedia();
             }
         }
         if (to.attr('href') === '#news') {
@@ -175,10 +93,57 @@ if ($appPage.length > 0) {
         }
     });
 
+    // Media carousels
+    function loadMedia() {
+
+        const $carousel1 = $('#carousel1');
+        const $carousel2 = $('#carousel2');
+
+        $carousel1.slick({
+            waitForAnimate: false,
+            arrows: false,
+            autoplay: false,
+            dots: false,
+            asNavFor: $carousel2,
+            adaptiveHeight: true,
+            lazyLoad: 'ondemand',
+        });
+
+        $carousel2.slick({
+            waitForAnimate: false,
+            arrows: false,
+            slidesToShow: 15,
+            autoplay: false,
+            dots: false,
+            variableWidth: true,
+            asNavFor: $carousel1,
+            focusOnSelect: true,
+            centerMode: true,
+            infinite: true,
+        });
+
+        $carousel1.on('afterChange', function (event, slick, currentSlide) {
+
+            // Stop all videos
+            resetVideos();
+
+            // Auto play current video
+            const $video = $carousel1.find('div[data-slick-index=' + currentSlide + '] video');
+            if ($video.length > 0) {
+                $video[0].play();
+            }
+        });
+
+        // $carousel1.slick('setPosition');
+        // $carousel2.slick('setPosition');
+    }
+
     // News data table
     function loadNews() {
 
-        $('#news-table').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const $newstable = $('#news-table');
+
+        const table = $newstable.DataTable($.extend(true, {}, dtDefaultOptions, {
             "ajax": function (data, callback, settings) {
 
                 delete data.columns;
@@ -204,9 +169,6 @@ if ($appPage.length > 0) {
                     "render": function (data, type, row) {
                         return '<div><i class="fas fa-newspaper"></i> ' + row[1] + '</div><div class="d-none">' + row[5] + '</div>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('article-title');
-                    },
                     "orderable": false
                 },
                 // Author
@@ -230,6 +192,49 @@ if ($appPage.length > 0) {
                 }
             ]
         }));
+
+        $newstable.on('click', 'tr[role=row]', function () {
+
+            const row = table.row($(this));
+
+            if (row.child.isShown()) {
+
+                row.child.hide();
+                $(this).removeClass('shown');
+
+            } else {
+
+                row.child($("<div/>").html(row.data()[5]).text()).show();
+                $(this).addClass('shown');
+            }
+        });
+
+        //
+        function showArt() {
+
+            const split = window.location.hash.split(',');
+
+            // If the hash has a news ID
+            if (split.length === 2 && (split[0] === 'news' || split[0] === '#news') && split[1]) {
+
+                let $art = $('tr[data-id=' + split[1] + ']').find('.d-none').html();
+                $art = $("<div />").html($art).text(); // Decode HTML
+                $modal.find('.modal-body').html($art);
+                $modal.modal('show');
+
+            } else {
+                $modal.modal('hide');
+            }
+        }
+
+        // Fix links
+        $('#news a').each(function () {
+
+            const href = $(this).attr('href');
+            if (href && !(href.startsWith('http'))) {
+                $(this).attr('href', 'http://' + href);
+            }
+        });
     }
 
     const defaultAppChartOptions = {

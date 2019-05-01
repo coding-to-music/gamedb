@@ -76,7 +76,7 @@ if ($('#news-page').length > 0) {
             ]
         }));
 
-        $table.on('click', 'td.article-title', function () {
+        $table.on('click', 'tr[role=row] td.article-title', function () {
 
             const $tr = $(this).closest('tr');
             const row = table.row($tr);

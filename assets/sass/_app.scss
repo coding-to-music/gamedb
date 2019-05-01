@@ -97,7 +97,7 @@
     }
 
     #news {
-        table.table td {
+        table.table tr[role=row] td {
             cursor: pointer;
         }
 
