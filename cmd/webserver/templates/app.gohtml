@@ -90,9 +90,7 @@
                         </div>
                     {{ end }}
 
-
                     <img class="rounded{{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">
-
 
                     <table class="table mb-0">
                         {{ if ne .App.GameName "" }}
@@ -180,9 +178,6 @@
                             </tr>
                         {{ end }}
                     </table>
-
-                    {{/*<iframe src="https://store.steampowered.com/widget/{{ .App.ID }}/" frameborder="0"></iframe>*/}}
-
                 </div>
 
                 {{/* Prices */}}
