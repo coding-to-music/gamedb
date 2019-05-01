@@ -203,24 +203,6 @@ if ($appPage.length > 0) {
             }
         });
 
-        //
-        function showArt() {
-
-            const split = window.location.hash.split(',');
-
-            // If the hash has a news ID
-            if (split.length === 2 && (split[0] === 'news' || split[0] === '#news') && split[1]) {
-
-                let $art = $('tr[data-id=' + split[1] + ']').find('.d-none').html();
-                $art = $("<div />").html($art).text(); // Decode HTML
-                $modal.find('.modal-body').html($art);
-                $modal.modal('show');
-
-            } else {
-                $modal.modal('hide');
-            }
-        }
-
         // Fix links
         $('#news a').each(function () {
 
