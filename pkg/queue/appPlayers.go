@@ -169,14 +169,22 @@ func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 
 func updateAppPlayerInfoRow(app *sql.App) (err error) {
 
+	var builder *influxql.Builder
 	var resp *influx.Response
 
 	// Trend value - https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
-	query := `SELECT cumulative_sum(difference) FROM (
-		SELECT difference(last("player_count")) FROM "GameDB"."alltime"."apps" WHERE "app_id" = '` + strconv.Itoa(app.ID) + `' AND time >= now() - 7d GROUP BY time(1h)
-	)`
+	subBuilder := influxql.NewBuilder()
+	subBuilder.AddSelect("difference(last(player_count))", "")
+	subBuilder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	subBuilder.AddWhere("app_id", "=", 440)
+	subBuilder.AddWhere("time", ">=", "NOW() - 7d")
+	subBuilder.AddGroupByTime("1h")
 
-	resp, err = helpers.InfluxQuery(query)
+	builder = influxql.NewBuilder()
+	builder.AddSelect("cumulative_sum(difference)", "")
+	builder.SetFromSubQuery(subBuilder)
+
+	resp, err = helpers.InfluxQuery(builder.String())
 	if err != nil {
 		return err
 	}
@@ -196,8 +204,6 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 			}
 		}
 	}
-
-	var builder *influxql.Builder
 
 	// 7 Days
 	builder = influxql.NewBuilder()
