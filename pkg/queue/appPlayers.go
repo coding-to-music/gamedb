@@ -176,7 +176,7 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 	subBuilder := influxql.NewBuilder()
 	subBuilder.AddSelect("difference(last(player_count))", "")
 	subBuilder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
-	subBuilder.AddWhere("app_id", "=", 440)
+	subBuilder.AddWhere("app_id", "=", app.ID)
 	subBuilder.AddWhere("time", ">=", "NOW() - 7d")
 	subBuilder.AddGroupByTime("1h")
 
