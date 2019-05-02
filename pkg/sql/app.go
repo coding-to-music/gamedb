@@ -388,7 +388,7 @@ func (app App) GetOnlinePlayers() (players int, err error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("player_count", "")
-		builder.SetFrom(helpers.InfluxDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+		builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
 		builder.AddWhere("app_id", "=", app.ID)
 		builder.AddOrderBy("time", false)
 		builder.SetLimit(1)

@@ -202,7 +202,7 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 	// 7 Days
 	builder = influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(helpers.InfluxDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.SetFillNone()
@@ -217,7 +217,7 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 	// All time
 	builder = influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(helpers.InfluxDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.SetFillNone()
 

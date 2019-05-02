@@ -28,8 +28,8 @@ func (im InfluxMeasurement) String() string {
 }
 
 const (
-	InfluxDB   = "GameDB"
-	TelegrafDB = "GameDB"
+	InfluxGameDB     = "GameDB"
+	InfluxTelegrafDB = "Telegraf"
 
 	InfluxRetentionPolicyAllTime InfluxRetentionPolicy = "alltime"
 	InfluxRetentionPolicy7Day    InfluxRetentionPolicy = "7d"
@@ -82,7 +82,7 @@ func InfluxWrite(retention InfluxRetentionPolicy, point influx.Point) (resp *inf
 
 func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) (resp *influx.Response, err error) {
 
-	batch.Database = InfluxDB
+	batch.Database = InfluxGameDB
 	batch.RetentionPolicy = string(retention)
 	batch.Precision = "m" // Must be in batch and point
 
@@ -116,7 +116,7 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 
 	resp, err = client.Query(influx.Query{
 		Command:         query,
-		Database:        InfluxDB,
+		Database:        InfluxGameDB,
 		RetentionPolicy: string(InfluxRetentionPolicyAllTime),
 	})
 
