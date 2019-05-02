@@ -35,7 +35,7 @@ const (
 	InfluxRetentionPolicy7Day    InfluxRetentionPolicy = "7d"
 	InfluxRetentionPolicy14Day   InfluxRetentionPolicy = "14d"
 
-	InfluxMeasurementApps        InfluxMeasurement = "apps2"
+	InfluxMeasurementApps        InfluxMeasurement = "apps"
 	InfluxMeasurementPackages    InfluxMeasurement = "packages"
 	InfluxMeasurementTags        InfluxMeasurement = "tags"
 	InfluxMeasurementPlayers     InfluxMeasurement = "players"
