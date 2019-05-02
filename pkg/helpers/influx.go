@@ -16,19 +16,31 @@ import (
 )
 
 type InfluxRetentionPolicy string
+
+func (irp InfluxRetentionPolicy) String() string {
+	return string(irp)
+}
+
 type InfluxMeasurement string
 
+func (im InfluxMeasurement) String() string {
+	return string(im)
+}
+
 const (
-	InfluxDB = "GameDB"
+	InfluxDB   = "GameDB"
+	TelegrafDB = "GameDB"
 
 	InfluxRetentionPolicyAllTime InfluxRetentionPolicy = "alltime"
 	InfluxRetentionPolicy7Day    InfluxRetentionPolicy = "7d"
+	InfluxRetentionPolicy14Day   InfluxRetentionPolicy = "14d"
 
-	InfluxMeasurementApps     InfluxMeasurement = "apps"
-	InfluxMeasurementPackages InfluxMeasurement = "packages"
-	InfluxMeasurementTags     InfluxMeasurement = "tags"
-	InfluxMeasurementPlayers  InfluxMeasurement = "players"
-	InfluxMeasurementStats    InfluxMeasurement = "stats"
+	InfluxMeasurementApps        InfluxMeasurement = "apps2"
+	InfluxMeasurementPackages    InfluxMeasurement = "packages"
+	InfluxMeasurementTags        InfluxMeasurement = "tags"
+	InfluxMeasurementPlayers     InfluxMeasurement = "players"
+	InfluxMeasurementStats       InfluxMeasurement = "stats"
+	InfluxMeasurementRabbitQueue InfluxMeasurement = "rabbitmq_queue"
 )
 
 var (
