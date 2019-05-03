@@ -74,6 +74,7 @@ func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {
 		if duration == 0 || config.IsLocal() {
 
 			w.Header().Set("Cache-Control", "public, max-age=0, s-maxage=0")
+			w.Header().Set("X-Live", "1") // Used in Varnish
 		} else {
 
 			w.Header().Set("Cache-Control", "public, max-age=0, s-maxage="+strconv.Itoa(int(duration.Seconds())))
