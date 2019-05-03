@@ -1,5 +1,7 @@
 if ($('#login-page').length > 0) {
 
-    $('#email').val(user.loginPage['email']);
+    if (user.loginPage !== null) {
+        $('#email').val(user.loginPage['email']);
+    }
 
 }
