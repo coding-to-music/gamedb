@@ -31,7 +31,7 @@ func SteamClientPlayers() {
 	sp := steamPlayersStruct{}
 	err = helpers.Unmarshal(b, &sp)
 	if err != nil {
-		log.Err("www.valvesoftware.com/en/about/stats down")
+		log.Err("www.valvesoftware.com/en/about/stats down: " + string(b))
 		return
 	}
 
@@ -45,6 +45,8 @@ func SteamClientPlayers() {
 	// Sometimes ingames shows up as something close to online
 	if inGame < online-1000000 {
 		fields["player_count"] = inGame
+	} else {
+		log.Err("valvesoftware issue still happening")
 	}
 
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
