@@ -123,6 +123,37 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 	return resp, err
 }
 
+func InfluxDelete() {
+
+	return
+
+	times := []string{
+		"2019-05-01 17:45:00",
+		"2019-05-02 00:28:00",
+		"2019-05-02 07:12:00",
+	}
+
+	layout := "2006-01-02 15:04:05"
+
+	for _, v := range times {
+
+		t, err := time.Parse(layout, v)
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		_, err = InfluxWrite(InfluxRetentionPolicyAllTime, influx.Point{
+			Measurement: string(InfluxMeasurementApps),
+			Tags: map[string]string{
+				"delete": "1",
+			},
+			Time:      t,
+			Precision: "m",
+		})
+	}
+}
+
 type HighChartsJson map[string][][]interface{}
 
 func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
