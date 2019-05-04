@@ -36,19 +36,17 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	setCacheHeaders(w, time.Hour)
 
-	t := playerTemplate{}
-
 	id := chi.URLParam(r, "id")
 	var toasts []Toast
 
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid Player ID: " + id, Error: err})
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID: " + id, Error: err})
 		return
 	}
 
 	if !helpers.IsValidPlayerID(idx) {
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid Player ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID: " + id})
 		return
 	}
 
@@ -60,15 +58,26 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			err = queue.ProducePlayer(idx)
 			log.Err(err, r)
 
-			data := errorTemplate{Code: 404, Message: "We haven't scanned this player yet, but we are looking now.", DataID: idx}
-			data.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+			// Template
+			tm := playerMissingTemplate{}
+			tm.fill(w, r, player.PersonaName, "")
+			tm.addAssetHighCharts()
+			tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+			tm.Player = player
+			tm.toasts = toasts
+			tm.DefaultAvatar = helpers.DefaultPlayerAvatar
 
-			returnErrorTemplate(w, r, data)
+			err = returnTemplate(w, r, "player_missing", tm)
+			log.Err(err, r)
+
 		} else {
 			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player.", Error: err})
 		}
 		return
 	}
+
+	//
+	t := playerTemplate{}
 
 	// Queue profile for a refresh
 	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
@@ -236,6 +245,12 @@ type playerTemplate struct {
 	Player     mongo.Player
 	// Ranks       playerRanksTemplate
 	RecentGames   []RecentlyPlayedGame
+	DefaultAvatar string
+}
+
+type playerMissingTemplate struct {
+	GlobalTemplate
+	Player        mongo.Player
 	DefaultAvatar string
 }
 

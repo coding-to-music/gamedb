@@ -1,4 +1,4 @@
-if ($('#queues-page').length > 0) {
+if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
 
     let activeWindow = true;
 

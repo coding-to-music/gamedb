@@ -1,0 +1,31 @@
+{{define "player_missing"}} {{ template "_header" . }}
+
+<div class="container" id="player-missing-page" data-id="{{ .Player.ID }}">
+
+    <div class="jumbotron">
+
+        <h1><i class="fas fa-spinner fa-spin"></i> Looking for player...</h1>
+        <p class="lead">This page should refresh when the player is found.</p>
+
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+
+                {{ if eq .Env "local" }}
+                    <div class="alert alert-primary" role="alert">Showing production queues</div>
+                {{ end }}
+
+                <div data-queue="Profiles" class="mb-2">
+                    <h5>Player Queue</h5>
+                    <div id="profiles"><i class="fas fa-spinner fa-spin fa-fw"></i></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" . }} {{end}}
