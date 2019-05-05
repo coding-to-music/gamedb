@@ -1,22 +1,6 @@
 #donate-page {
-    .patreon, .paypal, .bitcoin {
-        a {
-            color: white;
-        }
-        a:hover {
-            text-decoration: none;
-            h5 {
-                text-decoration: underline;
-            }
-        }
-    }
-    .patreon {
-        background-color: #F74E3E;
-    }
-    .paypal {
-        background-color: #162751;
-    }
-    .bitcoin {
-        background-color: #F38017;
+    #patreon-button {
+        height: 33px;
+        overflow: hidden;
     }
 }
