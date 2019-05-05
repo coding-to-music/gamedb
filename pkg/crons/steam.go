@@ -28,6 +28,11 @@ func SteamClientPlayers() {
 		return
 	}
 
+	if strings.TrimSpace(string(b)) == "[]" {
+		log.Info("www.valvesoftware.com/en/about/stats returned empty array")
+		return
+	}
+
 	sp := steamPlayersStruct{}
 	err = helpers.Unmarshal(b, &sp)
 	if err != nil {
@@ -35,18 +40,9 @@ func SteamClientPlayers() {
 		return
 	}
 
-	online := sp.int(sp.Online)
-	inGame := sp.int(sp.InGame)
-
 	fields := map[string]interface{}{
-		"player_online": online,
-	}
-
-	// Sometimes ingames shows up as something close to online
-	if inGame < online-1000000 {
-		fields["player_count"] = inGame
-	} else {
-		log.Err("valvesoftware issue still happening")
+		"player_online": sp.int(sp.Online),
+		"player_count":  sp.int(sp.InGame),
 	}
 
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
