@@ -656,10 +656,15 @@ type Toast struct {
 //
 func isAdmin(r *http.Request) bool {
 
-	id, err := session.Read(r, session.PlayerID)
+	adminID := config.Config.AdminSteamID.Get()
+	if adminID == "" {
+		return false
+	}
+
+	currentID, err := session.Read(r, session.PlayerID)
 	log.Err(err)
 
-	return id == config.Config.AdminSteamID.Get()
+	return currentID == adminID
 }
 
 //
