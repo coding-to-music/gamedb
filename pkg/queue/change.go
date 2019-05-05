@@ -95,6 +95,13 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	err = sendChangeToDiscord()
+	if err != nil {
+		logError(err)
+		payload.ackRetry(msg)
+		return
+	}
+
 	payload.ack(msg)
 }
 
@@ -175,5 +182,9 @@ func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
 		log.Err(err)
 	}
 
+	return nil
+}
+
+func sendChangeToDiscord() (err error) {
 	return nil
 }
