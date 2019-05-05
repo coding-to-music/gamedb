@@ -1,10 +1,10 @@
 package mongo
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -38,7 +38,7 @@ func (pw PatreonWebhook) BSON() (ret interface{}) {
 
 func (pw PatreonWebhook) Raw() (raw patreon.Webhook, err error) {
 
-	err = json.Unmarshal([]byte(pw.RequestBody), &raw)
+	err = helpers.Unmarshal([]byte(pw.RequestBody), &raw)
 	return raw, err
 }
 

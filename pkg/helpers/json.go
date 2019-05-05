@@ -12,7 +12,7 @@ var ErrUnMarshalNonPointer = errors.New("trying to unmarshal a non-pointer")
 
 func IsJSON(str string) bool {
 	var js json.RawMessage
-	return json.Unmarshal([]byte(str), &js) == nil
+	return Unmarshal([]byte(str), &js) == nil
 }
 
 func MarshalLog(v interface{}) []byte {

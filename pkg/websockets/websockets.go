@@ -1,7 +1,6 @@
 package websockets
 
 import (
-	"encoding/json"
 	"strings"
 
 	"cloud.google.com/go/pubsub"
@@ -126,7 +125,7 @@ func ListenToPubSub() {
 		log.Info("Incoming PubSub: " + string(m.Data))
 
 		pubSubMsg := PubSubBasePayload{}
-		err := json.Unmarshal(m.Data, &pubSubMsg)
+		err := helpers.Unmarshal(m.Data, &pubSubMsg)
 		if err != nil {
 			log.Critical(err)
 			return
@@ -141,7 +140,7 @@ func ListenToPubSub() {
 
 				idPayload := PubSubIDPayload{}
 
-				err = json.Unmarshal(m.Data, &idPayload)
+				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
 
 				wsPage.Send(idPayload.ID)
@@ -150,7 +149,7 @@ func ListenToPubSub() {
 
 				idPayload := PubSubID64Payload{}
 
-				err = json.Unmarshal(m.Data, &idPayload)
+				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
 
 				wsPage.Send(idPayload.ID)
@@ -159,7 +158,7 @@ func ListenToPubSub() {
 
 				changePayload := PubSubChangesPayload{}
 
-				err = json.Unmarshal(m.Data, &changePayload)
+				err = helpers.Unmarshal(m.Data, &changePayload)
 				log.Err(err)
 
 				wsPage.Send(changePayload.Data)
