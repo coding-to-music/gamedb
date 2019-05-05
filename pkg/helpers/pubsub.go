@@ -52,7 +52,7 @@ func Subscribe(topic PubSubItem, callback func(m *pubsub.Message)) (err error) {
 		return err
 	}
 
-	sub := client.Subscription(string(topic))
+	sub := client.Subscription(string(topic) + "-" + config.Config.Environment.Get())
 	return sub.Receive(ctx, func(ctx context.Context, m *pubsub.Message) {
 		callback(m)
 		m.Ack()
