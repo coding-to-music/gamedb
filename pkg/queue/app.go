@@ -202,8 +202,12 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page := websockets.GetPage(websockets.PageApp)
-	page.Send(message.ID)
+	wsPayload := websockets.PubSubIDPayload{}
+	wsPayload.ID = message.ID
+	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
+
+	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
+	log.Err(err)
 
 	// Clear caches
 	if config.HasMemcache() && app.ReleaseDateUnix > time.Now().Unix() && newApp {

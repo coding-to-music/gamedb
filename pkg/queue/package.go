@@ -155,8 +155,12 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page := websockets.GetPage(websockets.PagePackage)
-	page.Send(pack.ID)
+	wsPayload := websockets.PubSubIDPayload{}
+	wsPayload.ID = pack.ID
+	wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage}
+
+	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
+	log.Err(err)
 
 	// Clear caches
 	if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {

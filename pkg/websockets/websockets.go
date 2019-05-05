@@ -1,8 +1,11 @@
 package websockets
 
 import (
+	"encoding/json"
 	"strings"
 
+	"cloud.google.com/go/pubsub"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gorilla/websocket"
 	"github.com/satori/go.uuid"
@@ -21,7 +24,7 @@ const (
 	PagePackage  WebsocketPage = "package"
 	PagePackages WebsocketPage = "packages"
 	PagePrices   WebsocketPage = "prices"
-	PageProfile  WebsocketPage = "profile"
+	PagePlayers  WebsocketPage = "profile"
 )
 
 var (
@@ -39,7 +42,7 @@ func init() {
 		PageApp,
 		PagePackage,
 		PagePackages,
-		PageProfile,
+		PagePlayers,
 		PageBundle,
 		PageBundles,
 	}
@@ -113,4 +116,58 @@ type WebsocketPayload struct {
 	Data  interface{}
 	Page  WebsocketPage
 	Error string
+}
+
+// Converts pubsub messages into websockets
+func ListenToPubSub() {
+
+	err := helpers.Subscribe(helpers.PubSubWebsockets, func(m *pubsub.Message) {
+
+		log.Info("Incoming PubSub: " + string(m.Data))
+
+		pubSubMsg := PubSubBasePayload{}
+		err := json.Unmarshal(m.Data, &pubSubMsg)
+		if err != nil {
+			log.Critical(err)
+			return
+		}
+
+		for _, page := range pubSubMsg.Pages {
+
+			wsPage := GetPage(page)
+
+			switch page {
+			case PageApp, PageBundle, PageBundles, PagePackage, PagePackages:
+
+				idPayload := PubSubIDPayload{}
+
+				err = json.Unmarshal(m.Data, &idPayload)
+				log.Err(err)
+
+				wsPage.Send(idPayload.ID)
+
+			case PagePlayers:
+
+				idPayload := PubSubID64Payload{}
+
+				err = json.Unmarshal(m.Data, &idPayload)
+				log.Err(err)
+
+				wsPage.Send(idPayload.ID)
+
+			case PageChanges:
+
+				changePayload := PubSubChangesPayload{}
+
+				err = json.Unmarshal(m.Data, &changePayload)
+				log.Err(err)
+
+				wsPage.Send(changePayload.Data)
+
+			default:
+				log.Err("no handler for page: " + string(page))
+			}
+		}
+	})
+	log.Err(err)
 }

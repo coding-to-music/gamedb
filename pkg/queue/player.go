@@ -10,6 +10,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -177,9 +178,14 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page := websockets.GetPage(websockets.PageProfile)
-	page.Send(strconv.FormatInt(player.ID, 10))
+	wsPayload := websockets.PubSubID64Payload{}
+	wsPayload.ID = player.ID
+	wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayers}
 
+	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
+	log.Err(err)
+
+	//
 	payload.ack(msg)
 }
 

@@ -1,5 +1,24 @@
 package websockets
 
+type PubSubBasePayload struct {
+	Pages []WebsocketPage `json:"p"`
+}
+
+type PubSubIDPayload struct {
+	PubSubBasePayload
+	ID int `json:"id"`
+}
+
+type PubSubID64Payload struct {
+	PubSubBasePayload
+	ID int64 `json:"id"`
+}
+
+type PubSubChangesPayload struct {
+	PubSubBasePayload
+	Data [][]interface{} `json:"d"`
+}
+
 type AdminPayload struct {
 	Message string `json:"message"`
 }

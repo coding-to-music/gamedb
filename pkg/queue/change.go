@@ -166,8 +166,13 @@ func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
 	}
 
 	if len(ws) > 0 {
-		page := websockets.GetPage(websockets.PageChanges)
-		page.Send(ws)
+
+		wsPaload := websockets.PubSubChangesPayload{}
+		wsPaload.Data = ws
+		wsPaload.Pages = []websockets.WebsocketPage{websockets.PageChanges}
+
+		_, err = helpers.Publish(helpers.PubSubWebsockets, wsPaload)
+		log.Err(err)
 	}
 
 	return nil

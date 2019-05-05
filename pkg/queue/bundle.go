@@ -12,6 +12,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
@@ -112,11 +113,12 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	page := websockets.GetPage(websockets.PageBundle)
-	page.Send(message.ID)
+	wsPaload := websockets.PubSubIDPayload{}
+	wsPaload.ID = message.ID
+	wsPaload.Pages = []websockets.WebsocketPage{websockets.PageBundle, websockets.PageBundles}
 
-	page = websockets.GetPage(websockets.PageBundles)
-	page.Send(message.ID)
+	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPaload)
+	log.Err(err)
 
 	payload.ack(msg)
 }
