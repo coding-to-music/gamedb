@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -87,15 +88,24 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// Send websocket
-	err = sendChangesWebsocket(changes)
+	// Get apps and packages for all changes in message
+	appMap, packageMap, err := getChangesAppsAndPackages(changes)
 	if err != nil {
 		logError(err)
 		payload.ackRetry(msg)
 		return
 	}
 
-	err = sendChangeToDiscord()
+	// Send websocket
+	err = sendChangesWebsocket(changes, appMap, packageMap)
+	if err != nil {
+		logError(err)
+		payload.ackRetry(msg)
+		return
+	}
+
+	// Send to Discord
+	err = sendChangeToDiscord(changes, appMap, packageMap)
 	if err != nil {
 		logError(err)
 		payload.ackRetry(msg)
@@ -139,18 +149,20 @@ func saveChangesToMongo(changes map[int]*mongo.Change) (err error) {
 	return err
 }
 
-func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
+func getChangesAppsAndPackages(changes map[int]*mongo.Change) (appMap map[int]string, packageMap map[int]string, err error) {
+
+	appMap = map[int]string{}
+	packageMap = map[int]string{}
 
 	var appIDs []int
 	var packageIDs []int
-	var appMap = map[int]string{}
-	var packageMap = map[int]string{}
 
 	for _, v := range changes {
 		appIDs = append(appIDs, v.Apps...)
 		packageIDs = append(packageIDs, v.Packages...)
 	}
 
+	// Apps & packages for all changes
 	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name"})
 	log.Err(err)
 
@@ -159,13 +171,19 @@ func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
 	}
 
 	packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
-	log.Err(err)
+	if err != nil {
+		return appMap, packageMap, err
+	}
 
 	for _, v := range packages {
 		packageMap[v.ID] = v.GetName()
 	}
 
-	// Make websocket
+	return appMap, packageMap, err
+}
+
+func sendChangesWebsocket(changes map[int]*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
+
 	var ws [][]interface{}
 	for _, v := range changes {
 
@@ -185,6 +203,33 @@ func sendChangesWebsocket(changes map[int]*mongo.Change) (err error) {
 	return nil
 }
 
-func sendChangeToDiscord() (err error) {
+func sendChangeToDiscord(changes map[int]*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
+
+	if config.IsProd() {
+
+		discord, err := helpers.GetDiscord()
+		if err != nil {
+			return
+		}
+
+		for _, change := range changes {
+
+			var apps []string
+
+			for _, v := range change.Apps {
+				if val, ok := appMap[v]; ok {
+					apps = append(apps, val)
+				}
+			}
+
+			if len(apps) > 0 {
+
+				var msg = "Change " + strconv.Itoa(change.ID) + ": " + strings.Join(apps, ", ")
+				_, err := discord.ChannelMessageSend("574563721045606431", msg)
+				log.Err(err)
+			}
+		}
+	}
+
 	return nil
 }
