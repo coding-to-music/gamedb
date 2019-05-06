@@ -209,7 +209,7 @@ func sendChangeToDiscord(changes map[int]*mongo.Change, appMap map[int]string, p
 
 		discord, err := helpers.GetDiscord()
 		if err != nil {
-			return
+			return err
 		}
 
 		for _, change := range changes {
