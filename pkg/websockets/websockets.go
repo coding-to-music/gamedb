@@ -2,6 +2,7 @@ package websockets
 
 import (
 	"strings"
+	"sync"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -65,6 +66,7 @@ func GetPage(page WebsocketPage) (ret Page) {
 type Page struct {
 	name        WebsocketPage
 	connections map[uuid.UUID]*websocket.Conn
+	mutex       sync.RWMutex
 }
 
 func (p Page) GetName() WebsocketPage {
@@ -79,7 +81,9 @@ func (p *Page) AddConnection(conn *websocket.Conn) error {
 
 	id := uuid.NewV4()
 
+	p.mutex.Lock()
 	p.connections[id] = conn
+	p.mutex.Unlock()
 
 	return nil
 }
@@ -92,6 +96,7 @@ func (p *Page) Send(data interface{}) {
 		payload.Page = p.name
 		payload.Data = data
 
+		p.mutex.RLock()
 		for k, v := range p.connections {
 			err := v.WriteJSON(payload)
 			if err != nil {
@@ -101,13 +106,16 @@ func (p *Page) Send(data interface{}) {
 					// Clean up old connections
 					err := v.Close()
 					log.Err(err)
+					p.mutex.Lock()
 					delete(p.connections, k)
+					p.mutex.Unlock()
 
 				} else {
 					log.Err(err)
 				}
 			}
 		}
+		p.mutex.RUnlock()
 	}
 }
 
