@@ -106,7 +106,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/"+page+".gohtml",
 	)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Something has gone wrong!", Error: err})
+		log.Critical(err)
 		return err
 	}
 
@@ -114,7 +114,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	buf := &bytes.Buffer{}
 	err = t.ExecuteTemplate(buf, page, pageData)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something has gone wrong!", Error: err})
+		log.Critical(err)
 		return err
 	}
 
@@ -138,7 +138,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	} else {
 
 		_, err = buf.WriteTo(w)
-
 	}
 
 	log.Err(err)
