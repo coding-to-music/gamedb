@@ -158,7 +158,7 @@ function websocketListener(page, onMessage) {
 
     if (window.WebSocket === undefined) {
 
-        toast(false, 'Your browser does not support websockets');
+        console.log('Your browser does not support websockets');
 
     } else {
 
