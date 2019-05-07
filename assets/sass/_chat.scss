@@ -1,7 +1,19 @@
 #chat-page {
+
     .jumbotron {
         img {
             height: 105px;
+        }
+    }
+
+    .media {
+
+        margin-bottom: 0.5rem;
+
+        .media-body {
+            p {
+                margin-bottom: 0;
+            }
         }
     }
 }
