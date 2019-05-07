@@ -97,7 +97,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	folder := config.Config.TemplatesPath.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/_apps_header.gohtml",
-		folder+"/_current_apps.gohtml",
 		folder+"/_flashes.gohtml",
 		folder+"/_footer.gohtml",
 		folder+"/_header.gohtml",
@@ -368,15 +367,11 @@ func (t GlobalTemplate) IsFromVarnish() bool {
 }
 
 func (t GlobalTemplate) IsAppsPage() bool {
-	return helpers.SliceHasString([]string{"apps", "packages", "bundles"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString([]string{"apps", "upcoming", "new-releases", "trending", "packages", "bundles"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsStatsPage() bool {
 	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
-}
-
-func (t GlobalTemplate) IsTrendingPage() bool {
-	return helpers.SliceHasString([]string{"upcoming", "new-releases", "trending"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsMorePage() bool {

@@ -2,7 +2,7 @@
 
     <div class="card-header">
 
-        {{if endsWith .Path "packages" }}
+        {{if startsWith .Path "/packages" }}
             <h5 class="float-right mb-0">
                 <span class="badge badge-secondary cursor-pointer" id="live-badge">Live</span>
             </h5>
@@ -15,6 +15,30 @@
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Games</span>
                 {{else}}
                     <a class="nav-link" href="/apps" role="tab"><i class="fas fa-gamepad"></i> Games</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if startsWith .Path "/trending" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-poll"></i> Trending</span>
+                {{else}}
+                    <a class="nav-link" href="/trending" role="tab"><i class="fas fa-poll"></i> Trending</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if startsWith .Path "/upcoming" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-hourglass-start"></i> Upcoming</span>
+                {{else}}
+                    <a class="nav-link" href="/upcoming" role="tab"><i class="fas fa-hourglass-start"></i> Upcoming</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if startsWith .Path "/new-releases" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-hourglass-end"></i> New Releases</span>
+                {{else}}
+                    <a class="nav-link" href="/new-releases" role="tab"><i class="fas fa-hourglass-end"></i> New Releases</a>
                 {{end}}
             </li>
 
