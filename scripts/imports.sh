@@ -2,4 +2,4 @@
 
 # go get github.com/zackslash/goviz
 
-goviz -i github.com/gamedb/gamedb -p | dot -Tpng -o ./imports.png
+goviz -i github.com/gamedb/gamedb/cmd/webserver -p | dot -Tpng -o ./imports.png
