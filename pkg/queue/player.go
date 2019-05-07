@@ -156,6 +156,13 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	err = updatePlayerWishlist(&player)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
 	err = savePlayerMongo(player)
 	if err != nil {
 		logError(err, message.ID)
@@ -589,6 +596,29 @@ func updatePlayerGroups(player *mongo.Player) error {
 	}
 
 	player.Groups = resp.GetIDs()
+
+	return nil
+}
+
+func updatePlayerWishlist(player *mongo.Player) error {
+
+	resp, b, err := helpers.GetSteam().GetWishlist(player.ID)
+	err = helpers.HandleSteamStoreErr(err, b, []int{500})
+	if err != nil {
+		return err
+	}
+
+	var appIDs []int
+
+	for k := range resp.Items {
+
+		i, err := strconv.Atoi(k)
+		if err != nil {
+			appIDs = append(appIDs, i)
+		}
+	}
+
+	player.Wishlist = appIDs
 
 	return nil
 }

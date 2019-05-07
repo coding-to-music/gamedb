@@ -27,27 +27,28 @@ var (
 // }
 
 type Player struct {
-	ID               int64     `bson:"_id"`             //
-	Avatar           string    `bson:"avatar"`          //
-	Badges           string    `bson:"badges"`          // []ProfileBadge
-	BadgeStats       string    `bson:"badge_stats"`     // ProfileBadgeStats
-	Bans             string    `bson:"bans"`            // PlayerBans
-	CountryCode      string    `bson:"country_code"`    //
-	Donated          int       `bson:"donated"`         //
-	Friends          string    `bson:"friends"`         // []ProfileFriend
-	GamesRecent      string    `bson:"games_recent"`    // []ProfileRecentGame
-	GameStats        string    `bson:"game_stats"`      // PlayerAppStatsTemplate
-	Groups           []int     `bson:"groups"`          // []int
-	LastLogOff       time.Time `bson:"time_logged_off"` //
-	NumberOfGameBans int       `bson:"bans_game"`       //
-	NumberOfVACBans  int       `bson:"bans_cav"`        //
-	PersonaName      string    `bson:"persona_name"`    //
-	PrimaryClanID    int       `bson:"primary_clan_id"` //
-	RealName         string    `bson:"real_name"`       //
-	StateCode        string    `bson:"status_code"`     //
-	TimeCreated      time.Time `bson:"time_created"`    //
-	UpdatedAt        time.Time `bson:"updated_at"`      //
-	VanintyURL       string    `bson:"vanity_url"`      //
+	ID               int64     `bson:"_id"`              //
+	Avatar           string    `bson:"avatar"`           //
+	Badges           string    `bson:"badges"`           // []ProfileBadge
+	BadgeStats       string    `bson:"badge_stats"`      // ProfileBadgeStats
+	Bans             string    `bson:"bans"`             // PlayerBans
+	CountryCode      string    `bson:"country_code"`     //
+	Donated          int       `bson:"donated"`          //
+	Friends          string    `bson:"friends"`          // []ProfileFriend
+	GamesRecent      string    `bson:"games_recent"`     // []ProfileRecentGame
+	GameStats        string    `bson:"game_stats"`       // PlayerAppStatsTemplate
+	Groups           []int     `bson:"groups"`           // []int
+	LastLogOff       time.Time `bson:"time_logged_off"`  //
+	NumberOfGameBans int       `bson:"bans_game"`        //
+	NumberOfVACBans  int       `bson:"bans_cav"`         //
+	PersonaName      string    `bson:"persona_name"`     //
+	PrimaryClanID    int       `bson:"primary_clan_id"`  //
+	RealName         string    `bson:"real_name"`        //
+	StateCode        string    `bson:"status_code"`      //
+	TimeCreated      time.Time `bson:"time_created"`     //
+	UpdatedAt        time.Time `bson:"updated_at"`       //
+	VanintyURL       string    `bson:"vanity_url"`       //
+	Wishlist         []int     `bson:"wishlist_app_ids"` //
 
 	// Ranked
 	BadgesCount  int `bson:"badges_count"`
