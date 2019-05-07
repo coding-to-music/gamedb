@@ -438,7 +438,7 @@ func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save
 	t.flashesBad, err = session.GetBadFlashes(w, r)
 	log.Err(err, r)
 
-	if save && (len(t.flashesBad) > 0 || len(t.flashesBad) > 0) {
+	if save && (len(t.flashesGood) > 0 || len(t.flashesBad) > 0) {
 		err = session.Save(w, r)
 		log.Err(err)
 	}
