@@ -12,7 +12,8 @@ type CommandAppPlayers struct {
 }
 
 func (CommandAppPlayers) Regex() *regexp.Regexp {
-	return regexp.MustCompile("^.players ([a-zA-Z0-9]+)")
+	// ^.(players|online) ?([a-zA-Z0-9]+)?
+	return regexp.MustCompile("^.(players|online) ([a-zA-Z0-9]+)")
 }
 
 func (c CommandAppPlayers) Output(input string) (message discordgo.MessageSend, err error) {
