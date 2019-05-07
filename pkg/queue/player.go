@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -93,104 +94,165 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	player.CountryCode = message.PICSProfileInfo.CountryName
 	player.UpdatedAt = time.Now()
 
-	// Get summary
-	err = updatePlayerSummary(&player)
-	if err != nil {
+	//
+	var wg sync.WaitGroup
 
-		if err == steam.ErrNoUserFound {
-			payload.ack(msg)
-		} else {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+	// Calls to api.steampowered.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updatePlayerSummary(&player)
+		if err != nil {
+
+			if err == steam.ErrNoUserFound {
+				payload.ack(msg)
+			} else {
+				logError(err, message.ID)
+				payload.ackRetry(msg)
+			}
+
+			return
 		}
 
+		err = updatePlayerGames(&player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updatePlayerRecentGames(&player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updatePlayerBadges(&player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updatePlayerFriends(&player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updatePlayerLevel(&player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updatePlayerBans(&player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updatePlayerGroups(&player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	// Calls to store.steampowered.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updatePlayerWishlist(&player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+	}()
+
+	wg.Wait()
+
+	if payload.ActionTaken {
 		return
 	}
 
-	err = updatePlayerGames(&player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+	// Write to databases
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = savePlayerMongo(player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = savePlayerToInflux(player)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = mongo.CreateEvent(&http.Request{}, player.ID, mongo.EventRefresh)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if payload.ActionTaken {
 		return
 	}
 
-	err = updatePlayerRecentGames(&player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+	// Other bits
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		// Send websocket
+		wsPayload := websockets.PubSubID64Payload{}
+		wsPayload.ID = player.ID
+		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayers}
+
+		_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
+		log.Err(err)
+	}()
+
+	wg.Wait()
+
+	if payload.ActionTaken {
 		return
 	}
-
-	err = updatePlayerBadges(&player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = updatePlayerFriends(&player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = updatePlayerLevel(&player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = updatePlayerBans(&player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = updatePlayerGroups(&player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = updatePlayerWishlist(&player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = savePlayerMongo(player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = savePlayerToInflux(player)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = mongo.CreateEvent(&http.Request{}, player.ID, mongo.EventRefresh)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	// Send websocket
-	wsPayload := websockets.PubSubID64Payload{}
-	wsPayload.ID = player.ID
-	wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayers}
-
-	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
-	log.Err(err)
 
 	//
 	payload.ack(msg)

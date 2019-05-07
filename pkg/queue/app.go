@@ -108,112 +108,188 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		}
 	}
 
+	//
 	var appBeforeUpdate = app
 
-	if message.PICSAppInfo.ID > 0 {
-		err = updateAppPICS(&app, payload, message)
+	//
+	err = updateAppPICS(&app, payload, message)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
+	//
+	var wg sync.WaitGroup
+
+	// Calls to api.steampowered.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		schema, err := updateAppSchema(&app)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
-	}
 
-	err = updateAppDetails(&app)
-	if err != nil && err != steam.ErrAppNotFound {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		err = updateAppAchievements(&app, schema)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updateAppNews(&app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	// Calls to store.steampowered.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updateAppDetails(&app)
+		if err != nil && err != steam.ErrAppNotFound {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updateAppReviews(&app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = updateBundles(&app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	// Calls to steamspy.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updateAppSteamSpy(&app)
+		if err != nil {
+			logInfo(err, message.ID)
+		}
+	}()
+
+	// Calls to Twitch
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updateAppTwitch(&app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if payload.ActionTaken {
 		return
 	}
 
-	schema, err := updateAppSchema(&app)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+	// Save to databases
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = savePriceChanges(appBeforeUpdate, app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		app.Type = strings.ToLower(app.Type)
+		app.ReleaseState = strings.ToLower(app.ReleaseState)
+
+		gorm = gorm.Save(&app)
+		if gorm.Error != nil {
+			logError(gorm.Error, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = saveAppToInflux(app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if payload.ActionTaken {
 		return
 	}
 
-	err = updateAppAchievements(&app, schema)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+	wg.Add(1)
+	go func() {
 
-	err = updateAppNews(&app)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+		defer wg.Done()
 
-	err = updateAppReviews(&app)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+		// Send websocket
+		wsPayload := websockets.PubSubIDPayload{}
+		wsPayload.ID = message.ID
+		wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
 
-	err = updateAppSteamSpy(&app)
-	if err != nil {
-		logInfo(err, message.ID)
-	}
-
-	err = updateBundles(&app)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = updateAppTwitch(&app)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	// Save price changes
-	err = savePriceChanges(appBeforeUpdate, app)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	// Misc
-	app.Type = strings.ToLower(app.Type)
-	app.ReleaseState = strings.ToLower(app.ReleaseState)
-
-	// Save new data
-	gorm = gorm.Save(&app)
-	if gorm.Error != nil {
-		logError(gorm.Error, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	// Save to InfluxDB
-	err = saveAppToInflux(app)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	// Send websocket
-	wsPayload := websockets.PubSubIDPayload{}
-	wsPayload.ID = message.ID
-	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
-
-	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
-	log.Err(err)
-
-	// Clear caches
-	if config.HasMemcache() && app.ReleaseDateUnix > time.Now().Unix() && newApp {
-		err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingAppsCount.Key)
-		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
+		_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
 		log.Err(err)
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		// Clear caches
+		if config.HasMemcache() && app.ReleaseDateUnix > time.Now().Unix() && newApp {
+			err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingAppsCount.Key)
+			err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
+			log.Err(err)
+		}
+	}()
+
+	wg.Wait()
+
+	if payload.ActionTaken {
+		return
 	}
 
 	//
@@ -221,6 +297,10 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 }
 
 func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err error) {
+
+	if message.PICSAppInfo.ID == 0 {
+		return nil
+	}
 
 	if app.ChangeNumber > message.PICSAppInfo.ChangeNumber {
 		return nil

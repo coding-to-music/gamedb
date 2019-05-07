@@ -98,13 +98,11 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	var packageBeforeUpdate = pack
 
 	// Update from PICS
-	if message.PICSPackageInfo.ID > 0 {
-		err = updatePackageFromPICS(&pack, payload, message)
-		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
-			return
-		}
+	err = updatePackageFromPICS(&pack, payload, message)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
 	}
 
 	// Update from API
@@ -197,6 +195,10 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 }
 
 func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packageMessage) (err error) {
+
+	if message.PICSPackageInfo.ID == 0 {
+		return nil
+	}
 
 	if pack.ChangeNumber > message.PICSPackageInfo.ChangeNumber {
 		return nil
