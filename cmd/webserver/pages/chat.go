@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
+	"github.com/russross/blackfriday"
 )
 
 const (
@@ -41,7 +42,7 @@ func getDiscord() (discord *discordgo.Session, err error) {
 			AuthorID:     m.Author.ID,
 			AuthorUser:   m.Author.Username,
 			AuthorAvatar: m.Author.Avatar,
-			Content:      m.Content,
+			Content:      string(blackfriday.Run([]byte(m.Content), blackfriday.WithNoExtensions())),
 			Channel:      m.ChannelID,
 		})
 	})
@@ -220,7 +221,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				AuthorID:     v.Author.ID,
 				AuthorUser:   v.Author.Username,
 				AuthorAvatar: v.Author.Avatar,
-				Content:      v.Content,
+				Content:      string(blackfriday.Run([]byte(v.Content), blackfriday.WithNoExtensions())),
 				Channel:      v.ChannelID,
 			})
 		}
