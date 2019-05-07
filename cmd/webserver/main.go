@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -25,7 +26,7 @@ var version string
 func main() {
 
 	log.Info("Starting PubSub")
-	// go websockets.ListenToPubSub()
+	go websockets.ListenToPubSub()
 
 	log.Info("Starting webserver")
 
