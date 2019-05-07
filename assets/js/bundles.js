@@ -1,7 +1,6 @@
 if ($('#bundles-page').length > 0) {
 
-    // Setup datatable
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = $.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
             delete data.columns;
@@ -63,5 +62,18 @@ if ($('#bundles-page').length > 0) {
                 }
             }
         ]
-    }));
+    });
+
+    const $table = $('table.table-datatable2');
+    const dt = $table.DataTable(options);
+
+    websocketListener('bundles', function (e) {
+
+        const info = dt.page.info();
+        if (info.page === 0) { // Page 1
+
+            const data = $.parseJSON(e.data);
+            addDataTablesRow(options, data.Data, info.length, $table);
+        }
+    });
 }
