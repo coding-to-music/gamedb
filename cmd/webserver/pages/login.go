@@ -164,14 +164,14 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
 		log.Err(err)
 
-		err = session.SetBadFlash(w, r, err.Error())
+		err = session.SetBadFlash(r, err.Error())
 		log.Err(err, r)
 
 		redirect = "/login"
 
 	} else {
 
-		err = session.SetGoodFlash(w, r, "Login successful")
+		err = session.SetGoodFlash(r, "Login successful")
 		log.Err(err, r)
 
 		redirect = "/settings"
@@ -313,7 +313,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.Clear(r)
 	log.Err(err, r)
 
-	err = session.SetGoodFlash(w, r, "You have been logged out")
+	err = session.SetGoodFlash(r, "You have been logged out")
 	log.Err(err, r)
 
 	err = session.Save(w, r)

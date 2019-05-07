@@ -43,7 +43,7 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 			}
 		} else {
 			session.Options = &sessions.Options{
-				MaxAge:   2592000, // 30 days
+				MaxAge: 2592000, // 30 days
 				Path:   "/",
 			}
 		}
@@ -140,7 +140,7 @@ func GetBadFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{
 	return getFlashes(w, r, "bad")
 }
 
-func setFlash(w http.ResponseWriter, r *http.Request, flash string, group string) (err error) {
+func setFlash(r *http.Request, flash string, group string) (err error) {
 
 	session, err := getSession(r)
 	if err != nil {
@@ -152,12 +152,12 @@ func setFlash(w http.ResponseWriter, r *http.Request, flash string, group string
 	return nil
 }
 
-func SetGoodFlash(w http.ResponseWriter, r *http.Request, flash string) (err error) {
-	return setFlash(w, r, flash, "good")
+func SetGoodFlash(r *http.Request, flash string) (err error) {
+	return setFlash(r, flash, "good")
 }
 
-func SetBadFlash(w http.ResponseWriter, r *http.Request, flash string) (err error) {
-	return setFlash(w, r, flash, "bad")
+func SetBadFlash(r *http.Request, flash string) (err error) {
+	return setFlash(r, flash, "bad")
 }
 
 func Save(w http.ResponseWriter, r *http.Request) (err error) {

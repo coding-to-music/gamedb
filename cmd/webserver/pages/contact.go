@@ -121,9 +121,9 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	if err != nil {
-		err = session.SetGoodFlash(w, r, err.Error())
+		err = session.SetGoodFlash(r, err.Error())
 	} else {
-		err = session.SetGoodFlash(w, r, "Message sent!")
+		err = session.SetGoodFlash(r, "Message sent!")
 	}
 
 	err = session.Save(w, r)

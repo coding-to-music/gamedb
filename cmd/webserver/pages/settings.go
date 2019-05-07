@@ -43,7 +43,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 
 	if !loggedIn {
-		err := session.SetBadFlash(w, r, "Please login")
+		err := session.SetBadFlash(r, "Please login")
 		log.Err(err, r)
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
@@ -174,11 +174,11 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if good != "" {
-		err = session.SetGoodFlash(w, r, good)
+		err = session.SetGoodFlash(r, good)
 		log.Err(err)
 	}
 	if bad != "" {
-		err = session.SetBadFlash(w, r, bad)
+		err = session.SetBadFlash(r, bad)
 		log.Err(err)
 	}
 
@@ -311,11 +311,11 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if good != "" {
-		err = session.SetGoodFlash(w, r, good)
+		err = session.SetGoodFlash(r, good)
 		log.Err(err)
 	}
 	if bad != "" {
-		err = session.SetBadFlash(w, r, bad)
+		err = session.SetBadFlash(r, bad)
 		log.Err(err)
 	}
 

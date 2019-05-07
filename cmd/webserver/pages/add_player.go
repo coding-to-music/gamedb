@@ -75,7 +75,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
 		if message != "" {
 
-			err := session.SetBadFlash(w, r, message)
+			err := session.SetBadFlash(r, message)
 			log.Err(err)
 
 			err = session.Save(w, r)
