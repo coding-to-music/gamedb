@@ -336,23 +336,18 @@ func (t GlobalTemplate) GetCanonical() (text string) {
 
 func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 
-	// Page created time
-	text += template.HTML(`Page created <span data-livestamp="` + strconv.FormatInt(time.Now().Unix(), 10) + `"></span>.`)
-
-	text += " All times UTC."
-
-	// // Page load time
+	// Page load time
 	// startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
 	// log.Err(err)
 	//
 	// durStr, err := durationfmt.Format(time.Duration(time.Now().UnixNano()-startTimeInt), "%ims")
 	// log.Err(err)
 	//
-	// text += template.HTML(" in " + durStr + ".")
+	// text += template.HTML("Page created  in " + durStr + ".")
 
 	// Deployed commit hash
 	if len(config.Config.CommitHash.Get()) >= 7 {
-		text += template.HTML(` <a href="/commits">v` + config.Config.CommitHash.Get()[0:7] + `</a>.`)
+		text += template.HTML(`<a href="/commits">v` + config.Config.CommitHash.Get()[0:7] + `</a>.`)
 	}
 
 	return text
