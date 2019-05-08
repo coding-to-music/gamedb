@@ -240,8 +240,8 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		// Send websocket
 		wsPayload := websockets.PubSubID64Payload{}
-		wsPayload.ID = player.ID
-		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayers}
+		wsPayload.ID = strconv.FormatInt(player.ID, 10)
+		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayer}
 
 		_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
 		log.Err(err)

@@ -11,7 +11,7 @@ type PubSubIDPayload struct {
 
 type PubSubID64Payload struct {
 	PubSubBasePayload
-	ID int64 `json:"id"`
+	ID string `json:"id"` // String as int64 too large for js
 }
 
 type PubSubChangesPayload struct {

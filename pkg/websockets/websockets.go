@@ -24,7 +24,7 @@ const (
 	PagePackage  WebsocketPage = "package"
 	PagePackages WebsocketPage = "packages"
 	PagePrices   WebsocketPage = "prices"
-	PagePlayers  WebsocketPage = "profile"
+	PagePlayer   WebsocketPage = "profile"
 )
 
 var (
@@ -42,7 +42,7 @@ func init() {
 		PageApp,
 		PagePackage,
 		PagePackages,
-		PagePlayers,
+		PagePlayer,
 		PageBundle,
 		PageBundles,
 	}
@@ -150,7 +150,7 @@ func ListenToPubSub() {
 
 				wsPage.Send(idPayload.ID)
 
-			case PagePlayers:
+			case PagePlayer:
 
 				idPayload := PubSubID64Payload{}
 
