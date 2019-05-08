@@ -73,11 +73,13 @@ func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {
 
 		if duration == 0 || config.IsLocal() {
 
-			w.Header().Set("Cache-Control", "public, max-age=0, s-maxage=0")
-			w.Header().Set("X-Live", "1") // Used in Varnish
+			w.Header().Set("Cache-Control", "max-age=0")
+			w.Header().Set("Expires", time.Now().AddDate(0, 0, -2).Format(time.RFC1123))
+
 		} else {
 
-			w.Header().Set("Cache-Control", "public, max-age=0, s-maxage="+strconv.Itoa(int(duration.Seconds())))
+			w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
+			w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
 		}
 	}
 }
@@ -204,12 +206,12 @@ type GlobalTemplate struct {
 
 	// These variables can't!
 	// Session
-	userName    string
+	UserName    string
 	userEmail   string
-	userID      int
+	UserID      int
 	userLevel   int
-	flashesGood []interface{}
-	flashesBad  []interface{}
+	FlashesGood []interface{}
+	FlashesBad  []interface{}
 	session     map[string]string
 
 	//
@@ -245,14 +247,14 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	log.Err(err, r)
 
 	if id == "" {
-		t.userID = 0
+		t.UserID = 0
 	} else {
-		t.userID, err = strconv.Atoi(id)
+		t.UserID, err = strconv.Atoi(id)
 		log.Err(err, r)
 	}
 
 	// User name
-	t.userName, err = session.Read(r, session.PlayerName)
+	t.UserName, err = session.Read(r, session.PlayerName)
 	log.Err(err, r)
 
 	// Country
@@ -320,6 +322,31 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 }
 
+func (t GlobalTemplate) GetUserJSON() string {
+
+	stringMap := map[string]interface{}{
+		"contactPage":        t.contactPage,
+		"flashesBad":         t.FlashesBad,
+		"flashesGood":        t.FlashesGood,
+		"isAdmin":            t.IsAdmin(),
+		"isLoggedIn":         t.IsLoggedIn(),
+		"loginPage":          t.loginPage,
+		"showAds":            t.showAds(),
+		"toasts":             t.toasts,
+		"userCountry":        t.UserCountry,
+		"userCurrencySymbol": t.UserCurrencySymbol,
+		"userEmail":          t.userEmail,
+		"userID":             strconv.Itoa(t.UserID), // Too long for JS int
+		"userLevel":          t.userLevel,
+		"userName":           t.UserName,
+	}
+
+	b, err := json.Marshal(stringMap)
+	log.Err(err)
+
+	return string(b)
+}
+
 func (t GlobalTemplate) GetMetaImage() (text string) {
 
 	if t.metaImage == "" {
@@ -332,6 +359,16 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 func (t GlobalTemplate) GetCanonical() (text string) {
 
 	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
+}
+
+func (t GlobalTemplate) GetFlag() (text string) {
+
+	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
+
+}
+func (t GlobalTemplate) GetFUserCountry() (text string) {
+
+	return string(t.UserCountry)
 }
 
 func (t GlobalTemplate) GetFooterText() (text template.HTML) {
@@ -353,14 +390,6 @@ func (t GlobalTemplate) GetFooterText() (text template.HTML) {
 	return text
 }
 
-func (t GlobalTemplate) IsCacheHit() bool {
-	return t.request.Header.Get("X-Cache") == "HIT"
-}
-
-func (t GlobalTemplate) IsFromVarnish() bool {
-	return t.request.Header.Get("X-Cache") != ""
-}
-
 func (t GlobalTemplate) IsAppsPage() bool {
 	return helpers.SliceHasString([]string{"apps", "upcoming", "new-releases", "trending", "packages", "bundles"}, strings.TrimPrefix(t.Path, "/"))
 }
@@ -373,15 +402,11 @@ func (t GlobalTemplate) IsMorePage() bool {
 	return helpers.SliceHasString([]string{"changes", "chat", "chat-bot", "commits", "contact", "coop", "experience", "info", "queues", "steam-api"}, strings.TrimPrefix(t.Path, "/"))
 }
 
-func (t GlobalTemplate) isLoggedIn() bool {
-	return t.userID > 0
+func (t GlobalTemplate) IsLoggedIn() bool {
+	return t.UserID > 0
 }
 
-func (t GlobalTemplate) isLocal() bool {
-	return t.Env == string(config.EnvLocal)
-}
-
-func (t GlobalTemplate) isAdmin() bool {
+func (t GlobalTemplate) IsAdmin() bool {
 	return isAdmin(t.request)
 }
 
@@ -427,13 +452,13 @@ func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save
 
 	var err error
 
-	t.flashesGood, err = session.GetGoodFlashes(w, r)
+	t.FlashesGood, err = session.GetGoodFlashes(w, r)
 	log.Err(err, r)
 
-	t.flashesBad, err = session.GetBadFlashes(w, r)
+	t.FlashesBad, err = session.GetBadFlashes(w, r)
 	log.Err(err, r)
 
-	if save && (len(t.flashesGood) > 0 || len(t.flashesBad) > 0) {
+	if save && (len(t.FlashesGood) > 0 || len(t.FlashesBad) > 0) {
 		err = session.Save(w, r)
 		log.Err(err)
 	}

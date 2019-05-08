@@ -52,7 +52,6 @@ func main() {
 
 	// Pages
 	r.Get("/", pages.HomeHandler)
-	r.Get("/session.json", pages.SessionHandler)
 	r.Mount("/admin", pages.AdminRouter())
 	r.Mount("/api", pages.APIRouter())
 	r.Mount("/apps", pages.AppsRouter())

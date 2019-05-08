@@ -1,11 +1,19 @@
 {{define "_flashes"}}
 
-    <div class="alert alert-success d-none" role="alert" id="flashes-good">
-        {{/* Added with JS */}}
-    </div>
+    {{ if gt (len .FlashesGood) 0 }}
+        <div class="alert alert-success" role="alert" id="flashes-good">
+            {{ range $key, $value := .FlashesGood }}
+                <p>{{ $value }}</p>
+            {{ end }}
+        </div>
+    {{ end }}
 
-    <div class="alert alert-danger d-none" role="alert" id="flashes-bad">
-        {{/* Added with JS */}}
-    </div>
+    {{ if gt (len .FlashesBad) 0 }}
+        <div class="alert alert-danger" role="alert" id="flashes-bad">
+            {{ range $key, $value := .FlashesBad }}
+                <p>{{ $value }}</p>
+            {{ end }}
+        </div>
+    {{ end }}
 
 {{end}}
