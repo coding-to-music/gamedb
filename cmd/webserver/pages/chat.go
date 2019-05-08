@@ -44,6 +44,8 @@ func getDiscord() (discord *discordgo.Session, err error) {
 			AuthorAvatar: m.Author.Avatar,
 			Content:      string(blackfriday.Run([]byte(m.Content), blackfriday.WithNoExtensions())),
 			Channel:      m.ChannelID,
+			Time:         string(m.Timestamp),
+			I:            0,
 		})
 	})
 }
@@ -210,7 +212,9 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var messages []websockets.ChatPayload
+	var i float32 = 0
 	for _, v := range messagesResponse {
+
 		if v.Type == discordgo.MessageTypeDefault {
 
 			messages = append(messages, websockets.ChatPayload{
@@ -219,7 +223,11 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				AuthorAvatar: v.Author.Avatar,
 				Content:      string(blackfriday.Run([]byte(v.Content), blackfriday.WithNoExtensions())),
 				Channel:      v.ChannelID,
+				Time:         string(v.Timestamp),
+				I:            i / 20,
 			})
+
+			i++
 		}
 	}
 

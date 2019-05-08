@@ -190,15 +190,6 @@ body #toast-container > div {
 }
 
 // New item fade
-@-webkit-keyframes fade-green {
-    0% {
-        background: #28a745;
-    }
-    100% {
-        background: none;
-    }
-}
-
 @keyframes fade-green {
     0% {
         background: #28a745;
@@ -209,17 +200,7 @@ body #toast-container > div {
 }
 
 .fade-green {
-    -webkit-animation: fade-green 2s ease-in 1;
     animation: fade-green 2s ease-in 1;
-}
-
-@-webkit-keyframes fade-red {
-    0% {
-        background: $red;
-    }
-    100% {
-        background: none;
-    }
 }
 
 @keyframes fade-red {
@@ -232,8 +213,21 @@ body #toast-container > div {
 }
 
 .fade-red {
-    -webkit-animation: fade-red 2s ease-in 1;
     animation: fade-red 2s ease-in 1;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fade-in 0.5s;
+    animation-fill-mode: forwards;
 }
 
 //

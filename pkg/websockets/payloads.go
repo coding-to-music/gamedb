@@ -24,9 +24,11 @@ type AdminPayload struct {
 }
 
 type ChatPayload struct {
-	AuthorID     string `json:"author_id"`
-	AuthorUser   string `json:"author_user"`
-	AuthorAvatar string `json:"author_avatar"`
-	Content      string `json:"content"`
-	Channel      string `json:"channel"`
+	I            float32 `json:"i"`
+	AuthorID     string  `json:"author_id"`
+	AuthorUser   string  `json:"author_user"`
+	AuthorAvatar string  `json:"author_avatar"`
+	Content      string  `json:"content"`
+	Channel      string  `json:"channel"`
+	Time         string  `json:"timestamp"`
 }

@@ -31,7 +31,7 @@ if ($('#chat-page').length > 0) {
         $container.json2html(
             data,
             {
-                '<>': 'li', 'class': 'media', 'html': [
+                '<>': 'li', 'class': 'media fade-in', 'style': 'animation-delay: ${i}s', 'html': [
                     {'<>': 'img', 'class': 'mr-3 rounded', 'src': 'https://cdn.discordapp.com/avatars/${author_id}/${author_avatar}.png?size=64', 'alt': '${author_user}'},
                     {
                         '<>': 'div', 'class': 'media-body', 'html': [
@@ -40,7 +40,7 @@ if ($('#chat-page').length > 0) {
                                     return 'mt-0 mb-1 rounded' + (addToTop ? ' fade-green' : '');
                                 }, 'html': '${content}'
                             },
-                            {'<>': 'p', 'class': 'text-muted', 'html': 'By ${author_user}'}
+                            {'<>': 'p', 'class': 'text-muted', 'html': 'By ${author_user} at <span data-livestamp="${timestamp}"></span>'}
                         ]
                     }
                 ]
