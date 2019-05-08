@@ -175,7 +175,10 @@ function websocketListener(page, onMessage) {
             }
         };
 
-        socket.onmessage = onMessage;
+        socket.onmessage = function (e) {
+            console.log("Websocket: " + e.data);
+            return onMessage(e)
+        };
 
         // Click to close websocket manually
         // $badge.on('click', function (e) {
