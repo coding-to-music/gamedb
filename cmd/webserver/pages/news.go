@@ -27,8 +27,6 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour)
-
 	t := newsTemplate{}
 	t.fill(w, r, "News", "All the news from all the games, all in one place.")
 
@@ -62,8 +60,6 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*1)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

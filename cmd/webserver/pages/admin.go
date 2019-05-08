@@ -47,8 +47,6 @@ func AdminRouter() http.Handler {
 
 func adminHandler(w http.ResponseWriter, r *http.Request) {
 
-	setCacheHeaders(w, 0)
-
 	option := chi.URLParam(r, "option")
 
 	switch option {

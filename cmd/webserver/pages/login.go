@@ -38,8 +38,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour)
-
 	_, err := getPlayerFromSession(r)
 	if err == nil {
 		http.Redirect(w, r, "/settings", http.StatusFound)
@@ -71,8 +69,6 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, 0)
 
 	// Stop brute forces
 	time.Sleep(time.Second / 2)
@@ -190,8 +186,6 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, 0)
-
 	loggedIn, err := session.IsLoggedIn(r)
 	if err != nil {
 		log.Err(err, r)
@@ -223,8 +217,6 @@ var nonceStore = openid.NewSimpleNonceStore()
 var discoveryCache = openid.NewSimpleDiscoveryCache()
 
 func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	setCacheHeaders(w, 0)
 
 	// Get ID from OpenID
 	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
@@ -300,8 +292,6 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, 0)
 
 	id, err := getPlayerIDFromSession(r)
 	err = helpers.IgnoreErrors(err, errNotLoggedIn)

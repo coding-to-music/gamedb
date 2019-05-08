@@ -26,8 +26,6 @@ func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*12)
-
 	var err error
 
 	// Template
@@ -52,8 +50,6 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*6)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

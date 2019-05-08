@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
@@ -30,8 +29,6 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*12)
 
 	// Template
 	t := appsTemplate{}

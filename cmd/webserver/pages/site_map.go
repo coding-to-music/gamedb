@@ -33,8 +33,6 @@ func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	var sitemaps = []string{
 		"/sitemap/pages.xml",
 		"/sitemap/games-by-score.xml",
@@ -60,8 +58,6 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	var pages = []string{
 		"/",
@@ -107,8 +103,6 @@ func siteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	sm := sitemap.NewSitemap()
 
 	for _, v := range sitemapGetGames(r, "reviews_score desc") {
@@ -125,8 +119,6 @@ func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	sm := sitemap.NewSitemap()
 
@@ -146,8 +138,6 @@ func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	sm := sitemap.NewSitemap()
 
 	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, nil, mongo.M{"_id": 1, "name": 1})
@@ -166,8 +156,6 @@ func siteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	sm := sitemap.NewSitemap()
 

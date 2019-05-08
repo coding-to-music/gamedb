@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
@@ -20,8 +19,6 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	t := GlobalTemplate{}
 	t.fill(w, r, "Donate", "Databases take up a tonne of memory and space. Help pay for the server costs or just buy me a beer.")

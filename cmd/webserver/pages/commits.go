@@ -32,8 +32,6 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*1)
-
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
 
@@ -75,8 +73,6 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Minute*10)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

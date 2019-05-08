@@ -33,8 +33,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour)
-
 	t := homeTemplate{}
 	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
@@ -121,8 +119,6 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Minute)
-
 	var filter = mongo.D{
 		{"currency", string(session.GetCountryCode(r))},
 		{"app_id", bson.M{"$gt": 0}},
@@ -176,8 +172,6 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*6)
 
 	id := chi.URLParam(r, "sort")
 

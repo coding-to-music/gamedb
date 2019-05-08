@@ -27,8 +27,6 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour)
-
 	var err error
 
 	t := newReleasesTemplate{}
@@ -55,8 +53,6 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

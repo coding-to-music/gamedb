@@ -3,7 +3,6 @@ package pages
 import (
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/gamedb/cmd/webserver/session"
@@ -27,8 +26,6 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24*7)
 
 	t := contactTemplate{}
 	t.fill(w, r, "Contact", "Get in touch with Game DB.")

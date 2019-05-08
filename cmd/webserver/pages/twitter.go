@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -22,8 +21,6 @@ func twitterHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*1)
 
 	t := twitterTemplate{}
 	t.fill(w, r, "News", "")

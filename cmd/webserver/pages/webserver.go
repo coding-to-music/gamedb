@@ -52,7 +52,7 @@ func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string)
 	return false
 }
 
-func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
+func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)
 	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
@@ -63,30 +63,11 @@ func setAllHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 	if !strings.HasPrefix(r.URL.Path, "/esi") {
 		w.Header().Set("Surrogate-Control", "ESI/1.0") // Enable ESI
 	}
-
-	setCacheHeaders(w, time.Hour*24) // Default cache headers
-}
-
-func setCacheHeaders(w http.ResponseWriter, duration time.Duration) {
-
-	if w.Header().Get("Cache-Control") == "" || w.Header().Get("Expires") == "" {
-
-		if duration == 0 || config.IsLocal() {
-
-			w.Header().Set("Cache-Control", "max-age=0")
-			w.Header().Set("Expires", time.Now().AddDate(0, 0, -2).Format(time.RFC1123))
-
-		} else {
-
-			w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
-			w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
-		}
-	}
 }
 
 func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
 
-	setAllHeaders(w, r, "application/json")
+	setHeaders(w, r, "application/json")
 
 	_, err = w.Write(bytes)
 	return err
@@ -94,7 +75,7 @@ func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
-	setAllHeaders(w, r, "text/html")
+	setHeaders(w, r, "text/html")
 
 	folder := config.Config.TemplatesPath.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(

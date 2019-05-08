@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
@@ -20,8 +19,6 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	t := apiTemplate{}
 	t.fill(w, r, "API", "")

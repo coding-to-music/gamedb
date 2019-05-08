@@ -32,8 +32,6 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	// Template
 	t := statsTemplate{}
 	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
@@ -134,8 +132,6 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Minute*30)
-
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.AddSelect("max(player_online)", "max_player_online")
@@ -176,8 +172,6 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 	if retu {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*6)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -222,8 +216,6 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 
@@ -267,8 +259,6 @@ func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
 	if retu {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {

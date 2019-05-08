@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"path"
 	"strconv"
-	"time"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/gamedb/cmd/webserver/session"
@@ -19,8 +18,6 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	if r.Method == http.MethodPost {
 

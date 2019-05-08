@@ -3,7 +3,6 @@ package pages
 import (
 	"net/http"
 	"sort"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -27,8 +26,6 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	// Template
 	t := chatBotTemplate{}

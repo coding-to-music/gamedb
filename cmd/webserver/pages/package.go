@@ -29,8 +29,6 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour)
-
 	id := chi.URLParam(r, "id")
 
 	idx, err := strconv.Atoi(id)
@@ -190,8 +188,6 @@ func packagePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*3)
 
 	productPricesAjaxHandler(w, r, helpers.ProductTypePackage)
 }

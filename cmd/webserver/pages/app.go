@@ -38,8 +38,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour)
-
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID."})
@@ -377,8 +375,6 @@ func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*3)
 
 	productPricesAjaxHandler(w, r, helpers.ProductTypeApp)
 }

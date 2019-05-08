@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/webserver/session"
@@ -33,8 +32,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour)
 
 	id := chi.URLParam(r, "id")
 	var toasts []Toast
@@ -347,8 +344,6 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour)
-
 	playerID := chi.URLParam(r, "id")
 
 	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
@@ -432,8 +427,6 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, 0)
-
 	message, err, success := func(r *http.Request) (string, error, bool) {
 
 		if helpers.IsBot(r.UserAgent()) {
@@ -500,7 +493,6 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-	setCacheHeaders(w, time.Hour*3)
 
 	id := chi.URLParam(r, "id")
 	if id == "" {

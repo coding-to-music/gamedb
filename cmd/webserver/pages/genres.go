@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -22,8 +21,6 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Hour*24)
 
 	// Get config
 	config, err := sql.GetConfig(sql.ConfGenresUpdated)

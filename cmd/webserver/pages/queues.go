@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -26,8 +25,6 @@ func queuesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	t := queuesTemplate{}
 	t.fill(w, r, "Queues", "When new items get added to the site, they go through a queue to not overload the servers.")
 	t.addAssetHighCharts()
@@ -46,8 +43,6 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Second*10)
 
 	var item = helpers.MemcacheQueues
 	var highcharts = map[string]helpers.HighChartsJson{}

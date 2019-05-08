@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/session"
@@ -29,8 +28,6 @@ func packagesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	total, err := sql.CountPackages()
 	log.Err(err, r)
 
@@ -52,8 +49,6 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, 0)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

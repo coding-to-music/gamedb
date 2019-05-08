@@ -55,8 +55,6 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -181,8 +179,6 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, time.Second*10)
 
 	id := chi.URLParam(r, "id")
 	if id == "" {

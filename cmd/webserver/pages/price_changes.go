@@ -28,8 +28,6 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, time.Hour*24)
-
 	t := priceChangesTemplate{}
 	t.fill(w, r, "Price Changes", "Pick up a bargain.")
 	t.addAssetChosen()
@@ -49,8 +47,6 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, 0)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

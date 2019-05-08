@@ -37,8 +37,6 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, 0)
-
 	loggedIn, err := session.IsLoggedIn(r)
 	log.Err(err)
 
@@ -137,8 +135,6 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCacheHeaders(w, 0)
-
 	var err error
 
 	redirect, good, bad := func() (redirect string, good string, bad string) {
@@ -189,8 +185,6 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
-
-	setCacheHeaders(w, 0)
 
 	var err error
 
@@ -331,8 +325,6 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if ret {
 		return
 	}
-
-	setCacheHeaders(w, 0)
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
