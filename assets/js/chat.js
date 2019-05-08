@@ -18,33 +18,6 @@ if ($('#chat-page').length > 0) {
         },
     });
 
-    $('#reply form').on('submit', function (e) {
-
-        e.preventDefault();
-
-        const button = $(this).find('button');
-
-        button.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-
-        $.ajax({
-            type: 'POST',
-            url: '/chat/' + channel + '/post',
-            dataType: 'json',
-            cache: false,
-            data: {
-                message: $(this).find('textarea').val()
-            },
-            success: function (data, textStatus, jqXHR) {
-
-                button.html('Submit').prop('disabled', false);
-            },
-            complete: function (jqXHR, textStatus) {
-                toast(false, "Failed to post");
-                button.html('Submit').prop('disabled', false);
-            }
-        });
-    });
-
     websocketListener('chat', function (e) {
 
         const data = $.parseJSON(e.data);
