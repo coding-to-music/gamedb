@@ -4,22 +4,22 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/config"
 )
 
 var (
-	discordMutex   sync.Mutex
-	discordSession *discordgo.Session
+	discordConnections = map[string]*discordgo.Session{}
+	discordMutex       sync.Mutex
 )
 
-func GetDiscord(handlers ...interface{}) (session *discordgo.Session, err error) {
+func GetDiscord(botToken string, handlers ...interface{}) (session *discordgo.Session, err error) {
 
 	discordMutex.Lock()
 	defer discordMutex.Unlock()
 
-	if discordSession == nil {
+	_, ok := discordConnections[botToken]
+	if !ok {
 
-		discord, err := discordgo.New("Bot " + config.Config.DiscordRelayToken.Get())
+		discord, err := discordgo.New("Bot " + botToken)
 		if err != nil {
 			return discord, err
 		}
@@ -34,8 +34,8 @@ func GetDiscord(handlers ...interface{}) (session *discordgo.Session, err error)
 			return discord, err
 		}
 
-		discordSession = discord
+		discordConnections[botToken] = discord
 	}
 
-	return discordSession, err
+	return discordConnections[botToken], err
 }

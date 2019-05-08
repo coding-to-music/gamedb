@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/gamedb/gamedb/pkg/chatbot"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
@@ -35,7 +36,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	// Get amount of guilds
 	func() {
 
-		client, err := helpers.GetDiscord()
+		client, err := helpers.GetDiscord(config.Config.DiscordChatBotToken.Get())
 		if err != nil {
 			log.Warning(err)
 			return

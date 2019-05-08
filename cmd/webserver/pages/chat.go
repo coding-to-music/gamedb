@@ -9,6 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -31,7 +32,7 @@ func ChatRouter() http.Handler {
 
 func getDiscord() (discord *discordgo.Session, err error) {
 
-	return helpers.GetDiscord(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	return helpers.GetDiscord(config.Config.DiscordRelayBotToken.Get(), func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		if m.Author.Bot {
 			return

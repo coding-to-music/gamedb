@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -20,13 +18,7 @@ func main() {
 		log.Err("Prod & local only")
 	}
 
-	discord, err := discordgo.New("Bot " + config.Config.DiscordBotToken.Get())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	handler := func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		// Don't reply to bots
 		if m.Author.Bot {
@@ -76,11 +68,11 @@ func main() {
 				return
 			}
 		}
-	})
+	}
 
-	err = discord.Open()
+	_, err := helpers.GetDiscord(config.Config.DiscordChatBotToken.Get(), handler)
 	if err != nil {
-		fmt.Println(err)
+		log.Err(err)
 		return
 	}
 

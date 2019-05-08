@@ -66,8 +66,10 @@ func init() {
 
 	Config.DiscordClientID.Set("DISCORD_CLIENT_ID")
 	Config.DiscordSescret.Set("DISCORD_SECRET")
-	Config.DiscordBotToken.Set("DISCORD_BOT_TOKEN")
-	Config.DiscordRelayToken.Set("DISCORD_RELAY_TOKEN")
+
+	Config.DiscordChatBotToken.Set("DISCORD_BOT_TOKEN")
+	Config.DiscordRelayBotToken.Set("DISCORD_RELAY_TOKEN")
+	Config.DiscordChangesBotToken.Set("DISCORD_CHANGES_BOT_TOKEN")
 
 	Config.Path.Set("PATH")
 	Config.AssetsPath.Set("ASSETS_PATH")
@@ -108,10 +110,11 @@ type BaseConfig struct {
 	AdminEmail   ConfigItem
 	AdminSteamID ConfigItem
 
-	DiscordClientID   ConfigItem
-	DiscordSescret    ConfigItem
-	DiscordRelayToken ConfigItem
-	DiscordBotToken   ConfigItem
+	DiscordClientID        ConfigItem
+	DiscordSescret         ConfigItem
+	DiscordRelayBotToken   ConfigItem
+	DiscordChatBotToken    ConfigItem
+	DiscordChangesBotToken ConfigItem
 
 	InfluxURL      ConfigItem
 	InfluxPassword ConfigItem

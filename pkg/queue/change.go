@@ -207,7 +207,7 @@ func sendChangeToDiscord(changes map[int]*mongo.Change, appMap map[int]string, p
 
 	if config.IsProd() {
 
-		discord, err := helpers.GetDiscord()
+		discord, err := helpers.GetDiscord(config.Config.DiscordChangesBotToken.Get())
 		if err != nil {
 			return err
 		}
