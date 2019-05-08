@@ -666,7 +666,9 @@ func updatePlayerWishlist(player *mongo.Player) error {
 
 	resp, b, err := helpers.GetSteam().GetWishlist(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, []int{500})
-	if err != nil {
+	if err == steam.ErrWishlistNotFound {
+		return nil
+	} else if err != nil {
 		return err
 	}
 

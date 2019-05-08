@@ -29,6 +29,8 @@ github.com/Jleagle/steam-go v0.0.0-20190502203125-a4e99dea0d34 h1:G9UH9tr4Lo3jDN
 github.com/Jleagle/steam-go v0.0.0-20190502203125-a4e99dea0d34/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
 github.com/Jleagle/steam-go v0.0.0-20190507120930-08ece1b715a8 h1:RDZxVbHF0AaDFstQ3dEGBJDA2Rl9eNkw8RUlSe7nnks=
 github.com/Jleagle/steam-go v0.0.0-20190507120930-08ece1b715a8/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190508202824-36db23b6bbf5 h1:5XNGmWe6l2T+Mzdl01/7ArycmfXPGiUz0Cx66mDczjo=
+github.com/Jleagle/steam-go v0.0.0-20190508202824-36db23b6bbf5/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
 github.com/Jleagle/unmarshal-go v0.0.0-20190127220637-8ab9c10d2f0a h1:G5x66H0pfUAElcx6zz+rJFZ3pbTtamIWSnIomJD3y9U=
 github.com/Jleagle/unmarshal-go v0.0.0-20190127220637-8ab9c10d2f0a/go.mod h1:+hHDI4094ErQxmLu6+WeGWi7XMfc+Vr8FEPy5WyYPJU=
 github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9 h1:9XBNLl2K0jcQTKojALrFctO6AeF3NH2TFv7JjslCjr0=
