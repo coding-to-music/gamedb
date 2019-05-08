@@ -103,9 +103,6 @@ func (p *Page) Send(data interface{}) {
 
 				if strings.Contains(err.Error(), "broken pipe") {
 
-					// Clean up old connections
-					err := v.Close()
-					log.Err(err)
 					p.mutex.Lock()
 					delete(p.connections, k)
 					p.mutex.Unlock()
