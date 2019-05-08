@@ -33,10 +33,9 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 
 	var err error
 	var payload = baseMessage{
-		Message: packageMessage{},
+		Message:       packageMessage{},
+		OriginalQueue: queueGoPackages,
 	}
-
-	payload.OriginalQueue = queueGoPackages
 
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {

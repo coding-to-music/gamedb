@@ -29,10 +29,9 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 
 	var err error
 	var payload = baseMessage{
-		Message: changeMessage{},
+		Message:       changeMessage{},
+		OriginalQueue: queueGoChanges,
 	}
-
-	payload.OriginalQueue = queueGoChanges
 
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
