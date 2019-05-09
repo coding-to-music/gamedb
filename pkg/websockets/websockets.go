@@ -127,7 +127,7 @@ func ListenToPubSub() {
 
 	err := helpers.Subscribe(helpers.PubSubWebsockets, func(m *pubsub.Message) {
 
-		log.Info("Incoming PubSub: " + string(m.Data))
+		// log.Info("PubSub (" + humanize.Bytes(uint64(len(m.Data))) + "): " + string(m.Data))
 
 		pubSubMsg := PubSubBasePayload{}
 		err := helpers.Unmarshal(m.Data, &pubSubMsg)
@@ -167,6 +167,11 @@ func ListenToPubSub() {
 				log.Err(err)
 
 				wsPage.Send(changePayload.Data)
+
+				// log.Info(m.Data)
+				// for _, v := range changePayload.Data {
+				// 	log.Info(v[0])
+				// }
 
 			default:
 				log.Err("no handler for page: " + string(page))
