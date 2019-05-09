@@ -162,7 +162,7 @@ func log(interfaces ...interface{}) {
 	case SeverityError:
 		logger.Println(aurora.Red(entry.toText(true)))
 	case SeverityWarning:
-		logger.Println(aurora.Brown(entry.toText(false)))
+		logger.Println(aurora.Brown(entry.toText(true)))
 	case SeverityInfo:
 		logger.Println(entry.toText(false))
 	case SeverityDebug:
