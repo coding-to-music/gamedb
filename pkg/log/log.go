@@ -148,7 +148,7 @@ func log(interfaces ...interface{}) {
 			loggingServices = append(loggingServices, val)
 		case Option:
 		default:
-			// Warning("Invalid value given to log: " + reflect.TypeOf(val).String())
+			Warning("Invalid value given to log: " + reflect.TypeOf(val).String())
 		}
 	}
 
