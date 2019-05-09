@@ -66,7 +66,7 @@ func GetPage(page WebsocketPage) (ret Page) {
 type Page struct {
 	name        WebsocketPage
 	connections map[uuid.UUID]*websocket.Conn
-	mutex       sync.RWMutex
+	mutex       sync.Mutex
 }
 
 func (p Page) GetName() WebsocketPage {
@@ -96,23 +96,22 @@ func (p *Page) Send(data interface{}) {
 		payload.Page = p.name
 		payload.Data = data
 
-		p.mutex.RLock()
+		p.mutex.Lock()
 		for k, v := range p.connections {
 			err := v.WriteJSON(payload)
 			if err != nil {
 
 				if strings.Contains(err.Error(), "broken pipe") {
 
-					p.mutex.Lock()
 					delete(p.connections, k)
-					p.mutex.Unlock()
 
 				} else {
+
 					log.Err(err)
 				}
 			}
 		}
-		p.mutex.RUnlock()
+		p.mutex.Unlock()
 	}
 }
 
