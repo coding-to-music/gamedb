@@ -99,6 +99,9 @@ func (payload baseMessage) getNextAttempt() time.Time {
 // Remove from queue
 func (payload baseMessage) ack(msg amqp.Delivery) {
 
+	if payload.ActionTaken {
+		return
+	}
 	payload.ActionTaken = true
 
 	err := msg.Ack(false)
@@ -107,6 +110,9 @@ func (payload baseMessage) ack(msg amqp.Delivery) {
 
 func (payload baseMessage) ackMulti(msg amqp.Delivery) {
 
+	if payload.ActionTaken {
+		return
+	}
 	payload.ActionTaken = true
 
 	err := msg.Ack(true)
@@ -116,6 +122,9 @@ func (payload baseMessage) ackMulti(msg amqp.Delivery) {
 // Send to failed queue
 func (payload baseMessage) fail(msg amqp.Delivery) {
 
+	if payload.ActionTaken {
+		return
+	}
 	payload.ActionTaken = true
 
 	err := produce(payload, queueGoFailed)
@@ -134,6 +143,9 @@ func (payload baseMessage) fail(msg amqp.Delivery) {
 // Send to delay queue
 func (payload baseMessage) ackRetry(msg amqp.Delivery) {
 
+	if payload.ActionTaken {
+		return
+	}
 	payload.ActionTaken = true
 
 	payload.Attempt++
