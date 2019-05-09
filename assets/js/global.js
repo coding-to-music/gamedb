@@ -221,13 +221,12 @@ if (isIterable(user.toasts)) {
 // Fix URLs
 $(document).ready(function () {
     const path = $('#app-page, #package-page, #player-page, #bundle-page').attr('data-path');
-    if (path !== '' && path !== window.location.pathname) {
-        history.replaceState(null, null, path);
+    if (path && path !== window.location.pathname) {
+        history.replaceState(null, null, path + window.location.hash);
     }
 });
 
-// Broken images
-$(document).ready(function () {
+function fixBrokenImages() {
 
     $('img').one('error', function () {
 
@@ -240,4 +239,7 @@ $(document).ready(function () {
     $('img[src=""][data-src]').each(function (i, value) {
         this.src = $(this).attr('data-src');
     });
-});
+}
+
+// Broken images
+$(document).ready(fixBrokenImages);

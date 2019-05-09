@@ -83,6 +83,11 @@ $dataTables.on('page.dt', function (e, settings, processing) {
     }, 200);
 });
 
+$dataTables.on('draw.dt', function (e, settings) {
+
+    fixBrokenImages();
+});
+
 // Server side
 const dtDefaultOptions = {
     "ajax": function (data, callback, settings) {
@@ -137,21 +142,26 @@ const dtDefaultOptions = {
 };
 
 // Server side events
-$('table.table-datatable2:not(.table-no-fade)').on('page.dt search.dt', function (e, settings, processing) {
+$dataTables2.filter(':not(.table-no-fade)').on('page.dt search.dt', function (e, settings, processing) {
 
     $(this).fadeTo(500, 0.3);
-
-    if (e.type === 'page') {
-
-        const top = $(this).prev().offset().top - 15;
-        $('html, body').animate({scrollTop: top}, 200);
-    }
 
 }).on('draw.dt', function (e, settings, processing) {
 
     $(this).fadeTo(100, 1);
-    highLightOwnedGames();
+});
 
+$dataTables2.on('page.dt', function (e, settings, processing) {
+
+    $('html, body').animate({
+        scrollTop: $(this).prev().offset().top - 15
+    }, 200);
+});
+
+$dataTables2.on('draw.dt', function (e, settings, processing) {
+
+    highLightOwnedGames();
+    fixBrokenImages();
 });
 
 //
