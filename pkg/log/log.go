@@ -6,6 +6,7 @@ import (
 	logg "log"
 	"net/http"
 	"os"
+	"reflect"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -124,20 +125,25 @@ func log(interfaces ...interface{}) {
 		switch val := v.(type) {
 		case nil:
 			continue
+		case []byte:
+			entry.text = string(val)
 		case time.Duration:
 			entry.text = val.String()
 		case int:
 			entry.text = strconv.Itoa(val)
 		case int64:
 			entry.text = strconv.FormatInt(val, 10)
+		case float32:
+			entry.text = strconv.FormatFloat(float64(val), 'f', -1, 32)
+		case float64:
+			entry.text = strconv.FormatFloat(float64(val), 'f', -1, 64)
 		case string:
 			entry.text = val
+			fmt.Println(val)
 		case *http.Request:
 			entry.request = val
 		case error:
-			if val != nil {
-				entry.error = val.Error()
-			}
+			entry.error = val.Error()
 		case LogName:
 			entry.logName = val
 		case Severity:
