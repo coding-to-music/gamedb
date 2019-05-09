@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 
@@ -79,8 +80,18 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 		}
 	}
 
+	// Convert map to slice sor soeting
+	var changeSlice []*mongo.Change
+	for _, v := range changes {
+		changeSlice = append(changeSlice, v)
+	}
+
+	sort.Slice(changeSlice, func(i, j int) bool {
+		return changeSlice[i].ID < changeSlice[j].ID
+	})
+
 	// Save to Mongo
-	err = saveChangesToMongo(changes)
+	err = saveChangesToMongo(changeSlice)
 	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
 		logError(err)
 		payload.ackRetry(msg)
@@ -88,7 +99,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Get apps and packages for all changes in message
-	appMap, packageMap, err := getChangesAppsAndPackages(changes)
+	appMap, packageMap, err := getChangesAppsAndPackages(changeSlice)
 	if err != nil {
 		logError(err)
 		payload.ackRetry(msg)
@@ -96,7 +107,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send websocket
-	err = sendChangesWebsocket(changes, appMap, packageMap)
+	err = sendChangesWebsocket(changeSlice, appMap, packageMap)
 	if err != nil {
 		logError(err)
 		payload.ackRetry(msg)
@@ -104,7 +115,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send to Discord
-	err = sendChangeToDiscord(changes, appMap, packageMap)
+	err = sendChangeToDiscord(changeSlice, appMap, packageMap)
 	if err != nil {
 		logError(err)
 		payload.ackRetry(msg)
@@ -131,7 +142,7 @@ type RabbitMessageChangesPICS struct {
 	JobID steamKitJob `json:"JobID"`
 }
 
-func saveChangesToMongo(changes map[int]*mongo.Change) (err error) {
+func saveChangesToMongo(changes []*mongo.Change) (err error) {
 
 	var changesDocuments []mongo.Document
 	for _, v := range changes {
@@ -148,7 +159,7 @@ func saveChangesToMongo(changes map[int]*mongo.Change) (err error) {
 	return err
 }
 
-func getChangesAppsAndPackages(changes map[int]*mongo.Change) (appMap map[int]string, packageMap map[int]string, err error) {
+func getChangesAppsAndPackages(changes []*mongo.Change) (appMap map[int]string, packageMap map[int]string, err error) {
 
 	appMap = map[int]string{}
 	packageMap = map[int]string{}
@@ -181,7 +192,7 @@ func getChangesAppsAndPackages(changes map[int]*mongo.Change) (appMap map[int]st
 	return appMap, packageMap, err
 }
 
-func sendChangesWebsocket(changes map[int]*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
+func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
 
 	var ws [][]interface{}
 	for _, v := range changes {
@@ -202,7 +213,7 @@ func sendChangesWebsocket(changes map[int]*mongo.Change, appMap map[int]string, 
 	return nil
 }
 
-func sendChangeToDiscord(changes map[int]*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
+func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
 
 	if config.IsProd() {
 
