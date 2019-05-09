@@ -77,14 +77,6 @@ if ($('#changes-page').length > 0) {
         ]
     });
 
-    function sortByProductName(a, b) {
-        if (a.name < b.name)
-            return -1;
-        if (a.name > b.name)
-            return 1;
-        return 0;
-    }
-
     const $table = $('table.table-datatable2');
     const dt = $table.DataTable(options);
 
@@ -97,6 +89,11 @@ if ($('#changes-page').length > 0) {
 
             // Loop changes in websocket data and add each one
             if (isIterable(data.Data)) {
+
+                data.Data.sort(function (a, b) {
+                    return Math.sign(a[0] - b[0]);
+                });
+
                 for (const v of data.Data) {
                     addDataTablesRow(options, v, info.length, $table);
                 }
