@@ -182,7 +182,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 	wg.Wait()
 
-	if payload.ActionTaken {
+	if payload.actionTaken {
 		return
 	}
 
@@ -228,7 +228,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 	wg.Wait()
 
-	if payload.ActionTaken {
+	if payload.actionTaken {
 		return
 	}
 
@@ -249,7 +249,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 	wg.Wait()
 
-	if payload.ActionTaken {
+	if payload.actionTaken {
 		return
 	}
 

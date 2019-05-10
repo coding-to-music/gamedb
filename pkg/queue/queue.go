@@ -80,7 +80,8 @@ type baseMessage struct {
 	FirstSeen     time.Time   `json:"first_seen"`
 	Attempt       int         `json:"attempt"`
 	OriginalQueue queueName   `json:"original_queue"`
-	ActionTaken   bool        `json:"-"`
+	actionTaken   bool        `json:"-"`
+	actionMutex   sync.Mutex  `json:"-"`
 }
 
 func (payload baseMessage) getNextAttempt() time.Time {
@@ -99,10 +100,13 @@ func (payload baseMessage) getNextAttempt() time.Time {
 // Remove from queue
 func (payload baseMessage) ack(msg amqp.Delivery) {
 
-	if payload.ActionTaken {
+	payload.actionMutex.Lock()
+	defer payload.actionMutex.Unlock()
+
+	if payload.actionTaken {
 		return
 	}
-	payload.ActionTaken = true
+	payload.actionTaken = true
 
 	err := msg.Ack(false)
 	logError(err)
@@ -110,10 +114,13 @@ func (payload baseMessage) ack(msg amqp.Delivery) {
 
 func (payload baseMessage) ackMulti(msg amqp.Delivery) {
 
-	if payload.ActionTaken {
+	payload.actionMutex.Lock()
+	defer payload.actionMutex.Unlock()
+
+	if payload.actionTaken {
 		return
 	}
-	payload.ActionTaken = true
+	payload.actionTaken = true
 
 	err := msg.Ack(true)
 	logError(err)
@@ -122,10 +129,13 @@ func (payload baseMessage) ackMulti(msg amqp.Delivery) {
 // Send to failed queue
 func (payload baseMessage) fail(msg amqp.Delivery) {
 
-	if payload.ActionTaken {
+	payload.actionMutex.Lock()
+	defer payload.actionMutex.Unlock()
+
+	if payload.actionTaken {
 		return
 	}
-	payload.ActionTaken = true
+	payload.actionTaken = true
 
 	err := produce(payload, queueGoFailed)
 	if err != nil {
@@ -143,10 +153,13 @@ func (payload baseMessage) fail(msg amqp.Delivery) {
 // Send to delay queue
 func (payload baseMessage) ackRetry(msg amqp.Delivery) {
 
-	if payload.ActionTaken {
+	payload.actionMutex.Lock()
+	defer payload.actionMutex.Unlock()
+
+	if payload.actionTaken {
 		return
 	}
-	payload.ActionTaken = true
+	payload.actionTaken = true
 
 	payload.Attempt++
 
