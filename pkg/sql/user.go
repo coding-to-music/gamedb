@@ -7,31 +7,36 @@ import (
 )
 
 type User struct {
-	CreatedAt    time.Time `gorm:"not null;column:created_at"`
-	UpdatedAt    time.Time `gorm:"not null;column:updated_at"`
-	PlayerID     int64     `gorm:"not null;column:player_id;primary_key"`
-	Email        string    `gorm:"not null;column:email;index:email"`
-	Verified     bool      `gorm:"not null;column:verified"`
-	Password     string    `gorm:"not null;column:password"`
-	HideProfile  int8      `gorm:"not null;column:hide_profile"`
-	ShowAlerts   int8      `gorm:"not null;column:show_alerts"`
-	CountryCode  string    `gorm:"not null;column:country_code"`
-	PatreonLevel int8      `gorm:"not null;column:patreon_level"`
+	CreatedAt     time.Time `gorm:"not null;column:created_at"`
+	UpdatedAt     time.Time `gorm:"not null;column:updated_at"`
+	Email         string    `gorm:"not null;column:email;primary_key"`
+	EmailVerified bool      `gorm:"not null;column:email_verified"`
+	Password      string    `gorm:"not null;column:password"`
+	SteamID       int64     `gorm:"not null;column:steam_id"`
+	PatreonID     int64     `gorm:"not null;column:steam_id"`
+	PatreonLevel  int8      `gorm:"not null;column:patreon_level"`
+	HideProfile   int8      `gorm:"not null;column:hide_profile"`
+	ShowAlerts    int8      `gorm:"not null;column:show_alerts"`
+	CountryCode   string    `gorm:"not null;column:country_code"`
 }
 
-func GetUsersByEmail(email string) (users []User, err error) {
+func GetUser(email string, mustBeVerified bool) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
-		return users, err
+		return user, err
 	}
 
-	db = db.Limit(100).Where("email = (?)", email).Order("created_at ASC").Find(&users)
-	if db.Error != nil {
-		return users, db.Error
+	db = db.Where("email = ?", email)
+
+	if mustBeVerified {
+		db = db.Where("email_verified = ?", true)
 	}
 
-	return users, nil
+	db = db.First(&user)
+
+	return user, db.Error
+
 }
 
 func GetOrCreateUser(playerID int64) (user User, err error) {
@@ -41,7 +46,7 @@ func GetOrCreateUser(playerID int64) (user User, err error) {
 		return user, err
 	}
 
-	db.Attrs(User{CountryCode: string(steam.CountryUS)}).FirstOrCreate(&user, User{PlayerID: playerID})
+	db.Attrs(User{CountryCode: string(steam.CountryUS)}).FirstOrCreate(&user, User{SteamID: playerID})
 
 	return user, db.Error
 }

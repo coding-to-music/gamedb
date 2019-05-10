@@ -15,10 +15,10 @@
 
             <ul class="nav nav-tabs card-header-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#gamedb" role="tab"><i class="fas fa-key"></i> Login with Username</a>
+                    <a class="nav-link active" data-toggle="tab" href="#gamedb" role="tab">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#steam" role="tab"><i class="fab fa-steam-square"></i> Register / Login with Steam</a>
+                    <a class="nav-link" data-toggle="tab" href="#signup" role="tab">Sign Up</a>
                 </li>
             </ul>
 
@@ -34,7 +34,7 @@
                             <form action="/login" method="post" data-recaptcha>
                                 <div class="form-group">
                                     <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" placeholder="Email" name="email" autofocus required>
+                                    <input type="email" class="form-control" id="email" placeholder="Email" name="email" value="{{ .LoginEmail }}" autofocus required>
                                 </div>
 
                                 <div class="form-group">
@@ -54,21 +54,38 @@
                     </div>
 
                 </div>
-                <div class="tab-pane" id="steam" role="tabpanel">
+                <div class="tab-pane" id="signup" role="tabpanel">
 
-                    <p>Logging in with Steam tells Game DB who you are on Steam.</p>
-                    <p>Game DB can only retrieve public information in accordance to your
-                        <a href="https://steamcommunity.com/my/edit/settings" target="_blank">privacy settings</a>.</p>
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-8 col-lg-6">
 
-                    <form action="https://steamcommunity.com/openid/login" method="post">
-                        <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
-                        <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
-                        <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
-                        <input type="hidden" name="openid.mode" value="checkid_setup">
-                        <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
-                        <input type="hidden" name="openid.return_to" value="{{ .Domain }}/login/callback">
-                        <button type="submit" class="btn btn-success">Login with Steam</button>
-                    </form>
+                            <form action="/login/signup" method="post" data-recaptcha>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ .SignupEmail }}" autofocus required>
+                                    <small>A verification email will be sent here.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" autocomplete="new-password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password2">Confirm Password</label>
+                                    <input type="password" class="form-control" id="password2" name="password2" autocomplete="new-password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="message">Captcha</label>
+                                    <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success">Login</button>
+                            </form>
+
+                        </div>
+                    </div>
 
                 </div>
             </div>

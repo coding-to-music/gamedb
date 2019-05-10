@@ -66,7 +66,9 @@ func AutoPlayerRefreshes() {
 	}
 
 	for _, v := range users {
-		err := queue.ProducePlayer(v.PlayerID)
-		log.Err(err)
+		if v.SteamID > 0 {
+			err := queue.ProducePlayer(v.SteamID)
+			log.Err(err)
+		}
 	}
 }

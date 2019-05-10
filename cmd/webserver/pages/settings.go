@@ -3,17 +3,21 @@ package pages
 import (
 	"errors"
 	"net/http"
+	"path"
 	"strconv"
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/webserver/session"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,7 +29,9 @@ func SettingsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", settingsHandler)
 	r.Post("/", settingsPostHandler)
-	// r.Post("/delete", deletePostHandler)
+	r.Get("/openid", loginOpenIDHandler)
+	r.Get("/callback", loginOpenIDCallbackHandler)
+	r.Post("/delete", deletePostHandler)
 	r.Get("/events.json", settingsEventsAjaxHandler)
 	return r
 }
@@ -158,7 +164,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 			return "/settings", "", "There was an eror saving your information."
 		}
 
-		if r.PostForm.Get("id") == strconv.FormatInt(user.PlayerID, 10) {
+		if r.PostForm.Get("id") == strconv.FormatInt(user.SteamID, 10) {
 
 			err = session.Clear(r)
 			log.Err(err)
@@ -227,7 +233,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.PostForm.Get("password")
 
 		if email != user.Email {
-			user.Verified = false
+			user.EmailVerified = false
 		}
 
 		if password != "" {
@@ -278,7 +284,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Have to save as a map because gorm does not save empty values otherwise
 		db = db.Model(&user).Updates(map[string]interface{}{
 			"email":        user.Email,
-			"verified":     user.Verified,
+			"verified":     user.EmailVerified,
 			"password":     user.Password,
 			"hide_profile": user.HideProfile,
 			"show_alerts":  user.ShowAlerts,
@@ -378,4 +384,93 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
+}
+
+func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	ret := setAllowedQueries(w, r, []string{})
+	if ret {
+		return
+	}
+
+	loggedIn, err := session.IsLoggedIn(r)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	if loggedIn {
+		http.Redirect(w, r, "/settings", http.StatusFound)
+		return
+	}
+
+	var url string
+	var domain = config.Config.GameDBDomain.Get()
+	url, err = openid.RedirectURL("https://steamcommunity.com/openid/login", domain+"/login/callback", domain+"/")
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong sending you to Steam.", Error: err})
+		return
+	}
+
+	http.Redirect(w, r, url, http.StatusFound)
+}
+
+// todo
+// For the demo, we use in-memory infinite storage nonce and discovery
+// cache. In your app, do not use this as it will eat up memory and never
+// free it. Use your own implementation, on a better database system.
+// If you have multiple servers for example, you may need to share at least
+// the nonceStore between them.
+var nonceStore = openid.NewSimpleNonceStore()
+var discoveryCache = openid.NewSimpleDiscoveryCache()
+
+func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Get ID from OpenID
+	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+		return
+	}
+
+	// Convert to int
+	ID, err := strconv.ParseInt(path.Base(openID), 10, 64)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+		return
+	}
+
+	// Check if we have the player
+	player, err := mongo.GetPlayer(ID)
+	if err != nil && err != mongo.ErrNoDocuments {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+		return
+	}
+
+	// Queue for an update
+	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
+
+		err = queue.ProducePlayer(player.ID)
+		log.Err(err, r)
+	}
+
+	// Get user
+	user, err := sql.GetOrCreateUser(ID)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
+		return
+	}
+
+	// err = login(w, r, player, user)
+	// if err != nil {
+	// 	returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
+	// 	return
+	// }
+
+	err = session.Save(w, r)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
+		return
+	}
+
+	http.Redirect(w, r, "/settings", http.StatusFound)
 }

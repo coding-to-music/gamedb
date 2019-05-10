@@ -1,22 +1,19 @@
 package pages
 
 import (
-	"errors"
 	"net/http"
-	"path"
 	"strconv"
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
-	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,8 +22,7 @@ func LoginRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", loginHandler)
 	r.Post("/", loginPostHandler)
-	r.Get("/openid", loginOpenIDHandler)
-	r.Get("/callback", loginOpenIDCallbackHandler)
+	r.Post("/signup", signupPostHandler)
 	r.Get("/logout", logoutHandler)
 	return r
 }
@@ -38,8 +34,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := getPlayerFromSession(r)
+	_, err := getUserFromSession(r)
 	if err == nil {
+
+		err = session.SetGoodFlash(r, "Login successful")
+		log.Err(err, r)
+
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
 	}
@@ -50,6 +50,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.Domain = config.Config.GameDBDomain.Get()
 	t.setFlashes(w, r, true)
 
+	t.LoginEmail, err = session.Read(r, "login-email")
+	log.Err(err, r)
+	t.SignupEmail, err = session.Read(r, "signup-email")
+	log.Err(err, r)
+
 	err = returnTemplate(w, r, "login", t)
 	log.Err(err, r)
 }
@@ -58,10 +63,9 @@ type loginTemplate struct {
 	GlobalTemplate
 	RecaptchaPublic string
 	Domain          string
+	LoginEmail      string
+	SignupEmail     string
 }
-
-var ErrInvalidCreds = errors.New("invalid username or password")
-var ErrInvalidCaptcha = errors.New("please check the captcha")
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -70,220 +74,219 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Stop brute forces
 	time.Sleep(time.Second / 2)
 
-	err := func() (err error) {
+	message, success := func() (message string, success bool) {
 
 		// Parse form
-		err = r.ParseForm()
+		err := r.ParseForm()
 		if err != nil {
-			return err
+			log.Err(err, r)
+			return "An error occurred", false
 		}
 
-		// Save email so they don't need to keep typing it
-		err = session.Write(r, "login-email", r.PostForm.Get("email"))
-		log.Err(err, r)
-
-		// Recaptcha
-		if config.IsProd() {
-			err = recaptcha.CheckFromRequest(r)
-			if err != nil {
-
-				if err == recaptcha.ErrNotChecked {
-					return ErrInvalidCaptcha
-				}
-
-				return err
-			}
-		}
-
-		// Field validation
 		email := r.PostForm.Get("email")
 		password := r.PostForm.Get("password")
 
-		if email == "" || password == "" {
-			return ErrInvalidCreds
-		}
-
-		// Get users that match the email
-		users, err := sql.GetUsersByEmail(email)
+		// Remember email
+		err = session.Write(r, "login-email", r.PostForm.Get("email"))
 		if err != nil {
-			return err
+			log.Err(err, r)
 		}
 
-		if len(users) == 0 {
-			return ErrInvalidCreds
+		// Field validation
+		if email == "" {
+			return "Please fill in your email address", false
 		}
 
-		// Check password matches
-		var user sql.User
-		var success bool
-		for _, v := range users {
+		if password == "" {
+			return "Please fill in your password", false
+		}
 
-			err = bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(password))
-			if err == nil {
-				success = true
-				user = v
-				break
+		err = checkmail.ValidateFormat(email)
+		if err != nil {
+			return "Invalid email address", false
+		}
+
+		if config.IsProd() {
+			err = recaptcha.CheckFromRequest(r)
+			if err != nil {
+				return "Please check the captcha", false
 			}
 		}
 
-		if !success {
-			return ErrInvalidCreds
+		// Find user
+		user, err := sql.GetUser(email, true)
+		if err != nil {
+			log.Err(err, r)
+			return "Incorrect credentials", false
 		}
 
-		// Get player from user
-		player, err := mongo.GetPlayer(user.PlayerID)
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if err != nil {
-			return errors.New("no corresponding player")
+			return "Incorrect credentials", false
 		}
 
 		// Log user in
-		err = login(w, r, player, user)
-		if err != nil {
-			return err
+		sessionData := map[string]string{
+			session.UserEmail:   user.Email,
+			session.UserCountry: user.CountryCode,
 		}
 
-		// Remove form prefill on success
-		err = session.Write(r, "login-email", "")
-		log.Err(err, r)
+		player, err := mongo.GetPlayer(user.SteamID)
+		if err == nil {
 
-		return nil
+			sessionData[session.PlayerID] = strconv.FormatInt(player.ID, 10)
+			sessionData[session.PlayerName] = player.PersonaName
+			sessionData[session.PlayerLevel] = strconv.Itoa(player.Level)
+		} else {
+			log.Err(err, r)
+		}
+
+		err = session.WriteMany(w, r, sessionData)
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred", false
+		}
+
+		// Create login event
+		err = mongo.CreateEvent(r, player.ID, mongo.EventLogin)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		return "You have been logged in", true
 	}()
 
-	// Redirect
-	var redirect string
+	//
+	if success {
 
-	if err != nil {
-
-		err := helpers.IgnoreErrors(err, ErrInvalidCreds, ErrInvalidCaptcha)
-		log.Err(err)
-
-		err = session.SetBadFlash(r, err.Error())
+		err := session.SetGoodFlash(r, message)
 		log.Err(err, r)
 
-		redirect = "/login"
+		http.Redirect(w, r, "/settings", http.StatusFound)
 
 	} else {
 
-		err = session.SetGoodFlash(r, "Login successful")
+		err := session.SetBadFlash(r, message)
 		log.Err(err, r)
 
-		redirect = "/settings"
+		http.Redirect(w, r, "/login", http.StatusFound)
 	}
 
-	err = session.Save(w, r)
-	log.Err(err)
-
-	http.Redirect(w, r, redirect, http.StatusFound)
+	err := session.Save(w, r)
+	log.Err(err, r)
 }
 
-func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
+func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})
 	if ret {
 		return
 	}
 
-	loggedIn, err := session.IsLoggedIn(r)
-	if err != nil {
-		log.Err(err, r)
-	}
+	time.Sleep(time.Second)
 
-	if loggedIn {
+	message, success := func() (message string, success bool) {
+
+		// Parse form
+		err := r.ParseForm()
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred", false
+		}
+
+		email := r.PostForm.Get("email")
+		password := r.PostForm.Get("password")
+		password2 := r.PostForm.Get("password2")
+
+		// Remember email
+		err = session.Write(r, "signup-email", email)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		// Field validation
+		if email == "" {
+			return "Please fill in your email address", false
+		}
+
+		if password == "" || password2 == "" {
+			return "Please fill in your password", false
+		}
+
+		if password != password2 {
+			return "Passwords do not match", false
+		}
+
+		err = checkmail.ValidateFormat(email)
+		if err != nil {
+			return "Invalid email address", false
+		}
+
+		if config.IsProd() {
+			err = recaptcha.CheckFromRequest(r)
+			if err != nil {
+				return "Please check the captcha", false
+			}
+		}
+
+		// Check user doesnt exist
+		_, err = sql.GetUser(email, false)
+		if err == nil {
+			return "An account with this email already exists", true
+		} else {
+			log.Err(err, r)
+		}
+
+		// Create user
+		db, err := sql.GetMySQLClient()
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred", false
+		}
+
+		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred", false
+		}
+
+		db = db.Create(&sql.User{
+			Email:         email,
+			EmailVerified: false,
+			Password:      string(passwordBytes),
+		})
+
+		if db.Error != nil {
+			log.Err(err, r)
+			return "An error occurred", false
+		}
+
+		// todo, send email
+
+		return "Account created", true
+	}()
+
+	//
+	if success {
+
+		err := session.SetGoodFlash(r, message)
+		log.Err(err, r)
+
 		http.Redirect(w, r, "/settings", http.StatusFound)
-		return
-	}
 
-	var url string
-	var domain = config.Config.GameDBDomain.Get()
-	url, err = openid.RedirectURL("https://steamcommunity.com/openid/login", domain+"/login/callback", domain+"/")
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong sending you to Steam.", Error: err})
-		return
-	}
+	} else {
 
-	http.Redirect(w, r, url, http.StatusFound)
-}
-
-// todo
-// For the demo, we use in-memory infinite storage nonce and discovery
-// cache. In your app, do not use this as it will eat up memory and never
-// free it. Use your own implementation, on a better database system.
-// If you have multiple servers for example, you may need to share at least
-// the nonceStore between them.
-var nonceStore = openid.NewSimpleNonceStore()
-var discoveryCache = openid.NewSimpleDiscoveryCache()
-
-func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Get ID from OpenID
-	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
-		return
-	}
-
-	// Convert to int
-	ID, err := strconv.ParseInt(path.Base(openID), 10, 64)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
-		return
-	}
-
-	// Check if we have the player
-	player, err := mongo.GetPlayer(ID)
-	if err != nil && err != mongo.ErrNoDocuments {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
-		return
-	}
-
-	// Queue for an update
-	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
-
-		err = queue.ProducePlayer(player.ID)
+		err := session.SetBadFlash(r, message)
 		log.Err(err, r)
+
+		http.Redirect(w, r, "/login", http.StatusFound)
 	}
 
-	// Get user
-	user, err := sql.GetOrCreateUser(ID)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
-		return
-	}
-
-	err = login(w, r, player, user)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
-		return
-	}
-
-	err = session.Save(w, r)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
-		return
-	}
-
-	http.Redirect(w, r, "/settings", http.StatusFound)
-}
-
-func login(w http.ResponseWriter, r *http.Request, player mongo.Player, user sql.User) (err error) {
-
-	// Save session
-	err = session.WriteMany(w, r, map[string]string{
-		session.PlayerID:    strconv.FormatInt(player.ID, 10),
-		session.PlayerName:  player.PersonaName,
-		session.PlayerLevel: strconv.Itoa(player.Level),
-		session.UserEmail:   user.Email,
-		session.UserCountry: user.CountryCode,
-	})
-	if err != nil {
-		return err
-	}
-
-	// Create login record
-	return mongo.CreateEvent(r, player.ID, mongo.EventLogin)
+	err := session.Save(w, r)
+	log.Err(err, r)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {

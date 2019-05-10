@@ -40,6 +40,23 @@
                 {{/* Settings */}}
                 <div class="tab-pane show active" id="settings" role="tabpanel">
 
+                    <h5>Website Connections</h5>
+
+                    <p>Logging in with Steam tells Game DB who you are on Steam.</p>
+                    <p>Game DB can only retrieve public information in accordance to your
+                        <a href="https://steamcommunity.com/my/edit/settings" target="_blank">privacy settings</a>.</p>
+
+                    <form action="https://steamcommunity.com/openid/login" method="post">
+                        <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
+                        <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
+                        <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
+                        <input type="hidden" name="openid.mode" value="checkid_setup">
+                        <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
+                        <input type="hidden" name="openid.return_to" value="{{ .Domain }}/login/callback">
+                        <button type="submit" class="btn btn-success">Login with Steam</button>
+                    </form>
+
+                    <h5>Settings</h5>
                     <form action="/settings" method="post">
 
                         <div class="row">
