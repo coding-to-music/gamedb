@@ -48,8 +48,5 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = page.AddConnection(connection)
-	if err != nil {
-		log.Err(err)
-	}
+	page.AddConnection(connection)
 }

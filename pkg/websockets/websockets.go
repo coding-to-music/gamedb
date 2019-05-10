@@ -66,7 +66,7 @@ func GetPage(page WebsocketPage) (ret Page) {
 type Page struct {
 	name        WebsocketPage
 	connections map[uuid.UUID]*websocket.Conn
-	mutex       sync.Mutex
+	mutex       sync.RWMutex
 }
 
 func (p Page) GetName() WebsocketPage {
@@ -77,39 +77,46 @@ func (p Page) CountConnections() int {
 	return len(p.connections)
 }
 
-func (p *Page) AddConnection(conn *websocket.Conn) error {
+func (p *Page) AddConnection(conn *websocket.Conn) {
 
 	id := uuid.NewV4()
 
 	p.mutex.Lock()
 	p.connections[id] = conn
 	p.mutex.Unlock()
-
-	return nil
 }
 
 func (p *Page) Send(data interface{}) {
 
 	if p.CountConnections() > 0 {
 
+		var connsToDelete []uuid.UUID
+
 		payload := WebsocketPayload{}
 		payload.Page = p.name
 		payload.Data = data
 
-		p.mutex.Lock()
+		p.mutex.RLock()
 		for k, v := range p.connections {
+
 			err := v.WriteJSON(payload)
 			if err != nil {
 
 				if strings.Contains(err.Error(), "broken pipe") {
 
-					delete(p.connections, k)
+					connsToDelete = append(connsToDelete, k)
 
 				} else {
 
 					log.Err(err)
 				}
 			}
+		}
+		p.mutex.RUnlock()
+
+		p.mutex.Lock()
+		for _, v := range connsToDelete {
+			delete(p.connections, v)
 		}
 		p.mutex.Unlock()
 	}
@@ -166,11 +173,6 @@ func ListenToPubSub() {
 				log.Err(err)
 
 				wsPage.Send(changePayload.Data)
-
-				// log.Info(m.Data)
-				// for _, v := range changePayload.Data {
-				// 	log.Info(v[0])
-				// }
 
 			default:
 				log.Err("no handler for page: " + string(page))
