@@ -172,7 +172,7 @@ func Save(w http.ResponseWriter, r *http.Request) (err error) {
 
 func IsLoggedIn(r *http.Request) (val bool, err error) {
 	read, err := Read(r, PlayerID)
-	return read != "", err
+	return read != "" && read != "0", err
 }
 
 func GetCountryCode(r *http.Request) steam.CountryCode {
