@@ -32,7 +32,23 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 	t.setFlashes(w, r, true)
 
-	err := returnTemplate(w, r, "contact", t)
+	var err error
+
+	t.SessionName, err = session.Read(r, "contact-name")
+	log.Err(err)
+
+	t.SessionEmail, err = session.Read(r, "contact-email")
+	log.Err(err)
+
+	if t.SessionEmail == "" {
+		t.SessionEmail, err = session.Read(r, session.UserEmail)
+		log.Err(err)
+	}
+
+	t.SessionMessage, err = session.Read(r, "contact-message")
+	log.Err(err)
+
+	err = returnTemplate(w, r, "contact", t)
 	log.Err(err, r)
 }
 
@@ -41,6 +57,9 @@ type contactTemplate struct {
 	RecaptchaPublic string
 	Messages        []string
 	Success         bool
+	SessionName     string
+	SessionEmail    string
+	SessionMessage  string
 }
 
 func postContactHandler(w http.ResponseWriter, r *http.Request) {
