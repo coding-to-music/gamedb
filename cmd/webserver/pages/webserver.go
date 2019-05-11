@@ -445,6 +445,43 @@ func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save
 	}
 }
 
+// Middleware
+func middlewareAuthCheck() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			loggedIn, err := session.IsLoggedIn(r)
+			log.Err(err)
+
+			if loggedIn || err == nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			err = session.SetBadFlash(r, "Please login")
+			log.Err(err, r)
+
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		})
+	}
+}
+
+func middlewareAdminCheck() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			if isAdmin(r) {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			Error404Handler(w, r)
+		})
+	}
+}
+
+//
 type Asset struct {
 	URL       string
 	Integrity string

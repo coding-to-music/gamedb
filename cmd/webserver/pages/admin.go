@@ -17,27 +17,14 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 )
-
-func adminCheck() func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-			if isAdmin(r) {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			Error404Handler(w, r)
-		})
-	}
-}
 
 func AdminRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Use(middleware.NoCache)
-	r.Use(adminCheck())
+
+	r.Use(middlewareAuthCheck())
+	r.Use(middlewareAdminCheck())
+
 	r.Get("/", adminHandler)
 	r.Post("/", adminHandler)
 	r.Get("/{option}", adminHandler)

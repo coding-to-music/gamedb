@@ -22,8 +22,6 @@ func LoginRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", loginHandler)
 	r.Post("/", loginPostHandler)
-	r.Post("/signup", signupPostHandler)
-	r.Get("/logout", logoutHandler)
 	return r
 }
 
@@ -52,8 +50,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.LoginEmail, err = session.Read(r, "login-email")
 	log.Err(err, r)
-	t.SignupEmail, err = session.Read(r, "signup-email")
-	log.Err(err, r)
 
 	err = returnTemplate(w, r, "login", t)
 	log.Err(err, r)
@@ -64,7 +60,6 @@ type loginTemplate struct {
 	RecaptchaPublic string
 	Domain          string
 	LoginEmail      string
-	SignupEmail     string
 }
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -118,6 +113,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Find user
 		user, err := sql.GetUser(email, true)
 		if err != nil {
+			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 			log.Err(err, r)
 			return "Incorrect credentials", false
 		}
@@ -164,115 +160,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetGoodFlash(r, message)
 		log.Err(err, r)
 
-		http.Redirect(w, r, "/settings", http.StatusFound)
-
-	} else {
-
-		err := session.SetBadFlash(r, message)
-		log.Err(err, r)
-
-		http.Redirect(w, r, "/login", http.StatusFound)
-	}
-
-	err := session.Save(w, r)
-	log.Err(err, r)
-}
-
-func signupPostHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
-	time.Sleep(time.Second)
-
-	message, success := func() (message string, success bool) {
-
-		// Parse form
-		err := r.ParseForm()
-		if err != nil {
-			log.Err(err, r)
-			return "An error occurred", false
-		}
-
-		email := r.PostForm.Get("email")
-		password := r.PostForm.Get("password")
-		password2 := r.PostForm.Get("password2")
-
-		// Remember email
-		err = session.Write(r, "signup-email", email)
-		if err != nil {
-			log.Err(err, r)
-		}
-
-		// Field validation
-		if email == "" {
-			return "Please fill in your email address", false
-		}
-
-		if password == "" || password2 == "" {
-			return "Please fill in your password", false
-		}
-
-		if password != password2 {
-			return "Passwords do not match", false
-		}
-
-		err = checkmail.ValidateFormat(email)
-		if err != nil {
-			return "Invalid email address", false
-		}
-
-		if config.IsProd() {
-			err = recaptcha.CheckFromRequest(r)
-			if err != nil {
-				return "Please check the captcha", false
-			}
-		}
-
-		// Check user doesnt exist
-		_, err = sql.GetUser(email, false)
-		if err == nil {
-			return "An account with this email already exists", true
-		} else {
-			log.Err(err, r)
-		}
-
-		// Create user
-		db, err := sql.GetMySQLClient()
-		if err != nil {
-			log.Err(err, r)
-			return "An error occurred", false
-		}
-
-		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-		log.Err(err, r)
-		if err != nil {
-			log.Err(err, r)
-			return "An error occurred", false
-		}
-
-		db = db.Create(&sql.User{
-			Email:         email,
-			EmailVerified: false,
-			Password:      string(passwordBytes),
-		})
-
-		if db.Error != nil {
-			log.Err(err, r)
-			return "An error occurred", false
-		}
-
-		// todo, send email
-
-		return "Account created", true
-	}()
-
-	//
-	if success {
-
-		err := session.SetGoodFlash(r, message)
+		err = session.Save(w, r)
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
@@ -282,35 +170,9 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetBadFlash(r, message)
 		log.Err(err, r)
 
+		err = session.Save(w, r)
+		log.Err(err, r)
+
 		http.Redirect(w, r, "/login", http.StatusFound)
 	}
-
-	err := session.Save(w, r)
-	log.Err(err, r)
-}
-
-func logoutHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
-	id, err := getPlayerIDFromSession(r)
-	err = helpers.IgnoreErrors(err, errNotLoggedIn)
-	log.Err(err, r)
-
-	err = mongo.CreateEvent(r, id, mongo.EventLogout)
-	log.Err(err, r)
-
-	err = session.Clear(r)
-	log.Err(err, r)
-
-	err = session.SetGoodFlash(r, "You have been logged out")
-	log.Err(err, r)
-
-	err = session.Save(w, r)
-	log.Err(err, r)
-
-	http.Redirect(w, r, "/", http.StatusFound)
 }

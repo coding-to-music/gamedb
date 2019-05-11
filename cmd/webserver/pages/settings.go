@@ -1,6 +1,8 @@
 package pages
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"path"
@@ -19,6 +21,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/oauth2"
 )
 
 var (
@@ -26,13 +29,21 @@ var (
 )
 
 func SettingsRouter() http.Handler {
+
 	r := chi.NewRouter()
+	r.Use(middlewareAuthCheck())
+
 	r.Get("/", settingsHandler)
 	r.Post("/", settingsPostHandler)
-	r.Get("/openid", loginOpenIDHandler)
-	r.Get("/callback", loginOpenIDCallbackHandler)
 	r.Post("/delete", deletePostHandler)
 	r.Get("/events.json", settingsEventsAjaxHandler)
+
+	r.Get("/link-steam", linkSteamHandler)
+	r.Get("/steam-callback", linkSteamCallbackHandler)
+
+	r.Get("/link-patreon", linkPatreonHandler)
+	r.Get("/patreon-callback", linkPatreonCallbackHandler)
+
 	return r
 }
 
@@ -145,13 +156,6 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	redirect, good, bad := func() (redirect string, good string, bad string) {
 
-		loggedIn, err := session.IsLoggedIn(r)
-		log.Err(err)
-
-		if !loggedIn {
-			return "/login", "", "Please login"
-		}
-
 		// Parse form
 		err = r.ParseForm()
 		if err != nil {
@@ -195,12 +199,6 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	redirect, good, bad := func() (redirect string, good string, bad string) {
-
-		loggedIn, err := session.IsLoggedIn(r)
-		log.Err(err)
-		if !loggedIn || err != nil {
-			return "/login", "", "Please login"
-		}
 
 		// Get user
 		user, err := getUserFromSession(r)
@@ -386,26 +384,16 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.output(w, r)
 }
 
-func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
+func linkSteamHandler(w http.ResponseWriter, r *http.Request) {
 
 	ret := setAllowedQueries(w, r, []string{})
 	if ret {
 		return
 	}
 
-	loggedIn, err := session.IsLoggedIn(r)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	if loggedIn {
-		http.Redirect(w, r, "/settings", http.StatusFound)
-		return
-	}
-
 	var url string
 	var domain = config.Config.GameDBDomain.Get()
-	url, err = openid.RedirectURL("https://steamcommunity.com/openid/login", domain+"/login/callback", domain+"/")
+	url, err := openid.RedirectURL("https://steamcommunity.com/openid/login", domain+"/login/callback", domain+"/")
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong sending you to Steam.", Error: err})
 		return
@@ -423,7 +411,7 @@ func loginOpenIDHandler(w http.ResponseWriter, r *http.Request) {
 var nonceStore = openid.NewSimpleNonceStore()
 var discoveryCache = openid.NewSimpleDiscoveryCache()
 
-func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get ID from OpenID
 	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
@@ -454,11 +442,11 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user
-	user, err := sql.GetOrCreateUser(ID)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
-		return
-	}
+	// user, err := sql.GetOrCreateUser(ID)
+	// if err != nil {
+	// 	returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
+	// 	return
+	// }
 
 	// err = login(w, r, player, user)
 	// if err != nil {
@@ -473,4 +461,63 @@ func loginOpenIDCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
+}
+
+var (
+	patreonConfig = oauth2.Config{
+		ClientID:     config.Config.PatreonClientID.Get(),
+		ClientSecret: config.Config.PatreonClientSecret.Get(),
+		Scopes:       []string{"identity"},
+		RedirectURL:  "http://localhost:8081/settings/patreon-callback",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://www.patreon.com/oauth2/authorize",
+			TokenURL: "https://www.patreon.com/api/oauth2/token",
+		},
+	}
+)
+
+func linkPatreonHandler(w http.ResponseWriter, r *http.Request) {
+
+	state := helpers.RandString(5, helpers.Numbers)
+
+	err := session.Write(r, "patreon-oauth-state", state)
+	log.Err(err)
+
+	url := patreonConfig.AuthCodeURL(state)
+	http.Redirect(w, r, url, http.StatusFound)
+}
+
+func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	realState, err := session.Read(r, "patreon-oauth-state")
+	if err != nil {
+		log.Err(err)
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Err(err)
+	}
+
+	state := r.Form.Get("state")
+	if state != realState {
+		http.Error(w, "State invalid", http.StatusBadRequest)
+		return
+	}
+
+	code := r.Form.Get("code")
+	if code == "" {
+		http.Error(w, "Code not found", http.StatusBadRequest)
+		return
+	}
+
+	token, err := patreonConfig.Exchange(context.Background(), code)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	e := json.NewEncoder(w)
+	e.SetIndent("", "  ")
+	e.Encode(*token)
 }

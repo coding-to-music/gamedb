@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"math/rand"
 	"regexp"
 	"strings"
 )
@@ -39,4 +40,15 @@ func JoinInterface(i []interface{}) string {
 	}
 
 	return strings.Join(stringSlice, " | ")
+}
+
+const Letters = "abcdefghijklmnopqrstuvwxyz"
+const Numbers = "0123456789"
+
+func RandString(n int, chars string) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(b)
 }

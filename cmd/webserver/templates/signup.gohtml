@@ -1,0 +1,71 @@
+{{define "signup"}} {{ template "_header" . }}
+
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
+<div class="container" id="signup-page">
+
+    <div class="jumbotron">
+        <h1><i class="fas fa-key"></i> Signup</h1>
+    </div>
+
+    {{ template "_flashes" . }}
+
+    <div class="card">
+        <div class="card-header">
+
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login" role="tab">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/signup" role="tab">Sign Up</a>
+                </li>
+            </ul>
+
+        </div>
+        <div class="card-body">
+
+            <div class="tab-content">
+                <div class="tab-pane show active" id="signup" role="tabpanel">
+
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-8 col-lg-6">
+
+                            <form action="/signup" method="post" data-recaptcha>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ .SignupEmail }}" autofocus required>
+                                    <small>A verification email will be sent here.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" autocomplete="new-password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password2">Confirm Password</label>
+                                    <input type="password" class="form-control" id="password2" name="password2" autocomplete="new-password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="message">Captcha</label>
+                                    <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success">Sign Up</button>
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" . }} {{end}}
