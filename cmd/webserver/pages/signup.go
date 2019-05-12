@@ -237,9 +237,9 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 			return "Invalid code (1002)", false
 		}
 
-		if userVerify.Expires.Unix() < time.Now().Unix() {
-			return "This verify code has expired", false
-		}
+		// if userVerify.Expires.Unix() < time.Now().Unix() {
+		// return "This verify code has expired", false
+		// }
 
 		// Enable user
 		db, err = sql.GetMySQLClient()
