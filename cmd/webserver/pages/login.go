@@ -111,11 +111,15 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user
-		user, err := sql.GetUser(email, true)
+		user, err := sql.GetUser(email, false)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 			log.Err(err, r)
 			return "Incorrect credentials", false
+		}
+
+		if !user.EmailVerified {
+			return "Please verify your email address first", false
 		}
 
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
