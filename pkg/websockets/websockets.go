@@ -66,7 +66,7 @@ func GetPage(page WebsocketPage) (ret Page) {
 type Page struct {
 	name        WebsocketPage
 	connections map[uuid.UUID]*websocket.Conn
-	mutex       sync.RWMutex
+	mutex       sync.Mutex
 }
 
 func (p Page) GetName() WebsocketPage {
@@ -79,14 +79,16 @@ func (p Page) CountConnections() int {
 
 func (p *Page) AddConnection(conn *websocket.Conn) {
 
-	id := uuid.NewV4()
-
 	p.mutex.Lock()
-	p.connections[id] = conn
-	p.mutex.Unlock()
+	defer p.mutex.Unlock()
+
+	p.connections[uuid.NewV4()] = conn
 }
 
 func (p *Page) Send(data interface{}) {
+
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
 
 	if p.CountConnections() > 0 {
 
@@ -96,7 +98,6 @@ func (p *Page) Send(data interface{}) {
 		payload.Page = p.name
 		payload.Data = data
 
-		p.mutex.RLock()
 		for k, v := range p.connections {
 
 			err := v.WriteJSON(payload)
@@ -112,13 +113,10 @@ func (p *Page) Send(data interface{}) {
 				}
 			}
 		}
-		p.mutex.RUnlock()
 
-		p.mutex.Lock()
 		for _, v := range connsToDelete {
 			delete(p.connections, v)
 		}
-		p.mutex.Unlock()
 	}
 }
 
