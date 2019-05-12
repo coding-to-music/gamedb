@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"github.com/nlopes/slack"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
@@ -184,6 +185,12 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 			return "An error occurred", false
 		}
+
+		// Slack message
+		err = slack.PostWebhook(config.Config.SlackWebhook.Get(), &slack.WebhookMessage{
+			Text: "New signup: " + email,
+		})
+		log.Err(err)
 
 		return "Please check your email to verify your email", true
 	}()
