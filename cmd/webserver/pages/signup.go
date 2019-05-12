@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
@@ -162,8 +163,14 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send email
-		body := "Please click the below link to verify your email address\n" +
-			"http://localhost:8081/signup/verify?code=" + code.Code
+		var link string
+		if config.IsLocal() {
+			link = "http://localhost:8081/signup/verify?code=" + code.Code
+		} else {
+			link = "https://gamedb.online/signup/verify?code=" + code.Code
+		}
+
+		body := "Please click the below link to verify your email address\n" + link
 
 		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
 		_, err = client.Send(mail.NewSingleEmail(
@@ -171,7 +178,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			"Game DB Email Verification",
 			mail.NewEmail(email, email),
 			body,
-			body,
+			strings.ReplaceAll(body, "\n", "<br />"),
 		))
 		if err != nil {
 			log.Err(err, r)
