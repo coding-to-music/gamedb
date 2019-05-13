@@ -10,13 +10,13 @@
 
         <p class="lead">{{ .Description }}</p>
         <p class="lead">
-            <a href="{{ .App.GetCommunityLink }}" data-toggle="tooltip" data-placement="top" title="Community Page"><i class="fas fa-users"></i></a>
-            <a href="{{ .App.GetStoreLink }}" data-toggle="tooltip" data-placement="top" title="Store Page"><i class="fas fa-shopping-cart"></i></a>
+            <a href="{{ .App.GetCommunityLink }}" data-toggle="tooltip" data-placement="top" title="Community Page" target="_blank"><i class="fas fa-users"></i></a>
+            <a href="{{ .App.GetStoreLink }}" data-toggle="tooltip" data-placement="top" title="Store Page" target="_blank"><i class="fas fa-shopping-cart"></i></a>
             {{if ne .App.Homepage ""}}
-                <a href="{{ .App.Homepage }}" data-toggle="tooltip" data-placement="top" title="Official Website"><i class="fas fa-home"></i></a>
+                <a href="{{ .App.Homepage }}" data-toggle="tooltip" data-placement="top" title="Official Website" target="_blank"><i class="fas fa-home"></i></a>
             {{end}}
             <a href="{{ .App.GetInstallLink }}" data-toggle="tooltip" data-placement="top" title="Install"><i class="fas fa-sign-in-alt"></i></a>
-            <a href="{{ .App.GetPCGamingWikiLink }}" data-toggle="tooltip" data-placement="top" title="PC Gaming Wiki"><i class="fab fa-wikipedia-w"></i></a>
+            <a href="{{ .App.GetPCGamingWikiLink }}" data-toggle="tooltip" data-placement="top" title="PC Gaming Wiki" target="_blank"><i class="fab fa-wikipedia-w"></i></a>
         </p>
     </div>
 
