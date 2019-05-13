@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/nlopes/slack"
@@ -146,12 +147,14 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			return "An error occurred", false
 		}
 
-		db = db.Create(&sql.User{
+		user := sql.User{
 			Email:         email,
 			EmailVerified: false,
 			Password:      string(passwordBytes),
 			CountryCode:   string(steam.CountryUS),
-		})
+		}
+
+		db = db.Create(&user)
 
 		if db.Error != nil {
 			log.Err(db.Error, r)
@@ -186,6 +189,12 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false
+		}
+
+		// Create event
+		err = mongo.CreateUserEvent(r, user.ID, mongo.EventSignup)
+		if err != nil {
+			log.Err(err, r)
 		}
 
 		// Slack message

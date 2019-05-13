@@ -439,6 +439,12 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.SetGoodFlash(r, "Steam account linked")
 	log.Err(err)
 
+	// Create event
+	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkSteam)
+	if err != nil {
+		log.Err(err, r)
+	}
+
 	// Queue for an update
 	player, err := mongo.GetPlayer(ID)
 	if err != nil {
@@ -504,7 +510,13 @@ func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.Delete(r, session.PlayerLevel)
 	log.Err(err)
 
-	//
+	// Create event
+	err = mongo.CreateUserEvent(r, user.ID, mongo.EventUnlinkSteam)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	// Flash message
 	err = session.SetGoodFlash(r, "Steam unlinked")
 	log.Err(err)
 }
@@ -632,8 +644,15 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Flash message
 	err = session.SetGoodFlash(r, "Patreon account linked")
 	log.Err(err)
+
+	// Create event
+	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkPatreon)
+	if err != nil {
+		log.Err(err, r)
+	}
 }
 
 func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
@@ -671,6 +690,13 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Flash message
 	err = session.SetGoodFlash(r, "Patreon unlinked")
 	log.Err(err)
+
+	// Create event
+	err = mongo.CreateUserEvent(r, user.ID, mongo.EventUnlinkPatreon)
+	if err != nil {
+		log.Err(err, r)
+	}
 }

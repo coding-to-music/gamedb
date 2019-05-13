@@ -13,16 +13,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// User
 const (
-	EventLogin   = "login"
-	EventLogout  = "logout"
-	EventPatreon = "patreon"
-)
-
-// Player
-const (
-	EventRefresh = "refresh"
+	EventSignup         = "signup"
+	EventLogin          = "login"
+	EventLogout         = "logout"
+	EventPatreonWebhook = "patreon-webhook"
+	EventLinkSteam      = "link-steam"
+	EventUnlinkSteam    = "unlink-steam"
+	EventLinkPatreon    = "link-patreon"
+	EventUnlinkPatreon  = "unlink-patreon"
+	EventRefresh        = "refresh"
 )
 
 type Event struct {

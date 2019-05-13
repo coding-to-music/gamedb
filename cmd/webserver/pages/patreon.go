@@ -77,7 +77,7 @@ func saveWebhookEvent(r *http.Request, event string, pwr patreon.Webhook) (err e
 			return err
 		}
 
-		return mongo.CreatePlayerEvent(r, player.ID, mongo.EventPatreon+"-"+event)
+		return mongo.CreatePlayerEvent(r, player.ID, mongo.EventPatreonWebhook+"-"+event)
 	}
 
 	return nil
