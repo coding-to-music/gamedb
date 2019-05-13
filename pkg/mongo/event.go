@@ -9,20 +9,26 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// User
 const (
 	EventLogin   = "login"
 	EventLogout  = "logout"
-	EventRefresh = "refresh"
 	EventPatreon = "patreon"
+)
+
+// Player
+const (
+	EventRefresh = "refresh"
 )
 
 type Event struct {
 	CreatedAt time.Time `bson:"created_at"`
 	Type      string    `bson:"type"`
-	SteamID   int64     `bson:"player_id"`
+	UserID    int       `bson:"user_id"`
 	UserAgent string    `bson:"user_agent"`
 	IP        string    `bson:"ip"`
 }
@@ -32,7 +38,7 @@ func (event Event) BSON() (ret interface{}) {
 	return M{
 		"created_at": event.CreatedAt,
 		"type":       event.Type,
-		"player_id":  event.SteamID,
+		"user_id":    event.UserID,
 		"user_agent": event.UserAgent,
 		"ip":         event.IP,
 	}
@@ -108,7 +114,7 @@ func (event Event) GetIcon() string {
 	}
 }
 
-func GetEvents(playerID int64, offset int64) (events []Event, err error) {
+func GetEvents(userID int, offset int64) (events []Event, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -117,7 +123,7 @@ func GetEvents(playerID int64, offset int64) (events []Event, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents.String())
 
-	cur, err := c.Find(ctx, M{"player_id": playerID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(M{"created_at": -1}))
+	cur, err := c.Find(ctx, M{"user_id": userID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(M{"created_at": -1}))
 	if err != nil {
 		return events, err
 	}
@@ -138,11 +144,25 @@ func GetEvents(playerID int64, offset int64) (events []Event, err error) {
 	return events, cur.Err()
 }
 
-func CreateEvent(r *http.Request, steamID int64, eventType string) (err error) {
+func CreatePlayerEvent(r *http.Request, steamID int64, eventType string) (err error) {
+
+	user, err := sql.GetUserBySteamID(steamID)
+	if err != nil {
+		if err == sql.ErrRecordNotFound {
+			return nil
+		} else {
+			return err
+		}
+	}
+
+	return CreateUserEvent(r, user.ID, eventType)
+}
+
+func CreateUserEvent(r *http.Request, userID int, eventType string) (err error) {
 
 	event := &Event{}
 	event.CreatedAt = time.Now()
-	event.SteamID = steamID
+	event.UserID = userID
 	event.Type = eventType
 	event.UserAgent = r.Header.Get("User-Agent")
 	event.IP = r.RemoteAddr
@@ -153,20 +173,20 @@ func CreateEvent(r *http.Request, steamID int64, eventType string) (err error) {
 	}
 
 	if config.HasMemcache() {
-		err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(steamID).Key)
+		err = helpers.GetMemcache().Delete(helpers.MemcacheUserEventsCount(userID).Key)
 		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 	}
 
 	return err
 }
 
-func CountEvents(playerID int64) (count int64, err error) {
+func CountEvents(userID int) (count int64, err error) {
 
-	var item = helpers.MemcachePlayerEventsCount(playerID)
+	var item = helpers.MemcacheUserEventsCount(userID)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionEvents, M{"player_id": playerID})
+		return CountDocuments(CollectionEvents, M{"user_id": userID})
 	})
 
 	return count, err

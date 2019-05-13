@@ -29,8 +29,8 @@ var (
 	MemcacheMongoCount            = func(key string) memcache.Item {
 		return memcache.Item{Key: "mongo-count-" + key, Expiration: 60 * 60}
 	}
-	MemcachePlayerEventsCount = func(playerID int64) memcache.Item {
-		return memcache.Item{Key: "players-events-count-" + strconv.FormatInt(playerID, 10), Expiration: 86400}
+	MemcacheUserEventsCount = func(userID int) memcache.Item {
+		return memcache.Item{Key: "players-events-count-" + strconv.Itoa(userID), Expiration: 86400}
 	}
 
 	// Dropdowns

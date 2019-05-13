@@ -327,20 +327,9 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.SteamID == 0 {
-		return
-	}
-
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
-
-	// Get player ID
-	playerID, err := getPlayerIDFromSession(r)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
 
 	var wg sync.WaitGroup
 
@@ -351,7 +340,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		events, err = mongo.GetEvents(playerID, query.getOffset64())
+		events, err = mongo.GetEvents(user.ID, query.getOffset64())
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -366,7 +355,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		total, err = mongo.CountEvents(playerID)
+		total, err = mongo.CountEvents(user.ID)
 		log.Err(err, r)
 
 	}(r)

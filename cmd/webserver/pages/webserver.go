@@ -704,23 +704,28 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 	return strconv.ParseInt(id, 10, 64)
 }
 
+func getUserIDFromSesion(r *http.Request) (id int, err error) {
+
+	idx, err := session.Read(r, session.UserID)
+	if err != nil {
+		return id, err
+	}
+
+	if idx == "" {
+		return id, errors.New("no user id set")
+	}
+
+	return strconv.Atoi(idx)
+}
+
 func getUserFromSession(r *http.Request) (user sql.User, err error) {
 
-	id, err := session.Read(r, session.UserID)
+	id, err := getUserIDFromSesion(r)
 	if err != nil {
 		return user, err
 	}
 
-	if id == "" {
-		return user, errors.New("no user id set")
-	}
-
-	idx, err := strconv.Atoi(id)
-	if err != nil {
-		return user, err
-	}
-
-	return sql.GetUserByID(idx)
+	return sql.GetUserByID(id)
 }
 
 func isLoggedIn(r *http.Request) (val bool, err error) {

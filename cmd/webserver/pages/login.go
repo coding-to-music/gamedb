@@ -150,7 +150,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create login event
-		err = mongo.CreateEvent(r, player.ID, mongo.EventLogin)
+		err = mongo.CreateUserEvent(r, user.ID, mongo.EventLogin)
 		if err != nil {
 			log.Err(err, r)
 		}

@@ -41,6 +41,17 @@ func GetUserByEmail(email string) (user User, err error) {
 	return user, db.Error
 }
 
+func GetUserBySteamID(id int64) (user User, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return user, err
+	}
+
+	db = db.Where("steam_id = ?", id).First(&user)
+	return user, db.Error
+}
+
 func DeleteUser(id int64) (err error) {
 
 	db, err := GetMySQLClient()
