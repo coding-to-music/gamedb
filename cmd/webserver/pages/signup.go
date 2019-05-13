@@ -164,12 +164,12 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send email
-		var link string
-		if config.IsLocal() {
-			link = "http://localhost:8081/signup/verify?code=" + code.Code
-		} else {
-			link = "https://gamedb.online/signup/verify?code=" + code.Code
-		}
+		var link = func() string {
+			if config.IsLocal() {
+				return "http://localhost:" + config.Config.WebserverPort.Get() + "/signup/verify?code=" + code.Code
+			}
+			return "https://gamedb.online/signup/verify?code=" + code.Code
+		}()
 
 		body := "Please click the below link to verify your email address\n" + link
 
