@@ -133,6 +133,7 @@ func middlewareTime(next http.Handler) http.Handler {
 	})
 }
 
+// todo, check this is alright
 func middlewareCors() func(next http.Handler) http.Handler {
 	return cors.New(cors.Options{
 		AllowedOrigins: []string{config.Config.GameDBDomain.Get()}, // Use this to allow specific origin hosts
