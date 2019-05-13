@@ -83,6 +83,7 @@ func init() {
 	Config.SendGridAPIKey.Set("SENDGRID")
 	Config.SteamAPIKey.Set("API_KEY")
 	Config.WebserverPort.Set("PORT")
+	Config.SlackWebhook.Set("SLACK_GAMEDB_WEBHOOK")
 
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
@@ -175,6 +176,7 @@ type BaseConfig struct {
 	WebserverPort   ConfigItem
 	CommitHash      ConfigItem
 	NewReleaseDays  ConfigItem
+	SlackWebhook    ConfigItem
 }
 
 // ConfigItem
