@@ -127,6 +127,8 @@ func log(interfaces ...interface{}) {
 			continue
 		case []byte:
 			entry.text = string(val)
+		case bool:
+			entry.text = strconv.FormatBool(val)
 		case time.Duration:
 			entry.text = val.String()
 		case int:
