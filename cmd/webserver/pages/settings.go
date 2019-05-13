@@ -2,7 +2,6 @@ package pages
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"path"
@@ -19,6 +18,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"github.com/mxpv/patreon-go"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
@@ -38,10 +38,12 @@ func SettingsRouter() http.Handler {
 	r.Post("/delete", deletePostHandler)
 	r.Get("/events.json", settingsEventsAjaxHandler)
 
-	r.Get("/link-steam", linkSteamHandler)
+	// r.Get("/link-steam", linkSteamHandler)
 	r.Get("/steam-callback", linkSteamCallbackHandler)
+	r.Get("/unlink-steam", unlinkSteamHandler)
 
 	r.Get("/link-patreon", linkPatreonHandler)
+	r.Get("/unlink-patreon", unlinkPatreonHandler)
 	r.Get("/patreon-callback", linkPatreonCallbackHandler)
 
 	return r
@@ -391,24 +393,6 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.output(w, r)
 }
 
-func linkSteamHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
-	var url string
-	var domain = config.Config.GameDBDomain.Get()
-	url, err := openid.RedirectURL("https://steamcommunity.com/openid/login", domain+"/login/callback", domain+"/")
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong sending you to Steam.", Error: err})
-		return
-	}
-
-	http.Redirect(w, r, url, http.StatusFound)
-}
-
 // todo
 // For the demo, we use in-memory infinite storage nonce and discovery
 // cache. In your app, do not use this as it will eat up memory and never
@@ -470,15 +454,56 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
+func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
+
+	defer func() {
+
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
+	user, err := getUserFromSession(r)
+	if err != nil {
+		err = session.SetBadFlash(r, "An error occurred")
+		log.Err(err)
+		return
+	}
+
+	db, err := sql.GetMySQLClient()
+	if err != nil {
+		err = session.SetBadFlash(r, "An error occurred")
+		log.Err(err)
+		return
+	}
+
+	db = db.Model(&user).Update("steam_id", 0)
+	if db.Error != nil {
+		err = session.SetBadFlash(r, "An error occurred")
+		log.Err(err)
+		log.Err(db.Error)
+		return
+	}
+
+	err = session.SetGoodFlash(r, "Steam unlinked")
+	log.Err(err)
+}
+
 var (
 	patreonConfig = oauth2.Config{
 		ClientID:     config.Config.PatreonClientID.Get(),
 		ClientSecret: config.Config.PatreonClientSecret.Get(),
 		Scopes:       []string{"identity"},
-		RedirectURL:  "http://localhost:8081/settings/patreon-callback",
+		RedirectURL: func() string {
+			if config.IsLocal() {
+				return "http://localhost:" + config.Config.WebserverPort.Get() + "/settings/patreon-callback"
+			}
+			return "https://gamedb.online/settings/patreon-callback"
+		}(),
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://www.patreon.com/oauth2/authorize",
-			TokenURL: "https://www.patreon.com/api/oauth2/token",
+			AuthURL:  patreon.AuthorizationURL,
+			TokenURL: patreon.AccessTokenURL,
 		},
 	}
 )
@@ -490,41 +515,128 @@ func linkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 	err := session.Write(r, "patreon-oauth-state", state)
 	log.Err(err)
 
+	err = session.Save(w, r)
+	log.Err(err)
+
 	url := patreonConfig.AuthCodeURL(state)
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
 func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
+	defer func() {
+
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
 	realState, err := session.Read(r, "patreon-oauth-state")
 	if err != nil {
 		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1001)")
+		log.Err(err)
+		return
 	}
 
 	err = r.ParseForm()
 	if err != nil {
 		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1002)")
+		log.Err(err)
+		return
 	}
 
 	state := r.Form.Get("state")
 	if state != realState {
-		http.Error(w, "State invalid", http.StatusBadRequest)
+		err = session.SetBadFlash(r, "Invalid state")
+		log.Err(err)
 		return
 	}
 
 	code := r.Form.Get("code")
 	if code == "" {
-		http.Error(w, "Code not found", http.StatusBadRequest)
+		err = session.SetBadFlash(r, "Invalid code")
+		log.Err(err)
 		return
 	}
 
 	token, err := patreonConfig.Exchange(context.Background(), code)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Err(err)
+		err = session.SetBadFlash(r, "Invalid token")
+		log.Err(err)
 		return
 	}
 
-	e := json.NewEncoder(w)
-	e.SetIndent("", "  ")
-	e.Encode(*token)
+	db, err := sql.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1003)")
+		log.Err(err)
+		return
+	}
+
+	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token.AccessToken})
+	tc := oauth2.NewClient(context.TODO(), ts)
+
+	user, err := patreon.NewClient(tc).FetchUser()
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1004)")
+		log.Err(err)
+		return
+	}
+
+	db = db.Model(&user).Update("patreon_id", 0)
+	if db.Error != nil {
+		err = session.SetBadFlash(r, "An error occurred (1005)")
+		log.Err(err)
+		log.Err(db.Error)
+		return
+	}
+
+	err = session.SetGoodFlash(r, "Patreon removed")
+	log.Err(err)
+
+}
+
+func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
+
+	defer func() {
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1001)")
+		log.Err(err)
+		return
+	}
+
+	db, err := sql.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1002)")
+		log.Err(err)
+		return
+	}
+
+	db = db.Model(&user).Update("patreon_id", 0)
+	if db.Error != nil {
+		log.Err(err)
+		log.Err(db.Error)
+
+		err = session.SetBadFlash(r, "An error occurred (1003)")
+		log.Err(err)
+		return
+	}
+
+	err = session.SetGoodFlash(r, "Patreon unlinked")
+	log.Err(err)
 }

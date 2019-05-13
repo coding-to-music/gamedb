@@ -42,19 +42,30 @@
 
                     <h5>Website Connections</h5>
 
-                    <p>Logging in with Steam tells Game DB who you are on Steam.</p>
-                    <p>Game DB can only retrieve public information in accordance to your
-                        <a href="https://steamcommunity.com/my/edit/settings" target="_blank">privacy settings</a>.</p>
+                    {{ if gt .User.SteamID 0 }}
+                        <form action="https://steamcommunity.com/openid/login" method="post">
+                            <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
+                            <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
+                            <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
+                            <input type="hidden" name="openid.mode" value="checkid_setup">
+                            <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
+                            <input type="hidden" name="openid.return_to" value="https://gamedb.online/settings/steam-callback">
+                            <p>
+                                <button type="submit" class="btn btn-success btn-sm">Link Steam Account</button>
+                            </p>
+                        </form>
+                    {{ else }}
+                    {{ end }}
 
-                    <form action="https://steamcommunity.com/openid/login" method="post">
-                        <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
-                        <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
-                        <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
-                        <input type="hidden" name="openid.mode" value="checkid_setup">
-                        <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
-                        <input type="hidden" name="openid.return_to" value="https://gamedb.online/settings/steam-callback">
-                        <button type="submit" class="btn btn-success">Login with Steam</button>
-                    </form>
+                    {{ if eq .User.PatreonID 0 }}
+                        <p>
+                            <a href="/settings/link-patreon" role="button" class="btn btn-success btn-sm">Link Patreon Account</a>
+                        </p>
+                    {{ else }}
+                        <p>
+                            <a href="/settings/unlink-patreon" role="button" class="btn btn-danger btn-sm">Unlink Patreon Account</a>
+                        </p>
+                    {{ end }}
 
                     <h5>Settings</h5>
                     <form action="/settings" method="post">

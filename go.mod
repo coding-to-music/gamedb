@@ -11,7 +11,7 @@ require (
 	github.com/Jleagle/google-cloud-storage-go v0.0.0-20181227195340-0633133a5c6c
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
 	github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89
-	github.com/Jleagle/patreon-go v0.0.0-20190411072229-d54884f92a68
+	github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
 	github.com/Jleagle/steam-go v0.0.0-20190508202824-36db23b6bbf5
@@ -49,13 +49,15 @@ require (
 	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a // indirect
 	github.com/jinzhu/now v1.0.0
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/kr/pretty v0.1.0
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e
+	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
+	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mitchellh/mapstructure v1.1.2
+	github.com/mxpv/patreon-go v0.0.0-20180807002359-67dbab1ad14c
 	github.com/nicklaw5/helix v0.5.1
 	github.com/nlopes/slack v0.5.0
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
