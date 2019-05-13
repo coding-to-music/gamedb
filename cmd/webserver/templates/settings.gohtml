@@ -40,32 +40,33 @@
                 {{/* Settings */}}
                 <div class="tab-pane show active" id="settings" role="tabpanel">
 
-                    <h5>Website Connections</h5>
+                    <h5>Connections</h5>
 
-                    {{ if gt .User.SteamID 0 }}
+                    {{ if eq .User.SteamID 0 }}
                         <form action="https://steamcommunity.com/openid/login" method="post">
                             <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
                             <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
                             <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
                             <input type="hidden" name="openid.mode" value="checkid_setup">
                             <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
-                            <input type="hidden" name="openid.return_to" value="https://gamedb.online/settings/steam-callback">
+                            <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/steam-callback">
                             <p>
                                 <button type="submit" class="btn btn-success btn-sm">Link Steam Account</button>
                             </p>
                         </form>
                     {{ else }}
+                        <p>
+                            <a href="/settings/unlink-steam" role="button" class="btn btn-danger btn-sm">Unlink Steam Account</a>
+                        </p>
                     {{ end }}
 
-                    {{ if eq .User.PatreonID 0 }}
-                        <p>
+                    <p>
+                        {{ if eq .User.PatreonID 0 }}
                             <a href="/settings/link-patreon" role="button" class="btn btn-success btn-sm">Link Patreon Account</a>
-                        </p>
-                    {{ else }}
-                        <p>
+                        {{ else }}
                             <a href="/settings/unlink-patreon" role="button" class="btn btn-danger btn-sm">Unlink Patreon Account</a>
-                        </p>
-                    {{ end }}
+                        {{ end }}
+                    </p>
 
                     <h5>Settings</h5>
                     <form action="/settings" method="post">

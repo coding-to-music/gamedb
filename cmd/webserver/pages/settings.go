@@ -2,7 +2,6 @@ package pages
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"path"
 	"strconv"
@@ -22,10 +21,6 @@ import (
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
-)
-
-var (
-	errNotLoggedIn = errors.New("not logged in")
 )
 
 func SettingsRouter() http.Handler {
@@ -56,25 +51,39 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loggedIn, err := isLoggedIn(r)
-	log.Err(err)
-
-	if !loggedIn {
-		err := session.SetBadFlash(r, "Please login")
-		log.Err(err, r)
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
+	var err error
 
 	//
 	t := settingsTemplate{}
 	t.fill(w, r, "Settings", "")
 	t.addAssetPasswordStrength()
-	t.setFlashes(w, r, true)
+	t.setFlashes(w, r, false)
 	t.Domain = config.Config.GameDBDomain.Get()
 
 	// Get user
 	t.User, err = getUserFromSession(r)
+	log.Err(err)
+
+	// Set Steam name to session if missing, can happen after linking
+	if t.User.SteamID != 0 {
+
+		name, err := session.Read(r, session.PlayerName)
+		log.Err(err)
+
+		if name == "" && err == nil {
+
+			t.Player, err = mongo.GetPlayer(t.User.SteamID)
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+			log.Err(err)
+
+			if t.Player.PersonaName != "" {
+				err = session.Write(r, session.PlayerName, t.Player.VanintyURL)
+				log.Err(err)
+			}
+		}
+	}
+
+	err = session.Save(w, r)
 	log.Err(err)
 
 	//
@@ -105,22 +114,6 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Get Player
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		if t.User.SteamID == 0 {
-			return
-		}
-
-		var err error
-		t.Player, err = mongo.GetPlayer(t.User.SteamID)
-		// err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		log.Err(err)
-	}()
-
 	// Wait
 	wg.Wait()
 
@@ -136,10 +129,9 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 type settingsTemplate struct {
 	GlobalTemplate
-	Player    mongo.Player
 	User      sql.User
+	Player    mongo.Player
 	Games     string
-	Messages  []interface{}
 	Countries [][]string
 	Domain    string
 }
@@ -404,54 +396,79 @@ var discoveryCache = openid.NewSimpleDiscoveryCache()
 
 func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Get ID from OpenID
+	defer func() {
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
+	// Get Steam ID
 	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+		log.Err(err)
+		err = session.SetBadFlash(r, "We could not verify your Steam account")
+		log.Err(err)
 		return
 	}
 
 	// Convert to int
 	ID, err := strconv.ParseInt(path.Base(openID), 10, 64)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1001)")
+		log.Err(err)
 		return
 	}
 
-	// Check if we have the player
-	player, err := mongo.GetPlayer(ID)
-	if err != nil && err != mongo.ErrNoDocuments {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "We could not verify your Steam account.", Error: err})
+	// Update user row
+	db, err := sql.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1002)")
+		log.Err(err)
 		return
 	}
+
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1003)")
+		log.Err(err)
+		return
+	}
+
+	db = db.Model(&user).Update("steam_id", ID)
+	if db.Error != nil {
+		err = session.SetBadFlash(r, "An error occurred (1004)")
+		log.Err(err)
+		log.Err(db.Error)
+		return
+	}
+
+	// Success flash
+	err = session.SetGoodFlash(r, "Steam account linked")
+	log.Err(err)
 
 	// Queue for an update
-	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
-
-		err = queue.ProducePlayer(player.ID)
-		log.Err(err, r)
-	}
-
-	// Get user
-	// user, err := sql.GetOrCreateUser(ID)
-	// if err != nil {
-	// 	returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
-	// 	return
-	// }
-
-	// err = login(w, r, player, user)
-	// if err != nil {
-	// 	returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
-	// 	return
-	// }
-
-	err = session.Save(w, r)
+	player, err := mongo.GetPlayer(ID)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an error logging you in.", Error: err})
-		return
+		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+		log.Err(err)
+	} else {
+		if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateManual) {
+			err = queue.ProducePlayer(player.ID)
+			log.Err(err, r)
+
+			// Queued flash
+			err = session.SetGoodFlash(r, "Player has been queued for an update")
+			log.Err(err)
+		}
 	}
 
-	http.Redirect(w, r, "/settings", http.StatusFound)
+	// Update session
+	err = session.Write(r, session.PlayerID, openID)
+	log.Err(err)
 }
 
 func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
@@ -466,6 +483,7 @@ func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := getUserFromSession(r)
 	if err != nil {
+		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred")
 		log.Err(err)
 		return
@@ -473,6 +491,7 @@ func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 
 	db, err := sql.GetMySQLClient()
 	if err != nil {
+		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred")
 		log.Err(err)
 		return
@@ -480,12 +499,23 @@ func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 
 	db = db.Model(&user).Update("steam_id", 0)
 	if db.Error != nil {
+		log.Err(db.Error)
 		err = session.SetBadFlash(r, "An error occurred")
 		log.Err(err)
-		log.Err(db.Error)
 		return
 	}
 
+	// Clear session
+	err = session.Delete(r, session.PlayerID)
+	log.Err(err)
+
+	err = session.Delete(r, session.PlayerName)
+	log.Err(err)
+
+	err = session.Delete(r, session.PlayerLevel)
+	log.Err(err)
+
+	//
 	err = session.SetGoodFlash(r, "Steam unlinked")
 	log.Err(err)
 }
@@ -581,7 +611,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token.AccessToken})
 	tc := oauth2.NewClient(context.TODO(), ts)
 
-	user, err := patreon.NewClient(tc).FetchUser()
+	patreonUser, err := patreon.NewClient(tc).FetchUser()
 	if err != nil {
 		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1004)")
@@ -589,17 +619,32 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db = db.Model(&user).Update("patreon_id", 0)
-	if db.Error != nil {
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1005)")
+		log.Err(err)
+		return
+	}
+
+	idx, err := strconv.Atoi(patreonUser.Data.ID)
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1005)")
+		log.Err(err)
+		return
+	}
+
+	db = db.Model(&user).Update("patreon_id", idx)
+	if db.Error != nil {
+		err = session.SetBadFlash(r, "An error occurred (1006)")
 		log.Err(err)
 		log.Err(db.Error)
 		return
 	}
 
-	err = session.SetGoodFlash(r, "Patreon removed")
+	err = session.SetGoodFlash(r, "Patreon account linked")
 	log.Err(err)
-
 }
 
 func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {

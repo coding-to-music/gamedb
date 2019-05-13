@@ -110,6 +110,18 @@ func WriteMany(r *http.Request, values map[string]string) (err error) {
 	return nil
 }
 
+func Delete(r *http.Request, key string) (err error) {
+
+	session, err := getSession(r)
+	if err != nil {
+		return err
+	}
+
+	delete(session.Values, key)
+
+	return nil
+}
+
 func Clear(r *http.Request) (err error) {
 
 	session, err := getSession(r)

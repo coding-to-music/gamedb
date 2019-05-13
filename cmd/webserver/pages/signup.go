@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -241,7 +242,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		db, err := sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
-			return "An error occurred", false
+			return "An error occurred (1001)", false
 		}
 
 		var userVerify sql.UserVerification
@@ -260,7 +261,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		db, err = sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
-			return "An error occurred", false
+			return "An error occurred (1002)", false
 		}
 
 		var user = sql.User{Email: userVerify.Email}
