@@ -28,7 +28,6 @@ func GetUserByID(id int) (user User, err error) {
 
 	db = db.Where("id = ?", id).First(&user)
 	return user, db.Error
-
 }
 
 func GetUserByEmail(email string) (user User, err error) {
@@ -40,7 +39,6 @@ func GetUserByEmail(email string) (user User, err error) {
 
 	db = db.Where("email = ?", email).First(&user)
 	return user, db.Error
-
 }
 
 func DeleteUser(id int64) (err error) {
