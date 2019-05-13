@@ -494,7 +494,7 @@ var (
 	patreonConfig = oauth2.Config{
 		ClientID:     config.Config.PatreonClientID.Get(),
 		ClientSecret: config.Config.PatreonClientSecret.Get(),
-		Scopes:       []string{"identity"},
+		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
 		RedirectURL: func() string {
 			if config.IsLocal() {
 				return "http://localhost:" + config.Config.WebserverPort.Get() + "/settings/patreon-callback"
