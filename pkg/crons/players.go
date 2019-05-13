@@ -55,20 +55,17 @@ func AutoPlayerRefreshes() {
 		return
 	}
 
-	gorm = gorm.Select([]string{"player_id"})
-	gorm = gorm.Where("patreon_level >= ?", 3)
-
 	var users []sql.User
-	gorm = gorm.Find(&users)
+	gorm = gorm.Select([]string{"steam_id"}).Where("patreon_level >= ?", 3).Where("steam_id > ?", 0).Find(&users)
 	if gorm.Error != nil {
 		log.Err(gorm.Error)
 		return
 	}
 
 	for _, v := range users {
-		if v.SteamID > 0 {
-			err := queue.ProducePlayer(v.SteamID)
-			log.Err(err)
-		}
+		err := queue.ProducePlayer(v.SteamID)
+		log.Err(err)
 	}
+
+	cronLogInfo("Auto updated " + strconv.Itoa(len(users)) + " players")
 }
