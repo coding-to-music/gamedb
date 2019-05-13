@@ -10,29 +10,31 @@ import (
 )
 
 type PatreonWebhook struct {
-	CreatedAt               time.Time `bson:"created_at"`
-	RequestBody             string    `bson:"request_body"`
-	Event                   string    `bson:"event"`
-	Email                   string    `bson:"email"`
-	PatronStatus            string    `bson:"patron_status"`
-	LifetimeSupportCents    int       `bson:"lifetime_support_cents"`
-	PledgeAmountCents       int       `bson:"pledge_amount_cents"`
-	PledgeCapAmountCents    int       `bson:"pledge_cap_amount_cents"`
-	PledgeRelationshipStart time.Time `bson:"pledge_relationship_start"`
+	CreatedAt                   time.Time `bson:"created_at"`
+	RequestBody                 string    `bson:"request_body"`
+	Event                       string    `bson:"event"`
+	UserID                      int       `json:"user_id"`
+	UserEmail                   string    `bson:"user_email"`
+	DataPatronStatus            string    `bson:"patron_status"`
+	DataLifetimeSupportCents    int       `bson:"lifetime_support_cents"`
+	DataPledgeAmountCents       int       `bson:"pledge_amount_cents"`
+	DataPledgeCapAmountCents    int       `bson:"pledge_cap_amount_cents"`
+	DataPledgeRelationshipStart time.Time `bson:"pledge_relationship_start"`
 }
 
 func (pw PatreonWebhook) BSON() (ret interface{}) {
 
 	return M{
-		"created_at":                pw.CreatedAt,
-		"request_body":              pw.RequestBody,
-		"event":                     pw.Event,
-		"email":                     pw.Email,
-		"lifetime_support_cents":    pw.LifetimeSupportCents,
-		"patron_status":             pw.PatronStatus,
-		"pledge_amount_cents":       pw.PledgeAmountCents,
-		"pledge_cap_amount_cents":   pw.PledgeCapAmountCents,
-		"pledge_relationship_start": pw.PledgeRelationshipStart,
+		"created_at":                     pw.CreatedAt,
+		"request_body":                   pw.RequestBody,
+		"event":                          pw.Event,
+		"user_id":                        pw.UserID,
+		"user_email":                     pw.UserEmail,
+		"data_lifetime_support_cents":    pw.DataLifetimeSupportCents,
+		"data_patron_status":             pw.DataPatronStatus,
+		"data_pledge_amount_cents":       pw.DataPledgeAmountCents,
+		"data_pledge_cap_amount_cents":   pw.DataPledgeCapAmountCents,
+		"data_pledge_relationship_start": pw.DataPledgeRelationshipStart,
 	}
 }
 

@@ -51,15 +51,16 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 func saveWebhookToMongo(event string, pwr patreon.Webhook, body []byte) (err error) {
 
 	_, err = mongo.InsertDocument(mongo.CollectionPatreonWebhooks, mongo.PatreonWebhook{
-		CreatedAt:               time.Now(),
-		RequestBody:             string(body),
-		Event:                   event,
-		Email:                   pwr.User.Attributes.Email,
-		PatronStatus:            pwr.Data.Attributes.PatronStatus,
-		LifetimeSupportCents:    pwr.Data.Attributes.LifetimeSupportCents,
-		PledgeAmountCents:       pwr.Data.Attributes.PledgeAmountCents,
-		PledgeCapAmountCents:    int(pwr.Data.Attributes.PledgeCapAmountCents),
-		PledgeRelationshipStart: pwr.Data.Attributes.PledgeRelationshipStart,
+		CreatedAt:                   time.Now(),
+		RequestBody:                 string(body),
+		Event:                       event,
+		UserID:                      int(pwr.User.ID),
+		UserEmail:                   pwr.User.Attributes.Email,
+		DataPatronStatus:            pwr.Data.Attributes.PatronStatus,
+		DataLifetimeSupportCents:    pwr.Data.Attributes.LifetimeSupportCents,
+		DataPledgeAmountCents:       pwr.Data.Attributes.PledgeAmountCents,
+		DataPledgeCapAmountCents:    int(pwr.Data.Attributes.PledgeCapAmountCents),
+		DataPledgeRelationshipStart: pwr.Data.Attributes.PledgeRelationshipStart,
 	})
 	return err
 }
