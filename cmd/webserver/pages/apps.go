@@ -9,7 +9,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -234,7 +233,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	//
-	var code = session.GetCountryCode(r)
+	var code = getCountryCode(r)
 	var wg sync.WaitGroup
 
 	// Get apps

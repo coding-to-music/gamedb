@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -120,7 +119,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var filter = mongo.D{
-		{"currency", string(session.GetCountryCode(r))},
+		{"currency", string(getCountryCode(r))},
 		{"app_id", bson.M{"$gt": 0}},
 		{"difference", bson.M{"$lt": 0}},
 	}
@@ -128,7 +127,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
 	log.Err(err, r)
 
-	locale, err := helpers.GetLocaleFromCountry(session.GetCountryCode(r))
+	locale, err := helpers.GetLocaleFromCountry(getCountryCode(r))
 	log.Err(err)
 
 	var prices []homePrice

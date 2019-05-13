@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -58,7 +57,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get ranks
 	var priceChanges []mongo.ProductPrice
 
-	var code = session.GetCountryCode(r)
+	var code = getCountryCode(r)
 
 	var dateLimit = time.Now().AddDate(0, 0, -30)
 

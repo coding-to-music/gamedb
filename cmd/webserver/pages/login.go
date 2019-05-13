@@ -45,7 +45,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t := loginTemplate{}
 	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-	t.Domain = config.Config.GameDBDomain.Get()
 	t.setFlashes(w, r, true)
 
 	t.LoginEmail, err = session.Read(r, "login-email")
@@ -58,7 +57,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 type loginTemplate struct {
 	GlobalTemplate
 	RecaptchaPublic string
-	Domain          string
 	LoginEmail      string
 }
 
@@ -111,7 +109,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user
-		user, err := sql.GetUser(email, false)
+		user, err := sql.GetUserByEmail(email)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 			log.Err(err, r)
@@ -129,21 +127,23 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Log user in
 		sessionData := map[string]string{
-			session.UserEmail:   user.Email,
-			session.UserCountry: user.CountryCode,
+			session.UserID:         strconv.Itoa(user.ID),
+			session.UserEmail:      user.Email,
+			session.UserCountry:    user.CountryCode,
+			session.UserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		}
 
 		player, err := mongo.GetPlayer(user.SteamID)
 		if err == nil {
-
 			sessionData[session.PlayerID] = strconv.FormatInt(player.ID, 10)
 			sessionData[session.PlayerName] = player.PersonaName
 			sessionData[session.PlayerLevel] = strconv.Itoa(player.Level)
 		} else {
+			err = helpers.IgnoreErrors(err, mongo.ErrInvalidPlayerID, mongo.ErrNoDocuments)
 			log.Err(err, r)
 		}
 
-		err = session.WriteMany(w, r, sessionData)
+		err = session.WriteMany(r, sessionData)
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false

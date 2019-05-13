@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -200,7 +199,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Get price
-	t.Price = sql.GetPriceFormatted(app, session.GetCountryCode(r))
+	t.Price = sql.GetPriceFormatted(app, getCountryCode(r))
 
 	// Functions that get called multiple times in the template
 	t.Achievements, err = t.App.GetAchievements()

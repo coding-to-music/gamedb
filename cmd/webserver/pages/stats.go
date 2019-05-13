@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -83,7 +82,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var code = session.GetCountryCode(r)
+		var code = getCountryCode(r)
 		var rows []statsAppTypeTotalsRow
 
 		gorm = gorm.Select([]string{"type", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})

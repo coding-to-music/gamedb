@@ -54,7 +54,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loggedIn, err := session.IsLoggedIn(r)
+	loggedIn, err := isLoggedIn(r)
 	log.Err(err)
 
 	if !loggedIn {
@@ -69,6 +69,11 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Settings", "")
 	t.addAssetPasswordStrength()
 	t.setFlashes(w, r, true)
+	t.Domain = config.Config.GameDBDomain.Get()
+
+	// Get user
+	t.User, err = getUserFromSession(r)
+	log.Err(err)
 
 	//
 	var wg sync.WaitGroup
@@ -79,13 +84,11 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		id, err := getPlayerIDFromSession(r)
-		if err != nil {
-			log.Err(err, r)
+		if t.User.SteamID == 0 {
 			return
 		}
 
-		playerApps, err := mongo.GetPlayerApps(id, 0, 0, mongo.D{})
+		playerApps, err := mongo.GetPlayerApps(t.User.SteamID, 0, 0, mongo.D{})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -100,26 +103,19 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Get User
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.User, err = getUserFromSession(r)
-		log.Err(err)
-	}()
-
 	// Get Player
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
+		if t.User.SteamID == 0 {
+			return
+		}
+
 		var err error
-		t.Player, err = getPlayerFromSession(r)
-		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+		t.Player, err = mongo.GetPlayer(t.User.SteamID)
+		// err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		log.Err(err)
 	}()
 
@@ -143,6 +139,7 @@ type settingsTemplate struct {
 	Games     string
 	Messages  []interface{}
 	Countries [][]string
+	Domain    string
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
@@ -260,16 +257,16 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Save hidden
 		if r.PostForm.Get("hide") == "1" {
-			user.HideProfile = 1
+			user.HideProfile = true
 		} else {
-			user.HideProfile = 0
+			user.HideProfile = false
 		}
 
 		// Save alerts
 		if r.PostForm.Get("alerts") == "1" {
-			user.ShowAlerts = 1
+			user.ShowAlerts = true
 		} else {
-			user.ShowAlerts = 0
+			user.ShowAlerts = false
 		}
 
 		// Save user
@@ -295,13 +292,13 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update session
-		err = session.WriteMany(w, r, map[string]string{
+		err = session.WriteMany(r, map[string]string{
 			session.UserCountry:    user.CountryCode,
 			session.UserEmail:      user.Email,
-			session.UserShowAlerts: strconv.Itoa(int(user.ShowAlerts)),
+			session.UserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		})
-		log.Err(err, r)
 		if err != nil {
+			log.Err(err, r)
 			return "/settings", "", "Something went wrong saving your settings"
 		}
 
@@ -330,8 +327,18 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	if user.SteamID == 0 {
+		return
+	}
+
 	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
+	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
 	// Get player ID

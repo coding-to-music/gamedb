@@ -24,13 +24,17 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := getPlayerIDFromSession(r)
-	err = helpers.IgnoreErrors(err, errNotLoggedIn)
-	log.Err(err, r)
+	// Make event
+	steamID, err := getPlayerIDFromSession(r)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, eeeNoPlayerIDSet)
+		log.Err(err, r)
+	} else {
+		err = mongo.CreateEvent(r, steamID, mongo.EventLogout)
+		log.Err(err, r)
+	}
 
-	err = mongo.CreateEvent(r, id, mongo.EventLogout)
-	log.Err(err, r)
-
+	// Logout
 	err = session.Clear(r)
 	log.Err(err, r)
 
@@ -40,5 +44,6 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.Save(w, r)
 	log.Err(err, r)
 
+	//
 	http.Redirect(w, r, "/", http.StatusFound)
 }

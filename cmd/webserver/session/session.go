@@ -4,19 +4,21 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gorilla/sessions"
 )
 
 const (
-	PlayerID       = "id"
-	PlayerLevel    = "level"
-	PlayerName     = "name"
-	UserCountry    = "country"
-	UserEmail      = "email"
-	UserShowAlerts = "show-alerts"
+	// Set if logged in
+	UserID         = "user-id"
+	UserEmail      = "user-email"
+	UserCountry    = "user-country"
+	UserShowAlerts = "user-alerts"
+
+	// Set if player exists at login
+	PlayerID    = "player-id"
+	PlayerLevel = "player-level"
+	PlayerName  = "player-name"
 )
 
 var writeMutex sync.Mutex
@@ -94,7 +96,7 @@ func Write(r *http.Request, name string, value string) (err error) {
 	return nil
 }
 
-func WriteMany(w http.ResponseWriter, r *http.Request, values map[string]string) (err error) {
+func WriteMany(r *http.Request, values map[string]string) (err error) {
 
 	session, err := getSession(r)
 	if err != nil {
@@ -120,7 +122,7 @@ func Clear(r *http.Request) (err error) {
 	return nil
 }
 
-func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes []interface{}, err error) {
+func getFlashes(r *http.Request, group string) (flashes []interface{}, err error) {
 
 	session, err := getSession(r)
 	if err != nil {
@@ -132,12 +134,12 @@ func getFlashes(w http.ResponseWriter, r *http.Request, group string) (flashes [
 	return flashes, err
 }
 
-func GetGoodFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{}, err error) {
-	return getFlashes(w, r, "good")
+func GetGoodFlashes(r *http.Request) (flashes []interface{}, err error) {
+	return getFlashes(r, "good")
 }
 
-func GetBadFlashes(w http.ResponseWriter, r *http.Request) (flashes []interface{}, err error) {
-	return getFlashes(w, r, "bad")
+func GetBadFlashes(r *http.Request) (flashes []interface{}, err error) {
+	return getFlashes(r, "bad")
 }
 
 func setFlash(r *http.Request, flash string, group string) (err error) {
@@ -168,20 +170,4 @@ func Save(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 
 	return session.Save(r, w)
-}
-
-func IsLoggedIn(r *http.Request) (val bool, err error) {
-	read, err := Read(r, PlayerID)
-	return read != "" && read != "0", err
-}
-
-func GetCountryCode(r *http.Request) steam.CountryCode {
-
-	val, err := Read(r, UserCountry)
-	if err != nil || val == "" {
-		log.Err(err)
-		return steam.CountryUS
-	}
-
-	return steam.CountryCode(val)
 }

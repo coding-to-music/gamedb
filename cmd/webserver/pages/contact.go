@@ -76,7 +76,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Backup
-		err = session.WriteMany(w, r, map[string]string{
+		err = session.WriteMany(r, map[string]string{
 			"contact-name":    r.PostForm.Get("name"),
 			"contact-email":   r.PostForm.Get("email"),
 			"contact-message": r.PostForm.Get("message"),
@@ -125,7 +125,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove backup
-		err = session.WriteMany(w, r, map[string]string{
+		err = session.WriteMany(r, map[string]string{
 			"contact-name":    "",
 			"contact-email":   "",
 			"contact-message": "",

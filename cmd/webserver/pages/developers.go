@@ -3,7 +3,6 @@ package pages
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -33,7 +32,7 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := session.GetCountryCode(r)
+	code := getCountryCode(r)
 	prices := map[int]string{}
 	for _, v := range developers {
 		price, err := v.GetMeanPrice(code)

@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -146,7 +145,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get price
-	t.Price = sql.GetPriceFormatted(pack, session.GetCountryCode(r))
+	t.Price = sql.GetPriceFormatted(pack, getCountryCode(r))
 
 	t.Prices, err = t.Package.GetPrices()
 	log.Err(err)

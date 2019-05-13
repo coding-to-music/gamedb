@@ -136,10 +136,10 @@
                     </li>
                 {{ end }}
 
-                <li class="nav-item" id="header-user">
-                    {{ if .IsLoggedIn }}
-                        <a class="nav-link" href="/players/{{ .UserID }}">{{ .UserName }}</a>
-                    {{ else }}
+                <li class="nav-item">
+                    {{ if .PlayerName }}
+                        <a class="nav-link" href="/players/{{ .PlayerID }}">{{ .PlayerName }}</a>
+                    {{ else if not .IsLoggedIn }}
                         <a class="nav-link" href="/login">Login</a>
                     {{ end }}
                 </li>
@@ -152,7 +152,7 @@
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
                     <div class="dropdown-menu" id="header-settings">
                         {{ if .IsLoggedIn }}
-                            <a class="dropdown-item" href="/login/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
                             <a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i> Settings</a>
                             <div class="dropdown-divider"></div>
                         {{ end }}

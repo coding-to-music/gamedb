@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -76,7 +75,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"5": "player_trend",
 	}
 
-	var code = session.GetCountryCode(r)
+	var code = getCountryCode(r)
 
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})

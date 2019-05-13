@@ -123,7 +123,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check user doesnt exist
-		_, err = sql.GetUser(email, false)
+		_, err = sql.GetUserByEmail(email)
 		if err == nil {
 			return "An account with this email already exists", true
 		} else {

@@ -3,6 +3,7 @@ package pages
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"html/template"
 	"math"
 	"net/http"
@@ -55,10 +56,10 @@ func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string)
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Language", string(session.GetCountryCode(r))) // Used for varnish hash
-	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
+	w.Header().Set("Language", string(getCountryCode(r))) // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")   // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")   // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")       // Protection from clickjacking
 
 	if !strings.HasPrefix(r.URL.Path, "/esi") {
 		w.Header().Set("Surrogate-Control", "ESI/1.0") // Enable ESI
@@ -174,35 +175,41 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	// These variables can be used in templates and cached
-	Title              string        // Page title
-	TitleWithIcons     string        // Page title
-	Description        template.HTML // Page description
-	Path               string        // URL path
-	Env                string        // Environment
-	CSSFiles           []Asset
-	JSFiles            []Asset
+	Title          string        // Page title
+	TitleWithIcons string        // Page title
+	Description    template.HTML // Page description
+	Path           string        // URL path
+	Env            string        // Environment
+	CSSFiles       []Asset
+	JSFiles        []Asset
+
+	FlashesGood []interface{}
+	FlashesBad  []interface{}
+
+	UserID             int
+	UserName           string
+	userEmail          string
 	UserCountry        steam.CountryCode
 	UserCurrencySymbol string
 
-	// These variables can't!
-	// Session
-	UserName    string
-	userEmail   string
-	UserID      int
-	userLevel   int
-	FlashesGood []interface{}
-	FlashesBad  []interface{}
-	session     map[string]string
+	PlayerID   int64
+	PlayerName string
 
 	//
-	toasts      []Toast
+
+	// contact page
 	contactPage map[string]string
-	loginPage   map[string]string
+
+	// login page
+	loginPage map[string]string
+
+	// xp page
+	userLevel int
 
 	// Internal
 	request   *http.Request
 	metaImage string
+	toasts    []Toast
 }
 
 func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
@@ -223,33 +230,28 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
 
-	// User ID
-	id, err := session.Read(r, session.PlayerID)
+	id, err := session.Read(r, session.UserID)
 	log.Err(err, r)
-
-	if id == "" {
-		t.UserID = 0
-	} else {
+	if id != "" {
 		t.UserID, err = strconv.Atoi(id)
 		log.Err(err, r)
 	}
 
-	// User name
-	t.UserName, err = session.Read(r, session.PlayerName)
+	id, err = session.Read(r, session.PlayerID)
+	log.Err(err, r)
+	if id != "" {
+		t.PlayerID, err = strconv.ParseInt(id, 10, 64)
+		log.Err(err, r)
+	}
+
+	t.userEmail, err = session.Read(r, session.UserEmail)
 	log.Err(err, r)
 
-	// Country
-	t.UserCountry = steam.CountryCode(r.URL.Query().Get("cc"))
+	t.UserCountry = getCountryCode(r)
+	log.Err(err, r)
 
-	// Check if valid country
-	if _, ok := steam.Countries[t.UserCountry]; !ok {
-		t.UserCountry = session.GetCountryCode(r)
-	}
-
-	// Default country to session
-	if t.UserCountry == "" {
-		t.UserCountry = session.GetCountryCode(r)
-	}
+	t.UserName, err = session.Read(r, session.PlayerName)
+	log.Err(err, r)
 
 	// Currency
 	locale, err := helpers.GetLocaleFromCountry(t.UserCountry)
@@ -275,10 +277,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 			"email":   contactEmail,
 			"message": contactMessage,
 		}
-
-		// Email from logged in user
-		t.userEmail, err = session.Read(r, session.UserEmail)
-		log.Err(err, r)
 
 	case "/login":
 
@@ -306,20 +304,14 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
-		"contactPage":        t.contactPage,
-		"flashesBad":         t.FlashesBad,
-		"flashesGood":        t.FlashesGood,
-		"isAdmin":            t.IsAdmin(),
-		"isLoggedIn":         t.IsLoggedIn(),
-		"loginPage":          t.loginPage,
-		"showAds":            t.showAds(),
-		"toasts":             t.toasts,
+		"userID":             strconv.Itoa(t.UserID),
+		"userEmail":          t.userEmail,
 		"userCountry":        t.UserCountry,
 		"userCurrencySymbol": t.UserCurrencySymbol,
-		"userEmail":          t.userEmail,
-		"userID":             strconv.Itoa(t.UserID), // Too long for JS int
 		"userLevel":          t.userLevel,
-		"userName":           t.UserName,
+		"isLoggedIn":         t.IsLoggedIn(),
+		"showAds":            t.showAds(),
+		"toasts":             t.toasts,
 	}
 
 	b, err := json.Marshal(stringMap)
@@ -384,7 +376,7 @@ func (t GlobalTemplate) IsMorePage() bool {
 }
 
 func (t GlobalTemplate) IsLoggedIn() bool {
-	return t.UserID > 0
+	return t.UserID != 0
 }
 
 func (t GlobalTemplate) IsAdmin() bool {
@@ -433,10 +425,10 @@ func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save
 
 	var err error
 
-	t.FlashesGood, err = session.GetGoodFlashes(w, r)
+	t.FlashesGood, err = session.GetGoodFlashes(r)
 	log.Err(err, r)
 
-	t.FlashesBad, err = session.GetBadFlashes(w, r)
+	t.FlashesBad, err = session.GetBadFlashes(r)
 	log.Err(err, r)
 
 	if save && (len(t.FlashesGood) > 0 || len(t.FlashesBad) > 0) {
@@ -450,7 +442,7 @@ func middlewareAuthCheck() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			loggedIn, err := session.IsLoggedIn(r)
+			loggedIn, err := isLoggedIn(r)
 			log.Err(err)
 
 			if loggedIn || err == nil {
@@ -688,56 +680,74 @@ type Toast struct {
 //
 func isAdmin(r *http.Request) bool {
 
-	adminID := config.Config.AdminSteamID.Get()
-	if adminID == "" {
-		return false
-	}
-
-	currentID, err := session.Read(r, session.PlayerID)
+	id, err := session.Read(r, session.UserID)
 	log.Err(err)
 
-	return currentID == adminID
+	return id == "1"
 }
 
 //
+
+var eeeNoPlayerIDSet = errors.New("no player id set")
+
 func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 
-	// Check if logged in
-	loggedIn, err := session.IsLoggedIn(r)
-	if err != nil {
-		return playerID, errNotLoggedIn
-	}
-
-	if !loggedIn {
-		return playerID, errNotLoggedIn
-	}
-
-	// Get session
 	id, err := session.Read(r, session.PlayerID)
 	if err != nil {
 		return playerID, err
 	}
 
-	// Convert ID
-	return strconv.ParseInt(id, 10, 64)
-}
-
-func getPlayerFromSession(r *http.Request) (player mongo.Player, err error) {
-
-	playerID, err := getPlayerIDFromSession(r)
-	if err != nil {
-		return player, err
+	if id == "" || id == "0" {
+		return playerID, eeeNoPlayerIDSet
 	}
 
-	return mongo.GetPlayer(playerID)
+	return strconv.ParseInt(id, 10, 64)
 }
 
 func getUserFromSession(r *http.Request) (user sql.User, err error) {
 
-	playerID, err := getPlayerIDFromSession(r)
+	id, err := session.Read(r, session.UserID)
 	if err != nil {
 		return user, err
 	}
 
-	return sql.GetOrCreateUser(playerID)
+	if id == "" {
+		return user, errors.New("no user id set")
+	}
+
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		return user, err
+	}
+
+	return sql.GetUserByID(idx)
+}
+
+func isLoggedIn(r *http.Request) (val bool, err error) {
+	read, err := session.Read(r, session.UserEmail)
+	return read != "", err
+}
+
+func getCountryCode(r *http.Request) steam.CountryCode {
+
+	var cc string
+
+	q := r.URL.Query().Get("cc")
+	if q != "" {
+		cc = strings.ToUpper(q)
+	}
+
+	if cc == "" {
+		val, err := session.Read(r, session.UserCountry)
+		log.Err(err)
+		if err == nil || val != "" {
+			cc = val
+		}
+	}
+
+	if _, ok := steam.Countries[steam.CountryCode(cc)]; ok {
+		return steam.CountryCode(cc)
+	}
+
+	return steam.CountryUS
 }

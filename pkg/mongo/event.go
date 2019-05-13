@@ -22,7 +22,7 @@ const (
 type Event struct {
 	CreatedAt time.Time `bson:"created_at"`
 	Type      string    `bson:"type"`
-	PlayerID  int64     `bson:"player_id"`
+	SteamID   int64     `bson:"player_id"`
 	UserAgent string    `bson:"user_agent"`
 	IP        string    `bson:"ip"`
 }
@@ -32,7 +32,7 @@ func (event Event) BSON() (ret interface{}) {
 	return M{
 		"created_at": event.CreatedAt,
 		"type":       event.Type,
-		"player_id":  event.PlayerID,
+		"player_id":  event.SteamID,
 		"user_agent": event.UserAgent,
 		"ip":         event.IP,
 	}
@@ -138,11 +138,11 @@ func GetEvents(playerID int64, offset int64) (events []Event, err error) {
 	return events, cur.Err()
 }
 
-func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) {
+func CreateEvent(r *http.Request, steamID int64, eventType string) (err error) {
 
 	event := &Event{}
 	event.CreatedAt = time.Now()
-	event.PlayerID = playerID
+	event.SteamID = steamID
 	event.Type = eventType
 	event.UserAgent = r.Header.Get("User-Agent")
 	event.IP = r.RemoteAddr
@@ -153,7 +153,7 @@ func CreateEvent(r *http.Request, playerID int64, eventType string) (err error) 
 	}
 
 	if config.HasMemcache() {
-		err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(playerID).Key)
+		err = helpers.GetMemcache().Delete(helpers.MemcachePlayerEventsCount(steamID).Key)
 		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
 	}
 
