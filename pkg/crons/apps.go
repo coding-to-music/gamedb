@@ -31,6 +31,8 @@ func AppPlayers() {
 		log.Critical(gorm.Error)
 	}
 
+	log.Info("Found " + strconv.Itoa(len(appIDs)) + " apps")
+
 	// Chunk appIDs
 	var chunks [][]int
 	for i := 0; i < len(appIDs); i += 10 {
@@ -43,11 +45,15 @@ func AppPlayers() {
 		chunks = append(chunks, appIDs[i:end])
 	}
 
+	log.Info("Chunking")
+
 	for _, chunk := range chunks {
 
 		err = queue.ProduceAppPlayers(chunk)
 		log.Err(err)
 	}
+
+	log.Info("Finished chunking")
 
 	//
 	err = sql.SetConfig(sql.ConfAddedAllAppPlayers, strconv.FormatInt(time.Now().Unix(), 10))
