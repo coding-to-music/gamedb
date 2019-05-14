@@ -30,7 +30,6 @@ var store = sessions.NewCookieStore(
 func getSession(r *http.Request) (*sessions.Session, error) {
 
 	writeMutex.Lock()
-
 	defer writeMutex.Unlock()
 
 	session, err := store.Get(r, "gamedb-session")
@@ -118,6 +117,20 @@ func Delete(r *http.Request, key string) (err error) {
 	}
 
 	delete(session.Values, key)
+
+	return nil
+}
+
+func DeleteMany(r *http.Request, keys []string) (err error) {
+
+	session, err := getSession(r)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range keys {
+		delete(session.Values, v)
+	}
 
 	return nil
 }
