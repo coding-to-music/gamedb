@@ -169,13 +169,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send email
-		var link = func() string {
-			if config.IsLocal() {
-				return "http://localhost:" + config.Config.WebserverPort.Get() + "/signup/verify?code=" + code.Code
-			}
-			return "https://gamedb.online/signup/verify?code=" + code.Code
-		}()
-
+		link := config.Config.GameDBDomain.Get() + "/signup/verify?code=" + code.Code
 		body := "Please click the below link to verify your email address\n" + link
 
 		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
@@ -231,11 +225,6 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func verifyHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"code"})
-	if ret {
-		return
-	}
-
 	time.Sleep(time.Second)
 
 	message, success := func() (message string, success bool) {
@@ -248,7 +237,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find email from code
-		userVerify, err := sql.GetUserVerification(code)
+		userID, err := sql.GetUserVerification(code)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 			log.Err(err, r)
@@ -260,15 +249,11 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		// }
 
 		// Enable user
-		err = sql.UpdateUserCol(userVerify.UserID, "email_verified", true)
+		err = sql.UpdateUserCol(userID, "email_verified", true)
 		if err != nil {
 			log.Err(err, r)
 			return "Invalid code (1003)", false
 		}
-
-		// Delete code
-		err = sql.DeleteUserVerification(code)
-		log.Err(err)
 
 		//
 		return "Email has been verified", true
