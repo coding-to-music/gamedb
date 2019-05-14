@@ -103,7 +103,7 @@ func (payload baseMessage) ack(msg amqp.Delivery) {
 	payload.actionMutex.Lock()
 	defer payload.actionMutex.Unlock()
 
-	if payload.actionTaken {
+	if payload.actionTaken || msg.Acknowledger == nil {
 		return
 	}
 	payload.actionTaken = true
@@ -117,7 +117,7 @@ func (payload baseMessage) ackMulti(msg amqp.Delivery) {
 	payload.actionMutex.Lock()
 	defer payload.actionMutex.Unlock()
 
-	if payload.actionTaken {
+	if payload.actionTaken || msg.Acknowledger == nil {
 		return
 	}
 	payload.actionTaken = true
@@ -132,7 +132,7 @@ func (payload baseMessage) fail(msg amqp.Delivery) {
 	payload.actionMutex.Lock()
 	defer payload.actionMutex.Unlock()
 
-	if payload.actionTaken {
+	if payload.actionTaken || msg.Acknowledger == nil {
 		return
 	}
 	payload.actionTaken = true
@@ -156,7 +156,7 @@ func (payload baseMessage) ackRetry(msg amqp.Delivery) {
 	payload.actionMutex.Lock()
 	defer payload.actionMutex.Unlock()
 
-	if payload.actionTaken {
+	if payload.actionTaken || msg.Acknowledger == nil {
 		return
 	}
 	payload.actionTaken = true
