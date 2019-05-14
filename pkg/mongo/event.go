@@ -146,7 +146,7 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 
 func CreatePlayerEvent(r *http.Request, steamID int64, eventType string) (err error) {
 
-	user, err := sql.GetUserBySteamID(steamID)
+	user, err := sql.GetUserBySteamID(steamID, 0)
 	if err != nil {
 		if err == sql.ErrRecordNotFound {
 			return nil

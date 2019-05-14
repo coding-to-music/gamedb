@@ -401,8 +401,7 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convert to int
-	ID, err := strconv.ParseInt(path.Base(openID), 10, 64)
+	steamID, err := strconv.ParseInt(path.Base(openID), 10, 64)
 	if err != nil {
 		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1001)")
@@ -410,28 +409,33 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update user row
-	db, err := sql.GetMySQLClient()
+	user, err := getUserFromSession(r)
 	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1004)")
+		log.Err(err)
+		return
+	}
+
+	// Check Steam ID not already in use
+	_, err = sql.GetUserBySteamID(steamID, user.ID)
+	if err == nil {
+		err = session.SetBadFlash(r, "This Steam account is already linked to another Game DB account")
+		log.Err(err)
+		return
+	} else if err != sql.ErrRecordNotFound {
 		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1002)")
 		log.Err(err)
 		return
 	}
 
-	user, err := getUserFromSession(r)
+	// Update user
+	err = sql.UpdateUserCol(user.ID, "steam_id", steamID)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1003)")
+		err = session.SetBadFlash(r, "An error occurred (1007)")
 		log.Err(err)
-		return
-	}
-
-	db = db.Model(&user).Update("steam_id", ID)
-	if db.Error != nil {
-		err = session.SetBadFlash(r, "An error occurred (1004)")
-		log.Err(err)
-		log.Err(db.Error)
 		return
 	}
 
@@ -446,7 +450,7 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue for an update
-	player, err := mongo.GetPlayer(ID)
+	player, err := mongo.GetPlayer(steamID)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		log.Err(err)
@@ -469,49 +473,40 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
-
 		err := session.Save(w, r)
 		log.Err(err)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
 
-	user, err := getUserFromSession(r)
+	userID, err := getUserIDFromSesion(r)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred")
+		err = session.SetBadFlash(r, "An error occurred (1001)")
 		log.Err(err)
 		return
 	}
 
-	db, err := sql.GetMySQLClient()
+	// Update user
+	err = sql.UpdateUserCol(userID, "steam_id", 0)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred")
-		log.Err(err)
-		return
-	}
-
-	db = db.Model(&user).Update("steam_id", 0)
-	if db.Error != nil {
-		log.Err(db.Error)
-		err = session.SetBadFlash(r, "An error occurred")
+		err = session.SetBadFlash(r, "An error occurred (1002)")
 		log.Err(err)
 		return
 	}
 
 	// Clear session
-	err = session.Delete(r, session.PlayerID)
-	log.Err(err)
-
-	err = session.Delete(r, session.PlayerName)
-	log.Err(err)
-
-	err = session.Delete(r, session.PlayerLevel)
-	log.Err(err)
+	err = session.DeleteMany(r, []string{session.PlayerID, session.PlayerName, session.PlayerLevel})
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1003)")
+		log.Err(err)
+		return
+	}
 
 	// Create event
-	err = mongo.CreateUserEvent(r, user.ID, mongo.EventUnlinkSteam)
+	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlinkSteam)
 	if err != nil {
 		log.Err(err, r)
 	}
@@ -563,6 +558,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
 
+	// Oauth checks
 	realState, err := session.Read(r, "patreon-oauth-state")
 	if err != nil {
 		log.Err(err)
@@ -593,6 +589,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get token
 	token, err := patreonConfig.Exchange(context.Background(), code)
 	if err != nil {
 		log.Err(err)
@@ -601,7 +598,11 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := sql.GetMySQLClient()
+	// Get Patreon user
+	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token.AccessToken})
+	tc := oauth2.NewClient(context.TODO(), ts)
+
+	patreonUser, err := patreon.NewClient(tc).FetchUser()
 	if err != nil {
 		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1003)")
@@ -609,10 +610,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token.AccessToken})
-	tc := oauth2.NewClient(context.TODO(), ts)
-
-	patreonUser, err := patreon.NewClient(tc).FetchUser()
+	idx, err := strconv.Atoi(patreonUser.Data.ID)
 	if err != nil {
 		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1004)")
@@ -620,6 +618,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get user
 	user, err := getUserFromSession(r)
 	if err != nil {
 		log.Err(err)
@@ -628,31 +627,37 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idx, err := strconv.Atoi(patreonUser.Data.ID)
-	if err != nil {
-		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1005)")
+	// Check Steam ID not already in use
+	_, err = sql.GetUserByPatreonID(idx, user.ID)
+	if err == nil {
+		err = session.SetBadFlash(r, "This Patreon account is already linked to another Game DB account")
 		log.Err(err)
 		return
-	}
-
-	db = db.Model(&user).Update("patreon_id", idx)
-	if db.Error != nil {
+	} else if err != sql.ErrRecordNotFound {
+		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1006)")
 		log.Err(err)
-		log.Err(db.Error)
 		return
 	}
 
-	// Flash message
-	err = session.SetGoodFlash(r, "Patreon account linked")
-	log.Err(err)
+	// Update user
+	err = sql.UpdateUserCol(user.ID, "patreon_id", idx)
+	if err != nil {
+		log.Err(err)
+		err = session.SetBadFlash(r, "An error occurred (1007)")
+		log.Err(err)
+		return
+	}
 
 	// Create event
 	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkPatreon)
 	if err != nil {
 		log.Err(err, r)
 	}
+
+	// Flash message
+	err = session.SetGoodFlash(r, "Patreon account linked")
+	log.Err(err)
 }
 
 func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
@@ -664,7 +669,7 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
 
-	user, err := getUserFromSession(r)
+	userID, err := getUserIDFromSesion(r)
 	if err != nil {
 		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1001)")
@@ -672,7 +677,8 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := sql.GetMySQLClient()
+	// Update user
+	err = sql.UpdateUserCol(userID, "patreon_id", 0)
 	if err != nil {
 		log.Err(err)
 		err = session.SetBadFlash(r, "An error occurred (1002)")
@@ -680,22 +686,12 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db = db.Model(&user).Update("patreon_id", 0)
-	if db.Error != nil {
-		log.Err(err)
-		log.Err(db.Error)
-
-		err = session.SetBadFlash(r, "An error occurred (1003)")
-		log.Err(err)
-		return
-	}
-
 	// Flash message
 	err = session.SetGoodFlash(r, "Patreon unlinked")
-	log.Err(err)
+	log.Err(err, r)
 
 	// Create event
-	err = mongo.CreateUserEvent(r, user.ID, mongo.EventUnlinkPatreon)
+	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlinkPatreon)
 	if err != nil {
 		log.Err(err, r)
 	}

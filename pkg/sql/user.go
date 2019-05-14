@@ -19,6 +19,19 @@ type User struct {
 	CountryCode   string    `gorm:"not null;column:country_code"`
 }
 
+func UpdateUserCol(userID int, column string, value interface{}) (err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	var user = User{ID: 1}
+
+	db = db.Model(&user).Update(column, value)
+	return db.Error
+}
+
 func GetUserByID(id int) (user User, err error) {
 
 	db, err := GetMySQLClient()
@@ -41,14 +54,34 @@ func GetUserByEmail(email string) (user User, err error) {
 	return user, db.Error
 }
 
-func GetUserBySteamID(id int64) (user User, err error) {
+func GetUserBySteamID(id int64, excludeUserID int) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
 		return user, err
 	}
 
-	db = db.Where("steam_id = ?", id).First(&user)
+	db = db.Where("steam_id = ?", id)
+	if excludeUserID > 0 {
+		db = db.Where("id != ?", excludeUserID)
+	}
+	db = db.First(&user)
+
+	return user, db.Error
+}
+
+func GetUserByPatreonID(id int, excludeUserID int) (user User, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return user, err
+	}
+
+	db = db.Where("patreon_id = ?", id)
+	if excludeUserID > 0 {
+		db = db.Where("id != ?", excludeUserID)
+	}
+	db = db.First(&user)
 	return user, db.Error
 }
 
