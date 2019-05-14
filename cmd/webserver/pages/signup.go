@@ -162,7 +162,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create verification code
-		code, err := sql.CreateUserVerification(email)
+		code, err := sql.CreateUserVerification(user.ID)
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false
@@ -248,17 +248,10 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find email from code
-		db, err := sql.GetMySQLClient()
+		userVerify, err := sql.GetUserVerification(code)
 		if err != nil {
-			log.Err(err, r)
-			return "An error occurred (1001)", false
-		}
-
-		var userVerify sql.UserVerification
-		db = db.Where("code = ?", code).Find(&userVerify)
-		if db.Error != nil {
 			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
-			log.Err(db.Error, r)
+			log.Err(err, r)
 			return "Invalid code (1002)", false
 		}
 
@@ -267,19 +260,15 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		// }
 
 		// Enable user
-		db, err = sql.GetMySQLClient()
+		err = sql.UpdateUserCol(userVerify.UserID, "email_verified", true)
 		if err != nil {
 			log.Err(err, r)
-			return "An error occurred (1002)", false
-		}
-
-		var user = sql.User{Email: userVerify.Email}
-
-		db = db.Model(&user).Update("email_verified", true)
-		if db.Error != nil {
-			log.Err(db.Error, r)
 			return "Invalid code (1003)", false
 		}
+
+		// Delete code
+		err = sql.DeleteUserVerification(code)
+		log.Err(err)
 
 		//
 		return "Email has been verified", true
@@ -289,7 +278,6 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 	if success {
 
 		err := session.SetGoodFlash(r, message)
-		log.Err(err, r)
 
 		err = session.Save(w, r)
 		log.Err(err, r)

@@ -1,6 +1,8 @@
 package sql
 
 import (
+	"errors"
+	"strconv"
 	"time"
 )
 
@@ -20,6 +22,10 @@ type User struct {
 }
 
 func UpdateUserCol(userID int, column string, value interface{}) (err error) {
+
+	if userID == 0 {
+		return errors.New("invalid user id: " + strconv.Itoa(userID))
+	}
 
 	db, err := GetMySQLClient()
 	if err != nil {
