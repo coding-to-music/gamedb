@@ -53,11 +53,6 @@ func getDiscord() (discord *discordgo.Session, err error) {
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -177,11 +172,6 @@ type chatTemplate struct {
 }
 
 func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {

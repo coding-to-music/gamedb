@@ -27,11 +27,6 @@ func HomeRouter() http.Handler {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	t := homeTemplate{}
 	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
@@ -113,11 +108,6 @@ type homeNews struct {
 
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	var filter = mongo.D{
 		{"currency", string(getCountryCode(r))},
 		{"app_id", bson.M{"$gt": 0}},
@@ -166,11 +156,6 @@ type homePrice struct {
 }
 
 func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	id := chi.URLParam(r, "sort")
 

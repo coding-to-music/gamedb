@@ -27,11 +27,6 @@ func PlayerRouter() http.Handler {
 
 func playerHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	id := chi.URLParam(r, "id")
 	var toasts []Toast
 
@@ -338,11 +333,6 @@ type RecentlyPlayedGame struct {
 
 func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
-	if ret {
-		return
-	}
-
 	playerID := chi.URLParam(r, "id")
 
 	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
@@ -421,11 +411,6 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	message, err, success := func(r *http.Request) (string, error, bool) {
 
 		if helpers.IsBot(r.UserAgent()) {
@@ -487,11 +472,6 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {

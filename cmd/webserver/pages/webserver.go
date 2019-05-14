@@ -27,32 +27,6 @@ import (
 	"github.com/tdewolff/minify/html"
 )
 
-func setAllowedQueries(w http.ResponseWriter, r *http.Request, allowed []string) (redirect bool) {
-
-	if allowed == nil {
-		allowed = []string{}
-	}
-
-	allowed = append(allowed, "_") // jQuery caching
-
-	query := r.URL.Query()
-	oldPath := query.Encode()
-
-	for k := range query {
-		if !helpers.SliceHasString(allowed, k) {
-			query.Del(k)
-		}
-	}
-
-	newPath := query.Encode()
-	if oldPath != newPath {
-		http.Redirect(w, r, r.URL.Path+"?"+newPath, http.StatusFound)
-		return true
-	}
-
-	return false
-}
-
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)

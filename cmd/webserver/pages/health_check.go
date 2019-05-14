@@ -15,11 +15,6 @@ func HealthCheckRouter() http.Handler {
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 

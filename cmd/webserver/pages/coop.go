@@ -24,11 +24,6 @@ func CoopRouter() http.Handler {
 
 func coopHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"p"})
-	if ret {
-		return
-	}
-
 	t := coopTemplate{}
 	t.fill(w, r, "Co-op", "Find a game to play with friends.")
 	t.DefaultAvatar = helpers.DefaultAppIcon

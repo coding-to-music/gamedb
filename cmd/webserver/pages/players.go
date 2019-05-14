@@ -26,11 +26,6 @@ func PlayersRouter() http.Handler {
 
 func playersHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Template
 	t := playersTemplate{}
 
@@ -80,11 +75,6 @@ type playersTemplate struct {
 }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "search[search]", "start"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

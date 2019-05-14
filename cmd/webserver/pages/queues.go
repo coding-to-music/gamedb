@@ -20,11 +20,6 @@ func QueuesRouter() http.Handler {
 
 func queuesHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	t := queuesTemplate{}
 	t.fill(w, r, "Queues", "When new items get added to the site, they go through a queue to not overload the servers.")
 	t.addAssetHighCharts()
@@ -38,11 +33,6 @@ type queuesTemplate struct {
 }
 
 func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	var item = helpers.MemcacheQueues
 	var highcharts = map[string]helpers.HighChartsJson{}

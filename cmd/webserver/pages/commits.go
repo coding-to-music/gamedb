@@ -27,11 +27,6 @@ func CommitsRouter() http.Handler {
 
 func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
 
@@ -68,11 +63,6 @@ type commitsTemplate struct {
 }
 
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "start"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

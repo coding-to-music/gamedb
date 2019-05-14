@@ -15,11 +15,6 @@ func APIRouter() http.Handler {
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	t := apiTemplate{}
 	t.fill(w, r, "API", "")
 

@@ -24,11 +24,6 @@ func AppsRouter() http.Handler {
 
 func appsHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"tags", "genres", "developers", "publishers", "platforms", "types", "price-low", "price-high", "score-low", "score-high"})
-	if ret {
-		return
-	}
-
 	// Template
 	t := appsTemplate{}
 	t.fill(w, r, "Apps", "") // Description gets set later
@@ -208,11 +203,6 @@ type TableColumn struct {
 // )
 
 func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start", "search[value]", "search[tags][]", "search[developers][]", "search[publishers][]", "search[genres][]", "search[platforms][]", "search[types][]", "search[search]", "search[prices][]", "search[prices][]", "search[scores][]", "search[scores][]"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

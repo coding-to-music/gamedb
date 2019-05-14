@@ -15,11 +15,6 @@ func InfoRouter() http.Handler {
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	t := GlobalTemplate{}
 	t.fill(w, r, "Info", "")
 

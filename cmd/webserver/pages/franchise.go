@@ -18,18 +18,9 @@ func FranchiseRouter() http.Handler {
 
 func franchisesHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 }
 
 func franchiseHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	// Get publisher
 	id := chi.URLParam(r, "id")

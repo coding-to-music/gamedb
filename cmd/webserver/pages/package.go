@@ -23,11 +23,6 @@ func PackageRouter() http.Handler {
 
 func packageHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	id := chi.URLParam(r, "id")
 
 	idx, err := strconv.Atoi(id)
@@ -182,11 +177,6 @@ func (p packageTemplate) ShowDev() bool {
 }
 
 func packagePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"code"})
-	if ret {
-		return
-	}
 
 	productPricesAjaxHandler(w, r, helpers.ProductTypePackage)
 }

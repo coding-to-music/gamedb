@@ -16,11 +16,6 @@ func PublishersRouter() http.Handler {
 
 func publishersHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Get config
 	config, err := sql.GetConfig(sql.ConfPublishersUpdated)
 	log.Err(err, r)

@@ -25,11 +25,6 @@ var addMutex sync.Mutex
 
 func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	t := steamAPITemplate{}
 	t.fill(w, r, "Steam API", "")
 	t.Interfaces = Interfaces{}

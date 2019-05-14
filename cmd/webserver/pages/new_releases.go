@@ -21,11 +21,6 @@ func NewReleasesRouter() http.Handler {
 
 func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	var err error
 
 	t := newReleasesTemplate{}
@@ -47,11 +42,6 @@ type newReleasesTemplate struct {
 }
 
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

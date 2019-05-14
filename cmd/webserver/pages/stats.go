@@ -26,11 +26,6 @@ func StatsRouter() http.Handler {
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Template
 	t := statsTemplate{}
 	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
@@ -126,11 +121,6 @@ type statsAppTypeTotalsRow struct {
 
 func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.AddSelect("max(player_online)", "max_player_online")
@@ -166,11 +156,6 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
-
-	retu := setAllowedQueries(w, r, []string{})
-	if retu {
-		return
-	}
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -210,11 +195,6 @@ type statsAppReleaseDate struct {
 
 func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
-	retu := setAllowedQueries(w, r, []string{})
-	if retu {
-		return
-	}
-
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 
@@ -253,11 +233,6 @@ type statsAppScore struct {
 }
 
 func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
-
-	retu := setAllowedQueries(w, r, []string{})
-	if retu {
-		return
-	}
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {

@@ -22,11 +22,6 @@ func NewsRouter() http.Handler {
 
 func newsHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	t := newsTemplate{}
 	t.fill(w, r, "News", "All the news from all the games, all in one place.")
 
@@ -55,11 +50,6 @@ type newsTemplate struct {
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "start"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

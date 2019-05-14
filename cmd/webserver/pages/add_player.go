@@ -14,11 +14,6 @@ import (
 
 func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	if r.Method == http.MethodPost {
 
 		message := func() string {

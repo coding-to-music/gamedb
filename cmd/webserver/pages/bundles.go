@@ -23,11 +23,6 @@ func BundlesRouter() http.Handler {
 
 func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	total, err := sql.CountBundles()
 	log.Err(err, r)
 
@@ -44,11 +39,6 @@ type bundlesTemplate struct {
 }
 
 func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

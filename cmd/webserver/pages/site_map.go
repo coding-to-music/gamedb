@@ -28,11 +28,6 @@ func SiteMapRouter() http.Handler {
 //noinspection GoUnusedParameter
 func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	var sitemaps = []string{
 		"/sitemap/pages.xml",
 		"/sitemap/games-by-score.xml",
@@ -53,11 +48,6 @@ func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 
 //noinspection GoUnusedParameter
 func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	var pages = []string{
 		"/",
@@ -98,11 +88,6 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 
 func siteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	sm := sitemap.NewSitemap()
 
 	for _, v := range sitemapGetGames(r, "reviews_score desc") {
@@ -114,11 +99,6 @@ func siteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	sm := sitemap.NewSitemap()
 
@@ -133,11 +113,6 @@ func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 //noinspection GoUnusedParameter
 func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	sm := sitemap.NewSitemap()
 
 	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, nil, mongo.M{"_id": 1, "name": 1})
@@ -151,11 +126,6 @@ func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
 //noinspection GoUnusedParameter
 func siteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	sm := sitemap.NewSitemap()
 

@@ -16,11 +16,6 @@ func TagsRouter() http.Handler {
 
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Get config
 	config, err := sql.GetConfig(sql.ConfTagsUpdated)
 	log.Err(err, r)

@@ -46,11 +46,6 @@ func SettingsRouter() http.Handler {
 
 func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	var err error
 
 	//
@@ -137,11 +132,6 @@ type settingsTemplate struct {
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	var err error
 
@@ -313,11 +303,6 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "start"})
-	if ret {
-		return
-	}
 
 	user, err := getUserFromSession(r)
 	if err != nil {

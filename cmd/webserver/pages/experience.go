@@ -24,11 +24,6 @@ func ExperienceRouter() http.Handler {
 
 func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	var rows []level
 	xp := 0
 

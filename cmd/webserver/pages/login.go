@@ -27,11 +27,6 @@ func LoginRouter() http.Handler {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	_, err := getUserFromSession(r)
 	if err == nil {
 
@@ -61,11 +56,6 @@ type loginTemplate struct {
 }
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	time.Sleep(time.Second)
 

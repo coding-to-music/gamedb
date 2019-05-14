@@ -23,11 +23,6 @@ func ChatBotRouter() http.Handler {
 
 func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Template
 	t := chatBotTemplate{}
 	t.fill(w, r, "Chat", "The Game DB community.")

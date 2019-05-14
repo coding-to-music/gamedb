@@ -11,11 +11,6 @@ import (
 
 func RootFileHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 
 	r.URL.Path = strings.Replace(r.URL.Path, "..", "", -1)

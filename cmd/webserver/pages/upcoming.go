@@ -20,11 +20,6 @@ func UpcomingRouter() http.Handler {
 
 func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	var err error
 
 	// Template
@@ -44,11 +39,6 @@ type upcomingTemplate struct {
 }
 
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "start", "search[search]"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

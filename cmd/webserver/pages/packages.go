@@ -22,11 +22,6 @@ func PackagesRouter() http.Handler {
 
 func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	total, err := sql.CountPackages()
 	log.Err(err, r)
 
@@ -43,11 +38,6 @@ type packagesTemplate struct {
 }
 
 func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

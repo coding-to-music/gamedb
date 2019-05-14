@@ -16,11 +16,6 @@ func DevelopersRouter() http.Handler {
 
 func developersHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Get config
 	config, err := sql.GetConfig(sql.ConfDevelopersUpdated)
 	log.Err(err, r)

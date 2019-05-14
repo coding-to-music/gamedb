@@ -16,11 +16,6 @@ func GenresRouter() http.Handler {
 
 func genresHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Get config
 	config, err := sql.GetConfig(sql.ConfGenresUpdated)
 	log.Err(err, r)

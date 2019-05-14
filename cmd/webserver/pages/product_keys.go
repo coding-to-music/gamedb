@@ -20,11 +20,6 @@ func ProductKeysRouter() http.Handler {
 
 func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{"type", "key", "value"})
-	if ret {
-		return
-	}
-
 	q := r.URL.Query()
 
 	// Template

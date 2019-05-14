@@ -19,11 +19,6 @@ func DepotsRouter() http.Handler {
 
 func depotsHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Template
 	t := depotsTemplate{}
 	t.fill(w, r, "Depots", "")
@@ -37,11 +32,6 @@ type depotsTemplate struct {
 }
 
 func depotHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {

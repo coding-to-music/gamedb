@@ -23,11 +23,6 @@ func TrendingRouter() http.Handler {
 
 func trendingHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	var err error
 
 	// Template
@@ -48,11 +43,6 @@ type trendingTemplate struct {
 }
 
 func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{"draw", "order[0][column]", "order[0][dir]", "start"})
-	if ret {
-		return
-	}
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
@@ -130,11 +120,6 @@ func countTrendingApps() (count int, err error) {
 }
 
 func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	retu := setAllowedQueries(w, r, []string{"ids"})
-	if retu {
-		return
-	}
 
 	idsString := r.URL.Query().Get("ids")
 	idsSlice := strings.Split(idsString, ",")

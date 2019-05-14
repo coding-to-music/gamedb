@@ -17,11 +17,6 @@ func TwitterRouter() http.Handler {
 
 func twitterHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	t := twitterTemplate{}
 	t.fill(w, r, "News", "")
 

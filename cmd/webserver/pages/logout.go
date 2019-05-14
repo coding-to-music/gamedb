@@ -19,11 +19,6 @@ func LogoutRouter() http.Handler {
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	// Make event
 	steamID, err := getUserIDFromSesion(r)
 	if err != nil {

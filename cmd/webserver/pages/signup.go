@@ -32,11 +32,6 @@ func SignupRouter() http.Handler {
 
 func signupHandler(w http.ResponseWriter, r *http.Request) {
 
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
-
 	_, err := getUserFromSession(r)
 	if err == nil {
 
@@ -68,11 +63,6 @@ type signupTemplate struct {
 }
 
 func signupPostHandler(w http.ResponseWriter, r *http.Request) {
-
-	ret := setAllowedQueries(w, r, []string{})
-	if ret {
-		return
-	}
 
 	time.Sleep(time.Second)
 
