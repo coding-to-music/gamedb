@@ -53,7 +53,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err) })
+	err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err, r) })
 	if err != nil {
 		log.Critical(err, r)
 	}
@@ -130,7 +130,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 2), func(err error, t time.Duration) { log.Info(err) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 2), func(err error, t time.Duration) { log.Info(err, r) })
 	log.Err(err)
 
 	//

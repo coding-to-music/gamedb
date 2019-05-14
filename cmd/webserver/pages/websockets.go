@@ -32,10 +32,10 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 	if page.GetName() == "" {
 
 		bytes, err := json.Marshal(websockets.WebsocketPayload{Error: "Invalid page"})
-		log.Err(err)
+		log.Err(err, r)
 
 		_, err = w.Write(bytes)
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -43,7 +43,7 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if !strings.Contains(err.Error(), "websocket: not a websocket handshake") {
-			log.Err(err)
+			log.Err(err, r)
 		}
 		return
 	}

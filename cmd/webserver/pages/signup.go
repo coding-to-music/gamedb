@@ -201,7 +201,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		err = slack.PostWebhook(config.Config.SlackWebhook.Get(), &slack.WebhookMessage{
 			Text: "New signup: " + email,
 		})
-		log.Err(err)
+		log.Err(err, r)
 
 		return "Please check your email to verify your email", true
 	}()

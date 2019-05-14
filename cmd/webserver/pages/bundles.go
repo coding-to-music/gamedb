@@ -86,7 +86,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Limit(100)
 		gorm = gorm.Find(&bundles)
 
-		log.Err(gorm.Error)
+		log.Err(gorm.Error, r)
 
 	}(r)
 

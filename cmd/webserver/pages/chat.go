@@ -99,7 +99,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, r) })
 		if err != nil {
 			discordErr = err
 			log.Critical(err, r)
@@ -143,7 +143,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, r) })
 		if err != nil {
 			discordErr = err
 			log.Critical(err, r)
@@ -206,7 +206,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, r) })
 	if err != nil {
 		log.Critical(err, r)
 		return

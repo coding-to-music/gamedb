@@ -75,7 +75,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		articles, err = mongo.GetArticles(query.getOffset64())
-		log.Err(err)
+		log.Err(err, r)
 
 		for k, v := range articles {
 			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
@@ -90,7 +90,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil)
-		log.Err(err)
+		log.Err(err, r)
 	}()
 
 	wg.Wait()
