@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -18,6 +19,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/gorilla/sessions"
 )
 
 //noinspection GoUnusedGlobalVariable
@@ -25,13 +27,19 @@ var version string
 
 func main() {
 
+	//
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
+		os.Exit(1)
+	}
+
 	log.Info("Starting PubSub")
 	go websockets.ListenToPubSub()
 
-	log.Info("Starting webserver")
-
+	//
 	config.Config.CommitHash.SetDefault(version)
 
+	// Setup Recaptcha
 	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())
 
 	// Setup sessions
@@ -61,11 +69,7 @@ func main() {
 	//
 	rand.Seed(time.Now().UnixNano())
 
-	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
-		os.Exit(1)
-	}
-
+	// Routes
 	r := chi.NewRouter()
 
 	r.Use(middlewareTime)
@@ -134,6 +138,7 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
+	log.Info("Starting webserver")
 	err := http.ListenAndServe(config.ListenOn(), r)
 	log.Critical(err)
 
