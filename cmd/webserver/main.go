@@ -95,6 +95,7 @@ func main() {
 	r.Mount("/developers", pages.DevelopersRouter())
 	r.Mount("/donate", pages.DonateRouter())
 	r.Mount("/experience", pages.ExperienceRouter())
+	r.Mount("/forgot", pages.ForgotRouter())
 	r.Mount("/franchise", pages.FranchiseRouter())
 	r.Mount("/genres", pages.GenresRouter())
 	r.Mount("/health-check", pages.HealthCheckRouter())

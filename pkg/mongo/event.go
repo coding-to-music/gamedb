@@ -16,6 +16,7 @@ import (
 const (
 	EventSignup         = "signup"
 	EventLogin          = "login"
+	EventForgotPassword = "forgot-password"
 	EventLogout         = "logout"
 	EventPatreonWebhook = "patreon-webhook"
 	EventLinkSteam      = "link-steam"
