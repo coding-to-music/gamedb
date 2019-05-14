@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -40,7 +40,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := getUserFromSession(r)
 	if err == nil {
 
-		err = session.SetGoodFlash(r, "Login successful")
+		err = session.SetFlash(r, helpers.SessionGood, "Login successful")
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
@@ -53,7 +53,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t.Domain = config.Config.GameDBDomain.Get()
 	t.setFlashes(w, r, true)
 
-	t.SignupEmail, err = session.Read(r, "signup-email")
+	t.SignupEmail, err = session.Get(r, "signup-email")
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "signup", t)
@@ -90,7 +90,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		password2 := r.PostForm.Get("password2")
 
 		// Remember email
-		err = session.Write(r, "signup-email", email)
+		err = session.Set(r, "signup-email", email)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -209,7 +209,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetGoodFlash(r, message)
+		err := session.SetFlash(r, helpers.SessionGood, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -219,7 +219,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetBadFlash(r, message)
+		err := session.SetFlash(r, helpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -277,7 +277,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetGoodFlash(r, message)
+		err := session.SetFlash(r, helpers.SessionGood, message)
 
 		err = session.Save(w, r)
 		log.Err(err, r)
@@ -286,7 +286,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetBadFlash(r, message)
+		err := session.SetFlash(r, helpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)

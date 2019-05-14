@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -230,27 +230,27 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
 
-	id, err := session.Read(r, session.UserID)
+	id, err := session.Get(r, helpers.SessionUserID)
 	log.Err(err, r)
 	if id != "" {
 		t.UserID, err = strconv.Atoi(id)
 		log.Err(err, r)
 	}
 
-	id, err = session.Read(r, session.PlayerID)
+	id, err = session.Get(r, helpers.SessionPlayerID)
 	log.Err(err, r)
 	if id != "" {
 		t.PlayerID, err = strconv.ParseInt(id, 10, 64)
 		log.Err(err, r)
 	}
 
-	t.userEmail, err = session.Read(r, session.UserEmail)
+	t.userEmail, err = session.Get(r, helpers.SessionUserEmail)
 	log.Err(err, r)
 
 	t.UserCountry = getCountryCode(r)
 	log.Err(err, r)
 
-	t.UserName, err = session.Read(r, session.PlayerName)
+	t.UserName, err = session.Get(r, helpers.SessionPlayerName)
 	log.Err(err, r)
 
 	// Currency
@@ -265,11 +265,11 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	case "/contact":
 
 		// Details from form
-		contactName, err := session.Read(r, "contact-name")
+		contactName, err := session.Get(r, "contact-name")
 		log.Err(err)
-		contactEmail, err := session.Read(r, "contact-email")
+		contactEmail, err := session.Get(r, "contact-email")
 		log.Err(err)
-		contactMessage, err := session.Read(r, "contact-message")
+		contactMessage, err := session.Get(r, "contact-message")
 		log.Err(err)
 
 		t.contactPage = map[string]string{
@@ -280,7 +280,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	case "/login":
 
-		loginEmail, err := session.Read(r, "login-email")
+		loginEmail, err := session.Get(r, "login-email")
 		log.Err(err)
 
 		t.loginPage = map[string]string{
@@ -289,7 +289,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	case "/experience":
 
-		level, err := session.Read(r, session.PlayerLevel)
+		level, err := session.Get(r, helpers.SessionPlayerLevel)
 		log.Err(err, r)
 
 		if level == "" {
@@ -425,10 +425,10 @@ func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save
 
 	var err error
 
-	t.FlashesGood, err = session.GetGoodFlashes(r)
+	t.FlashesGood, err = session.GetFlashes(r, helpers.SessionGood)
 	log.Err(err, r)
 
-	t.FlashesBad, err = session.GetBadFlashes(r)
+	t.FlashesBad, err = session.GetFlashes(r, helpers.SessionBad)
 	log.Err(err, r)
 
 	if save && (len(t.FlashesGood) > 0 || len(t.FlashesBad) > 0) {
@@ -450,7 +450,7 @@ func middlewareAuthCheck() func(http.Handler) http.Handler {
 				return
 			}
 
-			err = session.SetBadFlash(r, "Please login")
+			err = session.SetFlash(r, helpers.SessionBad, "Please login")
 			log.Err(err, r)
 
 			http.Redirect(w, r, "/login", http.StatusFound)
@@ -680,7 +680,7 @@ type Toast struct {
 //
 func isAdmin(r *http.Request) bool {
 
-	id, err := session.Read(r, session.UserID)
+	id, err := session.Get(r, helpers.SessionUserID)
 	log.Err(err)
 
 	return id == "1"
@@ -692,7 +692,7 @@ var eeeNoPlayerIDSet = errors.New("no player id set")
 
 func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 
-	id, err := session.Read(r, session.PlayerID)
+	id, err := session.Get(r, helpers.SessionPlayerID)
 	if err != nil {
 		return playerID, err
 	}
@@ -706,7 +706,7 @@ func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
 
 func getUserIDFromSesion(r *http.Request) (id int, err error) {
 
-	idx, err := session.Read(r, session.UserID)
+	idx, err := session.Get(r, helpers.SessionUserID)
 	if err != nil {
 		return id, err
 	}
@@ -729,7 +729,7 @@ func getUserFromSession(r *http.Request) (user sql.User, err error) {
 }
 
 func isLoggedIn(r *http.Request) (val bool, err error) {
-	read, err := session.Read(r, session.UserEmail)
+	read, err := session.Get(r, helpers.SessionUserEmail)
 	return read != "", err
 }
 
@@ -743,7 +743,7 @@ func getCountryCode(r *http.Request) steam.CountryCode {
 	}
 
 	if cc == "" {
-		val, err := session.Read(r, session.UserCountry)
+		val, err := session.Get(r, helpers.SessionUserCountry)
 		log.Err(err)
 		if err == nil || val != "" {
 			cc = val

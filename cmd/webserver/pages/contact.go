@@ -5,8 +5,9 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
+	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go"
@@ -34,18 +35,18 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
-	t.SessionName, err = session.Read(r, "contact-name")
+	t.SessionName, err = session.Get(r, "contact-name")
 	log.Err(err)
 
-	t.SessionEmail, err = session.Read(r, "contact-email")
+	t.SessionEmail, err = session.Get(r, "contact-email")
 	log.Err(err)
 
 	if t.SessionEmail == "" {
-		t.SessionEmail, err = session.Read(r, session.UserEmail)
+		t.SessionEmail, err = session.Get(r, helpers.SessionUserEmail)
 		log.Err(err)
 	}
 
-	t.SessionMessage, err = session.Read(r, "contact-message")
+	t.SessionMessage, err = session.Get(r, "contact-message")
 	log.Err(err)
 
 	err = returnTemplate(w, r, "contact", t)
@@ -76,7 +77,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Backup
-		err = session.WriteMany(r, map[string]string{
+		err = session.SetMany(r, map[string]interface{}{
 			"contact-name":    r.PostForm.Get("name"),
 			"contact-email":   r.PostForm.Get("email"),
 			"contact-message": r.PostForm.Get("message"),
@@ -125,7 +126,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove backup
-		err = session.WriteMany(r, map[string]string{
+		err = session.SetMany(r, map[string]interface{}{
 			"contact-name":    "",
 			"contact-email":   "",
 			"contact-message": "",
@@ -137,9 +138,9 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	if err != nil {
-		err = session.SetGoodFlash(r, err.Error())
+		err = session.SetFlash(r, helpers.SessionBad, err.Error())
 	} else {
-		err = session.SetGoodFlash(r, "Message sent!")
+		err = session.SetFlash(r, helpers.SessionGood, "Message sent!")
 	}
 
 	err = session.Save(w, r)

@@ -3,7 +3,7 @@ package pages
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/cmd/webserver/session"
+	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -35,10 +35,10 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Logout
-	err = session.Clear(r)
+	err = session.DeleteAll(r)
 	log.Err(err, r)
 
-	err = session.SetGoodFlash(r, "You have been logged out")
+	err = session.SetFlash(r, helpers.SessionGood, "You have been logged out")
 	log.Err(err, r)
 
 	err = session.Save(w, r)

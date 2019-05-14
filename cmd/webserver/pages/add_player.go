@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
+	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -72,7 +72,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
 		if message != "" {
 
-			err := session.SetBadFlash(r, message)
+			err := session.SetFlash(r, helpers.SessionBad, message)
 			log.Err(err)
 
 			err = session.Save(w, r)

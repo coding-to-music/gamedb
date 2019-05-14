@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -35,7 +35,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := getUserFromSession(r)
 	if err == nil {
 
-		err = session.SetGoodFlash(r, "Login successful")
+		err = session.SetFlash(r, helpers.SessionGood, "Login successful")
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
@@ -47,7 +47,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 	t.setFlashes(w, r, true)
 
-	t.LoginEmail, err = session.Read(r, "login-email")
+	t.LoginEmail, err = session.Get(r, "login-email")
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "login", t)
@@ -67,7 +67,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	time.Sleep(time.Second / 2)
+	time.Sleep(time.Second)
 
 	message, success := func() (message string, success bool) {
 
@@ -82,7 +82,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.PostForm.Get("password")
 
 		// Remember email
-		err = session.Write(r, "login-email", r.PostForm.Get("email"))
+		err = session.Set(r, "login-email", r.PostForm.Get("email"))
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -126,24 +126,24 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Log user in
-		sessionData := map[string]string{
-			session.UserID:         strconv.Itoa(user.ID),
-			session.UserEmail:      user.Email,
-			session.UserCountry:    user.CountryCode,
-			session.UserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+		sessionData := map[string]interface{}{
+			helpers.SessionUserID:         strconv.Itoa(user.ID),
+			helpers.SessionUserEmail:      user.Email,
+			helpers.SessionUserCountry:    user.CountryCode,
+			helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		}
 
 		player, err := mongo.GetPlayer(user.SteamID)
 		if err == nil {
-			sessionData[session.PlayerID] = strconv.FormatInt(player.ID, 10)
-			sessionData[session.PlayerName] = player.PersonaName
-			sessionData[session.PlayerLevel] = strconv.Itoa(player.Level)
+			sessionData[helpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
+			sessionData[helpers.SessionPlayerName] = player.PersonaName
+			sessionData[helpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
 			err = helpers.IgnoreErrors(err, mongo.ErrInvalidPlayerID, mongo.ErrNoDocuments)
 			log.Err(err, r)
 		}
 
-		err = session.WriteMany(r, sessionData)
+		err = session.SetMany(r, sessionData)
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false
@@ -161,7 +161,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetGoodFlash(r, message)
+		err := session.SetFlash(r, helpers.SessionGood, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -171,7 +171,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetBadFlash(r, message)
+		err := session.SetFlash(r, helpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)

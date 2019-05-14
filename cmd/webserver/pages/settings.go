@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/webserver/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -67,7 +67,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Set Steam name to session if missing, can happen after linking
 	if t.User.SteamID != 0 {
 
-		name, err := session.Read(r, session.PlayerName)
+		name, err := session.Get(r, helpers.SessionPlayerName)
 		log.Err(err)
 
 		if name == "" && err == nil {
@@ -77,7 +77,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err)
 
 			if t.Player.PersonaName != "" {
-				err = session.Write(r, session.PlayerName, t.Player.VanintyURL)
+				err = session.Set(r, helpers.SessionPlayerName, t.Player.VanintyURL)
 				log.Err(err)
 			}
 		}
@@ -161,7 +161,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 		if r.PostForm.Get("id") == strconv.FormatInt(user.SteamID, 10) {
 
-			err = session.Clear(r)
+			err = session.DeleteAll(r)
 			log.Err(err)
 			return "/", "Your account has been deleted", ""
 
@@ -171,11 +171,11 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if good != "" {
-		err = session.SetGoodFlash(r, good)
+		err = session.SetFlash(r, helpers.SessionGood, good)
 		log.Err(err)
 	}
 	if bad != "" {
-		err = session.SetBadFlash(r, bad)
+		err = session.SetFlash(r, helpers.SessionBad, bad)
 		log.Err(err)
 	}
 
@@ -205,9 +205,11 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 			return "/settings", "", "Could not read form data"
 		}
 
-		// Email
 		email := r.PostForm.Get("email")
+		password := r.PostForm.Get("password")
+		country := r.PostForm.Get("country_code")
 
+		// Email
 		if email != "" && email != user.Email {
 
 			err = checkmail.ValidateFormat(r.PostForm.Get("email"))
@@ -219,8 +221,6 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Password
-		password := r.PostForm.Get("password")
-
 		if email != user.Email {
 			user.EmailVerified = false
 		}
@@ -241,10 +241,8 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Country code
-		code := r.PostForm.Get("country_code")
-
-		if _, ok := steam.Countries[steam.CountryCode(code)]; ok {
-			user.CountryCode = code
+		if _, ok := steam.Countries[steam.CountryCode(country)]; ok {
+			user.CountryCode = country
 		} else {
 			user.CountryCode = string(steam.CountryUS)
 		}
@@ -286,10 +284,10 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update session
-		err = session.WriteMany(r, map[string]string{
-			session.UserCountry:    user.CountryCode,
-			session.UserEmail:      user.Email,
-			session.UserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+		err = session.SetMany(r, map[string]interface{}{
+			helpers.SessionUserCountry:    user.CountryCode,
+			helpers.SessionUserEmail:      user.Email,
+			helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		})
 		if err != nil {
 			log.Err(err, r)
@@ -300,11 +298,11 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if good != "" {
-		err = session.SetGoodFlash(r, good)
+		err = session.SetFlash(r, helpers.SessionGood, good)
 		log.Err(err)
 	}
 	if bad != "" {
-		err = session.SetBadFlash(r, bad)
+		err = session.SetFlash(r, helpers.SessionBad, bad)
 		log.Err(err)
 	}
 
@@ -396,7 +394,7 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "We could not verify your Steam account")
+		err = session.SetFlash(r, helpers.SessionBad, "We could not verify your Steam account")
 		log.Err(err)
 		return
 	}
@@ -404,7 +402,7 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	steamID, err := strconv.ParseInt(path.Base(openID), 10, 64)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1001)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
 		log.Err(err)
 		return
 	}
@@ -412,7 +410,7 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := getUserFromSession(r)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1004)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
 		log.Err(err)
 		return
 	}
@@ -420,12 +418,12 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Check Steam ID not already in use
 	_, err = sql.GetUserBySteamID(steamID, user.ID)
 	if err == nil {
-		err = session.SetBadFlash(r, "This Steam account is already linked to another Game DB account")
+		err = session.SetFlash(r, helpers.SessionBad, "This Steam account is already linked to another Game DB account")
 		log.Err(err)
 		return
 	} else if err != sql.ErrRecordNotFound {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1002)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
 		log.Err(err)
 		return
 	}
@@ -434,13 +432,13 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	err = sql.UpdateUserCol(user.ID, "steam_id", steamID)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1007)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
 		log.Err(err)
 		return
 	}
 
 	// Success flash
-	err = session.SetGoodFlash(r, "Steam account linked")
+	err = session.SetFlash(r, helpers.SessionGood, "Steam account linked")
 	log.Err(err)
 
 	// Create event
@@ -460,13 +458,13 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 
 			// Queued flash
-			err = session.SetGoodFlash(r, "Player has been queued for an update")
+			err = session.SetFlash(r, helpers.SessionGood, "Player has been queued for an update")
 			log.Err(err)
 		}
 	}
 
 	// Update session
-	err = session.Write(r, session.PlayerID, openID)
+	err = session.Set(r, helpers.SessionPlayerID, steamID)
 	log.Err(err)
 }
 
@@ -482,7 +480,7 @@ func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 	userID, err := getUserIDFromSesion(r)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1001)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
 		log.Err(err)
 		return
 	}
@@ -491,16 +489,16 @@ func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 	err = sql.UpdateUserCol(userID, "steam_id", 0)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1002)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
 		log.Err(err)
 		return
 	}
 
 	// Clear session
-	err = session.DeleteMany(r, []string{session.PlayerID, session.PlayerName, session.PlayerLevel})
+	err = session.DeleteMany(r, []string{helpers.SessionPlayerID, helpers.SessionPlayerName, helpers.SessionPlayerLevel})
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1003)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
 		log.Err(err)
 		return
 	}
@@ -512,7 +510,7 @@ func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Flash message
-	err = session.SetGoodFlash(r, "Steam unlinked")
+	err = session.SetFlash(r, helpers.SessionGood, "Steam unlinked")
 	log.Err(err)
 }
 
@@ -538,7 +536,7 @@ func linkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 
 	state := helpers.RandString(5, helpers.Numbers)
 
-	err := session.Write(r, "patreon-oauth-state", state)
+	err := session.Set(r, "patreon-oauth-state", state)
 	log.Err(err)
 
 	err = session.Save(w, r)
@@ -559,10 +557,10 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Oauth checks
-	realState, err := session.Read(r, "patreon-oauth-state")
+	realState, err := session.Get(r, "patreon-oauth-state")
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1001)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
 		log.Err(err)
 		return
 	}
@@ -570,21 +568,21 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	err = r.ParseForm()
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1002)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
 		log.Err(err)
 		return
 	}
 
 	state := r.Form.Get("state")
 	if state != realState {
-		err = session.SetBadFlash(r, "Invalid state")
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
 		log.Err(err)
 		return
 	}
 
 	code := r.Form.Get("code")
 	if code == "" {
-		err = session.SetBadFlash(r, "Invalid code")
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid code")
 		log.Err(err)
 		return
 	}
@@ -593,7 +591,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	token, err := patreonConfig.Exchange(context.Background(), code)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "Invalid token")
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
 		log.Err(err)
 		return
 	}
@@ -605,7 +603,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	patreonUser, err := patreon.NewClient(tc).FetchUser()
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1003)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
 		log.Err(err)
 		return
 	}
@@ -613,7 +611,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	idx, err := strconv.Atoi(patreonUser.Data.ID)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1004)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
 		log.Err(err)
 		return
 	}
@@ -622,7 +620,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := getUserFromSession(r)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1005)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1005)")
 		log.Err(err)
 		return
 	}
@@ -630,12 +628,12 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Check Steam ID not already in use
 	_, err = sql.GetUserByPatreonID(idx, user.ID)
 	if err == nil {
-		err = session.SetBadFlash(r, "This Patreon account is already linked to another Game DB account")
+		err = session.SetFlash(r, helpers.SessionBad, "This Patreon account is already linked to another Game DB account")
 		log.Err(err)
 		return
 	} else if err != sql.ErrRecordNotFound {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1006)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1006)")
 		log.Err(err)
 		return
 	}
@@ -644,7 +642,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	err = sql.UpdateUserCol(user.ID, "patreon_id", idx)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1007)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1007)")
 		log.Err(err)
 		return
 	}
@@ -656,7 +654,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Flash message
-	err = session.SetGoodFlash(r, "Patreon account linked")
+	err = session.SetFlash(r, helpers.SessionGood, "Patreon account linked")
 	log.Err(err)
 }
 
@@ -672,7 +670,7 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 	userID, err := getUserIDFromSesion(r)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1001)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
 		log.Err(err)
 		return
 	}
@@ -681,13 +679,13 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 	err = sql.UpdateUserCol(userID, "patreon_id", 0)
 	if err != nil {
 		log.Err(err)
-		err = session.SetBadFlash(r, "An error occurred (1002)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
 		log.Err(err)
 		return
 	}
 
 	// Flash message
-	err = session.SetGoodFlash(r, "Patreon unlinked")
+	err = session.SetFlash(r, helpers.SessionGood, "Patreon unlinked")
 	log.Err(err, r)
 
 	// Create event

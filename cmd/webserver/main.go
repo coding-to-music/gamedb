@@ -34,6 +34,31 @@ func main() {
 
 	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())
 
+	// Setup sessions
+	sessionInit := session.Init{
+		CookieName:        "gamedb-session",
+		AuthenticationKey: config.Config.SessionAuthentication.Get(),
+		EncryptionKey:     config.Config.SessionEncryption.Get(),
+	}
+
+	if config.IsProd() {
+		sessionInit.CookieOptions = sessions.Options{
+			MaxAge:   2592000, // 30 days
+			Domain:   "gamedb.online",
+			Path:     "/",
+			Secure:   true,
+			HttpOnly: true,
+		}
+	} else {
+		sessionInit.CookieOptions = sessions.Options{
+			MaxAge: 2592000, // 30 days
+			Path:   "/",
+		}
+	}
+
+	session.Initialise(sessionInit)
+
+	//
 	rand.Seed(time.Now().UnixNano())
 
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
