@@ -13,6 +13,7 @@ require (
 	github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89
 	github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
+	github.com/Jleagle/session-go v0.0.0-20190514170753-50d0ff5e9e78
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
 	github.com/Jleagle/steam-go v0.0.0-20190508202824-36db23b6bbf5
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
@@ -70,7 +71,7 @@ require (
 	github.com/sendgrid/rest v2.4.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.4.1+incompatible
 	github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
-	github.com/streadway/amqp v0.0.0-20190214183023-884228600bc9
+	github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94
 	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect

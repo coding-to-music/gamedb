@@ -183,8 +183,8 @@ type GlobalTemplate struct {
 	CSSFiles       []Asset
 	JSFiles        []Asset
 
-	FlashesGood []interface{}
-	FlashesBad  []interface{}
+	FlashesGood []string
+	FlashesBad  []string
 
 	UserID             int
 	UserName           string

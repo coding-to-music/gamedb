@@ -126,7 +126,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Log user in
-		sessionData := map[string]interface{}{
+		sessionData := map[string]string{
 			helpers.SessionUserID:         strconv.Itoa(user.ID),
 			helpers.SessionUserEmail:      user.Email,
 			helpers.SessionUserCountry:    user.CountryCode,

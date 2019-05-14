@@ -284,7 +284,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update session
-		err = session.SetMany(r, map[string]interface{}{
+		err = session.SetMany(r, map[string]string{
 			helpers.SessionUserCountry:    user.CountryCode,
 			helpers.SessionUserEmail:      user.Email,
 			helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
@@ -399,7 +399,8 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	steamID, err := strconv.ParseInt(path.Base(openID), 10, 64)
+	steamIDString := path.Base(openID)
+	steamID, err := strconv.ParseInt(steamIDString, 10, 64)
 	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
@@ -464,7 +465,7 @@ func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update session
-	err = session.Set(r, helpers.SessionPlayerID, steamID)
+	err = session.Set(r, helpers.SessionPlayerID, steamIDString)
 	log.Err(err)
 }
 
