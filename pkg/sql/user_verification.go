@@ -15,19 +15,23 @@ type UserVerification struct {
 	Expires   time.Time `gorm:"not null;column:expires"`
 }
 
-func GetUserVerification(code string) (userVerification UserVerification, err error) {
+func GetUserVerification(code string) (userID int, err error) {
 
 	if len(code) != 10 {
-		return userVerification, errors.New("invalid code: " + code)
+		return userID, errors.New("invalid code: " + code)
 	}
 
 	db, err := GetMySQLClient()
 	if err != nil {
-		return userVerification, err
+		return userID, err
+	}
+	userVerification := UserVerification{}
+	db = db.Where("code = ?", code).Find(&userVerification)
+	if db.Error != nil {
+		return userVerification.UserID, db.Error
 	}
 
-	db = db.Where("code = ?", code).Find(&userVerification)
-	return userVerification, db.Error
+	return userVerification.UserID, deleteUserVerification(code)
 }
 
 func CreateUserVerification(userID int) (userVerification UserVerification, err error) {
@@ -52,7 +56,7 @@ func CreateUserVerification(userID int) (userVerification UserVerification, err 
 	return userVerification, db.Error
 }
 
-func DeleteUserVerification(code string) (err error) {
+func deleteUserVerification(code string) (err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -62,5 +66,8 @@ func DeleteUserVerification(code string) (err error) {
 	userVerification := UserVerification{}
 	userVerification.Code = code
 
-	return db.Delete(&userVerification).Error
+	err = db.Delete(&userVerification).Error
+	err = helpers.IgnoreErrors(err, ErrRecordNotFound)
+
+	return err
 }

@@ -81,6 +81,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	folder := config.Config.TemplatesPath.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/_apps_header.gohtml",
+		folder+"/_login_header.gohtml",
 		folder+"/_flashes.gohtml",
 		folder+"/_footer.gohtml",
 		folder+"/_header.gohtml",

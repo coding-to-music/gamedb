@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
@@ -13,6 +14,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func ForgotRouter() http.Handler {
@@ -88,7 +92,30 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 			return "An error occurred", false
 		}
 
-		// todo, send email with link to below function
+		// Create verification code
+		code, err := sql.CreateUserVerification(user.ID)
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred", false
+		}
+
+		// Send email
+		link := config.Config.GameDBDomain.Get() + "/forgot/reset?code=" + code.Code
+
+		body := "You are someone else has requested a new password for Game DB, this link will reset your password:\n" + link
+
+		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
+		_, err = client.Send(mail.NewSingleEmail(
+			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
+			"Game DB Forgotten Password",
+			mail.NewEmail(email, email),
+			body,
+			strings.ReplaceAll(body, "\n", "<br />"),
+		))
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred", false
+		}
 
 		// Create login event
 		err = mongo.CreateUserEvent(r, user.ID, mongo.EventForgotPassword)
@@ -105,20 +132,109 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetFlash(r, helpers.SessionGood, message)
 		log.Err(err, r)
 
+		err = session.Save(w, r)
+		log.Err(err, r)
+
+		http.Redirect(w, r, "/login", http.StatusFound)
+
 	} else {
 
 		err := session.SetFlash(r, helpers.SessionBad, message)
 		log.Err(err, r)
+
+		err = session.Save(w, r)
+		log.Err(err, r)
+
+		http.Redirect(w, r, "/forgot", http.StatusFound)
 	}
-
-	err := session.Save(w, r)
-	log.Err(err, r)
-
-	http.Redirect(w, r, "/forgot", http.StatusFound)
 }
 
 func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
-	// code := r.URL.Query().Get("code")
+	time.Sleep(time.Second)
 
+	message, success := func() (message string, success bool) {
+
+		// Validate code
+		code := r.URL.Query().Get("code")
+
+		if len(code) != 10 {
+			return "Invalid code (1001)", false
+		}
+
+		// Find email from code
+		userID, err := sql.GetUserVerification(code)
+		if err != nil {
+			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			log.Err(err, r)
+			return "Invalid code (1002)", false
+		}
+
+		// if userVerify.Expires.Unix() < time.Now().Unix() {
+		// return "This verify code has expired", false
+		// }
+
+		// Get user
+		user, err := sql.GetUserByID(userID)
+		if err != nil {
+			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			log.Err(err, r)
+			return "An error occurred (1001)", false
+		}
+
+		// Create password
+		passwordString := helpers.RandString(16, helpers.Letters)
+		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(passwordString), 14)
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred (1002)", false
+		}
+
+		// Send email
+		body := "Your new Game DB password is: " + passwordString
+
+		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
+		_, err = client.Send(mail.NewSingleEmail(
+			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
+			"Game DB Forgotten Password",
+			mail.NewEmail(user.Email, user.Email),
+			body,
+			strings.ReplaceAll(body, "\n", "<br />"),
+		))
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred", false
+		}
+
+		// Set password
+		err = sql.UpdateUserCol(userID, "password", string(passwordBytes))
+		if err != nil {
+			log.Err(err, r)
+			return "An error occurred (1003)", false
+		}
+
+		//
+		return "A new password has been emailed to you", true
+	}()
+
+	//
+	if success {
+
+		err := session.SetFlash(r, helpers.SessionGood, message)
+
+		err = session.Save(w, r)
+		log.Err(err, r)
+
+		http.Redirect(w, r, "/login", http.StatusFound)
+
+	} else {
+
+		err := session.SetFlash(r, helpers.SessionBad, message)
+		log.Err(err, r)
+
+		err = session.Save(w, r)
+		log.Err(err, r)
+
+		http.Redirect(w, r, "/signup", http.StatusFound)
+	}
 }
