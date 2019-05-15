@@ -13,7 +13,7 @@ require (
 	github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89
 	github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
-	github.com/Jleagle/session-go v0.0.0-20190514170753-50d0ff5e9e78
+	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
 	github.com/Jleagle/steam-go v0.0.0-20190515120823-3f2370388ffd
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect

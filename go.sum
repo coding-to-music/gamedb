@@ -27,6 +27,8 @@ github.com/Jleagle/session-go v0.0.0-20190514122144-e7f85416b084 h1:NVsB07jLdVgQ
 github.com/Jleagle/session-go v0.0.0-20190514122144-e7f85416b084/go.mod h1:atNOr9kQFyr7Zep/wGTj4t3fJIzNJ49DNURYEF7NQhQ=
 github.com/Jleagle/session-go v0.0.0-20190514170753-50d0ff5e9e78 h1:kkcWYBrByg+khakcENfanPhvLqDCoZtc7ZeRWb3451A=
 github.com/Jleagle/session-go v0.0.0-20190514170753-50d0ff5e9e78/go.mod h1:atNOr9kQFyr7Zep/wGTj4t3fJIzNJ49DNURYEF7NQhQ=
+github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233 h1:a51IBJjhY/73izx+ieGdWZtC2XWjQ3HnTUKoEV3Y844=
+github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233/go.mod h1:atNOr9kQFyr7Zep/wGTj4t3fJIzNJ49DNURYEF7NQhQ=
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50 h1:QkHMYi6HhE8HxBFROlbltZaAKRHU5cQ7UPsuT7M64ZY=
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50/go.mod h1:6XUIBoc/yO+w//k1YvVfZY6bsiG4Z/7l31B54EeSh/c=
 github.com/Jleagle/steam-go v0.0.0-20190508202824-36db23b6bbf5 h1:5XNGmWe6l2T+Mzdl01/7ArycmfXPGiUz0Cx66mDczjo=

@@ -1,5 +1,9 @@
 package helpers
 
+import (
+	"github.com/Jleagle/session-go/session"
+)
+
 const (
 	// Set if logged in
 	SessionUserID         = "user-id"
@@ -13,6 +17,6 @@ const (
 	SessionPlayerName  = "player-name"
 
 	// Flash groups
-	SessionGood = "good"
-	SessionBad  = "bad"
+	SessionGood session.FlashGroup = "good"
+	SessionBad  session.FlashGroup = "bad"
 )
