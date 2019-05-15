@@ -54,7 +54,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	if payload.getNextAttempt().Unix() <= time.Now().Unix() {
 
-		logInfo("Sending back to " + payload.OriginalQueue)
+		logInfo("Sending back to " + string(payload.OriginalQueue))
 		queue = payload.OriginalQueue
 
 	} else {
