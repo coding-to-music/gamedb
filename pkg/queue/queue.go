@@ -98,12 +98,12 @@ func (payload baseMessage) getNextAttempt() time.Time {
 }
 
 // Remove from queue
-func (payload baseMessage) ack(msg amqp.Delivery) {
+func (payload *baseMessage) ack(msg amqp.Delivery) {
 
 	payload.actionMutex.Lock()
 	defer payload.actionMutex.Unlock()
 
-	if payload.actionTaken || msg.Acknowledger == nil {
+	if payload.actionTaken {
 		return
 	}
 	payload.actionTaken = true
@@ -112,12 +112,12 @@ func (payload baseMessage) ack(msg amqp.Delivery) {
 	logError(err)
 }
 
-func (payload baseMessage) ackMulti(msg amqp.Delivery) {
+func (payload *baseMessage) ackMulti(msg amqp.Delivery) {
 
 	payload.actionMutex.Lock()
 	defer payload.actionMutex.Unlock()
 
-	if payload.actionTaken || msg.Acknowledger == nil {
+	if payload.actionTaken {
 		return
 	}
 	payload.actionTaken = true
@@ -127,17 +127,17 @@ func (payload baseMessage) ackMulti(msg amqp.Delivery) {
 }
 
 // Send to failed queue
-func (payload baseMessage) fail(msg amqp.Delivery) {
+func (payload *baseMessage) fail(msg amqp.Delivery) {
 
 	payload.actionMutex.Lock()
 	defer payload.actionMutex.Unlock()
 
-	if payload.actionTaken || msg.Acknowledger == nil {
+	if payload.actionTaken {
 		return
 	}
 	payload.actionTaken = true
 
-	err := produce(payload, queueGoFailed)
+	err := produce(*payload, queueGoFailed)
 	if err != nil {
 		logError(err)
 		return
@@ -151,12 +151,12 @@ func (payload baseMessage) fail(msg amqp.Delivery) {
 }
 
 // Send to delay queue
-func (payload baseMessage) ackRetry(msg amqp.Delivery) {
+func (payload *baseMessage) ackRetry(msg amqp.Delivery) {
 
 	payload.actionMutex.Lock()
 	defer payload.actionMutex.Unlock()
 
-	if payload.actionTaken || msg.Acknowledger == nil {
+	if payload.actionTaken {
 		return
 	}
 	payload.actionTaken = true
@@ -175,7 +175,7 @@ func (payload baseMessage) ackRetry(msg amqp.Delivery) {
 
 	logInfo("Adding to delay queue for " + leftStr + ", " + totalStr + " total, attempt " + strconv.Itoa(payload.Attempt))
 
-	err = produce(payload, queueGoDelays)
+	err = produce(*payload, queueGoDelays)
 	if err != nil {
 		logError(err)
 		return
