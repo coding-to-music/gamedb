@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
@@ -16,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/nlopes/slack"
-	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -159,17 +157,15 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send email
-		link := config.Config.GameDBDomain.Get() + "/signup/verify?code=" + code.Code
-		body := "Please click the below link to verify your email address\n" + link
+		body := "Please click the below link to verify your email address<br />" +
+			config.Config.GameDBDomain.Get() + "/signup/verify?code=" + code.Code
 
-		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
-		_, err = client.Send(mail.NewSingleEmail(
+		_, err = helpers.SendEmail(
+			mail.NewEmail(email, email),
 			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
 			"Game DB Email Verification",
-			mail.NewEmail(email, email),
 			body,
-			strings.ReplaceAll(body, "\n", "<br />"),
-		))
+		)
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false

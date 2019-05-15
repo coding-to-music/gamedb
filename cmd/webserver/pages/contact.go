@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
-	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
@@ -105,16 +104,12 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send
-		message := mail.NewSingleEmail(
+		_, err = helpers.SendEmail(
+			mail.NewEmail(config.Config.AdminName.Get(), config.Config.AdminEmail.Get()),
 			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
 			"Game DB Contact Form",
-			mail.NewEmail(config.Config.AdminName.Get(), config.Config.AdminEmail.Get()),
-			r.PostForm.Get("message"),
 			r.PostForm.Get("message"),
 		)
-		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
-
-		_, err = client.Send(message)
 		if err != nil {
 			log.Err(err, r)
 			return ErrSomething

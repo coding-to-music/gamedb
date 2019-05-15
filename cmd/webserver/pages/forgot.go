@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
@@ -14,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
-	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -100,18 +98,15 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send email
-		link := config.Config.GameDBDomain.Get() + "/forgot/reset?code=" + code.Code
+		body := "You are someone else has requested a new password for Game DB, this link will reset your password:\n" +
+			config.Config.GameDBDomain.Get() + "/forgot/reset?code=" + code.Code
 
-		body := "You are someone else has requested a new password for Game DB, this link will reset your password:\n" + link
-
-		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
-		_, err = client.Send(mail.NewSingleEmail(
+		_, err = helpers.SendEmail(
+			mail.NewEmail(email, email),
 			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
 			"Game DB Forgotten Password",
-			mail.NewEmail(email, email),
 			body,
-			strings.ReplaceAll(body, "\n", "<br />"),
-		))
+		)
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false
@@ -193,14 +188,12 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		// Send email
 		body := "Your new Game DB password is: " + passwordString
 
-		client := sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
-		_, err = client.Send(mail.NewSingleEmail(
+		_, err = helpers.SendEmail(
+			mail.NewEmail(user.Email, user.Email),
 			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
 			"Game DB Forgotten Password",
-			mail.NewEmail(user.Email, user.Email),
 			body,
-			strings.ReplaceAll(body, "\n", "<br />"),
-		))
+		)
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false
