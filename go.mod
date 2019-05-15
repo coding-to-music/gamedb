@@ -15,7 +15,7 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/session-go v0.0.0-20190514170753-50d0ff5e9e78
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20190508202824-36db23b6bbf5
+	github.com/Jleagle/steam-go v0.0.0-20190515120823-3f2370388ffd
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/antchfx/htmlquery v1.0.0 // indirect
 	github.com/antchfx/xmlquery v1.0.0 // indirect
