@@ -59,7 +59,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	if !message.PICSProfileInfo.SteamID.IsValid {
-		logError(errors.New("not valid player id: " + strconv.FormatInt(message.ID, 10)))
+		logError(errors.New("not a valid player id: " + strconv.FormatInt(message.ID, 10)))
 		payload.ack(msg)
 		return
 	}
