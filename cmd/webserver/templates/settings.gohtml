@@ -111,22 +111,38 @@
                                     <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
                                     <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/steam-callback">
                                     <p>
-                                        <button type="submit" class="btn btn-success btn-sm">Link Steam Account</button>
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fab fa-steam"></i> Link Steam Account
+                                        </button>
                                     </p>
                                 </form>
                             {{ else }}
                                 <p>
-                                    <a href="/settings/unlink-steam" role="button" class="btn btn-danger btn-sm">Unlink Steam Account</a>
+                                    <a href="/settings/unlink-steam" role="button" class="btn btn-danger btn-sm">
+                                        <i class="fab fa-steam"></i> Unlink Steam Account
+                                    </a>
                                 </p>
                             {{ end }}
 
                             <p>
                                 {{ if eq .User.PatreonID 0 }}
-                                    <a href="/settings/link-patreon" role="button" class="btn btn-success btn-sm">Link Patreon Account</a>
+                                    <a href="/settings/link-patreon" role="button" class="btn btn-success btn-sm">
+                                        <i class="fab fa-patreon"></i> Link Patreon Account
+                                    </a>
                                 {{ else }}
-                                    <a href="/settings/unlink-patreon" role="button" class="btn btn-danger btn-sm">Unlink Patreon Account</a>
+                                    <a href="/settings/unlink-patreon" role="button" class="btn btn-danger btn-sm">
+                                        <i class="fab fa-patreon"></i> Unlink Patreon Account
+                                    </a>
                                 {{ end }}
                             </p>
+
+                            {{/*                            <p>*/}}
+                            {{/*                                <span class="btn"><i class="fab fa-discord"></i> Link Discord</span>*/}}
+                            {{/*                            </p>*/}}
+
+                            {{/*                            <p>*/}}
+                            {{/*                                <span class="btn"><i class="fab fa-google"></i> Link Google</span>*/}}
+                            {{/*                            </p>*/}}
 
                         </div>
                     </div>
