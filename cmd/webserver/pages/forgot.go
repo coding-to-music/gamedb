@@ -98,7 +98,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send email
-		body := "You are someone else has requested a new password for Game DB, this link will reset your password:\n" +
+		body := "You are someone else has requested a new password for Game DB.<br>This link will reset your password: " +
 			config.Config.GameDBDomain.Get() + "/forgot/reset?code=" + code.Code
 
 		_, err = helpers.SendEmail(
