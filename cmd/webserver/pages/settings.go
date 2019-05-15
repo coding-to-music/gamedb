@@ -21,6 +21,7 @@ import (
 	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 func SettingsRouter() http.Handler {
@@ -675,3 +676,26 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 }
+
+var (
+	googleConfig = oauth2.Config{
+		ClientID:     "",
+		ClientSecret: "",
+		Scopes:       []string{""},
+		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/google-callback",
+		Endpoint:     google.Endpoint,
+	}
+)
+
+var (
+	discordConfig = oauth2.Config{
+		ClientID:     "",
+		ClientSecret: "",
+		Scopes:       []string{"identify"},
+		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/google-callback",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
+			TokenURL: "https://discordapp.com/api/oauth2/token",
+		},
+	}
+)
