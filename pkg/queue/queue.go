@@ -47,8 +47,8 @@ var (
 	consumerConnection *amqp.Connection
 	producerConnection *amqp.Connection
 
-	consumerCloseChannel = make(chan *amqp.Error)
-	producerCloseChannel = make(chan *amqp.Error)
+	consumerConnectionChannel = make(chan *amqp.Error)
+	producerConnectionChannel = make(chan *amqp.Error)
 
 	QueueRegister = map[queueName]baseQueue{
 		queueGoApps: {
@@ -238,7 +238,7 @@ func (q baseQueue) ConsumeMessages() {
 					logCritical("Connecting to Rabbit: " + err.Error())
 					return err
 				}
-				consumerConnection.NotifyClose(consumerCloseChannel)
+				consumerConnection.NotifyClose(consumerConnectionChannel)
 			}
 
 			return nil
@@ -271,8 +271,8 @@ func (q baseQueue) ConsumeMessages() {
 
 			for {
 				select {
-				case err = <-consumerCloseChannel:
-					logWarning(err)
+				case err = <-consumerConnectionChannel:
+					logWarning("Consumer connection closed", err)
 					return
 				case msg := <-msgs:
 					msgSlice = append(msgSlice, msg)
@@ -323,7 +323,7 @@ func produce(payload baseMessage, queue queueName) (err error) {
 				logCritical("Connecting to Rabbit: " + err.Error())
 				return err
 			}
-			producerConnection.NotifyClose(producerCloseChannel)
+			producerConnection.NotifyClose(producerConnectionChannel)
 		}
 
 		return nil
