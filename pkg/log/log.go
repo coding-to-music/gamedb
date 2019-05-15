@@ -3,7 +3,7 @@ package log
 import (
 	"context"
 	"fmt"
-	logg "log"
+	l "log"
 	"net/http"
 	"os"
 	"reflect"
@@ -63,7 +63,7 @@ func (s Severity) toGoole() (severity logging.Severity) {
 
 type entry struct {
 	request   *http.Request
-	text      string
+	texts     []string
 	error     string
 	logName   LogName
 	severity  Severity
@@ -74,22 +74,26 @@ func (e entry) toText(includeStack bool) string {
 
 	var ret []string
 
+	// Severity
 	ret = append(ret, strings.ToUpper(string(e.severity)))
 
+	// Request
 	if e.request != nil {
 		ret = append(ret, e.request.Method+" "+e.request.URL.Path)
 	}
 
-	if e.text != "" {
-		ret = append(ret, e.text)
-	}
+	// Texts
+	ret = append(ret, e.texts...)
 
+	// Error
 	if e.error != "" {
 		ret = append(ret, e.error)
 	}
 
+	// Join
 	str := strings.Join(ret, " - ")
 
+	// Stack
 	if includeStack {
 		str += "\n" + string(debug.Stack())
 	}
@@ -99,7 +103,7 @@ func (e entry) toText(includeStack bool) string {
 
 var (
 	googleClient *logging.Client
-	logger       = logg.New(os.Stderr, "", logg.Ltime)
+	logger       = l.New(os.Stderr, "", l.Ltime)
 )
 
 func init() {
@@ -126,21 +130,21 @@ func log(interfaces ...interface{}) {
 		case nil:
 			continue
 		case []byte:
-			entry.text = string(val)
+			entry.texts = append(entry.texts, string(val))
 		case bool:
-			entry.text = strconv.FormatBool(val)
+			entry.texts = append(entry.texts, strconv.FormatBool(val))
 		case time.Duration:
-			entry.text = val.String()
+			entry.texts = append(entry.texts, val.String())
 		case int:
-			entry.text = strconv.Itoa(val)
+			entry.texts = append(entry.texts, strconv.Itoa(val))
 		case int64:
-			entry.text = strconv.FormatInt(val, 10)
+			entry.texts = append(entry.texts, strconv.FormatInt(val, 10))
 		case float32:
-			entry.text = strconv.FormatFloat(float64(val), 'f', -1, 32)
+			entry.texts = append(entry.texts, strconv.FormatFloat(float64(val), 'f', -1, 32))
 		case float64:
-			entry.text = strconv.FormatFloat(float64(val), 'f', -1, 64)
+			entry.texts = append(entry.texts, strconv.FormatFloat(float64(val), 'f', -1, 64))
 		case string:
-			entry.text = val
+			entry.texts = append(entry.texts, val)
 			fmt.Println(val)
 		case *http.Request:
 			entry.request = val
@@ -160,36 +164,35 @@ func log(interfaces ...interface{}) {
 		}
 	}
 
-	if entry.text == "" && entry.error == "" {
-		return
-	}
+	if len(entry.texts) > 0 || entry.error != "" {
 
-	switch entry.severity {
-	case SeverityCritical:
-		logger.Println(aurora.Red(aurora.Bold(entry.toText(true))))
-	case SeverityError:
-		logger.Println(aurora.Red(entry.toText(true)))
-	case SeverityWarning:
-		logger.Println(aurora.Brown(entry.toText(true)))
-	case SeverityInfo:
-		logger.Println(entry.toText(false))
-	case SeverityDebug:
-		logger.Println(aurora.Green(entry.toText(false)))
-	default:
-		logger.Println(entry.toText(false))
-	}
+		switch entry.severity {
+		case SeverityCritical:
+			logger.Println(aurora.Red(aurora.Bold(entry.toText(true))))
+		case SeverityError:
+			logger.Println(aurora.Red(entry.toText(true)))
+		case SeverityWarning:
+			logger.Println(aurora.Brown(entry.toText(true)))
+		case SeverityInfo:
+			logger.Println(entry.toText(false))
+		case SeverityDebug:
+			logger.Println(aurora.Green(entry.toText(false)))
+		default:
+			logger.Println(entry.toText(false))
+		}
 
-	if config.IsProd() {
+		if config.IsProd() {
 
-		googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
-			Severity:  entry.severity.toGoole(),
-			Timestamp: entry.timestamp,
-			Payload:   entry.toText(true),
-			Labels: map[string]string{
-				"env": config.Config.Environment.Get(),
-				"key": config.GetSteamKeyTag(),
-			},
-		})
+			googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
+				Severity:  entry.severity.toGoole(),
+				Timestamp: entry.timestamp,
+				Payload:   entry.toText(true),
+				Labels: map[string]string{
+					"env": config.Config.Environment.Get(),
+					"key": config.GetSteamKeyTag(),
+				},
+			})
+		}
 	}
 }
 
