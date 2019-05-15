@@ -357,7 +357,12 @@ func makeAConnection() (conn *amqp.Connection, err error) {
 
 		logInfo("Connecting to Rabbit")
 
-		conn, err = amqp.Dial(config.RabbitDSN())
+		amqpConfig := amqp.Config{}
+		if config.IsLocal() {
+			amqpConfig.Heartbeat = time.Hour
+		}
+		conn, err = amqp.DialConfig(config.RabbitDSN(), amqpConfig)
+
 		return err
 	}
 
