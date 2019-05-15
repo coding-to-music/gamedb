@@ -505,12 +505,7 @@ var (
 		ClientID:     config.Config.PatreonClientID.Get(),
 		ClientSecret: config.Config.PatreonClientSecret.Get(),
 		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
-		RedirectURL: func() string {
-			if config.IsLocal() {
-				return "http://localhost:" + config.Config.WebserverPort.Get() + "/settings/patreon-callback"
-			}
-			return "https://gamedb.online/settings/patreon-callback"
-		}(),
+		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/patreon-callback",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  patreon.AuthorizationURL,
 			TokenURL: patreon.AccessTokenURL,
