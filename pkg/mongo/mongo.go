@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -51,7 +52,12 @@ const (
 	CollectionProductPrices   collection = "product_prices"
 )
 
+var mongoLock sync.Mutex
+
 func getMongo() (client *mongo.Client, ctx context.Context, err error) {
+
+	mongoLock.Lock()
+	defer mongoLock.Unlock()
 
 	if mongoClient == nil {
 
