@@ -126,10 +126,12 @@ func init() {
 }
 
 type BaseConfig struct {
+	// Admin
 	AdminName    ConfigItem
 	AdminEmail   ConfigItem
 	AdminSteamID ConfigItem
 
+	// Discord
 	DiscordClientID        ConfigItem
 	DiscordSescret         ConfigItem
 	DiscordRelayBotToken   ConfigItem
@@ -148,55 +150,64 @@ type BaseConfig struct {
 	InfluxPassword ConfigItem
 	InfluxUsername ConfigItem
 
+	// Instagram
 	InstagramPassword ConfigItem
 	InstagramUsername ConfigItem
 
+	// Mongo
 	MongoHost     ConfigItem
 	MongoPort     ConfigItem
 	MongoUsername ConfigItem
 	MongoPassword ConfigItem
 	MongoDatabase ConfigItem
 
+	// MySQL
 	MySQLHost     ConfigItem
 	MySQLPort     ConfigItem
 	MySQLUsername ConfigItem
 	MySQLPassword ConfigItem
 	MySQLDatabase ConfigItem
 
+	// Rabbit
 	RabbitUsername      ConfigItem
 	RabbitPassword      ConfigItem
 	RabbitHost          ConfigItem
 	RabbitPort          ConfigItem
 	RabbitManagmentPort ConfigItem
 
+	// Recaptcha
 	RecaptchaPrivate ConfigItem
 	RecaptchaPublic  ConfigItem
 
+	// Sessions
 	SessionAuthentication ConfigItem
 	SessionEncryption     ConfigItem
 
+	// Twitch
 	TwitchClientID     ConfigItem
 	TwitchClientSecret ConfigItem
 
+	// Twitter
 	TwitterAccessToken       ConfigItem
 	TwitterAccessTokenSecret ConfigItem
 	TwitterConsumerKey       ConfigItem
 	TwitterConsumerSecret    ConfigItem
 
+	// Patreon
 	PatreonSecret       ConfigItem
 	PatreonClientID     ConfigItem
 	PatreonClientSecret ConfigItem
 
+	// Paths
 	Path          ConfigItem
 	AssetsPath    ConfigItem
 	TemplatesPath ConfigItem
 
+	// Other
 	Environment     ConfigItem
 	GameDBDomain    ConfigItem
 	GameDBShortName ConfigItem
 	GithubToken     ConfigItem
-	GoogleBucket    ConfigItem
-	GoogleProject   ConfigItem
 	MemcacheDSN     ConfigItem
 	SendGridAPIKey  ConfigItem
 	SteamAPIKey     ConfigItem
