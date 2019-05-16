@@ -17,53 +17,12 @@ var Config BaseConfig
 
 func init() {
 
+	// Admin
 	Config.AdminName.Set("ADMIN_NAME")
 	Config.AdminEmail.Set("ADMIN_EMAIL")
 	Config.AdminSteamID.Set("ADMIN_STEAM_ID")
 
-	Config.RabbitUsername.Set("RABBIT_USER")
-	Config.RabbitPassword.Set("RABBIT_PASS")
-	Config.RabbitHost.Set("RABBIT_HOST")
-	Config.RabbitPort.Set("RABBIT_PORT")
-	Config.RabbitManagmentPort.Set("RABBIT_MANAGEMENT_PORT")
-
-	Config.SessionAuthentication.Set("SESSION_AUTHENTICATION")
-	Config.SessionEncryption.Set("SESSION_ENCRYPTION")
-
-	Config.InstagramUsername.Set("INSTAGRAM_USERNAME")
-	Config.InstagramPassword.Set("INSTAGRAM_PASSWORD")
-
-	Config.MySQLHost.Set("MYSQL_HOST")
-	Config.MySQLPort.Set("MYSQL_PORT")
-	Config.MySQLUsername.Set("MYSQL_USERNAME")
-	Config.MySQLPassword.Set("MYSQL_PASSWORD")
-	Config.MySQLDatabase.Set("MYSQL_DATABASE")
-
-	Config.RecaptchaPublic.Set("RECAPTCHA_PUBLIC")
-	Config.RecaptchaPrivate.Set("RECAPTCHA_PRIVATE")
-
-	Config.TwitchClientID.Set("TWITCH_CLIENT_ID")
-	Config.TwitchClientSecret.Set("TWITCH_CLIENT_SECRET")
-
-	Config.InfluxURL.Set("INFLUX_URL")
-	Config.InfluxUsername.Set("INFLUX_USERNAME")
-	Config.InfluxPassword.Set("INFLUX_PASSWORD")
-
-	Config.MongoHost.Set("MONGO_HOST")
-	Config.MongoPort.Set("MONGO_PORT")
-	Config.MongoUsername.Set("MONGO_USERNAME")
-	Config.MongoPassword.Set("MONGO_PASSWORD")
-	Config.MongoDatabase.Set("MONGO_DATABASE")
-
-	Config.TwitterAccessToken.Set("TWITTER_ACCESS_TOKEN")
-	Config.TwitterAccessTokenSecret.Set("TWITTER_ACCESS_TOKEN_SECRET")
-	Config.TwitterConsumerKey.Set("TWITTER_CONSUMER_KEY")
-	Config.TwitterConsumerSecret.Set("TWITTER_CONSUMER_SECRET")
-
-	Config.PatreonSecret.Set("PATREON_WEBOOK_SECRET")
-	Config.PatreonClientID.Set("PATREON_CLIENT_ID")
-	Config.PatreonClientSecret.Set("PATREON_CLIENT_SECRET")
-
+	// Discord
 	Config.DiscordClientID.Set("DISCORD_CLIENT_ID")
 	Config.DiscordSescret.Set("DISCORD_SECRET")
 
@@ -71,15 +30,72 @@ func init() {
 	Config.DiscordRelayBotToken.Set("DISCORD_RELAY_TOKEN")
 	Config.DiscordChangesBotToken.Set("DISCORD_CHANGES_BOT_TOKEN")
 
+	// Google
+	Config.GoogleBucket.Set("GOOGLE_BUCKET")
+	Config.GoogleProject.Set("GOOGLE_PROJECT")
+
+	// Influx
+	Config.InfluxURL.Set("INFLUX_URL")
+	Config.InfluxUsername.Set("INFLUX_USERNAME")
+	Config.InfluxPassword.Set("INFLUX_PASSWORD")
+
+	// Instagram
+	Config.InstagramUsername.Set("INSTAGRAM_USERNAME")
+	Config.InstagramPassword.Set("INSTAGRAM_PASSWORD")
+
+	// Mongo
+	Config.MongoHost.Set("MONGO_HOST")
+	Config.MongoPort.Set("MONGO_PORT")
+	Config.MongoUsername.Set("MONGO_USERNAME")
+	Config.MongoPassword.Set("MONGO_PASSWORD")
+	Config.MongoDatabase.Set("MONGO_DATABASE")
+
+	// MySQL
+	Config.MySQLHost.Set("MYSQL_HOST")
+	Config.MySQLPort.Set("MYSQL_PORT")
+	Config.MySQLUsername.Set("MYSQL_USERNAME")
+	Config.MySQLPassword.Set("MYSQL_PASSWORD")
+	Config.MySQLDatabase.Set("MYSQL_DATABASE")
+
+	// Paths
 	Config.Path.Set("PATH")
 	Config.AssetsPath.Set("ASSETS_PATH")
 	Config.TemplatesPath.Set("TEMPLATES_PATH")
 
+	// Patreon
+	Config.PatreonSecret.Set("PATREON_WEBOOK_SECRET")
+	Config.PatreonClientID.Set("PATREON_CLIENT_ID")
+	Config.PatreonClientSecret.Set("PATREON_CLIENT_SECRET")
+
+	// Rabbit
+	Config.RabbitUsername.Set("RABBIT_USER")
+	Config.RabbitPassword.Set("RABBIT_PASS")
+	Config.RabbitHost.Set("RABBIT_HOST")
+	Config.RabbitPort.Set("RABBIT_PORT")
+	Config.RabbitManagmentPort.Set("RABBIT_MANAGEMENT_PORT")
+
+	// Recaptcha
+	Config.RecaptchaPublic.Set("RECAPTCHA_PUBLIC")
+	Config.RecaptchaPrivate.Set("RECAPTCHA_PRIVATE")
+
+	// Session
+	Config.SessionAuthentication.Set("SESSION_AUTHENTICATION")
+	Config.SessionEncryption.Set("SESSION_ENCRYPTION")
+
+	// Twitch
+	Config.TwitchClientID.Set("TWITCH_CLIENT_ID")
+	Config.TwitchClientSecret.Set("TWITCH_CLIENT_SECRET")
+
+	// Twitter
+	Config.TwitterAccessToken.Set("TWITTER_ACCESS_TOKEN")
+	Config.TwitterAccessTokenSecret.Set("TWITTER_ACCESS_TOKEN_SECRET")
+	Config.TwitterConsumerKey.Set("TWITTER_CONSUMER_KEY")
+	Config.TwitterConsumerSecret.Set("TWITTER_CONSUMER_SECRET")
+
+	// Other
 	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
 	Config.GithubToken.Set("GITHUB_TOKEN")
-	Config.GoogleBucket.Set("GOOGLE_BUCKET")
-	Config.GoogleProject.Set("GOOGLE_PROJECT")
 	Config.SendGridAPIKey.Set("SENDGRID")
 	Config.SteamAPIKey.Set("API_KEY")
 	Config.WebserverPort.Set("PORT")
@@ -252,10 +268,6 @@ func IsLocal() bool {
 func IsProd() bool {
 	return Config.Environment.Get() == EnvProd
 }
-
-// func IsConsumer() bool {
-// 	return Config.Environment.Get() == EnvConsumer
-// }
 
 func GetSteamKeyTag() string {
 
