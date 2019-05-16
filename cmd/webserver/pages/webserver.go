@@ -662,23 +662,6 @@ func isAdmin(r *http.Request) bool {
 }
 
 //
-
-var eeeNoPlayerIDSet = errors.New("no player id set")
-
-func getPlayerIDFromSession(r *http.Request) (playerID int64, err error) {
-
-	id, err := session.Get(r, helpers.SessionPlayerID)
-	if err != nil {
-		return playerID, err
-	}
-
-	if id == "" || id == "0" {
-		return playerID, eeeNoPlayerIDSet
-	}
-
-	return strconv.ParseInt(id, 10, 64)
-}
-
 func getUserIDFromSesion(r *http.Request) (id int, err error) {
 
 	idx, err := session.Get(r, helpers.SessionUserID)
