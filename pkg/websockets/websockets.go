@@ -5,8 +5,10 @@ import (
 	"sync"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gorilla/websocket"
 	"github.com/satori/go.uuid"
 )
@@ -146,8 +148,12 @@ func ListenToPubSub() {
 
 			wsPage := GetPage(page)
 
+			if wsPage.CountConnections() == 0 {
+				continue
+			}
+
 			switch page {
-			case PageApp, PageBundle, PageBundles, PagePackage, PagePackages:
+			case PageApp, PageBundle, PagePackage:
 
 				idPayload := PubSubIDPayload{}
 
@@ -173,6 +179,36 @@ func ListenToPubSub() {
 				log.Err(err)
 
 				wsPage.Send(changePayload.Data)
+
+			case PagePackages:
+
+				idPayload := PubSubIDPayload{}
+
+				err = helpers.Unmarshal(m.Data, &idPayload)
+				log.Err(err)
+
+				pack, err := sql.GetPackage(idPayload.ID, nil)
+				if err != nil {
+					log.Err(err)
+					continue
+				}
+
+				wsPage.Send(pack.OutputForJSON(steam.CountryUS))
+
+			case PageBundles:
+
+				idPayload := PubSubIDPayload{}
+
+				err = helpers.Unmarshal(m.Data, &idPayload)
+				log.Err(err)
+
+				bundle, err := sql.GetBundle(idPayload.ID, nil)
+				if err != nil {
+					log.Err(err)
+					continue
+				}
+
+				wsPage.Send(bundle.OutputForJSON())
 
 			default:
 				log.Err("no handler for page: " + string(page))
