@@ -133,6 +133,14 @@ type BaseConfig struct {
 	DiscordChatBotToken    ConfigItem
 	DiscordChangesBotToken ConfigItem
 
+	// Google
+	GoogleBucket  ConfigItem
+	GoogleProject ConfigItem
+
+	GoogleOauthClientID     ConfigItem
+	GoogleOauthClientSecret ConfigItem
+
+	// Influx
 	InfluxURL      ConfigItem
 	InfluxPassword ConfigItem
 	InfluxUsername ConfigItem
