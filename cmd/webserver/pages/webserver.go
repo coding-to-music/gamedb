@@ -412,6 +412,12 @@ func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save
 	}
 }
 
+//
+type Asset struct {
+	URL       string
+	Integrity string
+}
+
 // Middleware
 func middlewareAuthCheck() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -446,12 +452,6 @@ func middlewareAdminCheck() func(http.Handler) http.Handler {
 			Error404Handler(w, r)
 		})
 	}
-}
-
-//
-type Asset struct {
-	URL       string
-	Integrity string
 }
 
 // DataTablesAjaxResponse
