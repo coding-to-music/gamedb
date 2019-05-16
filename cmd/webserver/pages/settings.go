@@ -42,6 +42,14 @@ func SettingsRouter() http.Handler {
 	r.Get("/unlink-patreon", unlinkPatreonHandler)
 	r.Get("/patreon-callback", linkPatreonCallbackHandler)
 
+	r.Get("/link-google", linkGoogleHandler)
+	r.Get("/unlink-google", unlinkGoogleHandler)
+	r.Get("/google-callback", linkGoogleCallbackHandler)
+
+	r.Get("/link-discord", linkDiscordHandler)
+	r.Get("/unlink-discord", unlinkDiscordHandler)
+	r.Get("/discord-callback", linkDiscordCallbackHandler)
+
 	return r
 }
 
@@ -687,6 +695,18 @@ var (
 	}
 )
 
+func linkGoogleHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func unlinkGoogleHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func linkGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
 var (
 	discordConfig = oauth2.Config{
 		ClientID:     "",
@@ -699,3 +719,15 @@ var (
 		},
 	}
 )
+
+func linkDiscordHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+}
