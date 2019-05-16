@@ -388,11 +388,6 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		events, err = mongo.GetEvents(user.ID, query.getOffset64())
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
 
 	}(r)
 
