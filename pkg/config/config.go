@@ -168,6 +168,16 @@ type BaseConfig struct {
 	MySQLPassword ConfigItem
 	MySQLDatabase ConfigItem
 
+	// Paths
+	Path          ConfigItem
+	AssetsPath    ConfigItem
+	TemplatesPath ConfigItem
+
+	// Patreon
+	PatreonSecret       ConfigItem
+	PatreonClientID     ConfigItem
+	PatreonClientSecret ConfigItem
+
 	// Rabbit
 	RabbitUsername      ConfigItem
 	RabbitPassword      ConfigItem
@@ -192,16 +202,6 @@ type BaseConfig struct {
 	TwitterAccessTokenSecret ConfigItem
 	TwitterConsumerKey       ConfigItem
 	TwitterConsumerSecret    ConfigItem
-
-	// Patreon
-	PatreonSecret       ConfigItem
-	PatreonClientID     ConfigItem
-	PatreonClientSecret ConfigItem
-
-	// Paths
-	Path          ConfigItem
-	AssetsPath    ConfigItem
-	TemplatesPath ConfigItem
 
 	// Other
 	Environment     ConfigItem
