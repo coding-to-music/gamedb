@@ -87,9 +87,6 @@ func (p *Page) AddConnection(conn *websocket.Conn) {
 
 func (p *Page) Send(data interface{}) {
 
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
-
 	if p.CountConnections() > 0 {
 
 		var connsToDelete []uuid.UUID
@@ -100,7 +97,10 @@ func (p *Page) Send(data interface{}) {
 
 		for k, v := range p.connections {
 
+			p.mutex.Lock()
 			err := v.WriteJSON(payload)
+			p.mutex.Unlock()
+
 			if err != nil {
 
 				if strings.Contains(err.Error(), "broken pipe") {
@@ -115,7 +115,9 @@ func (p *Page) Send(data interface{}) {
 		}
 
 		for _, v := range connsToDelete {
+			p.mutex.Lock()
 			delete(p.connections, v)
+			p.mutex.Unlock()
 		}
 	}
 }
