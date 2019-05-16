@@ -403,7 +403,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		total, err = mongo.CountEvents(user.ID)
+		total, err = mongo.CountPatreonWebhooks(user.ID)
 		log.Err(err, r)
 
 	}(r)

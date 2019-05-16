@@ -44,6 +44,18 @@ func (pw PatreonWebhook) Raw() (raw patreon.Webhook, err error) {
 	return raw, err
 }
 
+func CountPatreonWebhooks(userID int) (count int64, err error) {
+
+	var item = helpers.MemcachePatreonWebhooksCount(userID)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		return CountDocuments(CollectionPatreonWebhooks, M{"user_id": userID})
+	})
+
+	return count, err
+}
+
 func GetPatreonWebhooks(offset int64, limit int64, sort bool, filter interface{}, projection M) (webhooks []PatreonWebhook, err error) {
 
 	if filter == nil {

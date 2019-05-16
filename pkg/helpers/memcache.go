@@ -7,9 +7,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 )
 
-var ErrCacheMiss = memcache.ErrCacheMiss
+var (
+	ErrCacheMiss   = memcache.ErrCacheMiss
+	memcacheClient = memcache.New("game-db-", config.Config.MemcacheDSN.Get())
+)
 
-var memcacheClient = memcache.New("game-db-", config.Config.MemcacheDSN.Get())
+type MemcacheItem = memcache.Item
 
 func GetMemcache() *memcache.Memcache {
 	return memcacheClient
@@ -31,6 +34,9 @@ var (
 	}
 	MemcacheUserEventsCount = func(userID int) memcache.Item {
 		return memcache.Item{Key: "players-events-count-" + strconv.Itoa(userID), Expiration: 86400}
+	}
+	MemcachePatreonWebhooksCount = func(userID int) memcache.Item {
+		return memcache.Item{Key: "patreon-webhooks-count-" + strconv.Itoa(userID), Expiration: 86400}
 	}
 
 	// Dropdowns
