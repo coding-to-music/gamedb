@@ -78,7 +78,7 @@ func GetUserBySteamID(id int64, excludeUserID int) (user User, err error) {
 	return user, db.Error
 }
 
-func GetUserByPatreonID(id int64, excludeUserID int) (user User, err error) {
+func GetUserByPatreonID(id int, excludeUserID int) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
