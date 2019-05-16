@@ -737,11 +737,12 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Google
 var (
 	googleConfig = oauth2.Config{
-		ClientID:     "",
-		ClientSecret: "",
-		Scopes:       []string{""},
+		ClientID:     config.Config.GoogleOauthClientID.Get(),
+		ClientSecret: config.Config.GoogleOauthClientSecret.Get(),
+		Scopes:       []string{"profile"},
 		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/google-callback",
 		Endpoint:     google.Endpoint,
 	}
