@@ -30,7 +30,7 @@ func SettingsRouter() http.Handler {
 	r.Use(middlewareAuthCheck())
 
 	r.Get("/", settingsHandler)
-	r.Post("/", settingsPostHandler)
+	r.Post("/update", settingsPostHandler)
 	r.Post("/delete", deletePostHandler)
 	r.Get("/events.json", settingsEventsAjaxHandler)
 
