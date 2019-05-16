@@ -1,7 +1,11 @@
 package main
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
+	"github.com/didip/tollbooth"
+	"github.com/didip/tollbooth/limiter"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -18,6 +22,9 @@ func main() {
 		log.Err("Prod & local only")
 	}
 
+	ops := limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
+	lmt := limiter.New(&ops).SetMax(1).SetBurst(2)
+
 	handler := func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		// Don't reply to bots
@@ -25,6 +32,14 @@ func main() {
 			return
 		}
 
+		// Rate limit
+		err := tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
+		if err != nil {
+			log.Info(m.Author.ID + " over rate limit")
+			return
+		}
+
+		// Scan commands
 		for _, command := range chatbot.CommandRegister {
 
 			msg := m.Message.Content

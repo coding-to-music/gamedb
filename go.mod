@@ -29,6 +29,7 @@ require (
 	github.com/dghubble/go-twitter v0.0.0-20190108053744-7fd79e2bcc65
 	github.com/dghubble/oauth1 v0.5.0
 	github.com/dghubble/sling v1.2.0 // indirect
+	github.com/didip/tollbooth v4.0.0+incompatible // indirect
 	github.com/dustin/go-humanize v1.0.0
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
@@ -64,6 +65,7 @@ require (
 	github.com/nlopes/slack v0.5.0
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/robfig/cron v0.0.0-20180505203441-b41be1df6967
