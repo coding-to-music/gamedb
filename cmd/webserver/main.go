@@ -139,7 +139,7 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	log.Info("Starting webserver")
+	log.Info("Starting Webserver")
 	err := http.ListenAndServe(config.ListenOn(), r)
 	log.Critical(err)
 
