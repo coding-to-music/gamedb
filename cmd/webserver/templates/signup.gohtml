@@ -11,18 +11,7 @@
     {{ template "_flashes" . }}
 
     <div class="card">
-        <div class="card-header">
-
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link" href="/login" role="tab">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/signup" role="tab">Sign Up</a>
-                </li>
-            </ul>
-
-        </div>
+        {{ template "_login_header" . }}
         <div class="card-body">
 
             <div class="tab-content">
