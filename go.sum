@@ -23,16 +23,10 @@ github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d h1:aG+b0CIcmwlm
 github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d/go.mod h1:vieJKSf3M8fjjl0NMIxV0tjylhHkhEZz9Hlw9dtgqeQ=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83 h1:u+ekQU2p89s6sgUhl8MkK6Ii7lCmdNmcKeXjlrTj/0U=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83/go.mod h1:VKGCTl3nRL0ILsYBflxYMYgTMXueYetss2Q30fKpjpE=
-github.com/Jleagle/session-go v0.0.0-20190514122144-e7f85416b084 h1:NVsB07jLdVgQw7LJxwXXyEWxsK4j9rujrMap5YdnNMg=
-github.com/Jleagle/session-go v0.0.0-20190514122144-e7f85416b084/go.mod h1:atNOr9kQFyr7Zep/wGTj4t3fJIzNJ49DNURYEF7NQhQ=
-github.com/Jleagle/session-go v0.0.0-20190514170753-50d0ff5e9e78 h1:kkcWYBrByg+khakcENfanPhvLqDCoZtc7ZeRWb3451A=
-github.com/Jleagle/session-go v0.0.0-20190514170753-50d0ff5e9e78/go.mod h1:atNOr9kQFyr7Zep/wGTj4t3fJIzNJ49DNURYEF7NQhQ=
 github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233 h1:a51IBJjhY/73izx+ieGdWZtC2XWjQ3HnTUKoEV3Y844=
 github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233/go.mod h1:atNOr9kQFyr7Zep/wGTj4t3fJIzNJ49DNURYEF7NQhQ=
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50 h1:QkHMYi6HhE8HxBFROlbltZaAKRHU5cQ7UPsuT7M64ZY=
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50/go.mod h1:6XUIBoc/yO+w//k1YvVfZY6bsiG4Z/7l31B54EeSh/c=
-github.com/Jleagle/steam-go v0.0.0-20190508202824-36db23b6bbf5 h1:5XNGmWe6l2T+Mzdl01/7ArycmfXPGiUz0Cx66mDczjo=
-github.com/Jleagle/steam-go v0.0.0-20190508202824-36db23b6bbf5/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
 github.com/Jleagle/steam-go v0.0.0-20190515120823-3f2370388ffd h1:2TLlaszrYl4bJYO55dprFx+UYOqR4xivdwNlqNhUeoo=
 github.com/Jleagle/steam-go v0.0.0-20190515120823-3f2370388ffd/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
 github.com/Jleagle/unmarshal-go v0.0.0-20190127220637-8ab9c10d2f0a h1:G5x66H0pfUAElcx6zz+rJFZ3pbTtamIWSnIomJD3y9U=
