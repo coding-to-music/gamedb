@@ -11,7 +11,7 @@ var (
 	discordMutex       sync.Mutex
 )
 
-func GetDiscord(botToken string, handlers ...interface{}) (session *discordgo.Session, err error) {
+func GetDiscordBot(botToken string, handlers ...interface{}) (session *discordgo.Session, err error) {
 
 	discordMutex.Lock()
 	defer discordMutex.Unlock()

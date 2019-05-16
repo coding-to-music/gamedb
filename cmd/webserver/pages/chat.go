@@ -32,7 +32,7 @@ func ChatRouter() http.Handler {
 
 func getDiscord() (discord *discordgo.Session, err error) {
 
-	return helpers.GetDiscord(config.Config.DiscordRelayBotToken.Get(), func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	return helpers.GetDiscordBot(config.Config.DiscordRelayBotToken.Get(), func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		if m.Author.Bot {
 			return
