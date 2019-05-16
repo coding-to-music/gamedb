@@ -50,6 +50,7 @@ const (
 	CollectionPlayers         collection = "players"
 	CollectionPlayerApps      collection = "player_apps"
 	CollectionProductPrices   collection = "product_prices"
+	CollectionSessions        collection = "sessions"
 )
 
 var mongoLock sync.Mutex
