@@ -698,18 +698,19 @@ func getCountryCode(r *http.Request) steam.CountryCode {
 	q := r.URL.Query().Get("cc")
 	if q != "" {
 		cc = strings.ToUpper(q)
-	}
-
-	if cc == "" {
+	} else {
 		val, err := session.Get(r, helpers.SessionUserCountry)
 		log.Err(err)
-		if err == nil || val != "" {
+		if err == nil {
 			cc = val
 		}
 	}
 
-	if _, ok := steam.Countries[steam.CountryCode(cc)]; ok {
-		return steam.CountryCode(cc)
+	if cc != "" {
+		_, ok := steam.Countries[steam.CountryCode(cc)]
+		if ok {
+			return steam.CountryCode(cc)
+		}
 	}
 
 	return steam.CountryUS
