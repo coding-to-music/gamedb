@@ -33,6 +33,7 @@ func SettingsRouter() http.Handler {
 	r.Post("/update", settingsPostHandler)
 	r.Post("/delete", deletePostHandler)
 	r.Get("/events.json", settingsEventsAjaxHandler)
+	r.Get("/donations.json", settingsDonationsAjaxHandler)
 
 	// r.Get("/link-steam", linkSteamHandler)
 	r.Get("/steam-callback", linkSteamCallbackHandler)
@@ -312,6 +313,61 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	query := DataTablesQuery{}
+	err = query.fillFromURL(r.URL.Query())
+	log.Err(err, r)
+
+	var wg sync.WaitGroup
+
+	// Get events
+	var events []mongo.Event
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		events, err = mongo.GetEvents(user.ID, query.getOffset64())
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+	}(r)
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		total, err = mongo.CountEvents(user.ID)
+		log.Err(err, r)
+
+	}(r)
+
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.FormatInt(total, 10)
+	response.RecordsFiltered = response.RecordsTotal
+	response.Draw = query.Draw
+
+	for _, v := range events {
+		response.AddRow(v.OutputForJSON(r.RemoteAddr))
+	}
+
+	response.output(w, r)
+}
+
+func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := getUserFromSession(r)
 	if err != nil {
