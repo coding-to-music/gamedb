@@ -419,6 +419,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // todo
+// Steam
 // For the demo, we use in-memory infinite storage nonce and discovery
 // cache. In your app, do not use this as it will eat up memory and never
 // free it. Use your own implementation, on a better database system.
@@ -561,6 +562,7 @@ func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
+// Patreon
 var (
 	patreonConfig = oauth2.Config{
 		ClientID:     config.Config.PatreonClientID.Get(),
@@ -929,12 +931,13 @@ func linkGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
+// Discord
 var (
 	discordConfig = oauth2.Config{
-		ClientID:     "",
-		ClientSecret: "",
+		ClientID:     config.Config.DiscordClientID.Get(),
+		ClientSecret: config.Config.DiscordClientSescret.Get(),
 		Scopes:       []string{"identify"},
-		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/google-callback",
+		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/discord-callback",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
 			TokenURL: "https://discordapp.com/api/oauth2/token",
