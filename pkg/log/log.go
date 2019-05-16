@@ -145,7 +145,6 @@ func log(interfaces ...interface{}) {
 			entry.texts = append(entry.texts, strconv.FormatFloat(float64(val), 'f', -1, 64))
 		case string:
 			entry.texts = append(entry.texts, val)
-			fmt.Println(val)
 		case *http.Request:
 			entry.request = val
 		case error:
