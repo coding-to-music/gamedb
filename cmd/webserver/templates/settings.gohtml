@@ -136,9 +136,17 @@
                                     {{/*                                <span class="btn"><i class="fab fa-discord"></i> Link Discord</span>*/}}
                                     {{/*                            </p>*/}}
 
-                                    {{/*                            <p>*/}}
-                                    {{/*                                <span class="btn"><i class="fab fa-google"></i> Link Google</span>*/}}
-                                    {{/*                            </p>*/}}
+                                    <p>
+                                        {{ if eq .User.GoogleID "" }}
+                                            <a href="/settings/link-google" role="button" class="btn btn-success btn-sm">
+                                                <i class="fab fa-google"></i> Link Google Account
+                                            </a>
+                                        {{ else }}
+                                            <a href="/settings/unlink-google" role="button" class="btn btn-danger btn-sm">
+                                                <i class="fab fa-google"></i> Unlink Google Account
+                                            </a>
+                                        {{ end }}
+                                    </p>
 
                                 </div>
                             </div>

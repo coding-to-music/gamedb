@@ -15,7 +15,7 @@ type User struct {
 	Password      string    `gorm:"not null;column:password"`
 	SteamID       int64     `gorm:"not null;column:steam_id"`
 	PatreonID     int64     `gorm:"not null;column:patreon_id"`
-	GoogleID      int64     `gorm:"not null;column:google_id"`
+	GoogleID      string    `gorm:"not null;column:google_id"`
 	DiscordID     int64     `gorm:"not null;column:discord_id"`
 	PatreonLevel  int8      `gorm:"not null;column:patreon_level"`
 	HideProfile   bool      `gorm:"not null;column:hide_profile"`
@@ -78,7 +78,7 @@ func GetUserBySteamID(id int64, excludeUserID int) (user User, err error) {
 	return user, db.Error
 }
 
-func GetUserByPatreonID(id int, excludeUserID int) (user User, err error) {
+func GetUserByPatreonID(id int64, excludeUserID int) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -86,6 +86,36 @@ func GetUserByPatreonID(id int, excludeUserID int) (user User, err error) {
 	}
 
 	db = db.Where("patreon_id = ?", id)
+	if excludeUserID > 0 {
+		db = db.Where("id != ?", excludeUserID)
+	}
+	db = db.First(&user)
+	return user, db.Error
+}
+
+func GetUserByGoogleID(id string, excludeUserID int) (user User, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return user, err
+	}
+
+	db = db.Where("google_id = ?", id)
+	if excludeUserID > 0 {
+		db = db.Where("id != ?", excludeUserID)
+	}
+	db = db.First(&user)
+	return user, db.Error
+}
+
+func GetUserByDiscordID(id int64, excludeUserID int) (user User, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return user, err
+	}
+
+	db = db.Where("discord_id = ?", id)
 	if excludeUserID > 0 {
 		db = db.Where("id != ?", excludeUserID)
 	}

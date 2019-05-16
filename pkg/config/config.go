@@ -24,7 +24,7 @@ func init() {
 
 	// Discord
 	Config.DiscordClientID.Set("DISCORD_CLIENT_ID")
-	Config.DiscordSescret.Set("DISCORD_SECRET")
+	Config.DiscordClientSescret.Set("DISCORD_SECRET")
 
 	Config.DiscordChatBotToken.Set("DISCORD_BOT_TOKEN")
 	Config.DiscordRelayBotToken.Set("DISCORD_RELAY_TOKEN")
@@ -132,8 +132,9 @@ type BaseConfig struct {
 	AdminSteamID ConfigItem
 
 	// Discord
-	DiscordClientID        ConfigItem
-	DiscordSescret         ConfigItem
+	DiscordClientID      ConfigItem
+	DiscordClientSescret ConfigItem
+
 	DiscordRelayBotToken   ConfigItem
 	DiscordChatBotToken    ConfigItem
 	DiscordChangesBotToken ConfigItem

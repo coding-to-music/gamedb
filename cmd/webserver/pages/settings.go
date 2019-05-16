@@ -2,6 +2,8 @@ package pages
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"path"
 	"strconv"
@@ -799,6 +801,131 @@ func unlinkGoogleHandler(w http.ResponseWriter, r *http.Request) {
 
 func linkGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
+	defer func() {
+
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
+	// Oauth checks
+	realState, err := session.Get(r, "google-oauth-state")
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
+		log.Err(err)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
+		log.Err(err)
+		return
+	}
+
+	state := r.Form.Get("state")
+	if state != realState {
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
+		log.Err(err)
+		return
+	}
+
+	code := r.Form.Get("code")
+	if code == "" {
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid code")
+		log.Err(err)
+		return
+	}
+
+	// Get token
+	token, err := googleConfig.Exchange(context.Background(), code)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
+		log.Err(err)
+		return
+	}
+
+	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
+		log.Err(err)
+		return
+	}
+	defer func(response *http.Response) {
+		err := response.Body.Close()
+		log.Err(err)
+	}(response)
+
+	b, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
+		log.Err(err)
+		return
+	}
+
+	userInfo := struct {
+		ID         string `json:"id"`
+		Name       string `json:"name"`
+		GivenName  string `json:"given_name"`
+		FamilyName string `json:"family_name"`
+		Picture    string `json:"picture"`
+		Locale     string `json:"locale"`
+	}{}
+
+	err = json.Unmarshal(b, &userInfo)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1005)")
+		log.Err(err)
+		return
+	}
+
+	// Get user
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1007)")
+		log.Err(err)
+		return
+	}
+
+	// Check Steam ID not already in use
+	_, err = sql.GetUserByGoogleID(userInfo.ID, user.ID)
+	if err == nil {
+		err = session.SetFlash(r, helpers.SessionBad, "This Google account is already linked to another Game DB account")
+		log.Err(err)
+		return
+	} else if err != sql.ErrRecordNotFound {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1008)")
+		log.Err(err)
+		return
+	}
+
+	// Update user
+	err = sql.UpdateUserCol(user.ID, "google_id", userInfo.ID)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1009)")
+		log.Err(err)
+		return
+	}
+
+	// Create event
+	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkGoogle)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	// Flash message
+	err = session.SetFlash(r, helpers.SessionGood, "Google account linked")
+	log.Err(err)
 }
 
 var (
