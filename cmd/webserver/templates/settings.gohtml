@@ -132,9 +132,17 @@
                                         {{ end }}
                                     </p>
 
-                                    {{/*                            <p>*/}}
-                                    {{/*                                <span class="btn"><i class="fab fa-discord"></i> Link Discord</span>*/}}
-                                    {{/*                            </p>*/}}
+                                    <p>
+                                        {{ if eq .User.DiscordID 0 }}
+                                            <a href="/settings/link-discord" role="button" class="btn btn-success btn-sm">
+                                                <i class="fab fa-discord"></i> Link Discord Account
+                                            </a>
+                                        {{ else }}
+                                            <a href="/settings/unlink-discord" role="button" class="btn btn-danger btn-sm">
+                                                <i class="fab fa-discord"></i> Unlink Discord Account
+                                            </a>
+                                        {{ end }}
+                                    </p>
 
                                     <p>
                                         {{ if eq .User.GoogleID "" }}
