@@ -129,7 +129,7 @@ if ($('#settings-page').length > 0) {
 
     function loadDonations() {
 
-        const table = $('#events table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const table = $('#donations table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
             "ajax": function (data, callback, settings) {
 
                 delete data.columns;
@@ -168,30 +168,6 @@ if ($('#settings-page').length > 0) {
                     },
                     "orderable": false
                 },
-                // IP
-                {
-                    "targets": 2,
-                    "render": function (data, type, row) {
-
-                        if (row[3] === row[6]) {
-                            return '<span class="font-weight-bold" data-toggle="tooltip" data-placement="left" title="Your current IP">' + row[3] + '</span>';
-                        }
-                        return row[3];
-                    },
-                    "orderable": false
-                },
-                // User Agent
-                {
-                    "targets": 3,
-                    "render": function (data, type, row) {
-                        // return row[4];
-                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '">' + row[5] + '</span>';
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).attr('nowrap', 'nowrap');
-                    },
-                    "orderable": false
-                }
             ]
         }));
 
