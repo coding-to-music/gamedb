@@ -34,6 +34,9 @@ func init() {
 	Config.GoogleBucket.Set("GOOGLE_BUCKET")
 	Config.GoogleProject.Set("GOOGLE_PROJECT")
 
+	Config.GoogleProject.Set("GOOGLE_OAUTH_CLIENT_ID")
+	Config.GoogleProject.Set("GOOGLE_OAUTH_CLIENT_SECRET")
+
 	// Influx
 	Config.InfluxURL.Set("INFLUX_URL")
 	Config.InfluxUsername.Set("INFLUX_USERNAME")
