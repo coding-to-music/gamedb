@@ -19,11 +19,20 @@ const (
 	EventForgotPassword = "forgot-password"
 	EventLogout         = "logout"
 	EventPatreonWebhook = "patreon-webhook"
-	EventLinkSteam      = "link-steam"
-	EventUnlinkSteam    = "unlink-steam"
-	EventLinkPatreon    = "link-patreon"
-	EventUnlinkPatreon  = "unlink-patreon"
-	EventRefresh        = "refresh"
+
+	EventLinkSteam   = "link-steam"
+	EventUnlinkSteam = "unlink-steam"
+
+	EventLinkPatreon   = "link-patreon"
+	EventUnlinkPatreon = "unlink-patreon"
+
+	EventLinkGoogle   = "link-google"
+	EventUnlinkGoogle = "unlink-google"
+
+	EventLinkDiscord   = "link-discord"
+	EventUnlinkDiscord = "unlink-discord"
+
+	EventRefresh = "refresh"
 )
 
 type Event struct {

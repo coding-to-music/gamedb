@@ -388,7 +388,6 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-
 	}(r)
 
 	// Get total
@@ -762,6 +761,40 @@ func linkGoogleHandler(w http.ResponseWriter, r *http.Request) {
 
 func unlinkGoogleHandler(w http.ResponseWriter, r *http.Request) {
 
+	defer func() {
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
+	userID, err := getUserIDFromSesion(r)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
+		log.Err(err)
+		return
+	}
+
+	// Update user
+	err = sql.UpdateUserCol(userID, "google_id", 0)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
+		log.Err(err)
+		return
+	}
+
+	// Create event
+	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlinkGoogle)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	// Flash message
+	err = session.SetFlash(r, helpers.SessionGood, "Google unlinked")
+	log.Err(err)
+
 }
 
 func linkGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
@@ -796,6 +829,40 @@ func linkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
+
+	defer func() {
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
+	userID, err := getUserIDFromSesion(r)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
+		log.Err(err)
+		return
+	}
+
+	// Update user
+	err = sql.UpdateUserCol(userID, "discord_id", 0)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
+		log.Err(err)
+		return
+	}
+
+	// Create event
+	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlinkDiscord)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	// Flash message
+	err = session.SetFlash(r, helpers.SessionGood, "Steam unlinked")
+	log.Err(err)
 
 }
 
