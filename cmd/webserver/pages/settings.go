@@ -697,6 +697,16 @@ var (
 
 func linkGoogleHandler(w http.ResponseWriter, r *http.Request) {
 
+	state := helpers.RandString(5, helpers.Numbers)
+
+	err := session.Set(r, "google-oauth-state", state)
+	log.Err(err)
+
+	err = session.Save(w, r)
+	log.Err(err)
+
+	url := googleConfig.AuthCodeURL(state)
+	http.Redirect(w, r, url, http.StatusFound)
 }
 
 func unlinkGoogleHandler(w http.ResponseWriter, r *http.Request) {
@@ -722,6 +732,16 @@ var (
 
 func linkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 
+	state := helpers.RandString(5, helpers.Numbers)
+
+	err := session.Set(r, "discord-oauth-state", state)
+	log.Err(err)
+
+	err = session.Save(w, r)
+	log.Err(err)
+
+	url := discordConfig.AuthCodeURL(state)
+	http.Redirect(w, r, url, http.StatusFound)
 }
 
 func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
