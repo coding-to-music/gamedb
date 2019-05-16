@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	clientID = "567257603185311745"
+	chatBotClientID = "567257603185311745"
 )
 
 func ChatBotRouter() http.Handler {
@@ -76,5 +76,5 @@ type chatBotTemplate struct {
 }
 
 func (cbt chatBotTemplate) AddBotLink() string {
-	return "https://discordapp.com/oauth2/authorize?&client_id=" + clientID + "&scope=bot"
+	return "https://discordapp.com/oauth2/authorize?&client_id=" + chatBotClientID + "&scope=bot"
 }
