@@ -154,7 +154,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Send websocket
 	wsPayload := websockets.PubSubIDPayload{}
 	wsPayload.ID = pack.ID
-	wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage}
+	wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
 
 	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
 	log.Err(err)
