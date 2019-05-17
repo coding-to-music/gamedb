@@ -1,6 +1,10 @@
 package helpers
 
 import (
+	"errors"
+	"net/http"
+	"strconv"
+
 	"github.com/Jleagle/session-go/session"
 )
 
@@ -20,3 +24,18 @@ const (
 	SessionGood session.FlashGroup = "good"
 	SessionBad  session.FlashGroup = "bad"
 )
+
+//
+func GetUserIDFromSesion(r *http.Request) (id int, err error) {
+
+	idx, err := session.Get(r, SessionUserID)
+	if err != nil {
+		return id, err
+	}
+
+	if idx == "" {
+		return id, errors.New("no user id set")
+	}
+
+	return strconv.Atoi(idx)
+}

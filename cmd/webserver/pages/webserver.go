@@ -3,7 +3,6 @@ package pages
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"html/template"
 	"math"
 	"net/http"
@@ -661,29 +660,14 @@ func isAdmin(r *http.Request) bool {
 	return id == "1"
 }
 
-//
-func getUserIDFromSesion(r *http.Request) (id int, err error) {
-
-	idx, err := session.Get(r, helpers.SessionUserID)
-	if err != nil {
-		return id, err
-	}
-
-	if idx == "" {
-		return id, errors.New("no user id set")
-	}
-
-	return strconv.Atoi(idx)
-}
-
 func getUserFromSession(r *http.Request) (user sql.User, err error) {
 
-	id, err := getUserIDFromSesion(r)
-	if err != nil {
+	userID, err := helpers.GetUserIDFromSesion(r)
+	if err != nil || userID == 0 {
 		return user, err
 	}
 
-	return sql.GetUserByID(id)
+	return sql.GetUserByID(userID)
 }
 
 func isLoggedIn(r *http.Request) (val bool, err error) {
