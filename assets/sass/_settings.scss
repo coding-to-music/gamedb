@@ -1,11 +1,5 @@
 #settings-page {
 
-    #connections {
-        p:last-child {
-            @extend .mb-0
-        }
-    }
-
     #password-container {
         input#password {
             background: transparent;
