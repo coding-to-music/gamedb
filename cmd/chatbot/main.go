@@ -85,7 +85,7 @@ func main() {
 		}
 	}
 
-	_, err := helpers.GetDiscordBot(config.Config.DiscordChatBotToken.Get(), handler)
+	_, err := helpers.GetDiscordBot(config.Config.DiscordChatBotToken.Get(), true, handler)
 	if err != nil {
 		log.Err(err)
 		return

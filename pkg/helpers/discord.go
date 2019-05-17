@@ -11,15 +11,21 @@ var (
 	discordMutex       sync.Mutex
 )
 
-func GetDiscordBot(botToken string, handlers ...interface{}) (session *discordgo.Session, err error) {
+func GetDiscordBot(authToken string, bot bool, handlers ...interface{}) (session *discordgo.Session, err error) {
+
+	if bot {
+		authToken = "Bot " + authToken
+	} else {
+		authToken = "Bearer " + authToken
+	}
 
 	discordMutex.Lock()
 	defer discordMutex.Unlock()
 
-	_, ok := discordConnections[botToken]
+	_, ok := discordConnections[authToken]
 	if !ok {
 
-		discord, err := discordgo.New("Bot " + botToken)
+		discord, err := discordgo.New(authToken)
 		if err != nil {
 			return discord, err
 		}
@@ -34,8 +40,8 @@ func GetDiscordBot(botToken string, handlers ...interface{}) (session *discordgo
 			return discord, err
 		}
 
-		discordConnections[botToken] = discord
+		discordConnections[authToken] = discord
 	}
 
-	return discordConnections[botToken], err
+	return discordConnections[authToken], err
 }

@@ -31,7 +31,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	// Get amount of guilds
 	func() {
 
-		client, err := helpers.GetDiscordBot(config.Config.DiscordChatBotToken.Get())
+		client, err := helpers.GetDiscordBot(config.Config.DiscordChatBotToken.Get(), true)
 		if err != nil {
 			log.Warning(err)
 			return
