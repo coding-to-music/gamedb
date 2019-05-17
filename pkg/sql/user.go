@@ -51,75 +51,19 @@ func GetUserByID(id int) (user User, err error) {
 	return user, db.Error
 }
 
-func GetUserByEmail(email string) (user User, err error) {
+func GetUserByKey(key string, value interface{}, excludeUserID int) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
 		return user, err
 	}
 
-	db = db.Where("email = ?", email).First(&user)
-	return user, db.Error
-}
-
-func GetUserBySteamID(id int64, excludeUserID int) (user User, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return user, err
-	}
-
-	db = db.Where("steam_id = ?", id)
+	db = db.Where(key+" = ?", value)
 	if excludeUserID > 0 {
 		db = db.Where("id != ?", excludeUserID)
 	}
 	db = db.First(&user)
 
-	return user, db.Error
-}
-
-func GetUserByPatreonID(id int, excludeUserID int) (user User, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return user, err
-	}
-
-	db = db.Where("patreon_id = ?", id)
-	if excludeUserID > 0 {
-		db = db.Where("id != ?", excludeUserID)
-	}
-	db = db.First(&user)
-	return user, db.Error
-}
-
-func GetUserByGoogleID(id string, excludeUserID int) (user User, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return user, err
-	}
-
-	db = db.Where("google_id = ?", id)
-	if excludeUserID > 0 {
-		db = db.Where("id != ?", excludeUserID)
-	}
-	db = db.First(&user)
-	return user, db.Error
-}
-
-func GetUserByDiscordID(id int64, excludeUserID int) (user User, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return user, err
-	}
-
-	db = db.Where("discord_id = ?", id)
-	if excludeUserID > 0 {
-		db = db.Where("id != ?", excludeUserID)
-	}
-	db = db.First(&user)
 	return user, db.Error
 }
 
