@@ -24,7 +24,6 @@ func GetDiscordBot(authToken string, bot bool, handlers ...interface{}) (session
 
 	_, ok := discordConnections[authToken]
 	if !ok {
-
 		discord, err := discordgo.New(authToken)
 		if err != nil {
 			return discord, err

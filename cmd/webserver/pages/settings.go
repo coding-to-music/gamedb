@@ -3,7 +3,6 @@ package pages
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path"
@@ -619,7 +618,7 @@ func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	state := r.Form.Get("state")
-	if state != realState {
+	if state == "" || state != realState {
 		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
 		log.Err(err)
 		return
@@ -831,7 +830,7 @@ func linkGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	state := r.Form.Get("state")
-	if state != realState {
+	if state == "" || state != realState {
 		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
 		log.Err(err)
 		return
@@ -1026,20 +1025,18 @@ func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	state := r.Form.Get("state")
-	if state != realState {
+	if state == "" || state != realState {
 		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
 		log.Err(err)
 		return
 	}
-	// todo, join
+
 	code := r.Form.Get("code")
 	if code == "" {
 		err = session.SetFlash(r, helpers.SessionBad, "Invalid code")
 		log.Err(err)
 		return
 	}
-
-	fmt.Println(code)
 
 	// Get token
 	token, err := discordConfig.Exchange(context.Background(), code)
@@ -1051,7 +1048,20 @@ func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	discord, err := helpers.GetDiscordBot(token.AccessToken, false)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
+		log.Err(err)
+		return
+	}
+
 	discordUser, err := discord.User("@me")
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
+		log.Err(err)
+		return
+	}
 
 	if !discordUser.Verified {
 		err = session.SetFlash(r, helpers.SessionBad, "This Discord account has not been verified")
@@ -1060,13 +1070,18 @@ func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	idx, err := strconv.ParseInt(discordUser.ID, 10, 64)
-	fmt.Println(err)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
+		log.Err(err)
+		return
+	}
 
 	// Get user
 	user, err := getUserFromSession(r)
 	if err != nil {
 		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1007)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1005)")
 		log.Err(err)
 		return
 	}
@@ -1079,7 +1094,7 @@ func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if err != sql.ErrRecordNotFound {
 		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1008)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1006)")
 		log.Err(err)
 		return
 	}
@@ -1088,7 +1103,7 @@ func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	err = sql.UpdateUserCol(user.ID, "discord_id", idx)
 	if err != nil {
 		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1009)")
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1007)")
 		log.Err(err)
 		return
 	}
