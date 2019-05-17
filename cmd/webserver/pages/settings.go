@@ -782,7 +782,7 @@ func unlinkGoogleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update user
-	err = sql.UpdateUserCol(userID, "google_id", 0)
+	err = sql.UpdateUserCol(userID, "google_id", "")
 	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
