@@ -1053,8 +1053,11 @@ func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	discord, err := helpers.GetDiscordBot(token.AccessToken, false)
 	discordUser, err := discord.User("@me")
 
-	fmt.Println(discordUser.Verified)
-	fmt.Println(discordUser.ID)
+	if !discordUser.Verified {
+		err = session.SetFlash(r, helpers.SessionBad, "This Discord account has not been verified")
+		log.Err(err)
+		return
+	}
 
 	idx, err := strconv.ParseInt(discordUser.ID, 10, 64)
 	fmt.Println(err)
