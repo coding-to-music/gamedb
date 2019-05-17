@@ -3,6 +3,7 @@ package pages
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path"
@@ -720,7 +721,7 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update user
-	err = sql.UpdateUserCol(userID, "patreon_id", 0)
+	err = sql.UpdateUserCol(userID, "patreon_id", "")
 	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
@@ -977,7 +978,7 @@ func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update user
-	err = sql.UpdateUserCol(userID, "discord_id", 0)
+	err = sql.UpdateUserCol(userID, "discord_id", "")
 	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
@@ -999,4 +1000,103 @@ func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 
 func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
+	defer func() {
+
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
+	// Oauth checks
+	realState, err := session.Get(r, "discord-oauth-state")
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
+		log.Err(err)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
+		log.Err(err)
+		return
+	}
+
+	state := r.Form.Get("state")
+	if state != realState {
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
+		log.Err(err)
+		return
+	}
+	// todo, join
+	code := r.Form.Get("code")
+	if code == "" {
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid code")
+		log.Err(err)
+		return
+	}
+
+	fmt.Println(code)
+
+	// Get token
+	token, err := discordConfig.Exchange(context.Background(), code)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
+		log.Err(err)
+		return
+	}
+
+	discord, err := helpers.GetDiscordBot(token.AccessToken, false)
+	discordUser, err := discord.User("@me")
+
+	fmt.Println(discordUser.Verified)
+	fmt.Println(discordUser.ID)
+
+	idx, err := strconv.ParseInt(discordUser.ID, 10, 64)
+	fmt.Println(err)
+
+	// Get user
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1007)")
+		log.Err(err)
+		return
+	}
+
+	// Check Steam ID not already in use
+	_, err = sql.GetUserByDiscordID(idx, user.ID)
+	if err == nil {
+		err = session.SetFlash(r, helpers.SessionBad, "This discord account is already linked to another Game DB account")
+		log.Err(err)
+		return
+	} else if err != sql.ErrRecordNotFound {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1008)")
+		log.Err(err)
+		return
+	}
+
+	// Update user
+	err = sql.UpdateUserCol(user.ID, "discord_id", idx)
+	if err != nil {
+		log.Err(err)
+		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1009)")
+		log.Err(err)
+		return
+	}
+
+	// Create event
+	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkDiscord)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	// Flash message
+	err = session.SetFlash(r, helpers.SessionGood, "Discord account linked")
+	log.Err(err)
 }

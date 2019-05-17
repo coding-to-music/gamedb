@@ -121,7 +121,7 @@
                                     {{ end }}
 
                                     <p>
-                                        {{ if eq .User.PatreonID 0 }}
+                                        {{ if eq .User.PatreonID "" }}
                                             <a href="/settings/link-patreon" role="button" class="btn btn-success btn-sm">
                                                 <i class="fab fa-patreon"></i> Link Patreon Account
                                             </a>
@@ -133,7 +133,7 @@
                                     </p>
 
                                     <p>
-                                        {{ if eq .User.DiscordID 0 }}
+                                        {{ if eq .User.DiscordID "" }}
                                             <a href="/settings/link-discord" role="button" class="btn btn-success btn-sm">
                                                 <i class="fab fa-discord"></i> Link Discord Account
                                             </a>

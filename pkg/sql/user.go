@@ -14,9 +14,9 @@ type User struct {
 	EmailVerified bool      `gorm:"not null;column:email_verified"`
 	Password      string    `gorm:"not null;column:password"`
 	SteamID       int64     `gorm:"not null;column:steam_id"`
-	PatreonID     int64     `gorm:"not null;column:patreon_id"`
+	PatreonID     string    `gorm:"not null;column:patreon_id"`
 	GoogleID      string    `gorm:"not null;column:google_id"`
-	DiscordID     int64     `gorm:"not null;column:discord_id"`
+	DiscordID     string    `gorm:"not null;column:discord_id"`
 	PatreonLevel  int8      `gorm:"not null;column:patreon_level"`
 	HideProfile   bool      `gorm:"not null;column:hide_profile"`
 	ShowAlerts    bool      `gorm:"not null;column:show_alerts"`
