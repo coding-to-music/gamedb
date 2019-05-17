@@ -29,14 +29,16 @@ func GetDiscordBot(authToken string, bot bool, handlers ...interface{}) (session
 			return discord, err
 		}
 
-		for _, v := range handlers {
-			discord.AddHandler(v)
-		}
+		if bot {
+			for _, v := range handlers {
+				discord.AddHandler(v)
+			}
 
-		// Open connection
-		err = discord.Open()
-		if err != nil {
-			return discord, err
+			// Open connection
+			err = discord.Open()
+			if err != nil {
+				return discord, err
+			}
 		}
 
 		discordConnections[authToken] = discord
