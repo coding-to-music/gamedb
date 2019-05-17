@@ -1,29 +1,21 @@
 package pages
 
 import (
-	"context"
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	"path"
 	"strconv"
 	"sync"
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
+	"github.com/gamedb/gamedb/cmd/webserver/connections"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
-	"github.com/mxpv/patreon-go"
-	"github.com/yohcop/openid-go"
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 )
 
 func SettingsRouter() http.Handler {
@@ -38,8 +30,8 @@ func SettingsRouter() http.Handler {
 	r.Get("/donations.json", settingsDonationsAjaxHandler)
 
 	// r.Get("/link-steam", linkSteamHandler)
-	r.Get("/steam-callback", linkSteamCallbackHandler)
 	r.Get("/unlink-steam", unlinkSteamHandler)
+	r.Get("/steam-callback", linkSteamCallbackHandler)
 
 	r.Get("/link-patreon", linkPatreonHandler)
 	r.Get("/unlink-patreon", unlinkPatreonHandler)
@@ -418,703 +410,72 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.output(w, r)
 }
 
-// todo
 // Steam
-// For the demo, we use in-memory infinite storage nonce and discovery
-// cache. In your app, do not use this as it will eat up memory and never
-// free it. Use your own implementation, on a better database system.
-// If you have multiple servers for example, you may need to share at least
-// the nonceStore between them.
-var nonceStore = openid.NewSimpleNonceStore()
-var discoveryCache = openid.NewSimpleDiscoveryCache()
-
 func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	defer func() {
-		err := session.Save(w, r)
-		log.Err(err)
-
-		http.Redirect(w, r, "/settings", http.StatusFound)
-	}()
-
-	// Get Steam ID
-	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), discoveryCache, nonceStore)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "We could not verify your Steam account")
-		log.Err(err)
-		return
-	}
-
-	steamIDString := path.Base(openID)
-	steamID, err := strconv.ParseInt(steamIDString, 10, 64)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
-		log.Err(err)
-		return
-	}
-
-	user, err := getUserFromSession(r)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
-		log.Err(err)
-		return
-	}
-
-	// Check Steam ID not already in use
-	_, err = sql.GetUserBySteamID(steamID, user.ID)
-	if err == nil {
-		err = session.SetFlash(r, helpers.SessionBad, "This Steam account is already linked to another Game DB account")
-		log.Err(err)
-		return
-	} else if err != sql.ErrRecordNotFound {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
-
-	// Update user
-	err = sql.UpdateUserCol(user.ID, "steam_id", steamID)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
-		log.Err(err)
-		return
-	}
-
-	// Success flash
-	err = session.SetFlash(r, helpers.SessionGood, "Steam account linked")
-	log.Err(err)
-
-	// Create event
-	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkSteam)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	// Queue for an update
-	player, err := mongo.GetPlayer(steamID)
-	if err != nil {
-		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		log.Err(err)
-	} else {
-		if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateManual) {
-			err = queue.ProducePlayer(player.ID)
-			log.Err(err, r)
-
-			// Queued flash
-			err = session.SetFlash(r, helpers.SessionGood, "Player has been queued for an update")
-			log.Err(err)
-		}
-	}
-
-	// Update session
-	err = session.Set(r, helpers.SessionPlayerID, steamIDString)
-	log.Err(err)
+	connection := connections.New(connections.ConnectionSteam)
+	connection.CallbackHandler(w, r)
 }
 
 func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
 
-	defer func() {
-		err := session.Save(w, r)
-		log.Err(err)
-
-		http.Redirect(w, r, "/settings", http.StatusFound)
-	}()
-
-	userID, err := getUserIDFromSesion(r)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
-		log.Err(err)
-		return
-	}
-
-	// Update user
-	err = sql.UpdateUserCol(userID, "steam_id", 0)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
-
-	// Clear session
-	err = session.DeleteMany(r, []string{helpers.SessionPlayerID, helpers.SessionPlayerName, helpers.SessionPlayerLevel})
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
-		log.Err(err)
-		return
-	}
-
-	// Create event
-	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlinkSteam)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	// Flash message
-	err = session.SetFlash(r, helpers.SessionGood, "Steam unlinked")
-	log.Err(err)
+	connection := connections.New(connections.ConnectionSteam)
+	connection.UnlinkHandler(w, r)
 }
 
 // Patreon
-var (
-	patreonConfig = oauth2.Config{
-		ClientID:     config.Config.PatreonClientID.Get(),
-		ClientSecret: config.Config.PatreonClientSecret.Get(),
-		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
-		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/patreon-callback",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  patreon.AuthorizationURL,
-			TokenURL: patreon.AccessTokenURL,
-		},
-	}
-)
-
 func linkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 
-	state := helpers.RandString(5, helpers.Numbers)
-
-	err := session.Set(r, "patreon-oauth-state", state)
-	log.Err(err)
-
-	err = session.Save(w, r)
-	log.Err(err)
-
-	url := patreonConfig.AuthCodeURL(state)
-	http.Redirect(w, r, url, http.StatusFound)
-}
-
-func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	defer func() {
-
-		err := session.Save(w, r)
-		log.Err(err)
-
-		http.Redirect(w, r, "/settings", http.StatusFound)
-	}()
-
-	// Oauth checks
-	realState, err := session.Get(r, "patreon-oauth-state")
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
-		log.Err(err)
-		return
-	}
-
-	err = r.ParseForm()
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
-
-	state := r.Form.Get("state")
-	if state == "" || state != realState {
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
-		log.Err(err)
-		return
-	}
-
-	code := r.Form.Get("code")
-	if code == "" {
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid code")
-		log.Err(err)
-		return
-	}
-
-	// Get token
-	token, err := patreonConfig.Exchange(context.Background(), code)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
-		log.Err(err)
-		return
-	}
-
-	// Get Patreon user
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token.AccessToken})
-	tc := oauth2.NewClient(context.TODO(), ts)
-
-	patreonUser, err := patreon.NewClient(tc).FetchUser()
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
-		log.Err(err)
-		return
-	}
-
-	idx, err := strconv.Atoi(patreonUser.Data.ID)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
-		log.Err(err)
-		return
-	}
-
-	// Get user
-	user, err := getUserFromSession(r)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1005)")
-		log.Err(err)
-		return
-	}
-
-	// Check Steam ID not already in use
-	_, err = sql.GetUserByPatreonID(idx, user.ID)
-	if err == nil {
-		err = session.SetFlash(r, helpers.SessionBad, "This Patreon account is already linked to another Game DB account")
-		log.Err(err)
-		return
-	} else if err != sql.ErrRecordNotFound {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1006)")
-		log.Err(err)
-		return
-	}
-
-	// Update user
-	err = sql.UpdateUserCol(user.ID, "patreon_id", idx)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1007)")
-		log.Err(err)
-		return
-	}
-
-	// Create event
-	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkPatreon)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	// Flash message
-	err = session.SetFlash(r, helpers.SessionGood, "Patreon account linked")
-	log.Err(err)
+	connection := connections.New(connections.ConnectionPatreon)
+	connection.LinkHandler(w, r)
 }
 
 func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 
-	defer func() {
-		err := session.Save(w, r)
-		log.Err(err)
+	connection := connections.New(connections.ConnectionPatreon)
+	connection.UnlinkHandler(w, r)
+}
 
-		http.Redirect(w, r, "/settings", http.StatusFound)
-	}()
+func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	userID, err := getUserIDFromSesion(r)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
-		log.Err(err)
-		return
-	}
-
-	// Update user
-	err = sql.UpdateUserCol(userID, "patreon_id", "")
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
-
-	// Flash message
-	err = session.SetFlash(r, helpers.SessionGood, "Patreon unlinked")
-	log.Err(err, r)
-
-	// Create event
-	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlinkPatreon)
-	if err != nil {
-		log.Err(err, r)
-	}
+	connection := connections.New(connections.ConnectionPatreon)
+	connection.CallbackHandler(w, r)
 }
 
 // Google
-var (
-	googleConfig = oauth2.Config{
-		ClientID:     config.Config.GoogleOauthClientID.Get(),
-		ClientSecret: config.Config.GoogleOauthClientSecret.Get(),
-		Scopes:       []string{"profile"},
-		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/google-callback",
-		Endpoint:     google.Endpoint,
-	}
-)
-
 func linkGoogleHandler(w http.ResponseWriter, r *http.Request) {
 
-	state := helpers.RandString(5, helpers.Numbers)
-
-	err := session.Set(r, "google-oauth-state", state)
-	log.Err(err)
-
-	err = session.Save(w, r)
-	log.Err(err)
-
-	url := googleConfig.AuthCodeURL(state)
-	http.Redirect(w, r, url, http.StatusFound)
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LinkHandler(w, r)
 }
 
 func unlinkGoogleHandler(w http.ResponseWriter, r *http.Request) {
 
-	defer func() {
-		err := session.Save(w, r)
-		log.Err(err)
-
-		http.Redirect(w, r, "/settings", http.StatusFound)
-	}()
-
-	userID, err := getUserIDFromSesion(r)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
-		log.Err(err)
-		return
-	}
-
-	// Update user
-	err = sql.UpdateUserCol(userID, "google_id", "")
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
-
-	// Create event
-	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlinkGoogle)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	// Flash message
-	err = session.SetFlash(r, helpers.SessionGood, "Google unlinked")
-	log.Err(err)
-
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.UnlinkHandler(w, r)
 }
 
 func linkGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	defer func() {
-
-		err := session.Save(w, r)
-		log.Err(err)
-
-		http.Redirect(w, r, "/settings", http.StatusFound)
-	}()
-
-	// Oauth checks
-	realState, err := session.Get(r, "google-oauth-state")
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
-		log.Err(err)
-		return
-	}
-
-	err = r.ParseForm()
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
-
-	state := r.Form.Get("state")
-	if state == "" || state != realState {
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
-		log.Err(err)
-		return
-	}
-
-	code := r.Form.Get("code")
-	if code == "" {
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid code")
-		log.Err(err)
-		return
-	}
-
-	// Get token
-	token, err := googleConfig.Exchange(context.Background(), code)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
-		log.Err(err)
-		return
-	}
-
-	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
-		log.Err(err)
-		return
-	}
-	defer func(response *http.Response) {
-		err := response.Body.Close()
-		log.Err(err)
-	}(response)
-
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
-		log.Err(err)
-		return
-	}
-
-	userInfo := struct {
-		ID         string `json:"id"`
-		Name       string `json:"name"`
-		GivenName  string `json:"given_name"`
-		FamilyName string `json:"family_name"`
-		Picture    string `json:"picture"`
-		Locale     string `json:"locale"`
-	}{}
-
-	err = json.Unmarshal(b, &userInfo)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1005)")
-		log.Err(err)
-		return
-	}
-
-	// Get user
-	user, err := getUserFromSession(r)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1007)")
-		log.Err(err)
-		return
-	}
-
-	// Check Steam ID not already in use
-	_, err = sql.GetUserByGoogleID(userInfo.ID, user.ID)
-	if err == nil {
-		err = session.SetFlash(r, helpers.SessionBad, "This Google account is already linked to another Game DB account")
-		log.Err(err)
-		return
-	} else if err != sql.ErrRecordNotFound {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1008)")
-		log.Err(err)
-		return
-	}
-
-	// Update user
-	err = sql.UpdateUserCol(user.ID, "google_id", userInfo.ID)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1009)")
-		log.Err(err)
-		return
-	}
-
-	// Create event
-	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkGoogle)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	// Flash message
-	err = session.SetFlash(r, helpers.SessionGood, "Google account linked")
-	log.Err(err)
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.CallbackHandler(w, r)
 }
 
 // Discord
-var (
-	discordConfig = oauth2.Config{
-		ClientID:     config.Config.DiscordClientID.Get(),
-		ClientSecret: config.Config.DiscordClientSescret.Get(),
-		Scopes:       []string{"identify"},
-		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/discord-callback",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
-			TokenURL: "https://discordapp.com/api/oauth2/token",
-		},
-	}
-)
-
 func linkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 
-	state := helpers.RandString(5, helpers.Numbers)
-
-	err := session.Set(r, "discord-oauth-state", state)
-	log.Err(err)
-
-	err = session.Save(w, r)
-	log.Err(err)
-
-	url := discordConfig.AuthCodeURL(state)
-	http.Redirect(w, r, url, http.StatusFound)
+	connection := connections.New(connections.ConnectionDiscord)
+	connection.LinkHandler(w, r)
 }
 
 func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 
-	defer func() {
-		err := session.Save(w, r)
-		log.Err(err)
-
-		http.Redirect(w, r, "/settings", http.StatusFound)
-	}()
-
-	userID, err := getUserIDFromSesion(r)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
-		log.Err(err)
-		return
-	}
-
-	// Update user
-	err = sql.UpdateUserCol(userID, "discord_id", "")
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
-
-	// Create event
-	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlinkDiscord)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	// Flash message
-	err = session.SetFlash(r, helpers.SessionGood, "Steam unlinked")
-	log.Err(err)
-
+	connection := connections.New(connections.ConnectionDiscord)
+	connection.UnlinkHandler(w, r)
 }
 
 func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	defer func() {
-
-		err := session.Save(w, r)
-		log.Err(err)
-
-		http.Redirect(w, r, "/settings", http.StatusFound)
-	}()
-
-	// Oauth checks
-	realState, err := session.Get(r, "discord-oauth-state")
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
-		log.Err(err)
-		return
-	}
-
-	err = r.ParseForm()
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
-
-	state := r.Form.Get("state")
-	if state == "" || state != realState {
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid state")
-		log.Err(err)
-		return
-	}
-
-	code := r.Form.Get("code")
-	if code == "" {
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid code")
-		log.Err(err)
-		return
-	}
-
-	// Get token
-	token, err := discordConfig.Exchange(context.Background(), code)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
-		log.Err(err)
-		return
-	}
-
-	discord, err := helpers.GetDiscordBot(token.AccessToken, false)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
-		log.Err(err)
-		return
-	}
-
-	discordUser, err := discord.User("@me")
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
-		log.Err(err)
-		return
-	}
-
-	if !discordUser.Verified {
-		err = session.SetFlash(r, helpers.SessionBad, "This Discord account has not been verified")
-		log.Err(err)
-		return
-	}
-
-	idx, err := strconv.ParseInt(discordUser.ID, 10, 64)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
-		log.Err(err)
-		return
-	}
-
-	// Get user
-	user, err := getUserFromSession(r)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1005)")
-		log.Err(err)
-		return
-	}
-
-	// Check Steam ID not already in use
-	_, err = sql.GetUserByDiscordID(idx, user.ID)
-	if err == nil {
-		err = session.SetFlash(r, helpers.SessionBad, "This discord account is already linked to another Game DB account")
-		log.Err(err)
-		return
-	} else if err != sql.ErrRecordNotFound {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1006)")
-		log.Err(err)
-		return
-	}
-
-	// Update user
-	err = sql.UpdateUserCol(user.ID, "discord_id", idx)
-	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1007)")
-		log.Err(err)
-		return
-	}
-
-	// Create event
-	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLinkDiscord)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	// Flash message
-	err = session.SetFlash(r, helpers.SessionGood, "Discord account linked")
-	log.Err(err)
+	connection := connections.New(connections.ConnectionDiscord)
+	connection.CallbackHandler(w, r)
 }

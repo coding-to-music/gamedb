@@ -82,7 +82,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user
-		user, err := sql.GetUserByEmail(email)
+		user, err := sql.GetUserByKey("email", email, 0)
 		if err == sql.ErrRecordNotFound {
 			return "Email sent", true
 		} else if err != nil {

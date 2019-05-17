@@ -13,26 +13,25 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type EventEnum string
+
 const (
-	EventSignup         = "signup"
-	EventLogin          = "login"
-	EventForgotPassword = "forgot-password"
-	EventLogout         = "logout"
-	EventPatreonWebhook = "patreon-webhook"
+	EventSignup         EventEnum = "signup"
+	EventLogin          EventEnum = "login"
+	EventForgotPassword EventEnum = "forgot-password"
+	EventLogout         EventEnum = "logout"
+	EventPatreonWebhook EventEnum = "patreon-webhook"
+	EventRefresh        EventEnum = "refresh"
 
-	EventLinkSteam   = "link-steam"
-	EventUnlinkSteam = "unlink-steam"
-
-	EventLinkPatreon   = "link-patreon"
-	EventUnlinkPatreon = "unlink-patreon"
-
-	EventLinkGoogle   = "link-google"
-	EventUnlinkGoogle = "unlink-google"
-
-	EventLinkDiscord   = "link-discord"
-	EventUnlinkDiscord = "unlink-discord"
-
-	EventRefresh = "refresh"
+	// Connections
+	EventLinkSteam     EventEnum = "link-steam"
+	EventUnlinkSteam   EventEnum = "unlink-steam"
+	EventLinkPatreon   EventEnum = "link-patreon"
+	EventUnlinkPatreon EventEnum = "unlink-patreon"
+	EventLinkGoogle    EventEnum = "link-google"
+	EventUnlinkGoogle  EventEnum = "unlink-google"
+	EventLinkDiscord   EventEnum = "link-discord"
+	EventUnlinkDiscord EventEnum = "unlink-discord"
 )
 
 type Event struct {
@@ -98,7 +97,7 @@ func (event Event) GetIP(ip string) string {
 
 func (event Event) GetType() string {
 
-	switch event.Type {
+	switch EventEnum(event.Type) {
 	case EventLogin:
 		return "User Login"
 	case EventLogout:
@@ -112,7 +111,7 @@ func (event Event) GetType() string {
 
 func (event Event) GetIcon() string {
 
-	switch event.Type {
+	switch EventEnum(event.Type) {
 	case EventLogin:
 		return "fa-sign-in-alt"
 	case EventLogout:
@@ -154,9 +153,9 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 	return events, cur.Err()
 }
 
-func CreatePlayerEvent(r *http.Request, steamID int64, eventType string) (err error) {
+func CreatePlayerEvent(r *http.Request, steamID int64, eventType EventEnum) (err error) {
 
-	user, err := sql.GetUserBySteamID(steamID, 0)
+	user, err := sql.GetUserByKey("steam_id", steamID, 0)
 	if err != nil {
 		if err == sql.ErrRecordNotFound {
 			return nil
@@ -168,12 +167,12 @@ func CreatePlayerEvent(r *http.Request, steamID int64, eventType string) (err er
 	return CreateUserEvent(r, user.ID, eventType)
 }
 
-func CreateUserEvent(r *http.Request, userID int, eventType string) (err error) {
+func CreateUserEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
 
 	event := &Event{}
 	event.CreatedAt = time.Now()
 	event.UserID = userID
-	event.Type = eventType
+	event.Type = string(eventType)
 	event.UserAgent = r.Header.Get("User-Agent")
 	event.IP = r.RemoteAddr
 

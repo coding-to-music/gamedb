@@ -21,29 +21,29 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, event, err := patreon.ValidateRequest(r, config.Config.PatreonSecret.Get())
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		log.Err(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	pwr, err := patreon.UnmarshalBytes(b)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		log.Err(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err = saveWebhookToMongo(event, pwr, b)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		log.Err(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	err = saveWebhookEvent(r, event, pwr)
+	err = saveWebhookEvent(r, mongo.EventEnum(event), pwr)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		log.Err(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
@@ -65,7 +65,7 @@ func saveWebhookToMongo(event string, pwr patreon.Webhook, body []byte) (err err
 	return err
 }
 
-func saveWebhookEvent(r *http.Request, event string, pwr patreon.Webhook) (err error) {
+func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
 
 	if pwr.User.Attributes.Email != "" {
 		player := mongo.Player{}

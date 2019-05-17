@@ -20,11 +20,11 @@ func LogoutRouter() http.Handler {
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make event
-	steamID, err := getUserIDFromSesion(r)
-	if err != nil {
+	userID, err := helpers.GetUserIDFromSesion(r)
+	if err != nil || userID == 0 {
 		log.Err(err, r)
 	} else {
-		err = mongo.CreateUserEvent(r, steamID, mongo.EventLogout)
+		err = mongo.CreateUserEvent(r, userID, mongo.EventLogout)
 		log.Err(err, r)
 	}
 

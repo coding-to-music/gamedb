@@ -99,7 +99,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user
-		user, err := sql.GetUserByEmail(email)
+		user, err := sql.GetUserByKey("email", email, 0)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 			log.Err(err, r)
