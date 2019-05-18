@@ -204,19 +204,22 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
 
-	id, err := session.Get(r, helpers.SessionUserID)
+	val, err := session.Get(r, helpers.SessionUserID)
 	log.Err(err, r)
-	if id != "" {
-		t.UserID, err = strconv.Atoi(id)
+	if val != "" {
+		t.UserID, err = strconv.Atoi(val)
 		log.Err(err, r)
 	}
 
-	id, err = session.Get(r, helpers.SessionPlayerID)
+	val, err = session.Get(r, helpers.SessionPlayerID)
 	log.Err(err, r)
-	if id != "" {
-		t.PlayerID, err = strconv.ParseInt(id, 10, 64)
+	if val != "" {
+		t.PlayerID, err = strconv.ParseInt(val, 10, 64)
 		log.Err(err, r)
 	}
+
+	t.PlayerName, err = session.Get(r, helpers.SessionPlayerName)
+	log.Err(err)
 
 	t.userEmail, err = session.Get(r, helpers.SessionUserEmail)
 	log.Err(err, r)
