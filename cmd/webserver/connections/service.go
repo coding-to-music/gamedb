@@ -28,11 +28,17 @@ type ConnectionInterface interface {
 	getID(r *http.Request, token *oauth2.Token) interface{}
 	getName() string
 	getEnum() connectionEnum
-	getConfig() oauth2.Config
+	getConfig(login bool) oauth2.Config
 	getEmptyVal() interface{}
+
+	//
 	LinkHandler(w http.ResponseWriter, r *http.Request)
 	UnlinkHandler(w http.ResponseWriter, r *http.Request)
-	CallbackHandler(w http.ResponseWriter, r *http.Request)
+	LinkCallbackHandler(w http.ResponseWriter, r *http.Request)
+
+	//
+	LoginHandler(w http.ResponseWriter, r *http.Request)
+	LoginCallbackHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func New(s connectionEnum) ConnectionInterface {
@@ -51,7 +57,7 @@ func New(s connectionEnum) ConnectionInterface {
 	}
 }
 
-func linkOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface) {
+func linkOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface, login bool) {
 
 	state := helpers.RandString(5, helpers.Numbers)
 
@@ -61,7 +67,7 @@ func linkOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface) {
 	err = session.Save(w, r)
 	log.Err(err)
 
-	conf := c.getConfig()
+	conf := c.getConfig(login)
 	url := conf.AuthCodeURL(state)
 	http.Redirect(w, r, url, http.StatusFound)
 }
@@ -114,7 +120,7 @@ func unlink(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event
 	}
 }
 
-func callbackOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event mongo.EventEnum) {
+func callbackOAuth(r *http.Request, c ConnectionInterface, event mongo.EventEnum, login bool) {
 
 	realState, err := session.Get(r, strings.ToLower(c.getName())+"-oauth-state")
 	if err != nil {
@@ -146,7 +152,7 @@ func callbackOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface
 		return
 	}
 
-	conf := c.getConfig()
+	conf := c.getConfig(login)
 	token, err := conf.Exchange(context.Background(), code)
 	if err != nil {
 		log.Err(err)
@@ -155,10 +161,10 @@ func callbackOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface
 		return
 	}
 
-	callback(w, r, c, event, token)
+	callback(r, c, event, token, login)
 }
 
-func callback(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event mongo.EventEnum, token *oauth2.Token) {
+func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, token *oauth2.Token, login bool) {
 
 	id := c.getID(r, token)
 	if id == nil {
@@ -173,31 +179,39 @@ func callback(w http.ResponseWriter, r *http.Request, c ConnectionInterface, eve
 		return
 	}
 
-	// Check ID is not already in use
-	_, err = sql.GetUserByKey(strings.ToLower(c.getName())+"_id", id, userID)
-	if err == nil {
-		err = session.SetFlash(r, helpers.SessionBad, "This "+c.getName()+" account is already linked to another Game DB account")
-		log.Err(err)
-		return
-	} else if err != sql.ErrRecordNotFound {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
-		log.Err(err)
-		return
-	}
+	if login {
 
-	// Update user
-	err = sql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", id)
-	if err != nil {
+		err = session.SetFlash(r, helpers.SessionGood, "You have been logged in")
 		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
-		log.Err(err)
-		return
-	}
 
-	// Success flash
-	err = session.SetFlash(r, helpers.SessionGood, c.getName()+" account linked")
-	log.Err(err)
+	} else {
+
+		// Check ID is not already in use
+		_, err = sql.GetUserByKey(strings.ToLower(c.getName())+"_id", id, userID)
+		if err == nil {
+			err = session.SetFlash(r, helpers.SessionBad, "This "+c.getName()+" account is already linked to another Game DB account")
+			log.Err(err)
+			return
+		} else if err != sql.ErrRecordNotFound {
+			log.Err(err)
+			err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")
+			log.Err(err)
+			return
+		}
+
+		// Update user
+		err = sql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", id)
+		if err != nil {
+			log.Err(err)
+			err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
+			log.Err(err)
+			return
+		}
+
+		// Success flash
+		err = session.SetFlash(r, helpers.SessionGood, c.getName()+" account linked")
+		log.Err(err)
+	}
 
 	// Create event
 	err = mongo.CreateUserEvent(r, userID, event)
@@ -225,7 +239,7 @@ func callback(w http.ResponseWriter, r *http.Request, c ConnectionInterface, eve
 			}
 		}
 
-		// Update session
+		// Add player to session
 		err = session.Set(r, helpers.SessionPlayerID, strconv.FormatInt(idInt64, 10))
 		log.Err(err)
 	}

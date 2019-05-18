@@ -49,12 +49,20 @@ func (d discord) getEnum() connectionEnum {
 	return ConnectionDiscord
 }
 
-func (d discord) getConfig() oauth2.Config {
+func (d discord) getConfig(login bool) oauth2.Config {
+
+	var redirectURL string
+	if login {
+		redirectURL = config.Config.GameDBDomain.Get() + "/login/discord-callback"
+	} else {
+		redirectURL = config.Config.GameDBDomain.Get() + "/settings/discord-callback"
+	}
+
 	return oauth2.Config{
 		ClientID:     config.Config.DiscordClientID.Get(),
 		ClientSecret: config.Config.DiscordClientSescret.Get(),
 		Scopes:       []string{"identify"},
-		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/discord-callback",
+		RedirectURL:  redirectURL,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
 			TokenURL: "https://discordapp.com/api/oauth2/token",
@@ -67,19 +75,30 @@ func (d discord) getEmptyVal() interface{} {
 }
 
 func (d discord) LinkHandler(w http.ResponseWriter, r *http.Request) {
-	linkOAuth(w, r, d)
+	linkOAuth(w, r, d, false)
 }
 
 func (d discord) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
 	unlink(w, r, d, mongo.EventUnlinkDiscord)
 }
 
-func (d discord) CallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (d discord) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	callbackOAuth(w, r, d, mongo.EventLinkDiscord)
+	callbackOAuth(r, d, mongo.EventLinkDiscord, false)
 
 	err := session.Save(w, r)
 	log.Err(err)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
+}
+
+func (d discord) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	linkOAuth(w, r, d, true)
+}
+
+func (d discord) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	callbackOAuth(r, d, mongo.EventLogin, true)
+
+	http.Redirect(w, r, "/login", http.StatusFound)
 }

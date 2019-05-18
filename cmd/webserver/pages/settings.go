@@ -414,7 +414,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	connection := connections.New(connections.ConnectionSteam)
-	connection.CallbackHandler(w, r)
+	connection.LinkCallbackHandler(w, r)
 }
 
 func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
@@ -439,7 +439,7 @@ func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
 func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	connection := connections.New(connections.ConnectionPatreon)
-	connection.CallbackHandler(w, r)
+	connection.LinkCallbackHandler(w, r)
 }
 
 // Google
@@ -458,7 +458,7 @@ func unlinkGoogleHandler(w http.ResponseWriter, r *http.Request) {
 func linkGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	connection := connections.New(connections.ConnectionGoogle)
-	connection.CallbackHandler(w, r)
+	connection.LinkCallbackHandler(w, r)
 }
 
 // Discord
@@ -477,5 +477,5 @@ func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	connection := connections.New(connections.ConnectionDiscord)
-	connection.CallbackHandler(w, r)
+	connection.LinkCallbackHandler(w, r)
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
+	"github.com/gamedb/gamedb/cmd/webserver/connections"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -22,7 +23,67 @@ func LoginRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", loginHandler)
 	r.Post("/", loginPostHandler)
+
+	r.Get("/google", loginWithGoogleHandler)
+	r.Get("/google-callback", loginWithGoogleCallbackHandler)
+
+	r.Get("/discord", loginWithDiscordHandler)
+	r.Get("/discord-callback", loginWithDiscordCallbackHandler)
+
+	r.Get("/patreon", loginWithPatreonHandler)
+	r.Get("/patreon-callback", loginWithPatreonCallbackHandler)
+
+	r.Get("/steam", loginWithSteamHandler)
+	r.Get("/steam-callback", loginWithSteamCallbackHandler)
 	return r
+}
+
+func loginWithGoogleHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginHandler(w, r)
+}
+
+func loginWithDiscordHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionDiscord)
+	connection.LoginHandler(w, r)
+}
+
+func loginWithPatreonHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionPatreon)
+	connection.LoginHandler(w, r)
+}
+
+func loginWithSteamHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionSteam)
+	connection.LoginHandler(w, r)
+}
+
+func loginWithGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginCallbackHandler(w, r)
+}
+
+func loginWithDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginCallbackHandler(w, r)
+}
+
+func loginWithPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginCallbackHandler(w, r)
+}
+
+func loginWithSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginCallbackHandler(w, r)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,46 +167,14 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 			return "Incorrect credentials", false
 		}
 
-		if !user.EmailVerified {
-			return "Please verify your email address first", false
-		}
-
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if err != nil {
+			err = helpers.IgnoreErrors(err, bcrypt.ErrMismatchedHashAndPassword)
+			log.Err(err)
 			return "Incorrect credentials", false
 		}
 
-		// Log user in
-		sessionData := map[string]string{
-			helpers.SessionUserID:         strconv.Itoa(user.ID),
-			helpers.SessionUserEmail:      user.Email,
-			helpers.SessionUserCountry:    user.CountryCode,
-			helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
-		}
-
-		player, err := mongo.GetPlayer(user.SteamID)
-		if err == nil {
-			sessionData[helpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
-			sessionData[helpers.SessionPlayerName] = player.PersonaName
-			sessionData[helpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
-		} else {
-			err = helpers.IgnoreErrors(err, mongo.ErrInvalidPlayerID, mongo.ErrNoDocuments)
-			log.Err(err, r)
-		}
-
-		err = session.SetMany(r, sessionData)
-		if err != nil {
-			log.Err(err, r)
-			return "An error occurred", false
-		}
-
-		// Create login event
-		err = mongo.CreateUserEvent(r, user.ID, mongo.EventLogin)
-		if err != nil {
-			log.Err(err, r)
-		}
-
-		return "You have been logged in", true
+		return login(r, user)
 	}()
 
 	//
@@ -169,4 +198,43 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 	}
+}
+
+func login(r *http.Request, user sql.User) (string, bool) {
+
+	if !user.EmailVerified {
+		return "Please verify your email address first", false
+	}
+
+	// Log user in
+	sessionData := map[string]string{
+		helpers.SessionUserID:         strconv.Itoa(user.ID),
+		helpers.SessionUserEmail:      user.Email,
+		helpers.SessionUserCountry:    user.CountryCode,
+		helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+	}
+
+	player, err := mongo.GetPlayer(user.SteamID)
+	if err == nil {
+		sessionData[helpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
+		sessionData[helpers.SessionPlayerName] = player.PersonaName
+		sessionData[helpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
+	} else {
+		err = helpers.IgnoreErrors(err, mongo.ErrInvalidPlayerID, mongo.ErrNoDocuments)
+		log.Err(err, r)
+	}
+
+	err = session.SetMany(r, sessionData)
+	if err != nil {
+		log.Err(err, r)
+		return "An error occurred", false
+	}
+
+	// Create login event
+	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLogin)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	return "You have been logged in", true
 }

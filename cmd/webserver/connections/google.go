@@ -67,12 +67,20 @@ func (g google) getEnum() connectionEnum {
 	return ConnectionGoogle
 }
 
-func (g google) getConfig() oauth2.Config {
+func (g google) getConfig(login bool) oauth2.Config {
+
+	var redirectURL string
+	if login {
+		redirectURL = config.Config.GameDBDomain.Get() + "/settings/google-callback"
+	} else {
+		redirectURL = config.Config.GameDBDomain.Get() + "/settings/google-callback"
+	}
+
 	return oauth2.Config{
 		ClientID:     config.Config.GoogleOauthClientID.Get(),
 		ClientSecret: config.Config.GoogleOauthClientSecret.Get(),
 		Scopes:       []string{"profile"},
-		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/google-callback",
+		RedirectURL:  redirectURL,
 		Endpoint:     goog.Endpoint,
 	}
 }
@@ -82,19 +90,33 @@ func (g google) getEmptyVal() interface{} {
 }
 
 func (g google) LinkHandler(w http.ResponseWriter, r *http.Request) {
-	linkOAuth(w, r, g)
+
+	linkOAuth(w, r, g, false)
 }
 
 func (g google) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
+
 	unlink(w, r, g, mongo.EventUnlinkGoogle)
 }
 
-func (g google) CallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (g google) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	callbackOAuth(w, r, g, mongo.EventLinkGoogle)
+	callbackOAuth(r, g, mongo.EventLinkGoogle, false)
 
 	err := session.Save(w, r)
 	log.Err(err)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
+}
+
+func (g google) LoginHandler(w http.ResponseWriter, r *http.Request) {
+
+	linkOAuth(w, r, g, true)
+}
+
+func (g google) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	callbackOAuth(r, g, mongo.EventLogin, true)
+
+	http.Redirect(w, r, "/login", http.StatusFound)
 }

@@ -47,12 +47,20 @@ func (p patreon) getEnum() connectionEnum {
 	return ConnectionPatreon
 }
 
-func (p patreon) getConfig() oauth2.Config {
+func (p patreon) getConfig(login bool) oauth2.Config {
+
+	var redirectURL string
+	if login {
+		redirectURL = config.Config.GameDBDomain.Get() + "/login/patreon-callback"
+	} else {
+		redirectURL = config.Config.GameDBDomain.Get() + "/settings/patreon-callback"
+	}
+
 	return oauth2.Config{
 		ClientID:     config.Config.PatreonClientID.Get(),
 		ClientSecret: config.Config.PatreonClientSecret.Get(),
 		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
-		RedirectURL:  config.Config.GameDBDomain.Get() + "/settings/patreon-callback",
+		RedirectURL:  redirectURL,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  pat.AuthorizationURL,
 			TokenURL: pat.AccessTokenURL,
@@ -65,19 +73,33 @@ func (p patreon) getEmptyVal() interface{} {
 }
 
 func (p patreon) LinkHandler(w http.ResponseWriter, r *http.Request) {
-	linkOAuth(w, r, p)
+
+	linkOAuth(w, r, p, false)
 }
 
 func (p patreon) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
+
 	unlink(w, r, p, mongo.EventLinkPatreon)
 }
 
-func (p patreon) CallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (p patreon) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	callbackOAuth(w, r, p, mongo.EventUnlinkPatreon)
+	callbackOAuth(r, p, mongo.EventUnlinkPatreon, false)
 
 	err := session.Save(w, r)
 	log.Err(err)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
+}
+
+func (p patreon) LoginHandler(w http.ResponseWriter, r *http.Request) {
+
+	linkOAuth(w, r, p, true)
+}
+
+func (p patreon) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	callbackOAuth(r, p, mongo.EventLogin, true)
+
+	http.Redirect(w, r, "/login", http.StatusFound)
 }

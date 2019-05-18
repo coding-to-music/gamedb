@@ -48,7 +48,7 @@ func (s steam) getEnum() connectionEnum {
 	return ConnectionSteam
 }
 
-func (s steam) getConfig() oauth2.Config {
+func (s steam) getConfig(login bool) oauth2.Config {
 	return oauth2.Config{}
 }
 
@@ -64,12 +64,27 @@ func (s steam) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
 	unlink(w, r, s, mongo.EventUnlinkSteam)
 }
 
-func (s steam) CallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (s steam) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	callback(w, r, s, mongo.EventLinkSteam, nil)
+	callback(r, s, mongo.EventLinkSteam, nil, false)
 
 	err := session.Save(w, r)
 	log.Err(err)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
+}
+
+func (s steam) LoginHandler(w http.ResponseWriter, r *http.Request) {
+
+	// id := s.getID(r, nil)
+}
+
+func (s steam) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	callback(r, s, mongo.EventLogin, nil, true)
+
+	err := session.Save(w, r)
+	log.Err(err)
+
+	http.Redirect(w, r, "/login", http.StatusFound)
 }
