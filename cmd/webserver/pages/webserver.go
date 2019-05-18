@@ -197,7 +197,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		t.TitleWithIcons = title
 	} else {
 		t.Title = title + " - Game DB"
-		t.TitleWithIcons = title + " - 🅶🅰🅼🅴 🅳🅱"
+		t.TitleWithIcons = title + " - Game DB"
 	}
 
 	t.Description = description
