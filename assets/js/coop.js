@@ -1,9 +1,5 @@
 if ($('#coop-page').length > 0) {
 
-    if (user.isLoggedIn) {
-        $('#addme').removeClass('d-none')
-    }
-
     $('form#add').submit(function (e) {
 
         e.preventDefault();
@@ -23,7 +19,9 @@ if ($('#coop-page').length > 0) {
 
     $('#addme input').click(function (e) {
 
-        $('input#id').val(user.userID);
+        const val = $(this).attr('data-id');
+
+        $('input#id').val(val);
         $('form#add').submit();
     });
 }

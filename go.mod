@@ -51,6 +51,7 @@ require (
 	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a // indirect
 	github.com/jinzhu/now v1.0.0
 	github.com/kennygrant/sanitize v1.2.4 // indirect
+	github.com/kr/pretty v0.1.0
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e

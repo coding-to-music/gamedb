@@ -19,9 +19,11 @@
                         <div class="input-group-append">
                             <input type="submit" value="Add" class="input-group-text btn btn-success">
                         </div>
-                        <div class="input-group-append d-none" id="addme">
-                            <input type="button" value="Add Me" class="input-group-text btn btn-success">
-                        </div>
+                        {{ if .PlayerID }}
+                            <div class="input-group-append" id="addme">
+                                <input type="button" value="Add Me" class="input-group-text btn btn-success" data-id="{{ .PlayerID }}">
+                            </div>
+                        {{ end }}
                     </div>
                 </form>
 

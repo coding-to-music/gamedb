@@ -2,12 +2,6 @@ const $playerPage = $('#player-page');
 
 if ($playerPage.length > 0) {
 
-    // Add user ID to coop link
-    if (user.isLoggedIn) {
-        const $coop = $('#coop-link');
-        $coop.attr('href', $coop.attr('href') + '&p=' + user.userID);
-    }
-
     // Update link
     $('a[data-update-id]').on('click', function (e) {
 

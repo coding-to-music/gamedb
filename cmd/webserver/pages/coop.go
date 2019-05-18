@@ -66,10 +66,10 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 			err = queue.ProducePlayer(v)
 			if err != nil {
-				log.Err(err, r)
+				// log.Err(err, r)
+			} else {
+				t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 			}
-
-			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 		}
 	}
 

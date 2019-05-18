@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"errors"
 	"math"
 	"strconv"
 	"sync"
@@ -12,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
 )
@@ -454,7 +454,7 @@ func ProducePackage(ID int) (err error) {
 func ProducePlayer(ID int64) (err error) {
 
 	if !helpers.IsValidPlayerID(ID) {
-		return mongo.ErrInvalidPlayerID
+		return errors.New("invalid player id: " + strconv.FormatInt(ID, 10))
 	}
 
 	return produce(baseMessage{

@@ -42,7 +42,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/coop?p={{ .Player.ID }}" role="tab" id="coop-link">
+                    <a class="nav-link" href="/coop?p={{ .Player.ID }}{{ if .PlayerID }}&p={{ .PlayerID }}{{ end }}" role="tab">
                         <i class="fas fa-user-friends"></i> Co-op
                     </a>
                 </li>
