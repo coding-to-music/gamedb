@@ -149,13 +149,12 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Title          string        // Page title
-	TitleWithIcons string        // Page title
-	Description    template.HTML // Page description
-	Path           string        // URL path
-	Env            string        // Environment
-	CSSFiles       []Asset
-	JSFiles        []Asset
+	Title       string        // Page title
+	Description template.HTML // Page description
+	Path        string        // URL path
+	Env         string        // Environment
+	CSSFiles    []Asset
+	JSFiles     []Asset
 
 	FlashesGood []string
 	FlashesBad  []string
@@ -192,14 +191,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	t.request = r
 
-	if helpers.IsBot(r.UserAgent()) {
-		t.Title = title
-		t.TitleWithIcons = title
-	} else {
-		t.Title = title + " - Game DB"
-		t.TitleWithIcons = title + " - Game DB"
-	}
-
+	t.Title = title + " - Game DB"
 	t.Description = description
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
