@@ -36,11 +36,12 @@ const (
 	InfluxRetentionPolicy14Day   InfluxRetentionPolicy = "14d"
 
 	InfluxMeasurementApps        InfluxMeasurement = "apps"
+	InfluxMeasurementGroups      InfluxMeasurement = "groups"
 	InfluxMeasurementPackages    InfluxMeasurement = "packages"
-	InfluxMeasurementTags        InfluxMeasurement = "tags"
 	InfluxMeasurementPlayers     InfluxMeasurement = "players"
-	InfluxMeasurementStats       InfluxMeasurement = "stats"
 	InfluxMeasurementRabbitQueue InfluxMeasurement = "rabbitmq_queue"
+	InfluxMeasurementStats       InfluxMeasurement = "stats"
+	InfluxMeasurementTags        InfluxMeasurement = "tags"
 )
 
 var (

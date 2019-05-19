@@ -46,6 +46,7 @@ const (
 	CollectionAppArticles     collection = "app_articles"
 	CollectionChanges         collection = "changes"
 	CollectionEvents          collection = "events"
+	CollectionGroups          collection = "groups"
 	CollectionPatreonWebhooks collection = "patreon_webhooks"
 	CollectionPlayers         collection = "players"
 	CollectionPlayerApps      collection = "player_apps"

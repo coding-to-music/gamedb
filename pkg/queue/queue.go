@@ -32,6 +32,7 @@ const (
 	queueGoBundles   queueName = "GameDB_Go_Bundles"
 	queueGoChanges   queueName = "GameDB_Go_Changes"
 	queueGoDelays    queueName = "GameDB_Go_Delays"
+	queueGoGroups    queueName = "GameDB_Go_Groups"
 	queueGoPackages  queueName = "GameDB_Go_Packages"
 	queueGoPlayers   queueName = "GameDB_Go_Profiles"
 	queueGoFailed    queueName = "GameDB_Go_Failed"
@@ -62,6 +63,9 @@ var (
 		},
 		queueGoDelays: {
 			queue: &delayQueue{},
+		},
+		queueGoGroups: {
+			queue: &groupQueue{},
 		},
 		queueGoPackages: {
 			queue: &packageQueue{},
@@ -475,4 +479,17 @@ func ProduceAppPlayers(IDs []int) (err error) {
 			IDs: IDs,
 		},
 	}, queueGoAppPlayer)
+}
+
+func ProduceGroup(ID int64) (err error) {
+
+	// if !helpers.IsValidAppID(ID) {
+	// 	return sql.ErrInvalidAppID
+	// }
+
+	return produce(baseMessage{
+		Message: groupMessage{
+			ID: ID,
+		},
+	}, queueGoGroups)
 }
