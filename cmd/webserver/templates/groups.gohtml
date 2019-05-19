@@ -1,0 +1,36 @@
+{{define "groups"}} {{ template "_header" . }}
+
+<div class="container" id="groups-page">
+
+    <div class="jumbotron">
+
+        <h1><i class="fas fa-user-friends"></i> Groups</h1>
+        <p class="lead"></p>
+
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable2" data-path="/groups/groups.json">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Headline</th>
+                        <th scope="col">Members</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" . }} {{end}}

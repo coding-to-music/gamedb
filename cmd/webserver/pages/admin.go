@@ -342,6 +342,23 @@ func adminQueues(r *http.Request) {
 		}
 	}
 
+	if val := r.PostForm.Get("group-id"); val != "" {
+
+		vals := strings.Split(val, ",")
+
+		for _, val := range vals {
+
+			val = strings.TrimSpace(val)
+
+			groupID, err := strconv.ParseInt(val, 10, 64)
+			if err == nil {
+
+				err = queue.ProduceGroup(groupID)
+				log.Err(err, r)
+			}
+		}
+	}
+
 	if val := r.PostForm.Get("apps-ts"); val != "" {
 
 		log.Info("Queueing apps")

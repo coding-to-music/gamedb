@@ -98,6 +98,7 @@ func main() {
 	r.Mount("/forgot", pages.ForgotRouter())
 	r.Mount("/franchise", pages.FranchiseRouter())
 	r.Mount("/genres", pages.GenresRouter())
+	r.Mount("/groups", pages.GroupsRouter())
 	r.Mount("/health-check", pages.HealthCheckRouter())
 	r.Mount("/home", pages.HomeRouter())
 	r.Mount("/info", pages.InfoRouter())

@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=32e32e8557">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=06f3005533">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -101,6 +101,10 @@
                         <a class="dropdown-item d-block d-lg-none" href="/players">Players</a>
                         <a class="dropdown-item" href="/players/add">Add Player</a>
                     </div>
+                </li>
+
+                <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
+                    <a class="nav-link" href="/groups">Groups</a>
                 </li>
 
                 <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">

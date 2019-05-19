@@ -1,0 +1,39 @@
+{{define "group"}} {{ template "_header" . }}
+
+<div class="container" id="group-page">
+
+    <div class="jumbotron">
+
+        <img src="{{ .Group.GetIcon }}" alt="{{ .Group.Name }}">
+
+        {{ template "_social" .Group }}
+
+        <h1><i class="fas fa-user-friends"></i> {{ .Group.Name }}</h1>
+
+        <p class="lead"></p>
+
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <p>{{ .Group.ID64 }}</p>
+            <p>{{ .Group.ID }}</p>
+            <p>{{ .Group.CreatedAt }}</p>
+            <p>{{ .Group.UpdatedAt }}</p>
+            <p>{{ .Group.Name }}</p>
+            <p>{{ .Group.URL }}</p>
+            <p>{{ .Group.Headline }}</p>
+            <p>{{ .Group.Summary }}</p>
+            <p>{{ .Group.Icon }}</p>
+            <p>{{ .Group.Members }}</p>
+            <p>{{ .Group.MembersInChat }}</p>
+            <p>{{ .Group.MembersInGame }}</p>
+            <p>{{ .Group.MembersOnline }}</p>
+
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" . }} {{end}}
