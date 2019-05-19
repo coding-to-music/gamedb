@@ -29,6 +29,14 @@ github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50 h1:QkHMYi6HhE8H
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50/go.mod h1:6XUIBoc/yO+w//k1YvVfZY6bsiG4Z/7l31B54EeSh/c=
 github.com/Jleagle/steam-go v0.0.0-20190515120823-3f2370388ffd h1:2TLlaszrYl4bJYO55dprFx+UYOqR4xivdwNlqNhUeoo=
 github.com/Jleagle/steam-go v0.0.0-20190515120823-3f2370388ffd/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190519105932-a522aca6867f h1:dNomrR3X6W8w2h/PfOrNSV9ENET9Ct3SmiXiCTM2fkc=
+github.com/Jleagle/steam-go v0.0.0-20190519105932-a522aca6867f/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190519111821-7808042ec330 h1:D4ME+UETy9jwEnjDlzqKchnyEqjBhyWBq4cFeaafbAo=
+github.com/Jleagle/steam-go v0.0.0-20190519111821-7808042ec330/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190519112408-ca3eb0f9963c h1:TvMcOGeYwS583ZcpXAZx7Tu3Nw43J190z3gQmH+fvUI=
+github.com/Jleagle/steam-go v0.0.0-20190519112408-ca3eb0f9963c/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190519123041-c52f76d70628 h1:0VypPX9yfqAofRFgSdESOhb21RWHK5SqNnCUqjlYWRE=
+github.com/Jleagle/steam-go v0.0.0-20190519123041-c52f76d70628/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
 github.com/Jleagle/unmarshal-go v0.0.0-20190127220637-8ab9c10d2f0a h1:G5x66H0pfUAElcx6zz+rJFZ3pbTtamIWSnIomJD3y9U=
 github.com/Jleagle/unmarshal-go v0.0.0-20190127220637-8ab9c10d2f0a/go.mod h1:+hHDI4094ErQxmLu6+WeGWi7XMfc+Vr8FEPy5WyYPJU=
 github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9 h1:9XBNLl2K0jcQTKojALrFctO6AeF3NH2TFv7JjslCjr0=
