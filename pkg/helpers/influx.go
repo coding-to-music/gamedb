@@ -97,7 +97,7 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 	}
 
 	policy := backoff.NewExponentialBackOff()
-	policy.InitialInterval = 1
+	policy.InitialInterval = time.Second
 
 	operation := func() (err error) {
 		resp, err = client.Write(batch)
