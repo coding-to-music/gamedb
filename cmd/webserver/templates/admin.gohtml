@@ -43,43 +43,43 @@
 
                     <h5>Cron Jobs</h5>
                     <div class="row" id="actions">
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-tags" role="button" class="btn btn-success btn-block mb-4">
                                 Refresh Tags<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-tags").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-genres" role="button" class="btn btn-success btn-block mb-4">
                                 Refresh Genres<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-genres").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-developers" role="button" class="btn btn-success btn-block mb-4">
                                 Refresh Developers<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-developers").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-publishers" role="button" class="btn btn-success btn-block mb-4">
                                 Refresh Publishers<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-publishers").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-donations" role="button" class="btn btn-success btn-block mb-4">
                                 Refresh Donations<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-donations").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-ranks" role="button" class="btn btn-success btn-block mb-4">
                                 Refresh Ranks<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-ranks").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-app-players" role="button" class="btn btn-success btn-block mb-4">
                                 Refresh App Players<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-all-app-players").Value }}"></small>
@@ -89,31 +89,31 @@
 
                     <h5>Actions</h5>
                     <div class="row">
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/wipe-memcache" role="button" class="btn btn-danger btn-block mb-4">
                                 Wipe Memcache<br/>
                                 <small data-livestamp="{{ (index .Configs .GetMCConfigKey).Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-all-apps" role="button" class="btn btn-danger btn-block mb-4">
                                 Refresh All Apps<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-all-apps").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-all-packages" role="button" class="btn btn-danger btn-block mb-4">
                                 Refresh All Packages<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-all-packages").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/refresh-all-players" role="button" class="btn btn-danger btn-block mb-4">
                                 Refresh All Players<br/>
                                 <small data-livestamp="{{ (index .Configs "refresh-all-players").Value }}"></small>
                             </a>
                         </div>
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <a href="/admin/run-dev-code" role="button" class="btn btn-danger btn-block mb-4">
                                 Run Dev Code<br/>
                                 <small data-livestamp="{{ (index .Configs "run-dev-code").Value }}"></small>
@@ -123,7 +123,7 @@
 
                     <h5>Info</h5>
                     <div class="row">
-                        <div class="col col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <div class="btn btn-info btn-block mb-4 disabled">
                                 Goroutines<br/>
                                 <small>{{ .Goroutines }}</small>
