@@ -62,7 +62,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
-			// return
+			return
 		}
 
 		err = queue.ProduceGroup(group.ID64)
