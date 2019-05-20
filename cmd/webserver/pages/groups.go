@@ -48,7 +48,18 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		groups, err = mongo.GetGroups(query.getOffset64(), mongo.D{{"members", -1}}, nil, nil)
+		var filter = mongo.M{}
+
+		search := query.getSearchString("search")
+		if len(search) >= 2 {
+			filter["$or"] = mongo.A{
+				mongo.M{"$text": mongo.M{"$search": search}},
+				mongo.M{"_id": search},
+				mongo.M{"id": search},
+			}
+		}
+
+		groups, err = mongo.GetGroups(query.getOffset64(), mongo.D{{"members", -1}}, filter, nil)
 		if err != nil {
 			log.Err(err, r)
 			return
