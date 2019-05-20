@@ -471,6 +471,12 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type PlayersUpdateResponse struct {
+	Success bool   `json:"success"` // Red or green
+	Toast   string `json:"toast"`   // Browser notification
+	Log     error  `json:"log"`     // Console log
+}
+
 func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
@@ -520,10 +526,4 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 		return
 	}
-}
-
-type PlayersUpdateResponse struct {
-	Success bool   `json:"success"` // Red or green
-	Toast   string `json:"toast"`   // Browser notification
-	Log     error  `json:"log"`     // Console log
 }
