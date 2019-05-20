@@ -85,7 +85,7 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 
 	batch.Database = InfluxGameDB
 	batch.RetentionPolicy = string(retention)
-	batch.Precision = "m" // Must be in batch and point
+	batch.Precision = batch.Points[0].Precision // Must be in batch and point
 
 	if batch.Time.IsZero() {
 		batch.Time = time.Now()
