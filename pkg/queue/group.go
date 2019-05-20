@@ -14,7 +14,7 @@ import (
 )
 
 type groupMessage struct {
-	ID int64 `json:"id"`
+	ID string `json:"id"`
 }
 
 type groupQueue struct {
@@ -47,7 +47,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	if payload.Attempt > 1 {
-		logInfo("Consuming group " + strconv.FormatInt(message.ID, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
+		logInfo("Consuming group: " + message.ID + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
 	// if !helpers.IsValidAppID(message.ID) {
@@ -66,7 +66,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 12 * -1).Unix() {
+	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 1 * -1).Unix() {
 		logInfo("Skipping group, updated in last 12 hours")
 		payload.ack(msg)
 		return
@@ -74,8 +74,13 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = updateGroup(message, &group)
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		if err.Error() == "expected element type <memberList> but have <html>" {
+			logInfo("Group not found", message.ID)
+			payload.ack(msg)
+		} else {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+		}
 		return
 	}
 
@@ -98,16 +103,42 @@ func updateGroup(message groupMessage, group *mongo.Group) (err error) {
 		return err
 	}
 
-	group.ID64 = int64(resp.GroupID64)
-	group.Name = resp.GroupDetails.GroupName
-	group.URL = resp.GroupDetails.GroupURL
-	group.Headline = resp.GroupDetails.Headline
-	group.Summary = resp.GroupDetails.Summary
-	group.Icon = strings.Replace(resp.GroupDetails.AvatarFull, mongo.AvatarBase, "", 1)
-	group.Members = int(resp.GroupDetails.MemberCount)
-	group.MembersInChat = int(resp.GroupDetails.MembersInChat)
-	group.MembersInGame = int(resp.GroupDetails.MembersInGame)
-	group.MembersOnline = int(resp.GroupDetails.MembersOnline)
+	if len(message.ID) < 18 {
+
+		i, err := strconv.ParseInt(message.ID, 10, 32)
+		if err != nil {
+			return err
+		}
+		group.ID = int(i)
+	}
+
+	group.ID64 = resp.ID64
+	group.Name = resp.Details.Name
+	group.URL = resp.Details.URL
+	group.Headline = resp.Details.Headline
+	group.Summary = resp.Details.Summary
+	group.Members = int(resp.Details.MemberCount)
+	group.MembersInChat = int(resp.Details.MembersInChat)
+	group.MembersInGame = int(resp.Details.MembersInGame)
+	group.MembersOnline = int(resp.Details.MembersOnline)
+
+	// Get working icon
+	if helpers.GetResponseCode(resp.Details.AvatarFull) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarFull, mongo.AvatarBase, "", 1)
+
+	} else if helpers.GetResponseCode(resp.Details.AvatarMedium) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarMedium, mongo.AvatarBase, "", 1)
+
+	} else if helpers.GetResponseCode(resp.Details.AvatarIcon) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarIcon, mongo.AvatarBase, "", 1)
+
+	} else {
+
+		group.Icon = ""
+	}
 
 	return group.Save()
 }
@@ -124,11 +155,11 @@ func addGroupToInflux(group mongo.Group) (err error) {
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(helpers.InfluxMeasurementGroups),
 		Tags: map[string]string{
-			"group_id": strconv.FormatInt(group.ID64, 10),
+			"group_id": group.ID64,
 		},
 		Fields:    fields,
 		Time:      time.Now(),
-		Precision: "m",
+		Precision: "h",
 	})
 
 	return err

@@ -350,12 +350,8 @@ func adminQueues(r *http.Request) {
 
 			val = strings.TrimSpace(val)
 
-			groupID, err := strconv.ParseInt(val, 10, 64)
-			if err == nil {
-
-				err = queue.ProduceGroup(groupID)
-				log.Err(err, r)
-			}
+			err := queue.ProduceGroup(val)
+			log.Err(err, r)
 		}
 	}
 

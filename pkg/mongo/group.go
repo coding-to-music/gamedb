@@ -1,7 +1,6 @@
 package mongo
 
 import (
-	"math"
 	"strconv"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 const AvatarBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/"
 
 type Group struct {
-	ID64          int64     `bson:"_id"`
+	ID64          string    `bson:"_id"` // Too big for int64
 	ID            int       `bson:"id"`
 	CreatedAt     time.Time `bson:"created_at"`
 	UpdatedAt     time.Time `bson:"updated_at"`
@@ -65,7 +64,7 @@ func (group Group) OutputForJSON() (output []interface{}) {
 }
 
 func (group Group) GetPath() string {
-	return "/groups/" + strconv.FormatInt(group.ID64, 10) + "/" + slug.Make(group.Name)
+	return "/groups/" + group.ID64 + "/" + slug.Make(group.Name)
 }
 
 func (group Group) GetName() string {
@@ -82,18 +81,19 @@ func (group Group) Save() error {
 	return err
 }
 
-func GetGroup(id int64) (group Group, err error) {
+func GetGroup(id string) (group Group, err error) {
 
 	// if !IsValidPlayerID(id) {
 	// 	return group, ErrInvalidPlayerID
 	// }
 
-	err = FindDocument(CollectionGroups, "_id", id, nil, &group)
-
-	if id > math.MaxInt32 {
-		group.ID64 = id
+	if len(id) == 18 {
+		err = FindDocument(CollectionGroups, "_id", id, nil, &group)
 	} else {
-		group.ID = int(id)
+		i, err := strconv.ParseInt(id, 10, 32)
+		if err == nil {
+			err = FindDocument(CollectionGroups, "id", i, nil, &group)
+		}
 	}
 
 	return group, err
@@ -110,7 +110,7 @@ func GetGroupsByID(ids []int64, projection M) (groups []Group, err error) {
 		idsBSON = append(idsBSON, v)
 	}
 
-	return getGroups(0, 0, D{{"name", 1}}, M{"_id": M{"$in": idsBSON}}, projection)
+	return getGroups(0, 0, D{{"name", 1}}, M{"id": M{"$in": idsBSON}}, projection)
 }
 
 func GetGroups(offset int64, sort D, filter M, projection M) (groups []Group, err error) {

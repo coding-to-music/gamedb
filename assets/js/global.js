@@ -21,6 +21,8 @@ $document.on('mousemove', '[data-link]', function handler(e) {
 
 $(document).on('mouseup', '[data-link]', function (e) {
 
+    e.stopPropagation();
+
     const link = $(this).attr('data-link');
     const target = $(this).attr('data-target');
 
@@ -39,7 +41,7 @@ $(document).on('mouseup', '[data-link]', function (e) {
 
     // Middle click
     if (e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2 || target === '_blank') {
-
+        console.log('y');
         if (!$(e.target).is("a")) {
             window.open(link, '_blank');
         }
@@ -220,7 +222,7 @@ if (isIterable(user.toasts)) {
 
 // Fix URLs
 $(document).ready(function () {
-    const path = $('#app-page, #package-page, #player-page, #bundle-page').attr('data-path');
+    const path = $('#app-page, #package-page, #player-page, #bundle-page, #group-page').attr('data-path');
     if (path && path !== window.location.pathname) {
         history.replaceState(null, null, path + window.location.hash);
     }

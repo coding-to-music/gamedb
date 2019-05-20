@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=06f3005533">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=83fd00240a">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -124,6 +124,11 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
+
+                <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}">
+                    <a class="nav-link" href="/donate"><i class="fas fa-heart text-danger"></i> Donate</a>
+                </li>
+
                 <li class="nav-item d-none d-lg-block" id="header-flag">
                     {{ if .IsLoggedIn }}
                     <a href="/login">
@@ -149,10 +154,6 @@
                         {{ end }}
                     </li>
                 {{ end }}
-
-                <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}">
-                    <a class="nav-link" href="/donate"><i class="fas fa-heart text-danger"></i> Donate</a>
-                </li>
 
                 <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>

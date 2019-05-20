@@ -1,6 +1,6 @@
 {{define "group"}} {{ template "_header" . }}
 
-<div class="container" id="group-page">
+<div class="container" id="group-page" data-id="{{ .Group.ID64 }}" data-path="{{ .Group.GetPath }}">
 
     <div class="jumbotron">
 
@@ -15,10 +15,10 @@
     <div class="card">
         <div class="card-body">
 
+            <div id="chart"></div>
+
             <h5>{{ .Group.Headline }}</h5>
             <div>{{ .Summary }}</div>
-
-            <div id="chart" data-group-id="{{ .Group.ID }}"></div>
 
         </div>
     </div>

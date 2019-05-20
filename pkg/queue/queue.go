@@ -481,7 +481,7 @@ func ProduceAppPlayers(IDs []int) (err error) {
 	}, queueGoAppPlayer)
 }
 
-func ProduceGroup(ID int64) (err error) {
+func ProduceGroup(ID string) (err error) {
 
 	// if !helpers.IsValidAppID(ID) {
 	// 	return sql.ErrInvalidAppID

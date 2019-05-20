@@ -10,12 +10,13 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<img src="' + row[3] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                    return '<img data-src="/assets/img/no-app-image-square.jpg" src="' + row[3] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
+                    $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Headline
             {
@@ -37,7 +38,7 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '<a target="_blank" href="https://steamcommunity.com/groups/' + row[6] + '"><i class="fas fa-link"></i></a>';
+                    return '<i class="fas fa-link" data-target="_blank" data-link="https://steamcommunity.com/groups/' + row[6] + '"></i>';
                 },
                 "orderable": false,
             },
