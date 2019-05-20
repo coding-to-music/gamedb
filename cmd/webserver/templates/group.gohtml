@@ -8,28 +8,17 @@
 
         {{ template "_social" .Group }}
 
-        <h1><i class="fas fa-user-friends"></i> {{ .Group.Name }}</h1>
-
-        <p class="lead"></p>
+        <h1><i class="fas fa-user-friends"></i> {{ .Group.Name }} <a href="https://steamcommunity.com/groups/{{ .Group.URL }}" target="_blank"><i class="fas fa-link"></i></a></h1>
 
     </div>
 
     <div class="card">
         <div class="card-body">
 
-            <p>{{ .Group.ID64 }}</p>
-            <p>{{ .Group.ID }}</p>
-            <p>{{ .Group.CreatedAt }}</p>
-            <p>{{ .Group.UpdatedAt }}</p>
-            <p>{{ .Group.Name }}</p>
-            <p>{{ .Group.URL }}</p>
-            <p>{{ .Group.Headline }}</p>
-            <p>{{ .Group.Summary }}</p>
-            <p>{{ .Group.Icon }}</p>
-            <p>{{ .Group.Members }}</p>
-            <p>{{ .Group.MembersInChat }}</p>
-            <p>{{ .Group.MembersInGame }}</p>
-            <p>{{ .Group.MembersOnline }}</p>
+            <h5>{{ .Group.Headline }}</h5>
+            <div>{{ .Summary }}</div>
+
+            <div id="chart" data-group-id="{{ .Group.ID }}"></div>
 
         </div>
     </div>

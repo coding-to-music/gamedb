@@ -1,9 +1,11 @@
 package pages
 
 import (
+	"html/template"
 	"net/http"
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -53,6 +55,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	t := groupTemplate{}
 	t.fill(w, r, "Groups", "")
 	t.Group = group
+	t.Summary = helpers.RenderHTMLAndBBCode(group.Summary)
 
 	err = returnTemplate(w, r, "group", t)
 	log.Err(err, r)
@@ -60,5 +63,6 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 
 type groupTemplate struct {
 	GlobalTemplate
-	Group mongo.Group
+	Group   mongo.Group
+	Summary template.HTML
 }
