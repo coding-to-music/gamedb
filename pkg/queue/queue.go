@@ -421,6 +421,8 @@ func logCritical(interfaces ...interface{}) {
 
 func ProduceBundle(ID int, appID int) (err error) {
 
+	time.Sleep(time.Millisecond)
+
 	return produce(baseMessage{
 		Message: bundleMessage{
 			ID:    ID,
@@ -430,6 +432,8 @@ func ProduceBundle(ID int, appID int) (err error) {
 }
 
 func ProduceApp(ID int) (err error) {
+
+	time.Sleep(time.Millisecond)
 
 	if !helpers.IsValidAppID(ID) {
 		return sql.ErrInvalidAppID
@@ -444,6 +448,8 @@ func ProduceApp(ID int) (err error) {
 
 func ProducePackage(ID int) (err error) {
 
+	time.Sleep(time.Millisecond)
+
 	if !sql.IsValidPackageID(ID) {
 		return sql.ErrInvalidPackageID
 	}
@@ -456,6 +462,8 @@ func ProducePackage(ID int) (err error) {
 }
 
 func ProducePlayer(ID int64) (err error) {
+
+	time.Sleep(time.Millisecond)
 
 	if !helpers.IsValidPlayerID(ID) {
 		return errors.New("invalid player id: " + strconv.FormatInt(ID, 10))
@@ -470,6 +478,8 @@ func ProducePlayer(ID int64) (err error) {
 
 func ProduceAppPlayers(IDs []int) (err error) {
 
+	time.Sleep(time.Millisecond)
+
 	if len(IDs) == 0 {
 		return nil
 	}
@@ -483,6 +493,8 @@ func ProduceAppPlayers(IDs []int) (err error) {
 
 func ProduceGroup(ID string) (err error) {
 
+	time.Sleep(time.Millisecond)
+	
 	// if !helpers.IsValidAppID(ID) {
 	// 	return sql.ErrInvalidAppID
 	// }
