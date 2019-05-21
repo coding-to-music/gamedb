@@ -28,8 +28,8 @@ if ($('#groups-page').length > 0) {
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
-            if (row[7] === 'game') {
-                $(row).attr('class', 'table-success');
+            if (data[7] === 'game') {
+                $(row).addClass('table-primary');
             }
         },
         "columnDefs": [
