@@ -39,6 +39,24 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	// Make filter
+	var filter = mongo.M{}
+
+	search := query.getSearchString("search")
+	if len(search) >= 2 {
+		filter["$or"] = mongo.A{
+			// mongo.M{"$text": mongo.M{"$search": search}},
+			mongo.M{"_id": search},
+			mongo.M{"id": search},
+		}
+	}
+
+	typ := query.getSearchString("type")
+	if typ == "group" || typ == "game" {
+		filter["type"] = typ
+	}
+
+	//
 	var wg sync.WaitGroup
 
 	// Get groups
@@ -47,22 +65,6 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	go func(r *http.Request) {
 
 		defer wg.Done()
-
-		var filter = mongo.M{}
-
-		search := query.getSearchString("search")
-		if len(search) >= 2 {
-			filter["$or"] = mongo.A{
-				// mongo.M{"$text": mongo.M{"$search": search}},
-				mongo.M{"_id": search},
-				mongo.M{"id": search},
-			}
-		}
-
-		typ := query.getSearchString("type")
-		if typ == "group" || typ == "game" {
-			filter["type"] = typ
-		}
 
 		groups, err = mongo.GetGroups(query.getOffset64(), mongo.D{{"members", -1}}, filter, nil)
 		if err != nil {
@@ -80,7 +82,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionGroups, mongo.M{})
+		total, err = mongo.CountDocuments(mongo.CollectionGroups, filter)
 		log.Err(err, r)
 
 	}(r)
