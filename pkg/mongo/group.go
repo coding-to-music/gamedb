@@ -36,11 +36,13 @@ func (group Group) BSON() (ret interface{}) {
 		group.CreatedAt = time.Now()
 	}
 
+	group.UpdatedAt = time.Now()
+
 	return M{
 		"_id":             group.ID64,
 		"id":              group.ID,
 		"created_at":      group.CreatedAt,
-		"updated_at":      time.Now(),
+		"updated_at":      group.UpdatedAt,
 		"name":            group.Name,
 		"url":             group.URL,
 		"headline":        group.Headline,
