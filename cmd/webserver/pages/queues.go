@@ -44,9 +44,10 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			`"queue"='GameDB_CS_Packages'`,
 			`"queue"='GameDB_CS_Profiles'`,
 			`"queue"='GameDB_Go_Apps'`,
+			`"queue"='GameDB_Go_Changes'`,
+			`"queue"='GameDB_Go_Groups'`,
 			`"queue"='GameDB_Go_Packages'`,
 			`"queue"='GameDB_Go_Profiles'`,
-			`"queue"='GameDB_Go_Changes'`,
 		}
 
 		builder := influxql.NewBuilder()
