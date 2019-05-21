@@ -59,6 +59,11 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		typ := query.getSearchString("type")
+		if typ == "group" || typ == "game" {
+			filter["type"] = typ
+		}
+
 		groups, err = mongo.GetGroups(query.getOffset64(), mongo.D{{"members", -1}}, filter, nil)
 		if err != nil {
 			log.Err(err, r)

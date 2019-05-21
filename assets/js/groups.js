@@ -15,6 +15,7 @@ if ($('#groups-page').length > 0) {
 
             data.search = {};
             data.search.search = $('#search').val();
+            data.search.type = $('#type').val();
 
             $.ajax({
                 url: $(this).attr('data-path'),
@@ -27,6 +28,9 @@ if ($('#groups-page').length > 0) {
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
+            if (row[7] === 'game') {
+                $(row).attr('class', 'table-success');
+            }
         },
         "columnDefs": [
             // Icon / Name
