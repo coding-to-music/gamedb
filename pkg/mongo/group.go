@@ -11,6 +11,8 @@ import (
 
 const AvatarBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/"
 
+// { name: 'text', url: 'text', headline: 'text' }, { weights: { name: 3, url: 2, headline: 1 }}
+
 type Group struct {
 	ID64          string    `bson:"_id"` // Too big for int64
 	ID            int       `bson:"id"`
