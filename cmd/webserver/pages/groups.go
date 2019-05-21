@@ -66,7 +66,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		groups, err = mongo.GetGroups(query.getOffset64(), mongo.D{{"members", -1}}, filter, nil)
+		groups, err = mongo.GetGroups(100, query.getOffset64(), mongo.D{{"members", -1}}, filter, nil)
 		if err != nil {
 			log.Err(err, r)
 			return

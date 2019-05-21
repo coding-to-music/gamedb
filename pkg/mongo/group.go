@@ -120,9 +120,9 @@ func GetGroupsByID(ids []int64, projection M) (groups []Group, err error) {
 	return getGroups(0, 0, D{{"name", 1}}, M{"id": M{"$in": idsBSON}}, projection)
 }
 
-func GetGroups(offset int64, sort D, filter M, projection M) (groups []Group, err error) {
+func GetGroups(limit int64, offset int64, sort D, filter M, projection M) (groups []Group, err error) {
 
-	return getGroups(offset, 100, sort, filter, projection)
+	return getGroups(offset, limit, sort, filter, projection)
 }
 
 func getGroups(offset int64, limit int64, sort D, filter interface{}, projection M) (groups []Group, err error) {

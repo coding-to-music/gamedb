@@ -414,11 +414,17 @@ func adminDev() {
 
 	log.Info("Started dev code")
 
-	err = mongo.DeletePlayer(76561198955574187)
-	log.Err(err)
+	groups, err := mongo.GetGroups(0, 0, mongo.D{}, mongo.M{}, mongo.M{})
+	for _, v := range groups {
+		err = queue.ProduceGroup(v.ID64)
+		log.Err(err)
+	}
 
-	err = sql.DeleteUser(76561198955574187)
-	log.Err(err)
+	// err = mongo.DeletePlayer(76561198955574187)
+	// log.Err(err)
+	//
+	// err = sql.DeleteUser(76561198955574187)
+	// log.Err(err)
 
 	//
 	err = sql.SetConfig(sql.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
