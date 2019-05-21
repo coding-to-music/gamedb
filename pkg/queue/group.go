@@ -121,6 +121,7 @@ func updateGroup(message groupMessage, group *mongo.Group) (err error) {
 	group.MembersInChat = int(resp.Details.MembersInChat)
 	group.MembersInGame = int(resp.Details.MembersInGame)
 	group.MembersOnline = int(resp.Details.MembersOnline)
+	group.Type = resp.Type
 
 	// Get working icon
 	if helpers.GetResponseCode(resp.Details.AvatarFull) == 200 {
