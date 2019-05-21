@@ -985,6 +985,11 @@ func updateAppSteamSpy(app *sql.App) error {
 
 func updateBundles(app *sql.App) error {
 
+	// This app causes infinite redirects..
+	if app.ID == 12820 {
+		return nil
+	}
+
 	// Skip these app types
 	if helpers.SliceHasString([]string{"media", "movie"}, app.Type) {
 		return nil
