@@ -6,6 +6,12 @@ if ($('#groups-page').length > 0) {
         return false;
     });
 
+    $('#type').on('change', function (e) {
+
+        $table.DataTable().draw();
+        return false;
+    });
+
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
