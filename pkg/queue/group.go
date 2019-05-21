@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -67,10 +68,12 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 	// Skip if updated in last day, unless its from PICS
 	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 1 * -1).Unix() {
-		logInfo("Skipping group, updated in last 12 hours")
+		logInfo("Skipping group, updated in last hour")
 		payload.ack(msg)
 		return
 	}
+
+	time.Sleep(time.Second)
 
 	err = updateGroup(message, &group)
 	if err != nil {
@@ -100,6 +103,9 @@ func updateGroup(message groupMessage, group *mongo.Group) (err error) {
 	resp, b, err := helpers.GetSteam().GetGroupByID(message.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
+		if err == steam.ErrRateLimited {
+			time.Sleep(time.Minute)
+		}
 		return err
 	}
 
