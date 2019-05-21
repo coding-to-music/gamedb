@@ -53,7 +53,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		search := query.getSearchString("search")
 		if len(search) >= 2 {
 			filter["$or"] = mongo.A{
-				mongo.M{"$text": mongo.M{"$search": search}},
+				// mongo.M{"$text": mongo.M{"$search": search}},
 				mongo.M{"_id": search},
 				mongo.M{"id": search},
 			}
