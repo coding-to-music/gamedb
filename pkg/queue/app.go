@@ -997,22 +997,29 @@ func updateBundles(app *sql.App) error {
 
 	var bundleIDs []string
 
-	c := colly.NewCollector(
-		colly.AllowedDomains("store.steampowered.com"),
-		colly.AllowURLRevisit(), // This is for retrys
-	)
-
-	c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
-		bundleIDs = append(bundleIDs, e.Attr("value"))
-	})
+	reg := regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
 
 	// Retry call
 	operation := func() (err error) {
 
+		bundleIDs = []string{}
+
+		c := colly.NewCollector(
+			colly.URLFilters(reg),
+		)
+
+		c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
+			bundleIDs = append(bundleIDs, e.Attr("value"))
+		})
+
 		err = c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
-		if err != nil && strings.Contains(err.Error(), "because its not in AllowedDomains") {
-			return nil
+		if err != nil {
+			if strings.Contains(err.Error(), "because its not in AllowedDomains") {
+				log.Info(err)
+				return nil
+			}
 		}
+
 		return err
 	}
 
