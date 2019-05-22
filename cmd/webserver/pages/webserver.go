@@ -353,8 +353,7 @@ func (t GlobalTemplate) IsAdmin() bool {
 }
 
 func (t GlobalTemplate) showAds() bool {
-	return false
-	// return !t.isLocal()
+	return !config.IsLocal()
 }
 
 func (t *GlobalTemplate) addToast(toast Toast) {
@@ -492,12 +491,7 @@ func (q *DataTablesQuery) fillFromURL(url url.Values) (err error) {
 	}
 
 	// Convert map into struct
-	err = mapstructure.Decode(queryMap, q)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return mapstructure.Decode(queryMap, q)
 }
 
 func (q DataTablesQuery) getSearchString(k string) (search string) {
