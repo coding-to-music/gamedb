@@ -28,8 +28,9 @@ if ($groupPage.length > 0) {
                     text: ''
                 },
                 labels: {
-                    enabled: false
+                    // enabled: false
                 },
+                // min: 0,
             };
 
             Highcharts.chart('chart', {
