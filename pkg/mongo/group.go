@@ -82,12 +82,6 @@ func (group Group) GetIcon() string {
 	return AvatarBase + group.Icon
 }
 
-func (group Group) Save() error {
-
-	_, err := ReplaceDocument(CollectionGroups, M{"_id": group.ID64}, group)
-	return err
-}
-
 func GetGroup(id string) (group Group, err error) {
 
 	// if !IsValidPlayerID(id) {

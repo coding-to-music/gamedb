@@ -9,6 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -152,7 +153,10 @@ func updateGroup(message groupMessage, group *mongo.Group) (err error) {
 		group.Icon = ""
 	}
 
-	return group.Save()
+	// Save
+	_, err = mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
+
+	return err
 }
 
 func addGroupToInflux(group mongo.Group) (err error) {
