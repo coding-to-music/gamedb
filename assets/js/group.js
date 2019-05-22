@@ -2,6 +2,16 @@ const $groupPage = $('#group-page');
 
 if ($groupPage.length > 0) {
 
+    // Websockets
+    websocketListener('group', function (e) {
+
+        const data = $.parseJSON(e.data);
+        if (data.Data.toString() === $groupPage.attr('data-id')) {
+            toast(true, 'Click to refresh', 'This group has been updated', -1, 'refresh');
+        }
+    });
+
+    // Load chart
     $.ajax({
         type: "GET",
         url: '/groups/' + $groupPage.attr('data-id') + '/time.json',

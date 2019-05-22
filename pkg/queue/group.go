@@ -94,6 +94,11 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	err = sendGroupWebsocket(group)
+	if err != nil {
+		logError(err, message.ID)
+	}
+
 	//
 	payload.ack(msg)
 }
@@ -169,5 +174,16 @@ func addGroupToInflux(group mongo.Group) (err error) {
 		Precision: "h",
 	})
 
+	return err
+}
+
+func sendGroupWebsocket(group mongo.Group) (err error) {
+
+	// Send websocket
+	wsPayload := websockets.PubSubIDStringPayload{}
+	wsPayload.ID = group.ID64
+	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageGroup}
+
+	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
 	return err
 }

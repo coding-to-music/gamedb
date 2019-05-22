@@ -22,6 +22,7 @@ const (
 	PageBundles  WebsocketPage = "bundles"
 	PageChanges  WebsocketPage = "changes"
 	PageChat     WebsocketPage = "chat"
+	PageGroup    WebsocketPage = "group"
 	PageNews     WebsocketPage = "news"
 	PagePackage  WebsocketPage = "package"
 	PagePackages WebsocketPage = "packages"
@@ -36,17 +37,18 @@ var (
 func init() {
 
 	pagesSlice := []WebsocketPage{
-		PageChanges,
-		PageChat,
-		PageNews,
-		PagePrices,
 		PageAdmin,
 		PageApp,
-		PagePackage,
-		PagePackages,
-		PagePlayer,
 		PageBundle,
 		PageBundles,
+		PageChanges,
+		PageChat,
+		PageGroup,
+		PageNews,
+		PagePackage,
+		PagePackages,
+		PagePrices,
+		PagePlayer,
 	}
 	for _, v := range pagesSlice {
 		Pages[v] = Page{
@@ -165,6 +167,15 @@ func ListenToPubSub() {
 			case PagePlayer:
 
 				idPayload := PubSubID64Payload{}
+
+				err = helpers.Unmarshal(m.Data, &idPayload)
+				log.Err(err)
+
+				wsPage.Send(idPayload.ID)
+
+			case PageGroup:
+
+				idPayload := PubSubIDStringPayload{}
 
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
