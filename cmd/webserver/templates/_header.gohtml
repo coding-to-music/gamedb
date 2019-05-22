@@ -165,9 +165,12 @@
                         {{ end }}
                         <a class="dropdown-item" href="/changes">Changes</a>
                         {{ if eq .Env "local" }}
+                            <a class="dropdown-item" href="/api">API</a>
                             <a class="dropdown-item" href="/chat">Chat</a>
                             <a class="dropdown-item" href="/chat-bot">Chat Bot</a>
-                            <a class="dropdown-item" href="/commits">Commits</a>
+                        {{ end }}
+                        <a class="dropdown-item" href="/commits">Commits</a>
+                        {{ if eq .Env "local" }}
                             <a class="dropdown-item" href="/contact">Contact</a>
                         {{ end }}
                         <a class="dropdown-item" href="/coop">Co-op</a>
