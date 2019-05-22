@@ -19,11 +19,10 @@ func main() {
 	err = c.AddFunc("0 */10 * * * *", crons.CronRegister[crons.CronSteamClientPlayers])
 	log.Critical(err)
 
-	// Every 3 hours
-	err = c.AddFunc("0 0 */3 * * *", crons.CronRegister[crons.CronAppPlayers])
+	// Every 6 hours
+	err = c.AddFunc("0 0 */6 * * *", crons.CronRegister[crons.CronAppPlayers])
 	log.Critical(err)
 
-	// Every 6 hours
 	err = c.AddFunc("0 0 */6 * * *", crons.CronRegister[crons.CronAutoPlayerRefreshes])
 	log.Critical(err)
 
