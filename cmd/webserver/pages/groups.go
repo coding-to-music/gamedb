@@ -2,9 +2,11 @@ package pages
 
 import (
 	"net/http"
+	"regexp"
 	"strconv"
 	"sync"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -37,7 +39,10 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err)
+		return
+	}
 
 	// Make filter
 	var filter = mongo.M{}
@@ -45,7 +50,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
 		filter["$or"] = mongo.A{
-			// mongo.M{"$text": mongo.M{"$search": search}},
+			mongo.M{"$text": mongo.M{"$search": search}},
 			mongo.M{"_id": search},
 			mongo.M{"id": search},
 		}
@@ -70,6 +75,12 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Err(err, r)
 			return
+		}
+
+		re := regexp.MustCompile("[[:^ascii:]]")
+
+		for k := range groups {
+			groups[k].Headline = helpers.TruncateString(re.ReplaceAllLiteralString(groups[k].Headline, ""), 100)
 		}
 
 	}(r)

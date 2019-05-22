@@ -3,6 +3,7 @@ package pages
 import (
 	"encoding/json"
 	"html/template"
+	"math/big"
 	"net/http"
 	"time"
 
@@ -90,11 +91,21 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		log.Err("invalid id", r)
+		log.Err("invalid id: "+id, r)
 		return
 	}
 
-	// todo, validate ip
+	if len(id) != 18 {
+		log.Err("invalid id: "+id, r)
+		return
+	}
+
+	i := big.NewInt(0)
+	i, success := i.SetString(id, 10)
+	if !success {
+		log.Err("invalid id: "+id, r)
+		return
+	}
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect(`max("members_count")`, "max_members_count")
