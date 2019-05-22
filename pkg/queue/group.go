@@ -74,7 +74,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 5)
 
 	err = updateGroup(message, &group)
 	if err != nil {
@@ -117,7 +117,8 @@ func updateGroup(message groupMessage, group *mongo.Group) (err error) {
 	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		if err == steam.ErrRateLimited {
-			time.Sleep(time.Minute * 2)
+			// Have to sleep instead of delay in Rabbit, to stop doing more calls.
+			time.Sleep(time.Minute * 5)
 		}
 		return err
 	}
