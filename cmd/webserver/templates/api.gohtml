@@ -5,18 +5,65 @@
     <div class="jumbotron">
 
         <h1><i class="fas fa-database"></i> API</h1>
-        <p class="lead">Under construction</p>
 
     </div>
 
     <div class="card">
         <div class="card-body">
 
-            <ul>
-                <li>Tag popularity over time</li>
-                <li>Apps export</li>
-                <li>Etc</li>
-            </ul>
+            {{ range $key, $value := .Calls }}
+
+                <form action="/api/{{ .Path }}" target="_blank" method="GET">
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span>{{ .Title }}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group mb-0">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">GET</span>
+                                </div>
+                                <input type="text" class="form-control endpoint" value="https://gamedb.online/api/{{ .Path }}">
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit">Go</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover table-sm mb-0">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="font-weight-bold" width="30%">Name</th>
+                                    <th scope="col" class="font-weight-bold">Type</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{ range $key, $value := .Params }}
+                                    <tr>
+                                        <td>
+                                            {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
+                                                <input type="number" name="{{ .Name }}">
+                                            {{ else if eq .Type "bool" }}
+                                                <input type="checkbox" name="{{ .Name }}" value="1">
+                                            {{ else }}
+                                                <input type="text" name="{{ .Name }}">
+                                            {{ end }}
+                                        </td>
+                                        <td>{{ .Name }}</td>
+                                        <td>{{ .Type }}</td>
+                                    </tr>
+                                {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+
+            {{ end }}
 
         </div>
     </div>

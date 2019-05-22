@@ -10,8 +10,6 @@ if ($('#ranks-page').length > 0) {
         "ajax": function (data, callback, settings) {
 
             delete data.columns;
-            delete data.length;
-            delete data.search;
 
             data.search = {};
             data.search.search = $('#search').val();
