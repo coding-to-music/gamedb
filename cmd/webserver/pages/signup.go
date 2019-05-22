@@ -140,6 +140,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			EmailVerified: false,
 			Password:      string(passwordBytes),
 			CountryCode:   string(steam.CountryUS),
+			APIKey:        helpers.RandString(20, helpers.Numbers+helpers.Letters),
 		}
 
 		db = db.Create(&user)

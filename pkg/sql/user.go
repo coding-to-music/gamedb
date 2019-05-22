@@ -21,6 +21,7 @@ type User struct {
 	HideProfile   bool      `gorm:"not null;column:hide_profile"`
 	ShowAlerts    bool      `gorm:"not null;column:show_alerts"`
 	CountryCode   string    `gorm:"not null;column:country_code"`
+	APIKey        string    `gorm:"not null;column:api_key"`
 }
 
 func UpdateUserCol(userID int, column string, value interface{}) (err error) {
