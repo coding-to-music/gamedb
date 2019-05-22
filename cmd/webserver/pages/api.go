@@ -10,6 +10,11 @@ import (
 func APIRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", apiHandler)
+	r.Get("/app/{id}", apiApp)
+	r.Get("/package/{id}", apiPackage)
+	r.Get("/bundle/{id}", apiBundle)
+	r.Get("/group/{id}", apiGroup)
+	r.Get("/player/{id}", apiPlayer)
 	return r
 }
 
@@ -24,6 +29,35 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 type apiTemplate struct {
 	GlobalTemplate
-	Commits []commit
-	Hash    string
+	Calls []apiCall
+}
+
+type apiCall struct {
+	path   string
+	params []apiCallParam
+}
+
+type apiCallParam struct {
+	name string
+	typ  string
+}
+
+func apiApp(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func apiPackage(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func apiBundle(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func apiPlayer(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func apiGroup(w http.ResponseWriter, r *http.Request) {
+
 }
