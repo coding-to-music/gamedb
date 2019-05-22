@@ -73,7 +73,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	time.Sleep(time.Second)
+	time.Sleep(time.Second * 2)
 
 	err = updateGroup(message, &group)
 	if err != nil {
@@ -109,7 +109,7 @@ func updateGroup(message groupMessage, group *mongo.Group) (err error) {
 	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		if err == steam.ErrRateLimited {
-			time.Sleep(time.Minute)
+			time.Sleep(time.Minute * 2)
 		}
 		return err
 	}
