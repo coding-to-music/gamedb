@@ -98,9 +98,9 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect(`max("members_count")`, "max_members_count")
-	builder.AddSelect(`max("members_in_chat")`, "max_members_in_chat")
-	builder.AddSelect(`max("members_in_game")`, "max_members_in_game")
-	builder.AddSelect(`max("members_online")`, "max_members_online")
+	// builder.AddSelect(`max("members_in_chat")`, "max_members_in_chat")
+	// builder.AddSelect(`max("members_in_game")`, "max_members_in_game")
+	// builder.AddSelect(`max("members_online")`, "max_members_online")
 	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementGroups.String())
 	builder.AddWhere("group_id", "=", id)
 	// builder.AddWhere("time", ">", "now()-365d")

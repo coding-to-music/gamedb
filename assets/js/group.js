@@ -75,27 +75,27 @@ if ($groupPage.length > 0) {
                         marker: {symbol: 'circle'},
                         yAxis: 0,
                     },
-                    {
-                        name: 'In Chat',
-                        color: '#007bff',
-                        data: data['max_members_in_chat'],
-                        marker: {symbol: 'circle'},
-                        yAxis: 1,
-                    },
-                    {
-                        name: 'In Game',
-                        color: '#e83e8c',
-                        data: data['max_members_in_game'],
-                        marker: {symbol: 'circle'},
-                        yAxis: 2,
-                    },
-                    {
-                        name: 'Online',
-                        color: '#ffc107',
-                        data: data['max_members_online'],
-                        marker: {symbol: 'circle'},
-                        yAxis: 3,
-                    },
+                    // {
+                    //     name: 'In Chat',
+                    //     color: '#007bff',
+                    //     data: data['max_members_in_chat'],
+                    //     marker: {symbol: 'circle'},
+                    //     yAxis: 1,
+                    // },
+                    // {
+                    //     name: 'In Game',
+                    //     color: '#e83e8c',
+                    //     data: data['max_members_in_game'],
+                    //     marker: {symbol: 'circle'},
+                    //     yAxis: 2,
+                    // },
+                    // {
+                    //     name: 'Online',
+                    //     color: '#ffc107',
+                    //     data: data['max_members_online'],
+                    //     marker: {symbol: 'circle'},
+                    //     yAxis: 3,
+                    // },
                 ],
             });
 
