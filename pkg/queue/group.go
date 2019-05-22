@@ -100,6 +100,13 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		logError(err, message.ID)
 	}
 
+	err = clearGroupMemcache(group)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
 	//
 	payload.ack(msg)
 }
@@ -190,4 +197,10 @@ func sendGroupWebsocket(group mongo.Group) (err error) {
 
 	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
 	return err
+}
+
+func clearGroupMemcache(group mongo.Group) (err error) {
+
+	return nil
+	return helpers.GetMemcache().Delete(helpers.MemcacheGroupRow(group.ID64).Key)
 }
