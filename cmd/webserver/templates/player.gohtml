@@ -33,7 +33,11 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#badges" role="tab">XP / Badges ({{ comma .Player.BadgesCount }})</a>
                 </li>
-
+                {{if gt (len .Groups) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#groups" role="tab">Groups ({{ comma (len .Groups) }})</a>
+                    </li>
+                {{ end }}
                 <li class="ml-0 ml-lg-auto"></li>
 
                 <li class="nav-item">
@@ -314,6 +318,30 @@
                                     <td data-order="{{.CompletionTime}}" nowrap="nowrap">{{ .GetTimeFormatted }}</td>
                                     <td>{{ comma .XP }}</td>
                                     <td>{{ comma .Scarcity }}</td>
+                                </tr>
+                            {{ end }}
+                        </table>
+                    </div>
+
+                </div>
+                <div class="tab-pane" id="groups" role="tabpanel">
+
+                    {{/* Badges */}}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Group</th>
+                                <th scope="col">Members</th>
+                            </tr>
+                            </thead>
+                            {{ range $key, $value := .Groups }}
+                                <tr data-link="{{ .GetPath }}">
+                                    <td class="img">
+                                        <img src="{{ .Icon }}" alt="{{ .Name }}" class="rounded square">
+                                        <span>{{ .Name }}</span>
+                                    </td>
+                                    <td>{{ comma .Members }}</td>
                                 </tr>
                             {{ end }}
                         </table>

@@ -183,6 +183,23 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
+	// Get groups
+	var groups []mongo.Group
+	wg.Add(1)
+	go func(player mongo.Player) {
+
+		defer wg.Done()
+
+		var err error
+		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "name": 1, "members": 1, "icon": 1})
+		log.Err(err, r)
+
+		for k, v := range groups {
+			groups[k].Icon = v.GetIcon()
+		}
+
+	}(player)
+
 	// Wait
 	wg.Wait()
 
@@ -220,6 +237,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.toasts = toasts
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 	t.Canonical = player.GetPath()
+	t.Groups = groups
 
 	err = returnTemplate(w, r, "player", t)
 	log.Err(err, r)
@@ -227,17 +245,18 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 type playerTemplate struct {
 	GlobalTemplate
-	Apps       []mongo.PlayerApp
-	Badges     []mongo.ProfileBadge
-	BadgeStats mongo.ProfileBadgeStats
-	Banners    map[string][]string
-	Bans       mongo.PlayerBans
-	Friends    []mongo.ProfileFriend
-	GameStats  mongo.PlayerAppStatsTemplate
-	Player     mongo.Player
-	// Ranks       playerRanksTemplate
+	Apps          []mongo.PlayerApp
+	Badges        []mongo.ProfileBadge
+	BadgeStats    mongo.ProfileBadgeStats
+	Banners       map[string][]string
+	Bans          mongo.PlayerBans
+	Friends       []mongo.ProfileFriend
+	GameStats     mongo.PlayerAppStatsTemplate
+	Player        mongo.Player
 	RecentGames   []RecentlyPlayedGame
 	DefaultAvatar string
+	Groups        []mongo.Group
+	// Ranks       playerRanksTemplate
 }
 
 type playerMissingTemplate struct {
