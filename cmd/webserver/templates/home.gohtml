@@ -86,7 +86,7 @@
 
                         {{ range $key, $value := .News }}
                             <li class="media mb-2" data-link="{{ .Link }}">
-                                <img src="{{ .Image }}" alt="{{ .Title }}" class="mr-3 mb-2 img rounded">
+                                <img src="{{ .Image }}" alt="{{ .Title }}" class="mr-3 mb-2 img rounded" loading="lazy">
                                 <div class="media-body">
                                     <h5 class="mt-0 mb-1">{{ .Title }}</h5>
                                     {{ .Contents }}
@@ -109,7 +109,7 @@
 
             {{ range $key, $value := .Games }}
                 <a href="{{ .GetPath }}">
-                    <img src="{{ .HeaderImage }}" alt="{{ .GetName }}">
+                    <img src="{{ .HeaderImage }}" alt="{{ .GetName }}" loading="lazy">
                 </a>
             {{ end }}
 
