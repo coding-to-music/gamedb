@@ -4,7 +4,7 @@
 
     <div class="jumbotron mb-0">
 
-        <h1><i class="fas fa-database"></i> API</h1>
+        <h1><i class="fas fa-database"></i> API <small>(Under construction)</small></h1>
         <p class="lead">{{ .Description }}</p>
         <small>For the Steam API, see <a href="/steam-api">here</a>.</small>
 
@@ -51,7 +51,7 @@
                                             <span class="input-group-text">GET</span>
                                         </div>
                                         <!--suppress HtmlFormInputWithoutLabel -->
-                                        <input type="text" class="form-control endpoint" value="https://gamedb.online/{{ .Path }}">
+                                        <input type="text" class="form-control endpoint" value="https://gamedb.online/api/{{ .Path }}">
                                         <div class="input-group-append">
                                             <button class="btn btn-success" type="submit">Go</button>
                                         </div>

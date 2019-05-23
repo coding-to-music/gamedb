@@ -2,7 +2,9 @@ package pages
 
 import (
 	"net/http"
+	"regexp"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
@@ -19,134 +21,182 @@ func APIRouter() http.Handler {
 }
 
 var (
-	apiKey = apiCallParam{Name: "key", Type: "string"}
-	start  = apiCallParam{Name: "start", Type: "uint"}
-	length = apiCallParam{Name: "length", Type: "uint"}
+	paramAPIKey = apiCallParam{Name: "key", Type: "string"}
+	paramStart  = apiCallParam{Name: "start", Type: "int"}
+	paramLength = apiCallParam{Name: "length", Type: "int"}
+	paramID     = apiCallParam{Name: "length", Type: "int"}
 )
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := apiTemplate{}
-	t.fill(w, r, "API", "")
+	t.fill(w, r, "API", "A list of API endpoints to access Steam data & Game DB data")
 
 	t.Calls = []apiCall{
 		{
-			Title: "New releases",
+			Title: "App",
+			Path:  "app",
 			Params: []apiCallParam{
-				apiKey,
+				paramAPIKey,
+				paramID,
 			},
 		},
 		{
-			Title: "Bundles",
+			Title: "App - Players",
+			Path:  "app-players",
 			Params: []apiCallParam{
-				apiKey,
+				paramAPIKey,
+				paramID,
 			},
 		},
 		{
-			Title: "Packages",
+			Title: "App - Price Changes",
+			Path:  "app-prices",
 			Params: []apiCallParam{
-				apiKey,
+				paramAPIKey,
+				paramID,
 			},
 		},
 		{
-			Title: "Changes",
+			Title: "App - Reviews",
+			Path:  "app-reviews",
 			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "Trending apps",
-			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "News",
-			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "Trending",
-			Params: []apiCallParam{
-				apiKey,
+				paramAPIKey,
+				paramID,
 			},
 		},
 		{
 			Title: "Apps",
+			Path:  "apps",
 			Params: []apiCallParam{
-				apiKey,
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Apps - New releases",
+			Path:  "new-releases",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Apps - Trending",
+			Path:  "trending-apps",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Apps - Keys",
+			Path:  "app-keys",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Article",
+			Path:  "article",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
+			},
+		},
+		{
+			Title: "Articles",
+			Path:  "articles",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Bundle",
+			Path:  "bundle",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
+			},
+		},
+		{
+			Title: "Bundles",
+			Path:  "bundles",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Change",
+			Path:  "change",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
+			},
+		},
+		{
+			Title: "Changes",
+			Path:  "changes",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Group",
+			Path:  "group",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
+			},
+		},
+		{
+			Title: "Groups",
+			Path:  "groups",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Package",
+			Path:  "package",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
+			},
+		},
+		{
+			Title: "Packages",
+			Path:  "packages",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Player",
+			Path:  "player",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
+			},
+		},
+		{
+			Title: "Player - Games",
+			Path:  "player-apps",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
+			},
+		},
+		{
+			Title: "Player - History",
+			Path:  "player-history",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
 			},
 		},
 		{
 			Title: "Players",
+			Path:  "players",
 			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "Prices",
-			Params: []apiCallParam{
-				{
-					Name: "limit",
-					Type: "int",
-				},
-				{
-					Name: "start",
-					Type: "int",
-				},
-			},
-		},
-		{
-			Title: "Product Keys",
-			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "App's top players",
-			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "App's Reviews",
-			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "Player's games",
-			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "Player's history",
-			Params: []apiCallParam{
-				apiKey,
-			},
-		},
-		{
-			Title: "Retrieve an app",
-			Path:  "app",
-			Params: []apiCallParam{
-				apiKey,
-				{
-					Name: "id",
-					Type: "int",
-				},
-			},
-		},
-		{
-			Title: "Retrieve a package",
-			Path:  "package",
-			Params: []apiCallParam{
-				apiKey,
-				{
-					Name: "id",
-					Type: "int",
-				},
+				paramAPIKey,
 			},
 		},
 	}
@@ -166,9 +216,20 @@ type apiCall struct {
 	Params []apiCallParam
 }
 
+func (c apiCall) Hashtag() string {
+	return regexp.MustCompile("[^a-zA-Z0-9]+").ReplaceAllString(c.Title, "")
+}
+
 type apiCallParam struct {
 	Name string
 	Type string
+}
+
+func (p apiCallParam) InputType() string {
+	if helpers.SliceHasString([]string{"int", "uint"}, p.Type) {
+		return "number"
+	}
+	return "text"
 }
 
 func apiApp(w http.ResponseWriter, r *http.Request) {
