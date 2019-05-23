@@ -22,6 +22,7 @@ func SiteMapRouter() http.Handler {
 	r.Get("/games-by-players.xml", siteMapGamesByPlayersHandler)
 	r.Get("/players-by-level.xml", siteMapPlayersByLevel)
 	r.Get("/players-by-games.xml", siteMapPlayersByGamesCount)
+	r.Get("/groups.xml", siteMapGroups)
 	return r
 }
 
@@ -34,6 +35,7 @@ func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 		"/sitemap/games-by-players.xml",
 		"/sitemap/players-by-level.xml",
 		"/sitemap/players-by-games.xml",
+		"/sitemap/groups.xml",
 	}
 
 	sm := sitemap.NewSiteMapIndex()
@@ -117,6 +119,20 @@ func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
 	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, nil, mongo.M{"_id": 1, "name": 1})
 	for _, v := range players {
+		sm.AddLocation(urlBase+v.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.9)
+	}
+
+	_, err = sm.Write(w)
+	log.Err(err)
+}
+
+//noinspection GoUnusedParameter
+func siteMapGroups(w http.ResponseWriter, r *http.Request) {
+
+	sm := sitemap.NewSitemap()
+
+	groups, err := mongo.GetGroups(1000, 0, mongo.D{{"members", -1}}, mongo.M{"type": "group"}, mongo.M{"_id": 1, "name": 1})
+	for _, v := range groups {
 		sm.AddLocation(urlBase+v.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.9)
 	}
 
