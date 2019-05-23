@@ -13,6 +13,7 @@
         </div>
     </footer>
 
+    {{/* Facebook */}}
     <div id="fb-root"></div>
     <script async>
         (function (d, s, id) {
@@ -25,6 +26,7 @@
         }(document, 'script', 'facebook-jssdk'));
     </script>
 
+    {{/* Twitter */}}
     <script async>
         window.twttr = (function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0],
@@ -44,6 +46,7 @@
         }(document, "script", "twitter-wjs"));
     </script>
 
+    {{/* Dependencies */}}
     <script integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script integrity="sha256-fTuUgtT7O2rqoImwjrhDgbXTKUwyxxujIMRIK7TbuNU=" crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js"></script>
     <script integrity="sha256-pl1bSrtlqtN/MCyW8XUTYuJCKohp9/iJESVW1344SBM=" crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.js"></script>
@@ -54,13 +57,16 @@
         <script src="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous"></script>
     {{ end }}
     <script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/rg-1.1.0/datatables.min.js"></script>
+
+    {{/* Load JS */}}
     <script>
         const user = JSON.parse({{ .GetUserJSON }});
     </script>
     <script src="/assets/compiled.min.js?rel=f6b242b656"></script>
 
+    {{/* Google */}}
     <script src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
-    <script async>
+    <script>
         window.dataLayer = window.dataLayer || [];
 
         function gtag() {
@@ -75,7 +81,6 @@
             gtag('set', {'user_id': user.userID});
         }
     </script>
-    <script async src="https://cdn.chitika.net/getads.js"></script>
 
     </body>
     </html>

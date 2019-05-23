@@ -7,9 +7,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha256-R91pD48xW+oHbpJYGn5xR0Q7tMhH4xOrWn1QqMRINtA=" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css" integrity="sha256-MyPOSprr9/vRwXTYc0saw86ylzGM2HVRKWUfHIFta74=" crossorigin="anonymous"/>
+    <link rel="stylesheet" integrity="sha256-BtbhCIbtfeVWGsqxk1vOHEYXS6qcvQvLMZqjtpWUEx8=" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
+    <link rel="stylesheet" integrity="sha256-R91pD48xW+oHbpJYGn5xR0Q7tMhH4xOrWn1QqMRINtA=" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+    <link rel="stylesheet" integrity="sha256-MyPOSprr9/vRwXTYc0saw86ylzGM2HVRKWUfHIFta74=" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css">
     {{ range .CSSFiles }}
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
@@ -34,15 +34,15 @@
     {{/*<meta name="google" content="notranslate">*/}}
     <meta name="google-site-verification" content="brhvE2bHEwuvvoiOxeYHMQRSQECE4vAk8rMJ3iYZtSg"/>
 
-    <!-- Common -->
+    {{/* Common */}}
     <title>{{ .Title }}</title>
     <meta name="description" content="{{ .Description }}">
 
-    <!-- Schema.org -->
+    {{/* Schema.org */}}
     <meta itemprop="name" content="{{ .Title }}">
     <meta itemprop="description" content="{{ .Description }}">
 
-    <!-- Twitter -->
+    {{/* Twitter */}}
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@gamedbonline"/>
     <meta name="twitter:title" content="{{ .Title }}">
@@ -50,7 +50,7 @@
     <meta name="twitter:image" content="{{ .GetMetaImage }}"/>
     <meta name="twitter:image:alt" content="{{ .Title }}"/>
 
-    <!-- Open Graph -->
+    {{/* Open Graph */}}
     <meta name="og:title" content="{{ .Title }}">
     <meta name="og:description" content="{{ .Description }}">
     <meta name="og:image" content="{{ .GetMetaImage }}">
@@ -58,7 +58,7 @@
     <meta name="og:locale" content="en_US">
     <meta name="og:type" content="website">
 
-    <!-- Facebook -->
+    {{/* Facebook */}}
     <meta name="fb:admins" content="537840742">
     <meta name="fb:app_id" content="2539079269452708">
 
