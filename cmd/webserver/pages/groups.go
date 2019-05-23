@@ -2,11 +2,9 @@ package pages
 
 import (
 	"net/http"
-	"regexp"
 	"strconv"
 	"sync"
 
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -77,11 +75,11 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		re := regexp.MustCompile("[[:^ascii:]]")
-
-		for k := range groups {
-			groups[k].Headline = helpers.TruncateString(re.ReplaceAllLiteralString(groups[k].Headline, ""), 100)
-		}
+		// re := regexp.MustCompile("[[:^ascii:]]")
+		//
+		// for k := range groups {
+		// 	groups[k].Headline = helpers.TruncateString(re.ReplaceAllLiteralString(groups[k].Headline, ""), 60)
+		// }
 
 	}(r)
 
