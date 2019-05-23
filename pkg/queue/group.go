@@ -74,7 +74,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 10)
 
 	err = updateGroup(message, &group)
 	if err != nil {
