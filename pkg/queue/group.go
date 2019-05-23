@@ -68,13 +68,13 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 6 * -1).Unix() {
-		logInfo("Skipping group, updated in last 6 hours")
+	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
+		logInfo("Skipping group, updated in last 24 hours")
 		payload.ack(msg)
 		return
 	}
 
-	time.Sleep(time.Second * 20)
+	time.Sleep(time.Second * 30)
 
 	err = updateGroup(message, &group)
 	if err != nil {
@@ -118,7 +118,7 @@ func updateGroup(message groupMessage, group *mongo.Group) (err error) {
 	if err != nil {
 		if err == steam.ErrRateLimited {
 			// Have to sleep instead of delay in Rabbit, to stop doing more calls.
-			time.Sleep(time.Minute * 5)
+			// time.Sleep(time.Minute * 5)
 		}
 		return err
 	}
