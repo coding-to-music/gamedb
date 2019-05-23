@@ -344,6 +344,10 @@ func (t GlobalTemplate) IsMorePage() bool {
 	return helpers.SliceHasString([]string{"changes", "chat", "chat-bot", "commits", "contact", "coop", "experience", "info", "queues", "steam-api"}, strings.TrimPrefix(t.Path, "/"))
 }
 
+func (t GlobalTemplate) IsSidebarPage() bool {
+	return helpers.SliceHasString([]string{"api", "steam-api"}, strings.TrimPrefix(t.Path, "/"))
+}
+
 func (t GlobalTemplate) IsLoggedIn() bool {
 	return t.UserID != 0
 }

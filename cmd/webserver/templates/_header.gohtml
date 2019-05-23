@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=83fd00240a">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=036c5d5ab4">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -63,7 +63,7 @@
     <meta name="fb:app_id" content="2539079269452708">
 
 </head>
-<body{{ if eq .Path "/steam-api" }} data-spy="scroll" data-target="#sidebar"{{ end }}>
+<body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }}>
 
 <header class="container">
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -163,21 +163,20 @@
                             <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
                             <div class="dropdown-divider"></div>
                         {{ end }}
+                        <a class="dropdown-item" href="/api">Game DB API</a>
+                        <a class="dropdown-item" href="/steam-api">Steam API</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/changes">Changes</a>
                         {{ if eq .Env "local" }}
-                            <a class="dropdown-item" href="/api">API</a>
                             <a class="dropdown-item" href="/chat">Chat</a>
                             <a class="dropdown-item" href="/chat-bot">Chat Bot</a>
                         {{ end }}
                         <a class="dropdown-item" href="/commits">Commits</a>
-                        {{ if eq .Env "local" }}
-                            <a class="dropdown-item" href="/contact">Contact</a>
-                        {{ end }}
+                        <a class="dropdown-item" href="/contact">Contact</a>
                         <a class="dropdown-item" href="/coop">Co-op</a>
                         <a class="dropdown-item" href="/experience">Experience</a>
                         <a class="dropdown-item" href="/info">Info</a>
                         <a class="dropdown-item" href="/queues">Queues</a>
-                        <a class="dropdown-item" href="/steam-api">Steam API</a>
                     </div>
                 </li>
             </ul>
