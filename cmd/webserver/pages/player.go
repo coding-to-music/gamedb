@@ -219,6 +219,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Bans = bans
 	t.toasts = toasts
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
+	t.Canonical = player.GetPath()
 
 	err = returnTemplate(w, r, "player", t)
 	log.Err(err, r)

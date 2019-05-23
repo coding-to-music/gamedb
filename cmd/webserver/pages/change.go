@@ -42,6 +42,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 	t.Change = change
 	t.Apps = map[int]sql.App{}
 	t.Packages = map[int]sql.Package{}
+	t.Canonical = change.GetPath()
 
 	//
 	var wg sync.WaitGroup

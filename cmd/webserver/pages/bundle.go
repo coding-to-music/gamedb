@@ -55,6 +55,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	t := bundleTemplate{}
 	t.fill(w, r, bundle.Name, "")
 	t.Bundle = bundle
+	t.Canonical = bundle.GetPath()
 
 	//
 	var wg sync.WaitGroup

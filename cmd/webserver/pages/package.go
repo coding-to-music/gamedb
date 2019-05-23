@@ -119,6 +119,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Package = pack
 	t.Apps = apps
 	t.Bundles = bundles
+	t.Canonical = pack.GetPath()
 
 	// Update news, reviews etc
 	func() {

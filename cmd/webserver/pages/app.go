@@ -70,6 +70,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetHighCharts()
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
+	t.Canonical = app.GetPath()
 
 	//
 	var wg sync.WaitGroup

@@ -38,10 +38,6 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	t := groupTemplate{}
-	t.fill(w, r, "Groups", "")
-	t.addAssetHighCharts()
-
 	// Get group
 	group, err := mongo.GetGroup(id)
 	if err != nil {
@@ -54,6 +50,11 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the group", Error: err})
 		return
 	}
+
+	t := groupTemplate{}
+	t.fill(w, r, "Groups", "")
+	t.addAssetHighCharts()
+	t.Canonical = group.GetPath()
 
 	// Update group
 	func() {

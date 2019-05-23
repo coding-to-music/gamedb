@@ -155,6 +155,7 @@ type GlobalTemplate struct {
 	Env         string        // Environment
 	CSSFiles    []Asset
 	JSFiles     []Asset
+	Canonical   string
 
 	FlashesGood []string
 	FlashesBad  []string
@@ -300,6 +301,9 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 
 func (t GlobalTemplate) GetCanonical() (text string) {
 
+	if t.Canonical != "" {
+		return "https://gamedb.online" + t.Canonical
+	}
 	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
 }
 
