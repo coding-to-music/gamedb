@@ -64,4 +64,7 @@ var (
 	MemcachePopularApps    = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
 	MemcachePopularNewApps = memcache.Item{Key: "popular-new-apps", Expiration: 60}
 	MemcacheTrendingApps   = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
+	MemcacheUserLevelByKey = func(key string) memcache.Item {
+		return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60}
+	}
 )

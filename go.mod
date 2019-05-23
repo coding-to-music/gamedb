@@ -29,7 +29,7 @@ require (
 	github.com/dghubble/go-twitter v0.0.0-20190108053744-7fd79e2bcc65
 	github.com/dghubble/oauth1 v0.5.0
 	github.com/dghubble/sling v1.2.0 // indirect
-	github.com/didip/tollbooth v4.0.0+incompatible // indirect
+	github.com/didip/tollbooth v4.0.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c

@@ -1,38 +1,29 @@
 package pages
 
 import (
+	"errors"
 	"net/http"
 	"regexp"
+	"strconv"
+	"time"
 
+	"github.com/Jleagle/session-go/session"
+	"github.com/didip/tollbooth"
+	"github.com/didip/tollbooth/limiter"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"github.com/jinzhu/gorm"
 )
-
-func APIRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Get("/", apiHandler)
-	r.Get("/app", apiApp)
-	r.Get("/package", apiPackage)
-	r.Get("/bundle", apiBundle)
-	r.Get("/group", apiGroup)
-	r.Get("/player", apiPlayer)
-	return r
-}
 
 var (
 	paramAPIKey = apiCallParam{Name: "key", Type: "string"}
-	paramStart  = apiCallParam{Name: "start", Type: "int"}
-	paramLength = apiCallParam{Name: "length", Type: "int"}
-	paramID     = apiCallParam{Name: "length", Type: "int"}
-)
+	paramID     = apiCallParam{Name: "id", Type: "int"}
+	paramOffset = apiCallParam{Name: "offset", Type: "int"}
+	paramLimit  = apiCallParam{Name: "limit", Type: "int"}
 
-func apiHandler(w http.ResponseWriter, r *http.Request) {
-
-	t := apiTemplate{}
-	t.fill(w, r, "API", "A list of API endpoints to access Steam data & Game DB data")
-
-	t.Calls = []apiCall{
+	endpoints = []apiCall{
 		{
 			Title: "App",
 			Path:  "app",
@@ -47,6 +38,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Params: []apiCallParam{
 				paramAPIKey,
 				paramID,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -55,6 +48,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Params: []apiCallParam{
 				paramAPIKey,
 				paramID,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -70,13 +65,18 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "apps",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
+			Handler: apiAppsHandler,
 		},
 		{
 			Title: "Apps - New releases",
 			Path:  "new-releases",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -84,6 +84,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "trending-apps",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -91,6 +93,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "app-keys",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -106,6 +110,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "articles",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -121,6 +127,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "bundles",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -136,6 +144,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "changes",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -151,6 +161,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "groups",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -166,6 +178,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "packages",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -182,6 +196,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Params: []apiCallParam{
 				paramAPIKey,
 				paramID,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -190,6 +206,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Params: []apiCallParam{
 				paramAPIKey,
 				paramID,
+				paramOffset,
+				paramLimit,
 			},
 		},
 		{
@@ -197,9 +215,31 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			Path:  "players",
 			Params: []apiCallParam{
 				paramAPIKey,
+				paramOffset,
+				paramLimit,
 			},
 		},
 	}
+)
+
+func APIRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", apiHandler)
+
+	for _, v := range endpoints {
+		if v.Handler != nil {
+			r.Get("/app", v.Handler)
+		}
+	}
+
+	return r
+}
+
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := apiTemplate{}
+	t.fill(w, r, "API", "A list of API endpoints to access Steam data & Game DB data")
+	t.Calls = endpoints
 
 	err := returnTemplate(w, r, "api", t)
 	log.Err(err, r)
@@ -211,9 +251,10 @@ type apiTemplate struct {
 }
 
 type apiCall struct {
-	Title  string
-	Path   string
-	Params []apiCallParam
+	Title   string
+	Path    string
+	Params  []apiCallParam
+	Handler http.HandlerFunc
 }
 
 func (c apiCall) Hashtag() string {
@@ -232,22 +273,116 @@ func (p apiCallParam) InputType() string {
 	return "text"
 }
 
-func apiApp(w http.ResponseWriter, r *http.Request) {
+var errNoKey = errors.New("no key")
+var errOverLimit = errors.New("no key")
+var errInvalidKey = errors.New("invalid key")
+var errWrongLevelKey = errors.New("wrong level key")
+var errInvalidOffset = errors.New("invalid offset")
+var errInvalidLimit = errors.New("invalid limit")
+
+var ops = limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
+var lmt = limiter.New(&ops).SetMax(1).SetBurst(2)
+
+func handleAPICall(r *http.Request) (id int64, offset int64, limit int64, err error) {
+
+	q := r.URL.Query()
+
+	key := q.Get("key")
+	if key == "" {
+		key, err := session.Get(r, helpers.SessionUserAPIKey)
+		if err != nil {
+			return id, offset, limit, err
+		}
+		if key == "" {
+			return id, offset, limit, errNoKey
+		}
+	}
+
+	err = tollbooth.LimitByKeys(lmt, []string{key})
+	if err != nil {
+		return id, offset, limit, errOverLimit
+	}
+
+	if len(key) != 20 {
+		return id, offset, limit, errInvalidKey
+	}
+
+	level, err := sql.GetUserLevelWithKey(key)
+	if level < 3 {
+		// todo, return missing user error etc
+		return id, offset, limit, errWrongLevelKey
+	}
+
+	val := q.Get("id")
+	id, err = strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return id, offset, limit, err
+	}
+
+	val = q.Get("offset")
+	offset, err = strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return id, offset, limit, err
+	}
+
+	if offset < 0 {
+		return id, offset, limit, errInvalidOffset
+	}
+
+	val = q.Get("limit")
+	limit, err = strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return id, offset, limit, err
+	}
+
+	if limit < 0 || limit > 1000 {
+		return id, offset, limit, errInvalidLimit
+	}
+
+	return id, offset, limit, err
+}
+
+func handleAPISQLList(r *http.Request, db *gorm.DB) *gorm.DB {
+
+	// id, ofset, limit, err := handleAPICall(r)
+
+	return db
 
 }
 
-func apiPackage(w http.ResponseWriter, r *http.Request) {
+func apiAppsHandler(w http.ResponseWriter, r *http.Request) {
+
+	gorm, err := sql.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	gorm = gorm.Select([]string{"id", "name", "screenshots", "reviews_score"})
+	gorm = gorm.Order("id asc")
+	gorm = handleAPISQLList(r, gorm)
+
+	var apps []sql.App
+	gorm = gorm.Find(&apps)
+	if gorm.Error != nil {
+		log.Err(gorm.Error)
+		return
+	}
 
 }
 
-func apiBundle(w http.ResponseWriter, r *http.Request) {
+func apiPackageHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func apiPlayer(w http.ResponseWriter, r *http.Request) {
+func apiBundleHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func apiGroup(w http.ResponseWriter, r *http.Request) {
+func apiPlayerHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func apiGroupHandler(w http.ResponseWriter, r *http.Request) {
 
 }

@@ -211,6 +211,7 @@ func login(r *http.Request, user sql.User) (string, bool) {
 		helpers.SessionUserID:         strconv.Itoa(user.ID),
 		helpers.SessionUserEmail:      user.Email,
 		helpers.SessionUserCountry:    user.CountryCode,
+		helpers.SessionUserAPIKey:     user.APIKey,
 		helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 	}
 

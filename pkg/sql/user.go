@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strconv"
 	"time"
+
+	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
 type User struct {
@@ -78,4 +80,21 @@ func DeleteUser(id int64) (err error) {
 	db = db.Where("player_id = ?", id).Delete(&User{})
 
 	return db.Error
+}
+
+func GetUserLevelWithKey(key string) (level int, err error) {
+
+	var item = helpers.MemcacheBundlesCount
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &level, func() (interface{}, error) {
+
+		user, err := GetUserByKey(key, "api_key", 0)
+		if err != nil {
+			return 0, err
+		}
+
+		return user.PatreonLevel, err
+	})
+
+	return level, err
 }
