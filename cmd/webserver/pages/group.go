@@ -52,7 +52,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := groupTemplate{}
-	t.fill(w, r, "Groups", "")
+	t.fill(w, r, group.GetName(), "")
 	t.addAssetHighCharts()
 	t.Canonical = group.GetPath()
 
