@@ -8,7 +8,9 @@
 
         {{ template "_social" .Group }}
 
-        <h1><i class="fas fa-user-friends"></i> {{ .Group.Name }} <a href="https://steamcommunity.com/groups/{{ .Group.URL }}" target="_blank"><i class="fas fa-link"></i></a></h1>
+        <h1 class="text-truncate" title="{{ .Group.Name }}">
+            <i class="fas fa-user-friends"></i> {{ .Group.Name }} <a href="https://steamcommunity.com/groups/{{ .Group.URL }}" target="_blank"><i class="fas fa-link"></i></a>
+        </h1>
 
     </div>
 
