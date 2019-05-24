@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -67,11 +68,16 @@ func (group Group) OutputForJSON() (output []interface{}) {
 		group.Members,
 		group.URL,
 		group.Type,
+		group.GetLink(),
 	}
 }
 
 func (group Group) GetPath() string {
 	return "/groups/" + group.ID64 + "/" + slug.Make(group.Name)
+}
+
+func (group Group) GetLink() string {
+	return "https://steamcommunity.com/groups/" + group.URL + "?utm_source=" + config.Config.GameDBShortName.Get()
 }
 
 func (group Group) GetName() string {

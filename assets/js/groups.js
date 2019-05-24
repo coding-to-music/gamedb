@@ -71,7 +71,7 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '<i class="fas fa-link" data-target="_blank" data-link="https://steamcommunity.com/groups/' + row[6] + '"></i>';
+                    return '<i class="fas fa-link" data-target="_blank" data-link="' + row[8] + '"></i>';
                 },
                 "orderable": false,
             },
