@@ -19,6 +19,10 @@
 
             <div id="chart"></div>
 
+            {{ if eq .Group.Type "game" }}
+                <p><a href="/apps/{{ .Group.URL }}" class="btn btn-primary">Go to App page</a></p>
+            {{ end }}
+
             <h5>{{ .Group.Headline }}</h5>
             <div>{{ .Summary }}</div>
 
