@@ -1,17 +1,19 @@
 package queue
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
+	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
+	"github.com/powerslacker/ratelimit"
 	"github.com/streadway/amqp"
 )
 
@@ -52,6 +54,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming group: " + message.ID + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
+	// todo, make helper
 	// if !helpers.IsValidAppID(message.ID) {
 	// 	logError(errors.New("invalid app ID: " + strconv.Itoa(message.ID)))
 	// 	payload.ack(msg)
@@ -68,24 +71,37 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
-		logInfo("Skipping group, updated in last 24 hours")
+	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
+		logInfo("Skipping group, updated recently")
 		payload.ack(msg)
 		return
 	}
 
-	time.Sleep(time.Second * 60)
+	if group.ID64 == "" || group.UpdatedAt.Unix() < time.Now().Add(time.Hour * 24 * 28 * -1).Unix() {
 
-	err = updateGroup(message, &group)
-	if err != nil {
-		if err.Error() == "expected element type <memberList> but have <html>" {
-			logInfo("Group not found", message.ID)
-			payload.ack(msg)
-		} else {
+		// Go get details for first time
+		err = updateGroupFromXML(message, &group)
+		if err != nil {
+			if err.Error() == "expected element type <memberList> but have <html>" {
+				logInfo("Group not found", message.ID)
+				payload.ack(msg)
+			} else {
+				logError(err, message.ID)
+				payload.ackRetry(msg)
+			}
+			return
+		}
+
+	} else {
+
+		// Just update counts, scrapes to avoice rate limit
+		err = updateGroupFromPage(message, &group)
+		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
+			return
 		}
-		return
+
 	}
 
 	err = addGroupToInflux(group)
@@ -111,15 +127,15 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func updateGroup(message groupMessage, group *mongo.Group) (err error) {
+var groupRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack)
+
+func updateGroupFromXML(message groupMessage, group *mongo.Group) (err error) {
+
+	groupRateLimit.Take()
 
 	resp, b, err := helpers.GetSteam().GetGroupByID(message.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
-		if err == steam.ErrRateLimited {
-			// Have to sleep instead of delay in Rabbit, to stop doing more calls.
-			// time.Sleep(time.Minute * 5)
-		}
 		return err
 	}
 
@@ -163,7 +179,66 @@ func updateGroup(message groupMessage, group *mongo.Group) (err error) {
 
 	// Save
 	_, err = mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
+	return err
+}
 
+var reg = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
+var regNums = regexp.MustCompile("[^0-9]+")
+
+func updateGroupFromPage(message groupMessage, group *mongo.Group) (err error) {
+
+	c := colly.NewCollector(
+		colly.URLFilters(reg),
+	)
+
+	// Regular groups - https://steamcommunity.com/groups/indiegala
+	c.OnHTML("div.membercount.members .count", func(e *colly.HTMLElement) {
+		e.Text = regNums.ReplaceAllString(e.Text, "")
+		group.Members, err = strconv.Atoi(e.Text)
+	})
+
+	c.OnHTML("div.membercount.ingame .count", func(e *colly.HTMLElement) {
+		e.Text = regNums.ReplaceAllString(e.Text, "")
+		group.MembersInGame, err = strconv.Atoi(e.Text)
+	})
+
+	c.OnHTML("div.membercount.online .count", func(e *colly.HTMLElement) {
+		e.Text = regNums.ReplaceAllString(e.Text, "")
+		group.MembersOnline, err = strconv.Atoi(e.Text)
+	})
+
+	c.OnHTML("div.joinchat_membercount .count", func(e *colly.HTMLElement) {
+		e.Text = regNums.ReplaceAllString(e.Text, "")
+		group.MembersInChat, err = strconv.Atoi(e.Text)
+	})
+
+	// Game groups - https://steamcommunity.com/games/218620
+	c.OnHTML("#profileBlock .linkStandard", func(e *colly.HTMLElement) {
+		e.Text = regNums.ReplaceAllString(e.Text, "")
+		if strings.Contains(e.Text, "chat") {
+			group.MembersInChat, err = strconv.Atoi(e.Text)
+		} else {
+			group.Members, err = strconv.Atoi(e.Text)
+		}
+	})
+
+	c.OnHTML("#profileBlock .membersInGame", func(e *colly.HTMLElement) {
+		e.Text = regNums.ReplaceAllString(e.Text, "")
+		group.MembersInGame, err = strconv.Atoi(e.Text)
+	})
+
+	c.OnHTML("#profileBlock .membersOnline", func(e *colly.HTMLElement) {
+		e.Text = regNums.ReplaceAllString(e.Text, "")
+		group.MembersOnline, err = strconv.Atoi(e.Text)
+	})
+
+	err = c.Visit("https://steamcommunity.com/gid/" + message.ID)
+	if err != nil {
+		return err
+	}
+
+	// Save
+	_, err = mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
 	return err
 }
 
@@ -202,6 +277,6 @@ func sendGroupWebsocket(group mongo.Group) (err error) {
 
 func clearGroupMemcache(group mongo.Group) (err error) {
 
-	return nil
+	return nil // Consumers dont have memcache yet
 	return helpers.GetMemcache().Delete(helpers.MemcacheGroupRow(group.ID64).Key)
 }

@@ -537,12 +537,16 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 
 func (app App) GetDLC() (dlcs []int, err error) {
 
+	dlcs = []int{} // Needed for marshalling into type
+
 	err = helpers.Unmarshal([]byte(app.DLC), &dlcs)
 	log.Err(err)
 	return dlcs, err
 }
 
 func (app App) GetPackages() (packages []int, err error) {
+
+	packages = []int{} // Needed for marshalling into type
 
 	err = helpers.Unmarshal([]byte(app.Packages), &packages)
 	log.Err(err)
@@ -551,6 +555,8 @@ func (app App) GetPackages() (packages []int, err error) {
 
 func (app App) GetReviews() (reviews AppReviewSummary, err error) {
 
+	reviews = AppReviewSummary{} // Needed for marshalling into type
+
 	err = helpers.Unmarshal([]byte(app.Reviews), &reviews)
 	log.Err(err)
 	return reviews, err
@@ -558,11 +564,15 @@ func (app App) GetReviews() (reviews AppReviewSummary, err error) {
 
 func (app App) GetGenreIDs() (genres []int, err error) {
 
+	genres = []int{} // Needed for marshalling into type
+
 	err = helpers.Unmarshal([]byte(app.Genres), &genres)
 	return genres, err
 }
 
 func (app App) GetGenres() (genres []Genre, err error) {
+
+	genres = []Genre{} // Needed for marshalling into type
 
 	ids, err := app.GetGenreIDs()
 	if err != nil {
@@ -574,12 +584,16 @@ func (app App) GetGenres() (genres []Genre, err error) {
 
 func (app App) GetCategoryIDs() (categories []int, err error) {
 
+	categories = []int{} // Needed for marshalling into type
+
 	err = helpers.Unmarshal([]byte(app.Categories), &categories)
 	log.Err(err)
 	return categories, err
 }
 
 func (app App) GetTagIDs() (tags []int, err error) {
+
+	tags = []int{} // Needed for marshalling into type
 
 	err = helpers.Unmarshal([]byte(app.Tags), &tags)
 	if err != nil {
@@ -591,6 +605,8 @@ func (app App) GetTagIDs() (tags []int, err error) {
 
 func (app App) GetTags() (tags []Tag, err error) {
 
+	tags = []Tag{} // Needed for marshalling into type
+
 	ids, err := app.GetTagIDs()
 	if err != nil {
 		return tags, err
@@ -601,12 +617,16 @@ func (app App) GetTags() (tags []Tag, err error) {
 
 func (app App) GetDeveloperIDs() (developers []int, err error) {
 
+	developers = []int{} // Needed for marshalling into type
+
 	err = helpers.Unmarshal([]byte(app.Developers), &developers)
 	log.Err(err)
 	return developers, err
 }
 
 func (app App) GetDevelopers() (developers []Developer, err error) {
+
+	developers = []Developer{} // Needed for marshalling into type
 
 	ids, err := app.GetDeveloperIDs()
 	if err != nil {
@@ -618,12 +638,16 @@ func (app App) GetDevelopers() (developers []Developer, err error) {
 
 func (app App) GetPublisherIDs() (publishers []int, err error) {
 
+	publishers = []int{} // Needed for marshalling into type
+
 	err = helpers.Unmarshal([]byte(app.Publishers), &publishers)
 	log.Err(err)
 	return publishers, err
 }
 
 func (app App) GetPublishers() (publishers []Publisher, err error) {
+
+	publishers = []Publisher{} // Needed for marshalling into type
 
 	ids, err := app.GetPublisherIDs()
 	if err != nil {

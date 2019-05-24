@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"regexp"
@@ -31,6 +32,7 @@ var (
 				paramAPIKey,
 				paramID,
 			},
+			Handler: apiAppHandler,
 		},
 		{
 			Title: "App - Players",
@@ -219,6 +221,41 @@ var (
 				paramLimit,
 			},
 		},
+		{
+			Title: "Stats - Categories",
+			Path:  "steam-stats",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Stats - Genres",
+			Path:  "steam-stats",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Stats - Publishers",
+			Path:  "steam-stats",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Stats - Steam",
+			Path:  "steam-stats",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
+		{
+			Title: "Stats - Tags",
+			Path:  "steam-stats",
+			Params: []apiCallParam{
+				paramAPIKey,
+			},
+		},
 	}
 )
 
@@ -228,7 +265,7 @@ func APIRouter() http.Handler {
 
 	for _, v := range endpoints {
 		if v.Handler != nil {
-			r.Get("/app", v.Handler)
+			r.Get("/"+v.Path, v.Handler)
 		}
 	}
 
@@ -262,8 +299,9 @@ func (c apiCall) Hashtag() string {
 }
 
 type apiCallParam struct {
-	Name string
-	Type string
+	Name    string
+	Type    string
+	Default string
 }
 
 func (p apiCallParam) InputType() string {
@@ -274,7 +312,8 @@ func (p apiCallParam) InputType() string {
 }
 
 var errNoKey = errors.New("no key")
-var errOverLimit = errors.New("no key")
+var errOverID = errors.New("invalid id")
+var errOverLimit = errors.New("over rate limit")
 var errInvalidKey = errors.New("invalid key")
 var errWrongLevelKey = errors.New("wrong level key")
 var errInvalidOffset = errors.New("invalid offset")
@@ -287,9 +326,10 @@ func handleAPICall(r *http.Request) (id int64, offset int64, limit int64, err er
 
 	q := r.URL.Query()
 
+	// Get key from url/session
 	key := q.Get("key")
 	if key == "" {
-		key, err := session.Get(r, helpers.SessionUserAPIKey)
+		key, err = session.Get(r, helpers.SessionUserAPIKey)
 		if err != nil {
 			return id, offset, limit, err
 		}
@@ -298,80 +338,229 @@ func handleAPICall(r *http.Request) (id int64, offset int64, limit int64, err er
 		}
 	}
 
-	err = tollbooth.LimitByKeys(lmt, []string{key})
-	if err != nil {
-		return id, offset, limit, errOverLimit
-	}
-
 	if len(key) != 20 {
 		return id, offset, limit, errInvalidKey
 	}
 
-	level, err := sql.GetUserLevelWithKey(key)
-	if level < 3 {
-		// todo, return missing user error etc
+	// Rate limit
+	err = tollbooth.LimitByKeys(lmt, []string{key})
+	if err != nil {
+		// return id, offset, limit, errOverLimit // todo
+	}
+
+	// Check user ahs access to api
+	level, err := sql.GetUserFromKeyCache(key)
+	if err != nil {
+		return id, offset, limit, err
+	}
+	if level.PatreonLevel < 3 {
 		return id, offset, limit, errWrongLevelKey
 	}
 
+	// Read ID
 	val := q.Get("id")
-	id, err = strconv.ParseInt(val, 10, 64)
-	if err != nil {
-		return id, offset, limit, err
+	if val == "" {
+		id = 0
+	} else {
+
+		id, err = strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return id, offset, limit, errOverID
+		}
+
+		if id < 1 {
+			return id, offset, limit, errOverID
+		}
 	}
 
+	// Read offset
 	val = q.Get("offset")
-	offset, err = strconv.ParseInt(val, 10, 64)
-	if err != nil {
-		return id, offset, limit, err
+	if val == "" {
+		offset = 0
+	} else {
+
+		offset, err = strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return id, offset, limit, errInvalidOffset
+		}
+
+		if offset < 0 {
+			return id, offset, limit, errInvalidOffset
+		}
 	}
 
-	if offset < 0 {
-		return id, offset, limit, errInvalidOffset
-	}
-
+	// Read limit
 	val = q.Get("limit")
-	limit, err = strconv.ParseInt(val, 10, 64)
-	if err != nil {
-		return id, offset, limit, err
-	}
+	if val == "" {
+		limit = 10
+	} else {
 
-	if limit < 0 || limit > 1000 {
-		return id, offset, limit, errInvalidLimit
+		limit, err = strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return id, offset, limit, errInvalidLimit
+		}
+
+		if limit < 1 || limit > 1000 {
+			return id, offset, limit, errInvalidLimit
+		}
 	}
 
 	return id, offset, limit, err
 }
 
-func handleAPISQLList(r *http.Request, db *gorm.DB) *gorm.DB {
+func handleAPISQLSingle(r *http.Request, db *gorm.DB) (*gorm.DB, error) {
 
-	// id, ofset, limit, err := handleAPICall(r)
+	id, _, _, err := handleAPICall(r)
+	if err != nil {
+		return db, err
+	}
 
-	return db
+	db = db.Where("id = ?", id)
 
+	return db, db.Error
 }
 
-func apiAppsHandler(w http.ResponseWriter, r *http.Request) {
+func handleAPISQLMany(r *http.Request, db *gorm.DB) (*gorm.DB, error) {
 
-	gorm, err := sql.GetMySQLClient()
+	_, offset, limit, err := handleAPICall(r)
+	if err != nil {
+		return db, err
+	}
+
+	db = db.Limit(limit)
+	db = db.Offset(offset)
+
+	return db, db.Error
+}
+
+type apiApp struct {
+	ID         int               `json:"id"`
+	Name       string            `json:"name"`
+	Tags       []int             `json:"tags"`
+	Genres     []int             `json:"genres"`
+	Developers []int             `json:"developers"`
+	Publishers []int             `json:"publishers"`
+	Prices     sql.ProductPrices `json:"prices"`
+}
+
+func (apiApp *apiApp) fill(sqlApp sql.App) (err error) {
+
+	apiApp.ID = sqlApp.ID
+	apiApp.Name = sqlApp.GetName()
+	apiApp.Tags, err = sqlApp.GetTagIDs()
+	if err != nil {
+		return err
+	}
+	apiApp.Genres, err = sqlApp.GetGenreIDs()
+	if err != nil {
+		return err
+	}
+	apiApp.Developers, err = sqlApp.GetDeveloperIDs()
+	if err != nil {
+		return err
+	}
+	apiApp.Publishers, err = sqlApp.GetPublisherIDs()
+	if err != nil {
+		return err
+	}
+	apiApp.Prices, err = sqlApp.GetPrices()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func apiAppHandler(w http.ResponseWriter, r *http.Request) {
+
+	db, err := sql.GetMySQLClient()
 	if err != nil {
 		log.Err(err)
 		return
 	}
 
-	gorm = gorm.Select([]string{"id", "name", "screenshots", "reviews_score"})
-	gorm = gorm.Order("id asc")
-	gorm = handleAPISQLList(r, gorm)
-
-	var apps []sql.App
-	gorm = gorm.Find(&apps)
-	if gorm.Error != nil {
-		log.Err(gorm.Error)
+	db = db.Select([]string{"id", "name", "tags", "genres", "developers", "categories", "prices"})
+	db = db.Order("id asc")
+	db = db.Table("apps")
+	db, err = handleAPISQLSingle(r, db)
+	if err != nil {
+		log.Err(err)
 		return
 	}
 
+	var app sql.App
+	db = db.Find(&app)
+	if db.Error != nil {
+		log.Err(db.Error)
+		return
+	}
+
+	apiApp := apiApp{}
+	err = apiApp.fill(app)
+	if db.Error != nil {
+		log.Err(db.Error)
+		return
+	}
+
+	b, err := json.Marshal(apiApp)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	err = returnJSON(w, r, b)
+	log.Err(err)
+}
+
+func apiAppsHandler(w http.ResponseWriter, r *http.Request) {
+
+	db, err := sql.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	db = db.Select([]string{"id", "name", "tags", "genres", "developers", "categories", "prices"})
+	db = db.Order("id asc")
+	db, err = handleAPISQLMany(r, db)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var sqlApps []sql.App
+	db = db.Find(&sqlApps)
+	if db.Error != nil {
+		log.Err(db.Error)
+		return
+	}
+
+	//noinspection GoPreferNilSlice
+	var apiApps = []apiApp{}
+
+	for _, v := range sqlApps {
+		apiApp := apiApp{}
+		err = apiApp.fill(v)
+		log.Err(err)
+
+		apiApps = append(apiApps, apiApp)
+	}
+
+	b, err := json.Marshal(apiApps)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	err = returnJSON(w, r, b)
+	log.Err(err)
 }
 
 func apiPackageHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func apiPackagesHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
@@ -379,10 +568,22 @@ func apiBundleHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func apiBundlesHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func apiPlayerHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func apiPlayersHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func apiGroupHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func apiGroupsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
