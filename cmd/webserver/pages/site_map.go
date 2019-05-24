@@ -64,6 +64,7 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		"/experience",
 		"/apps",
 		"/genres",
+		"/groups",
 		"/info",
 		"/login",
 		"/news",
