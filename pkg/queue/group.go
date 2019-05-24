@@ -214,10 +214,11 @@ func updateGroupFromPage(message groupMessage, group *mongo.Group) (err error) {
 
 	// Game groups - https://steamcommunity.com/games/218620
 	c.OnHTML("#profileBlock .linkStandard", func(e *colly.HTMLElement) {
-		e.Text = regNums.ReplaceAllString(e.Text, "")
-		if strings.Contains(e.Text, "chat") {
+		if strings.Contains(strings.ToLower(e.Text), "chat") {
+			e.Text = regNums.ReplaceAllString(e.Text, "")
 			group.MembersInChat, err = strconv.Atoi(e.Text)
 		} else {
+			e.Text = regNums.ReplaceAllString(e.Text, "")
 			group.Members, err = strconv.Atoi(e.Text)
 		}
 	})
