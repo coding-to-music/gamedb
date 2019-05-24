@@ -255,7 +255,8 @@ func addGroupToInflux(group mongo.Group) (err error) {
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(helpers.InfluxMeasurementGroups),
 		Tags: map[string]string{
-			"group_id": group.ID64,
+			"group_id":   group.ID64,
+			"group_type": group.Type,
 		},
 		Fields:    fields,
 		Time:      time.Now(),
