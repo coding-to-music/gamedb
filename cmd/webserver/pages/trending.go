@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -162,15 +161,6 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	b, err := json.Marshal(ret)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	err = returnJSON(w, r, b)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
+	err = returnJSON(w, r, ret)
+	log.Err(err, r)
 }

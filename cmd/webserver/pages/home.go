@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -135,13 +134,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	b, err := json.Marshal(prices)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	err = returnJSON(w, r, b)
+	err = returnJSON(w, r, prices)
 	log.Err(err)
 }
 
@@ -223,13 +216,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		resp = append(resp, homePlayer)
 	}
 
-	b, err := json.Marshal(resp)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	err = returnJSON(w, r, b)
+	err = returnJSON(w, r, resp)
 	log.Err(err)
 }
 

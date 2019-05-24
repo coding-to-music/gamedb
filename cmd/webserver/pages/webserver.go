@@ -39,11 +39,17 @@ func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 	}
 }
 
-func returnJSON(w http.ResponseWriter, r *http.Request, bytes []byte) (err error) {
+func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err error) {
 
 	setHeaders(w, r, "application/json")
 
-	_, err = w.Write(bytes)
+	b, err := json.Marshal(i)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	_, err = w.Write(b)
 	return err
 }
 
@@ -474,10 +480,7 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 		t.Data = make([][]interface{}, 0)
 	}
 
-	b, err := json.Marshal(t)
-	log.Err(err, r)
-
-	err = returnJSON(w, r, b)
+	err := returnJSON(w, r, t)
 	log.Err(err, r)
 }
 

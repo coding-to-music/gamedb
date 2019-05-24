@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"net/http"
 	"strings"
 	"sync"
@@ -222,9 +221,6 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	bytes, err := json.Marshal(messages)
-	log.Err(err, r)
-
-	err = returnJSON(w, r, bytes)
+	err = returnJSON(w, r, messages)
 	log.Err(err, r)
 }

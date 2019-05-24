@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -483,12 +482,8 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		Log:     err,
 	}
 
-	bytes, err := json.Marshal(response)
+	err = returnJSON(w, r, response)
 	log.Err(err, r)
-	if err == nil {
-		err = returnJSON(w, r, bytes)
-		log.Err(err, r)
-	}
 }
 
 type PlayersUpdateResponse struct {
@@ -535,15 +530,6 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
-	b, err := json.Marshal(hc)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	err = returnJSON(w, r, b)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
+	err = returnJSON(w, r, hc)
+	log.Err(err, r)
 }

@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"html/template"
 	"math/big"
 	"net/http"
@@ -132,15 +131,6 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
-	b, err := json.Marshal(hc)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	err = returnJSON(w, r, b)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
+	err = returnJSON(w, r, hc)
+	log.Err(err, r)
 }

@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -80,15 +79,6 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := json.Marshal(highcharts)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	err = returnJSON(w, r, b)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
+	err = returnJSON(w, r, highcharts)
+	log.Err(err, r)
 }

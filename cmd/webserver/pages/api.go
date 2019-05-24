@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"regexp"
@@ -502,13 +501,7 @@ func apiAppHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := json.Marshal(apiApp)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	err = returnJSON(w, r, b)
+	err = returnJSON(w, r, apiApp)
 	log.Err(err)
 }
 
@@ -546,13 +539,7 @@ func apiAppsHandler(w http.ResponseWriter, r *http.Request) {
 		apiApps = append(apiApps, apiApp)
 	}
 
-	b, err := json.Marshal(apiApps)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	err = returnJSON(w, r, b)
+	err = returnJSON(w, r, apiApps)
 	log.Err(err)
 }
 
