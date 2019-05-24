@@ -82,19 +82,14 @@ func DeleteUser(id int64) (err error) {
 	return db.Error
 }
 
-func GetUserLevelWithKey(key string) (level int, err error) {
+func GetUserFromKeyCache(key string) (user User, err error) {
 
-	var item = helpers.MemcacheBundlesCount
+	var item = helpers.MemcacheUserLevelByKey(key)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &level, func() (interface{}, error) {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &user, func() (interface{}, error) {
 
-		user, err := GetUserByKey(key, "api_key", 0)
-		if err != nil {
-			return 0, err
-		}
-
-		return user.PatreonLevel, err
+		return GetUserByKey("api_key", key, 0)
 	})
 
-	return level, err
+	return user, err
 }
