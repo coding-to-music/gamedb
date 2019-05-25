@@ -91,12 +91,17 @@ li.nav-item {
         margin: 0;
     }
 
-    .social {
+    .social-buttons {
         float: right;
-        height: 20px;
 
-        > div > span {
-            vertical-align: unset !important;
+        > div {
+            height: 20px;
+
+            > div {
+                > span {
+                    vertical-align: unset !important;
+                }
+            }
         }
     }
 
