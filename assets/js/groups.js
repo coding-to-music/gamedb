@@ -57,6 +57,9 @@ if ($('#groups-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[4]
                 },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).addClass('d-none d-lg-block');
+                },
                 "orderable": false,
             },
             // Members
