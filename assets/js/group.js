@@ -65,7 +65,7 @@ if ($groupPage.length > 0) {
                 ],
                 tooltip: {
                     formatter: function () {
-                        return this.y.toLocaleString() + ' players on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        return this.y.toLocaleString() + ' members on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                     },
                 },
                 series: [
