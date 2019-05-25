@@ -455,7 +455,8 @@ if ($appPage.length > 0) {
                         return '<img src="' + row[5] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('img')
+                        $(td).addClass('img');
+                        $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false,
                 },
@@ -464,6 +465,9 @@ if ($appPage.length > 0) {
                     "targets": 3,
                     "render": function (data, type, row) {
                         return row[2];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false,
                 },
