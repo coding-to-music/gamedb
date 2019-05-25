@@ -81,6 +81,9 @@ func (group Group) GetLink() string {
 }
 
 func (group Group) GetName() string {
+	if group.Name == "" {
+		return "Group " + group.ID64
+	}
 	return group.Name
 }
 
