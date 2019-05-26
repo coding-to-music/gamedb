@@ -178,7 +178,15 @@ func updateGroupFromXML(message groupMessage, group *mongo.Group) (err error) {
 	}
 
 	// Save
-	_, err = mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
+	mongoResp, err := mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
+	if err != nil {
+		return err
+	}
+
+	if mongoResp.UpsertedCount > 0 {
+		// new row, clear cache?
+	}
+
 	return err
 }
 
