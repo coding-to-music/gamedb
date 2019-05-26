@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -77,9 +78,10 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// re := regexp.MustCompile("[[:^ascii:]]")
 		//
-		// for k := range groups {
-		// 	groups[k].Headline = helpers.TruncateString(re.ReplaceAllLiteralString(groups[k].Headline, ""), 60)
-		// }
+		for k := range groups {
+			// groups[k].Headline = helpers.TruncateString(re.ReplaceAllLiteralString(groups[k].Headline, ""), 60)
+			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline, 10)
+		}
 
 	}(r)
 
