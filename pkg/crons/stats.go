@@ -5,13 +5,11 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
 type Genres struct {
@@ -31,7 +29,7 @@ func (c Genres) Config() sql.ConfigType {
 
 func (c Genres) Work() {
 
-	cronLogInfo("Genres updating")
+	started(c)
 
 	// Get current genres, to delete old ones
 	currentGenres, err := sql.GetAllGenres(true)
@@ -176,19 +174,12 @@ func (c Genres) Work() {
 	wg.Wait()
 
 	//
-	err = sql.SetConfig(sql.ConfGenresUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLogErr(err)
-
-	page := websockets.GetPage(websockets.PageAdmin) //
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfGenresUpdated) + " complete"})
-
-	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheGenreKeyNames.Key)
 	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	cronLogErr(err)
 
 	//
-	cronLogInfo("Genres updated")
+	finished(c)
 }
 
 type Publishers struct {
@@ -208,7 +199,7 @@ func (c Publishers) Config() sql.ConfigType {
 
 func (c Publishers) Work() {
 
-	cronLogInfo("Publishers updating")
+	started(c)
 
 	// Get current publishers, to delete old ones
 	allPublishers, err := sql.GetAllPublishers()
@@ -353,19 +344,12 @@ func (c Publishers) Work() {
 	wg.Wait()
 
 	//
-	err = sql.SetConfig(sql.ConfPublishersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLogErr(err)
-
-	page := websockets.GetPage(websockets.PageAdmin) //
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfPublishersUpdated) + " complete"})
-
-	//
 	err = helpers.GetMemcache().Delete(helpers.MemcachePublisherKeyNames.Key)
 	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	cronLogErr(err)
 
 	//
-	cronLogInfo("Publishers updated")
+	finished(c)
 }
 
 type Developers struct {
@@ -385,7 +369,7 @@ func (c Developers) Config() sql.ConfigType {
 
 func (c Developers) Work() {
 
-	cronLogInfo("Developers updating")
+	started(c)
 
 	// Get current developers, to delete old ones
 	allDevelopers, err := sql.GetAllDevelopers([]string{"id", "name"})
@@ -529,19 +513,12 @@ func (c Developers) Work() {
 	wg.Wait()
 
 	//
-	err = sql.SetConfig(sql.ConfDevelopersUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLogErr(err)
-
-	page := websockets.GetPage(websockets.PageAdmin) //
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfDevelopersUpdated) + " complete"})
-
-	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheDeveloperKeyNames.Key)
 	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	cronLogErr(err)
 
 	//
-	cronLogInfo("Developers updated")
+	finished(c)
 }
 
 type Tags struct {
@@ -560,6 +537,8 @@ func (c Tags) Config() sql.ConfigType {
 }
 
 func (c Tags) Work() {
+
+	started(c)
 
 	// Get current tags, to delete old ones
 	tags, err := sql.GetAllTags()
@@ -700,19 +679,12 @@ func (c Tags) Work() {
 	wg.Wait()
 
 	//
-	err = sql.SetConfig(sql.ConfTagsUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLogErr(err)
-
-	page := websockets.GetPage(websockets.PageAdmin) //
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfTagsUpdated) + " complete"})
-
-	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheTagKeyNames.Key)
 	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	cronLogErr(err)
 
 	//
-	cronLogInfo("Tags updated")
+	finished(c)
 }
 
 type statsRow struct {

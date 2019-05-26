@@ -26,7 +26,7 @@ func (c Instagram) Config() sql.ConfigType {
 
 func (c Instagram) Work() {
 
-	log.Info("Running IG")
+	started(c)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -72,4 +72,6 @@ func (c Instagram) Work() {
 	if err != nil {
 		log.Critical(err, url)
 	}
+
+	finished(c)
 }

@@ -30,7 +30,7 @@ func (c SteamClientPlayers) Config() sql.ConfigType {
 
 func (c SteamClientPlayers) Work() {
 
-	log.Info("Cron running: Steam users")
+	started(c)
 
 	resp, err := http.Get("https://www.valvesoftware.com/en/about/stats")
 	if err != nil {
@@ -72,6 +72,8 @@ func (c SteamClientPlayers) Work() {
 	})
 
 	log.Warning(err)
+
+	finished(c)
 }
 
 type steamPlayersStruct struct {

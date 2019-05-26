@@ -2,13 +2,11 @@ package crons
 
 import (
 	"strconv"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
 type PlayerRanks struct {
@@ -28,7 +26,7 @@ func (c PlayerRanks) Config() sql.ConfigType {
 
 func (c PlayerRanks) Work() {
 
-	cronLogInfo("PlayerRanks updated started")
+	started(c)
 
 	cronLogInfo("Level")
 	err := mongo.RankPlayers("level", "level_rank")
@@ -51,13 +49,7 @@ func (c PlayerRanks) Work() {
 	log.Warning(err)
 
 	//
-	err = sql.SetConfig(sql.ConfRanksUpdated, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLogErr(err)
-
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfRanksUpdated) + " complete"})
-
-	cronLogInfo("PlayerRanks updated")
+	finished(c)
 }
 
 type AutoPlayerRefreshes struct {
@@ -77,7 +69,7 @@ func (c AutoPlayerRefreshes) Config() sql.ConfigType {
 
 func (c AutoPlayerRefreshes) Work() {
 
-	cronLogInfo("Running auto profile updates")
+	started(c)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -98,4 +90,6 @@ func (c AutoPlayerRefreshes) Work() {
 	}
 
 	cronLogInfo("Auto updated " + strconv.Itoa(len(users)) + " players")
+
+	finished(c)
 }

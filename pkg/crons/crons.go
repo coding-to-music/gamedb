@@ -2,9 +2,11 @@ package crons
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
 type CronEnum string
@@ -56,3 +58,22 @@ func statsLogger(tableName string, count int, total int, rowName string) {
 }
 
 //
+
+func started(c CronInterface) {
+
+	cronLogInfo("Cron started: " + string(c.Config()))
+}
+
+func finished(c CronInterface) {
+
+	// Save config row
+	err := sql.SetConfig(c.Config(), strconv.FormatInt(time.Now().Unix(), 10))
+	cronLogErr(err)
+
+	// Send websocket
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{Message: string(c.Config()) + " complete"})
+
+	//
+	cronLogInfo("Cron complete: " + string(c.Config()))
+}

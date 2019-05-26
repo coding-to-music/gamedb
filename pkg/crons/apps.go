@@ -2,13 +2,11 @@ package crons
 
 import (
 	"strconv"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
 type AppPlayers struct {
@@ -28,7 +26,7 @@ func (c AppPlayers) Config() sql.ConfigType {
 
 func (c AppPlayers) Work() {
 
-	log.Info("Queueing apps for player checks")
+	started(c)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -68,16 +66,7 @@ func (c AppPlayers) Work() {
 		log.Err(err)
 	}
 
-	log.Info("Finished chunking")
-
-	//
-	err = sql.SetConfig(sql.ConfAddedAllAppPlayers, strconv.FormatInt(time.Now().Unix(), 10))
-	cronLogErr(err)
-
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllAppPlayers) + " complete"})
-
-	cronLogInfo("App players cron complete")
+	finished(c)
 }
 
 type ClearUpcomingCache struct {
@@ -97,6 +86,8 @@ func (c ClearUpcomingCache) Config() sql.ConfigType {
 
 func (c ClearUpcomingCache) Work() {
 
+	started(c)
+
 	var mc = helpers.GetMemcache()
 	var err error
 
@@ -107,4 +98,6 @@ func (c ClearUpcomingCache) Work() {
 	err = mc.Delete(helpers.MemcacheUpcomingPackagesCount.Key)
 	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
 	log.Err(err)
+
+	finished(c)
 }
