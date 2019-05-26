@@ -43,48 +43,16 @@
 
                     <h5>Cron Jobs</h5>
                     <div class="row" id="actions">
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-tags" role="button" class="btn btn-success btn-block mb-4">
-                                Refresh Tags<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-tags").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-genres" role="button" class="btn btn-success btn-block mb-4">
-                                Refresh Genres<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-genres").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-developers" role="button" class="btn btn-success btn-block mb-4">
-                                Refresh Developers<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-developers").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-publishers" role="button" class="btn btn-success btn-block mb-4">
-                                Refresh Publishers<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-publishers").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-donations" role="button" class="btn btn-success btn-block mb-4">
-                                Refresh Donations<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-donations").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-ranks" role="button" class="btn btn-success btn-block mb-4">
-                                Refresh Ranks<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-ranks").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-app-players" role="button" class="btn btn-success btn-block mb-4">
-                                Refresh App Players<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-all-app-players").Value }}"></small>
-                            </a>
-                        </div>
+                        {{ range $key, $value := .Crons }}
+
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <a href="/admin/run-cron?cron={{ $key }}" role="button" class="btn btn-success btn-block mb-4">
+                                    {{ .Name }}<br/>
+                                    <small data-livestamp="{{ (index $.Configs (.Config.String)).Value }}"></small>
+                                </a>
+                            </div>
+
+                        {{ end }}
                     </div>
 
                     <h5>Actions</h5>

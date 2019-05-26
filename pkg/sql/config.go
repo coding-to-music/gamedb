@@ -6,21 +6,32 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
-const (
-	ConfTagsUpdated       = "refresh-tags"
-	ConfGenresUpdated     = "refresh-genres"
-	ConfPublishersUpdated = "refresh-publishers"
-	ConfDevelopersUpdated = "refresh-developers"
+type ConfigType string
 
-	ConfRanksUpdated       = "refresh-ranks"
-	ConfDonationsUpdated   = "refresh-donations"
-	ConfAddedAllApps       = "refresh-all-apps"
-	ConfAddedAllPackages   = "refresh-all-packages"
-	ConfAddedAllPlayers    = "refresh-all-players"
-	ConfAddedAllAppPlayers = "refresh-all-app-players"
-	ConfWipeMemcache       = "wipe-memcache"
-	ConfRunDevCode         = "run-dev-code"
-	ConfGarbageCollection  = "run-garbage-collection"
+func (c ConfigType) String() string {
+	return string(c)
+}
+
+const (
+	// Crons
+	ConfTagsUpdated        ConfigType = "refresh-tags"
+	ConfGenresUpdated      ConfigType = "refresh-genres"
+	ConfClientPlayers      ConfigType = "check-people-on-steam"
+	ConfPublishersUpdated  ConfigType = "refresh-publishers"
+	ConfDevelopersUpdated  ConfigType = "refresh-developers"
+	ConfRanksUpdated       ConfigType = "refresh-ranks"
+	ConfAddedAllAppPlayers ConfigType = "refresh-all-app-players"
+	ConfClearUpcomingCache ConfigType = "clear-upcoming-cache"
+	ConfInstagram          ConfigType = "posted-to-instagram"
+	ConfAutoProfile        ConfigType = "auto-profiles-updated"
+
+	//
+	ConfAddedAllApps      ConfigType = "refresh-all-apps"
+	ConfAddedAllPackages  ConfigType = "refresh-all-packages"
+	ConfAddedAllPlayers   ConfigType = "refresh-all-players"
+	ConfWipeMemcache      ConfigType = "wipe-memcache"
+	ConfRunDevCode        ConfigType = "run-dev-code"
+	ConfGarbageCollection ConfigType = "run-garbage-collection"
 )
 
 type Config struct {
@@ -29,7 +40,7 @@ type Config struct {
 	Value     string     `gorm:"not null;column:value"`
 }
 
-func SetConfig(id string, value string) (err error) {
+func SetConfig(id ConfigType, value string) (err error) {
 
 	// Update app
 	db, err := GetMySQLClient()
@@ -38,7 +49,7 @@ func SetConfig(id string, value string) (err error) {
 	}
 
 	config := &Config{}
-	config.ID = id
+	config.ID = string(id)
 
 	db = db.Assign(Config{Value: value}).FirstOrInit(config)
 	if db.Error != nil {
@@ -51,14 +62,14 @@ func SetConfig(id string, value string) (err error) {
 	}
 
 	// Save to memcache
-	item := helpers.MemcacheConfigRow(id)
+	item := helpers.MemcacheConfigRow(string(id))
 
 	return helpers.GetMemcache().SetInterface(item.Key, config, item.Expiration)
 }
 
-func GetConfig(id string) (config Config, err error) {
+func GetConfig(id ConfigType) (config Config, err error) {
 
-	var item = helpers.MemcacheConfigRow(id)
+	var item = helpers.MemcacheConfigRow(string(id))
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &config, func() (interface{}, error) {
 
@@ -77,7 +88,7 @@ func GetConfig(id string) (config Config, err error) {
 	return config, err
 }
 
-func GetConfigs(ids []string) (configsMap map[string]Config, err error) {
+func GetConfigs(ids []ConfigType) (configsMap map[string]Config, err error) {
 
 	configsMap = map[string]Config{}
 

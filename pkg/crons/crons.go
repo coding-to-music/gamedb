@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 type CronEnum string
@@ -20,25 +21,26 @@ var (
 	CronDevelopers          CronEnum = "update-stats-developers"
 	CronTags                CronEnum = "update-stats-tags"
 
-	CronRegister = map[CronEnum]func(){
-		CronAppPlayers:          AppPlayers,
-		CronClearUpcomingCache:  ClearUpcomingCache,
-		CronInstagram:           Instagram,
-		CronPlayerRanks:         PlayerRanks,
-		CronAutoPlayerRefreshes: AutoPlayerRefreshes,
-		CronGenres:              Genres,
-		CronPublishers:          Publishers,
-		CronDevelopers:          Developers,
-		CronTags:                Tags,
-		CronSteamClientPlayers:  SteamClientPlayers,
+	CronRegister = map[CronEnum]CronInterface{
+		CronAppPlayers:          AppPlayers{},
+		CronClearUpcomingCache:  ClearUpcomingCache{},
+		CronInstagram:           Instagram{},
+		CronPlayerRanks:         PlayerRanks{},
+		CronAutoPlayerRefreshes: AutoPlayerRefreshes{},
+		CronGenres:              Genres{},
+		CronPublishers:          Publishers{},
+		CronDevelopers:          Developers{},
+		CronTags:                Tags{},
+		CronSteamClientPlayers:  SteamClientPlayers{},
 	}
 )
 
-// type CronInterface interface {
-// 	ID() CronEnum
-// 	Name() string
-// 	Work()
-// }
+type CronInterface interface {
+	ID() CronEnum
+	Name() string
+	Config() sql.ConfigType
+	Work()
+}
 
 // Logging
 func cronLogErr(interfaces ...interface{}) {

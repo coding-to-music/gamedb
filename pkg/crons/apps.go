@@ -11,7 +11,22 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
-func AppPlayers() {
+type AppPlayers struct {
+}
+
+func (c AppPlayers) ID() CronEnum {
+	return CronAppPlayers
+}
+
+func (c AppPlayers) Name() string {
+	return "Check apps for players"
+}
+
+func (c AppPlayers) Config() sql.ConfigType {
+	return sql.ConfAddedAllAppPlayers
+}
+
+func (c AppPlayers) Work() {
 
 	log.Info("Queueing apps for player checks")
 
@@ -60,12 +75,27 @@ func AppPlayers() {
 	cronLogErr(err)
 
 	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllAppPlayers + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllAppPlayers) + " complete"})
 
 	cronLogInfo("App players cron complete")
 }
 
-func ClearUpcomingCache() {
+type ClearUpcomingCache struct {
+}
+
+func (c ClearUpcomingCache) ID() CronEnum {
+	return CronClearUpcomingCache
+}
+
+func (c ClearUpcomingCache) Name() string {
+	return "Clear upcoming apps cache"
+}
+
+func (c ClearUpcomingCache) Config() sql.ConfigType {
+	return sql.ConfClearUpcomingCache
+}
+
+func (c ClearUpcomingCache) Work() {
 
 	var mc = helpers.GetMemcache()
 	var err error

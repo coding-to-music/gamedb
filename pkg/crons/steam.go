@@ -9,10 +9,26 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
 )
 
-func SteamClientPlayers() {
+type SteamClientPlayers struct {
+}
+
+func (c SteamClientPlayers) ID() CronEnum {
+	return CronSteamClientPlayers
+}
+
+func (c SteamClientPlayers) Name() string {
+	return "Update Steam client players"
+}
+
+func (c SteamClientPlayers) Config() sql.ConfigType {
+	return sql.ConfClientPlayers
+}
+
+func (c SteamClientPlayers) Work() {
 
 	log.Info("Cron running: Steam users")
 

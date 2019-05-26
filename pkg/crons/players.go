@@ -11,7 +11,22 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
-func PlayerRanks() {
+type PlayerRanks struct {
+}
+
+func (c PlayerRanks) ID() CronEnum {
+	return CronPlayerRanks
+}
+
+func (c PlayerRanks) Name() string {
+	return "Update player ranks"
+}
+
+func (c PlayerRanks) Config() sql.ConfigType {
+	return sql.ConfRanksUpdated
+}
+
+func (c PlayerRanks) Work() {
 
 	cronLogInfo("PlayerRanks updated started")
 
@@ -40,12 +55,27 @@ func PlayerRanks() {
 	cronLogErr(err)
 
 	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: sql.ConfRanksUpdated + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfRanksUpdated) + " complete"})
 
 	cronLogInfo("PlayerRanks updated")
 }
 
-func AutoPlayerRefreshes() {
+type AutoPlayerRefreshes struct {
+}
+
+func (c AutoPlayerRefreshes) ID() CronEnum {
+	return CronAutoPlayerRefreshes
+}
+
+func (c AutoPlayerRefreshes) Name() string {
+	return "Update donator profiles"
+}
+
+func (c AutoPlayerRefreshes) Config() sql.ConfigType {
+	return sql.ConfAutoProfile
+}
+
+func (c AutoPlayerRefreshes) Work() {
 
 	cronLogInfo("Running auto profile updates")
 

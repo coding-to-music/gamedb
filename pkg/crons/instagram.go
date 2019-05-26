@@ -9,7 +9,22 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
-func Instagram() {
+type Instagram struct {
+}
+
+func (c Instagram) ID() CronEnum {
+	return CronInstagram
+}
+
+func (c Instagram) Name() string {
+	return "Post an Instagram picture"
+}
+
+func (c Instagram) Config() sql.ConfigType {
+	return sql.ConfInstagram
+}
+
+func (c Instagram) Work() {
 
 	log.Info("Running IG")
 
@@ -49,7 +64,7 @@ func Instagram() {
 
 	var url = screenshots[rand.Intn(len(screenshots))].PathFull
 	if url == "" {
-		Instagram()
+		c.Work()
 		return
 	}
 

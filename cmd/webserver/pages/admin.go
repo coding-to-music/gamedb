@@ -37,26 +37,16 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	option := chi.URLParam(r, "option")
 
 	switch option {
+	case "run-cron":
+		go adminRunCron(r)
 	case "refresh-all-apps":
 		go adminQueueEveryApp()
 	case "refresh-all-packages":
 		go adminQueueEveryPackage()
 	case "refresh-all-players":
 		go adminQueueEveryPlayer()
-	case "refresh-app-players":
-		go crons.AppPlayers()
-	case "refresh-genres":
-		go crons.Genres()
-	case "refresh-tags":
-		go crons.Tags()
-	case "refresh-developers":
-		go crons.Developers()
-	case "refresh-publishers":
-		go crons.Publishers()
-	case "refresh-ranks":
-		go crons.PlayerRanks()
 	case "wipe-memcache":
-		go adminMemcache()
+		go adminClearMemcache()
 	case "delete-bin-logs":
 		go adminDeleteBinLogs(r)
 	case "disable-consumers":
@@ -78,20 +68,20 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get configs for times
-	configs, err := sql.GetConfigs([]string{
-		sql.ConfTagsUpdated,
-		sql.ConfGenresUpdated,
-		sql.ConfGenresUpdated,
-		sql.ConfDonationsUpdated,
-		sql.ConfRanksUpdated,
+	configKeys := []sql.ConfigType{
 		sql.ConfAddedAllApps,
-		sql.ConfDevelopersUpdated,
-		sql.ConfPublishersUpdated,
-		sql.ConfWipeMemcache + "-" + config.Config.Environment.Get(),
+		sql.ConfWipeMemcache + "-" + sql.ConfigType(config.Config.Environment.Get()),
 		sql.ConfRunDevCode,
 		sql.ConfGarbageCollection,
 		sql.ConfAddedAllAppPlayers,
-	})
+		sql.ConfAddedAllPackages,
+	}
+
+	for _, v := range crons.CronRegister {
+		configKeys = append(configKeys, v.Config())
+	}
+
+	configs, err := sql.GetConfigs(configKeys)
 	log.Err(err, r)
 
 	// Template
@@ -100,6 +90,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Configs = configs
 	t.Goroutines = runtime.NumGoroutine()
 	t.Websockets = websockets.Pages
+	t.Crons = crons.CronRegister
 
 	//
 	gorm, err := sql.GetMySQLClient()
@@ -116,7 +107,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		t.BinLogs[k].Total = total
 	}
 
-	gorm.Raw("SELECT * FROM information_schema.processlist where command != 'sleep'").Scan(&t.Queries)
+	gorm = gorm.Raw("SELECT * FROM information_schema.processlist where command != 'sleep'").Scan(&t.Queries)
+	log.Err(gorm.Error, r)
 
 	err = returnTemplate(w, r, "admin", t)
 	log.Err(err, r)
@@ -130,6 +122,7 @@ type adminTemplate struct {
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
 	Websockets map[websockets.WebsocketPage]websockets.Page
+	Crons      map[crons.CronEnum]crons.CronInterface
 }
 
 type adminQuery struct {
@@ -155,6 +148,15 @@ func (at adminTemplate) GetMCConfigKey() string {
 }
 
 func adminDisableConsumers() {
+
+}
+
+func adminRunCron(r *http.Request) {
+
+	c := r.URL.Query().Get("cron")
+
+	cron := crons.CronRegister[crons.CronEnum(c)]
+	cron.Work()
 
 }
 
@@ -196,7 +198,7 @@ func adminQueueEveryApp() {
 	log.Err(err)
 
 	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllApps + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllApps) + " complete"})
 
 	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
@@ -237,7 +239,7 @@ func adminQueueEveryPackage() {
 	log.Err(err)
 
 	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllPackages + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllPackages) + " complete"})
 
 	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
 }
@@ -266,7 +268,7 @@ func adminQueueEveryPlayer() {
 	log.Err(err)
 
 	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: sql.ConfAddedAllPlayers + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllPlayers) + " complete"})
 
 	log.Info(strconv.Itoa(len(players)) + " players added to rabbit")
 }
@@ -379,16 +381,16 @@ func adminQueues(r *http.Request) {
 	}
 }
 
-func adminMemcache() {
+func adminClearMemcache() {
 
 	err := helpers.GetMemcache().DeleteAll()
 	log.Err(err)
 
-	err = sql.SetConfig(sql.ConfWipeMemcache+"-"+config.Config.Environment.Get(), strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfWipeMemcache+"-"+sql.ConfigType(config.Config.Environment.Get()), strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: sql.ConfWipeMemcache + "-" + config.Config.Environment.Get() + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfWipeMemcache) + "-" + config.Config.Environment.Get() + " complete"})
 
 	log.Info("Memcache wiped")
 }
@@ -431,7 +433,7 @@ func adminDev() {
 	log.Err(err)
 
 	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: sql.ConfRunDevCode + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfRunDevCode) + " complete"})
 
 	log.Info("Dev code run")
 }

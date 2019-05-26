@@ -14,7 +14,22 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
-func Genres() {
+type Genres struct {
+}
+
+func (c Genres) ID() CronEnum {
+	return CronGenres
+}
+
+func (c Genres) Name() string {
+	return "Update genres"
+}
+
+func (c Genres) Config() sql.ConfigType {
+	return sql.ConfGenresUpdated
+}
+
+func (c Genres) Work() {
 
 	cronLogInfo("Genres updating")
 
@@ -165,7 +180,7 @@ func Genres() {
 	cronLogErr(err)
 
 	page := websockets.GetPage(websockets.PageAdmin) //
-	page.Send(websockets.AdminPayload{Message: sql.ConfGenresUpdated + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfGenresUpdated) + " complete"})
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheGenreKeyNames.Key)
@@ -176,7 +191,22 @@ func Genres() {
 	cronLogInfo("Genres updated")
 }
 
-func Publishers() {
+type Publishers struct {
+}
+
+func (c Publishers) ID() CronEnum {
+	return CronPublishers
+}
+
+func (c Publishers) Name() string {
+	return "Update publishers"
+}
+
+func (c Publishers) Config() sql.ConfigType {
+	return sql.ConfPublishersUpdated
+}
+
+func (c Publishers) Work() {
 
 	cronLogInfo("Publishers updating")
 
@@ -327,7 +357,7 @@ func Publishers() {
 	cronLogErr(err)
 
 	page := websockets.GetPage(websockets.PageAdmin) //
-	page.Send(websockets.AdminPayload{Message: sql.ConfPublishersUpdated + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfPublishersUpdated) + " complete"})
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcachePublisherKeyNames.Key)
@@ -338,7 +368,22 @@ func Publishers() {
 	cronLogInfo("Publishers updated")
 }
 
-func Developers() {
+type Developers struct {
+}
+
+func (c Developers) ID() CronEnum {
+	return CronDevelopers
+}
+
+func (c Developers) Name() string {
+	return "Update developers"
+}
+
+func (c Developers) Config() sql.ConfigType {
+	return sql.ConfDevelopersUpdated
+}
+
+func (c Developers) Work() {
 
 	cronLogInfo("Developers updating")
 
@@ -488,7 +533,7 @@ func Developers() {
 	cronLogErr(err)
 
 	page := websockets.GetPage(websockets.PageAdmin) //
-	page.Send(websockets.AdminPayload{Message: sql.ConfDevelopersUpdated + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfDevelopersUpdated) + " complete"})
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheDeveloperKeyNames.Key)
@@ -499,7 +544,22 @@ func Developers() {
 	cronLogInfo("Developers updated")
 }
 
-func Tags() {
+type Tags struct {
+}
+
+func (c Tags) ID() CronEnum {
+	return CronTags
+}
+
+func (c Tags) Name() string {
+	return "Update tags"
+}
+
+func (c Tags) Config() sql.ConfigType {
+	return sql.ConfTagsUpdated
+}
+
+func (c Tags) Work() {
 
 	// Get current tags, to delete old ones
 	tags, err := sql.GetAllTags()
@@ -644,7 +704,7 @@ func Tags() {
 	cronLogErr(err)
 
 	page := websockets.GetPage(websockets.PageAdmin) //
-	page.Send(websockets.AdminPayload{Message: sql.ConfTagsUpdated + " complete"})
+	page.Send(websockets.AdminPayload{Message: string(sql.ConfTagsUpdated) + " complete"})
 
 	//
 	err = helpers.GetMemcache().Delete(helpers.MemcacheTagKeyNames.Key)
