@@ -71,7 +71,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Skip if updated in last day, unless its from PICS
-	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
+	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
 		logInfo("Skipping group, updated recently")
 		payload.ack(msg)
 		return
