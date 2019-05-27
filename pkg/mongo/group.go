@@ -109,7 +109,7 @@ func GetGroup(id string) (group Group, err error) {
 	return group, err
 }
 
-func GetGroupsByID(ids []int64, projection M) (groups []Group, err error) {
+func GetGroupsByShortID(ids []int64, projection M) (groups []Group, err error) {
 
 	if len(ids) < 1 {
 		return groups, nil
@@ -121,6 +121,25 @@ func GetGroupsByID(ids []int64, projection M) (groups []Group, err error) {
 	}
 
 	return getGroups(0, 0, D{{"name", 1}}, M{"id": M{"$in": idsBSON}}, projection)
+}
+
+func GetGroupsByLongID(ids []string, projection M) (groups []Group, err error) {
+
+	if len(ids) < 1 {
+		return groups, nil
+	}
+
+	var idsBSON A
+	for _, v := range ids {
+		idsBSON = append(idsBSON, v)
+	}
+
+	filter := M{
+		"_id":        M{"$in": idsBSON},
+		"updated_at": M{"$lt": time.Now().Add(time.Hour * 24 * -1)},
+	}
+
+	return getGroups(0, 0, nil, filter, projection)
 }
 
 func GetGroups(limit int64, offset int64, sort D, filter M, projection M) (groups []Group, err error) {

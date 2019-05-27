@@ -18,7 +18,8 @@ import (
 )
 
 type groupMessage struct {
-	ID string `json:"id"`
+	ID  string   `json:"id"`
+	IDs []string `json:"ids"`
 }
 
 type groupQueue struct {
@@ -54,12 +55,38 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming group: " + message.ID + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
-	// todo, make helper
+	// todo, make helper, put into producer..
 	// if !helpers.IsValidAppID(message.ID) {
 	// 	logError(errors.New("invalid app ID: " + strconv.Itoa(message.ID)))
 	// 	payload.ack(msg)
 	// 	return
 	// }
+
+	// Backwards compatability
+	message.IDs = append(message.IDs, message.ID)
+
+	// Make ID map
+	var IDMap = map[string]string{}
+
+	// Get groups to update
+	groups, err := mongo.GetGroupsByLongID(message.IDs, nil)
+	if err != nil {
+		logError(err)
+		payload.ack(msg)
+		return
+	}
+
+	for _, v := range groups {
+		delete(IDMap, v.ID64)
+
+		// Update row from scraping
+	}
+
+	for k := range IDMap {
+
+		// Update from XML
+
+	}
 
 	// Load current group
 	group, err := mongo.GetGroup(message.ID)
