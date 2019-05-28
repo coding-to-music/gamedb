@@ -352,7 +352,7 @@ func adminQueues(r *http.Request) {
 
 			val = strings.TrimSpace(val)
 
-			err := queue.ProduceGroup(val)
+			err := queue.ProduceGroup([]string{val})
 			log.Err(err, r)
 		}
 	}

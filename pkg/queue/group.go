@@ -55,18 +55,15 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming group: " + message.ID + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
-	// todo, make helper, put into producer..
-	// if !helpers.IsValidAppID(message.ID) {
-	// 	logError(errors.New("invalid app ID: " + strconv.Itoa(message.ID)))
-	// 	payload.ack(msg)
-	// 	return
-	// }
-
-	// Backwards compatability
+	// Backwards compatability, can remove when group queue goes down
 	message.IDs = append(message.IDs, message.ID)
 
 	// Make ID map
 	var IDMap = map[string]string{}
+
+	for _, v := range message.IDs {
+		IDMap[v] = v
+	}
 
 	// Get groups to update
 	groups, err := mongo.GetGroupsByLongID(message.IDs, nil)
@@ -76,37 +73,50 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	for _, v := range groups {
-		delete(IDMap, v.ID64)
+	for _, group := range groups {
 
-		// Update row from scraping
+		// Continue here means get from XML API
+		if group.ID64 == "" || group.UpdatedAt.Unix() < time.Now().Add(time.Hour * 24 * 28 * -1).Unix() {
+			continue
+		}
+
+		//
+		delete(IDMap, group.ID64)
+
+		// Continue here means skip this group altogether
+		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
+			continue
+		}
+
+		//
+		err = updateGroupFromPage(message, &group)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = addGroupToInflux(group)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = sendGroupWebsocket(group)
+		if err != nil {
+			logError(err, message.ID)
+		}
 	}
 
 	for k := range IDMap {
 
-		// Update from XML
+		if helpers.IsValidGroupID(k) {
+			continue
+		}
 
-	}
+		group := mongo.Group{}
 
-	// Load current group
-	group, err := mongo.GetGroup(message.ID)
-	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ack(msg)
-		return
-	}
-
-	// Skip if updated in last day, unless its from PICS
-	if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
-		logInfo("Skipping group, updated recently")
-		payload.ack(msg)
-		return
-	}
-
-	if group.ID64 == "" || group.UpdatedAt.Unix() < time.Now().Add(time.Hour * 24 * 28 * -1).Unix() {
-
-		// Go get details for first time
 		err = updateGroupFromXML(message, &group)
 		if err != nil {
 			if err.Error() == "expected element type <memberList> but have <html>" {
@@ -119,35 +129,17 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-	} else {
-
-		// Just update counts, scrapes to avoice rate limit
-		err = updateGroupFromPage(message, &group)
+		err = addGroupToInflux(group)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
-	}
-
-	err = addGroupToInflux(group)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-
-	err = sendGroupWebsocket(group)
-	if err != nil {
-		logError(err, message.ID)
-	}
-
-	err = clearGroupMemcache(group)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
+		err = sendGroupWebsocket(group)
+		if err != nil {
+			logError(err, message.ID)
+		}
 	}
 
 	//
@@ -211,60 +203,60 @@ func updateGroupFromXML(message groupMessage, group *mongo.Group) (err error) {
 	}
 
 	if mongoResp.UpsertedCount > 0 {
-		// new row, clear cache?
+		// todo, new row, clear count cache
 	}
 
 	return err
 }
 
-var reg = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
-var regNums = regexp.MustCompile("[^0-9]+")
+var regexURLFilter = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
+var regexIntsOnly = regexp.MustCompile("[^0-9]+")
 
 func updateGroupFromPage(message groupMessage, group *mongo.Group) (err error) {
 
 	c := colly.NewCollector(
-		colly.URLFilters(reg),
+		colly.URLFilters(regexURLFilter),
 	)
 
 	// Regular groups - https://steamcommunity.com/groups/indiegala
 	c.OnHTML("div.membercount.members .count", func(e *colly.HTMLElement) {
-		e.Text = regNums.ReplaceAllString(e.Text, "")
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.Members, err = strconv.Atoi(e.Text)
 	})
 
 	c.OnHTML("div.membercount.ingame .count", func(e *colly.HTMLElement) {
-		e.Text = regNums.ReplaceAllString(e.Text, "")
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersInGame, err = strconv.Atoi(e.Text)
 	})
 
 	c.OnHTML("div.membercount.online .count", func(e *colly.HTMLElement) {
-		e.Text = regNums.ReplaceAllString(e.Text, "")
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersOnline, err = strconv.Atoi(e.Text)
 	})
 
 	c.OnHTML("div.joinchat_membercount .count", func(e *colly.HTMLElement) {
-		e.Text = regNums.ReplaceAllString(e.Text, "")
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersInChat, err = strconv.Atoi(e.Text)
 	})
 
 	// Game groups - https://steamcommunity.com/games/218620
 	c.OnHTML("#profileBlock .linkStandard", func(e *colly.HTMLElement) {
 		if strings.Contains(strings.ToLower(e.Text), "chat") {
-			e.Text = regNums.ReplaceAllString(e.Text, "")
+			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 			group.MembersInChat, err = strconv.Atoi(e.Text)
 		} else {
-			e.Text = regNums.ReplaceAllString(e.Text, "")
+			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 			group.Members, err = strconv.Atoi(e.Text)
 		}
 	})
 
 	c.OnHTML("#profileBlock .membersInGame", func(e *colly.HTMLElement) {
-		e.Text = regNums.ReplaceAllString(e.Text, "")
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersInGame, err = strconv.Atoi(e.Text)
 	})
 
 	c.OnHTML("#profileBlock .membersOnline", func(e *colly.HTMLElement) {
-		e.Text = regNums.ReplaceAllString(e.Text, "")
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersOnline, err = strconv.Atoi(e.Text)
 	})
 
@@ -310,10 +302,4 @@ func sendGroupWebsocket(group mongo.Group) (err error) {
 
 	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
 	return err
-}
-
-func clearGroupMemcache(group mongo.Group) (err error) {
-
-	return nil // Consumers dont have memcache yet
-	return helpers.GetMemcache().Delete(helpers.MemcacheGroupRow(group.ID64).Key)
 }

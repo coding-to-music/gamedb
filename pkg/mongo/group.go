@@ -134,12 +134,7 @@ func GetGroupsByLongID(ids []string, projection M) (groups []Group, err error) {
 		idsBSON = append(idsBSON, v)
 	}
 
-	filter := M{
-		"_id":        M{"$in": idsBSON},
-		"updated_at": M{"$lt": time.Now().Add(time.Hour * 24 * -1)},
-	}
-
-	return getGroups(0, 0, nil, filter, projection)
+	return getGroups(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection)
 }
 
 func GetGroups(limit int64, offset int64, sort D, filter M, projection M) (groups []Group, err error) {
