@@ -482,7 +482,9 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 	// Start badges slice
 	var badgeSlice []mongo.ProfileBadge
+	var playerBadgeSlice []mongo.PlayerBadge
 	var appIDSlice []int
+	var specialAppIDSlice []int
 	for _, v := range response.Badges {
 		appIDSlice = append(appIDSlice, v.AppID)
 		badgeSlice = append(badgeSlice, mongo.ProfileBadge{
@@ -493,8 +495,22 @@ func updatePlayerBadges(player *mongo.Player) error {
 			XP:             v.XP,
 			Scarcity:       v.Scarcity,
 		})
+		playerBadgeSlice = append(playerBadgeSlice, mongo.PlayerBadge{
+			PlayerID:            player.ID,
+			BadgeID:             v.BadgeID,
+			BadgeLevel:          v.Level,
+			BadgeCompletionTime: v.CompletionTime,
+			BadgeXP:             v.XP,
+			BadgeScarcity:       v.Scarcity,
+			AppID:               v.AppID,
+		})
+		if v.AppID == 0 {
+			specialAppIDSlice = append(specialAppIDSlice, v.AppID)
+		}
 	}
 	appIDSlice = helpers.Unique(appIDSlice)
+
+	player.BadgeIDs = specialAppIDSlice
 
 	// Make map of app rows
 	var appRowsMap = map[int]sql.App{}
@@ -503,6 +519,19 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 	for _, v := range appRows {
 		appRowsMap[v.ID] = v
+	}
+
+	// Save to Mongo
+	for k, v := range playerBadgeSlice {
+		if app, ok := appRowsMap[v.AppID]; ok {
+			playerBadgeSlice[k].AppName = app.GetName()
+			playerBadgeSlice[k].AppIcon = app.GetIcon()
+		}
+	}
+
+	err = mongo.UpdatePlayerBadges(playerBadgeSlice)
+	if err != nil {
+		return err
 	}
 
 	// Finish badges slice
@@ -660,7 +689,7 @@ func updatePlayerGroups(player *mongo.Player) error {
 
 	// Queue groups for update
 	for _, v := range player.Groups {
-		err = ProduceGroup(strconv.FormatInt(v, 10))
+		err = ProduceGroup([]string{strconv.FormatInt(v, 10)})
 		log.Err(err)
 	}
 

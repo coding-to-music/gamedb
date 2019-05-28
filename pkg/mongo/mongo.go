@@ -50,6 +50,7 @@ const (
 	CollectionPatreonWebhooks collection = "patreon_webhooks"
 	CollectionPlayers         collection = "players"
 	CollectionPlayerApps      collection = "player_apps"
+	CollectionPlayerBadges    collection = "player_badges"
 	CollectionProductPrices   collection = "product_prices"
 	CollectionSessions        collection = "sessions"
 )

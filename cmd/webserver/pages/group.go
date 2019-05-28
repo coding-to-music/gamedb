@@ -2,7 +2,6 @@ package pages
 
 import (
 	"html/template"
-	"math/big"
 	"net/http"
 	"time"
 
@@ -100,9 +99,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	i := big.NewInt(0)
-	i, success := i.SetString(id, 10)
-	if !success {
+	if !helpers.IsValidGroupID(id) {
 		log.Err("invalid id: "+id, r)
 		return
 	}

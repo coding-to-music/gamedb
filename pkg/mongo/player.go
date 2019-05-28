@@ -30,6 +30,7 @@ type Player struct {
 	ID               int64     `bson:"_id"`              //
 	Avatar           string    `bson:"avatar"`           //
 	Badges           string    `bson:"badges"`           // []ProfileBadge
+	BadgeIDs         []int     `bson:"badge_ids"`        // []int - Only special badges
 	BadgeStats       string    `bson:"badge_stats"`      // ProfileBadgeStats
 	Bans             string    `bson:"bans"`             // PlayerBans
 	CountryCode      string    `bson:"country_code"`     //
@@ -71,6 +72,7 @@ func (player Player) BSON() (ret interface{}) {
 		"_id":              player.ID,
 		"avatar":           player.Avatar,
 		"badges":           player.Badges,
+		"badge_ids":        player.BadgeIDs,
 		"badge_stats":      player.BadgeStats,
 		"bans":             player.Bans,
 		"country_code":     player.CountryCode,
