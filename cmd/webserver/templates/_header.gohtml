@@ -107,6 +107,12 @@
                     <a class="nav-link" href="/groups">Groups</a>
                 </li>
 
+                {{ if eq .Env "local" }}
+                <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">
+                    <a class="nav-link" href="/badges">Badges</a>
+                </li>
+                {{ end }}
+
                 <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
                     <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/stats" data-toggle="dropdown">Stats</a>
                     <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Stats</a>

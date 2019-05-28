@@ -84,6 +84,7 @@ func main() {
 	r.Mount("/admin", pages.AdminRouter())
 	r.Mount("/api", pages.APIRouter())
 	r.Mount("/apps", pages.AppsRouter())
+	r.Mount("/badges", pages.BadgesRouter())
 	r.Mount("/bundles", pages.BundlesRouter())
 	r.Mount("/changes", pages.ChangesRouter())
 	r.Mount("/chat", pages.ChatRouter())
