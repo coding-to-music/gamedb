@@ -491,17 +491,45 @@ func ProduceAppPlayers(IDs []int) (err error) {
 	}, queueGoAppPlayer)
 }
 
-func ProduceGroup(ID string) (err error) {
+func ProduceGroup(IDs []string) (err error) {
 
 	time.Sleep(time.Millisecond)
-	
-	// if !helpers.IsValidAppID(ID) {
-	// 	return sql.ErrInvalidAppID
-	// }
 
-	return produce(baseMessage{
-		Message: groupMessage{
-			ID: ID,
-		},
-	}, queueGoGroups)
+	mc := helpers.GetMemcache()
+
+	var prodIDs []string
+
+	for _, v := range IDs {
+		if helpers.IsValidGroupID(v) {
+
+			_, err := mc.Get(v)
+			if err == nil {
+				log.Info("Group " + v + " already in queue")
+				continue
+			}
+
+			item := helpers.MemcacheGroupInQueue(v)
+			err = mc.Set(&item)
+			log.Err(err)
+
+			prodIDs = append(prodIDs, v)
+		}
+	}
+
+	if len(prodIDs) == 0 {
+		return nil
+	}
+
+	chunks := helpers.ChunkStrings(prodIDs, 10)
+
+	for _, v := range chunks {
+		err = produce(baseMessage{
+			Message: groupMessage{
+				IDs: v,
+			},
+		}, queueGoGroups)
+		log.Err(err)
+	}
+
+	return nil
 }

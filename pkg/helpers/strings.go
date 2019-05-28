@@ -66,3 +66,17 @@ func InsertNewLines(s string, n int) string {
 	}
 	return buffer.String()
 }
+
+func ChunkStrings(strings []string, n int) (chunks [][]string) {
+
+	for i := 0; i < len(strings); i += n {
+		end := i + n
+
+		if end > len(strings) {
+			end = len(strings)
+		}
+
+		chunks = append(chunks, strings[i:end])
+	}
+	return chunks
+}

@@ -31,15 +31,6 @@ func GetAppPath(id int, name string) string {
 	return p
 }
 
-func GetPackagePath(id int, name string) string {
-
-	path := "/packages/" + strconv.Itoa(id)
-	if name == "" {
-		return path
-	}
-	return path + "/" + slug.Make(name)
-}
-
 func GetAppName(id int, name string) string {
 
 	if name != "" {
