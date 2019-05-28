@@ -120,10 +120,10 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		err = updateGroupFromXML(message, &group)
 		if err != nil {
 			if err.Error() == "expected element type <memberList> but have <html>" {
-				logInfo("Group not found", message.ID)
+				logInfo("Group not found", k)
 				payload.ack(msg)
 			} else {
-				logError(err, message.ID)
+				logError(err, k)
 				payload.ackRetry(msg)
 			}
 			return
@@ -131,14 +131,14 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = addGroupToInflux(group)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, k)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = sendGroupWebsocket(group)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, k)
 		}
 	}
 
