@@ -1,0 +1,34 @@
+{{define "badge"}} {{ template "_header" . }}
+
+<div class="container" id="badge-page" data-id="{{ .Group.ID64 }}" data-path="{{ .Group.GetPath }}">
+
+    <div class="jumbotron">
+
+        <img src="{{ .Group.GetIcon }}" alt="{{ .Group.Name }}">
+
+        {{ template "_social" .Group }}
+
+        <h1 class="text-truncate" title="{{ .Group.Name }}">
+            <i class="fas fa-user-friends"></i> {{ .Group.Name }} <a href="{{ .Group.GetLink }}" target="_blank"><i class="fas fa-link"></i></a>
+        </h1>
+
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div id="chart"></div>
+
+            {{ if eq .Group.Type "game" }}
+                <p><a href="/apps/{{ .Group.URL }}" class="btn btn-success">Go to App page</a></p>
+            {{ end }}
+
+            <h5>{{ .Group.Headline }}</h5>
+            <div>{{ .Summary }}</div>
+
+        </div>
+    </div>
+
+</div>
+
+{{ template "_footer" . }} {{end}}
