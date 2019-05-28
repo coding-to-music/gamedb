@@ -54,6 +54,7 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	var pages = []string{
 		"/",
 		"/api",
+		"/badges",
 		"/changes",
 		"/chat",
 		"/commits",
