@@ -48,7 +48,7 @@ if ($groupPage.length > 0) {
                     enabled: false
                 },
                 legend: {
-                    enabled: true
+                    enabled: false
                 },
                 plotOptions: {},
                 xAxis: {
@@ -56,6 +56,7 @@ if ($groupPage.length > 0) {
                         text: ''
                     },
                     type: 'datetime'
+
                 },
                 yAxis: [
                     Object.assign({}, yAxisGroup),
