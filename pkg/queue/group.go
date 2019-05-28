@@ -51,9 +51,9 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	if payload.Attempt > 1 {
-		logInfo("Consuming group: " + message.ID + ", attempt " + strconv.Itoa(payload.Attempt))
-	}
+	// if payload.Attempt > 1 {
+	// 	logInfo("Consuming group: " + message.ID + ", attempt " + strconv.Itoa(payload.Attempt))
+	// }
 
 	// Backwards compatability, can remove when group queue goes down
 	message.IDs = append(message.IDs, message.ID)
@@ -111,7 +111,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 	for k := range IDMap {
 
-		if helpers.IsValidGroupID(k) {
+		if !helpers.IsValidGroupID(k) {
 			continue
 		}
 
