@@ -2,21 +2,23 @@ package mongo
 
 import (
 	"strconv"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type PlayerBadge struct {
-	PlayerID            int64  `bson:"player_id"`
-	BadgeID             int    `bson:"badge_id"`
-	BadgeLevel          int    `bson:"badge_level"`
-	BadgeCompletionTime int64  `bson:"badge_time"`
-	BadgeXP             int    `bson:"badge_xp"`
-	BadgeScarcity       int    `bson:"badge_scarcity"`
-	AppID               int    `bson:"app_id"`
-	AppName             string `bson:"app_name"`
-	AppIcon             string `bson:"app_icon"`
+	PlayerID            int64     `bson:"player_id"`
+	BadgeID             int       `bson:"badge_id"`
+	BadgeLevel          int       `bson:"badge_level"`
+	BadgeCompletionTime time.Time `bson:"badge_time"`
+	BadgeXP             int       `bson:"badge_xp"`
+	BadgeScarcity       int       `bson:"badge_scarcity"`
+	BadgeItemID         int64     `bson:"badge_item_id"`
+	AppID               int       `bson:"app_id"`
+	AppName             string    `bson:"app_name"`
+	AppIcon             string    `bson:"app_icon"`
 }
 
 func (pb PlayerBadge) BSON() (ret interface{}) {
@@ -29,6 +31,7 @@ func (pb PlayerBadge) BSON() (ret interface{}) {
 		"badge_time":     pb.BadgeCompletionTime,
 		"badge_xp":       pb.BadgeXP,
 		"badge_scarcity": pb.BadgeScarcity,
+		"badge_item_id":  pb.BadgeItemID,
 		"app_id":         pb.AppID,
 		"app_name":       pb.AppName,
 		"app_icon":       pb.AppIcon,
