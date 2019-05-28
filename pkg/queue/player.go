@@ -499,10 +499,11 @@ func updatePlayerBadges(player *mongo.Player) error {
 			PlayerID:            player.ID,
 			BadgeID:             v.BadgeID,
 			BadgeLevel:          v.Level,
-			BadgeCompletionTime: v.CompletionTime,
+			BadgeCompletionTime: time.Unix(v.CompletionTime, 0),
 			BadgeXP:             v.XP,
 			BadgeScarcity:       v.Scarcity,
 			AppID:               v.AppID,
+			BadgeItemID:         int64(v.CommunityItemID),
 		})
 		if v.AppID == 0 {
 			specialAppIDSlice = append(specialAppIDSlice, v.AppID)
