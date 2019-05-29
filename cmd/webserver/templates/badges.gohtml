@@ -9,31 +9,81 @@
     </div>
 
     <div class="card">
+        <div class="card-header">
+
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#special" role="tab">Special Badges</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#event" role="tab">Event Badges</a>
+                </li>
+            </ul>
+
+        </div>
         <div class="card-body">
 
-            <h5>Event Badges</h5>
+            <div class="tab-content">
 
-            <h5>Special Badges</h5>
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable" data-ordering="false">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col" width="50%">Badge</th>
-                        <th scope="col">Players</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{ range $key, $value := .Badges }}
-                        <tr data-link="{{ .GetPath }}">
-                            <td class="img" nowrap="nowrap">
-                                <img src="{{ $.ImageBase }}{{ .Image }}" alt="{{ .Name }}">
-                                <span>{{ .Name }}</span>
-                            </td>
-                            <td>{{ .Max }}</td>
-                        </tr>
-                    {{ end }}
-                    </tbody>
-                </table>
+                <div class="tab-pane show active" id="special" role="tabpanel">
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable" data-ordering="false">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" width="50%">Badge</th>
+                                <th scope="col">Game DB Players</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range $key, $value := .SpecialBadges }}
+                                <tr data-link="{{ .GetPath }}">
+                                    <td class="img" nowrap="nowrap">
+                                        <img src="{{ .GetIcon }}" alt="{{ .Name }}">
+                                        <span>{{ .Name }}</span>
+                                    </td>
+                                    <td>{{ .Max }}</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="tab-pane" id="event" role="tabpanel">
+
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover table-striped table-datatable" data-ordering="false">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" width="50%">Badge</th>
+                                <th scope="col">Highest Level</th>
+                                <th scope="col">Highest Foil</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range $key, $value := .EventBadges }}
+                                <tr data-link="{{ .GetPath }}">
+                                    <td class="img" nowrap="nowrap">
+                                        <img src="{{ .GetIcon }}" alt="{{ .Name }}">
+                                        <span>{{ .Name }}</span>
+                                    </td>
+                                    <td>{{ .Max }}</td>
+                                    <td>{{ .MaxFoil }}</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h6>What are Foil Trading Cards?</h6>
+                    <p>There is a small chance whenever you get a Trading Card from playing a game that it will have a special foil border.
+                        You'll need to collect a set of foil cards in order to craft them into a foil badge.
+                        There is no extra benefit to having foil cards or foil badges aside from their rarity.</p>
+
+                </div>
+
             </div>
 
         </div>
