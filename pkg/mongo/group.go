@@ -98,11 +98,11 @@ func GetGroup(id string) (group Group, err error) {
 	// }
 
 	if len(id) == 18 {
-		err = FindDocument(CollectionGroups, "_id", id, nil, &group)
+		err = FindDocumentByKey(CollectionGroups, "_id", id, nil, &group)
 	} else {
 		i, err := strconv.ParseInt(id, 10, 32)
 		if err == nil {
-			err = FindDocument(CollectionGroups, "id", i, nil, &group)
+			err = FindDocumentByKey(CollectionGroups, "id", i, nil, &group)
 		}
 	}
 

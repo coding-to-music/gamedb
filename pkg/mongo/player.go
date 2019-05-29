@@ -362,7 +362,7 @@ func GetPlayer(id int64) (player Player, err error) {
 		return player, ErrInvalidPlayerID
 	}
 
-	err = FindDocument(CollectionPlayers, "_id", id, nil, &player)
+	err = FindDocumentByKey(CollectionPlayers, "_id", id, nil, &player)
 
 	player.ID = id
 
