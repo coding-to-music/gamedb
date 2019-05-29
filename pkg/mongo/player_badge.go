@@ -88,8 +88,9 @@ func (pb PlayerBadge) GetIcon() string {
 	return specialImageBase + pb.BadgeIcon
 }
 
-func (pb PlayerBadge) GetPlayers() int {
-	return 123
+func (pb PlayerBadge) GetPlayers() (int64, error) {
+
+	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": pb.BadgeID})
 }
 
 func (pb PlayerBadge) GetMax() int {
@@ -129,20 +130,15 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	return err
 }
 
-func CountPlayersWithSpecialBadge(badgeID int) (count int64, err error) {
-
-	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": badgeID})
-}
-
 // func GetPlayerSpecialBadges(playerID int64) (badges []PlayerBadge, err error) {
 // 	return getBadges(0, 100, M{"app_id": 0, "player_id": playerID})
 // }
 
 func GetPlayerEventBadges(playerID int64, offset int64) (badges []PlayerBadge, err error) {
-	return getBadges(offset, 100, M{"app_id": M{"$gt": 0}, "player_id": playerID})
+	return getBadges(offset, 100, M{"app_id": M{"$gt": 0}, "player_id": playerID}, M{"badge_completion_time": -1})
 }
 
-func getBadges(offset int64, limit int64, filter interface{}) (badges []PlayerBadge, err error) {
+func getBadges(offset int64, limit int64, filter interface{}, sort interface{}) (badges []PlayerBadge, err error) {
 
 	if filter == nil {
 		filter = M{}
@@ -155,8 +151,11 @@ func getBadges(offset int64, limit int64, filter interface{}) (badges []PlayerBa
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerBadges.String())
 
-	ops := options.Find().SetSort(M{"badge_completion_time": -1})
+	ops := options.Find()
 
+	if sort != nil {
+		ops.SetSort(sort)
+	}
 	if limit > 0 {
 		ops.SetLimit(limit)
 	}
@@ -193,9 +192,9 @@ var Badges = map[int]PlayerBadge{
 	3:      {BadgeID: 3, BadgeIcon: "03_potato/potato03_80.png", BadgeName: "The Potato Sack"},
 	4:      {BadgeID: 4, BadgeIcon: "04_treasurehunt/treasurehunt03_80.png", BadgeName: "The Great Steam Treasure Hunt"},
 	5:      {BadgeID: 5, BadgeIcon: "05_summer2011/tickets80.png", BadgeName: "Steam Summer Camp"},
-	6:      {BadgeID: 6, BadgeIcon: "06_winter2011/coal03_80.png", BadgeName: "Steam HolBadgeIDay Sale 2011"},
+	6:      {BadgeID: 6, BadgeIcon: "06_winter2011/coal03_80.png", BadgeName: "Steam Holiday Sale 2011"},
 	7:      {BadgeID: 7, BadgeIcon: "07_summer2012/Summer2012_stage3_80.png", BadgeName: "Steam Summer Sale 2012"},
-	8:      {BadgeID: 8, BadgeIcon: "08_winter2012/winter2012_badge80.png", BadgeName: "Steam HolBadgeIDay Sale 2012"},
+	8:      {BadgeID: 8, BadgeIcon: "08_winter2012/winter2012_badge80.png", BadgeName: "Steam Holiday Sale 2012"},
 	9:      {BadgeID: 9, BadgeIcon: "09_communitytranslator/translator_level4_80.png", BadgeName: "Steam Community Translator"},
 	10:     {BadgeID: 10, BadgeIcon: "generic/CommunityModerator_80.png", BadgeName: "Steam Community Moderator"},
 	11:     {BadgeID: 11, BadgeIcon: "generic/ValveEmployee_80.png", BadgeName: "Valve Employee"},
@@ -209,7 +208,7 @@ var Badges = map[int]PlayerBadge{
 	19:     {BadgeID: 19, BadgeIcon: "16_summer2014/team_green.png", BadgeName: "Steam Summer Adventure 2014 - Green Team"},
 	20:     {BadgeID: 20, BadgeIcon: "16_summer2014/team_purple.png", BadgeName: "Steam Summer Adventure 2014 - Purple Team"},
 	21:     {BadgeID: 21, BadgeIcon: "21_auction/winner_80.png?v=2", BadgeName: "Auction Participant/Winner"},
-	22:     {BadgeID: 22, BadgeIcon: "22_golden/owner_80.png", BadgeName: "2014 HolBadgeIDay Profile Recipient"},
+	22:     {BadgeID: 22, BadgeIcon: "22_golden/owner_80.png", BadgeName: "2014 Holiday Profile Recipient"},
 	23:     {BadgeID: 23, BadgeIcon: "23_towerattack/wormhole.png", BadgeName: "Monster Summer"},
 	24:     {BadgeID: 24, BadgeIcon: "24_winter2015_arg_red_herring/red_herring.png", BadgeName: "Red Herring"},
 	25:     {BadgeID: 25, BadgeIcon: "25_steamawardnominations/level04_80.png", BadgeName: "Steam Awards Nomination Committee 2016"},

@@ -42,7 +42,7 @@
                                         <img src="{{ .GetIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
                                     </td>
-                                    <td>{{ comma .GetPlayers }}</td>
+                                    <td>{{ comma64 .GetPlayers }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
