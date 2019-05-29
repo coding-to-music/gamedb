@@ -497,6 +497,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 			BadgeScarcity:       v.Scarcity,
 			BadgeXP:             v.XP,
 			PlayerID:            player.ID,
+			PlayerIcon:          player.Avatar,
+			PlayerName:          player.GetName(),
 		})
 		if v.AppID == 0 {
 			specialAppIDSlice = append(specialAppIDSlice, v.AppID)

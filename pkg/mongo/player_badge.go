@@ -29,6 +29,8 @@ type PlayerBadge struct {
 	BadgeScarcity       int       `bson:"badge_scarcity"`
 	BadgeXP             int       `bson:"badge_xp"`
 	PlayerID            int64     `bson:"player_id"`
+	PlayerName          string    `bson:"player_name"`
+	PlayerIcon          string    `bson:"player_icon"`
 }
 
 func (pb PlayerBadge) BSON() (ret interface{}) {
@@ -45,6 +47,8 @@ func (pb PlayerBadge) BSON() (ret interface{}) {
 		"badge_scarcity":        pb.BadgeScarcity,
 		"badge_xp":              pb.BadgeXP,
 		"player_id":             pb.PlayerID,
+		"player_icon":           pb.PlayerIcon,
+		"player_name":           pb.PlayerName,
 	}
 }
 
