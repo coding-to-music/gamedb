@@ -496,14 +496,15 @@ func updatePlayerBadges(player *mongo.Player) error {
 			Scarcity:       v.Scarcity,
 		})
 		playerBadgeSlice = append(playerBadgeSlice, mongo.PlayerBadge{
-			PlayerID:            player.ID,
-			BadgeID:             v.BadgeID,
-			BadgeLevel:          v.Level,
-			BadgeCompletionTime: time.Unix(v.CompletionTime, 0),
-			BadgeXP:             v.XP,
-			BadgeScarcity:       v.Scarcity,
 			AppID:               v.AppID,
+			BadgeCompletionTime: time.Unix(v.CompletionTime, 0),
+			BadgeFoil:           bool(v.BorderColor),
+			BadgeID:             v.BadgeID,
 			BadgeItemID:         int64(v.CommunityItemID),
+			BadgeLevel:          v.Level,
+			BadgeScarcity:       v.Scarcity,
+			BadgeXP:             v.XP,
+			PlayerID:            player.ID,
 		})
 		if v.AppID == 0 {
 			specialAppIDSlice = append(specialAppIDSlice, v.AppID)
