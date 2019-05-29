@@ -115,6 +115,32 @@ func FindDocumentByKey(collection collection, col string, val interface{}, proje
 	return result.Decode(document)
 }
 
+func GetFirstDocument(collection collection, filter interface{}, sort interface{}, projection M, document Document) (err error) {
+
+	if filter == nil {
+		filter = M{}
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	ops := options.FindOne()
+
+	if projection != nil {
+		ops.SetProjection(projection)
+	}
+	if sort != nil {
+		ops.SetSort(sort)
+	}
+
+	c := client.Database(MongoDatabase).Collection(collection.String())
+	result := c.FindOne(ctx, filter, ops)
+
+	return result.Decode(document)
+}
+
 // Errors if key already exists
 func InsertDocument(collection collection, document Document) (resp *mongo.InsertOneResult, err error) {
 

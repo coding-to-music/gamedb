@@ -39,7 +39,7 @@
                             {{ range $key, $value := .GetSpecialBadges }}
                                 <tr data-link="{{ .GetPath }}">
                                     <td class="img" nowrap="nowrap">
-                                        <img src="{{ .GetIcon }}" alt="{{ .BadgeName }}">
+                                        <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
                                     </td>
                                     <td>{{ comma64 .GetPlayers }}</td>
@@ -66,7 +66,7 @@
                             {{ range $key, $value := .GetEventBadges }}
                                 <tr data-link="{{ .GetPath }}">
                                     <td class="img" nowrap="nowrap">
-                                        <img src="{{ .GetIcon }}" alt="{{ .BadgeName }}">
+                                        <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
                                     </td>
                                     <td>{{ comma .GetMax }}</td>

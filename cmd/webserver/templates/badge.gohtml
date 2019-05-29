@@ -4,7 +4,7 @@
 
     <div class="jumbotron">
 
-        <img src="{{ .Badge.GetIcon }}" alt="{{ .Badge.GetName }}">
+        <img src="{{ .Badge.GetBadgeIcon }}" alt="{{ .Badge.GetName }}">
 
         {{ template "_social" .Badge }}
 
@@ -17,14 +17,25 @@
     <div class="card">
         <div class="card-body">
 
-            <div id="chart"></div>
-
-            {{ if eq .Group.Type "game" }}
-                <p><a href="/apps/{{ .Group.URL }}" class="btn btn-success">Go to App page</a></p>
+            {{ if gt .Badge.AppID 0 }}
+                <p><a href="{{ .Badge.GetAppPath }}" class="btn btn-success">Go to App page</a></p>
             {{ end }}
 
-            <h5>{{ .Group.Headline }}</h5>
-            <div>{{ .Summary }}</div>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable2 mb-0" data-ordering="false" data-path="/badges/{{ .Badge.BadgeID }}/players.json">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col" width="1%">Rank</th>
+                        <th scope="col">Player</th>
+                        <th scope="col">Level</th>
+                        <th scope="col">Achieved</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     </div>

@@ -60,8 +60,16 @@ func (pb PlayerBadge) IsSpecial() bool {
 	return pb.AppID == 0
 }
 
+func (pb PlayerBadge) GetName() string {
+	return pb.BadgeName
+}
+
 func (pb PlayerBadge) GetPath() string {
 	return "/badges/" + strconv.Itoa(pb.BadgeID) + "/" + slug.Make(pb.BadgeName)
+}
+
+func (pb PlayerBadge) GetPlayerPath() string {
+	return helpers.GetPlayerPath(pb.PlayerID, pb.PlayerName)
 }
 
 func (pb PlayerBadge) GetTimeFormatted() string {
@@ -79,7 +87,7 @@ func (pb PlayerBadge) GetAppName() string {
 	return helpers.GetAppName(pb.AppID, pb.AppName)
 }
 
-func (pb PlayerBadge) GetIcon() string {
+func (pb PlayerBadge) GetBadgeIcon() string {
 
 	if pb.BadgeIcon == "" {
 		return helpers.DefaultAppIcon
@@ -92,17 +100,42 @@ func (pb PlayerBadge) GetIcon() string {
 	return specialImageBase + pb.BadgeIcon
 }
 
+func (pb PlayerBadge) GetPlayerIcon() string {
+	return helpers.GetPlayerAvatar(pb.PlayerIcon)
+}
+
 func (pb PlayerBadge) GetPlayers() (int64, error) {
 
 	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": pb.BadgeID})
 }
 
-func (pb PlayerBadge) GetMax() int {
-	return 123
+func (pb PlayerBadge) GetMax() (max int, err error) {
+
+	doc := PlayerBadge{}
+	err = GetFirstDocument(
+		CollectionPlayerBadges,
+		M{"app_id": M{"$gt": 0}, "badge_foil": false},
+		M{"badge_level": -1, "badge_completion_time": 1},
+		M{"badge_level": 1, "_id": -1},
+		&doc,
+	)
+
+	return doc.BadgeLevel, err
 }
 
-func (pb PlayerBadge) GetMaxFoil() int {
-	return 123
+func (pb PlayerBadge) GetMaxFoil() (max int, err error) {
+
+	doc := PlayerBadge{}
+	err = GetFirstDocument(
+		CollectionPlayerBadges,
+		M{"app_id": M{"$gt": 0}, "badge_foil": true},
+		M{"badge_level": -1, "badge_completion_time": 1},
+		M{"badge_level": 1, "_id": -1},
+		&doc,
+	)
+	err = helpers.IgnoreErrors(err, ErrNoDocuments)
+
+	return doc.BadgeLevel, err
 }
 
 func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
@@ -134,15 +167,15 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	return err
 }
 
-// func GetPlayerSpecialBadges(playerID int64) (badges []PlayerBadge, err error) {
-// 	return getBadges(0, 100, M{"app_id": 0, "player_id": playerID})
-// }
-
 func GetPlayerEventBadges(playerID int64, offset int64) (badges []PlayerBadge, err error) {
-	return getBadges(offset, 100, M{"app_id": M{"$gt": 0}, "player_id": playerID}, M{"badge_completion_time": -1})
+	return getBadges(offset, 100, M{"app_id": M{"$gt": 0}, "player_id": playerID}, M{"badge_completion_time": -1}, nil)
 }
 
-func getBadges(offset int64, limit int64, filter interface{}, sort interface{}) (badges []PlayerBadge, err error) {
+func GetBadgePlayers(offset int64, filter interface{}) (badges []PlayerBadge, err error) {
+	return getBadges(offset, 100, filter, M{"badge_level": -1, "badge_completion_time": 1}, nil)
+}
+
+func getBadges(offset int64, limit int64, filter interface{}, sort interface{}, projection interface{}) (badges []PlayerBadge, err error) {
 
 	if filter == nil {
 		filter = M{}
@@ -165,6 +198,9 @@ func getBadges(offset int64, limit int64, filter interface{}, sort interface{}) 
 	}
 	if offset > 0 {
 		ops.SetSkip(offset)
+	}
+	if projection != nil {
+		ops.SetProjection(projection)
 	}
 
 	cur, err := c.Find(ctx, filter, ops)
