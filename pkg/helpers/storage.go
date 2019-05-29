@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	PathBadges      = func(playerID int64) string { return "player-badges/" + strconv.FormatInt(playerID, 10) + ".json" }
 	PathFriends     = func(playerID int64) string { return "player-friends/" + strconv.FormatInt(playerID, 10) + ".json" }
 	PathRecentGames = func(playerID int64) string { return "player-recent-games/" + strconv.FormatInt(playerID, 10) + ".json" }
 )

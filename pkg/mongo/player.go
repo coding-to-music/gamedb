@@ -29,7 +29,6 @@ var (
 type Player struct {
 	ID               int64     `bson:"_id"`              //
 	Avatar           string    `bson:"avatar"`           //
-	Badges           string    `bson:"badges"`           // []ProfileBadge
 	BadgeIDs         []int     `bson:"badge_ids"`        // []int - Only special badges
 	BadgeStats       string    `bson:"badge_stats"`      // ProfileBadgeStats
 	Bans             string    `bson:"bans"`             // PlayerBans
@@ -71,7 +70,6 @@ func (player Player) BSON() (ret interface{}) {
 	return M{
 		"_id":              player.ID,
 		"avatar":           player.Avatar,
-		"badges":           player.Badges,
 		"badge_ids":        player.BadgeIDs,
 		"badge_stats":      player.BadgeStats,
 		"bans":             player.Bans,
@@ -221,27 +219,20 @@ func (player Player) GetPlaytimeRank() string {
 }
 
 //
-func (player Player) GetBadges() (badges []ProfileBadge, err error) {
+func (player Player) GetSpecialBadges() (badges []PlayerBadge) {
 
-	if player.Badges == "" || player.Badges == "null" {
+	if player.BadgeIDs == nil || len(player.BadgeIDs) == 0 {
 		return
 	}
 
-	var bytes []byte
+	for _, v := range player.BadgeIDs {
 
-	if helpers.IsStorageLocaion(player.Badges) {
-
-		bytes, err = helpers.Download(helpers.PathBadges(player.ID))
-		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
-		if err != nil {
-			return badges, err
+		if val, ok := Badges[v]; ok {
+			badges = append(badges, val)
 		}
-	} else {
-		bytes = []byte(player.Badges)
 	}
 
-	err = helpers.Unmarshal(bytes, &badges)
-	return badges, err
+	return badges
 }
 
 func (player Player) GetFriends() (friends []ProfileFriend, err error) {
@@ -600,41 +591,7 @@ func (p ProfileFriend) GetLevel() string {
 	return "-"
 }
 
-// ProfileBadge
-type ProfileBadge struct {
-	BadgeID        int    `json:"bi"`
-	AppID          int    `json:"ai"`
-	AppName        string `json:"an"`
-	AppIcon        string `json:"ac"`
-	Level          int    `json:"lv"`
-	CompletionTime int64  `json:"ct"`
-	XP             int    `json:"xp"`
-	Scarcity       int    `json:"sc"`
-}
-
-func (p ProfileBadge) GetTimeFormatted() string {
-	return time.Unix(p.CompletionTime, 0).Format(helpers.DateYearTime)
-}
-
-func (p ProfileBadge) GetAppPath() string {
-	return helpers.GetAppPath(p.AppID, p.AppName)
-}
-
-func (p ProfileBadge) GetAppName() string {
-	if p.AppID == 0 {
-		return "No App"
-	}
-	return helpers.GetAppName(p.AppID, p.AppName)
-}
-
-func (p ProfileBadge) GetIcon() string {
-	if p.AppIcon == "" {
-		return helpers.DefaultAppIcon
-	}
-	return p.AppIcon
-}
-
-// ProfileBadge
+// ProfileBadgeStats
 type ProfileBadgeStats struct {
 	PlayerXP                   int
 	PlayerLevel                int

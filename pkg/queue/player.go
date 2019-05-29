@@ -480,21 +480,13 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 	player.BadgeStats = string(b)
 
-	// Start badges slice
-	var badgeSlice []mongo.ProfileBadge
+	// Save badges
 	var playerBadgeSlice []mongo.PlayerBadge
 	var appIDSlice []int
 	var specialAppIDSlice []int
+
 	for _, v := range response.Badges {
 		appIDSlice = append(appIDSlice, v.AppID)
-		badgeSlice = append(badgeSlice, mongo.ProfileBadge{
-			BadgeID:        v.BadgeID,
-			AppID:          v.AppID,
-			Level:          v.Level,
-			CompletionTime: v.CompletionTime,
-			XP:             v.XP,
-			Scarcity:       v.Scarcity,
-		})
 		playerBadgeSlice = append(playerBadgeSlice, mongo.PlayerBadge{
 			AppID:               v.AppID,
 			BadgeCompletionTime: time.Unix(v.CompletionTime, 0),
@@ -523,46 +515,16 @@ func updatePlayerBadges(player *mongo.Player) error {
 		appRowsMap[v.ID] = v
 	}
 
-	// Save to Mongo
+	// Finish badges slice
 	for k, v := range playerBadgeSlice {
 		if app, ok := appRowsMap[v.AppID]; ok {
 			playerBadgeSlice[k].AppName = app.GetName()
-			playerBadgeSlice[k].AppIcon = app.GetIcon()
+			playerBadgeSlice[k].BadgeIcon = app.GetIcon()
 		}
 	}
 
-	err = mongo.UpdatePlayerBadges(playerBadgeSlice)
-	if err != nil {
-		return err
-	}
-
-	// Finish badges slice
-	for k, v := range badgeSlice {
-		if app, ok := appRowsMap[v.AppID]; ok {
-			badgeSlice[k].AppName = app.GetName()
-			badgeSlice[k].AppIcon = app.GetIcon()
-		}
-	}
-
-	// Encode to JSON bytes
-	b, err = json.Marshal(badgeSlice)
-	if err != nil {
-		return err
-	}
-
-	// Upload
-	if len(b) > maxBytesToStore {
-		storagePath := helpers.PathBadges(player.ID)
-		err = helpers.Upload(storagePath, b)
-		if err != nil {
-			return err
-		}
-		player.Badges = storagePath
-	} else {
-		player.Badges = string(b)
-	}
-
-	return nil
+	// Save to Mongo
+	return mongo.UpdatePlayerBadges(playerBadgeSlice)
 }
 
 func updatePlayerFriends(player *mongo.Player) error {

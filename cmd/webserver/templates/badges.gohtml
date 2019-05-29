@@ -36,13 +36,13 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {{ range $key, $value := .SpecialBadges }}
+                            {{ range $key, $value := .GetSpecialBadges }}
                                 <tr data-link="{{ .GetPath }}">
                                     <td class="img" nowrap="nowrap">
-                                        <img src="{{ .GetIcon }}" alt="{{ .Name }}">
-                                        <span>{{ .Name }}</span>
+                                        <img src="{{ .GetIcon }}" alt="{{ .BadgeName }}">
+                                        <span>{{ .BadgeName }}</span>
                                     </td>
-                                    <td>{{ .Max }}</td>
+                                    <td>{{ comma .GetPlayers }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
@@ -63,14 +63,14 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {{ range $key, $value := .EventBadges }}
+                            {{ range $key, $value := .GetEventBadges }}
                                 <tr data-link="{{ .GetPath }}">
                                     <td class="img" nowrap="nowrap">
-                                        <img src="{{ .GetIcon }}" alt="{{ .Name }}">
-                                        <span>{{ .Name }}</span>
+                                        <img src="{{ .GetIcon }}" alt="{{ .BadgeName }}">
+                                        <span>{{ .BadgeName }}</span>
                                     </td>
-                                    <td>{{ .Max }}</td>
-                                    <td>{{ .MaxFoil }}</td>
+                                    <td>{{ comma .GetMax }}</td>
+                                    <td>{{ comma .GetMaxFoil }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>

@@ -104,19 +104,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
-	// Get badges
-	var badges []mongo.ProfileBadge
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		// var err error
-		badges, _ = player.GetBadges()
-		// log.Err(err, r) // log.Err(err, r) // Too many logs
-
-	}(player)
-
 	// Get recent games
 	var recentGames []RecentlyPlayedGame
 	wg.Add(1)
@@ -228,7 +215,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Player = player
 	t.Friends = friends
 	t.Apps = []mongo.PlayerApp{}
-	t.Badges = badges
+	t.Badges = player.GetSpecialBadges()
 	t.BadgeStats = badgeStats
 	t.RecentGames = recentGames
 	t.GameStats = gameStats
@@ -245,7 +232,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 type playerTemplate struct {
 	GlobalTemplate
 	Apps          []mongo.PlayerApp
-	Badges        []mongo.ProfileBadge
+	Badges        []mongo.PlayerBadge
 	BadgeStats    mongo.ProfileBadgeStats
 	Banners       map[string][]string
 	Bans          mongo.PlayerBans
