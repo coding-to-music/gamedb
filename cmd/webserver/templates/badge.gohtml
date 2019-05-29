@@ -1,15 +1,15 @@
 {{define "badge"}} {{ template "_header" . }}
 
-<div class="container" id="badge-page" data-id="{{ .Badge.ID }}" data-path="{{ .Badge.GetPath }}">
+<div class="container" id="badge-page" data-path="{{ .Badge.GetPath }}">
 
     <div class="jumbotron">
 
-        <img src="{{ .Group.GetIcon }}" alt="{{ .Group.Name }}">
+        <img src="{{ .Badge.GetIcon }}" alt="{{ .Badge.GetName }}">
 
-        {{ template "_social" .Group }}
+        {{ template "_social" .Badge }}
 
-        <h1 class="text-truncate" title="{{ .Group.Name }}">
-            <i class="fas fa-user-friends"></i> {{ .Group.Name }} <a href="{{ .Group.GetLink }}" target="_blank"><i class="fas fa-link"></i></a>
+        <h1 class="text-truncate" title="{{ .Badge.GetName }}">
+            <i class="fas fa-ribbon"></i> {{ .Badge.GetName }}
         </h1>
 
     </div>
