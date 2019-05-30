@@ -664,10 +664,8 @@ func updatePlayerGroups(player *mongo.Player) error {
 	player.Groups = resp.GetIDs()
 
 	// Queue groups for update
-	for _, v := range player.Groups {
-		err = ProduceGroup([]string{strconv.FormatInt(v, 10)})
-		log.Err(err)
-	}
+	err = ProduceGroup(resp.GetIDs())
+	log.Err(err)
 
 	return nil
 }

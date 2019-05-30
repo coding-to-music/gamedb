@@ -178,7 +178,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		groups, err = mongo.GetGroupsByShortID(player.Groups, mongo.M{"_id": 1, "name": 1, "members": 1, "icon": 1})
+		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "name": 1, "members": 1, "icon": 1}, mongo.D{{"name", 1}})
 		log.Err(err, r)
 
 		for k, v := range groups {

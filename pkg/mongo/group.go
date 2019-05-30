@@ -109,32 +109,29 @@ func GetGroup(id string) (group Group, err error) {
 	return group, err
 }
 
-func GetGroupsByShortID(ids []int64, projection M) (groups []Group, err error) {
+func GetGroupsByID(ids []string, projection M, sort D) (groups []Group, err error) {
 
 	if len(ids) < 1 {
 		return groups, nil
 	}
 
 	var idsBSON A
+	var id64sBSON A
+
 	for _, v := range ids {
-		idsBSON = append(idsBSON, v)
+		if len(v) == 18 {
+			id64sBSON = append(id64sBSON, v)
+		} else {
+			idsBSON = append(idsBSON, v)
+		}
 	}
 
-	return getGroups(0, 0, D{{"name", 1}}, M{"id": M{"$in": idsBSON}}, projection)
-}
+	var filter = M{"$or": A{
+		M{"_id": M{"$in": id64sBSON}},
+		M{"id": M{"$in": idsBSON}},
+	}}
 
-func GetGroupsByLongID(ids []string, projection M) (groups []Group, err error) {
-
-	if len(ids) < 1 {
-		return groups, nil
-	}
-
-	var idsBSON A
-	for _, v := range ids {
-		idsBSON = append(idsBSON, v)
-	}
-
-	return getGroups(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection)
+	return getGroups(0, 0, sort, filter, projection)
 }
 
 func GetGroups(limit int64, offset int64, sort D, filter M, projection M) (groups []Group, err error) {
