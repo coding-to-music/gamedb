@@ -192,6 +192,16 @@ var (
 			},
 		},
 		{
+			Title: "Player - Badges",
+			Path:  "player-badges",
+			Params: []apiCallParam{
+				paramAPIKey,
+				paramID,
+				paramOffset,
+				paramLimit,
+			},
+		},
+		{
 			Title: "Player - Games",
 			Path:  "player-apps",
 			Params: []apiCallParam{
