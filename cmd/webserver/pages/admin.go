@@ -414,6 +414,14 @@ func adminDev() {
 
 	log.Info("Started dev code")
 
+	players, err := mongo.GetPlayersWithAGroup()
+	log.Err(err)
+	for _, v := range players {
+		err = queue.ProducePlayer(v.ID)
+		log.Err(err)
+		// log.Info(v.ID)
+	}
+
 	// groups, err := mongo.GetGroups(0, 0, mongo.D{}, mongo.M{}, mongo.M{})
 	// for _, v := range groups {
 	// 	err = queue.ProduceGroup(v.ID64)

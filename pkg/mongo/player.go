@@ -425,6 +425,11 @@ func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
 	return getPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection)
 }
 
+func GetPlayersWithAGroup() (players []Player, err error) {
+
+	return getPlayers(0, 0, nil, M{"groups.0": M{"$exists": true}}, M{"_id": 1})
+}
+
 func getPlayers(offset int64, limit int64, sort D, filter interface{}, projection M) (players []Player, err error) {
 
 	if filter == nil {
