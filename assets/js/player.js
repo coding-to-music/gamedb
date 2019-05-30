@@ -49,6 +49,13 @@ if ($playerPage.length > 0) {
                 loadPlayerGames();
             }
         }
+        if (to.attr('href') === '#badges') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+
+                loadPlayerBadges();
+            }
+        }
 
         // On any tab
         $.each(dataTables, function (index, value) {
@@ -109,6 +116,59 @@ if ($playerPage.length > 0) {
                         return row[6];
                     },
                 }
+            ]
+        }));
+
+        dataTables.push(dt);
+    }
+
+    function loadPlayerBadges() {
+
+        const dt = $('#badges table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+            "order": [[2, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-app-id', data[0]);
+                $(row).attr('data-link', data[2]);
+            },
+            "columnDefs": [
+                // Icon / App Name
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<img src="' + row[5] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                },
+                // Level / XP
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[6].toLocaleString() + ' (' + row[8].toLocaleString() + 'xp)';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    }
+                },
+                // Scarcity
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[7].toLocaleString();
+                    },
+                },
+                // Completion Time
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[3].toLocaleString();
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    }
+                },
             ]
         }));
 

@@ -269,6 +269,7 @@
                 <div class="tab-pane" id="badges" role="tabpanel">
 
                     {{/* XP Info */}}
+                    <h5>Current Level</h5>
                     <table class="table">
                         <tbody>
                         <tr>
@@ -294,6 +295,8 @@
                         </tbody>
                     </table>
 
+                    {{/* Badge Icons */}}
+                    <h5>Noteworthy Badges</h5>
                     <div id="special" class="mb-3">
                         {{ range $key, $value := .Badges }}
                             <a href="{{ .GetPath }}">
@@ -302,32 +305,20 @@
                         {{ end }}
                     </div>
 
-                    {{/* Badges */}}
+                    {{/* App Badges Table */}}
+                    <h5>App Badges</h5>
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "desc"]]'>
+                        <table class="table table-hover table-striped table-datatable2 mb-0" data-ordering="false" data-path="/players/{{ .Player.ID }}/badges.json">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col">Game</th>
-                                <th scope="col">ID</th>
+                                <th scope="col">App</th>
                                 <th scope="col">Level</th>
-                                <th scope="col">Acquired</th>
-                                <th scope="col">XP</th>
                                 <th scope="col">Owners</th>
+                                <th scope="col">Achieved</th>
                             </tr>
                             </thead>
-                            {{ range $key, $value := .Badges }}
-                                <tr{{if gt .AppID 0}} data-link="{{ .GetAppPath }}"{{end}}>
-                                    <td class="img" data-order="{{ .GetAppName }}">
-                                        <img src="{{ .GetIcon }}" alt="{{ .GetAppName }}" class="rounded square">
-                                        <span class="truncate" style="width: 500px;">{{ .GetAppName }}</span>
-                                    </td>
-                                    <td>{{ comma .BadgeID }}</td>
-                                    <td>{{ comma .Level }}</td>
-                                    <td data-order="{{.CompletionTime}}" nowrap="nowrap">{{ .GetTimeFormatted }}</td>
-                                    <td>{{ comma .XP }}</td>
-                                    <td>{{ comma .Scarcity }}</td>
-                                </tr>
-                            {{ end }}
+                            <tbody>
+                            </tbody>
                         </table>
                     </div>
 

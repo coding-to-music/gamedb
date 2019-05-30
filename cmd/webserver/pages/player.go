@@ -18,6 +18,7 @@ func PlayerRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", playerHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
+	r.Get("/badges.json", playerBadgesAjaxHandler)
 	r.Get("/update.json", playersUpdateAjaxHandler)
 	r.Get("/history.json", playersHistoryAjaxHandler)
 	r.Get("/{slug}", playerHandler)
@@ -413,6 +414,75 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.output(w, r)
 
+}
+
+func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id: "+id, r)
+		return
+	}
+
+	idx, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := DataTablesQuery{}
+	err = query.fillFromURL(r.URL.Query())
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	// Make filter
+	var filter = mongo.M{"app_id": mongo.M{"$gt": 0}, "player_id": idx}
+
+	//
+	var wg sync.WaitGroup
+
+	// Get badges
+	var badges []mongo.PlayerBadge
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		var err error
+		badges, err = mongo.GetPlayerEventBadges(query.getOffset64(), filter)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}(r)
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}(r)
+
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = strconv.FormatInt(total, 10)
+	response.RecordsFiltered = response.RecordsTotal
+	response.Draw = query.Draw
+
+	for _, v := range badges {
+		response.AddRow(v.OutputForJSON())
+	}
+
+	response.output(w, r)
 }
 
 func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {

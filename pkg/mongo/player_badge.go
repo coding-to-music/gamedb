@@ -141,6 +141,20 @@ func (pb PlayerBadge) GetEventMaxFoil() (max int, err error) {
 	return doc.BadgeLevel, err
 }
 
+func (pb PlayerBadge) OutputForJSON() []interface{} {
+	return []interface{}{
+		pb.AppID,        // 0
+		pb.AppName,      // 1
+		pb.GetAppPath(), // 2
+		pb.BadgeCompletionTime.Format("2006-01-02 15:04:05"), // 3
+		pb.BadgeFoil,     // 4
+		pb.BadgeIcon,     // 5
+		pb.BadgeLevel,    // 6
+		pb.BadgeScarcity, // 7
+		pb.BadgeXP,       // 8
+	}
+}
+
 func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 
 	if badges == nil || len(badges) == 0 {
@@ -170,8 +184,8 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	return err
 }
 
-func GetPlayerEventBadges(playerID int64, offset int64) (badges []PlayerBadge, err error) {
-	return getBadges(offset, 100, M{"app_id": M{"$gt": 0}, "player_id": playerID}, M{"badge_completion_time": -1}, nil)
+func GetPlayerEventBadges(offset int64, filter interface{}) (badges []PlayerBadge, err error) {
+	return getBadges(offset, 100, filter, M{"badge_completion_time": -1}, nil)
 }
 
 func GetBadgePlayers(offset int64, filter interface{}) (badges []PlayerBadge, err error) {
