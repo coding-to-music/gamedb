@@ -17,36 +17,36 @@
 
             <ul class="nav nav-tabs card-header-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
+                    <a class="nav-link nav-link-small active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#charts" role="tab">History</a>
+                    <a class="nav-link nav-link-small" data-toggle="tab" href="#charts" role="tab">History</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#games" role="tab">Games ({{ comma .Player.GamesCount }})</a>
+                    <a class="nav-link nav-link-small" data-toggle="tab" href="#games" role="tab">Games ({{ comma .Player.GamesCount }})</a>
                 </li>
                 {{if gt .Player.FriendsCount 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }}/{{ comma .Player.GetMaxFriends }})</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }}/{{ comma .Player.GetMaxFriends }})</a>
                     </li>
                 {{ end }}
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#badges" role="tab">XP / Badges ({{ comma .Player.BadgesCount }})</a>
+                    <a class="nav-link nav-link-small" data-toggle="tab" href="#badges" role="tab">XP / Badges ({{ comma .Player.BadgesCount }})</a>
                 </li>
                 {{if gt (len .Groups) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#groups" role="tab">Groups ({{ comma (len .Groups) }})</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#groups" role="tab">Groups ({{ comma (len .Groups) }})</a>
                     </li>
                 {{ end }}
                 <li class="ml-0 ml-lg-auto"></li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#" role="tab" data-update-id="{{ .Player.ID }}" rel="nofollow">
+                    <a class="nav-link nav-link-small" href="#" role="tab" data-update-id="{{ .Player.ID }}" rel="nofollow">
                         <i class="fas fa-sync-alt"></i> Update
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/coop?p={{ .Player.ID }}{{ if .PlayerID }}&p={{ .PlayerID }}{{ end }}" role="tab">
+                    <a class="nav-link nav-link-small" href="/coop?p={{ .Player.ID }}{{ if .PlayerID }}&p={{ .PlayerID }}{{ end }}" role="tab">
                         <i class="fas fa-user-friends"></i> Co-op
                     </a>
                 </li>
