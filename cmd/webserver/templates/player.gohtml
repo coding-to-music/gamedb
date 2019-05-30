@@ -294,6 +294,14 @@
                         </tbody>
                     </table>
 
+                    <div id="special" class="mb-3">
+                        {{ range $key, $value := .Badges }}
+                            <a href="{{ .GetPath }}">
+                                <img src="{{ .GetBadgeIcon }}" alt="" class="mr-1 mb-1" data-toggle="tooltip" data-placement="top" title="{{ .GetName }}">
+                            </a>
+                        {{ end }}
+                    </div>
+
                     {{/* Badges */}}
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "desc"]]'>
