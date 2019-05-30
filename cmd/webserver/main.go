@@ -134,6 +134,7 @@ func main() {
 	r.Get("/browserconfig.xml", pages.RootFileHandler)
 	r.Get("/robots.txt", pages.RootFileHandler)
 	r.Get("/site.webmanifest", pages.RootFileHandler)
+	r.Get("/ads.txt", pages.RootFileHandler)
 
 	// File server
 	fileServer(r, "/assets", http.Dir(config.Config.AssetsPath.Get()))
