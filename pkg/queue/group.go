@@ -51,12 +51,33 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	// if message.ID != "" {
+	// 	message.IDs = append(message.IDs, message.ID)
+	// }
+	//
+	// f, err := os.OpenFile("groups.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	// log.Err(err)
+	//
+	// for _, v := range message.IDs {
+	// 	log.Info(v)
+	// 	_, err = f.WriteString("," + v)
+	// 	log.Err(err)
+	// }
+	//
+	// err = f.Close()
+	// log.Err(err)
+	//
+	// payload.ack(msg)
+	// return
+
 	// if payload.Attempt > 1 {
 	// 	logInfo("Consuming group: " + message.ID + ", attempt " + strconv.Itoa(payload.Attempt))
 	// }
 
 	// Backwards compatability, can remove when group queue goes down
-	message.IDs = append(message.IDs, message.ID)
+	if message.ID != "" {
+		message.IDs = append(message.IDs, message.ID)
+	}
 
 	// Make ID map
 	var IDMap = map[string]string{}
@@ -117,7 +138,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 		group := mongo.Group{}
 
-		err = updateGroupFromXML(message, &group)
+		err = updateGroupFromXML(k, &group)
 		if err != nil {
 			if err.Error() == "expected element type <memberList> but have <html>" {
 				logInfo("Group not found", k)
@@ -148,19 +169,19 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 var groupRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack)
 
-func updateGroupFromXML(message groupMessage, group *mongo.Group) (err error) {
+func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 
 	groupRateLimit.Take()
 
-	resp, b, err := helpers.GetSteam().GetGroupByID(message.ID)
+	resp, b, err := helpers.GetSteam().GetGroupByID(id)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		return err
 	}
 
-	if len(message.ID) < 18 {
+	if len(id) < 18 {
 
-		i, err := strconv.ParseInt(message.ID, 10, 32)
+		i, err := strconv.ParseInt(id, 10, 32)
 		if err != nil {
 			return err
 		}
