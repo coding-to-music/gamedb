@@ -350,8 +350,6 @@ func adminQueues(r *http.Request) {
 
 		for _, val := range vals {
 
-			val = strings.TrimSpace(val)
-
 			err := queue.ProduceGroup([]string{val})
 			log.Err(err, r)
 		}

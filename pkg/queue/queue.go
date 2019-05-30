@@ -500,6 +500,9 @@ func ProduceGroup(IDs []string) (err error) {
 	var prodIDs []string
 
 	for _, v := range IDs {
+
+		v = strings.TrimSpace(v)
+
 		if helpers.IsValidGroupID(v) {
 
 			_, err := mc.Get(v)
