@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"errors"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -231,6 +232,10 @@ func (player Player) GetSpecialBadges() (badges []PlayerBadge) {
 			badges = append(badges, val)
 		}
 	}
+
+	sort.Slice(badges, func(i, j int) bool {
+		return badges[i].BadgeID < badges[j].BadgeID
+	})
 
 	return badges
 }
