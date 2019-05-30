@@ -500,8 +500,18 @@ func updatePlayerBadges(player *mongo.Player) error {
 			PlayerIcon:          player.Avatar,
 			PlayerName:          player.GetName(),
 		})
+
+		// Add significant badges to profile
 		if v.AppID == 0 {
-			specialBadgeIDSlice = append(specialBadgeIDSlice, v.BadgeID)
+			_, ok := mongo.Badges[v.BadgeID]
+			if ok {
+				specialBadgeIDSlice = append(specialBadgeIDSlice, v.BadgeID)
+			}
+		} else {
+			_, ok := mongo.Badges[v.AppID]
+			if ok {
+				specialBadgeIDSlice = append(specialBadgeIDSlice, v.AppID)
+			}
 		}
 	}
 	appIDSlice = helpers.Unique(appIDSlice)
