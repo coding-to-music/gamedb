@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -505,13 +506,13 @@ func ProduceGroup(IDs []string) (err error) {
 
 		if helpers.IsValidGroupID(v) {
 
-			_, err := mc.Get(v)
+			item := helpers.MemcacheGroupInQueue(v)
+
+			_, err := mc.Get(item.Key)
 			if err == nil {
-				log.Info("Group " + v + " already in queue")
 				continue
 			}
 
-			item := helpers.MemcacheGroupInQueue(v)
 			err = mc.Set(&item)
 			log.Err(err)
 
