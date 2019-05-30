@@ -104,36 +104,39 @@ func (pb PlayerBadge) GetPlayerIcon() string {
 	return helpers.GetPlayerAvatar(pb.PlayerIcon)
 }
 
-func (pb PlayerBadge) GetPlayers() (int64, error) {
+func (pb PlayerBadge) GetSpecialPlayers() (int64, error) {
 
 	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": pb.BadgeID})
 }
 
-func (pb PlayerBadge) GetMax() (max int, err error) {
+func (pb PlayerBadge) GetEventMax() (max int, err error) {
 
 	doc := PlayerBadge{}
 	err = GetFirstDocument(
 		CollectionPlayerBadges,
-		M{"app_id": M{"$gt": 0}, "badge_foil": false},
-		M{"badge_level": -1, "badge_completion_time": 1},
-		M{"badge_level": 1, "_id": -1},
-		&doc,
-	)
-
-	return doc.BadgeLevel, err
-}
-
-func (pb PlayerBadge) GetMaxFoil() (max int, err error) {
-
-	doc := PlayerBadge{}
-	err = GetFirstDocument(
-		CollectionPlayerBadges,
-		M{"app_id": M{"$gt": 0}, "badge_foil": true},
+		M{"app_id": pb.AppID, "badge_id": 1, "badge_foil": false},
 		M{"badge_level": -1, "badge_completion_time": 1},
 		M{"badge_level": 1, "_id": -1},
 		&doc,
 	)
 	err = helpers.IgnoreErrors(err, ErrNoDocuments)
+	log.Err(err)
+
+	return doc.BadgeLevel, err
+}
+
+func (pb PlayerBadge) GetEventMaxFoil() (max int, err error) {
+
+	doc := PlayerBadge{}
+	err = GetFirstDocument(
+		CollectionPlayerBadges,
+		M{"app_id": pb.AppID, "badge_id": 1, "badge_foil": true},
+		M{"badge_level": -1, "badge_completion_time": 1},
+		M{"badge_level": 1, "_id": -1},
+		&doc,
+	)
+	err = helpers.IgnoreErrors(err, ErrNoDocuments)
+	log.Err(err)
 
 	return doc.BadgeLevel, err
 }

@@ -43,6 +43,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	t := badgeTemplate{}
 	t.fill(w, r, "Badge", "")
 	t.Badge = val
+	t.Foil = r.URL.Query().Get("foil")
 
 	err = returnTemplate(w, r, "badge", t)
 	log.Err(err, r)
@@ -51,6 +52,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 type badgeTemplate struct {
 	GlobalTemplate
 	Badge mongo.PlayerBadge
+	Foil  string
 }
 
 type badgePlayerAjax struct {
@@ -89,15 +91,15 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	var filter = mongo.M{
-		"badge_id":   idx,
-		"badge_foil": false, // todo, toggle this
-	}
+	var filter = mongo.M{}
 
 	if badge.IsSpecial() {
 		filter["app_id"] = 0
+		filter["badge_id"] = idx
 	} else {
-		filter["app_id"] = mongo.M{"$gt": 0}
+		filter["app_id"] = idx
+		filter["badge_id"] = 1
+		filter["badge_foil"] = r.URL.Query().Get("foil") == "1"
 	}
 
 	var badgeAjaxRows []badgePlayerAjax

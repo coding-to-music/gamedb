@@ -25,6 +25,7 @@
 
             <div class="tab-content">
 
+                {{/* Special Badges */}}
                 <div class="tab-pane show active" id="special" role="tabpanel">
 
                     <div class="table-responsive">
@@ -42,7 +43,7 @@
                                         <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
                                     </td>
-                                    <td>{{ comma64 .GetPlayers }}</td>
+                                    <td>{{ comma64 .GetSpecialPlayers }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
@@ -51,6 +52,7 @@
 
                 </div>
 
+                {{/* Event/App Badges */}}
                 <div class="tab-pane" id="event" role="tabpanel">
 
                     <div class="table-responsive mb-4">
@@ -64,13 +66,13 @@
                             </thead>
                             <tbody>
                             {{ range $key, $value := .GetEventBadges }}
-                                <tr data-link="{{ .GetPath }}">
-                                    <td class="img" nowrap="nowrap">
+                                <tr>
+                                    <td data-link="{{ .GetPath }}" class="img" nowrap="nowrap">
                                         <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
                                     </td>
-                                    <td>{{ comma .GetMax }}</td>
-                                    <td>{{ comma .GetMaxFoil }}</td>
+                                    <td data-link="{{ .GetPath }}">{{ comma .GetEventMax }}</td>
+                                    <td data-link="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
