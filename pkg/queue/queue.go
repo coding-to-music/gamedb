@@ -526,10 +526,10 @@ func ProduceGroup(IDs []string) (err error) {
 
 	chunks := helpers.ChunkStrings(prodIDs, 10)
 
-	for _, v := range chunks {
+	for _, chunk := range chunks {
 		err = produce(baseMessage{
 			Message: groupMessage{
-				IDs: v,
+				IDs: chunk,
 			},
 		}, queueGoGroups)
 		log.Err(err)
