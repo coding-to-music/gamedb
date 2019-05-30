@@ -483,7 +483,7 @@ func updatePlayerBadges(player *mongo.Player) error {
 	// Save badges
 	var playerBadgeSlice []mongo.PlayerBadge
 	var appIDSlice []int
-	var specialAppIDSlice []int
+	var specialBadgeIDSlice []int
 
 	for _, v := range response.Badges {
 		appIDSlice = append(appIDSlice, v.AppID)
@@ -501,12 +501,12 @@ func updatePlayerBadges(player *mongo.Player) error {
 			PlayerName:          player.GetName(),
 		})
 		if v.AppID == 0 {
-			specialAppIDSlice = append(specialAppIDSlice, v.AppID)
+			specialBadgeIDSlice = append(specialBadgeIDSlice, v.BadgeID)
 		}
 	}
 	appIDSlice = helpers.Unique(appIDSlice)
 
-	player.BadgeIDs = specialAppIDSlice
+	player.BadgeIDs = specialBadgeIDSlice
 
 	// Make map of app rows
 	var appRowsMap = map[int]sql.App{}
