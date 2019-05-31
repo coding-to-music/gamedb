@@ -27,6 +27,8 @@ var version string
 
 func main() {
 
+	rand.Seed(time.Now().Unix())
+
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
@@ -65,9 +67,6 @@ func main() {
 	}
 
 	session.Initialise(sessionInit)
-
-	//
-	rand.Seed(time.Now().UnixNano())
 
 	// Routes
 	r := chi.NewRouter()
