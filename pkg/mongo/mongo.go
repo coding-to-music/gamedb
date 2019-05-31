@@ -227,3 +227,15 @@ func CountDocuments(collection collection, filter interface{}) (count int64, err
 
 	return count, err
 }
+
+func DeleteColumn(collection collection, column string) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return nil
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
+	_, err = c.UpdateMany(ctx, M{}, M{"$unset": M{column: ""}})
+	return err
+}
