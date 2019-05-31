@@ -52,7 +52,10 @@ var (
 	MemcacheGroupRow = func(ID64 string) memcache.Item {
 		return memcache.Item{Key: "group-" + ID64, Expiration: 86400 * 30}
 	}
-	MemcacheConfigRow = func(key string) memcache.Item {
+	MemcachePackage = func(id int) memcache.Item {
+		return memcache.Item{Key: "package-" + strconv.Itoa(id), Expiration: 0}
+	}
+	MemcacheConfigItem = func(key string) memcache.Item {
 		return memcache.Item{Key: "config-item-" + key, Expiration: 0}
 	}
 	MemcacheAppPlayersRow = func(appID int) memcache.Item {

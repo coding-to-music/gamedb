@@ -370,30 +370,32 @@ func IsValidPackageID(id int) bool {
 	return id != 0
 }
 
-func GetPackage(id int, columns []string) (pack Package, err error) {
+func GetPackage(id int) (pack Package, err error) {
 
-	db, err := GetMySQLClient()
-	if err != nil {
-		return pack, err
-	}
+	var item = helpers.MemcachePackage(id)
 
-	db = db.First(&pack, id)
-	if db.Error != nil {
-		return pack, db.Error
-	}
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &pack, func() (interface{}, error) {
 
-	if columns != nil && len(columns) > 0 {
-		db = db.Select(columns)
+		var pack Package
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return pack, err
+		}
+
+		db = db.First(&pack, id)
 		if db.Error != nil {
 			return pack, db.Error
 		}
-	}
 
-	if pack.ID == 0 {
-		return pack, ErrRecordNotFound
-	}
+		if pack.ID == 0 {
+			return pack, ErrRecordNotFound
+		}
 
-	return pack, nil
+		return pack, nil
+	})
+
+	return pack, err
 }
 
 func GetPackages(ids []int, columns []string) (packages []Package, err error) {
