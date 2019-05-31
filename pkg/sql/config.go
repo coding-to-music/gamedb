@@ -62,14 +62,14 @@ func SetConfig(id ConfigType, value string) (err error) {
 	}
 
 	// Save to memcache
-	item := helpers.MemcacheConfigRow(string(id))
+	item := helpers.MemcacheConfigItem(string(id))
 
 	return helpers.GetMemcache().SetInterface(item.Key, config, item.Expiration)
 }
 
 func GetConfig(id ConfigType) (config Config, err error) {
 
-	var item = helpers.MemcacheConfigRow(string(id))
+	var item = helpers.MemcacheConfigItem(string(id))
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &config, func() (interface{}, error) {
 

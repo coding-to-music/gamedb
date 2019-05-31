@@ -3,20 +3,18 @@ package helpers
 import (
 	"strconv"
 
+	"cloud.google.com/go/pubsub"
 	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 )
+
+type MemcacheItem = memcache.Item
 
 var (
 	ErrCacheMiss   = memcache.ErrCacheMiss
 	memcacheClient = memcache.New("game-db-", config.Config.MemcacheDSN.Get())
 )
-
-type MemcacheItem = memcache.Item
-
-func GetMemcache() *memcache.Memcache {
-	return memcacheClient
-}
 
 var (
 	// Counts
@@ -46,8 +44,8 @@ var (
 	MemcacheDeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 86400 * 7}
 
 	// Rows
-	MemcacheChangeRow = func(changeID int64) memcache.Item {
-		return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 86400 * 30}
+	MemcacheChange = func(changeID int64) memcache.Item {
+		return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0}
 	}
 	MemcacheGroup = func(id string) memcache.Item {
 		return memcache.Item{Key: "group-" + id, Expiration: 0}
@@ -76,3 +74,28 @@ var (
 		return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60}
 	}
 )
+
+func GetMemcache() *memcache.Memcache {
+	return memcacheClient
+}
+
+func ListenToPubSub() {
+
+	mc := GetMemcache()
+
+	err := PubSubSubscribe(PubSubMemcache, func(m *pubsub.Message) {
+
+		err := mc.Delete(string(m.Data))
+		err = IgnoreErrors(err, memcache.ErrCacheMiss)
+		log.Err(err)
+
+	})
+	log.Err(err)
+}
+
+//
+func ClearMemcache(item MemcacheItem) (err error) {
+
+	_, err = Publish(PubSubTopicWebsockets, item.Key)
+	return err
+}

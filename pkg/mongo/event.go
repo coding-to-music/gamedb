@@ -5,8 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/memcache-go/memcache"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -181,10 +179,9 @@ func CreateUserEvent(r *http.Request, userID int, eventType EventEnum) (err erro
 		return err
 	}
 
-	if config.HasMemcache() {
-		err = helpers.GetMemcache().Delete(helpers.MemcacheUserEventsCount(userID).Key)
-		err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
-	}
+	// Clear cache
+	err = helpers.ClearMemcache(helpers.MemcacheUserEventsCount(userID))
+	log.Err(err)
 
 	return err
 }

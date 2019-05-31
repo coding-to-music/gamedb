@@ -133,7 +133,7 @@ type WebsocketPayload struct {
 // Converts pubsub messages into websockets
 func ListenToPubSub() {
 
-	err := helpers.Subscribe(helpers.PubSubWebsockets, func(m *pubsub.Message) {
+	err := helpers.PubSubSubscribe(helpers.PubSubWebsockets, func(m *pubsub.Message) {
 
 		// log.Info("PubSub (" + humanize.Bytes(uint64(len(m.Data))) + "): " + string(m.Data))
 
@@ -164,7 +164,7 @@ func ListenToPubSub() {
 
 			case PagePlayer:
 
-				idPayload := PubSubID64Payload{}
+				idPayload := PubSubIDStringPayload{} // int64 too large for js
 
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
@@ -173,7 +173,7 @@ func ListenToPubSub() {
 
 			case PageGroup:
 
-				idPayload := PubSubIDStringPayload{}
+				idPayload := PubSubIDStringPayload{} // ID too large for int64
 
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
@@ -196,7 +196,7 @@ func ListenToPubSub() {
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
 
-				pack, err := sql.GetPackage(idPayload.ID, nil)
+				pack, err := sql.GetPackage(idPayload.ID)
 				if err != nil {
 					log.Err(err)
 					continue

@@ -85,7 +85,7 @@ func (change Change) OutputForJSON(allApps map[int]string, allPackages map[int]s
 
 func GetChange(id int64) (change Change, err error) {
 
-	var item = helpers.MemcacheChangeRow(id)
+	var item = helpers.MemcacheChange(id)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &change, func() (interface{}, error) {
 

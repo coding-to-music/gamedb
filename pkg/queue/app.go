@@ -13,7 +13,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -268,19 +267,19 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		wsPayload.ID = message.ID
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
 
-		_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
+		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 		log.Err(err)
 	}()
 
+	// Clear caches
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		// Clear caches
-		if config.HasMemcache() && app.ReleaseDateUnix > time.Now().Unix() && newApp {
-			err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingAppsCount.Key)
-			err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
+		if app.ReleaseDateUnix > time.Now().Unix() && newApp {
+
+			err = helpers.ClearMemcache(helpers.MemcacheUpcomingAppsCount)
 			log.Err(err)
 		}
 	}()

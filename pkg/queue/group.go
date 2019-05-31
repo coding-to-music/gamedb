@@ -8,6 +8,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
@@ -105,6 +106,12 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		if err != nil {
 			logError(err, message.ID)
 		}
+
+		err = helpers.ClearMemcache(helpers.MemcacheGroup(group.ID64))
+		log.Err(err)
+
+		err = helpers.ClearMemcache(helpers.MemcacheGroup(strconv.Itoa(group.ID)))
+		log.Err(err)
 	}
 
 	for k := range IDMap {
@@ -118,13 +125,12 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		err = updateGroupFromXML(k, &group)
 		if err != nil {
 			if err.Error() == "expected element type <memberList> but have <html>" {
-				logInfo("Group not found", k)
-				payload.ack(msg)
+				continue
 			} else {
 				logError(err, k)
 				payload.ackRetry(msg)
+				return
 			}
-			return
 		}
 
 		err = addGroupToInflux(group)
@@ -138,6 +144,12 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		if err != nil {
 			logError(err, k)
 		}
+
+		err = helpers.ClearMemcache(helpers.MemcacheGroup(group.ID64))
+		log.Err(err)
+
+		err = helpers.ClearMemcache(helpers.MemcacheGroup(strconv.Itoa(group.ID)))
+		log.Err(err)
 	}
 
 	//
@@ -294,10 +306,10 @@ func addGroupToInflux(group mongo.Group) (err error) {
 func sendGroupWebsocket(group mongo.Group) (err error) {
 
 	// Send websocket
-	wsPayload := websockets.PubSubIDStringPayload{}
+	wsPayload := websockets.PubSubIDStringPayload{} // String as int64 too large for js
 	wsPayload.ID = group.ID64
 	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageGroup}
 
-	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
+	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 	return err
 }

@@ -88,16 +88,13 @@ func (c ClearUpcomingCache) Work() {
 
 	started(c)
 
-	var mc = helpers.GetMemcache()
 	var err error
 
-	err = mc.Delete(helpers.MemcacheUpcomingAppsCount.Key)
-	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
-	log.Err(err)
+	err = helpers.ClearMemcache(helpers.MemcacheUpcomingAppsCount)
+	cronLogErr(err)
 
-	err = mc.Delete(helpers.MemcacheUpcomingPackagesCount.Key)
-	err = helpers.IgnoreErrors(err, helpers.ErrCacheMiss)
-	log.Err(err)
+	err = helpers.ClearMemcache(helpers.MemcacheUpcomingPackagesCount)
+	cronLogErr(err)
 
 	finished(c)
 }

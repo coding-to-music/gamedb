@@ -8,10 +8,18 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 )
 
-type PubSubItem string
+type PubSubTopic string
 
 const (
-	PubSubWebsockets PubSubItem = "gamedb-websockets"
+	PubSubTopicWebsockets PubSubTopic = "gamedb-websockets"
+	PubSubTopicMemcache   PubSubTopic = "gamedb-memcache"
+)
+
+type PubSubSubscription string
+
+var (
+	PubSubWebsockets = PubSubSubscription("gamedb-websockets-" + config.Config.Environment.Get())
+	PubSubMemcache   = PubSubSubscription("gamedb-memcache-" + config.Config.Environment.Get())
 )
 
 var pubSubClient *pubsub.Client
@@ -27,14 +35,14 @@ func GetPubSub() (client *pubsub.Client, ctx context.Context, err error) {
 	return client, ctx, err
 }
 
-func Publish(topic PubSubItem, message interface{}) (res *pubsub.PublishResult, err error) {
+func Publish(topic PubSubTopic, message interface{}) (res *pubsub.PublishResult, err error) {
 
-	b, err := json.Marshal(message)
+	client, ctx, err := GetPubSub()
 	if err != nil {
 		return res, err
 	}
 
-	client, ctx, err := GetPubSub()
+	b, err := json.Marshal(message)
 	if err != nil {
 		return res, err
 	}
@@ -45,14 +53,14 @@ func Publish(topic PubSubItem, message interface{}) (res *pubsub.PublishResult, 
 	return res, err
 }
 
-func Subscribe(topic PubSubItem, callback func(m *pubsub.Message)) (err error) {
+func PubSubSubscribe(subscription PubSubSubscription, callback func(m *pubsub.Message)) (err error) {
 
 	client, ctx, err := GetPubSub()
 	if err != nil {
 		return err
 	}
 
-	sub := client.Subscription(string(topic) + "-" + config.Config.Environment.Get())
+	sub := client.Subscription(string(subscription))
 	return sub.Receive(ctx, func(ctx context.Context, m *pubsub.Message) {
 		callback(m)
 		m.Ack()

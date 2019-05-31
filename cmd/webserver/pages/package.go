@@ -32,7 +32,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get package
-	pack, err := sql.GetPackage(idx, []string{})
+	pack, err := sql.GetPackage(idx)
 	if err != nil {
 
 		if err == sql.ErrRecordNotFound {

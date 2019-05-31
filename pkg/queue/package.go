@@ -156,12 +156,13 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	wsPayload.ID = pack.ID
 	wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
 
-	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
+	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 	log.Err(err)
 
 	// Clear caches
 	if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
-		err = helpers.GetMemcache().Delete(helpers.MemcacheUpcomingPackagesCount.Key)
+
+		err = helpers.ClearMemcache(helpers.MemcacheUpcomingPackagesCount)
 		log.Err(err)
 	}
 

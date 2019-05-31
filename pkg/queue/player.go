@@ -239,11 +239,11 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		defer wg.Done()
 
 		// Send websocket
-		wsPayload := websockets.PubSubID64Payload{}
+		wsPayload := websockets.PubSubIDStringPayload{} // String as int64 too large for js
 		wsPayload.ID = strconv.FormatInt(player.ID, 10)
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayer}
 
-		_, err = helpers.Publish(helpers.PubSubWebsockets, wsPayload)
+		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 		log.Err(err)
 	}()
 

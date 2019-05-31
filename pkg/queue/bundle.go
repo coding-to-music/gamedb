@@ -116,7 +116,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	wsPaload.ID = message.ID
 	wsPaload.Pages = []websockets.WebsocketPage{websockets.PageBundle, websockets.PageBundles}
 
-	_, err = helpers.Publish(helpers.PubSubWebsockets, wsPaload)
+	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPaload)
 	log.Err(err)
 
 	payload.ack(msg)
