@@ -1,15 +1,14 @@
 {{define "home"}} {{ template "_header" . }}
 
-<div class="container" id="home-page">
+<link href="https://fonts.googleapis.com/css?family=Audiowide&display=fallback" rel="stylesheet">
 
-    <div class="jumbotron">
-
-        <h1 class="display-4">Game DB</h1>
-        {{/*<p class="lead">{{ .Description }}</p>*/}}
-
-        <h5 class="mt-4">New Features!</h5>
-        <p class="mb-0">Groups database and badge stats have been added.</p>
+<div id="home-image" class="mb-4">
+    <div class="container">
+        <h1>Game DB</h1>
     </div>
+</div>
+
+<div class="container" id="home-page">
 
     {{ template "_flashes" . }}
 

@@ -162,6 +162,7 @@ type GlobalTemplate struct {
 	CSSFiles    []Asset
 	JSFiles     []Asset
 	Canonical   string
+	Background  string
 
 	FlashesGood []string
 	FlashesBad  []string

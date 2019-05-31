@@ -2,13 +2,12 @@ html {
     overflow-y: scroll;
 }
 
-html, body {
-    //scroll-behavior: smooth;
-}
-
 body {
-    background-size: 100%;
-    background: #1b2738 no-repeat center top;
+    background-color: #1b2738;
+    background-size: auto;
+    background-position-x: center;
+    background-position-y: -200px;
+    background-repeat: no-repeat;
 }
 
 *::-webkit-scrollbar {
@@ -17,7 +16,7 @@ body {
 
 *::-webkit-scrollbar-thumb {
     background-color: #28a745;
-    border-radius: .1rem;
+    border-radius: 2px;
 }
 
 div#top {
