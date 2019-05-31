@@ -31,7 +31,7 @@ const (
 )
 
 var (
-	Pages = map[WebsocketPage]Page{}
+	Pages = map[WebsocketPage]*Page{}
 )
 
 func init() {
@@ -51,14 +51,14 @@ func init() {
 		PagePlayer,
 	}
 	for _, v := range pagesSlice {
-		Pages[v] = Page{
+		Pages[v] = &Page{
 			name:        v,
 			connections: map[uuid.UUID]*websocket.Conn{},
 		}
 	}
 }
 
-func GetPage(page WebsocketPage) (ret Page) {
+func GetPage(page WebsocketPage) (ret *Page) {
 
 	if val, ok := Pages[page]; ok {
 		return val
@@ -70,7 +70,7 @@ func GetPage(page WebsocketPage) (ret Page) {
 type Page struct {
 	name        WebsocketPage
 	connections map[uuid.UUID]*websocket.Conn
-	mutex       sync.Mutex
+	sync.Mutex
 }
 
 func (p Page) GetName() WebsocketPage {
@@ -83,13 +83,16 @@ func (p Page) CountConnections() int {
 
 func (p *Page) AddConnection(conn *websocket.Conn) {
 
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	p.connections[uuid.NewV4()] = conn
 }
 
 func (p *Page) Send(data interface{}) {
+
+	p.Lock()
+	defer p.Unlock()
 
 	if p.CountConnections() > 0 {
 
@@ -101,10 +104,7 @@ func (p *Page) Send(data interface{}) {
 
 		for k, v := range p.connections {
 
-			p.mutex.Lock()
 			err := v.WriteJSON(payload)
-			p.mutex.Unlock()
-
 			if err != nil {
 
 				if strings.Contains(err.Error(), "broken pipe") {
@@ -119,9 +119,7 @@ func (p *Page) Send(data interface{}) {
 		}
 
 		for _, v := range connsToDelete {
-			p.mutex.Lock()
 			delete(p.connections, v)
-			p.mutex.Unlock()
 		}
 	}
 }

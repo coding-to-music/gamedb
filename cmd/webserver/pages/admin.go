@@ -121,7 +121,7 @@ type adminTemplate struct {
 	Goroutines int
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
-	Websockets map[websockets.WebsocketPage]websockets.Page
+	Websockets map[websockets.WebsocketPage]*websockets.Page
 	Crons      map[crons.CronEnum]crons.CronInterface
 }
 
