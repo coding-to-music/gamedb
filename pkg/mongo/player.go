@@ -38,8 +38,7 @@ type Player struct {
 	Friends          string    `bson:"friends"`          // []ProfileFriend
 	GamesRecent      string    `bson:"games_recent"`     // []ProfileRecentGame
 	GameStats        string    `bson:"game_stats"`       // PlayerAppStatsTemplate
-	Groups           []string  `bson:"-"`                // []int - Can be greater than 64bit
-	Groups2          []int64   `bson:"groups"`           // []int - Can be greater than 64bit
+	Groups           []string  `bson:"groups"`           // []int - Can be greater than 64bit
 	LastLogOff       time.Time `bson:"time_logged_off"`  //
 	NumberOfGameBans int       `bson:"bans_game"`        //
 	NumberOfVACBans  int       `bson:"bans_cav"`         //
