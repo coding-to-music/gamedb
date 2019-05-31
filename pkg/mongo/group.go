@@ -115,8 +115,8 @@ func GetGroupsByID(ids []string, projection M, sort D) (groups []Group, err erro
 		return groups, nil
 	}
 
-	var idsBSON A
 	var id64sBSON A
+	var idsBSON A
 
 	for _, v := range ids {
 		if len(v) == 18 {
@@ -126,12 +126,17 @@ func GetGroupsByID(ids []string, projection M, sort D) (groups []Group, err erro
 		}
 	}
 
-	var filter = M{"$or": A{
-		M{"_id": M{"$in": id64sBSON}},
-		M{"id": M{"$in": idsBSON}},
-	}}
+	var or = A{}
 
-	return getGroups(0, 0, sort, filter, projection)
+	if len(id64sBSON) > 0 {
+		or = append(or, M{"_id": M{"$in": id64sBSON}})
+	}
+
+	if len(idsBSON) > 0 {
+		or = append(or, M{"id": M{"$in": idsBSON}})
+	}
+
+	return getGroups(0, 0, sort, M{"$or": or}, projection)
 }
 
 func GetGroups(limit int64, offset int64, sort D, filter M, projection M) (groups []Group, err error) {
