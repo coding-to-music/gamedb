@@ -1,16 +1,20 @@
 package mongo
 
 import (
+	"errors"
 	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const AvatarBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/"
+
+var ErrInvalidGroupID = errors.New("invalid group id")
 
 // { name: 'text', url: 'text', headline: 'text' }, { weights: { name: 3, url: 2, headline: 1 }}
 
@@ -93,18 +97,27 @@ func (group Group) GetIcon() string {
 
 func GetGroup(id string) (group Group, err error) {
 
-	// if !IsValidPlayerID(id) {
-	// 	return group, ErrInvalidPlayerID
-	// }
-
-	if len(id) == 18 {
-		err = FindDocumentByKey(CollectionGroups, "_id", id, nil, &group)
-	} else {
-		i, err := strconv.ParseInt(id, 10, 32)
-		if err == nil {
-			err = FindDocumentByKey(CollectionGroups, "id", i, nil, &group)
-		}
+	if !helpers.IsValidGroupID(id) {
+		return group, ErrInvalidGroupID
 	}
+
+	var item = helpers.MemcacheGroup(id)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &group, func() (interface{}, error) {
+
+		var group Group
+
+		if len(id) == 18 {
+			err = FindDocumentByKey(CollectionGroups, "_id", id, nil, &group)
+		} else {
+			i, err := strconv.ParseInt(id, 10, 32)
+			if err == nil {
+				err = FindDocumentByKey(CollectionGroups, "id", i, nil, &group)
+			}
+		}
+
+		return group, err
+	})
 
 	return group, err
 }

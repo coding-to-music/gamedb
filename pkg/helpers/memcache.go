@@ -49,8 +49,8 @@ var (
 	MemcacheChangeRow = func(changeID int64) memcache.Item {
 		return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 86400 * 30}
 	}
-	MemcacheGroupRow = func(ID64 string) memcache.Item {
-		return memcache.Item{Key: "group-" + ID64, Expiration: 86400 * 30}
+	MemcacheGroup = func(id string) memcache.Item {
+		return memcache.Item{Key: "group-" + id, Expiration: 0}
 	}
 	MemcachePackage = func(id int) memcache.Item {
 		return memcache.Item{Key: "package-" + strconv.Itoa(id), Expiration: 0}
