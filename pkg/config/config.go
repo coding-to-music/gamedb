@@ -280,10 +280,6 @@ func ListenOn() string {
 	return "0.0.0.0:" + Config.WebserverPort.Get()
 }
 
-func HasMemcache() bool {
-	return Config.MemcacheDSN.Get() != ""
-}
-
 func IsLocal() bool {
 	return Config.Environment.Get() == EnvLocal
 }
