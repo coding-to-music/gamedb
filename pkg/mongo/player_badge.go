@@ -109,6 +109,11 @@ func (pb PlayerBadge) GetSpecialPlayers() (int64, error) {
 	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": pb.BadgeID})
 }
 
+func (pb PlayerBadge) GetEventPlayers() (int64, error) {
+
+	return CountDocuments(CollectionPlayerBadges, M{"app_id": pb.AppID, "badge_id": 1})
+}
+
 func (pb PlayerBadge) GetEventMax() (max int, err error) {
 
 	doc := PlayerBadge{}

@@ -32,14 +32,14 @@
                         <table class="table table-hover table-striped table-datatable" data-ordering="false">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" width="50%">Badge</th>
+                                <th scope="col">Badge</th>
                                 <th scope="col">Game DB Players</th>
                             </tr>
                             </thead>
                             <tbody>
                             {{ range $key, $value := .GetSpecialBadges }}
                                 <tr data-link="{{ .GetPath }}">
-                                    <td class="img" nowrap="nowrap">
+                                    <td class="img" nowrap="nowrap" width="1%">
                                         <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
                                     </td>
@@ -59,7 +59,8 @@
                         <table class="table table-hover table-striped table-datatable" data-ordering="false">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" width="50%">Badge</th>
+                                <th scope="col">Badge</th>
+                                <th scope="col">Game DB Players</th>
                                 <th scope="col">Highest Level</th>
                                 <th scope="col">Highest Foil Level</th>
                             </tr>
@@ -71,6 +72,7 @@
                                         <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
                                     </td>
+                                    <td>{{ comma64 .GetEventPlayers }}</td>
                                     <td data-link="{{ .GetPath }}">{{ comma .GetEventMax }}</td>
                                     <td data-link="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil }}</td>
                                 </tr>
