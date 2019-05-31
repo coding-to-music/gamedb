@@ -96,6 +96,6 @@ func ListenToPubSub() {
 //
 func ClearMemcache(item MemcacheItem) (err error) {
 
-	_, err = Publish(PubSubTopicWebsockets, item.Key)
+	_, err = Publish(PubSubTopicMemcache, item.Key)
 	return err
 }
