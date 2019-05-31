@@ -685,7 +685,7 @@ func updatePlayerWishlist(player *mongo.Player) error {
 	for k := range resp.Items {
 
 		i, err := strconv.Atoi(k)
-		if err != nil {
+		if err == nil && i > 0 {
 			appIDs = append(appIDs, i)
 		}
 	}
