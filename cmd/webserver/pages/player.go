@@ -51,7 +51,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			// Template
 			tm := playerMissingTemplate{}
-			tm.fill(w, r, player.PersonaName, "")
+			tm.fill(w, r, "Looking for player!", "")
 			tm.addAssetHighCharts()
 			tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 			tm.Player = player
