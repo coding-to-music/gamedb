@@ -51,29 +51,6 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// if message.ID != "" {
-	// 	message.IDs = append(message.IDs, message.ID)
-	// }
-	//
-	// f, err := os.OpenFile("groups.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-	// log.Err(err)
-	//
-	// for _, v := range message.IDs {
-	// 	log.Info(v)
-	// 	_, err = f.WriteString("," + v)
-	// 	log.Err(err)
-	// }
-	//
-	// err = f.Close()
-	// log.Err(err)
-	//
-	// payload.ack(msg)
-	// return
-
-	// if payload.Attempt > 1 {
-	// 	logInfo("Consuming group: " + message.ID + ", attempt " + strconv.Itoa(payload.Attempt))
-	// }
-
 	// Backwards compatability, can remove when group queue goes down
 	if message.ID != "" {
 		message.IDs = append(message.IDs, message.ID)
