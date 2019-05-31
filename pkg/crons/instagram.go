@@ -1,9 +1,12 @@
 package crons
 
 import (
+	"errors"
 	"math/rand"
 	"strconv"
+	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -28,50 +31,54 @@ func (c Instagram) Work() {
 
 	started(c)
 
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-		log.Err(err)
-		return
+	operation := func() (err error) {
+
+		gorm, err := sql.GetMySQLClient()
+		if err != nil {
+			return err
+		}
+
+		gorm = gorm.Select([]string{"id", "name", "screenshots", "reviews_score"})
+		gorm = gorm.Where("JSON_DEPTH(screenshots) = ?", 3)
+		gorm = gorm.Where("name != ?", "")
+		gorm = gorm.Where("type = ?", "game")
+		gorm = gorm.Where("reviews_score >= ?", 90)
+		gorm = gorm.Order("RAND()")
+		gorm = gorm.Limit(1)
+
+		var apps []sql.App
+		gorm = gorm.First(&apps)
+		if gorm.Error != nil {
+			return gorm.Error
+		}
+
+		if len(apps) == 0 {
+			return errors.New("no apps found for instagram")
+		}
+
+		var app = apps[0]
+
+		screenshots, err := app.GetScreenshots()
+		if err != nil {
+			return err
+		}
+
+		var url = screenshots[rand.Intn(len(screenshots))].PathFull
+		if url == "" {
+			return errors.New("empty url")
+		}
+
+		text := app.GetName() + " (Score: " + helpers.FloatToString(app.ReviewsScore, 2) + ") https://gamedb.online/apps/" + strconv.Itoa(app.ID) +
+			" #steamgames #steam #gaming " + helpers.GetHashTag(app.GetName())
+
+		return helpers.UploadInstagram(url, text)
 	}
 
-	gorm = gorm.Select([]string{"id", "name", "screenshots", "reviews_score"})
-	gorm = gorm.Where("JSON_DEPTH(screenshots) = ?", 3)
-	gorm = gorm.Where("name != ?", "")
-	gorm = gorm.Where("type = ?", "game")
-	gorm = gorm.Where("reviews_score >= ?", 90)
-	gorm = gorm.Order("RAND()")
-	gorm = gorm.Limit(1)
+	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second * 10
 
-	var apps []sql.App
-	gorm = gorm.Find(&apps)
-	if gorm.Error != nil {
-		log.Err(gorm.Error)
-		return
-	}
-
-	if len(apps) == 0 {
-		log.Err("no apps found for instagram")
-		return
-	}
-
-	var app = apps[0]
-
-	screenshots, err := app.GetScreenshots()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	var url = screenshots[rand.Intn(len(screenshots))].PathFull
-	if url == "" {
-		c.Work()
-		return
-	}
-
-	err = helpers.UploadInstagram(url, app.GetName()+" (Score: "+helpers.FloatToString(app.ReviewsScore, 2)+") https://gamedb.online/apps/"+strconv.Itoa(app.ID)+" #steamgames #steam #gaming "+helpers.GetHashTag(app.GetName()))
-	if err != nil {
-		log.Critical(err, url)
-	}
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+	log.Critical(err)
 
 	finished(c)
 }

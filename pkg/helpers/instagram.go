@@ -2,13 +2,9 @@ package helpers
 
 import (
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/ahmdrz/goinsta/v2"
-	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 )
 
 var (
@@ -37,6 +33,11 @@ func getInstagram() (*goinsta.Instagram, error) {
 
 func UploadInstagram(imageURL string, message string) (err error) {
 
+	ig, err := getInstagram()
+	if err != nil {
+		return err
+	}
+
 	resp, err := http.Get(imageURL)
 	if err != nil {
 		return err
@@ -45,22 +46,6 @@ func UploadInstagram(imageURL string, message string) (err error) {
 	//noinspection GoUnhandledErrorResult
 	defer resp.Body.Close()
 
-	ig, err := getInstagram()
-	if err != nil {
-		return err
-	}
-
-	operation := func() (err error) {
-
-		_, err = ig.UploadPhoto(resp.Body, message, 0, 0)
-		if err != nil && strings.Contains(err.Error(), "image: unknown format") {
-			return backoff.Permanent(err)
-		}
-		return err
-	}
-
-	policy := backoff.NewExponentialBackOff()
-	policy.InitialInterval = time.Second * 10
-
-	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, "url: "+imageURL) })
+	_, err = ig.UploadPhoto(resp.Body, message, 0, 0)
+	return err
 }
