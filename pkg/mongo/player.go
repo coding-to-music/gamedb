@@ -85,12 +85,12 @@ func (player Player) BSON() (ret interface{}) {
 		"bans_cav":         player.NumberOfVACBans,
 		"persona_name":     player.PersonaName,
 		"primary_clan_id":  player.PrimaryClanID,
-		"real_name":        player.RealName,
 		"status_code":      player.StateCode,
 		"time_created":     player.TimeCreated,
 		"updated_at":       time.Now(),
 		"vanity_url":       player.VanintyURL,
 		"wishlist_app_ids": player.Wishlist,
+		// "real_name":        player.RealName, // Don't need
 
 		// Ranked
 		"badges_count":  player.BadgesCount,
