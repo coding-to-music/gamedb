@@ -34,6 +34,7 @@ const (
 	queueGoChanges   queueName = "GameDB_Go_Changes"
 	queueGoDelays    queueName = "GameDB_Go_Delays"
 	queueGoGroups    queueName = "GameDB_Go_Groups"
+	queueGoGroupsNew queueName = "GameDB_Go_Groups_New"
 	queueGoPackages  queueName = "GameDB_Go_Packages"
 	queueGoPlayers   queueName = "GameDB_Go_Profiles"
 	queueGoFailed    queueName = "GameDB_Go_Failed"
@@ -67,6 +68,9 @@ var (
 		},
 		queueGoGroups: {
 			queue: &groupQueue{},
+		},
+		queueGoGroupsNew: {
+			queue: &groupQueueNew{},
 		},
 		queueGoPackages: {
 			queue: &packageQueue{},
@@ -534,6 +538,37 @@ func ProduceGroup(IDs []string) (err error) {
 		}, queueGoGroups)
 		log.Err(err)
 	}
+
+	return nil
+}
+
+func produceGroupNew(ID string) (err error) {
+
+	time.Sleep(time.Millisecond)
+
+	ID = strings.TrimSpace(ID)
+
+	if !helpers.IsValidGroupID(ID) {
+		return nil
+	}
+
+	item := helpers.MemcacheGroupInQueue(ID)
+
+	mc := helpers.GetMemcache()
+	_, err = mc.Get(item.Key)
+	if err == nil {
+		return nil
+	}
+
+	err = mc.Set(&item)
+	log.Err(err)
+
+	err = produce(baseMessage{
+		Message: groupMessage{
+			ID: ID,
+		},
+	}, queueGoGroupsNew)
+	log.Err(err)
 
 	return nil
 }

@@ -14,7 +14,6 @@ import (
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
-	"github.com/powerslacker/ratelimit"
 	"github.com/streadway/amqp"
 )
 
@@ -80,6 +79,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		}
 
 		//
+		delete(IDMap, strconv.Itoa(group.ID))
 		delete(IDMap, group.ID64)
 
 		// Continue here means skip this group altogether
@@ -95,18 +95,29 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		err = addGroupToInflux(group)
+		//
+		err = saveGroupToMongo(group)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
+		//
+		err = saveGroupToInflux(group)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		//
 		err = sendGroupWebsocket(group)
 		if err != nil {
 			logError(err, message.ID)
 		}
 
+		//
 		err = helpers.ClearMemcache(helpers.MemcacheGroup(group.ID64))
 		log.Err(err)
 
@@ -115,108 +126,12 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	for k := range IDMap {
-
-		if !helpers.IsValidGroupID(k) {
-			continue
-		}
-
-		group := mongo.Group{}
-
-		err = updateGroupFromXML(k, &group)
-		if err != nil {
-			if err.Error() == "expected element type <memberList> but have <html>" {
-				continue
-			} else {
-				logError(err, k)
-				payload.ackRetry(msg)
-				return
-			}
-		}
-
-		err = addGroupToInflux(group)
-		if err != nil {
-			logError(err, k)
-			payload.ackRetry(msg)
-			return
-		}
-
-		err = sendGroupWebsocket(group)
-		if err != nil {
-			logError(err, k)
-		}
-
-		err = helpers.ClearMemcache(helpers.MemcacheGroup(group.ID64))
-		log.Err(err)
-
-		err = helpers.ClearMemcache(helpers.MemcacheGroup(strconv.Itoa(group.ID)))
-		log.Err(err)
+		err = produceGroupNew(k)
+		log.Err(err, k)
 	}
 
 	//
 	payload.ack(msg)
-}
-
-var groupRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack)
-
-func updateGroupFromXML(id string, group *mongo.Group) (err error) {
-
-	groupRateLimit.Take()
-
-	resp, b, err := helpers.GetSteam().GetGroupByID(id)
-	err = helpers.HandleSteamStoreErr(err, b, nil)
-	if err != nil {
-		return err
-	}
-
-	if len(id) < 18 {
-
-		i, err := strconv.ParseInt(id, 10, 32)
-		if err != nil {
-			return err
-		}
-		group.ID = int(i)
-	}
-
-	group.ID64 = resp.ID64
-	group.Name = resp.Details.Name
-	group.URL = resp.Details.URL
-	group.Headline = resp.Details.Headline
-	group.Summary = resp.Details.Summary
-	group.Members = int(resp.Details.MemberCount)
-	group.MembersInChat = int(resp.Details.MembersInChat)
-	group.MembersInGame = int(resp.Details.MembersInGame)
-	group.MembersOnline = int(resp.Details.MembersOnline)
-	group.Type = resp.Type
-
-	// Get working icon
-	if helpers.GetResponseCode(resp.Details.AvatarFull) == 200 {
-
-		group.Icon = strings.Replace(resp.Details.AvatarFull, mongo.AvatarBase, "", 1)
-
-	} else if helpers.GetResponseCode(resp.Details.AvatarMedium) == 200 {
-
-		group.Icon = strings.Replace(resp.Details.AvatarMedium, mongo.AvatarBase, "", 1)
-
-	} else if helpers.GetResponseCode(resp.Details.AvatarIcon) == 200 {
-
-		group.Icon = strings.Replace(resp.Details.AvatarIcon, mongo.AvatarBase, "", 1)
-
-	} else {
-
-		group.Icon = ""
-	}
-
-	// Save
-	mongoResp, err := mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
-	if err != nil {
-		return err
-	}
-
-	if mongoResp.UpsertedCount > 0 {
-		// todo, new row, clear count cache
-	}
-
-	return err
 }
 
 var regexURLFilter = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
@@ -270,17 +185,24 @@ func updateGroupFromPage(message groupMessage, group *mongo.Group) (err error) {
 		group.MembersOnline, err = strconv.Atoi(e.Text)
 	})
 
-	err = c.Visit("https://steamcommunity.com/gid/" + message.ID)
+	return c.Visit("https://steamcommunity.com/gid/" + message.ID)
+}
+
+func saveGroupToMongo(group mongo.Group) (err error) {
+
+	mongoResp, err := mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
 	if err != nil {
 		return err
 	}
 
-	// Save
-	_, err = mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
-	return err
+	if mongoResp.UpsertedCount > 0 {
+		// todo, new row, clear count cache
+	}
+
+	return nil
 }
 
-func addGroupToInflux(group mongo.Group) (err error) {
+func saveGroupToInflux(group mongo.Group) (err error) {
 
 	fields := map[string]interface{}{
 		"members_count":   group.Members,
