@@ -127,6 +127,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	for k := range IDMap {
+
 		err = produceGroupNew(k)
 		if err != nil {
 			log.Err(err, k)
@@ -138,10 +139,10 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 }
 
 var (
-	regexURLFilter      = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
-	regexIntsOnly       = regexp.MustCompile("[^0-9]+")
+	regexURLFilter = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
+	regexIntsOnly  = regexp.MustCompile("[^0-9]+")
 
-	groupScapeRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second), ratelimit.WithoutSlack)
+	groupScapeRateLimit = ratelimit.New(1, ratelimit.WithoutSlack)
 )
 
 func updateGroupFromPage(message groupMessage, group *mongo.Group) (err error) {
