@@ -14,6 +14,7 @@ import (
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
+	"github.com/powerslacker/ratelimit"
 	"github.com/streadway/amqp"
 )
 
@@ -118,10 +119,10 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		}
 
 		//
-		err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGroup(group.ID64))
+		err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGroup(strconv.Itoa(group.ID)))
 		log.Err(err)
 
-		err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGroup(strconv.Itoa(group.ID)))
+		err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGroup(group.ID64))
 		log.Err(err)
 	}
 
@@ -136,10 +137,16 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-var regexURLFilter = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
-var regexIntsOnly = regexp.MustCompile("[^0-9]+")
+var (
+	regexURLFilter      = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
+	regexIntsOnly       = regexp.MustCompile("[^0-9]+")
+
+	groupScapeRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second), ratelimit.WithoutSlack)
+)
 
 func updateGroupFromPage(message groupMessage, group *mongo.Group) (err error) {
+
+	groupScapeRateLimit.Take()
 
 	c := colly.NewCollector(
 		colly.URLFilters(regexURLFilter),

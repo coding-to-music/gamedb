@@ -102,11 +102,11 @@ func (q groupQueueNew) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-var groupRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack)
+var groupXMLRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack)
 
 func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 
-	groupRateLimit.Take()
+	groupXMLRateLimit.Take()
 
 	resp, b, err := helpers.GetSteam().GetGroupByID(id)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
