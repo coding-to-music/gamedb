@@ -90,10 +90,10 @@ func (c ClearUpcomingCache) Work() {
 
 	var err error
 
-	err = helpers.ClearMemcache(helpers.MemcacheUpcomingAppsCount)
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingAppsCount)
 	cronLogErr(err)
 
-	err = helpers.ClearMemcache(helpers.MemcacheUpcomingPackagesCount)
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingPackagesCount)
 	cronLogErr(err)
 
 	finished(c)

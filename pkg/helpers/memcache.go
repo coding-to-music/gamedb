@@ -94,7 +94,7 @@ func ListenToPubSub() {
 }
 
 //
-func ClearMemcache(item MemcacheItem) (err error) {
+func RemoveKeyFromMemCacheViaPubSub(item MemcacheItem) (err error) {
 
 	_, err = Publish(PubSubTopicMemcache, item.Key)
 	return err

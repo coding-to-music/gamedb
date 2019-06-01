@@ -174,7 +174,7 @@ func (c Genres) Work() {
 	wg.Wait()
 
 	//
-	err = helpers.ClearMemcache(helpers.MemcacheGenreKeyNames)
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGenreKeyNames)
 	cronLogErr(err)
 
 	//
@@ -343,7 +343,7 @@ func (c Publishers) Work() {
 	wg.Wait()
 
 	//
-	err = helpers.ClearMemcache(helpers.MemcachePublisherKeyNames)
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcachePublisherKeyNames)
 	cronLogErr(err)
 
 	//
@@ -511,7 +511,7 @@ func (c Developers) Work() {
 	wg.Wait()
 
 	//
-	err = helpers.ClearMemcache(helpers.MemcacheDeveloperKeyNames)
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheDeveloperKeyNames)
 	cronLogErr(err)
 
 	//
@@ -676,7 +676,7 @@ func (c Tags) Work() {
 	wg.Wait()
 
 	//
-	err = helpers.ClearMemcache(helpers.MemcacheTagKeyNames)
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheTagKeyNames)
 	cronLogErr(err)
 
 	//

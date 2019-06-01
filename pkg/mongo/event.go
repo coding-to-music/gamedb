@@ -180,7 +180,7 @@ func CreateUserEvent(r *http.Request, userID int, eventType EventEnum) (err erro
 	}
 
 	// Clear cache
-	err = helpers.ClearMemcache(helpers.MemcacheUserEventsCount(userID))
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUserEventsCount(userID))
 	log.Err(err)
 
 	return err

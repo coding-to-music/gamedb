@@ -88,12 +88,12 @@ func (q groupQueueNew) processMessages(msgs []amqp.Delivery) {
 	}
 
 	//
-	err = helpers.ClearMemcache(helpers.MemcacheGroup(group.ID64))
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGroup(group.ID64))
 	if err != nil {
 		logError(err, message.ID)
 	}
 
-	err = helpers.ClearMemcache(helpers.MemcacheGroup(strconv.Itoa(group.ID)))
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGroup(strconv.Itoa(group.ID)))
 	if err != nil {
 		logError(err, message.ID)
 	}

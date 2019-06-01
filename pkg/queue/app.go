@@ -279,7 +279,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		if app.ReleaseDateUnix > time.Now().Unix() && newApp {
 
-			err = helpers.ClearMemcache(helpers.MemcacheUpcomingAppsCount)
+			err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingAppsCount)
 			log.Err(err)
 		}
 	}()
