@@ -561,14 +561,18 @@ func produceGroupNew(ID string) (err error) {
 	}
 
 	err = mc.Set(&item)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, ID)
+	}
 
 	err = produce(baseMessage{
 		Message: groupMessage{
 			ID: ID,
 		},
 	}, queueGoGroupsNew)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, ID)
+	}
 
 	return nil
 }

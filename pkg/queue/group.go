@@ -127,7 +127,9 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 	for k := range IDMap {
 		err = produceGroupNew(k)
-		log.Err(err, k)
+		if err != nil {
+			log.Err(err, k)
+		}
 	}
 
 	//
