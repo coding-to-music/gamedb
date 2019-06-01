@@ -41,7 +41,6 @@ $(document).on('mouseup', '[data-link]', function (e) {
 
     // Middle click
     if (e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2 || target === '_blank') {
-        console.log('y');
         if (!$(e.target).is("a")) {
             window.open(link, '_blank');
         }
@@ -178,7 +177,6 @@ function websocketListener(page, onMessage) {
         };
 
         socket.onmessage = function (e) {
-            console.log("Websocket: " + e.data);
             return onMessage(e)
         };
 
