@@ -135,7 +135,9 @@ func GetGroupsByID(ids []string, projection M, sort D) (groups []Group, err erro
 		if len(v) == 18 {
 			id64sBSON = append(id64sBSON, v)
 		} else {
-			idsBSON = append(idsBSON, v)
+			i, err := strconv.Atoi(v)
+			log.Err(err)
+			idsBSON = append(idsBSON, i)
 		}
 	}
 
