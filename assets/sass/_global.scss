@@ -85,13 +85,24 @@ li.nav-item {
     margin-top: 0;
     margin-bottom: 1rem;
     overflow: hidden;
+    position: relative;
 
     .lead {
         margin: 0;
     }
 
     .social-buttons {
-        float: right;
+
+        position: absolute;
+        right: 30px;
+        bottom: 30px;
+
+        @include media-breakpoint-up(md) {
+            position: relative;
+            right: 0;
+            bottom: 0;
+            float: right;
+        }
 
         > div {
             height: 20px;
