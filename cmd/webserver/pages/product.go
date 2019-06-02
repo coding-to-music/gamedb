@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"net/http"
 	"sort"
 	"strconv"
@@ -92,13 +91,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	})
 
 	// Return
-	pricesBytes, err := json.Marshal(response)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	err = returnJSON(w, r, pricesBytes)
+	err = returnJSON(w, r, response)
 	log.Err(err, r)
 }
 
