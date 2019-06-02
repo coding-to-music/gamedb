@@ -989,6 +989,11 @@ func (a AppAchievement) GetIcon() string {
 	return helpers.DefaultAppIcon
 }
 
+func (a AppAchievement) IsHidden() bool {
+
+	return a.Icon == "" && a.Description == ""
+}
+
 type AppStat struct {
 	Name        string `json:"n"`
 	Default     int    `json:"d"`

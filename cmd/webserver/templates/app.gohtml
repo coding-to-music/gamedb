@@ -345,7 +345,7 @@
                                 </tr>
                                 </thead>
                                 {{ range $key, $value := .Achievements }}
-                                    <tr>
+                                    <tr {{ if .IsHidden }}class="table-dark"{{ end }}>
                                         <td class="img" nowrap="nowrap">
                                             <img src="{{ .GetIcon }}" class="rounded square" alt="{{ .Name }}">
                                             <span>{{ .Name }}</span>
