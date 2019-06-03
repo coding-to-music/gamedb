@@ -144,12 +144,6 @@
                     {{ end }}
                 </li>
 
-                {{ if .IsAdmin }}
-                    <li class="nav-item {{if startsWith .Path "/admin" }}active{{end}}">
-                        <a class="nav-link" href="/admin">Admin</a>
-                    </li>
-                {{ end }}
-
                 {{ if eq .Env "local" }}
                     <li class="nav-item">
                         {{ if .PlayerName }}
@@ -163,6 +157,9 @@
                 <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
                     <div class="dropdown-menu" id="header-settings">
+                        {{ if .IsAdmin }}
+                            <a class="dropdown-item" href="/admin"><i class="fas fa-users-cog"></i> Admin</a>
+                        {{ end }}
                         {{ if .IsLoggedIn }}
                             <a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i> Settings</a>
                             <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
