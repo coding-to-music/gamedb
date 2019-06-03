@@ -48,7 +48,7 @@ func (c Wishlists) Work() {
 		appIDs = append(appIDs, appID)
 	}
 
-	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name", "tags"})
+	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name", "tags", "icon"})
 
 	var appMap = map[int]sql.App{}
 	for _, app := range apps {
@@ -91,6 +91,7 @@ func (c Wishlists) Work() {
 			AppID:   appID,
 			AppName: appMap[appID].GetName(),
 			Count:   count,
+			AppIcon: appMap[appID].Icon,
 		})
 	}
 

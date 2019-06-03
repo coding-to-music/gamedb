@@ -65,7 +65,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Get groups to update
-	groups, err := mongo.GetGroupsByID(message.IDs, nil, nil)
+	groups, err := mongo.GetGroupsByID(message.IDs, nil)
 	if err != nil {
 		logError(err)
 		payload.ack(msg)
