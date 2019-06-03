@@ -595,6 +595,10 @@ func (app App) GetTagIDs() (tags []int, err error) {
 
 	tags = []int{} // Needed for marshalling into type
 
+	if app.Tags == "" || app.Tags == "null" || app.Tags == "[]" {
+		return tags, err
+	}
+
 	err = helpers.Unmarshal([]byte(app.Tags), &tags)
 	if err != nil {
 		log.Err(err)
