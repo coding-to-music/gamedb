@@ -33,7 +33,7 @@ if ($wishlistsPage.length > 0) {
         "pageLength": 1000,
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-link', data[5]);
+            $(row).attr('data-link', data[2]);
         },
         "columnDefs": [
             // Tag
