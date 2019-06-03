@@ -26,25 +26,35 @@ func main() {
 	err = c.AddFunc("0 0 */6 * * *", crons.CronRegister[crons.CronAutoPlayerRefreshes].Work)
 	log.Critical(err)
 
-	// Every 24 hours
+	// 12.00
+	err = c.AddFunc("0 0 0 * * *", crons.CronRegister[crons.CronWishlist].Work)
+	log.Critical(err)
+
+	// 12.01
 	err = c.AddFunc("0 1 0 * * *", crons.CronRegister[crons.CronClearUpcomingCache].Work)
 	log.Critical(err)
 
-	err = c.AddFunc("0 0 0 * * *", crons.CronRegister[crons.CronPlayerRanks].Work)
+	// 12.02
+	err = c.AddFunc("0 2 0 * * *", crons.CronRegister[crons.CronPlayerRanks].Work)
 	log.Critical(err)
 
+	// 01.00
 	err = c.AddFunc("0 0 1 * * *", crons.CronRegister[crons.CronGenres].Work)
 	log.Critical(err)
 
+	// 02.00
 	err = c.AddFunc("0 0 2 * * *", crons.CronRegister[crons.CronTags].Work)
 	log.Critical(err)
 
+	// 03.00
 	err = c.AddFunc("0 0 3 * * *", crons.CronRegister[crons.CronPublishers].Work)
 	log.Critical(err)
 
+	// 04.00
 	err = c.AddFunc("0 0 4 * * *", crons.CronRegister[crons.CronDevelopers].Work)
 	log.Critical(err)
 
+	// 12.00
 	err = c.AddFunc("0 0 12 * * *", crons.CronRegister[crons.CronInstagram].Work)
 	log.Critical(err)
 

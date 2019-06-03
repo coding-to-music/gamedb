@@ -191,7 +191,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		value:          1,
 	}
 
-	players, err := mongo.GetPlayers(0, 10, mongo.D{{sort, 1}}, mongo.M{sort: mongo.M{"$gt": 0}}, projection)
+	players, err := mongo.GetPlayers(0, 10, mongo.D{{sort, 1}}, mongo.M{sort: mongo.M{"$gt": 0}}, projection, nil)
 	if err != nil {
 		log.Err(err)
 		return

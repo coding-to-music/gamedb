@@ -48,11 +48,13 @@ const (
 	CollectionEvents          collection = "events"
 	CollectionGroups          collection = "groups"
 	CollectionPatreonWebhooks collection = "patreon_webhooks"
-	CollectionPlayers         collection = "players"
 	CollectionPlayerApps      collection = "player_apps"
 	CollectionPlayerBadges    collection = "player_badges"
+	CollectionPlayers         collection = "players"
 	CollectionProductPrices   collection = "product_prices"
 	CollectionSessions        collection = "sessions"
+	CollectionWishlistApps    collection = "wishlist-apps"
+	CollectionWishlistTags    collection = "wishlist-tags"
 )
 
 var mongoLock sync.Mutex
@@ -237,5 +239,17 @@ func DeleteColumn(collection collection, column string) (err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
 	_, err = c.UpdateMany(ctx, M{}, M{"$unset": M{column: ""}})
+	return err
+}
+
+func DeleteRows(collection collection, filter M) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return nil
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
+	_, err = c.DeleteMany(ctx, filter)
 	return err
 }

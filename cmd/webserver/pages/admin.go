@@ -248,7 +248,7 @@ func adminQueueEveryPlayer() {
 
 	log.Info("Queueing every player")
 
-	players, err := mongo.GetPlayers(0, 0, mongo.D{{"_id", 1}}, nil, mongo.M{"_id": 1})
+	players, err := mongo.GetPlayers(0, 0, mongo.D{{"_id", 1}}, nil, mongo.M{"_id": 1}, nil)
 	if err != nil {
 		log.Err(err)
 		return

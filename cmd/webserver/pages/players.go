@@ -127,7 +127,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"games_rank":     1,
 			"level_rank":     1,
 			"play_time_rank": 1,
-		})
+		}, nil)
 		if err != nil {
 			log.Err(err)
 			return

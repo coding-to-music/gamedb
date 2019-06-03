@@ -124,6 +124,7 @@ func main() {
 	r.Mount("/twitter", pages.TwitterRouter())
 	r.Mount("/upcoming", pages.UpcomingRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
+	r.Mount("/wishlists", pages.WishlistsRouter())
 
 	// Profiling
 	if config.IsLocal() {

@@ -21,6 +21,7 @@ const (
 	ConfDevelopersUpdated  ConfigType = "refresh-developers"
 	ConfRanksUpdated       ConfigType = "refresh-ranks"
 	ConfAddedAllAppPlayers ConfigType = "refresh-all-app-players"
+	ConfWishlistUpdated    ConfigType = "wishlist-updated"
 	ConfClearUpcomingCache ConfigType = "clear-upcoming-cache"
 	ConfInstagram          ConfigType = "posted-to-instagram"
 	ConfAutoProfile        ConfigType = "auto-profiles-updated"

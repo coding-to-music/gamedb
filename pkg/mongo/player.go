@@ -406,9 +406,9 @@ func SearchPlayer(s string, projection M) (player Player, err error) {
 	return player, err
 }
 
-func GetPlayers(offset int64, limit int64, sort D, filter M, projection M) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, filter M, projection M, ops *options.FindOptions) (players []Player, err error) {
 
-	return getPlayers(offset, limit, sort, filter, projection)
+	return getPlayers(offset, limit, sort, filter, projection, ops)
 }
 
 func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
@@ -422,10 +422,10 @@ func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
 		idsBSON = append(idsBSON, v)
 	}
 
-	return getPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection)
+	return getPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection, nil)
 }
 
-func getPlayers(offset int64, limit int64, sort D, filter interface{}, projection M) (players []Player, err error) {
+func getPlayers(offset int64, limit int64, sort D, filter interface{}, projection M, ops *options.FindOptions) (players []Player, err error) {
 
 	if filter == nil {
 		filter = M{}
@@ -436,7 +436,9 @@ func getPlayers(offset int64, limit int64, sort D, filter interface{}, projectio
 		return players, err
 	}
 
-	ops := options.Find()
+	if ops == nil {
+		ops = options.Find()
+	}
 	if offset > 0 {
 		ops.SetSkip(offset)
 	}
@@ -502,7 +504,7 @@ func CountPlayers() (count int64, err error) {
 
 func RankPlayers(col string, colToUpdate string) (err error) {
 
-	players, err := getPlayers(0, 0, D{{col, -1}}, M{col: M{"$gt": 0}}, M{"_id": 1})
+	players, err := getPlayers(0, 0, D{{col, -1}}, M{col: M{"$gt": 0}}, M{"_id": 1}, nil)
 	if err != nil {
 		return err
 	}

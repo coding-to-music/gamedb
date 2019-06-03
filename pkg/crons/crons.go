@@ -13,27 +13,29 @@ type CronEnum string
 
 var (
 	CronAppPlayers          CronEnum = "update-app-players"
+	CronAutoPlayerRefreshes CronEnum = "update-auto-player-refreshes"
 	CronClearUpcomingCache  CronEnum = "clear-upcoming-apps-cache"
+	CronDevelopers          CronEnum = "update-stats-developers"
+	CronGenres              CronEnum = "update-stats-genres"
 	CronInstagram           CronEnum = "post-to-instagram"
 	CronPlayerRanks         CronEnum = "update-player-ranks"
-	CronAutoPlayerRefreshes CronEnum = "update-auto-player-refreshes"
-	CronSteamClientPlayers  CronEnum = "update-steam-client-players"
-	CronGenres              CronEnum = "update-stats-genres"
 	CronPublishers          CronEnum = "update-stats-publishers"
-	CronDevelopers          CronEnum = "update-stats-developers"
+	CronSteamClientPlayers  CronEnum = "update-steam-client-players"
 	CronTags                CronEnum = "update-stats-tags"
+	CronWishlist            CronEnum = "update-wishlist"
 
 	CronRegister = map[CronEnum]CronInterface{
 		CronAppPlayers:          AppPlayers{},
+		CronAutoPlayerRefreshes: AutoPlayerRefreshes{},
 		CronClearUpcomingCache:  ClearUpcomingCache{},
+		CronDevelopers:          Developers{},
+		CronGenres:              Genres{},
 		CronInstagram:           Instagram{},
 		CronPlayerRanks:         PlayerRanks{},
-		CronAutoPlayerRefreshes: AutoPlayerRefreshes{},
-		CronGenres:              Genres{},
 		CronPublishers:          Publishers{},
-		CronDevelopers:          Developers{},
-		CronTags:                Tags{},
 		CronSteamClientPlayers:  SteamClientPlayers{},
+		CronTags:                Tags{},
+		CronWishlist:            Wishlists{},
 	}
 )
 
