@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -178,8 +179,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "name": 1, "members": 1, "icon": 1}, mongo.D{{"name", 1}})
+		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "name": 1, "members": 1, "icon": 1})
 		log.Err(err, r)
+
+		sort.Slice(groups, func(i, j int) bool {
+			return groups[i].GetName() > groups[j].GetName()
+		})
 
 		for k, v := range groups {
 			groups[k].Icon = v.GetIcon()
@@ -194,7 +199,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Game stats
 	gameStats, err := player.GetGameStats(getCountryCode(r))
-	// log.Err(err, r) // Disable for now, too many logs
+	log.Err(err, r)
 
 	// Make banners
 	banners := make(map[string][]string)

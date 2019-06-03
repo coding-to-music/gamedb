@@ -3,6 +3,7 @@ package mongo
 import (
 	"errors"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
@@ -122,36 +123,60 @@ func GetGroup(id string) (group Group, err error) {
 	return group, err
 }
 
-func GetGroupsByID(ids []string, projection M, sort D) (groups []Group, err error) {
+func GetGroupsByID(ids []string, projection M) (groups []Group, err error) {
 
 	if len(ids) < 1 {
 		return groups, nil
 	}
 
-	var id64sBSON A
-	var idsBSON A
+	chunks := helpers.ChunkStrings(ids, 100)
 
-	for _, v := range ids {
-		if len(v) == 18 {
-			id64sBSON = append(id64sBSON, v)
-		} else {
-			i, err := strconv.Atoi(v)
-			log.Err(err)
-			idsBSON = append(idsBSON, i)
-		}
+	var wg sync.WaitGroup
+
+	for _, chunk := range chunks {
+
+		wg.Add(1)
+		go func(chunk []string) {
+
+			defer wg.Done()
+
+			var id64sBSON A
+			var idsBSON A
+
+			for _, groupID := range chunk {
+				if len(groupID) == 18 {
+					id64sBSON = append(id64sBSON, groupID)
+				} else {
+					i, err := strconv.Atoi(groupID)
+					log.Err(err)
+					idsBSON = append(idsBSON, i)
+				}
+			}
+
+			var or = A{}
+
+			if len(id64sBSON) > 0 {
+				or = append(or, M{"_id": M{"$in": id64sBSON}})
+			}
+
+			if len(idsBSON) > 0 {
+				or = append(or, M{"id": M{"$in": idsBSON}})
+			}
+
+			resp, err := getGroups(0, 0, nil, M{"$or": or}, projection)
+			if err != nil {
+				log.Err(err)
+				return
+			}
+
+			groups = append(groups, resp...)
+
+		}(chunk)
 	}
 
-	var or = A{}
+	wg.Wait()
 
-	if len(id64sBSON) > 0 {
-		or = append(or, M{"_id": M{"$in": id64sBSON}})
-	}
-
-	if len(idsBSON) > 0 {
-		or = append(or, M{"id": M{"$in": idsBSON}})
-	}
-
-	return getGroups(0, 0, sort, M{"$or": or}, projection)
+	return groups, err
 }
 
 func GetGroups(limit int64, offset int64, sort D, filter M, projection M) (groups []Group, err error) {
