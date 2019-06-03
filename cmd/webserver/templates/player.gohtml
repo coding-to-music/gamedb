@@ -295,18 +295,61 @@
                         </tbody>
                     </table>
 
-                    {{/* Badge Icons */}}
-                    <h5>Noteworthy Badges</h5>
-                    <div id="special" class="mb-3">
-                        {{ range $key, $value := .Badges }}
-                            <a href="{{ .GetPath }}">
-                                <img src="{{ .GetBadgeIcon }}" alt="" class="mr-1 mb-1" data-toggle="tooltip" data-placement="top" title="{{ .GetName }}">
-                            </a>
-                        {{ end }}
+                    {{/* Noteworthy Icons */}}
+                    <div class="row">
+                        <div class="col-6">
+
+                            <div class="table-responsive mb-4">
+                                <table class="table table-hover table-striped table-datatable">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Special Badges</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {{ range $key, $value := .Badges }}
+                                        {{ if eq .AppID 0 }}
+                                            <tr data-link="{{ .GetPath }}">
+                                                <td class="img">
+                                                    <img src="{{ .GetBadgeIcon }}" alt="" class="img">
+                                                    <span>{{ .GetName }}</span>
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+                                    {{ end }}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="col-6">
+
+                            <div class="table-responsive mb-4">
+                                <table class="table table-hover table-striped table-datatable">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Event Badges</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {{ range $key, $value := .Badges }}
+                                        {{ if ne .AppID 0 }}
+                                            <tr data-link="{{ .GetPath }}">
+                                                <td class="img">
+                                                    <img src="{{ .GetBadgeIcon }}" alt="" class="img">
+                                                    <span>{{ .GetName }}</span>
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+                                    {{ end }}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
                     </div>
 
                     {{/* App Badges Table */}}
-                    <h5>App Badges</h5>
                     <div class="table-responsive">
                         <table class="table table-hover table-striped table-datatable2 mb-0" data-ordering="false" data-path="/players/{{ .Player.ID }}/badges.json">
                             <thead class="thead-light">
