@@ -516,7 +516,7 @@ func updatePlayerBadges(player *mongo.Player) error {
 	}
 	appIDSlice = helpers.Unique(appIDSlice)
 
-	player.BadgeIDs = specialBadgeIDSlice
+	player.BadgeIDs = helpers.Unique(specialBadgeIDSlice)
 
 	// Make map of app rows
 	var appRowsMap = map[int]sql.App{}
