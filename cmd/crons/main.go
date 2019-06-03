@@ -50,11 +50,5 @@ func main() {
 
 	c.Start()
 
-	// // Scan for app players after deploy
-	// go func() {
-	// 	time.Sleep(time.Minute)
-	// 	crons.AppPlayers()
-	// }()
-
 	helpers.KeepAlive()
 }
