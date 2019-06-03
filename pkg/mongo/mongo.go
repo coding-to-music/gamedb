@@ -52,9 +52,15 @@ const (
 	CollectionPlayerBadges    collection = "player_badges"
 	CollectionPlayers         collection = "players"
 	CollectionProductPrices   collection = "product_prices"
-	CollectionSessions        collection = "sessions"
 	CollectionWishlistApps    collection = "wishlist-apps"
 	CollectionWishlistTags    collection = "wishlist-tags"
+
+	// Stats
+	CollectionTags       collection = "tags"
+	CollectionGenres     collection = "genres"
+	CollectionDevelopers collection = "developers"
+	CollectionPublishers collection = "publishers"
+	CollectionCategories collection = "categories"
 )
 
 var mongoLock sync.Mutex
