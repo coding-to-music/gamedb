@@ -70,9 +70,21 @@ func (q groupQueueNew) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	//
-	group := mongo.Group{}
+	// See if it's been added
+	group, err := mongo.GetGroup(message.ID)
+	if err != nil && err != mongo.ErrNoDocuments { // Random error, retry
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+	if err == nil && group.ID64 != "" { // This can go through normal queue
+		err = ProduceGroup([]string{message.ID})
+		log.Err()
+		payload.ack(msg)
+		return
+	}
 
+	//
 	err = updateGroupFromXML(message.ID, &group)
 	if err != nil {
 		if err.Error() == "expected element type <memberList> but have <html>" {
