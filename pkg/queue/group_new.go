@@ -78,6 +78,7 @@ func (q groupQueueNew) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 	if err == nil && group.ID64 != "" { // This can go through normal queue
+		log.Info("Putting group back into first queue")
 		err = ProduceGroup([]string{message.ID})
 		log.Err()
 		payload.ack(msg)
