@@ -75,7 +75,8 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	for _, group := range groups {
 
 		// Continue here means get from XML API
-		if group.ID64 == "" || group.UpdatedAt.Unix() < time.Now().Add(time.Hour * 24 * 28 * -1).Unix() {
+		// if group.ID64 == "" || group.UpdatedAt.Unix() < time.Now().Add(time.Hour * 24 * 28 * -1).Unix() {
+		if group.ID64 == "" {
 			continue
 		}
 
@@ -84,7 +85,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		delete(IDMap, group.ID64)
 
 		// Continue here means skip this group altogether
-		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
+		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
 			continue
 		}
 
