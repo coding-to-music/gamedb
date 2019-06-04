@@ -89,7 +89,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		}
 
 		//
-		err = updateGroupFromPage(message, &group)
+		err = updateGroupFromPage(group.ID64, &group)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
@@ -145,7 +145,7 @@ var (
 	groupScapeRateLimit = ratelimit.New(1, ratelimit.WithoutSlack)
 )
 
-func updateGroupFromPage(message groupMessage, group *mongo.Group) (err error) {
+func updateGroupFromPage(id string, group *mongo.Group) (err error) {
 
 	groupScapeRateLimit.Take()
 
@@ -195,7 +195,7 @@ func updateGroupFromPage(message groupMessage, group *mongo.Group) (err error) {
 		group.MembersOnline, err = strconv.Atoi(e.Text)
 	})
 
-	return c.Visit("https://steamcommunity.com/gid/" + message.ID)
+	return c.Visit("https://steamcommunity.com/gid/" + id)
 }
 
 func saveGroupToMongo(group mongo.Group) (err error) {
