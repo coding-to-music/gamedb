@@ -59,6 +59,12 @@ var (
 	MemcacheAppPlayersRow = func(appID int) memcache.Item {
 		return memcache.Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60}
 	}
+	MemcacheStatRowID = func(c string, id int) memcache.Item {
+		return memcache.Item{Key: c + "-stat-id-" + strconv.Itoa(id), Expiration: 60 * 60 * 24}
+	}
+	MemcacheStatRowName = func(c string, name string) memcache.Item {
+		return memcache.Item{Key: c + "-stat-name-" + name, Expiration: 60 * 60 * 24}
+	}
 
 	// Queue checks
 	MemcacheGroupInQueue = func(groupID string) memcache.Item {
