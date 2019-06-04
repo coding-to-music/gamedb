@@ -15,7 +15,7 @@ func main() {
 	if config.IsLocal() {
 		log.Info("Starting consumers profiling")
 		go func() {
-			log.Err(http.ListenAndServe("localhost:9082", nil))
+			log.Err(http.ListenAndServe("localhost:6060", nil))
 		}()
 	}
 

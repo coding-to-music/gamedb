@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-go tool pprof http://localhost:${STEAM_PORT}/debug/pprof/heap
+go tool pprof http://localhost:6060/debug/pprof/heap
 
 # web
