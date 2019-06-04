@@ -513,7 +513,7 @@ func ProduceGroup(IDs []string) (err error) {
 			item := helpers.MemcacheGroupInQueue(v)
 
 			_, err := mc.Get(item.Key)
-			if err == nil {
+			if err == nil && config.IsProd() {
 				continue
 			}
 
@@ -556,7 +556,7 @@ func produceGroupNew(ID string) (err error) {
 
 	mc := helpers.GetMemcache()
 	_, err = mc.Get(item.Key)
-	if err == nil {
+	if err == nil && config.IsProd() {
 		return nil
 	}
 
