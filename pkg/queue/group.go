@@ -92,7 +92,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		//
 		found, err := updateGroupFromPage(group.ID64, &group)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, group.ID, group.ID64)
 			payload.ackRetry(msg)
 			return
 		}
@@ -106,7 +106,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		//
 		err = saveGroupToMongo(group)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, group.ID, group.ID64)
 			payload.ackRetry(msg)
 			return
 		}
@@ -114,7 +114,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		//
 		err = saveGroupToInflux(group)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, group.ID, group.ID64)
 			payload.ackRetry(msg)
 			return
 		}
@@ -122,7 +122,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		//
 		err = sendGroupWebsocket(group)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, group.ID, group.ID64)
 		}
 
 		//
