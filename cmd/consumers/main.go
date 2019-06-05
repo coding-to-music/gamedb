@@ -12,6 +12,8 @@ import (
 
 func main() {
 
+	// debug.SetGCPercent(1)
+
 	if config.IsLocal() {
 		log.Info("Starting consumers profiling")
 		go func() {
