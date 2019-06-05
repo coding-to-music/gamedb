@@ -3,6 +3,7 @@ package pages
 import (
 	"html/template"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/influxql"
@@ -75,6 +76,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Group = group
 	t.Summary = helpers.RenderHTMLAndBBCode(group.Summary)
+	t.Group.Error = strings.Replace(t.Group.Error, "Click here for information on how to report groups on Steam.", "", 1)
 
 	err = returnTemplate(w, r, "group", t)
 	log.Err(err, r)
