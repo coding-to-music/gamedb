@@ -11,6 +11,12 @@ func IsValidGroupID(id string) bool {
 	}
 
 	i := big.NewInt(0)
+
+	// Help GC
+	defer func(i *big.Int) {
+		i = nil
+	}(i)
+
 	i, success := i.SetString(id, 10)
 	if !success || i == nil {
 		return false
