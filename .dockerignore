@@ -4,6 +4,8 @@ tmp/
 logs/
 .tscache/
 
+cmd/webserver/cache
+
 # Files that should be deleted
 assets/css/sass/
 assets/concatenate.css

@@ -30,6 +30,7 @@ require (
 	github.com/dghubble/oauth1 v0.5.0
 	github.com/dghubble/sling v1.2.0 // indirect
 	github.com/didip/tollbooth v4.0.0+incompatible
+	github.com/djherbis/fscache v0.8.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
@@ -98,5 +99,7 @@ require (
 	golang.org/x/sys v0.0.0-20190405154228-4b34438f7a67 // indirect
 	google.golang.org/genproto v0.0.0-20190307195333-5fe7a883aa19 // indirect
 	google.golang.org/grpc v1.19.0
+	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
+	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
 )
