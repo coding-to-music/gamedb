@@ -185,7 +185,8 @@ type GlobalTemplate struct {
 	loginPage map[string]string
 
 	// xp page
-	userLevel int
+	UserLevel   int
+	UserLevelTo int
 
 	// Internal
 	request   *http.Request
@@ -238,8 +239,8 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	// Pages
-	switch t.Path {
-	case "/contact":
+	switch true {
+	case strings.HasPrefix(t.Path, "/contact"):
 
 		// Details from form
 		contactName, err := session.Get(r, "contact-name")
@@ -255,7 +256,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 			"message": contactMessage,
 		}
 
-	case "/login":
+	case strings.HasPrefix(t.Path, "/login"):
 
 		loginEmail, err := session.Get(r, "login-email")
 		log.Err(err)
@@ -264,16 +265,18 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 			"email": loginEmail,
 		}
 
-	case "/experience":
+	case strings.HasPrefix(t.Path, "/experience"):
 
 		level, err := session.Get(r, helpers.SessionPlayerLevel)
 		log.Err(err, r)
 
 		if level == "" {
-			t.userLevel = 0
+			t.UserLevel = 10
+			t.UserLevelTo = 20
 		} else {
-			t.userLevel, err = strconv.Atoi(level)
+			t.UserLevel, err = strconv.Atoi(level)
 			log.Err(err, r)
+			t.UserLevelTo = t.UserLevel + 10
 		}
 	}
 }
@@ -285,7 +288,6 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"userEmail":          t.userEmail,
 		"userCountry":        t.UserCountry,
 		"userCurrencySymbol": t.UserCurrencySymbol,
-		"userLevel":          t.userLevel,
 		"isLoggedIn":         t.IsLoggedIn(),
 		"showAds":            t.showAds(),
 		"toasts":             t.toasts,
