@@ -33,6 +33,7 @@ type Group struct {
 	MembersInChat int       `bson:"members_in_chat"`
 	MembersInGame int       `bson:"members_in_game"`
 	MembersOnline int       `bson:"members_online"`
+	Error         string    `bson:"error"`
 	Type          string    `bson:"type"`
 }
 
@@ -58,6 +59,7 @@ func (group Group) BSON() (ret interface{}) {
 		"members_in_chat": group.MembersInChat,
 		"members_in_game": group.MembersInGame,
 		"members_online":  group.MembersOnline,
+		"error":           group.Error,
 		"type":            group.Type,
 	}
 }
@@ -65,15 +67,16 @@ func (group Group) BSON() (ret interface{}) {
 func (group Group) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{
-		group.ID64,
-		group.Name,
-		group.GetPath(),
-		group.GetIcon(),
-		group.Headline,
-		group.Members,
-		group.URL,
-		group.Type,
-		group.GetLink(),
+		group.ID64,        // 0
+		group.Name,        // 1
+		group.GetPath(),   // 2
+		group.GetIcon(),   // 3
+		group.Headline,    // 4
+		group.Members,     // 5
+		group.URL,         // 6
+		group.Type,        // 7
+		group.GetLink(),   // 8
+		group.Error != "", // 9
 	}
 }
 

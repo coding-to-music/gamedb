@@ -209,6 +209,13 @@ func updateGroupFromPage(id string, group *mongo.Group) (found bool, err error) 
 		found = true
 	})
 
+	// Error
+	group.Error = ""
+	c.OnHTML("#message h3", func(e *colly.HTMLElement) {
+		group.Error = e.Text
+		found = true
+	})
+
 	return found, c.Visit("https://steamcommunity.com/gid/" + id)
 }
 
