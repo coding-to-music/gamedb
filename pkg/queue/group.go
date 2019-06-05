@@ -90,9 +90,15 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		}
 
 		//
-		err = updateGroupFromPage(group.ID64, &group)
+		found, err := updateGroupFromPage(group.ID64, &group)
 		if err != nil {
 			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		if !found {
+			logWarning("Group counts not found", group.ID, group.ID64)
 			payload.ackRetry(msg)
 			return
 		}
@@ -146,7 +152,7 @@ var (
 	groupScapeRateLimit = ratelimit.New(1, ratelimit.WithoutSlack)
 )
 
-func updateGroupFromPage(id string, group *mongo.Group) (err error) {
+func updateGroupFromPage(id string, group *mongo.Group) (found bool, err error) {
 
 	groupScapeRateLimit.Take()
 
@@ -158,21 +164,25 @@ func updateGroupFromPage(id string, group *mongo.Group) (err error) {
 	c.OnHTML("div.membercount.members .count", func(e *colly.HTMLElement) {
 		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.Members, err = strconv.Atoi(e.Text)
+		found = true
 	})
 
 	c.OnHTML("div.membercount.ingame .count", func(e *colly.HTMLElement) {
 		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersInGame, err = strconv.Atoi(e.Text)
+		found = true
 	})
 
 	c.OnHTML("div.membercount.online .count", func(e *colly.HTMLElement) {
 		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersOnline, err = strconv.Atoi(e.Text)
+		found = true
 	})
 
 	c.OnHTML("div.joinchat_membercount .count", func(e *colly.HTMLElement) {
 		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersInChat, err = strconv.Atoi(e.Text)
+		found = true
 	})
 
 	// Game groups - https://steamcommunity.com/games/218620
@@ -184,19 +194,22 @@ func updateGroupFromPage(id string, group *mongo.Group) (err error) {
 			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 			group.Members, err = strconv.Atoi(e.Text)
 		}
+		found = true
 	})
 
 	c.OnHTML("#profileBlock .membersInGame", func(e *colly.HTMLElement) {
 		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersInGame, err = strconv.Atoi(e.Text)
+		found = true
 	})
 
 	c.OnHTML("#profileBlock .membersOnline", func(e *colly.HTMLElement) {
 		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersOnline, err = strconv.Atoi(e.Text)
+		found = true
 	})
 
-	return c.Visit("https://steamcommunity.com/gid/" + id)
+	return found, c.Visit("https://steamcommunity.com/gid/" + id)
 }
 
 func saveGroupToMongo(group mongo.Group) (err error) {
