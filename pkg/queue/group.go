@@ -214,16 +214,8 @@ func updateGroupFromPage(id string, group *mongo.Group) (found bool, err error) 
 
 func saveGroupToMongo(group mongo.Group) (err error) {
 
-	mongoResp, err := mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
-	if err != nil {
-		return err
-	}
-
-	if mongoResp.UpsertedCount > 0 {
-		// todo, new row, clear count cache
-	}
-
-	return nil
+	_, err = mongo.ReplaceDocument(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
+	return err
 }
 
 func saveGroupToInflux(group mongo.Group) (err error) {
