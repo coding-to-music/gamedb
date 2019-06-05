@@ -37,6 +37,9 @@ if ($('#groups-page').length > 0) {
             if (data[7] === 'game' && !$('#type').val()) {
                 $(row).addClass('table-primary');
             }
+            if (data[9]) {
+                $(row).addClass('table-danger');
+            }
         },
         "columnDefs": [
             // Icon / Name
