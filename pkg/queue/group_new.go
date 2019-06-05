@@ -51,20 +51,23 @@ func (q groupQueueNew) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// See if it's been added
-	group, err := mongo.GetGroup(message.ID)
-	log.Info(err)
-	if err != nil && err != mongo.ErrNoDocuments { // Random error, retry
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
-	if err == nil && group.ID64 != "" { // This can go through normal queue
-		log.Info("Putting group back into first queue")
-		err = ProduceGroup([]string{message.ID})
-		log.Err()
-		payload.ack(msg)
-		return
-	}
+	// group, err := mongo.GetGroup(message.ID)
+	// log.Info(err)
+	// if err != nil && err != mongo.ErrNoDocuments { // Random error, retry
+	// 	logError(err, message.ID)
+	// 	payload.ackRetry(msg)
+	// 	return
+	// }
+	//
+	// if err == nil && group.ID64 != "" { // This can go through normal queue
+	// 	log.Info("Putting group back into first queue")
+	// 	err = ProduceGroup([]string{message.ID})
+	// 	log.Err()
+	// 	payload.ack(msg)
+	// 	return
+	// }
+
+	group := mongo.Group{}
 
 	//
 	err = updateGroupFromXML(message.ID, &group)
