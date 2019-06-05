@@ -360,7 +360,12 @@ func produce(payload baseMessage, queue queueName) (err error) {
 	return ch.Close()
 }
 
+var connectionLock sync.Mutex
+
 func makeAConnection() (conn *amqp.Connection, err error) {
+
+	connectionLock.Lock()
+	defer connectionLock.Unlock()
 
 	operation := func() (err error) {
 
