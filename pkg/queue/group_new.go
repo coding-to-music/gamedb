@@ -44,26 +44,6 @@ func (q groupQueueNew) processMessages(msgs []amqp.Delivery) {
 	}
 
 	//
-	// if message.ID != "" {
-	// 	message.IDs = append(message.IDs, message.ID)
-	// }
-	//
-	// f, err := os.OpenFile("groups.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-	// log.Err(err)
-	//
-	// for _, v := range message.IDs {
-	// 	log.Info(v)
-	// 	_, err = f.WriteString("," + v)
-	// 	log.Err(err)
-	// }
-	//
-	// err = f.Close()
-	// log.Err(err)
-	//
-	// payload.ack(msg)
-	// return
-
-	//
 	if !helpers.IsValidGroupID(message.ID) {
 		log.Err(errors.New("invalid group id: " + message.ID))
 		payload.ack(msg)
