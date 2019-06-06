@@ -79,6 +79,12 @@ var (
 	MemcacheUserLevelByKey = func(key string) memcache.Item {
 		return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60}
 	}
+	MemcacheBadgeMax = func(id int) memcache.Item {
+		return memcache.Item{Key: "badge-max-key-" + strconv.Itoa(id), Expiration: 60 * 60 * 25}
+	}
+	MemcacheBadgeMaxFoil = func(id int) memcache.Item {
+		return memcache.Item{Key: "badge-max-foil-key-" + strconv.Itoa(id), Expiration: 60 * 60 * 25}
+	}
 )
 
 func GetMemcache() *memcache.Memcache {
