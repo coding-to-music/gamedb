@@ -1,12 +1,14 @@
 package pages
 
 import (
+	"encoding/gob"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -14,6 +16,10 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/github"
 )
+
+func init() {
+	gob.Register(&Interfaces{})
+}
 
 func SteamAPIRouter() http.Handler {
 	r := chi.NewRouter()
@@ -27,12 +33,28 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := steamAPITemplate{}
 	t.fill(w, r, "Steam API", "")
-	t.Interfaces = Interfaces{}
-	t.addDocumented(w, r)
-	t.addUndocumented()
+
+	var err error
+	var interfaces = Interfaces{}
+
+	retrieve := func() interface{} {
+		err = interfaces.addDocumented(w, r)
+		log.Err(err)
+		err = interfaces.addUndocumented()
+		log.Err(err)
+		return &interfaces
+	}
+
+	err = helpers.GetCache("steam-api", time.Hour*24, retrieve, &interfaces)
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "An error occurred"})
+		return
+	}
+
+	t.Interfaces = interfaces
 	t.Description = template.HTML(strconv.Itoa(t.Count())) + " of the known Steam web API endpoints."
 
-	err := returnTemplate(w, r, "steam_api", t)
+	err = returnTemplate(w, r, "steam_api", t)
 	log.Err(err, r)
 }
 
@@ -54,21 +76,6 @@ func (t steamAPITemplate) Count() (count int) {
 	return count
 }
 
-func (t *steamAPITemplate) addDocumented(w http.ResponseWriter, r *http.Request) {
-
-	steamResp, b, err := helpers.GetSteam().GetSupportedAPIList()
-	err = helpers.HandleSteamStoreErr(err, b, nil)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't talk to Steam"})
-		return
-	}
-
-	// Put into a map to remove dupes from Github
-	for _, v := range steamResp.Interfaces {
-		t.Interfaces.addInterface(v, true)
-	}
-}
-
 type Interfaces map[string]Methods
 
 type Methods map[string]Method
@@ -85,25 +92,80 @@ type Param struct {
 	Description string `json:"description"`
 }
 
-func (t *steamAPITemplate) addUndocumented() {
+func (interfaces *Interfaces) addInterface(in steam.APIInterface, documented bool) {
+
+	addMutex.Lock()
+	defer addMutex.Unlock()
+
+	for _, method := range in.Methods {
+
+		for _, param := range method.Parameters {
+
+			if (*interfaces)[in.Name] == nil {
+				(*interfaces)[in.Name] = map[string]Method{}
+			}
+
+			if (*interfaces)[in.Name][method.Name].Versions == nil {
+				(*interfaces)[in.Name][method.Name] = Method{
+					Documented: documented,
+					Versions:   map[int]map[string]map[string]Param{},
+				}
+			}
+
+			if (*interfaces)[in.Name][method.Name].Versions[method.Version] == nil {
+				(*interfaces)[in.Name][method.Name].Versions[method.Version] = make(map[string]map[string]Param)
+			}
+
+			if (*interfaces)[in.Name][method.Name].Versions[method.Version][method.HTTPmethod] == nil {
+				(*interfaces)[in.Name][method.Name].Versions[method.Version][method.HTTPmethod] = make(map[string]Param)
+			}
+
+			(*interfaces)[in.Name][method.Name].Versions[method.Version][method.HTTPmethod][param.Name] = Param{
+				Type:        param.Type,
+				Optional:    param.Optional,
+				Description: param.Description,
+			}
+		}
+	}
+}
+
+func (interfaces *Interfaces) addDocumented(w http.ResponseWriter, r *http.Request) (err error) {
+
+	steamResp, b, err := helpers.GetSteam().GetSupportedAPIList()
+	err = helpers.HandleSteamStoreErr(err, b, nil)
+	if err != nil {
+		return err
+	}
+
+	// Put into a map to remove dupes from Github
+	for _, v := range steamResp.Interfaces {
+		interfaces.addInterface(v, true)
+	}
+
+	return nil
+}
+
+func (interfaces *Interfaces) addUndocumented() (err error) {
 
 	client, ctx := helpers.GetGithub()
-	_, dir, _, err := client.Repositories.GetContents(ctx, "SteamDatabase", "SteamTracking", "API", nil)
-	log.Err(err)
+	_, dirs, _, err := client.Repositories.GetContents(ctx, "SteamDatabase", "SteamTracking", "API", nil)
+	if err != nil {
+		return err
+	}
 
 	var wg sync.WaitGroup
-	for _, v := range dir {
+	for _, dir := range dirs {
 
 		wg.Add(1)
-		go func(v *github.RepositoryContent) {
+		go func(dir *github.RepositoryContent) {
 
 			defer wg.Done()
 
-			if !strings.HasSuffix(*v.DownloadURL, ".json") {
+			if !strings.HasSuffix(*dir.DownloadURL, ".json") {
 				return
 			}
 
-			resp, err := http.Get(*v.DownloadURL)
+			resp, err := http.Get(*dir.DownloadURL)
 			if err != nil {
 				log.Err(err)
 				return
@@ -122,46 +184,11 @@ func (t *steamAPITemplate) addUndocumented() {
 				return
 			}
 
-			t.Interfaces.addInterface(i, false)
-		}(v)
+			interfaces.addInterface(i, false)
+		}(dir)
 	}
 
 	wg.Wait()
-}
 
-func (i *Interfaces) addInterface(in steam.APIInterface, documented bool) {
-
-	addMutex.Lock()
-	defer addMutex.Unlock()
-
-	for _, method := range in.Methods {
-
-		for _, param := range method.Parameters {
-
-			if (*i)[in.Name] == nil {
-				(*i)[in.Name] = map[string]Method{}
-			}
-
-			if (*i)[in.Name][method.Name].Versions == nil {
-				(*i)[in.Name][method.Name] = Method{
-					Documented: documented,
-					Versions:   map[int]map[string]map[string]Param{},
-				}
-			}
-
-			if (*i)[in.Name][method.Name].Versions[method.Version] == nil {
-				(*i)[in.Name][method.Name].Versions[method.Version] = make(map[string]map[string]Param)
-			}
-
-			if (*i)[in.Name][method.Name].Versions[method.Version][method.HTTPmethod] == nil {
-				(*i)[in.Name][method.Name].Versions[method.Version][method.HTTPmethod] = make(map[string]Param)
-			}
-
-			(*i)[in.Name][method.Name].Versions[method.Version][method.HTTPmethod][param.Name] = Param{
-				Type:        param.Type,
-				Optional:    param.Optional,
-				Description: param.Description,
-			}
-		}
-	}
+	return nil
 }
