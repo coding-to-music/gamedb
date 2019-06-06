@@ -149,7 +149,7 @@ var (
 	regexURLFilter = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
 	regexIntsOnly  = regexp.MustCompile("[^0-9]+")
 
-	groupScapeRateLimit = ratelimit.New(1, ratelimit.WithoutSlack)
+	groupScapeRateLimit = ratelimit.New(2, ratelimit.WithoutSlack) // 2 a second
 )
 
 func updateGroupFromPage(id string, group *mongo.Group) (found bool, err error) {
