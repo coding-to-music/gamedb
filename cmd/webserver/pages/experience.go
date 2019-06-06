@@ -1,14 +1,11 @@
 package pages
 
 import (
-	"bytes"
 	"encoding/gob"
 	"math"
 	"net/http"
 	"strconv"
-	"time"
 
-	"github.com/djherbis/fscache"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
@@ -36,52 +33,20 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Experience", "Check how much XP you need to go up a level")
 
 	//
-	c, err := fscache.New("./cache", 0755, time.Hour*24*365)
+	var chunks [][]level
+
+	retrieve := func() interface{} {
+		chunks = getExperienceRows()
+		return &chunks
+	}
+
+	err := helpers.GetCache("experience", 0, retrieve, &chunks)
 	if err != nil {
 		log.Err(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500})
 	}
 
-	rr, ww, err := c.Get("stream")
-	if err != nil {
-		log.Err(err)
-		returnErrorTemplate(w, r, errorTemplate{Code: 500})
-	}
-
-	defer func() {
-		err = rr.Close()
-		log.Err(err)
-	}()
-
-	if ww == nil {
-
-		// Read from cache
-		dec := gob.NewDecoder(rr)
-
-		err := dec.Decode(&t.Chunks)
-		log.Err(err)
-
-	} else {
-
-		defer func() {
-			err = ww.Close()
-			log.Err(err)
-		}()
-
-		t.Chunks = getExperienceRows()
-		log.Info("x")
-
-		var buf bytes.Buffer
-		enc := gob.NewEncoder(&buf)
-
-		err := enc.Encode(&t.Chunks)
-		log.Err(err)
-
-		// Save to cache
-		_, err = ww.Write(buf.Bytes())
-		log.Err(err)
-
-	}
+	t.Chunks = chunks
 
 	// Highlight level from URL
 	t.Level = -1
