@@ -32,6 +32,22 @@ func init() {
 		out.Name = "li"
 		return out, true
 	})
+	BBCodeCompiler.SetTag("table", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "table"
+		out.Attrs["class"] = "table table-hover table-striped mb-0"
+		return out, true
+	})
+	BBCodeCompiler.SetTag("tr", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "tr"
+		return out, true
+	})
+	BBCodeCompiler.SetTag("td", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "td"
+		return out, true
+	})
 }
 
 func RenderHTMLAndBBCode(in string) template.HTML {
