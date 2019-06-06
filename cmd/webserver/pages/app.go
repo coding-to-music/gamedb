@@ -484,7 +484,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, playerAppFilter)
+		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, playerAppFilter, 0)
 		log.Err(err, r)
 	}()
 

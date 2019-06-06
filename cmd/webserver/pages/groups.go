@@ -93,7 +93,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionGroups, filter)
+		total, err = mongo.CountDocuments(mongo.CollectionGroups, filter, 0)
 		log.Err(err, r)
 
 	}(r)

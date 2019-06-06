@@ -117,7 +117,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		filtered, err = mongo.CountDocuments(mongo.CollectionProductPrices, filter)
+		filtered, err = mongo.CountDocuments(mongo.CollectionProductPrices, filter, 0)
 		log.Err(err, r)
 	}(r)
 
@@ -132,7 +132,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, mongo.M{
 			"currency":   string(code),
 			"created_at": mongo.M{"$gt": dateLimit},
-		})
+		}, 0)
 		log.Err(err, r)
 	}(r)
 

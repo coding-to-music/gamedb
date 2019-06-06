@@ -57,7 +57,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionWishlistApps, nil)
+		count, err = mongo.CountDocuments(mongo.CollectionWishlistApps, nil, 0)
 		log.Err(err, r)
 	}()
 
@@ -107,7 +107,7 @@ func wishlistTagsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionWishlistTags, nil)
+		count, err = mongo.CountDocuments(mongo.CollectionWishlistTags, nil, 0)
 		log.Err(err, r)
 	}()
 

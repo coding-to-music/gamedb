@@ -192,7 +192,7 @@ func CountEvents(userID int) (count int64, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionEvents, M{"user_id": userID})
+		return CountDocuments(CollectionEvents, M{"user_id": userID}, 0)
 	})
 
 	return count, err

@@ -496,7 +496,7 @@ func CountPlayers() (count int64, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionPlayers, M{})
+		return CountDocuments(CollectionPlayers, M{}, 0)
 	})
 
 	return count, err

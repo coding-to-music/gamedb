@@ -36,7 +36,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Articles, err = mongo.GetArticlesByApps(appIDs, 0, time.Now().AddDate(0, 0, -7))
 	log.Err(err, r)
 
-	t.Count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil)
+	t.Count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "news", t)
@@ -79,7 +79,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil)
+		count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
 		log.Err(err, r)
 	}()
 

@@ -109,12 +109,12 @@ func (pb PlayerBadge) GetPlayerIcon() string {
 
 func (pb PlayerBadge) GetSpecialPlayers() (int64, error) {
 
-	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": pb.BadgeID})
+	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": pb.BadgeID}, 60*60*24*24)
 }
 
 func (pb PlayerBadge) GetEventPlayers() (int64, error) {
 
-	return CountDocuments(CollectionPlayerBadges, M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}})
+	return CountDocuments(CollectionPlayerBadges, M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}}, 60*60*24*24)
 }
 
 func (pb PlayerBadge) GetEventMax() (max int, err error) {

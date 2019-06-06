@@ -206,7 +206,7 @@ func InsertDocuments(collection collection, documents []Document) (resp *mongo.I
 	return resp, err
 }
 
-func CountDocuments(collection collection, filter interface{}) (count int64, err error) {
+func CountDocuments(collection collection, filter interface{}, ttl int32) (count int64, err error) {
 
 	if filter == nil {
 		filter = M{}
@@ -220,6 +220,9 @@ func CountDocuments(collection collection, filter interface{}) (count int64, err
 	key := hex.EncodeToString(h[:])
 
 	item := helpers.MemcacheMongoCount(collection.String() + "-" + key)
+	if ttl > 0 {
+		item.Expiration = ttl
+	}
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 

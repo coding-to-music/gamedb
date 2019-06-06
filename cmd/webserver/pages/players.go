@@ -175,7 +175,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		filtered, err = mongo.CountDocuments(mongo.CollectionPlayers, filter)
+		filtered, err = mongo.CountDocuments(mongo.CollectionPlayers, filter, 0)
 		log.Err(err, r)
 	}()
 

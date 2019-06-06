@@ -132,7 +132,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter)
+		count, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 0)
 		log.Err(err, r)
 	}()
 
