@@ -122,7 +122,7 @@ func (pb PlayerBadge) GetEventMax() (max int, err error) {
 	doc := PlayerBadge{}
 	err = GetFirstDocument(
 		CollectionPlayerBadges,
-		M{"app_id": pb.AppID, "badge_id": 1, "badge_foil": false},
+		M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}, "badge_foil": false},
 		M{"badge_level": -1, "badge_completion_time": 1},
 		M{"badge_level": 1, "_id": -1},
 		&doc,
