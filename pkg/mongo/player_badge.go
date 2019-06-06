@@ -65,7 +65,10 @@ func (pb PlayerBadge) GetName() string {
 }
 
 func (pb PlayerBadge) GetPath() string {
-	return "/badges/" + strconv.Itoa(pb.BadgeID) + "/" + slug.Make(pb.BadgeName)
+	if pb.IsSpecial() {
+		return "/badges/" + strconv.Itoa(pb.BadgeID) + "/" + slug.Make(pb.BadgeName)
+	}
+	return "/badges/" + strconv.Itoa(pb.AppID) + "/" + slug.Make(pb.BadgeName)
 }
 
 func (pb PlayerBadge) GetPlayerPath() string {
