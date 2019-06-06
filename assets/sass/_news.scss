@@ -16,32 +16,7 @@
             cursor: ns-resize;
 
             > div {
-
-                h1, h2, h3 {
-                    font-size: 1.5rem;
-                    font-weight: bold;
-                }
-
-                img {
-                    max-width: 100%;
-                    max-height: 300px;
-                }
-
-                p:empty {
-                    display: none;
-                }
-
-                br:first-child {
-                    display: none;
-                }
-
-                //br + br + br {
-                //    display: none
-                //}
-                //
-                //p:empty + p:empty {
-                //    display: none;
-                //}
+                @include news-content;
             }
         }
 

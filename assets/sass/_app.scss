@@ -97,14 +97,15 @@
     }
 
     #news {
+
+        // Normal rows
         table.table tr[role=row] td {
             cursor: pointer;
         }
 
-        .modal-body {
-            img {
-                max-width: 100%;
-            }
+        // Extra rows
+        table.table tr:not([role=row]) td {
+            @include news-content;
         }
     }
 }
