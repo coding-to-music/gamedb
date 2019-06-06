@@ -55,7 +55,7 @@ func (bt badgesTemplate) GetEventBadges() (badges []mongo.PlayerBadge) {
 	}
 
 	sort.Slice(badges, func(i, j int) bool {
-		return badges[i].BadgeID > badges[j].BadgeID
+		return badges[i].AppID > badges[j].AppID
 	})
 
 	return badges
