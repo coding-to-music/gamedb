@@ -61,7 +61,7 @@ if ($('#groups-page').length > 0) {
                     return row[4]
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('d-none d-lg-block');
+                    $(td).addClass('d-none d-lg-table-cell');
                 },
                 "orderable": false,
             },
