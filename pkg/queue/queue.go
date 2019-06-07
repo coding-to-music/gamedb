@@ -234,71 +234,79 @@ func (q baseQueue) ConsumeMessages() {
 
 	for {
 
-		// Connect
-		err = func() error {
+		func() {
 
-			consumeLock.Lock()
-			defer consumeLock.Unlock()
+			// Connect
+			err = func() error {
 
-			if consumerConnection == nil {
+				consumeLock.Lock()
+				defer consumeLock.Unlock()
 
-				consumerConnection, err = makeAConnection()
-				if err != nil {
-					logCritical("Connecting to Rabbit: " + err.Error())
-					return err
+				log.Info("Getting new consumer connection")
+
+				if consumerConnection == nil {
+
+					consumerConnection, err = makeAConnection()
+					if err != nil {
+						return err
+					}
+					consumerConnection.NotifyClose(consumerConnectionChannel)
 				}
-				consumerConnection.NotifyClose(consumerConnectionChannel)
+
+				return nil
+			}()
+
+			if err != nil {
+				logCritical("Connecting to Rabbit: " + err.Error())
+				return
 			}
 
-			return nil
+			//
+			ch, qu, err := getQueue(consumerConnection, q.Name, q.getQOS())
+			if err != nil {
+				logError(err)
+				return
+			}
+
+			defer func(ch *amqp.Channel) {
+				err = ch.Close()
+				logError(err)
+			}(ch)
+
+			tag := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
+
+			msgs, err := ch.Consume(qu.Name, tag, false, false, false, false, nil)
+			if err != nil {
+				logError(err)
+				return
+			}
+
+			// In a anon function so can return at anytime
+			func(msgs <-chan amqp.Delivery, q baseQueue) {
+
+				var msgSlice []amqp.Delivery
+
+				for {
+					select {
+					case err = <-consumerConnectionChannel:
+						logWarning("Consumer connection closed", err)
+						return
+					case msg := <-msgs:
+						msgSlice = append(msgSlice, msg)
+					}
+
+					if len(msgSlice) >= q.batchSize {
+						log.Info(".")
+						q.queue.processMessages(msgSlice)
+						msgSlice = []amqp.Delivery{}
+					}
+				}
+
+			}(msgs, q)
+
+			logWarning("Rabbit consumer connection has disconnected")
+
 		}()
-
-		if err != nil {
-			logError(err)
-			return
-		}
-
-		//
-		ch, qu, err := getQueue(consumerConnection, q.Name, q.getQOS())
-		if err != nil {
-			logError(err)
-			return
-		}
-
-		tag := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
-
-		msgs, err := ch.Consume(qu.Name, tag, false, false, false, false, nil)
-		if err != nil {
-			logError(err)
-			return
-		}
-
-		// In a anon function so can return at anytime
-		func(msgs <-chan amqp.Delivery, q baseQueue) {
-
-			var msgSlice []amqp.Delivery
-
-			for {
-				select {
-				case err = <-consumerConnectionChannel:
-					logWarning("Consumer connection closed", err)
-					return
-				case msg := <-msgs:
-					msgSlice = append(msgSlice, msg)
-				}
-
-				if len(msgSlice) >= q.batchSize {
-					q.queue.processMessages(msgSlice)
-					msgSlice = []amqp.Delivery{}
-				}
-			}
-
-		}(msgs, q)
-
-		logWarning("Rabbit consumer connection has disconnected")
-
-		err = ch.Close()
-		logError(err)
 	}
 }
 
@@ -348,16 +356,16 @@ func produce(payload baseMessage, queue queueName) (err error) {
 		return err
 	}
 
-	err = ch.Publish("", qu.Name, false, false, amqp.Publishing{
+	defer func() {
+		err = ch.Close()
+		log.Err(err)
+	}()
+
+	return ch.Publish("", qu.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
 		Body:         b,
 	})
-	if err != nil {
-		return err
-	}
-
-	return ch.Close()
 }
 
 func makeAConnection() (conn *amqp.Connection, err error) {
