@@ -60,6 +60,13 @@ func (pb PlayerBadge) IsSpecial() bool {
 	return pb.AppID == 0
 }
 
+func (pb PlayerBadge) GetUniqueID() int {
+	if pb.IsSpecial() {
+		return pb.BadgeID
+	}
+	return pb.AppID
+}
+
 func (pb PlayerBadge) GetName() string {
 	return pb.BadgeName
 }
