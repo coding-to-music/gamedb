@@ -75,11 +75,10 @@
 
         gtag('js', new Date());
         gtag('config', 'UA-125104-31');
-
-        gtag('set', {'user_cc': user.userCountry});
-        if (user.userID > 0) {
-            gtag('set', {'user_id': user.userID});
-        }
+        {{ if .IsLoggedIn }}
+        gtag('set', {'user_cc': '{{ .UserCountry }}'});
+        gtag('set', {'user_id': {{ .UserID }}});
+        {{ end }}
     </script>
 
     </body>

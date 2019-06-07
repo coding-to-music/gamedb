@@ -284,8 +284,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
-		"userID":             strconv.Itoa(t.UserID),
-		"userEmail":          t.userEmail,
 		"userCountry":        t.UserCountry,
 		"userCurrencySymbol": t.UserCurrencySymbol,
 		"isLoggedIn":         t.IsLoggedIn(),
