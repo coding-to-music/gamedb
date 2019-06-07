@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -55,16 +54,6 @@ type badgeTemplate struct {
 	Foil  string
 }
 
-type badgePlayerAjax struct {
-	badgeLevel int
-	playerID   int64
-	playerName string
-	playerIcon string
-	playerLink string
-	rank       int
-	time       string
-}
-
 func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
@@ -102,27 +91,15 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter["badge_foil"] = r.URL.Query().Get("foil") == "1"
 	}
 
-	var badgeAjaxRows []badgePlayerAjax
+	var badges []mongo.PlayerBadge
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		badges, err := mongo.GetBadgePlayers(query.getOffset64(), filter)
+		var err error
+		badges, err = mongo.GetBadgePlayers(query.getOffset64(), filter)
 		log.Err(err, r)
-
-		for k, badge := range badges {
-
-			badgeAjaxRows = append(badgeAjaxRows, badgePlayerAjax{
-				badgeLevel: badge.BadgeLevel,
-				playerID:   badge.PlayerID,
-				playerName: badge.PlayerName,
-				playerLink: badge.GetPlayerPath(),
-				playerIcon: badge.GetPlayerIcon(),
-				rank:       query.getOffset() + k + 1,
-				time:       badge.BadgeCompletionTime.Format("2006-01-02 15:04:05"),
-			})
-		}
 	}()
 
 	var count int64
@@ -143,14 +120,14 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsFiltered = response.RecordsTotal
 	response.Draw = query.Draw
 
-	for _, player := range badgeAjaxRows {
+	for k, player := range badges {
 		response.AddRow([]interface{}{
-			helpers.OrdinalComma(player.rank), // 0
-			player.playerName,                 // 1
-			player.playerIcon,                 // 2
-			player.badgeLevel,                 // 3
-			player.time,                       // 4
-			player.playerLink,                 // 5
+			query.getOffset() + k + 1, // 0
+			player.PlayerName,         // 1
+			player.GetPlayerIcon(),    // 2
+			player.BadgeLevel,         // 3
+			player.BadgeCompletionTime.Format("2006-01-02 15:04:05"), // 4
+			player.GetPlayerPath(), // 5
 		})
 	}
 
