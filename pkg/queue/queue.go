@@ -364,6 +364,8 @@ func makeAConnection() (conn *amqp.Connection, err error) {
 
 	operation := func() (err error) {
 
+		log.Info("Connecting to Rabbit")
+
 		amqpConfig := amqp.Config{}
 		if config.IsLocal() {
 			amqpConfig.Heartbeat = time.Hour
