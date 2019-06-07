@@ -40,7 +40,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := badgeTemplate{}
-	t.fill(w, r, "Badge", "")
+	t.fill(w, r, val.BadgeName, "")
 	t.Badge = val
 	t.Foil = r.URL.Query().Get("foil")
 
