@@ -80,6 +80,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		//
 		for k := range groups {
 			// groups[k].Headline = helpers.TruncateString(re.ReplaceAllLiteralString(groups[k].Headline, ""), 60)
+			groups[k].Name = helpers.InsertNewLines(groups[k].Name, 20)
 			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline, 10)
 		}
 
