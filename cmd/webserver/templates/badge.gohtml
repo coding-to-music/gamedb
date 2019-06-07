@@ -18,7 +18,14 @@
         <div class="card-body">
 
             {{ if gt .Badge.AppID 0 }}
-                <p><a href="{{ .Badge.GetAppPath }}" class="btn btn-success">Go to App page</a></p>
+                <p>
+                    <a href="{{ .Badge.GetAppPath }}" class="btn btn-success">Go to App page</a>
+                    {{ if eq .Foil "1" }}
+                        <a href="{{ .Badge.GetPath }}" class="btn btn-success">Go to non-foil badge</a>
+                    {{ else }}
+                        <a href="{{ .Badge.GetPath }}?foil=1" class="btn btn-success">Go to foil badge</a>
+                    {{ end }}
+                </p>
             {{ end }}
 
             <div class="table-responsive">
