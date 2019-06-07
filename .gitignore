@@ -3,8 +3,7 @@ vendor/
 tmp/
 logs/
 .tscache/
-
-cmd/webserver/cache
+cmd/webserver/cache/
 
 # Files that should be deleted
 assets/css/sass/
