@@ -234,7 +234,7 @@ func (player Player) GetSpecialBadges() (badges []PlayerBadge) {
 	}
 
 	sort.Slice(badges, func(i, j int) bool {
-		return badges[i].BadgeID < badges[j].BadgeID
+		return badges[i].GetUniqueID() > badges[j].GetUniqueID()
 	})
 
 	return badges
