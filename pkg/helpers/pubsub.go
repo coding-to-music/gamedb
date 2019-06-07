@@ -3,11 +3,13 @@ package helpers
 import (
 	"context"
 	"encoding/json"
+	"sync"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/gamedb/gamedb/pkg/config"
 )
 
+// Topics
 type PubSubTopic string
 
 const (
@@ -15,6 +17,7 @@ const (
 	PubSubTopicMemcache   PubSubTopic = "gamedb-memcache"
 )
 
+// Subscriptions
 type PubSubSubscription string
 
 var (
@@ -22,9 +25,14 @@ var (
 	PubSubMemcache   = PubSubSubscription("gamedb-memcache-" + config.Config.Environment.Get())
 )
 
+//
 var pubSubClient *pubsub.Client
+var pubSubClientLock sync.Mutex
 
 func GetPubSub() (client *pubsub.Client, ctx context.Context, err error) {
+
+	pubSubClientLock.Lock()
+	defer pubSubClientLock.Unlock()
 
 	ctx = context.Background()
 
