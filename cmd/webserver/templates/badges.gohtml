@@ -34,6 +34,7 @@
                             <tr>
                                 <th scope="col">Badge</th>
                                 <th scope="col">Game DB Players</th>
+                                <th scope="col">First</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -44,6 +45,7 @@
                                         <span>{{ .BadgeName }}</span>
                                     </td>
                                     <td>{{ comma64 .GetSpecialPlayers }}</td>
+                                    <td data-link="{{ .GetSpecialMax.GetPlayerPath }}">{{ .GetSpecialMax.PlayerName }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
@@ -63,18 +65,20 @@
                                 <th scope="col">Game DB Players</th>
                                 <th scope="col">Highest Level</th>
                                 <th scope="col">Highest Foil Level</th>
+                                <th scope="col">First</th>
                             </tr>
                             </thead>
                             <tbody>
                             {{ range $key, $value := .GetEventBadges }}
                                 <tr>
-                                    <td data-link="{{ .GetPath }}" class="img" nowrap="nowrap">
+                                    <td class="img" nowrap="nowrap">
                                         <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
                                     </td>
                                     <td>{{ comma64 .GetEventPlayers }}</td>
-                                    <td data-link="{{ .GetPath }}">{{ comma .GetEventMax }}</td>
-                                    <td data-link="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil }}</td>
+                                    <td data-link="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</td>
+                                    <td data-link="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil.BadgeLevel }}</td>
+                                    <td data-link="{{ .GetEventMaxFoil.GetPlayerPath }}">{{ .GetEventMaxFoil.PlayerName }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>

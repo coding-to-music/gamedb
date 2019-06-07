@@ -79,7 +79,7 @@ func (pb PlayerBadge) GetPath() string {
 }
 
 func (pb PlayerBadge) GetPlayerPath() string {
-	return helpers.GetPlayerPath(pb.PlayerID, pb.PlayerName)
+	return helpers.GetPlayerPath(pb.PlayerID, pb.PlayerName) + "#badges"
 }
 
 func (pb PlayerBadge) GetTimeFormatted() string {
@@ -119,14 +119,35 @@ func (pb PlayerBadge) GetSpecialPlayers() (int64, error) {
 	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": pb.BadgeID}, 60*60*24*24)
 }
 
+func (pb PlayerBadge) GetSpecialMax() (max PlayerBadge, err error) {
+
+	var item = helpers.MemcacheBadgeMaxSpecial(pb.BadgeID)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
+
+		err = GetFirstDocument(
+			CollectionPlayerBadges,
+			M{"app_id": 0, "badge_id": pb.BadgeID},
+			M{"badge_level": -1, "badge_completion_time": 1},
+			M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+			&max,
+		)
+
+		return max, err
+
+	})
+
+	return max, err
+}
+
 func (pb PlayerBadge) GetEventPlayers() (int64, error) {
 
 	return CountDocuments(CollectionPlayerBadges, M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}}, 60*60*24*24)
 }
 
-func (pb PlayerBadge) GetEventMax() (max int, err error) {
+func (pb PlayerBadge) GetEventMax() (max PlayerBadge, err error) {
 
-	var item = helpers.MemcacheBadgeMax(pb.AppID)
+	var item = helpers.MemcacheBadgeMaxEvent(pb.AppID)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
 		return pb.getEventMax(false)
@@ -135,9 +156,9 @@ func (pb PlayerBadge) GetEventMax() (max int, err error) {
 	return max, err
 }
 
-func (pb PlayerBadge) GetEventMaxFoil() (max int, err error) {
+func (pb PlayerBadge) GetEventMaxFoil() (max PlayerBadge, err error) {
 
-	var item = helpers.MemcacheBadgeMaxFoil(pb.AppID)
+	var item = helpers.MemcacheBadgeMaxEventFoil(pb.AppID)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
 		return pb.getEventMax(true)
@@ -146,20 +167,17 @@ func (pb PlayerBadge) GetEventMaxFoil() (max int, err error) {
 	return max, err
 }
 
-func (pb PlayerBadge) getEventMax(foil bool) (max int, err error) {
+func (pb PlayerBadge) getEventMax(foil bool) (max PlayerBadge, err error) {
 
-	doc := PlayerBadge{}
 	err = GetFirstDocument(
 		CollectionPlayerBadges,
 		M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}, "badge_foil": foil},
 		M{"badge_level": -1, "badge_completion_time": 1},
-		M{"badge_level": 1, "_id": -1},
-		&doc,
+		M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+		&max,
 	)
-	err = helpers.IgnoreErrors(err, ErrNoDocuments)
-	log.Err(err)
 
-	return doc.BadgeLevel, err
+	return max, err
 }
 
 func (pb PlayerBadge) OutputForJSON() []interface{} {
