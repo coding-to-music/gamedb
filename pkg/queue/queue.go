@@ -379,7 +379,7 @@ func makeAConnection() (conn *amqp.Connection, err error) {
 	policy.MaxElapsedTime = 0
 	policy.InitialInterval = 5 * time.Second
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logError(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
 
 	return conn, err
 }
