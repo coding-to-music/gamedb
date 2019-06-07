@@ -17,8 +17,9 @@ import (
 )
 
 var (
-	mongoClient *mongo.Client
-	mongoCtx    context.Context
+	mongoClient     *mongo.Client
+	mongoClientLock sync.Mutex
+	mongoCtx        context.Context
 
 	MongoDatabase = config.Config.MongoDatabase.Get()
 
@@ -63,12 +64,10 @@ const (
 	CollectionCategories collection = "categories"
 )
 
-var mongoLock sync.Mutex
-
 func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 
-	mongoLock.Lock()
-	defer mongoLock.Unlock()
+	mongoClientLock.Lock()
+	defer mongoClientLock.Unlock()
 
 	if mongoClient == nil {
 
