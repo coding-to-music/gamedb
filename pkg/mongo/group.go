@@ -99,29 +99,21 @@ func (group Group) GetIcon() string {
 	return AvatarBase + group.Icon
 }
 
+// Don't cache, as we need updatedAt to be live for notifications etc
 func GetGroup(id string) (group Group, err error) {
 
 	if !helpers.IsValidGroupID(id) {
 		return group, ErrInvalidGroupID
 	}
 
-	var item = helpers.MemcacheGroup(id)
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &group, func() (interface{}, error) {
-
-		var group Group
-
-		if len(id) == 18 {
-			err = FindDocumentByKey(CollectionGroups, "_id", id, nil, &group)
-		} else {
-			i, err := strconv.ParseInt(id, 10, 32)
-			if err == nil {
-				err = FindDocumentByKey(CollectionGroups, "id", i, nil, &group)
-			}
+	if len(id) == 18 {
+		err = FindDocumentByKey(CollectionGroups, "_id", id, nil, &group)
+	} else {
+		i, err := strconv.ParseInt(id, 10, 32)
+		if err == nil {
+			err = FindDocumentByKey(CollectionGroups, "id", i, nil, &group)
 		}
-
-		return group, err
-	})
+	}
 
 	return group, err
 }
