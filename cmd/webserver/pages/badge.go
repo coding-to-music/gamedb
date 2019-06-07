@@ -98,7 +98,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter["badge_id"] = idx
 	} else {
 		filter["app_id"] = idx
-		filter["badge_id"] = 1
+		filter["badge_id"] = mongo.M{"$gt": 0}
 		filter["badge_foil"] = r.URL.Query().Get("foil") == "1"
 	}
 
