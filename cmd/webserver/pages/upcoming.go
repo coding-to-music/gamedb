@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -75,10 +74,10 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(count)
-	response.RecordsFiltered = response.RecordsTotal
+	response.RecordsTotal = int64(count)
+	response.RecordsFiltered = int64(count)
 	if search != "" {
-		response.RecordsFiltered = strconv.Itoa(filtered)
+		response.RecordsFiltered = int64(filtered)
 	}
 	response.Draw = query.Draw
 

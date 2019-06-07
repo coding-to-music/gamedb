@@ -3,7 +3,6 @@ package pages
 import (
 	"errors"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/cenkalti/backoff"
@@ -125,8 +124,8 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(total)
-	response.RecordsFiltered = strconv.Itoa(total)
+	response.RecordsTotal = int64(total)
+	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
 
 	for _, v := range commits2 {

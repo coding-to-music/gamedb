@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
@@ -47,7 +46,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	var count int
+	var count int64
 	var apps []sql.App
 
 	gorm, err := sql.GetMySQLClient()
@@ -84,8 +83,8 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(gorm.Error, r)
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(count)
-	response.RecordsFiltered = strconv.Itoa(count)
+	response.RecordsTotal = count
+	response.RecordsFiltered = count
 	response.Draw = query.Draw
 
 	for _, app := range apps {

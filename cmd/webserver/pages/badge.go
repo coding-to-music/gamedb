@@ -116,8 +116,8 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.FormatInt(count, 10)
-	response.RecordsFiltered = response.RecordsTotal
+	response.RecordsTotal = count
+	response.RecordsFiltered = count
 	response.Draw = query.Draw
 
 	for k, player := range badges {

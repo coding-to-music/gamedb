@@ -3,7 +3,6 @@ package pages
 import (
 	"html/template"
 	"net/http"
-	"strconv"
 	"sync"
 
 	"github.com/dustin/go-humanize"
@@ -96,8 +95,8 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(count)
-	response.RecordsFiltered = strconv.Itoa(count)
+	response.RecordsTotal = int64(count)
+	response.RecordsFiltered = int64(count)
 	response.Draw = query.Draw
 
 	for _, v := range packages {

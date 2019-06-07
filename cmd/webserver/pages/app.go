@@ -347,8 +347,8 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(total)
-	response.RecordsFiltered = strconv.Itoa(total)
+	response.RecordsTotal = int64(total)
+	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
 
 	for _, v := range articles {
@@ -492,8 +492,8 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.FormatInt(total, 10)
-	response.RecordsFiltered = response.RecordsTotal
+	response.RecordsTotal = total
+	response.RecordsFiltered = total
 	response.Draw = query.Draw
 
 	for _, v := range playersAppRows {

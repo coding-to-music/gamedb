@@ -228,7 +228,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get apps
 	var apps []sql.App
-	var recordsFiltered int
+	var recordsFiltered int64
 
 	wg.Add(1)
 	go func() {
@@ -407,8 +407,8 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(count)
-	response.RecordsFiltered = strconv.Itoa(recordsFiltered)
+	response.RecordsTotal = int64(count)
+	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw
 
 	for _, v := range apps {

@@ -466,8 +466,8 @@ func middlewareAdminCheck() func(http.Handler) http.Handler {
 // DataTablesAjaxResponse
 type DataTablesAjaxResponse struct {
 	Draw            string          `json:"draw"`
-	RecordsTotal    string          `json:"recordsTotal"`
-	RecordsFiltered string          `json:"recordsFiltered"`
+	RecordsTotal    int64           `json:"recordsTotal,string"`
+	RecordsFiltered int64           `json:"recordsFiltered,string"`
 	Data            [][]interface{} `json:"data"`
 }
 
@@ -491,7 +491,7 @@ type DataTablesQuery struct {
 	Order  map[string]map[string]interface{}
 	Start  string
 	Search map[string]interface{}
-	Time   string `mapstructure:"_"`
+	// Time   string `mapstructure:"_"`
 	// Columns []string
 }
 

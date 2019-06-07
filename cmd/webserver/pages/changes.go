@@ -71,8 +71,8 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = "10000"
-	response.RecordsFiltered = "10000"
+	response.RecordsTotal = 10000
+	response.RecordsFiltered = 10000
 	response.Draw = query.Draw
 
 	for _, v := range changes {

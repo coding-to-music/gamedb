@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strconv"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -58,7 +57,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get products
 	var products []extendedRow
-	var recordsFiltered int
+	var recordsFiltered int64
 	wg.Add(1)
 	go func() {
 
@@ -125,8 +124,8 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(count)
-	response.RecordsFiltered = strconv.Itoa(recordsFiltered)
+	response.RecordsTotal = int64(count)
+	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw
 
 	for _, v := range products {

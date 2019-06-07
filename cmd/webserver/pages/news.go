@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strconv"
 	"sync"
 	"time"
 
@@ -86,8 +85,8 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.FormatInt(count, 10)
-	response.RecordsFiltered = response.RecordsTotal
+	response.RecordsTotal = count
+	response.RecordsFiltered = count
 	response.Draw = query.Draw
 
 	for _, v := range articles {

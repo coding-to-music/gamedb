@@ -140,8 +140,8 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.FormatInt(total, 10)
-	response.RecordsFiltered = strconv.FormatInt(filtered, 10)
+	response.RecordsTotal = total
+	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
 
 	for _, v := range priceChanges {

@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/Jleagle/influxql"
@@ -76,8 +75,8 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.Itoa(count)
-	response.RecordsFiltered = strconv.Itoa(count)
+	response.RecordsTotal = int64(count)
+	response.RecordsFiltered = int64(count)
 	response.Draw = query.Draw
 
 	for _, app := range apps {

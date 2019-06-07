@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strconv"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -102,8 +101,8 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = strconv.FormatInt(total, 10)
-	response.RecordsFiltered = response.RecordsTotal
+	response.RecordsTotal = total
+	response.RecordsFiltered = total
 	response.Draw = query.Draw
 
 	for _, v := range groups {
