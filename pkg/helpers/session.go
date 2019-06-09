@@ -4,8 +4,11 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Jleagle/session-go/session"
+	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 const (
@@ -15,6 +18,7 @@ const (
 	SessionUserCountry    = "user-country"
 	SessionUserShowAlerts = "user-alerts"
 	SessionUserAPIKey     = "user-api-key"
+	SessionUserLevel      = "user-level"
 
 	// Set if player exists at login
 	SessionPlayerID    = "player-id"
@@ -64,4 +68,19 @@ func GetCountryCode(r *http.Request) steam.CountryCode {
 	}
 
 	return steam.CountryUS
+}
+
+func GetUserLevel(r *http.Request) int {
+
+	val, err := session.Get(r, SessionUserLevel)
+	if err != nil {
+		return 0
+	}
+
+	i, err := strconv.Atoi(val)
+	if err != nil {
+		return 0
+	}
+
+	return i
 }
