@@ -213,6 +213,7 @@ func login(r *http.Request, user sql.User) (string, bool) {
 		helpers.SessionUserCountry:    user.CountryCode,
 		helpers.SessionUserAPIKey:     user.APIKey,
 		helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+		helpers.SessionUserLevel:      strconv.Itoa(int(user.PatreonLevel)),
 	}
 
 	player, err := mongo.GetPlayer(user.SteamID)
