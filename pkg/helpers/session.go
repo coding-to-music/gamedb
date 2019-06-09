@@ -14,7 +14,7 @@ const (
 	SessionUserEmail      = "user-email"
 	SessionUserCountry    = "user-country"
 	SessionUserShowAlerts = "user-alerts"
-	SessionUserAPIKey     = "user-pai-key"
+	SessionUserAPIKey     = "user-api-key"
 
 	// Set if player exists at login
 	SessionPlayerID    = "player-id"
