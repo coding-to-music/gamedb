@@ -45,7 +45,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	// Get code
 	code := steam.CountryCode(r.URL.Query().Get("code"))
 	if code == "" {
-		code = getCountryCode(r)
+		code = helpers.GetCountryCode(r)
 	}
 
 	if code == "" {

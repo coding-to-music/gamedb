@@ -194,7 +194,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Get price
-	t.Price = sql.GetPriceFormatted(app, getCountryCode(r))
+	t.Price = sql.GetPriceFormatted(app, helpers.GetCountryCode(r))
 
 	// Functions that get called multiple times in the template
 	t.Achievements, err = t.App.GetAchievements()

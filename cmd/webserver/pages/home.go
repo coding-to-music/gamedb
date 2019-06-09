@@ -117,7 +117,7 @@ type homeNews struct {
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var filter = mongo.D{
-		{"currency", string(getCountryCode(r))},
+		{"currency", string(helpers.GetCountryCode(r))},
 		{"app_id", bson.M{"$gt": 0}},
 		{"difference", bson.M{"$lt": 0}},
 	}
@@ -125,7 +125,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
 	log.Err(err, r)
 
-	locale, err := helpers.GetLocaleFromCountry(getCountryCode(r))
+	locale, err := helpers.GetLocaleFromCountry(helpers.GetCountryCode(r))
 	log.Err(err)
 
 	var prices []homePrice

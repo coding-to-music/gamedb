@@ -68,7 +68,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
 
-	var code = getCountryCode(r)
+	var code = helpers.GetCountryCode(r)
 
 	count, err := countUpcomingApps()
 	log.Err(err)

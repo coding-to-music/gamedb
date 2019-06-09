@@ -141,7 +141,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get price
-	t.Price = sql.GetPriceFormatted(pack, getCountryCode(r))
+	t.Price = sql.GetPriceFormatted(pack, helpers.GetCountryCode(r))
 
 	t.Prices, err = t.Package.GetPrices()
 	log.Err(err)

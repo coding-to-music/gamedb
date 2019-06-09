@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -43,7 +44,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	//
-	var code = getCountryCode(r)
+	var code = helpers.GetCountryCode(r)
 	var wg sync.WaitGroup
 
 	// Get apps

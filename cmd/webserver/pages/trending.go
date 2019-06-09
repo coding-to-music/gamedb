@@ -61,7 +61,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
 	gorm = gorm.Where("player_trend >= 100 OR player_trend <= -100")
-	gorm = gorm.Order(query.getOrderSQL(columns, getCountryCode(r)))
+	gorm = gorm.Order(query.getOrderSQL(columns, helpers.GetCountryCode(r)))
 	gorm = gorm.Limit(100)
 	gorm = gorm.Offset(query.getOffset())
 
@@ -69,7 +69,7 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
 
-	var code = getCountryCode(r)
+	var code = helpers.GetCountryCode(r)
 
 	count, err := countTrendingApps()
 	log.Err(err)

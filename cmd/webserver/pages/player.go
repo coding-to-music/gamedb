@@ -198,7 +198,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14)
 
 	// Game stats
-	gameStats, err := player.GetGameStats(getCountryCode(r))
+	gameStats, err := player.GetGameStats(helpers.GetCountryCode(r))
 	log.Err(err, r)
 
 	// Make banners
@@ -357,7 +357,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	code := getCountryCode(r)
+	code := helpers.GetCountryCode(r)
 
 	//
 	var wg sync.WaitGroup

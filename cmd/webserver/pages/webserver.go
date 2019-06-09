@@ -29,10 +29,10 @@ import (
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Language", string(getCountryCode(r))) // Used for varnish hash
-	w.Header().Set("X-Content-Type-Options", "nosniff")   // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")   // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")       // Protection from clickjacking
+	w.Header().Set("Language", string(helpers.GetCountryCode(r))) // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
 
 	if !strings.HasPrefix(r.URL.Path, "/esi") {
 		w.Header().Set("Surrogate-Control", "ESI/1.0") // Enable ESI
@@ -225,7 +225,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.userEmail, err = session.Get(r, helpers.SessionUserEmail)
 	log.Err(err, r)
 
-	t.UserCountry = getCountryCode(r)
+	t.UserCountry = helpers.GetCountryCode(r)
 	log.Err(err, r)
 
 	t.UserName, err = session.Get(r, helpers.SessionPlayerName)
@@ -675,29 +675,4 @@ func getUserFromSession(r *http.Request) (user sql.User, err error) {
 func isLoggedIn(r *http.Request) (val bool, err error) {
 	read, err := session.Get(r, helpers.SessionUserEmail)
 	return read != "", err
-}
-
-func getCountryCode(r *http.Request) steam.CountryCode {
-
-	var cc string
-
-	q := r.URL.Query().Get("cc")
-	if q != "" {
-		cc = strings.ToUpper(q)
-	} else {
-		val, err := session.Get(r, helpers.SessionUserCountry)
-		log.Err(err)
-		if err == nil {
-			cc = val
-		}
-	}
-
-	if cc != "" {
-		_, ok := steam.Countries[steam.CountryCode(cc)]
-		if ok {
-			return steam.CountryCode(cc)
-		}
-	}
-
-	return steam.CountryUS
 }

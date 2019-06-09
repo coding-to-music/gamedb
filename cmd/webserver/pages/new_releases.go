@@ -64,7 +64,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"5": "player_trend",
 	}
 
-	var code = getCountryCode(r)
+	var code = helpers.GetCountryCode(r)
 
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})

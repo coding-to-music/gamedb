@@ -3,6 +3,7 @@ package pages
 import (
 	"net/http"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -27,7 +28,7 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := getCountryCode(r)
+	code := helpers.GetCountryCode(r)
 	prices := map[int]string{}
 	for _, v := range genres {
 		price, err := v.GetMeanPrice(code)

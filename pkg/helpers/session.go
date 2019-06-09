@@ -40,3 +40,28 @@ func GetUserIDFromSesion(r *http.Request) (id int, err error) {
 
 	return strconv.Atoi(idx)
 }
+
+func GetCountryCode(r *http.Request) steam.CountryCode {
+
+	var cc string
+
+	q := r.URL.Query().Get("cc")
+	if q != "" {
+		cc = strings.ToUpper(q)
+	} else {
+		val, err := session.Get(r, SessionUserCountry)
+		log.Err(err)
+		if err == nil {
+			cc = val
+		}
+	}
+
+	if cc != "" {
+		_, ok := steam.Countries[steam.CountryCode(cc)]
+		if ok {
+			return steam.CountryCode(cc)
+		}
+	}
+
+	return steam.CountryUS
+}
