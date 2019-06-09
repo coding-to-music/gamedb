@@ -67,11 +67,11 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	query.getOffset()
+	query.limit(r)
 
 	client, ctx := helpers.GetGithub()
 
-	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
+	commitsResponse, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
 			Page:    query.getPage(commitsLimit),
 			PerPage: commitsLimit,
@@ -84,22 +84,22 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get commits
-	var commits2 []commit
+	var commits []commitStruct
 
 	var deployed bool
-	for _, v := range commits {
+	for _, commit := range commitsResponse {
 
-		if v.GetSHA() == config.Config.CommitHash.Get() {
+		if commit.GetSHA() == config.Config.CommitHash.Get() {
 			deployed = true
 		}
 
-		commits2 = append(commits2, commit{
-			Message:   v.Commit.GetMessage(),
-			Time:      v.Commit.Author.Date.Unix(),
+		commits = append(commits, commitStruct{
+			Message:   commit.Commit.GetMessage(),
+			Time:      commit.Commit.Author.Date.Unix(),
 			Deployed:  deployed,
-			Link:      v.GetHTMLURL(),
-			Highlight: v.GetSHA() == config.Config.CommitHash.Get(),
-			Hash:      v.GetSHA()[0:7],
+			Link:      commit.GetHTMLURL(),
+			Highlight: commit.GetSHA() == config.Config.CommitHash.Get(),
+			Hash:      commit.GetSHA()[0:7],
 		})
 	}
 
@@ -127,15 +127,16 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
+	response.limit(r)
 
-	for _, v := range commits2 {
+	for _, v := range commits {
 		response.AddRow(v.OutputForJSON())
 	}
 
 	response.output(w, r)
 }
 
-type commit struct {
+type commitStruct struct {
 	Message   string
 	Deployed  bool
 	Time      int64
@@ -144,7 +145,7 @@ type commit struct {
 	Hash      string
 }
 
-func (commit commit) OutputForJSON() (output []interface{}) {
+func (commit commitStruct) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{
 		commit.Message,

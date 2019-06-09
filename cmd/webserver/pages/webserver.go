@@ -485,6 +485,25 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 }
 
+func (t *DataTablesAjaxResponse) limit(r *http.Request) {
+
+	var limit int64 = 100
+	var pages int64
+
+	switch helpers.GetUserLevel(r) {
+	case 0:
+		pages = 5
+	case 1:
+		pages = 10
+	case 2:
+		pages = 20
+	}
+
+	if pages > 0 && t.RecordsFiltered > (pages*limit) {
+		t.RecordsFiltered = pages * limit
+	}
+}
+
 // DataTablesQuery
 type DataTablesQuery struct {
 	Draw   string
@@ -505,6 +524,30 @@ func (q *DataTablesQuery) fillFromURL(url url.Values) (err error) {
 
 	// Convert map into struct
 	return mapstructure.Decode(queryMap, q)
+}
+
+func (q *DataTablesQuery) limit(r *http.Request) {
+
+	var limit = 100
+	var pages = 0
+
+	switch helpers.GetUserLevel(r) {
+	case 0:
+		pages = 5
+	case 1:
+		pages = 10
+	case 2:
+		pages = 20
+	}
+
+	startI, err := strconv.Atoi(q.Start)
+	if err != nil {
+		log.Err(err)
+	}
+
+	if pages > 0 && startI > ((pages*limit)-limit) {
+		q.Start = strconv.Itoa((pages * limit) - limit)
+	}
 }
 
 func (q DataTablesQuery) getSearchString(k string) (search string) {
