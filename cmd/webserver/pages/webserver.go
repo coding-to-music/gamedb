@@ -324,23 +324,12 @@ func (t GlobalTemplate) GetFUserCountry() (text string) {
 	return string(t.UserCountry)
 }
 
-func (t GlobalTemplate) GetFooterText() (text template.HTML) {
+func (t GlobalTemplate) GetVersionHash() string {
 
-	// Page load time
-	// startTimeInt, err := strconv.ParseInt(t.request.Header.Get("start-time"), 10, 64)
-	// log.Err(err)
-	//
-	// durStr, err := durationfmt.Format(time.Duration(time.Now().UnixNano()-startTimeInt), "%ims")
-	// log.Err(err)
-	//
-	// text += template.HTML("Page created  in " + durStr + ".")
-
-	// Deployed commit hash
 	if len(config.Config.CommitHash.Get()) >= 7 {
-		text += template.HTML(`<a href="/commits">v` + config.Config.CommitHash.Get()[0:7] + `</a>.`)
+		return config.Config.CommitHash.Get()[0:7]
 	}
-
-	return text
+	return ""
 }
 
 func (t GlobalTemplate) IsAppsPage() bool {
