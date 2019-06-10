@@ -315,12 +315,10 @@ func (t GlobalTemplate) GetCanonical() (text string) {
 }
 
 func (t GlobalTemplate) GetFlag() (text string) {
-
 	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
-
 }
-func (t GlobalTemplate) GetFUserCountry() (text string) {
 
+func (t GlobalTemplate) GetFUserCountry() (text string) {
 	return string(t.UserCountry)
 }
 
