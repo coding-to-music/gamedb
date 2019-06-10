@@ -476,20 +476,11 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 
 func (t *DataTablesAjaxResponse) limit(r *http.Request) {
 
-	var limit int64 = 100
-	var pages int64
+	level := sql.UserLevel(helpers.GetUserLevel(r))
+	max := level.MaxResults(100)
 
-	switch helpers.GetUserLevel(r) {
-	case 0:
-		pages = 5
-	case 1:
-		pages = 10
-	case 2:
-		pages = 20
-	}
-
-	if pages > 0 && t.RecordsFiltered > (pages*limit) {
-		t.RecordsFiltered = pages * limit
+	if max > 0 && max < t.RecordsFiltered {
+		t.RecordsFiltered = max
 	}
 }
 
@@ -517,25 +508,13 @@ func (q *DataTablesQuery) fillFromURL(url url.Values) (err error) {
 
 func (q *DataTablesQuery) limit(r *http.Request) {
 
-	var limit = 100
-	var pages = 0
+	level := sql.UserLevel(helpers.GetUserLevel(r))
+	max := level.MaxOffset(100)
 
-	switch helpers.GetUserLevel(r) {
-	case 0:
-		pages = 5
-	case 1:
-		pages = 10
-	case 2:
-		pages = 20
-	}
+	start, _ := strconv.Atoi(q.Start)
 
-	startI, err := strconv.Atoi(q.Start)
-	if err != nil {
-		log.Err(err)
-	}
-
-	if pages > 0 && startI > ((pages*limit)-limit) {
-		q.Start = strconv.Itoa((pages * limit) - limit)
+	if max > 0 && int64(start) > max {
+		q.Start = strconv.FormatInt(int64(start), 10)
 	}
 }
 

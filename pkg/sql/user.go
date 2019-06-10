@@ -8,6 +8,38 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
+type UserLevel int
+
+func (ul UserLevel) MaxResults(limit int64) int64 {
+
+	switch ul {
+	default:
+		return 5 * limit
+	case 1:
+		return 10 * limit
+	case 2:
+		return 20 * limit
+	case 3:
+		return 0
+	}
+}
+
+func (ul UserLevel) MaxOffset(limit int64) int64 {
+
+	results := ul.MaxResults(limit)
+	if results == 0 {
+		return 0
+	}
+	return results - limit
+}
+
+const (
+	UserLevel0 UserLevel = 0
+	UserLevel1 UserLevel = 1
+	UserLevel2 UserLevel = 2
+	UserLevel3 UserLevel = 3
+)
+
 type User struct {
 	ID            int       `gorm:"not null;column:id;primary_key"`
 	CreatedAt     time.Time `gorm:"not null;column:created_at"`
