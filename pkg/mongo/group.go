@@ -85,6 +85,10 @@ func (group Group) GetPath() string {
 }
 
 func (group Group) GetLink() string {
+
+	if group.Type == "game" {
+		return "https://steamcommunity.com/games/" + group.URL + "?utm_source=" + config.Config.GameDBShortName.Get()
+	}
 	return "https://steamcommunity.com/groups/" + group.URL + "?utm_source=" + config.Config.GameDBShortName.Get()
 }
 
