@@ -40,6 +40,8 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	query.limit(r)
+
 	changes, err := mongo.GetChanges(query.getOffset64())
 	if err != nil {
 		log.Err(err, r)
@@ -74,6 +76,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = 10000
 	response.RecordsFiltered = 10000
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range changes {
 		response.AddRow(v.OutputForJSON(appMap, packageMap))
