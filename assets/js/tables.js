@@ -172,6 +172,17 @@ $dataTables2.on('draw.dt', function (e, settings, processing) {
 
     highLightOwnedGames();
     fixBrokenImages();
+
+    // Donate link
+    console.log(user.userLevel);
+    if (user.userLevel === '0' || user.userLevel === '') {
+
+        const bold = $('li.paginate_button.page-item.next.disabled').length > 0 ? 'font-weight-bold' : '';
+        $('div.dataTables_paginate ul.pagination').append(
+            $('<li><small><a href="/donate"><i class="fas fa-heart text-danger"></i> <span class="' + bold + '">See more!</span></a></small></li>').addClass('ml-1 donate')
+        );
+        // $('li.paginate_button.page-item.next.disabled').unbind().removeClass('disabled').children().html('<i class="fas fa-heart text-danger"></i> See more!').attr('href', '/donate');
+    }
 });
 
 //

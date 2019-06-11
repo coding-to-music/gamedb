@@ -2,6 +2,11 @@ div table.dataTable {
     border-collapse: separate !important;
 }
 
+// Pagination donate link
+ul.pagination li.donate {
+    padding: .5rem .75rem;
+}
+
 // Border radius table corners
 table.table:not(.fixedHeader-floating) {
 
@@ -36,6 +41,7 @@ table.table:not(.fixedHeader-floating) {
     }
 }
 
+// TH padding
 table.table-datatable, table.table-datatable2 {
     th.sorting_desc_disabled, th.sorting_asc_disabled {
         padding-right: 35px;
@@ -58,9 +64,10 @@ table.table {
     }
 
     td {
-        img{
+        img {
             max-width: 100%;
         }
+
         div.progress {
             height: 24px;
         }
