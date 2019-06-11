@@ -58,18 +58,24 @@ func (change Change) GetNiceDate() string {
 
 func (change Change) OutputForJSON(allApps map[int]string, allPackages map[int]string) (output []interface{}) {
 
-	var apps = map[int]string{}
-	var packages = map[int]string{}
+	var apps = map[int]changeProduct{}
+	var packages = map[int]changeProduct{}
 
 	for _, v := range change.Apps {
 		if val, ok := allApps[v]; ok {
-			apps[v] = val
+			apps[v] = changeProduct{
+				Name: val,
+				Path: helpers.GetAppPath(v, val),
+			}
 		}
 	}
 
 	for _, v := range change.Packages {
 		if val, ok := allPackages[v]; ok {
-			packages[v] = val
+			packages[v] = changeProduct{
+				Name: val,
+				Path: helpers.GetPackagePath(v, val),
+			}
 		}
 	}
 
@@ -81,6 +87,11 @@ func (change Change) OutputForJSON(allApps map[int]string, allPackages map[int]s
 		packages,
 		change.GetPath(),
 	}
+}
+
+type changeProduct struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 func GetChange(id int64) (change Change, err error) {
