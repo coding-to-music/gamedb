@@ -66,7 +66,7 @@
 <body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }}{{ if ne .Background "" }} class="bg"{{end}}>
 
 {{ if ne .Background "" }}
-    <div id="bg" style="background-image: url('{{ .Background }}');"></div>
+    <div id="bg" style="background-image: url('{{ .Background }}');" title="{{ .BackgroundTitle }}"></div>
 {{ end }}
 
 <header>

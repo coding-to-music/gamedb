@@ -155,14 +155,15 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Title       string        // Page title
-	Description template.HTML // Page description
-	Path        string        // URL path
-	Env         string        // Environment
-	CSSFiles    []Asset
-	JSFiles     []Asset
-	Canonical   string
-	Background  string
+	Title           string        // Page title
+	Description     template.HTML // Page description
+	Path            string        // URL path
+	Env             string        // Environment
+	CSSFiles        []Asset
+	JSFiles         []Asset
+	Canonical       string
+	Background      string
+	BackgroundTitle string
 
 	FlashesGood []string
 	FlashesBad  []string
