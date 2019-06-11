@@ -197,6 +197,8 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 	case "time":
 		sort = "play_time_rank"
 		value = "play_time"
+	default:
+		return
 	}
 
 	projection := mongo.M{
