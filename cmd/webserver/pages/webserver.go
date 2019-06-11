@@ -172,6 +172,7 @@ type GlobalTemplate struct {
 	userEmail          string
 	UserCountry        steam.CountryCode
 	UserCurrencySymbol string
+	userLevel          string
 
 	PlayerID   int64
 	PlayerName string
@@ -183,8 +184,8 @@ type GlobalTemplate struct {
 	loginPage map[string]string
 
 	// xp page
-	UserLevel   int
-	UserLevelTo int
+	PlayerLevel   int
+	PlayerLevelTo int
 
 	// Internal
 	request   *http.Request
@@ -223,10 +224,13 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.userEmail, err = session.Get(r, helpers.SessionUserEmail)
 	log.Err(err, r)
 
-	t.UserCountry = helpers.GetCountryCode(r)
+	t.userLevel, err = session.Get(r, helpers.SessionUserLevel)
 	log.Err(err, r)
 
 	t.UserName, err = session.Get(r, helpers.SessionPlayerName)
+	log.Err(err, r)
+
+	t.UserCountry = helpers.GetCountryCode(r)
 	log.Err(err, r)
 
 	// Currency
@@ -269,12 +273,12 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		log.Err(err, r)
 
 		if level == "" {
-			t.UserLevel = 10
-			t.UserLevelTo = 20
+			t.PlayerLevel = 10
+			t.PlayerLevelTo = 20
 		} else {
-			t.UserLevel, err = strconv.Atoi(level)
+			t.PlayerLevel, err = strconv.Atoi(level)
 			log.Err(err, r)
-			t.UserLevelTo = t.UserLevel + 10
+			t.PlayerLevelTo = t.PlayerLevel + 10
 		}
 	}
 }
@@ -284,6 +288,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 	stringMap := map[string]interface{}{
 		"userCountry":        t.UserCountry,
 		"userCurrencySymbol": t.UserCurrencySymbol,
+		"userLevel":          t.userLevel,
 		"isLoggedIn":         t.IsLoggedIn(),
 		"showAds":            t.showAds(),
 		"toasts":             t.toasts,
