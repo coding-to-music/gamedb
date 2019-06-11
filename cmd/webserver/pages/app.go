@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"sort"
@@ -70,6 +71,30 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
 	t.Canonical = app.GetPath()
+	t.Background = func() string {
+
+		common, err := app.GetCommon()
+		if err != nil {
+			log.Err(err)
+			return ""
+		}
+
+		if assets, ok := common["library_assets"]; ok {
+
+			assetMap := map[string]interface{}{}
+			err = json.Unmarshal([]byte(assets), &assetMap)
+			if err != nil {
+				log.Err(err)
+				return ""
+			}
+
+			if _, ok := assetMap["library_hero"]; ok {
+				return "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(app.ID) + "/library_hero.jpg"
+			}
+		}
+
+		return ""
+	}()
 
 	//
 	var wg sync.WaitGroup
