@@ -78,6 +78,8 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	query.limit(r)
+
 	var wg sync.WaitGroup
 
 	var filter = mongo.M{}
@@ -119,6 +121,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for k, player := range badges {
 		response.AddRow([]interface{}{
