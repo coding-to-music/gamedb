@@ -79,6 +79,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	query.limit(r)
+
 	var columns = map[string]string{
 		"3": "level",
 		"4": "games_count",
@@ -185,6 +187,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range playerRows {
 

@@ -320,6 +320,8 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r, idx)
 	}
 
+	query.limit(r)
+
 	//
 	var wg sync.WaitGroup
 
@@ -341,7 +343,6 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		for k, v := range articles {
 			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
 		}
-
 	}(r)
 
 	// Get total
@@ -375,6 +376,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range articles {
 		response.AddRow(v.OutputForJSON())
@@ -441,6 +443,8 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
+
+	query.limit(r)
 
 	playerAppFilter := mongo.M{"app_id": idx, "app_time": mongo.M{"$gt": 0}}
 
@@ -520,6 +524,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range playersAppRows {
 

@@ -42,6 +42,8 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	query.limit(r)
+
 	//
 	var wg sync.WaitGroup
 
@@ -144,6 +146,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range priceChanges {
 
