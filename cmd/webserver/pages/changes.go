@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"sync"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -42,39 +43,68 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	changes, err := mongo.GetChanges(query.getOffset64())
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
+	var wg sync.WaitGroup
 
-	var appIDs []int
-	var packageIDs []int
+	// Get changes
+	var changes []mongo.Change
 	var appMap = map[int]string{}
 	var packageMap = map[int]string{}
+	wg.Add(1)
+	go func() {
 
-	for _, v := range changes {
-		appIDs = append(appIDs, v.Apps...)
-		packageIDs = append(packageIDs, v.Packages...)
-	}
+		defer wg.Done()
 
-	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name"})
-	log.Err(err)
+		var err error
 
-	for _, v := range apps {
-		appMap[v.ID] = v.GetName()
-	}
+		changes, err = mongo.GetChanges(query.getOffset64())
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
 
-	packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
-	log.Err(err)
+		var appIDs []int
+		var packageIDs []int
 
-	for _, v := range packages {
-		packageMap[v.ID] = v.GetName()
-	}
+		for _, v := range changes {
+			appIDs = append(appIDs, v.Apps...)
+			packageIDs = append(packageIDs, v.Packages...)
+		}
+
+		// App map
+		apps, err := sql.GetAppsByID(appIDs, []string{"id", "name"})
+		log.Err(err)
+
+		for _, v := range apps {
+			appMap[v.ID] = v.GetName()
+		}
+
+		// Package map
+		packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
+		log.Err(err)
+
+		for _, v := range packages {
+			packageMap[v.ID] = v.GetName()
+		}
+	}()
+
+	// Get count
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		count, err = mongo.CountDocuments(mongo.CollectionChanges, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = 10000
-	response.RecordsFiltered = 10000
+	response.RecordsTotal = count
+	response.RecordsFiltered = count
 	response.Draw = query.Draw
 	response.limit(r)
 
