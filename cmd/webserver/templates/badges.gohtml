@@ -70,7 +70,7 @@
                             </thead>
                             <tbody>
                             {{ range $key, $value := .GetEventBadges }}
-                                <tr>
+                                <tr data-link="{{ .GetPath }}">
                                     <td class="img" nowrap="nowrap">
                                         <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
                                         <span>{{ .BadgeName }}</span>
