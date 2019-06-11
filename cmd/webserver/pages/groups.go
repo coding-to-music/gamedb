@@ -42,6 +42,8 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	query.limit(r)
+
 	// Make filter
 	var filter = mongo.M{}
 
@@ -104,6 +106,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range groups {
 		response.AddRow(v.OutputForJSON())
