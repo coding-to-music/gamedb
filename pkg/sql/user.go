@@ -14,11 +14,11 @@ func (ul UserLevel) MaxResults(limit int64) int64 {
 
 	switch ul {
 	default:
-		return 5 * limit
-	case 1:
 		return 10 * limit
-	case 2:
+	case 1:
 		return 20 * limit
+	case 2:
+		return 40 * limit
 	case 3:
 		return 0
 	}
