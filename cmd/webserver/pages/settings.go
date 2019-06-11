@@ -318,6 +318,8 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	query.limit(r)
+
 	var wg sync.WaitGroup
 
 	// Get events
@@ -353,6 +355,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range events {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
@@ -372,6 +375,8 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
+
+	query.limit(r)
 
 	var wg sync.WaitGroup
 
@@ -402,6 +407,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range events {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
