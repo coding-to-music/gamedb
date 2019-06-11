@@ -296,7 +296,6 @@ func (q baseQueue) ConsumeMessages() {
 					}
 
 					if len(msgSlice) >= q.batchSize {
-						log.Info(".")
 						q.queue.processMessages(msgSlice)
 						msgSlice = []amqp.Delivery{}
 					}
