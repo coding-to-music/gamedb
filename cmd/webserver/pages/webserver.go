@@ -176,8 +176,6 @@ type GlobalTemplate struct {
 	PlayerID   int64
 	PlayerName string
 
-	//
-
 	// contact page
 	contactPage map[string]string
 

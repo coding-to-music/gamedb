@@ -4,10 +4,61 @@ html {
 
 body {
     background-color: #1b2738;
-    background-size: auto;
+}
+
+body.bg {
+    div.jumbotron {
+        opacity: 0.9;
+        margin-top: 1rem;
+    }
+
+    header.container {
+        background-color: #1b2738;
+    }
+
+    .container {
+        .card {
+            opacity: 0.9;
+        }
+    }
+}
+
+#bg {
+    position: absolute;
+    height: 620px;
+    width: 100%;
+
+    background-color: #1b2738;
+    background-size: cover;
     background-position-x: center;
-    background-position-y: -200px;
+    background-position-y: center;
     background-repeat: no-repeat;
+
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: linear-gradient(to bottom, rgba(27, 39, 56, 1) 0, rgba(40, 134, 212, 0) 168px, rgba(41, 137, 216, 0) 452px, rgba(27, 39, 56, 1) 100%);
+    }
+}
+
+#hero {
+
+    margin-top: 140px;
+    margin-bottom: 140px;
+    position: relative;
+
+    h1 {
+        color: #28a745;
+        font-family: 'Audiowide', sans-serif;
+        text-align: center;
+        text-shadow: 0 0 10px #1b2738, 0 0 10px #1b2738;
+        font-size: 5rem;
+        margin: 0;
+    }
 }
 
 *::-webkit-scrollbar {

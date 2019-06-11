@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=8ade0b2e69">
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=82f87cedd9">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -63,125 +63,131 @@
     <meta name="fb:app_id" content="2539079269452708">
 
 </head>
-<body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }}{{ if ne .Background "" }} style="background-image: url('{{ .Background }}')"{{ end }}>
+<body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }}{{ if ne .Background "" }} class="bg"{{end}}>
 
-<header class="container">
+{{ if ne .Background "" }}
+    <div id="bg" style="background-image: url('{{ .Background }}');"></div>
+{{ end }}
+
+<header>
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand" href="/">
-            <img src="/assets/img/sa-500x500.png" alt="Game DB">
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="/assets/img/sa-500x500.png" alt="Game DB">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbar">
-            <ul class="navbar-nav mr-auto">
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav mr-auto">
 
-                <li class="nav-item dropdown {{if .IsAppsPage }}active{{end}}">
-                    <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/apps" data-toggle="dropdown">Games</a>
-                    <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Games</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item d-block d-lg-none" href="/trending">Games</a>
-                        <a class="dropdown-item" href="/trending">Trending</a>
-                        <a class="dropdown-item" href="/upcoming">Upcoming</a>
-                        <a class="dropdown-item" href="/new-releases">New Releases</a>
-                        <a class="dropdown-item" href="/packages">Packages</a>
-                        <a class="dropdown-item" href="/bundles">Bundles</a>
-                        <a class="dropdown-item" href="/wishlists">Wishlists</a>
-                    </div>
-                </li>
+                    <li class="nav-item dropdown {{if .IsAppsPage }}active{{end}}">
+                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/apps" data-toggle="dropdown">Games</a>
+                        <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Games</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item d-block d-lg-none" href="/trending">Games</a>
+                            <a class="dropdown-item" href="/trending">Trending</a>
+                            <a class="dropdown-item" href="/upcoming">Upcoming</a>
+                            <a class="dropdown-item" href="/new-releases">New Releases</a>
+                            <a class="dropdown-item" href="/packages">Packages</a>
+                            <a class="dropdown-item" href="/bundles">Bundles</a>
+                            <a class="dropdown-item" href="/wishlists">Wishlists</a>
+                        </div>
+                    </li>
 
-                <li class="nav-item {{if startsWith .Path "/price-changes" }}active{{end}}">
-                    <a class="nav-link" href="/price-changes">Price Changes</a>
-                </li>
+                    <li class="nav-item {{if startsWith .Path "/price-changes" }}active{{end}}">
+                        <a class="nav-link" href="/price-changes">Price Changes</a>
+                    </li>
 
-                <li class="nav-item dropdown {{if startsWith .Path "/players"}}active{{end}}">
-                    <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/players" data-toggle="dropdown">Players</a>
-                    <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Players</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item d-block d-lg-none" href="/players">Players</a>
-                        <a class="dropdown-item" href="/players/add">Add Player</a>
-                    </div>
-                </li>
+                    <li class="nav-item dropdown {{if startsWith .Path "/players"}}active{{end}}">
+                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/players" data-toggle="dropdown">Players</a>
+                        <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Players</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item d-block d-lg-none" href="/players">Players</a>
+                            <a class="dropdown-item" href="/players/add">Add Player</a>
+                        </div>
+                    </li>
 
-                <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
-                    <a class="nav-link" href="/groups">Groups</a>
-                </li>
+                    <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
+                        <a class="nav-link" href="/groups">Groups</a>
+                    </li>
 
-                <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">
-                    <a class="nav-link" href="/badges">Badges</a>
-                </li>
+                    <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">
+                        <a class="nav-link" href="/badges">Badges</a>
+                    </li>
 
-                <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
-                    <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/stats" data-toggle="dropdown">Stats</a>
-                    <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Stats</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item d-block d-lg-none" href="/stats">Stats</a>
-                        <a class="dropdown-item" href="/tags">Tags</a>
-                        <a class="dropdown-item" href="/genres">Genres</a>
-                        <a class="dropdown-item" href="/publishers">Publishers</a>
-                        <a class="dropdown-item" href="/developers">Developers</a>
-                    </div>
-                </li>
+                    <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
+                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/stats" data-toggle="dropdown">Stats</a>
+                        <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Stats</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item d-block d-lg-none" href="/stats">Stats</a>
+                            <a class="dropdown-item" href="/tags">Tags</a>
+                            <a class="dropdown-item" href="/genres">Genres</a>
+                            <a class="dropdown-item" href="/publishers">Publishers</a>
+                            <a class="dropdown-item" href="/developers">Developers</a>
+                        </div>
+                    </li>
 
-                <li class="nav-item {{if startsWith .Path "/news" }}active{{end}}">
-                    <a class="nav-link" href="/news">News</a>
-                </li>
+                    <li class="nav-item {{if startsWith .Path "/news" }}active{{end}}">
+                        <a class="nav-link" href="/news">News</a>
+                    </li>
 
-                <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}">
-                    <a class="nav-link" href="/donate"><i class="fas fa-heart text-danger"></i> Donate</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav">
+                    <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}">
+                        <a class="nav-link" href="/donate"><i class="fas fa-heart text-danger"></i> Donate</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
 
-                <li class="nav-item d-none d-lg-block" id="header-flag">
-                    {{ if .IsLoggedIn }}
-                    <a href="/login">
-                        {{ end }}
-                        <img src="/assets/img/flags/{{ lower .GetFUserCountry }}.png" alt="{{ .UserCountry }}">
+                    <li class="nav-item d-none d-lg-block" id="header-flag">
                         {{ if .IsLoggedIn }}
-                    </a>
-                    {{ end }}
-                </li>
-
-                {{ if eq .Env "local" }}
-                    <li class="nav-item">
-                        {{ if .PlayerName }}
-                            <a class="nav-link" href="/players/{{ .PlayerID }}">{{ .PlayerName }}</a>
-                        {{ else if not .IsLoggedIn }}
-                            <a class="nav-link" href="/login">Login</a>
+                        <a href="/login">
+                            {{ end }}
+                            <img src="/assets/img/flags/{{ lower .GetFUserCountry }}.png" alt="{{ .UserCountry }}">
+                            {{ if .IsLoggedIn }}
+                        </a>
                         {{ end }}
                     </li>
-                {{ end }}
 
-                <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
-                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
-                    <div class="dropdown-menu" id="header-settings">
-                        {{ if .IsAdmin }}
-                            <a class="dropdown-item" href="/admin"><i class="fas fa-users-cog"></i> Admin</a>
-                        {{ end }}
-                        {{ if .IsLoggedIn }}
-                            <a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i> Settings</a>
-                            <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    {{ if eq .Env "local" }}
+                        <li class="nav-item">
+                            {{ if .PlayerName }}
+                                <a class="nav-link" href="/players/{{ .PlayerID }}">{{ .PlayerName }}</a>
+                            {{ else if not .IsLoggedIn }}
+                                <a class="nav-link" href="/login">Login</a>
+                            {{ end }}
+                        </li>
+                    {{ end }}
+
+                    <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
+                        <div class="dropdown-menu" id="header-settings">
+                            {{ if .IsAdmin }}
+                                <a class="dropdown-item" href="/admin"><i class="fas fa-users-cog"></i> Admin</a>
+                            {{ end }}
+                            {{ if .IsLoggedIn }}
+                                <a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i> Settings</a>
+                                <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                                <div class="dropdown-divider"></div>
+                            {{ end }}
+                            <a class="dropdown-item" href="/api">Game DB API</a>
+                            <a class="dropdown-item" href="/steam-api">Steam API</a>
                             <div class="dropdown-divider"></div>
-                        {{ end }}
-                        <a class="dropdown-item" href="/api">Game DB API</a>
-                        <a class="dropdown-item" href="/steam-api">Steam API</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/changes">Changes</a>
-                        {{ if eq .Env "local" }}
-                            <a class="dropdown-item" href="/chat">Chat</a>
-                            <a class="dropdown-item" href="/chat-bot">Chat Bot</a>
-                        {{ end }}
-                        <a class="dropdown-item" href="/commits">Commits</a>
-                        <a class="dropdown-item" href="/contact">Contact</a>
-                        <a class="dropdown-item" href="/coop">Co-op</a>
-                        <a class="dropdown-item" href="/experience">Experience</a>
-                        <a class="dropdown-item" href="/info">Info</a>
-                        <a class="dropdown-item" href="/queues">Queues</a>
-                    </div>
-                </li>
-            </ul>
+                            <a class="dropdown-item" href="/changes">Changes</a>
+                            {{ if eq .Env "local" }}
+                                <a class="dropdown-item" href="/chat">Chat</a>
+                                <a class="dropdown-item" href="/chat-bot">Chat Bot</a>
+                            {{ end }}
+                            <a class="dropdown-item" href="/commits">Commits</a>
+                            <a class="dropdown-item" href="/contact">Contact</a>
+                            <a class="dropdown-item" href="/coop">Co-op</a>
+                            <a class="dropdown-item" href="/experience">Experience</a>
+                            <a class="dropdown-item" href="/info">Info</a>
+                            <a class="dropdown-item" href="/queues">Queues</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 </header>
