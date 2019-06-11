@@ -45,7 +45,7 @@
                                         <span>{{ .BadgeName }}</span>
                                     </td>
                                     <td>{{ comma64 .GetSpecialPlayers }}</td>
-                                    <td data-link="{{ .GetSpecialMax.GetPlayerPath }}">{{ .GetSpecialMax.PlayerName }}</td>
+                                    <td><a href="{{ .GetSpecialMax.GetPlayerPath }}">{{ .GetSpecialMax.PlayerName }}</a></td>
                                 </tr>
                             {{ end }}
                             </tbody>
@@ -76,9 +76,9 @@
                                         <span>{{ .BadgeName }}</span>
                                     </td>
                                     <td>{{ comma64 .GetEventPlayers }}</td>
-                                    <td data-link="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</td>
-                                    <td data-link="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil.BadgeLevel }}</td>
-                                    <td data-link="{{ .GetEventMaxFoil.GetPlayerPath }}">{{ .GetEventMaxFoil.PlayerName }}</td>
+                                    <td><a href="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</a></td>
+                                    <td><a href="{{ .GetPath }}">{{ comma .GetEventMaxFoil.BadgeLevel }}</a></td>
+                                    <td><a href="{{ .GetEventMaxFoil.GetPlayerPath }}">{{ .GetEventMaxFoil.PlayerName }}</a></td>
                                 </tr>
                             {{ end }}
                             </tbody>
