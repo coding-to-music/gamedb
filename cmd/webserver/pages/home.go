@@ -31,18 +31,10 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
 	t.setFlashes(w, r, true)
-	t.Background = func() string {
-		apps := []int{
-			10, 70, 220, 240, 400, 400, 620, 8800, 8930, 9420, 22380, 48700, 49520, 105600, 113200, 206190, 213670, 213670, 219740, 223470,
-			268910, 280220, 284810, 292030, 294100, 294100, 311190, 312530, 324160, 367520, 385250, 386940, 411960, 413150, 415000, 415000,
-			427520, 460950, 525510, 591460, 597220, 597220, 611760, 635940, 704470, 816490, 843380, 883710, 910630, 942970, 1036580, 1046030,
-		}
-		return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(apps[rand.Intn(len(apps))]) + "/page_bg_generated_v6b.jpg"
-	}()
 
 	var wg sync.WaitGroup
 
-	// Popular games
+	// Popular NEW games
 	wg.Add(1)
 	go func() {
 
@@ -50,6 +42,18 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Games, err = sql.PopularNewApps()
+		log.Err(err, r)
+	}()
+
+	// Popular games
+	var popularApps []sql.App
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		popularApps, err = sql.PopularApps()
 		log.Err(err, r)
 	}()
 
@@ -93,6 +97,18 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	wg.Wait()
+
+	t.Background = func() string {
+
+		var appIDs = []int{}
+		for _, v := range popularApps {
+			if v.ID != 629760 && v.ID != 779340 {
+				appIDs = append(appIDs, v.ID)
+			}
+		}
+
+		return "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(appIDs[rand.Intn(len(appIDs))]) + "/library_hero.jpg"
+	}()
 
 	//
 	err := returnTemplate(w, r, "home", t)
