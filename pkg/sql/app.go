@@ -380,6 +380,21 @@ func (app App) GetUFS() (ufs PICSAppUFS, err error) {
 	return ufs, err
 }
 
+func (app App) IsOnSale() bool {
+
+	common, err := app.GetCommon()
+	if err != nil {
+		log.Err(err)
+		return true
+	}
+
+	if common.GetValue("app_retired_publisher_request") == "1" {
+		return false
+	}
+
+	return true
+}
+
 func (app App) GetOnlinePlayers() (players int, err error) {
 
 	var item = helpers.MemcacheAppPlayersRow(app.ID)

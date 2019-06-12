@@ -352,15 +352,19 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 			documents = append(documents, price)
 		}
 
-		// Tweet free US products
+		// Tweet
 		if code == steam.CountryUS && before.GetProductType() == helpers.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
 
-			twitter := helpers.GetTwitter()
+			appBefore, ok := before.(sql.App)
+			if ok && appBefore.IsOnSale() {
 
-			_, _, err = twitter.Statuses.Update("Free game! Down from $"+helpers.FloatToString(float64(oldPrice)/100, 2)+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
-			if err != nil {
-				if !strings.Contains(err.Error(), "Status is a duplicate") {
-					logCritical(err)
+				twitter := helpers.GetTwitter()
+
+				_, _, err = twitter.Statuses.Update("Free game! Down from $"+helpers.FloatToString(float64(oldPrice)/100, 2)+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
+				if err != nil {
+					if !strings.Contains(err.Error(), "Status is a duplicate") {
+						logCritical(err)
+					}
 				}
 			}
 		}
