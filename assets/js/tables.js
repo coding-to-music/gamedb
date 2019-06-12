@@ -217,7 +217,7 @@ function addDataTablesRow(options, data, limit, $table) {
             const $td = $('<td />').html(value);
 
             if ('createdCell' in v) {
-                v.createdCell($td[0], null, data, null, null); // todo, this [0] may not be needed
+                v.createdCell($td, null, data, null, null);
             }
 
             $td.find('[data-livestamp]').html('a few seconds ago');
