@@ -19,15 +19,19 @@ body.bg {
 }
 
 #bg {
-    position: absolute;
+    top: 0;
     height: 620px;
     width: 100%;
 
     background-color: #1b2738;
-    background-size: cover;
     background-position-x: center;
-    background-position-y: center;
+    background-position-y: top;
     background-repeat: no-repeat;
+    background-size: cover;
+    position: absolute;
+    @include media-breakpoint-up(sm) {
+        position: fixed;
+    }
 
     &:before {
         content: '';
