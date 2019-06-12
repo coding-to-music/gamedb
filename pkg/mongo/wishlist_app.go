@@ -19,6 +19,7 @@ func (wl WishlistApp) BSON() (ret interface{}) {
 	return M{
 		"_id":      wl.AppID,
 		"app_name": wl.AppName,
+		"app_icon": wl.AppIcon,
 		"count":    wl.Count,
 	}
 }
