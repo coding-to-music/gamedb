@@ -1,6 +1,8 @@
 package crons
 
 import (
+	"strconv"
+
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -36,6 +38,8 @@ func (c Wishlists) Work() {
 		return
 	}
 
+	log.Info("Found " + strconv.Itoa(len(players)) + " players")
+
 	for _, v := range players {
 		for _, vv := range v.Wishlist {
 			appCounts[vv]++
@@ -49,6 +53,12 @@ func (c Wishlists) Work() {
 	}
 
 	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name", "tags", "icon"})
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	log.Info("Found " + strconv.Itoa(len(apps)) + " apps")
 
 	var appMap = map[int]sql.App{}
 	for _, app := range apps {
@@ -77,6 +87,12 @@ func (c Wishlists) Work() {
 
 	// Get tags
 	tags, err := sql.GetAllTags()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	log.Info("Found " + strconv.Itoa(len(tags)) + " tags")
 
 	var tagMap = map[int]sql.Tag{}
 	for _, tag := range tags {
