@@ -243,3 +243,18 @@ function fixBrokenImages() {
 
 // Broken images
 $(document).ready(fixBrokenImages);
+
+//
+// $('div.table-responsive').doubleScroll({
+//     //contentElement: undefined, // Widest element, if not specified first child element will be used
+//     scrollCss: {
+//         'overflow-x': 'auto',
+//         'overflow-y': 'hidden'
+//     },
+//     contentCss: {
+//         'overflow-x': 'auto',
+//         'overflow-y': 'hidden'
+//     },
+//     onlyIfScroll: false, // top scrollbar is not shown if the bottom one is not present
+//     resetOnWindowResize: false // recompute the top ScrollBar requirements when the window is resized
+// });
