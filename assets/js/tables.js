@@ -114,12 +114,25 @@ const dtDefaultOptions = {
 
                 callback(data, textStatus, jqXHR);
 
+                // noinspection JSUnresolvedVariable
                 if (data.limited) {
                     const bold = $('li.paginate_button.page-item.next.disabled').length > 0 ? 'font-weight-bold' : '';
                     const donate = $('<li><small><a href="/donate"><i class="fas fa-heart text-danger"></i> <span class="' + bold + '">See more!</span></a></small></li>').addClass('ml-1 donate');
                     $this.parent().find('.dt-pagination ul.pagination').append(donate);
                 }
 
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+                const data = {
+                    "draw": "1",
+                    "recordsTotal": "0",
+                    "recordsFiltered": "0",
+                    "data": [],
+                    "limited": false
+                };
+
+                callback(data, textStatus, null);
             },
             dataType: 'json',
             cache: $this.attr('data-cache') !== "false"
