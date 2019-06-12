@@ -8,16 +8,12 @@ body {
 
 body.bg {
     div.jumbotron {
-        opacity: 0.9;
-    }
-
-    header.container {
-        background-color: #1b2738;
+        background-color: rgba(233, 236, 239, 0.9); // Using opacity makes images translucent too
     }
 
     .container {
         .card {
-            opacity: 0.9;
+            background-color: rgba(255, 255, 255, 0.95); // Using opacity makes images translucent too
         }
     }
 }
