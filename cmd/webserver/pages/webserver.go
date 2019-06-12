@@ -460,6 +460,7 @@ type DataTablesAjaxResponse struct {
 	RecordsTotal    int64           `json:"recordsTotal,string"`
 	RecordsFiltered int64           `json:"recordsFiltered,string"`
 	Data            [][]interface{} `json:"data"`
+	LevelLimited    bool            `json:"limited"`
 }
 
 func (t *DataTablesAjaxResponse) AddRow(row []interface{}) {
@@ -483,6 +484,7 @@ func (t *DataTablesAjaxResponse) limit(r *http.Request) {
 
 	if max > 0 && max < t.RecordsFiltered {
 		t.RecordsFiltered = max
+		t.LevelLimited = true
 	}
 }
 
