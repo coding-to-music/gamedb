@@ -48,8 +48,6 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get ranks
-	var priceChanges []mongo.ProductPrice
-
 	var code = helpers.GetCountryCode(r)
 
 	var dateLimit = time.Now().AddDate(0, 0, -30)
@@ -102,6 +100,8 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Get rows
+	var priceChanges []mongo.ProductPrice
 	wg.Add(1)
 	go func(r *http.Request) {
 
@@ -109,10 +109,17 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		priceChanges, err = mongo.GetPrices(query.getOffset64(), 100, filter)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		for k := range priceChanges {
+			priceChanges[k].Name = helpers.InsertNewLines(priceChanges[k].Name, 20)
+		}
 	}(r)
 
-	// Get filtered
+	// Get filtered count
 	var filtered int64
 	wg.Add(1)
 	go func(r *http.Request) {
@@ -124,7 +131,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}(r)
 
-	// Get total
+	// Get total count
 	var total int64
 	wg.Add(1)
 	go func(r *http.Request) {
