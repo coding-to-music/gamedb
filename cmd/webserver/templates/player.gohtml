@@ -25,6 +25,11 @@
                 <li class="nav-item">
                     <a class="nav-link nav-link-small" data-toggle="tab" href="#games" role="tab">Games ({{ comma .Player.GamesCount }})</a>
                 </li>
+                {{if gt (len .Player.Wishlist) 0}}
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#wishlist" role="tab">Wishlist ({{ comma (len .Player.Wishlist) }})</a>
+                    </li>
+                {{ end }}
                 {{if gt .Player.FriendsCount 0}}
                     <li class="nav-item">
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }})</a>
@@ -501,10 +506,36 @@
                     {{ end }}
 
                 </div>
+
+                {{/* Wishlist */}}
+                <div class="tab-pane" id="wishlist" role="tabpanel">
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[1, "desc"]]'>
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Recent Games</th>
+                                <th scope="col">State</th>
+                                <th scope="col">Release Date</th>
+                            </tr>
+                            </thead>
+                            {{ range $key, $value := .Wishlist }}
+                                <tr data-link="/apps/{{ .ID }}">
+                                    <td class="img">
+                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
+                                        <span>{{ .GetName }}</span>
+                                    </td>
+                                    <td>{{ .GetReleaseState }}</td>
+                                    <td>{{ .GetReleaseDateNice }}</td>
+                                </tr>
+                            {{ end }}
+                        </table>
+                    </div>
+
+                </div>
             </div>
         </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }} {{end}}

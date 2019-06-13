@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -192,6 +193,19 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
+	// Get wishlist
+	var wishlist []sql.App
+	wg.Add(1)
+	go func(player mongo.Player) {
+
+		defer wg.Done()
+
+		var err error
+		wishlist, err = sql.GetAppsByID(player.Wishlist, []string{"id", "name", "icon", "release_state", "release_date_unix"})
+		log.Err(err)
+
+	}(player)
+
 	// Wait
 	wg.Wait()
 
@@ -230,6 +244,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 	t.Canonical = player.GetPath()
 	t.Groups = groups
+	t.Wishlist = wishlist
 
 	err = returnTemplate(w, r, "player", t)
 	log.Err(err, r)
@@ -242,12 +257,13 @@ type playerTemplate struct {
 	BadgeStats    mongo.ProfileBadgeStats
 	Banners       map[string][]string
 	Bans          mongo.PlayerBans
+	DefaultAvatar string
 	Friends       []mongo.ProfileFriend
 	GameStats     mongo.PlayerAppStatsTemplate
+	Groups        []mongo.Group
 	Player        mongo.Player
 	RecentGames   []RecentlyPlayedGame
-	DefaultAvatar string
-	Groups        []mongo.Group
+	Wishlist      []sql.App
 	// Ranks       playerRanksTemplate
 }
 
