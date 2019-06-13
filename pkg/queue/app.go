@@ -437,7 +437,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "sysreqs":
 
-			b, err := json.Marshal(v.ToNestedMaps())
+			b, err := json.MarshalIndent(v.ToNestedMaps(), "", "  ")
 			if err != nil {
 				return err
 			}
