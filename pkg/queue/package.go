@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
@@ -323,7 +324,7 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 		if code == steam.CountryUS {
 
 			// Controller
-			var controller = sql.PICSController{}
+			var controller = pics.PICSController{}
 			for k, v := range response.Data.Controller {
 				controller[k] = v
 			}

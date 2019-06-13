@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/go-chi/chi"
 )
 
@@ -164,9 +165,9 @@ type packageTemplate struct {
 	Apps       map[int]sql.App
 	Bundles    []sql.Bundle
 	Banners    map[string][]string
-	Controller sql.PICSController
+	Controller pics.PICSController
 	DepotIDs   []int
-	Extended   sql.PICSExtended
+	Extended   pics.PICSKeyValues
 	Package    sql.Package
 	Price      sql.ProductPriceFormattedStruct
 	Prices     sql.ProductPrices

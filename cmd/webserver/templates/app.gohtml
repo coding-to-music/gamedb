@@ -679,10 +679,10 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .App.GetExtended }}
+                                            {{ range $key, $value := .Extended }}
                                                 <tr data-link="/product-keys?type=app&key={{ $key }}&value={{ $value }}">
-                                                    <td>{{ $key }}</td>
-                                                    <td>{{ $value }}</td>
+                                                    <td>{{ .Key }}</td>
+                                                    <td class="{{ .TDClass }}">{{ .Value }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -701,10 +701,10 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .App.GetCommon }}
+                                            {{ range $key, $val := .Common }}
                                                 <tr>
-                                                    <td>{{ $key }}</td>
-                                                    <td>{{ $value }}</td>
+                                                    <td>{{ .Key }}</td>
+                                                    <td class="{{ .TDClass }}">{{ .Value }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -832,10 +832,10 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .App.GetConfig }}
+                                            {{ range $key, $value := .Config }}
                                                 <tr>
-                                                    <td>{{ $key }}</td>
-                                                    <td>{{ $value }}</td>
+                                                    <td>{{ .Key }}</td>
+                                                    <td class="{{ .TDClass }}">{{ .Value }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -855,10 +855,10 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .App.GetUFS }}
+                                            {{ range $key, $value := .UFS }}
                                                 <tr>
-                                                    <td>{{ $key }}</td>
-                                                    <td>{{ $value }}</td>
+                                                    <td>{{ .Key }}</td>
+                                                    <td class="{{ .TDClass }}">{{ .Value }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>

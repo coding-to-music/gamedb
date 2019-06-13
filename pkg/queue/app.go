@@ -20,6 +20,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -336,7 +337,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "common":
 
-			var common = sql.PICSAppCommon{}
+			var common = pics.PICSKeyValues{}
 			var tags []int
 
 			for _, vv := range v.Children {
@@ -406,7 +407,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "ufs":
 
-			var ufs = sql.PICSAppUFS{}
+			var ufs = pics.PICSKeyValues{}
 			for _, vv := range v.Children {
 				ufs[vv.Name] = vv.String()
 			}

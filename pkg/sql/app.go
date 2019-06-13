@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/jinzhu/gorm"
 )
 
@@ -303,41 +304,50 @@ func (app App) GetNewsIDs() (ids []int64, err error) {
 	return ids, err
 }
 
-func (app App) GetExtended() (extended PICSExtended, err error) {
+func (app App) GetExtended() (extended pics.PICSKeyValues) {
 
-	extended = PICSExtended{}
-
-	err = helpers.Unmarshal([]byte(app.Extended), &extended)
+	extended = pics.PICSKeyValues{}
+	err := helpers.Unmarshal([]byte(app.Extended), &extended)
 	log.Err(err)
-	return extended, err
+
+	return extended
 }
 
-func (app App) GetCommon() (common PICSAppCommon, err error) {
+func (app App) GetCommon() (common pics.PICSKeyValues) {
 
-	common = PICSAppCommon{}
-
-	err = helpers.Unmarshal([]byte(app.Common), &common)
+	common = pics.PICSKeyValues{}
+	err := helpers.Unmarshal([]byte(app.Common), &common)
 	log.Err(err)
-	return common, err
+
+	return common
 }
 
-func (app App) GetConfig() (config PICSAppConfig, err error) {
+func (app App) GetConfig() (config pics.PICSKeyValues) {
 
-	config = PICSAppConfig{}
-
-	err = helpers.Unmarshal([]byte(app.Config), &config)
+	config = pics.PICSKeyValues{}
+	err := helpers.Unmarshal([]byte(app.Config), &config)
 	log.Err(err)
-	return config, err
+
+	return config
 }
 
-func (app App) GetDepots() (depots PICSDepots, err error) {
+func (app App) GetUFS() (ufs pics.PICSKeyValues) {
+
+	ufs = pics.PICSKeyValues{}
+	err := helpers.Unmarshal([]byte(app.UFS), &ufs)
+	log.Err(err)
+
+	return ufs
+}
+
+func (app App) GetDepots() (depots pics.PICSDepots, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Depots), &depots)
 	log.Err(err)
 	return depots, err
 }
 
-func (app App) GetLaunch() (items []PICSAppConfigLaunchItem, err error) {
+func (app App) GetLaunch() (items []pics.PICSAppConfigLaunchItem, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Launch), &items)
 	log.Err(err)
@@ -371,22 +381,9 @@ func (app App) GetSystemRequirements() (systemRequirements map[string]interface{
 	return systemRequirements, err
 }
 
-func (app App) GetUFS() (ufs PICSAppUFS, err error) {
-
-	ufs = PICSAppUFS{}
-
-	err = helpers.Unmarshal([]byte(app.UFS), &ufs)
-	log.Err(err)
-	return ufs, err
-}
-
 func (app App) IsOnSale() bool {
 
-	common, err := app.GetCommon()
-	if err != nil {
-		log.Err(err)
-		return true
-	}
+	common := app.GetCommon()
 
 	if common.GetValue("app_retired_publisher_request") == "1" {
 		return false

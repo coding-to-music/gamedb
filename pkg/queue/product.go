@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/sql/pics"
 )
 
 type rabbitMessageProduct struct {
@@ -75,9 +76,9 @@ func (i rabbitMessageProductKeyValues) ToNestedMaps() (ret map[string]interface{
 	return m
 }
 
-func (i rabbitMessageProductKeyValues) GetExtended() (extended sql.PICSExtended) {
+func (i rabbitMessageProductKeyValues) GetExtended() (extended pics.PICSKeyValues) {
 
-	extended = sql.PICSExtended{}
+	extended = pics.PICSKeyValues{}
 	for _, v := range i.Children {
 		if v.Value == nil {
 			b, err := json.Marshal(v.ToNestedMaps())
@@ -90,9 +91,9 @@ func (i rabbitMessageProductKeyValues) GetExtended() (extended sql.PICSExtended)
 	return extended
 }
 
-func (i rabbitMessageProductKeyValues) GetAppConfig() (config sql.PICSAppConfig, launch []sql.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) GetAppConfig() (config pics.PICSKeyValues, launch []pics.PICSAppConfigLaunchItem) {
 
-	config = sql.PICSAppConfig{}
+	config = pics.PICSKeyValues{}
 	for _, v := range i.Children {
 		if v.Name == "launch" {
 			launch = v.GetAppLaunch()
@@ -108,7 +109,7 @@ func (i rabbitMessageProductKeyValues) GetAppConfig() (config sql.PICSAppConfig,
 	return config, launch
 }
 
-func (i rabbitMessageProductKeyValues) GetAppDepots() (depots sql.PICSDepots) {
+func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.PICSDepots) {
 
 	depots.Extra = map[string]string{}
 
@@ -133,7 +134,7 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots sql.PICSDepots) {
 			continue
 		}
 
-		depot := sql.PICSAppDepotItem{}
+		depot := pics.PICSAppDepotItem{}
 		depot.ID = id
 
 		for _, vv := range v.Children {
@@ -196,11 +197,11 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots sql.PICSDepots) {
 	return depots
 }
 
-func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []sql.PICSAppDepotBranches) {
+func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []pics.PICSAppDepotBranches) {
 
 	for _, v := range i.Children {
 
-		branch := sql.PICSAppDepotBranches{}
+		branch := pics.PICSAppDepotBranches{}
 		branch.Name = v.Name
 
 		for _, vv := range v.Children {
@@ -239,11 +240,11 @@ func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []sql.PIC
 	return branches
 }
 
-func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []sql.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []pics.PICSAppConfigLaunchItem) {
 
 	for _, v := range i.Children {
 
-		item := sql.PICSAppConfigLaunchItem{}
+		item := pics.PICSAppConfigLaunchItem{}
 		item.Order = v.Name
 
 		v.getAppLaunchItem(&item)
@@ -254,7 +255,7 @@ func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []sql.PICSAppConfig
 	return items
 }
 
-func (i rabbitMessageProductKeyValues) getAppLaunchItem(launchItem *sql.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) getAppLaunchItem(launchItem *pics.PICSAppConfigLaunchItem) {
 
 	for _, v := range i.Children {
 

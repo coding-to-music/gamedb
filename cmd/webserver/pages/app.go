@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/go-chi/chi"
 )
 
@@ -73,11 +74,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.Canonical = app.GetPath()
 	t.Background = func() string {
 
-		common, err := app.GetCommon()
-		if err != nil {
-			log.Err(err)
-			return ""
-		}
+		common := app.GetCommon()
 
 		if assets, ok := common["library_assets"]; ok {
 
@@ -242,6 +239,14 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 	t.SteamSpy, err = t.App.GetSteamSpy()
 	log.Err(err, r)
+	t.Common, err = t.App.GetCommon().Formatted(app.ID, pics.CommonKeys)
+	log.Err(err, r)
+	t.Extended, err = t.App.GetExtended().Formatted(app.ID, pics.ExtendedKeys)
+	log.Err(err, r)
+	t.Config, err = t.App.GetConfig().Formatted(app.ID, pics.ConfigKeys)
+	log.Err(err, r)
+	t.UFS, err = t.App.GetUFS().Formatted(app.ID, pics.UFSKeys)
+	log.Err(err, r)
 
 	// Make banners
 	banners := make(map[string][]string)
@@ -272,9 +277,12 @@ type appTemplate struct {
 	App          sql.App
 	Banners      map[string][]string
 	Bundles      []sql.Bundle
+	Common       []pics.KeyValue
+	Config       []pics.KeyValue
 	Demos        []sql.App
 	Developers   []sql.Developer
 	DLCs         []sql.App
+	Extended     []pics.KeyValue
 	Genres       []sql.Genre
 	Movies       []sql.AppVideo
 	NewsIDs      []int64
@@ -287,6 +295,7 @@ type appTemplate struct {
 	SteamSpy     sql.AppSteamSpy
 	Stats        []sql.AppStat
 	Tags         []sql.Tag
+	UFS          []pics.KeyValue
 }
 
 func (t appTemplate) GetReleaseDate() string {

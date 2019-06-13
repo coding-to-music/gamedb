@@ -24,58 +24,6 @@ type ProductInterface interface {
 var ErrMissingCountryCode = errors.New("invalid code")
 
 //
-type PICSExtended map[string]string
-type PICSAppCommon map[string]string
-type PICSAppUFS map[string]string
-type PICSController map[string]bool
-type PICSAppConfig map[string]string
-type PICSAppConfigLaunchItem struct {
-	Order             interface{} `json:"order"` // Int but can be "main"
-	Executable        string      `json:"executable"`
-	Arguments         string      `json:"arguments"`
-	Description       string      `json:"description"`
-	Typex             string      `json:"type"`
-	OSList            string      `json:"oslist"`
-	OSArch            string      `json:"osarch"`
-	OwnsDLCs          []string    `json:"ownsdlc"`
-	BetaKey           string      `json:"betakey"`
-	WorkingDir        string      `json:"workingdir"`
-	VRMode            string      `json:"vrmode"`
-	VACModuleFilename string      `json:"vacmodulefilename"`
-}
-type PICSDepots struct {
-	Depots   []PICSAppDepotItem
-	Branches []PICSAppDepotBranches
-	Extra    map[string]string
-}
-type PICSAppDepotItem struct {
-	ID                         int               `json:"id"`
-	Name                       string            `json:"name"`
-	Configs                    map[string]string `json:"config"`
-	Manifests                  map[string]string `json:"manifests"`
-	EncryptedManifests         string            `json:"encryptedmanifests"`
-	MaxSize                    int64             `json:"maxsize"`
-	App                        int               `json:"depotfromapp"`
-	DLCApp                     int               `json:"dlcappid"`
-	SystemDefined              bool              `json:"systemdefined"`
-	Optional                   bool              `json:"optional"`
-	SharedInstall              bool              `json:"sharedinstall"`
-	SharedDepotType            bool              `json:"shareddepottype"`
-	LVCache                    bool              `json:"lvcache"`
-	AllowAddRemoveWhileRunning bool              `json:"allowaddremovewhilerunning"`
-}
-type PICSAppDepotBranches struct {
-	Name             string `json:"name"`
-	Description      string `json:"description"`
-	BuildID          int    `json:"buildid"`
-	TimeUpdated      int64  `json:"timeupdated"`
-	PasswordRequired bool   `json:"pwdrequired"`
-	LCSRequired      bool   `json:"lcsrequired"`
-	DefaultForSubs   string `json:"defaultforsubs"`
-	UnlockForSubs    string `json:"unlockforsubs"`
-}
-
-//
 type ProductPrices map[steam.CountryCode]ProductPriceStruct
 
 func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam.PackageDetailsBody) {
