@@ -15,21 +15,11 @@ if ($('#groups-page').length > 0) {
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
-            delete data.columns;
-            delete data.length;
-            delete data.search;
-
             data.search = {};
             data.search.search = $('#search').val();
             data.search.type = $('#type').val();
 
-            $.ajax({
-                url: $(this).attr('data-path'),
-                data: data,
-                success: callback,
-                dataType: 'json',
-                cache: true
-            });
+            dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {

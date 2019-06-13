@@ -112,21 +112,11 @@ if ($('#price-changes-page').length > 0) {
         "order": [[4, 'desc']],
         "ajax": function (data, callback, settings) {
 
-            delete data.columns;
-            delete data.length;
-            delete data.search.regex;
-
             data.search.type = $('#type').val();
             data.search.percents = changeSlider.get();
             data.search.prices = priceSlider.get();
 
-            $.ajax({
-                url: $(this).attr('data-path'),
-                data: data,
-                success: callback,
-                dataType: 'json',
-                cache: true
-            });
+            dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);

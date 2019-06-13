@@ -7,22 +7,9 @@ if ($('#upcoming-page').length > 0) {
         "pageLength": 100,
         "ajax": function (data, callback, settings) {
 
-            data = {
-                draw: data.draw,
-                order: data.order,
-                start: data.start,
-                search: {
-                    search: $('#search').val(),
-                },
-            };
+            data.search.search = $('#search').val();
 
-            $.ajax({
-                url: '/upcoming/upcoming.json',
-                data: data,
-                success: callback,
-                dataType: 'json',
-                cache: $(this).attr('data-cache') !== "false"
-            });
+            dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);

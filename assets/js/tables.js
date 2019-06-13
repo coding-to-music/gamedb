@@ -99,16 +99,15 @@ function getPagingType() {
 
 // Server side
 const dtDefaultOptions = {
-    "ajax": function (data, callback, settings) {
+    "ajax": function (data, callback, settings, $ctx = null) {
 
-        const $this = $(this);
-
-        delete data.columns;
-        delete data.length;
-        delete data.search.regex;
+        let $this = $(this);
+        if ($ctx) {
+            $this = $ctx;
+        }
 
         $.ajax({
-            url: $(this).attr('data-path'),
+            url: $this.attr('data-path'),
             data: data,
             success: function (data, textStatus, jqXHR) {
 

@@ -6,21 +6,11 @@ if ($('#product-keys-page').length > 0) {
     $table.DataTable($.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
-            delete data.columns;
-            delete data.length;
-            delete data.search.regex;
-
             data.search.key = $('#key').val();
             data.search.value = $('#value').val();
             data.search.type = $("input[name=type]:checked").val();
 
-            $.ajax({
-                url: $(this).attr('data-path'),
-                data: data,
-                success: callback,
-                dataType: 'json',
-                cache: true
-            });
+            dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
         "order": [[0, 'asc']],
         "createdRow": function (row, data, dataIndex) {

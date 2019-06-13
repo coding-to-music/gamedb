@@ -9,18 +9,10 @@ if ($('#ranks-page').length > 0) {
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
-            delete data.columns;
-
             data.search = {};
             data.search.search = $('#search').val();
 
-            $.ajax({
-                url: $(this).attr('data-path'),
-                data: data,
-                success: callback,
-                dataType: 'json',
-                cache: true
-            });
+            dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
         "language": {
             "zeroRecords": "No players found <a href='/players/add'>Add a Player</a>",

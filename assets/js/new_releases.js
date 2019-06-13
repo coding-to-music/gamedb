@@ -1,20 +1,6 @@
 if ($('#new-releases-page').length > 0) {
 
     $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
-        "ajax": function (data, callback, settings) {
-
-            delete data.columns;
-            delete data.length;
-            delete data.search;
-
-            $.ajax({
-                url: $(this).attr('data-path'),
-                data: data,
-                success: callback,
-                dataType: 'json',
-                cache: $(this).attr('data-cache') !== "false"
-            });
-        },
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);

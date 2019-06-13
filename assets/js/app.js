@@ -148,20 +148,6 @@ if ($appPage.length > 0) {
         const $newstable = $('#news-table');
 
         const table = $newstable.DataTable($.extend(true, {}, dtDefaultOptions, {
-            "ajax": function (data, callback, settings) {
-
-                delete data.columns;
-                delete data.length;
-                delete data.search;
-
-                $.ajax({
-                    url: $(this).attr('data-path'),
-                    data: data,
-                    success: callback,
-                    dataType: 'json',
-                    cache: $(this).attr('data-cache') !== "false"
-                });
-            },
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);

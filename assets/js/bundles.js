@@ -1,20 +1,6 @@
 if ($('#bundles-page').length > 0) {
 
     const options = $.extend(true, {}, dtDefaultOptions, {
-        "ajax": function (data, callback, settings) {
-
-            delete data.columns;
-            delete data.length;
-            delete data.search;
-
-            $.ajax({
-                url: $(this).attr('data-path'),
-                data: data,
-                success: callback,
-                dataType: 'json',
-                cache: true
-            });
-        },
         "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
