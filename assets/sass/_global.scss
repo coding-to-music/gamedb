@@ -18,6 +18,19 @@ body.bg {
     }
 }
 
+header {
+    background-color: #1b2738;
+    position: relative;
+}
+
+@include media-breakpoint-up(lg) {
+
+    header {
+        background-color: transparent;
+        position: static;
+    }
+}
+
 #bg {
     top: 0;
     height: 620px;
