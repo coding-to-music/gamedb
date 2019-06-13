@@ -29,8 +29,6 @@ import (
 	"github.com/streadway/amqp"
 )
 
-var errSteamSpyDown = errors.New("steamspy is down")
-
 type appMessage struct {
 	ID          int                  `json:"id"`
 	PICSAppInfo rabbitMessageProduct `json:"PICSAppInfo"`
@@ -916,7 +914,8 @@ func updateAppSteamSpy(app *sql.App) error {
 	client := &http.Client{}
 	client.Timeout = time.Second * 5
 
-	req, err := http.NewRequest("GET", "https://steamspy.com/api.php?"+query.Encode(), nil)
+	ssURL := "https://steamspy.com/api.php?" + query.Encode()
+	req, err := http.NewRequest("GET", ssURL, nil)
 	if err != nil {
 		return err
 	}
@@ -940,7 +939,7 @@ func updateAppSteamSpy(app *sql.App) error {
 	}
 
 	if response.StatusCode != 200 {
-		return errSteamSpyDown
+		return errors.New("steamspy is down: " + ssURL)
 	}
 
 	bytes, err := ioutil.ReadAll(response.Body)
@@ -952,14 +951,14 @@ func updateAppSteamSpy(app *sql.App) error {
 	logError(err)
 
 	if strings.Contains(string(bytes), "Connection failed") {
-		return errSteamSpyDown
+		return errors.New("steamspy is down: " + ssURL)
 	}
 
 	// Unmarshal JSON
 	resp := sql.SteamSpyAppResponse{}
 	err = helpers.Unmarshal(bytes, &resp)
 	if err != nil {
-		return errSteamSpyDown
+		return errors.New("steamspy is down: " + ssURL)
 	}
 
 	owners := resp.GetOwners()
