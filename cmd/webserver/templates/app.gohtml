@@ -680,8 +680,8 @@
                                             </tr>
                                             </thead>
                                             {{ range $key, $value := .Extended }}
-                                                <tr data-link="/product-keys?type=app&key={{ $key }}&value={{ $value }}">
-                                                    <td>{{ .Key }}</td>
+                                                <tr>
+                                                    <td><a href="/product-keys?type=app&key={{ $key }}&value={{ $value }}">{{ .Key }}</a></td>
                                                     <td class="{{ .TDClass }}">{{ .Value }}</td>
                                                 </tr>
                                             {{ end }}
