@@ -51,6 +51,11 @@ $(document).on('mouseup', '[data-link]', function (e) {
     return true;
 });
 
+$(document).on('mouseup', '[data-link] a', function (e) {
+    e.stopPropagation();
+    return true;
+});
+
 $('.stop-prop').on('click', function (e) {
     e.stopPropagation();
 });
