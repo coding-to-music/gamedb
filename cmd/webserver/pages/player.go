@@ -357,6 +357,8 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err = query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	query.limit(r)
+
 	code := helpers.GetCountryCode(r)
 
 	//
@@ -412,6 +414,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, v := range playerApps {
 		response.AddRow(v.OutputForJSON(code))
