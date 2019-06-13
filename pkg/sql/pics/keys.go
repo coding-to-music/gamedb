@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -137,7 +138,16 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
 			return template.HTML("<img src=\"" + item.Link + "\" /><span><a href=\"" + item.Link + "\" rel=\"nofollow\" target=\"_blank\">" + val + "</a></span>")
 		case picsTypeTime:
-			return val
+
+			i, err := strconv.ParseInt(val, 10, 64)
+			if err != nil {
+				return val
+			}
+
+			t := time.Unix(i, 0).Format(helpers.DateTime) + " (" + val + ")"
+
+			return t
+
 		case picsTypeBytes:
 
 			i, err := strconv.ParseUint(val, 10, 64)
