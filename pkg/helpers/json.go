@@ -46,3 +46,19 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 
 	return err
 }
+
+func FormayJSON(unformatted string) (formatted string, err error) {
+
+	var x interface{}
+	err = json.Unmarshal([]byte(unformatted), &x)
+	if err != nil {
+		return formatted, err
+	}
+
+	b, err := json.MarshalIndent(x, "", "  ")
+	if err != nil {
+		return formatted, err
+	}
+
+	return string(b), err
+}
