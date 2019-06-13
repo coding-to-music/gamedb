@@ -99,17 +99,15 @@
         </div>
         <div class="col-12 col-md-4" id="new-releases">
 
-            <div class="card top">
+            <div class="card border-0">
                 <div class="card-header">Popular New Releases</div>
-            </div>
-
-            {{ range $key, $value := .Games }}
-                <a href="{{ .GetPath }}">
-                    <img src="{{ .HeaderImage }}" alt="{{ .GetName }}" loading="lazy">
-                </a>
-            {{ end }}
-
-            <div class="card bottom">
+                <div class="card-body p-0">
+                    {{ range $key, $value := .Games }}
+                        <a href="{{ .GetPath }}">
+                            <img src="{{ .HeaderImage }}" alt="{{ .GetName }}" loading="lazy">
+                        </a>
+                    {{ end }}
+                </div>
                 <div class="card-footer">
                     <a href="/new-releases">More</a>
                 </div>

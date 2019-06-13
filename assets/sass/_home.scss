@@ -42,26 +42,28 @@
 
     #new-releases {
 
-        .card.top {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-
-        .card.bottom {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
+        //.card.top {
+        //    border-bottom-left-radius: 0;
+        //    border-bottom-right-radius: 0;
+        //}
+        //
+        //.card.bottom {
+        //    border-top-left-radius: 0;
+        //    border-top-right-radius: 0;
+        //}
 
         a {
             img {
                 //margin-bottom: 0.5rem;
                 width: 100%;
+                border-bottom: solid #fff 1px;
             }
         }
 
         a:last-of-type {
             img {
                 //margin-bottom: 0;
+                border-bottom: 0;
             }
         }
     }
