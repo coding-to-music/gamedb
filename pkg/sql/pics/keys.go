@@ -158,7 +158,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 		case picsTypeJson:
 
-			j, err := helpers.FormayJSON(val)
+			j, err := helpers.FormatJSON(val)
 			if err != nil {
 				return val
 			}

@@ -47,7 +47,7 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 	return err
 }
 
-func FormayJSON(unformatted string) (formatted string, err error) {
+func FormatJSON(unformatted string) (formatted string, err error) {
 
 	var x interface{}
 	err = json.Unmarshal([]byte(unformatted), &x)
