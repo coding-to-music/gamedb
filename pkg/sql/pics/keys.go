@@ -54,16 +54,17 @@ var CommonKeys = map[string]PicsKey{
 }
 
 var ExtendedKeys = map[string]PicsKey{
-	"developer_url":       {Type: picsTypeLink, Link: "$val$"},
-	"gamemanualurl":       {Type: picsTypeLink, Link: "$val$"},
-	"homepage":            {Type: picsTypeLink, Link: "$val$"},
-	"isfreeapp":           {Type: picsTypeBool},
-	"loadallbeforelaunch": {Type: picsTypeBool},
-	"noservers":           {Type: picsTypeBool},
-	"requiressse":         {Type: picsTypeBool},
-	"sourcegame":          {Type: picsTypeBool},
-	"vacmacmodulecache":   {Type: picsTypeLink, Link: "/apps/$val$"},
-	"vacmodulecache":      {Type: picsTypeLink, Link: "/apps/$val$"},
+	"anti_cheat_support_url": {Type: picsTypeLink, Link: "$val$"},
+	"developer_url":          {Type: picsTypeLink, Link: "$val$"},
+	"gamemanualurl":          {Type: picsTypeLink, Link: "$val$"},
+	"homepage":               {Type: picsTypeLink, Link: "$val$"},
+	"isfreeapp":              {Type: picsTypeBool},
+	"loadallbeforelaunch":    {Type: picsTypeBool},
+	"noservers":              {Type: picsTypeBool},
+	"requiressse":            {Type: picsTypeBool},
+	"sourcegame":             {Type: picsTypeBool},
+	"vacmacmodulecache":      {Type: picsTypeLink, Link: "/apps/$val$"},
+	"vacmodulecache":         {Type: picsTypeLink, Link: "/apps/$val$"},
 }
 
 var ConfigKeys = map[string]PicsKey{
