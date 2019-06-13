@@ -603,7 +603,7 @@
                                         <a class="nav-link" data-toggle="tab" href="#dev-install" role="tab">Install</a>
                                     </li>
                                 {{ end }}
-                                {{ if gt (len .App.GetLocalization) 0}}
+                                {{ if .App.GetLocalization.HasLanguages }}
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
                                     </li>
@@ -933,22 +933,26 @@
                                 {{/* Localisation */}}
                                 <div class="tab-pane" id="dev-localisation" role="tabpanel">
 
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Key</th>
-                                                <th scope="col">Value</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range $key, $value := .App.GetLocalization }}
+                                    {{ range $key, $value := .App.GetLocalization.RichPresence }}
+                                        <div class="table-responsive mb-3">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
                                                 <tr>
-                                                    <td>{{ $key }}</td>
-                                                    <td>{{ json $value }}</td>
+                                                    <th scope="col" colspan="2">{{ title $key }}</th>
                                                 </tr>
-                                            {{ end }}
-                                        </table>
-                                    </div>
+                                                </thead>
+                                                <tbody>
+                                                {{ range $key, $value := .Tokens }}
+                                                    <tr>
+                                                        <td>{{ $key }}</td>
+                                                        <td>{{ $value }}</td>
+                                                    </tr>
+                                                {{ end }}
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    {{ end }}
 
                                 </div>
 

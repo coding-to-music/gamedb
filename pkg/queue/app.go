@@ -428,7 +428,27 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "localization":
 
-			b, err := json.Marshal(v.ToNestedMaps())
+			localization := pics.Localisation{}
+			for _, vv := range v.Children {
+				if vv.Name == "richpresence" {
+					for _, vvv := range vv.Children {
+						localization.AddLanguage(vvv.Name, &pics.LocalisationLanguage{})
+						for _, vvvv := range vvv.Children {
+							if vvvv.Name == "tokens" {
+								for _, vvvvv := range vvvv.Children {
+									localization.RichPresence[vvv.Name].AddToken(vvvvv.Name, vvvvv.Value.(string))
+								}
+							} else {
+								log.Warning("Missing localization language key")
+							}
+						}
+					}
+				} else {
+					log.Warning("Missing localization key")
+				}
+			}
+
+			b, err := json.Marshal(localization)
 			if err != nil {
 				return err
 			}

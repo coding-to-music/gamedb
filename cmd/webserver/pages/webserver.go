@@ -150,6 +150,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"html":       func(html string) template.HTML { return helpers.RenderHTMLAndBBCode(html) },
 		"json":       func(v interface{}) (string, error) { b, err := json.Marshal(v); log.Err(err); return string(b), err },
+		"title":      func(a string) string { return strings.Title(a) },
 	}
 }
 

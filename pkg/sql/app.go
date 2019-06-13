@@ -363,13 +363,13 @@ func (app App) GetInstall() (install map[string]interface{}, err error) {
 	return install, err
 }
 
-func (app App) GetLocalization() (localization map[string]interface{}, err error) {
+func (app App) GetLocalization() (localization pics.Localisation) {
 
-	localization = map[string]interface{}{}
-
-	err = helpers.Unmarshal([]byte(app.Localization), &localization)
+	localization = pics.Localisation{}
+	err := helpers.Unmarshal([]byte(app.Localization), &localization)
 	log.Err(err)
-	return localization, err
+
+	return localization
 }
 
 func (app App) GetSystemRequirements() (systemRequirements map[string]interface{}, err error) {
