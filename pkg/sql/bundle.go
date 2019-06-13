@@ -38,6 +38,13 @@ func (bundle Bundle) GetPath() string {
 	return "/bundles/" + strconv.Itoa(bundle.ID) + "/" + slug.Make(bundle.Name)
 }
 
+func (bundle Bundle) GetName() string {
+	if bundle.Name != "" {
+		return bundle.Name
+	}
+	return "Bundle " + strconv.Itoa(bundle.ID)
+}
+
 func (bundle Bundle) GetStoreLink() string {
 	name := config.Config.GameDBShortName.Get()
 	return "https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID) + "?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name

@@ -3,7 +3,7 @@
 <div class="container" id="bundle-page" data-path="{{ .Bundle.GetPath }}">
 
     <div class="jumbotron">
-        <h1 class="text-truncate"><i class="fas fa-cubes"></i> {{ .Bundle.Name }}</h1>
+        <h1 class="text-truncate"><i class="fas fa-cubes"></i> {{ .Bundle.GetName }}</h1>
     </div>
 
     <div class="card">
@@ -11,7 +11,7 @@
         <div class="card-body">
 
             {{ if ne .Bundle.Image ""}}
-                <img class="rounded" src="{{ .Bundle.Image }}" alt="{{ .Bundle.Name }}">
+                <img class="rounded" src="{{ .Bundle.Image }}" alt="{{ .Bundle.GetName }}">
             {{ end }}
 
             <table class="table mt-3">
