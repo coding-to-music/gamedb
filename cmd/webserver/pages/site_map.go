@@ -23,6 +23,7 @@ func SiteMapRouter() http.Handler {
 	r.Get("/players-by-level.xml", siteMapPlayersByLevel)
 	r.Get("/players-by-games.xml", siteMapPlayersByGamesCount)
 	r.Get("/groups.xml", siteMapGroups)
+	r.Get("/badges.xml", siteMapBadges)
 	return r
 }
 
@@ -36,6 +37,7 @@ func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 		"/sitemap/players-by-level.xml",
 		"/sitemap/players-by-games.xml",
 		"/sitemap/groups.xml",
+		"/sitemap/badges.xml",
 	}
 
 	sm := sitemap.NewSiteMapIndex()
@@ -139,6 +141,18 @@ func siteMapGroups(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = sm.Write(w)
+	log.Err(err)
+}
+
+func siteMapBadges(w http.ResponseWriter, r *http.Request) {
+
+	sm := sitemap.NewSitemap()
+
+	for _, badge := range mongo.Badges {
+		sm.AddLocation(urlBase+badge.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.9)
+	}
+
+	_, err := sm.Write(w)
 	log.Err(err)
 }
 
