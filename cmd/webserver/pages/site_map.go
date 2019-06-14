@@ -85,7 +85,7 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	for _, v := range pages {
-		sm.AddLocation(urlBase+v, time.Time{}, sitemap.FrequencyDaily, 1)
+		sm.AddLocation(urlBase+v, time.Time{}, sitemap.FrequencyMonthly, 1)
 	}
 
 	_, err := sm.Write(w)
