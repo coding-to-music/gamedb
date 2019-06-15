@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/sitemap-go/sitemap"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -180,13 +179,7 @@ func sitemapGetApps(r *http.Request, sort string) (apps []sql.App) {
 	}
 
 	gorm = gorm.Select([]string{"id", "name", "updated_at"})
-
-	if config.IsLocal() {
-		gorm = gorm.Limit(10)
-	} else {
-		gorm = gorm.Limit(1000) // Max: 50,000
-	}
-
+	gorm = gorm.Limit(1000) // Max: 50,000
 	gorm = gorm.Order(sort)
 	gorm = gorm.Find(&apps)
 
