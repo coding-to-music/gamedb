@@ -100,11 +100,15 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Background = func() string {
 
-		var appIDs = []int{}
+		var appIDs []int
 		for _, v := range popularApps {
-			if v.ID != 629760 && v.ID != 779340 {
+			if v.ID != 779340 { // todo, can remove when its there
 				appIDs = append(appIDs, v.ID)
 			}
+		}
+
+		if len(appIDs) == 0 {
+			return ""
 		}
 
 		return "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(appIDs[rand.Intn(len(appIDs))]) + "/library_hero.jpg"
