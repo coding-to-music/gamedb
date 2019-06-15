@@ -18,9 +18,10 @@ func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret [
 
 	for k, v := range kv {
 		ret = append(ret, KeyValue{
-			Key:   k,
-			Value: FormatVal(k, v, productID, keys),
-			Type:  GetType(k, keys),
+			Key:            k,
+			Value:          v,
+			ValueFormatted: FormatVal(k, v, productID, keys),
+			Type:           GetType(k, keys),
 		})
 	}
 
@@ -30,4 +31,3 @@ func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret [
 
 	return ret, err
 }
-

@@ -30,6 +30,7 @@ var CommonKeys = map[string]PicsKey{
 	"clienttga":               {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.tga"},
 	"community_hub_visible":   {Type: picsTypeBool},
 	"community_visible_stats": {Type: picsTypeBool},
+	"controllervr":            {Type: picsTypeJson},
 	"eulas":                   {Type: picsTypeJson},
 	"exfgls":                  {Type: picsTypeBool},
 	"gameid":                  {Type: picsTypeLink, Link: "/apps/$val$"},
@@ -89,9 +90,10 @@ type PicsKey struct {
 }
 
 type KeyValue struct {
-	Key   string
-	Value interface{}
-	Type  PicsItemType
+	Key            string
+	Value          string
+	ValueFormatted interface{}
+	Type           PicsItemType
 }
 
 func (kv KeyValue) TDClass() string {

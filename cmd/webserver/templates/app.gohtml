@@ -679,10 +679,10 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .Extended }}
+                                            {{ range .Extended }}
                                                 <tr>
-                                                    <td><a href="/product-keys?type=app&key={{ $key }}&value={{ $value }}">{{ .Key }}</a></td>
-                                                    <td class="{{ .TDClass }}">{{ .Value }}</td>
+                                                    <td><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
+                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -701,10 +701,10 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $val := .Common }}
+                                            {{ range .Common }}
                                                 <tr>
                                                     <td>{{ .Key }}</td>
-                                                    <td class="{{ .TDClass }}">{{ .Value }}</td>
+                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -835,7 +835,7 @@
                                             {{ range $key, $value := .Config }}
                                                 <tr>
                                                     <td>{{ .Key }}</td>
-                                                    <td class="{{ .TDClass }}">{{ .Value }}</td>
+                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -855,10 +855,10 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .UFS }}
+                                            {{ range .UFS }}
                                                 <tr>
                                                     <td>{{ .Key }}</td>
-                                                    <td class="{{ .TDClass }}">{{ .Value }}</td>
+                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
