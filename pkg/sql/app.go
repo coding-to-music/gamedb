@@ -836,6 +836,10 @@ type AppType struct {
 
 func GetApp(id int, columns []string) (app App, err error) {
 
+	if !helpers.IsValidAppID(id) {
+		return app, ErrInvalidAppID
+	}
+
 	db, err := GetMySQLClient()
 	if err != nil {
 		return app, err
