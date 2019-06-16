@@ -15,6 +15,11 @@ import (
 
 const AvatarBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/"
 
+const (
+	GroupTypeGame  = "game"
+	GroupTypeGroup = "group"
+)
+
 var ErrInvalidGroupID = errors.New("invalid group id")
 
 // { name: 'text', url: 'text', headline: 'text' }, { weights: { name: 3, url: 2, headline: 1 }}
