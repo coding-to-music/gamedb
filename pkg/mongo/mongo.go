@@ -120,6 +120,11 @@ func FindDocumentByKey(collection collection, col string, val interface{}, proje
 	c := client.Database(MongoDatabase).Collection(collection.String())
 	result := c.FindOne(ctx, M{col: val}, ops)
 
+	err = result.Err()
+	if err != nil {
+		return err
+	}
+
 	return result.Decode(document)
 }
 
