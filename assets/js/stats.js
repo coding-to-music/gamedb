@@ -164,7 +164,11 @@ if ($('#stats-page').length > 0) {
                         point: {
                             events: {
                                 click: function () {
-                                    window.location.href = '/apps?types=' + (this.name.toLowerCase());
+                                    let name = this.name.toLowerCase();
+                                    if (name === 'unknown') {
+                                        name = '';
+                                    }
+                                    window.location.href = '/apps?types=' + name;
                                 }
                             }
                         }
