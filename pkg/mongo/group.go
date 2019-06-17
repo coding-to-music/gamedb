@@ -30,6 +30,7 @@ type Group struct {
 	CreatedAt     time.Time `bson:"created_at"`
 	UpdatedAt     time.Time `bson:"updated_at"`
 	Name          string    `bson:"name"`
+	Abbr          string    `bson:"abbreviation"`
 	URL           string    `bson:"url"`
 	Headline      string    `bson:"headline"`
 	Summary       string    `bson:"summary"`
@@ -56,6 +57,7 @@ func (group Group) BSON() (ret interface{}) {
 		"created_at":      group.CreatedAt,
 		"updated_at":      group.UpdatedAt,
 		"name":            group.Name,
+		"abbreviation":    group.Abbr,
 		"url":             group.URL,
 		"headline":        group.Headline,
 		"summary":         group.Summary,
@@ -66,6 +68,16 @@ func (group Group) BSON() (ret interface{}) {
 		"members_online":  group.MembersOnline,
 		"error":           group.Error,
 		"type":            group.Type,
+	}
+}
+
+func (group *Group) SetID(id string) {
+
+	if len(id) < 18 {
+		i, err := strconv.ParseInt(id, 10, 32)
+		if err == nil {
+			group.ID = int(i)
+		}
 	}
 }
 

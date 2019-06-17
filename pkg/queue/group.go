@@ -1,6 +1,9 @@
 package queue
 
 import (
+	"errors"
+	"net/http"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,12 +13,20 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/powerslacker/ratelimit"
 	"github.com/streadway/amqp"
+)
+
+var (
+	groupScrapeRateLimit = ratelimit.New(2, ratelimit.WithoutSlack)                                               // 2 a second
+	groupXMLRateLimit    = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack) // 1 a second
+
+	regexIntsOnly = regexp.MustCompile("[^0-9]+")
 )
 
 type groupMessage struct {
@@ -57,48 +68,49 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		message.IDs = append(message.IDs, message.ID)
 	}
 
-	// Make ID map
-	var IDMap = map[string]string{}
+	//
+	for _, groupID := range message.IDs {
 
-	for _, v := range message.IDs {
-		IDMap[v] = v
-	}
+		var err error
 
-	// Get groups to update
-	groups, err := mongo.GetGroupsByID(message.IDs, nil)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
-	}
+		group, err := mongo.GetGroup(groupID)
+		if err == mongo.ErrNoDocuments {
 
-	for _, group := range groups {
+			group := mongo.Group{}
+			group.Type, err = getGroupType(groupID)
+			group.SetID(groupID)
 
-		// Continue here means get from XML API
-		// if group.ID64 == "" || group.UpdatedAt.Unix() < time.Now().Add(time.Hour * 24 * 28 * -1).Unix() {
-		if group.ID64 == "" {
-			continue
+		} else if err != nil {
+
+			logError(err, groupID)
+			payload.ackRetry(msg)
+			return
 		}
-
-		//
-		delete(IDMap, strconv.Itoa(group.ID))
-		delete(IDMap, group.ID64)
 
 		// Continue here means skip this group altogether
 		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
 			continue
 		}
 
-		//
-		found, err := updateGroupFromPage(group.ID64, &group)
+		var found bool
+		if group.Type == mongo.GroupTypeGame {
+			found, err = updateGameGroup(group.ID64, &group)
+		} else if group.Type == mongo.GroupTypeGroup {
+			found, err = updateRegularGroup(group.ID64, &group)
+		} else {
+			logError(errors.New("group with no typr"), groupID)
+			payload.ack(msg)
+			return
+		}
+
 		if err != nil {
-			logError(err, group.ID, group.ID64)
+			logError(err, groupID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		if !found {
-			logWarning("Group counts not found", group.ID, group.ID64)
+			logWarning("Group counts not found", groupID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -106,7 +118,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		//
 		err = saveGroupToMongo(group)
 		if err != nil {
-			logError(err, group.ID, group.ID64)
+			logError(err, groupID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -114,7 +126,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		//
 		err = saveGroupToInflux(group)
 		if err != nil {
-			logError(err, group.ID, group.ID64)
+			logError(err, groupID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -122,7 +134,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		//
 		err = sendGroupWebsocket(group)
 		if err != nil {
-			logError(err, group.ID, group.ID64)
+			logError(err, groupID)
 		}
 
 		//
@@ -133,104 +145,196 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		log.Err(err)
 	}
 
-	for k := range IDMap {
-
-		err = produceGroupNew(k)
-		if err != nil {
-			log.Err(err, k)
-		}
-	}
-
 	//
 	payload.ack(msg)
 }
 
 var (
-	regexURLFilter = regexp.MustCompile(`steamcommunity\.com\/(groups|games|gid)\/`)
-	regexIntsOnly  = regexp.MustCompile("[^0-9]+")
-
-	groupScapeRateLimit = ratelimit.New(2, ratelimit.WithoutSlack) // 2 a second
+	gameGroupURL            = regexp.MustCompile(`steamcommunity\.com/app/([0-9]+)`)
+	gameGroupRegexURLFilter = regexp.MustCompile(`steamcommunity\.com/(gid|games)/`)
 )
 
-func updateGroupFromPage(id string, group *mongo.Group) (found bool, err error) {
+func updateGameGroup(id string, group *mongo.Group) (found bool, err error) {
 
-	groupScapeRateLimit.Take()
+	groupScrapeRateLimit.Take()
 
-	c := colly.NewCollector(
-		colly.URLFilters(regexURLFilter),
-	)
+	c := colly.NewCollector(colly.URLFilters(gameGroupRegexURLFilter))
 
-	// Regular groups - https://steamcommunity.com/groups/indiegala
-	c.OnHTML("div.membercount.members .count", func(e *colly.HTMLElement) {
-		if strings.Contains(e.Request.URL.Path, "groups") {
+	// ID64
+	c.OnHTML("a[href^=\"steam:\"]", func(e *colly.HTMLElement) {
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		group.ID64 = path.Base(e.Attr("href"))
+	})
+
+	// URL
+	c.OnHTML("#rightActionBlock .actionItemIcon", func(e *colly.HTMLElement) {
+		if group.URL == "" {
+
+			matches := gameGroupURL.FindStringSubmatch(e.Text)
+			if len(matches) > 1 {
+				group.URL = matches[0]
+			}
+		}
+	})
+
+	// Name
+	c.OnHTML("#mainContents > h1", func(e *colly.HTMLElement) {
+		if group.Name == "" {
+			group.Name = e.Text
+		}
+	})
+
+	// Headline
+	c.OnHTML("#profileBlock > h1", func(e *colly.HTMLElement) {
+		if group.Name == "" {
+			group.Name = e.Text
+		}
+	})
+
+	// Summary
+	c.OnHTML("#summaryText", func(e *colly.HTMLElement) {
+		if group.Summary == "" {
+			var err error
+			group.Summary, err = e.DOM.Html()
+			log.Err(err)
+		}
+	})
+
+	// Icon
+	if group.Icon == "" && group.URL != "" {
+		i, err := strconv.Atoi(group.URL)
+		if err == nil && i > 0 {
+			app, err := sql.GetApp(i, []string{"id", ""})
+			if err != nil {
+				log.Err(err)
+			}
+			group.Icon = app.Icon
+		}
+	}
+
+	// Members / Members In Chat
+	c.OnHTML("#profileBlock .linkStandard", func(e *colly.HTMLElement) {
+		if strings.Contains(strings.ToLower(e.Text), "chat") {
+			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+			group.MembersInChat, err = strconv.Atoi(e.Text)
+		} else {
 			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 			group.Members, err = strconv.Atoi(e.Text)
 			found = true
 		}
 	})
 
-	c.OnHTML("div.membercount.ingame .count", func(e *colly.HTMLElement) {
-		if strings.Contains(e.Request.URL.Path, "groups") {
-			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-			group.MembersInGame, err = strconv.Atoi(e.Text)
-			found = true
-		}
-	})
-
-	c.OnHTML("div.membercount.online .count", func(e *colly.HTMLElement) {
-		if strings.Contains(e.Request.URL.Path, "groups") {
-			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-			group.MembersOnline, err = strconv.Atoi(e.Text)
-			found = true
-		}
-	})
-
-	c.OnHTML("div.joinchat_membercount .count", func(e *colly.HTMLElement) {
-		if strings.Contains(e.Request.URL.Path, "groups") {
-			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-			group.MembersInChat, err = strconv.Atoi(e.Text)
-			found = true
-		}
-	})
-
-	// Game groups - https://steamcommunity.com/games/218620
-	c.OnHTML("#profileBlock .linkStandard", func(e *colly.HTMLElement) {
-		if strings.Contains(e.Request.URL.Path, "games") {
-			if strings.Contains(strings.ToLower(e.Text), "chat") {
-				e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-				group.MembersInChat, err = strconv.Atoi(e.Text)
-			} else {
-				e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-				group.Members, err = strconv.Atoi(e.Text)
-			}
-			found = true
-		}
-	})
-
+	// Members In Game
 	c.OnHTML("#profileBlock .membersInGame", func(e *colly.HTMLElement) {
-		if strings.Contains(e.Request.URL.Path, "games") {
-			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-			group.MembersInGame, err = strconv.Atoi(e.Text)
-			found = true
-		}
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		group.MembersInGame, err = strconv.Atoi(e.Text)
 	})
 
+	// Members Online
 	c.OnHTML("#profileBlock .membersOnline", func(e *colly.HTMLElement) {
-		if strings.Contains(e.Request.URL.Path, "games") {
-			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-			group.MembersOnline, err = strconv.Atoi(e.Text)
-			found = true
-		}
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		group.MembersOnline, err = strconv.Atoi(e.Text)
 	})
 
 	// Error
-	group.Error = ""
 	c.OnHTML("#message h3", func(e *colly.HTMLElement) {
 		group.Error = e.Text
 		found = true
 	})
 
 	return found, c.Visit("https://steamcommunity.com/gid/" + id)
+}
+
+var (
+	regularGroupID64Regex      = regexp.MustCompile(`commentthread_Clan_([0-9]{18})_`)
+	regularGroupRegexURLFilter = regexp.MustCompile(`steamcommunity\.com/(gid|groups)/`)
+)
+
+func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err error) {
+
+	groupScrapeRateLimit.Take()
+
+	c := colly.NewCollector(colly.URLFilters(regularGroupRegexURLFilter), )
+
+	// ID64
+	c.OnHTML("[id^=commentthread_Clan_]", func(e *colly.HTMLElement) {
+
+		matches := regularGroupID64Regex.FindStringSubmatch(e.Attr("id"))
+		if len(matches) > 1 {
+			group.ID64 = matches[0]
+		}
+	})
+
+	// Name
+	c.OnHTML("div.grouppage_header_name", func(e *colly.HTMLElement) {
+
+		group.Name = e.Text
+	})
+
+	// Abbreviation
+	c.OnHTML("div.grouppage_header_name span.grouppage_header_abbrev", func(e *colly.HTMLElement) {
+
+		group.Abbr = e.Text
+	})
+
+	// URL
+
+	// Headline
+	c.OnHTML("div.group_content.group_summary h1", func(e *colly.HTMLElement) {
+
+		group.Headline = strings.TrimSpace(e.Text)
+	})
+
+	// Summary
+	c.OnHTML("div.formatted_group_summary", func(e *colly.HTMLElement) {
+
+		var err error
+		group.Summary, err = e.DOM.Html()
+		log.Err(err)
+	})
+
+	// Icon
+	c.OnHTML("div.grouppage_logo img", func(e *colly.HTMLElement) {
+
+		group.Icon = strings.TrimPrefix(e.Attr("src"), mongo.AvatarBase)
+	})
+
+	// Members
+	c.OnHTML("div.membercount.members .count", func(e *colly.HTMLElement) {
+
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		group.Members, err = strconv.Atoi(e.Text)
+		foundMembers = true
+	})
+
+	// Members In Game
+	c.OnHTML("div.membercount.ingame .count", func(e *colly.HTMLElement) {
+
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		group.MembersInGame, err = strconv.Atoi(e.Text)
+	})
+
+	// Members Online
+	c.OnHTML("div.membercount.online .count", func(e *colly.HTMLElement) {
+
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		group.MembersOnline, err = strconv.Atoi(e.Text)
+	})
+
+	// Members In Chat
+	c.OnHTML("div.joinchat_membercount .count", func(e *colly.HTMLElement) {
+
+		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		group.MembersInChat, err = strconv.Atoi(e.Text)
+	})
+
+	// Error
+	c.OnHTML("#message h3", func(e *colly.HTMLElement) {
+		group.Error = e.Text
+		foundMembers = true
+	})
+
+	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
 }
 
 func saveGroupToMongo(group mongo.Group) (err error) {
@@ -270,5 +374,72 @@ func sendGroupWebsocket(group mongo.Group) (err error) {
 	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageGroup}
 
 	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+	return err
+}
+
+func getGroupType(id string) (string, error) {
+
+	resp, err := http.Get("https://steamcommunity.com/gid/" + id)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		err = resp.Body.Close()
+		log.Err(err)
+	}()
+
+	u := resp.Request.URL.String()
+
+	if strings.Contains(u, "/games/") {
+		return "game", err
+	} else if strings.Contains(u, "/groups/") {
+		return "group", err
+	}
+
+	return "", err
+}
+
+//noinspection GoUnusedFunction
+func updateGroupFromXML(id string, group *mongo.Group) (err error) {
+
+	groupXMLRateLimit.Take()
+
+	resp, b, err := helpers.GetSteam().GetGroupByID(id)
+	err = helpers.HandleSteamStoreErr(err, b, nil)
+	if err != nil {
+		return err
+	}
+
+	group.SetID(id)
+	group.ID64 = resp.ID64
+	group.Name = resp.Details.Name
+	group.URL = resp.Details.URL
+	group.Headline = resp.Details.Headline
+	group.Summary = resp.Details.Summary
+	group.Members = int(resp.Details.MemberCount)
+	group.MembersInChat = int(resp.Details.MembersInChat)
+	group.MembersInGame = int(resp.Details.MembersInGame)
+	group.MembersOnline = int(resp.Details.MembersOnline)
+	group.Type = resp.Type
+
+	// Get working icon
+	if helpers.GetResponseCode(resp.Details.AvatarFull) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarFull, mongo.AvatarBase, "", 1)
+
+	} else if helpers.GetResponseCode(resp.Details.AvatarMedium) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarMedium, mongo.AvatarBase, "", 1)
+
+	} else if helpers.GetResponseCode(resp.Details.AvatarIcon) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarIcon, mongo.AvatarBase, "", 1)
+
+	} else {
+
+		group.Icon = ""
+	}
+
 	return err
 }
