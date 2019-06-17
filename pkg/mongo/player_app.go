@@ -135,6 +135,11 @@ func GetPlayersApps(playerIDs []int64) (apps []PlayerApp, err error) {
 	return getPlayerApps(0, 0, M{"player_id": M{"$in": playersFilter}}, nil, M{"_id": -1, "player_id": 1, "app_id": 1})
 }
 
+func GetAppPlayTimes(appID int) (apps []PlayerApp, err error) {
+
+	return getPlayerApps(0, 0, M{"app_id": appID}, nil, M{"_id": -1, "app_time": 1})
+}
+
 func getPlayerApps(offset int64, limit int64, filter interface{}, sort interface{}, projection interface{}) (apps []PlayerApp, err error) {
 
 	if filter == nil {
