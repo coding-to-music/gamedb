@@ -94,9 +94,9 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 		var found bool
 		if group.Type == mongo.GroupTypeGame {
-			found, err = updateGameGroup(group.ID64, &group)
+			found, err = updateGameGroup(groupID, &group)
 		} else if group.Type == mongo.GroupTypeGroup {
-			found, err = updateRegularGroup(group.ID64, &group)
+			found, err = updateRegularGroup(groupID, &group)
 		} else {
 			logError(errors.New("group with no typr"), groupID)
 			payload.ack(msg)
