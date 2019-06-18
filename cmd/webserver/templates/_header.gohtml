@@ -7,14 +7,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" integrity="sha256-BtbhCIbtfeVWGsqxk1vOHEYXS6qcvQvLMZqjtpWUEx8=" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
-    <link rel="stylesheet" integrity="sha256-R91pD48xW+oHbpJYGn5xR0Q7tMhH4xOrWn1QqMRINtA=" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
-    <link rel="stylesheet" integrity="sha256-MyPOSprr9/vRwXTYc0saw86ylzGM2HVRKWUfHIFta74=" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" integrity="sha256-BtbhCIbtfeVWGsqxk1vOHEYXS6qcvQvLMZqjtpWUEx8=" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha256-R91pD48xW+oHbpJYGn5xR0Q7tMhH4xOrWn1QqMRINtA=" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/12.1.0/nouislider.min.css" integrity="sha256-MyPOSprr9/vRwXTYc0saw86ylzGM2HVRKWUfHIFta74=" crossorigin="anonymous"/>
     {{ range .CSSFiles }}
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
-    <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css">
-    <link rel="stylesheet" href="/assets/compiled.min.css?rel=3d30262248">
+    <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css"/>
+    <link rel="stylesheet" href="/assets/compiled.min.css?rel=3d30262248"/>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
@@ -29,9 +29,7 @@
     <meta name="msapplication-TileColor" content="#343a40">
     <meta name="msapplication-config" content="/browserconfig.xml">
     <meta name="theme-color" content="#343a40">
-    {{/*<meta name="google" content="notranslate">*/}}
     <meta name="google-site-verification" content="brhvE2bHEwuvvoiOxeYHMQRSQECE4vAk8rMJ3iYZtSg"/>
-
     {{/* Common */}}
     <title>{{ .Title }}</title>
     <meta name="description" content="{{ .Description }}">
@@ -41,7 +39,6 @@
     {{/* Schema.org */}}
     <meta itemprop="name" content="{{ .Title }}">
     <meta itemprop="description" content="{{ .Description }}">
-
     {{/* Twitter */}}
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@gamedbonline"/>
@@ -49,7 +46,6 @@
     <meta name="twitter:description" content="{{ .Description }}">
     <meta name="twitter:image" content="{{ .GetMetaImage }}"/>
     <meta name="twitter:image:alt" content="{{ .Title }}"/>
-
     {{/* Open Graph */}}
     <meta name="og:title" content="{{ .Title }}">
     <meta name="og:description" content="{{ .Description }}">
@@ -57,7 +53,6 @@
     <meta name="og:url" content="{{ .GetCanonical }}">
     <meta name="og:locale" content="en_US">
     <meta name="og:type" content="website">
-
     {{/* Facebook */}}
     <meta name="fb:admins" content="537840742">
     <meta name="fb:app_id" content="2539079269452708">
