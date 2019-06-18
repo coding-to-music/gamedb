@@ -69,9 +69,9 @@ var (
 		queueGoGroups: {
 			queue: &groupQueue{},
 		},
-		// queueGoGroupsNew: {
-		// 	queue: &groupQueueNew{},
-		// },
+		queueGoGroupsNew: {
+			queue: &groupQueue{}, // todo, delete when queues gone
+		},
 		queueGoPackages: {
 			queue: &packageQueue{},
 		},

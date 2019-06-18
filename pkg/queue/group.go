@@ -23,9 +23,6 @@ import (
 )
 
 var (
-	groupScrapeRateLimit = ratelimit.New(2, ratelimit.WithoutSlack)                                               // 2 a second
-	groupXMLRateLimit    = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack) // 1 a second
-
 	regexIntsOnly = regexp.MustCompile("[^0-9]+")
 )
 
@@ -72,13 +69,18 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	for _, groupID := range message.IDs {
 
 		var err error
-		var group mongo.Group // Stop shadowing
+		var group mongo.Group
 
 		group, err = mongo.GetGroup(groupID)
-		if err == mongo.ErrNoDocuments || group.ID64 == "" || group.Type == "" {
+		if err == mongo.ErrNoDocuments || (err == nil && (group.ID64 == "" || group.Type == "")) {
 
-			group.Type, err = getGroupType(groupID)
 			group.SetID(groupID)
+			group.Type, err = getGroupType(groupID)
+			if err != nil || group.Type == "" {
+				logError(err, groupID)
+				payload.ackRetry(msg)
+				return
+			}
 
 		} else if err != nil {
 
@@ -98,7 +100,13 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		} else if group.Type == mongo.GroupTypeGroup {
 			found, err = updateRegularGroup(groupID, &group)
 		} else {
-			logError(errors.New("group with no typr"), groupID)
+			logError(errors.New("group with no type: "+group.Type), groupID)
+			payload.ack(msg)
+			return
+		}
+
+		if group.ID64 == "" {
+			logInfo("Could not find ID64 for: " + groupID)
 			payload.ack(msg)
 			return
 		}
@@ -113,6 +121,10 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 			logWarning("Group counts not found", groupID)
 			payload.ackRetry(msg)
 			return
+		}
+
+		if group.Summary == "No information given." {
+			group.Summary = ""
 		}
 
 		//
@@ -150,15 +162,12 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 }
 
 var (
-	gameGroupURL            = regexp.MustCompile(`steamcommunity\.com/app/([0-9]+)`)
-	gameGroupRegexURLFilter = regexp.MustCompile(`steamcommunity\.com/(gid|games)/`)
+	gameGroupURL = regexp.MustCompile(`steamcommunity\.com/app/([0-9]+)`)
 )
 
 func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err error) {
 
-	groupScrapeRateLimit.Take()
-
-	c := colly.NewCollector(colly.URLFilters(gameGroupRegexURLFilter))
+	c := colly.NewCollector()
 
 	// ID64
 	c.OnHTML("a[href^=\"steam:\"]", func(e *colly.HTMLElement) {
@@ -167,36 +176,31 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	})
 
 	// URL
-	c.OnHTML("#rightActionBlock .actionItemIcon", func(e *colly.HTMLElement) {
-		if group.URL == "" {
-
-			matches := gameGroupURL.FindStringSubmatch(e.Text)
-			if len(matches) > 1 {
-				group.URL = matches[0]
-			}
+	c.OnHTML("#rightActionBlock .actionItemIcon a", func(e *colly.HTMLElement) {
+		matches := gameGroupURL.FindStringSubmatch(e.Attr("href"))
+		if len(matches) > 1 {
+			group.URL = matches[1]
 		}
 	})
 
 	// Name
 	c.OnHTML("#mainContents > h1", func(e *colly.HTMLElement) {
-		if group.Name == "" {
-			group.Name = strings.TrimSpace(e.Text)
-		}
+		group.Name = strings.TrimSpace(e.Text)
 	})
 
 	// Headline
 	c.OnHTML("#profileBlock > h1", func(e *colly.HTMLElement) {
-		if group.Name == "" {
-			group.Name = strings.TrimSpace(e.Text)
-		}
+		group.Headline = strings.TrimSpace(e.Text)
 	})
 
 	// Summary
 	c.OnHTML("#summaryText", func(e *colly.HTMLElement) {
-		if group.Summary == "" {
-			var err error
-			group.Summary, err = e.DOM.Html()
-			log.Err(err)
+		var err error
+		group.Summary, err = e.DOM.Html()
+		log.Err(err)
+
+		if group.Summary == "No information given." {
+			group.Summary = ""
 		}
 	})
 
@@ -204,7 +208,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	if group.Icon == "" && group.URL != "" {
 		i, err := strconv.Atoi(group.URL)
 		if err == nil && i > 0 {
-			app, err := sql.GetApp(i, []string{"id", ""})
+			app, err := sql.GetApp(i, []string{"id", "icon"})
 			if err != nil {
 				log.Err(err)
 			}
@@ -242,23 +246,24 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 		foundNumbers = true
 	})
 
+	//
+	c.OnError(func(r *colly.Response, err error) {
+		log.Err(err)
+	})
+
 	return foundNumbers, c.Visit("https://steamcommunity.com/gid/" + id)
 }
 
 var (
-	regularGroupID64Regex      = regexp.MustCompile(`commentthread_Clan_([0-9]{18})_`)
-	regularGroupRegexURLFilter = regexp.MustCompile(`steamcommunity\.com/(gid|groups)/`)
+	regularGroupID64Regex = regexp.MustCompile(`commentthread_Clan_([0-9]{18})_`)
 )
 
 func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err error) {
 
-	groupScrapeRateLimit.Take()
-
-	c := colly.NewCollector(colly.URLFilters(regularGroupRegexURLFilter), )
+	c := colly.NewCollector()
 
 	// ID64
 	c.OnHTML("[id^=commentthread_Clan_]", func(e *colly.HTMLElement) {
-
 		matches := regularGroupID64Regex.FindStringSubmatch(e.Attr("id"))
 		if len(matches) > 1 {
 			group.ID64 = matches[1]
@@ -267,27 +272,26 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	// Name
 	c.OnHTML("div.grouppage_header_name", func(e *colly.HTMLElement) {
-
 		group.Name = strings.TrimPrefix(e.DOM.Children().First().Text(), "/ ")
 	})
 
 	// Abbreviation
 	c.OnHTML("div.grouppage_header_name span.grouppage_header_abbrev", func(e *colly.HTMLElement) {
-
 		group.Abbr = strings.TrimPrefix(e.Text, "/ ")
 	})
 
 	// URL
+	c.OnHTML("form#join_group_form", func(e *colly.HTMLElement) {
+		group.URL = path.Base(e.Attr("action"))
+	})
 
 	// Headline
 	c.OnHTML("div.group_content.group_summary h1", func(e *colly.HTMLElement) {
-
 		group.Headline = strings.TrimSpace(e.Text)
 	})
 
 	// Summary
 	c.OnHTML("div.formatted_group_summary", func(e *colly.HTMLElement) {
-
 		summary, err := e.DOM.Html()
 		log.Err(err)
 		if err == nil {
@@ -297,43 +301,39 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	// Icon
 	c.OnHTML("div.grouppage_logo img", func(e *colly.HTMLElement) {
-
 		group.Icon = strings.TrimPrefix(e.Attr("src"), mongo.AvatarBase)
 	})
 
 	// Members
 	c.OnHTML("div.membercount.members .count", func(e *colly.HTMLElement) {
-
-		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-		group.Members, err = strconv.Atoi(e.Text)
+		group.Members, err = strconv.Atoi(regexIntsOnly.ReplaceAllString(e.Text, ""))
 		foundMembers = true
 	})
 
 	// Members In Game
 	c.OnHTML("div.membercount.ingame .count", func(e *colly.HTMLElement) {
-
-		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-		group.MembersInGame, err = strconv.Atoi(e.Text)
+		group.MembersInGame, err = strconv.Atoi(regexIntsOnly.ReplaceAllString(e.Text, ""))
 	})
 
 	// Members Online
 	c.OnHTML("div.membercount.online .count", func(e *colly.HTMLElement) {
-
-		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-		group.MembersOnline, err = strconv.Atoi(e.Text)
+		group.MembersOnline, err = strconv.Atoi(regexIntsOnly.ReplaceAllString(e.Text, ""))
 	})
 
 	// Members In Chat
 	c.OnHTML("div.joinchat_membercount .count", func(e *colly.HTMLElement) {
-
-		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-		group.MembersInChat, err = strconv.Atoi(e.Text)
+		group.MembersInChat, err = strconv.Atoi(regexIntsOnly.ReplaceAllString(e.Text, ""))
 	})
 
 	// Error
 	c.OnHTML("#message h3", func(e *colly.HTMLElement) {
 		group.Error = e.Text
 		foundMembers = true
+	})
+
+	//
+	c.OnError(func(r *colly.Response, err error) {
+		log.Err(err)
 	})
 
 	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
@@ -401,6 +401,8 @@ func getGroupType(id string) (string, error) {
 
 	return "", err
 }
+
+var groupXMLRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack)
 
 //noinspection GoUnusedFunction
 func updateGroupFromXML(id string, group *mongo.Group) (err error) {
