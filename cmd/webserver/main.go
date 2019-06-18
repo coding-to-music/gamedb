@@ -137,6 +137,9 @@ func main() {
 	r.Get("/site.webmanifest", pages.RootFileHandler)
 	r.Get("/ads.txt", pages.RootFileHandler)
 
+	// Redirects
+	r.Get("/sitemap.xml", pages.RedirectHandler("/sitemap/index.xml"))
+
 	// File server
 	fileServer(r, "/assets", http.Dir(config.Config.AssetsPath.Get()))
 
