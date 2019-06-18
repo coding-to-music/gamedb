@@ -32,7 +32,7 @@ var CommonKeys = map[string]PicsKey{
 	"community_visible_stats": {Type: picsTypeBool},
 	"controllervr":            {Type: picsTypeJson},
 	"eulas":                   {Type: picsTypeJson},
-	"exfgls":                  {Type: picsTypeBool},
+	"exfgls":                  {Type: picsTypeBool, Description: "Exclude from game library sharing"},
 	"gameid":                  {Type: picsTypeLink, Link: "/apps/$val$"},
 	"genres":                  {Type: picsTypeJson},
 	"has_adult_content":       {Type: picsTypeBool},
@@ -85,8 +85,9 @@ var UFSKeys = map[string]PicsKey{
 }
 
 type PicsKey struct {
-	Type PicsItemType
-	Link string
+	Type        PicsItemType
+	Link        string
+	Description string
 }
 
 type KeyValue struct {
@@ -94,6 +95,7 @@ type KeyValue struct {
 	Value          string
 	ValueFormatted interface{}
 	Type           PicsItemType
+	Description    string
 }
 
 func (kv KeyValue) TDClass() string {
@@ -108,10 +110,18 @@ func (kv KeyValue) TDClass() string {
 	}
 }
 
-func GetType(key string, keys map[string]PicsKey) PicsItemType {
+func getType(key string, keys map[string]PicsKey) PicsItemType {
 
 	if val, ok := keys[key]; ok {
 		return val.Type
+	}
+	return ""
+}
+
+func getDescription(key string, keys map[string]PicsKey) string {
+
+	if val, ok := keys[key]; ok {
+		return val.Description
 	}
 	return ""
 }

@@ -703,7 +703,7 @@
                                             </thead>
                                             {{ range .Common }}
                                                 <tr>
-                                                    <td>{{ .Key }}</td>
+                                                    <td>{{ .Key }} {{ if ne .Description "" }}<small>({{ .Description }})</small>{{ end }}</td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                 </tr>
                                             {{ end }}

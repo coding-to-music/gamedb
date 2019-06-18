@@ -21,7 +21,8 @@ func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret [
 			Key:            k,
 			Value:          v,
 			ValueFormatted: FormatVal(k, v, productID, keys),
-			Type:           GetType(k, keys),
+			Type:           getType(k, keys),
+			Description:    getDescription(k, keys),
 		})
 	}
 
