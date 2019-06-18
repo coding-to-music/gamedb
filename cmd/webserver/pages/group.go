@@ -32,10 +32,10 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if !db.IsValidAppID(idx) {
-	// 	returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid bundle ID: " + id})
-	// 	return
-	// }
+	if !helpers.IsValidGroupID(id) {
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid group ID: " + id})
+		return
+	}
 
 	// Get group
 	group, err := mongo.GetGroup(id)
