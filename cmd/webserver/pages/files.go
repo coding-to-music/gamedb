@@ -27,3 +27,9 @@ func RootFileHandler(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(data)
 	log.Err(err, r)
 }
+
+func RedirectHandler(url string) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, url, http.StatusFound)
+	}
+}
