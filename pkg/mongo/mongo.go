@@ -104,7 +104,7 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
-// Returns ErrNoDocuments on nothing found
+// Does not return error on nothing returned
 func FindDocumentByKey(collection collection, col string, val interface{}, projection M, document Document) (err error) {
 
 	client, ctx, err := getMongo()

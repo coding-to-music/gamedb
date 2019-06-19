@@ -43,8 +43,6 @@ func (a *App) UpdatePlaytime() (err error) {
 
 func (a *App) UpdateAchievements() (err error) {
 
-
-
 	players, err := GetAppPlayTimes(a.ID)
 	if err != nil {
 		return err
@@ -74,6 +72,12 @@ func GetApp(id int) (app App, err error) {
 	}
 
 	err = FindDocumentByKey(CollectionApps, "_id", id, nil, &app)
+	if err != nil {
+		return app, err
+	}
+	if app.ID == 0 {
+		return app, ErrNoDocuments
+	}
 
 	return app, err
 }

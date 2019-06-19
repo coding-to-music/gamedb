@@ -136,6 +136,10 @@ func GetGroup(id string) (group Group, err error) {
 		}
 	}
 
+	if group.ID64 == "" {
+		return group, ErrNoDocuments
+	}
+
 	return group, err
 }
 

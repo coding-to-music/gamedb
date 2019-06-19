@@ -368,6 +368,12 @@ func GetPlayer(id int64) (player Player, err error) {
 	}
 
 	err = FindDocumentByKey(CollectionPlayers, "_id", id, nil, &player)
+	if err != nil {
+		return player, err
+	}
+	if player.ID == 0 {
+		return player, ErrNoDocuments
+	}
 
 	player.ID = id
 
