@@ -11,7 +11,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -41,7 +40,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	group, err := mongo.GetGroup(id)
 	if err != nil {
 
-		if err == sql.ErrRecordNotFound {
+		if err == mongo.ErrNoDocuments {
 			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Sorry but we can not find this group"})
 			return
 		}
@@ -92,17 +91,17 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		log.Err("invalid id: "+id, r)
+		log.Info("invalid id: "+id, r)
 		return
 	}
 
 	if len(id) != 18 {
-		log.Err("invalid id: "+id, r)
+		log.Info("invalid id: "+id, r)
 		return
 	}
 
 	if !helpers.IsValidGroupID(id) {
-		log.Err("invalid id: "+id, r)
+		log.Info("invalid id: "+id, r)
 		return
 	}
 

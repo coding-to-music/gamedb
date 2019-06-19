@@ -65,13 +65,16 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		message.IDs = append(message.IDs, message.ID)
 	}
 
+	defer func(message groupMessage) {
+		err := helpers.RemoveKeyFromMemCacheViaPubSub(message.IDs...)
+		log.Err(err)
+	}(message)
+
 	//
 	for _, groupID := range message.IDs {
 
 		var err error
 		var group mongo.Group
-
-		defer removeGroupFromMemcache(&group)
 
 		group, err = mongo.GetGroup(groupID)
 		if err == mongo.ErrNoDocuments || (err == nil && (group.ID64 == "" || group.Type == "")) {
@@ -441,15 +444,4 @@ func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 	}
 
 	return err
-}
-
-func removeGroupFromMemcache(group *mongo.Group) {
-
-	var err error
-
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGroup(strconv.Itoa(group.ID)))
-	log.Err(err)
-
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGroup(group.ID64))
-	log.Err(err)
 }

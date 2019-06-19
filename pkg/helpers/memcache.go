@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"cloud.google.com/go/pubsub"
@@ -72,17 +73,26 @@ func ListenToPubSub() {
 
 	err := PubSubSubscribe(PubSubMemcache, func(m *pubsub.Message) {
 
-		err := mc.Delete(string(m.Data))
-		err = IgnoreErrors(err, memcache.ErrCacheMiss)
-		log.Err(err)
+		var ids []string
 
+		err := json.Unmarshal(m.Data, &ids)
+		if err != nil {
+			// Backwards compatibility, todo, remove later...
+			ids = []string{string(m.Data)}
+		}
+
+		for _, id := range ids {
+			err = mc.Delete(id)
+			err = IgnoreErrors(err, memcache.ErrCacheMiss)
+			log.Err(err)
+		}
 	})
 	log.Err(err)
 }
 
 //
-func RemoveKeyFromMemCacheViaPubSub(item MemcacheItem) (err error) {
+func RemoveKeyFromMemCacheViaPubSub(keys ...string) (err error) {
 
-	_, err = Publish(PubSubTopicMemcache, item.Key)
+	_, err = Publish(PubSubTopicMemcache, keys)
 	return err
 }
