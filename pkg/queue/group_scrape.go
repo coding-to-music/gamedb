@@ -107,12 +107,10 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 		// Some pages dont contain the ID64, so use the API
 		if group.ID64 == "" {
-			err = updateGroupFromXML(groupID, &group)
-			if err != nil {
-				logError(err, groupID)
-				payload.ackRetry(msg)
-				return
-			}
+			err = produceGroupNew(groupID)
+			logError(err, groupID)
+			payload.ackRetry(msg)
+			return
 		}
 
 		// Fix group data

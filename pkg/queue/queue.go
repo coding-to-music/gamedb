@@ -67,10 +67,10 @@ var (
 			queue: &delayQueue{},
 		},
 		queueGoGroups: {
-			queue: &groupQueue{},
+			queue: &groupQueueScrape{},
 		},
 		queueGoGroupsNew: {
-			queue: &groupQueue{}, // todo, delete when queues gone
+			queue: &groupQueueAPI{},
 		},
 		queueGoPackages: {
 			queue: &packageQueue{},
@@ -551,37 +551,24 @@ func ProduceGroup(IDs []string) (err error) {
 	return nil
 }
 
-// func produceGroupNew(ID string) (err error) {
-//
-// 	time.Sleep(time.Millisecond)
-//
-// 	ID = strings.TrimSpace(ID)
-//
-// 	if !helpers.IsValidGroupID(ID) {
-// 		return nil
-// 	}
-//
-// 	item := helpers.MemcacheGroupInQueue(ID)
-//
-// 	mc := helpers.GetMemcache()
-// 	_, err = mc.Get(item.Key)
-// 	if err == nil && config.IsProd() {
-// 		return nil
-// 	}
-//
-// 	err = mc.Set(&item)
-// 	if err != nil {
-// 		log.Err(err, ID)
-// 	}
-//
-// 	err = produce(baseMessage{
-// 		Message: groupMessage{
-// 			ID: ID,
-// 		},
-// 	}, queueGoGroupsNew)
-// 	if err != nil {
-// 		log.Err(err, ID)
-// 	}
-//
-// 	return nil
-// }
+func produceGroupNew(ID string) (err error) {
+
+	time.Sleep(time.Millisecond)
+
+	ID = strings.TrimSpace(ID)
+
+	if !helpers.IsValidGroupID(ID) {
+		return nil
+	}
+
+	err = produce(baseMessage{
+		Message: groupMessage{
+			ID: ID,
+		},
+	}, queueGoGroupsNew)
+	if err != nil {
+		log.Err(err, ID)
+	}
+
+	return nil
+}
