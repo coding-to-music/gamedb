@@ -749,9 +749,9 @@
                                                     <tr data-link="/depots/{{ .ID }}">
                                                         <td>{{ .ID }}</td>
                                                         <td nowrap="nowrap">{{ .Name }}</td>
-                                                        <td>{{ json .Configs }}</td>
-                                                        <td>{{ json .Manifests }}</td>
-                                                        <td>{{ .EncryptedManifests }}</td>
+                                                        <td class="json">{{ json .Configs }}</td>
+                                                        <td class="json">{{ json .Manifests }}</td>
+                                                        <td class="json">{{ .EncryptedManifests }}</td>
                                                         <td>{{ .MaxSize }}</td>
                                                         <td>{{ .App }}</td>
                                                         <td>{{ .DLCApp }}</td>
