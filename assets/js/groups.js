@@ -48,7 +48,7 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return row[4]
+                    return row[4];
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('d-none d-lg-table-cell');
@@ -67,7 +67,7 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '<i class="fas fa-link" data-target="_blank" data-link="' + row[8] + '"></i>';
+                    return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
                 },
                 "orderable": false,
             },
