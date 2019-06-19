@@ -30,12 +30,12 @@ type groupMessage struct {
 	IDs []string `json:"ids"`
 }
 
-type groupQueue struct {
+type groupQueueScrape struct {
 	baseQueue
 }
 
 //noinspection GoNilness
-func (q groupQueue) processMessages(msgs []amqp.Delivery) {
+func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 	msg := msgs[0]
 
