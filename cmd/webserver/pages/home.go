@@ -98,21 +98,14 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	t.Background = func() string {
-
-		var appIDs []int
-		for _, v := range popularApps {
-			if v.ID != 779340 { // todo, can remove when its there
-				appIDs = append(appIDs, v.ID)
-			}
+	if len(popularApps) > 0 {
+		backgroundApp := popularApps[rand.Intn(len(popularApps))]
+		if backgroundApp.ID != 779340 { // todo, can remove when its there
+			t.Background = "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(backgroundApp.ID) + "/library_hero.jpg"
+			t.BackgroundTitle = backgroundApp.GetName()
+			t.BackgroundLink = backgroundApp.GetPath()
 		}
-
-		if len(appIDs) == 0 {
-			return ""
-		}
-
-		return "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(appIDs[rand.Intn(len(appIDs))]) + "/library_hero.jpg"
-	}()
+	}
 
 	//
 	err := returnTemplate(w, r, "home", t)
