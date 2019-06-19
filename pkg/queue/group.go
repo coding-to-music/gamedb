@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"errors"
 	"net/http"
 	"path"
 	"regexp"
@@ -35,6 +34,7 @@ type groupQueue struct {
 	baseQueue
 }
 
+//noinspection GoNilness
 func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 
 	msg := msgs[0]
@@ -73,66 +73,59 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 	//
 	for _, groupID := range message.IDs {
 
-		var err error
-		var group mongo.Group
+		group, err := mongo.GetGroup(groupID)
+		if err != nil && err != mongo.ErrNoDocuments {
+			logError(err, groupID)
+			payload.ackRetry(msg)
+			return
+		}
 
-		group, err = mongo.GetGroup(groupID)
-		if err == mongo.ErrNoDocuments || (err == nil && (group.ID64 == "" || group.Type == "")) {
+		// Skip if updated recently
+		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
+			continue
+		}
 
-			group.SetID(groupID)
+		// Get `type` if missing
+		if group.Type == "" {
 			group.Type, err = getGroupType(groupID)
 			if err != nil || group.Type == "" {
 				logError(err, groupID)
 				payload.ackRetry(msg)
 				return
 			}
-
-		} else if err != nil {
-
-			logError(err, groupID)
-			payload.ackRetry(msg)
-			return
 		}
 
-		// Continue here means skip this group altogether
-		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
-			continue
-		}
-
+		// Update group
 		var found bool
 		if group.Type == mongo.GroupTypeGame {
 			found, err = updateGameGroup(groupID, &group)
-		} else if group.Type == mongo.GroupTypeGroup {
-			found, err = updateRegularGroup(groupID, &group)
 		} else {
-			logError(errors.New("group with no type: "+group.Type), groupID)
-			payload.ack(msg)
-			return
+			found, err = updateRegularGroup(groupID, &group)
 		}
 
-		if group.ID64 == "" {
-			logInfo("Could not find ID64 for: " + groupID)
-			payload.ack(msg)
-			return
-		}
-
-		if err != nil {
-			logError(err, groupID)
-			payload.ackRetry(msg)
-			return
-		}
-
+		// Skip if we cant find numbers
 		if !found {
 			logWarning("Group counts not found", groupID)
 			payload.ackRetry(msg)
 			return
 		}
 
+		// Some pages dont contain the ID64, so use the API
+		if group.ID64 == "" {
+			err = updateGroupFromXML(groupID, &group)
+			if err != nil {
+				logError(err, groupID)
+				payload.ackRetry(msg)
+				return
+			}
+		}
+
+		// Fix group data
 		if group.Summary == "No information given." {
 			group.Summary = ""
 		}
 
-		//
+		// Update row
 		err = saveGroupToMongo(group)
 		if err != nil {
 			logError(err, groupID)
@@ -140,7 +133,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		//
+		// Save to Influx
 		err = saveGroupToInflux(group)
 		if err != nil {
 			logError(err, groupID)
@@ -148,7 +141,7 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		//
+		// Send websocket
 		err = sendGroupWebsocket(group)
 		if err != nil {
 			logError(err, groupID)
@@ -402,7 +395,6 @@ func getGroupType(id string) (string, error) {
 
 var groupXMLRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Minute), ratelimit.WithoutSlack)
 
-//noinspection GoUnusedFunction
 func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 
 	groupXMLRateLimit.Take()
