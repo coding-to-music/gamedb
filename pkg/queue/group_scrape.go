@@ -65,11 +65,6 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 		message.IDs = append(message.IDs, message.ID)
 	}
 
-	defer func(message groupMessage) {
-		err := helpers.RemoveKeyFromMemCacheViaPubSub(message.IDs...)
-		log.Err(err)
-	}(message)
-
 	//
 	for _, groupID := range message.IDs {
 
@@ -140,13 +135,15 @@ func (q groupQueue) processMessages(msgs []amqp.Delivery) {
 			payload.ackRetry(msg)
 			return
 		}
-
-		// Send websocket
-		err = sendGroupWebsocket(group)
-		if err != nil {
-			logError(err, groupID)
-		}
 	}
+
+	// Clear memcache
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(message.IDs...)
+	log.Err(err)
+
+	// Send websocket
+	err = sendGroupWebsocket(message.IDs)
+	logError(err)
 
 	//
 	payload.ack(msg)
@@ -359,11 +356,10 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 	return err
 }
 
-func sendGroupWebsocket(group mongo.Group) (err error) {
+func sendGroupWebsocket(ids []string) (err error) {
 
-	// Send websocket
-	wsPayload := websockets.PubSubIDStringPayload{} // String as int64 too large for js
-	wsPayload.ID = group.ID64
+	wsPayload := websockets.PubSubIDStringsPayload{} // String as int64 too large for js
+	wsPayload.IDs = ids
 	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageGroup}
 
 	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)

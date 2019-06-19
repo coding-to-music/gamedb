@@ -19,6 +19,11 @@ type PubSubIDStringPayload struct {
 	ID string `json:"id"`
 }
 
+type PubSubIDStringsPayload struct {
+	PubSubBasePayload
+	IDs []string `json:"id"`
+}
+
 type PubSubChangesPayload struct {
 	PubSubBasePayload
 	Data [][]interface{} `json:"d"`
