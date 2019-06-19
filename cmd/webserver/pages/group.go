@@ -65,6 +65,10 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if group.Error != "" {
+			return
+		}
+
 		err = queue.ProduceGroup([]string{group.ID64})
 		if err != nil {
 			log.Err(err, r)
