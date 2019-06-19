@@ -35,6 +35,7 @@ type Group struct {
 	Headline      string    `bson:"headline"`
 	Summary       string    `bson:"summary"`
 	Icon          string    `bson:"icon"`
+	Trending      int       `bson:"trending"`
 	Members       int       `bson:"members"`
 	MembersInChat int       `bson:"members_in_chat"`
 	MembersInGame int       `bson:"members_in_game"`
@@ -62,6 +63,7 @@ func (group Group) BSON() (ret interface{}) {
 		"headline":        group.Headline,
 		"summary":         group.Summary,
 		"icon":            group.Icon,
+		"trending":        group.Trending,
 		"members":         group.Members,
 		"members_in_chat": group.MembersInChat,
 		"members_in_game": group.MembersInGame,
@@ -94,6 +96,7 @@ func (group Group) OutputForJSON() (output []interface{}) {
 		group.Type,        // 7
 		group.GetLink(),   // 8
 		group.Error != "", // 9
+		group.Trending,    // 10
 	}
 }
 
