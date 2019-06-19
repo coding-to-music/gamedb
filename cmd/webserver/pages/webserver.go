@@ -63,6 +63,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		folder+"/_login_header.gohtml",
 		folder+"/_flashes.gohtml",
 		folder+"/_footer.gohtml",
+		folder+"/_groups_header.gohtml",
 		folder+"/_header.gohtml",
 		folder+"/_stats_header.gohtml",
 		folder+"/_social.gohtml",

@@ -1,0 +1,28 @@
+{{define "_groups_header"}}
+
+    <div class="card-header">
+
+        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+
+            <li class="nav-item">
+                {{if endsWith .Path "/groups" }}
+                    <span class="nav-link active" role="tab">Groups</span>
+                {{else}}
+                    <a class="nav-link" href="/groups" role="tab">Groups</a>
+                {{end}}
+            </li>
+
+            {{ if eq .Env "local" }}
+                <li class="nav-item">
+                    {{if endsWith .Path "/trending" }}
+                        <span class="nav-link active" role="tab">Trending</span>
+                    {{else}}
+                        <a class="nav-link" href="/groups/trending" role="tab">Trending</a>
+                    {{end}}
+                </li>
+            {{end}}
+
+        </ul>
+    </div>
+
+{{end}}
