@@ -49,13 +49,14 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 	// See if it's been added
 	group, err := mongo.GetGroup(message.ID)
-	log.Err(err)
 	if err == nil {
 		log.Info("Putting group back into first queue")
 		err = ProduceGroup([]string{message.ID})
 		log.Err()
 		payload.ack(msg)
 		return
+	} else if err != mongo.ErrNoDocuments {
+		log.Err(err)
 	}
 
 	//

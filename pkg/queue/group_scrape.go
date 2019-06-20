@@ -108,7 +108,9 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		// Some pages dont contain the ID64, so use the API
 		if group.ID64 == "" {
 			err = produceGroupNew(groupID)
-			logError(err, groupID)
+			if err != nil {
+				logError(err, groupID)
+			}
 			payload.ackRetry(msg)
 			return
 		}
