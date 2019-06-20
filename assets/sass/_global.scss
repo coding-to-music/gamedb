@@ -19,7 +19,7 @@ body.bg {
 }
 
 header {
-    background-color: #1b2738;
+    background-color: rgba(27, 39, 56, 0.9);
     position: relative;
 }
 
@@ -146,10 +146,14 @@ li.nav-item {
 
 .jumbotron {
     padding: 2rem;
-    margin-top: 0;
+    margin-top: 1rem;
     margin-bottom: 1rem;
     overflow: hidden;
     position: relative;
+
+    @include media-breakpoint-up(lg) {
+        margin-top: 0;
+    }
 
     .lead {
         margin: 0;
