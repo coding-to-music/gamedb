@@ -165,9 +165,6 @@
                                 <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
                                 <div class="dropdown-divider"></div>
                             {{ end }}
-                            <a class="dropdown-item" href="/api">Game DB API</a>
-                            <a class="dropdown-item" href="/steam-api">Steam API</a>
-                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/changes">Changes</a>
                             {{ if eq .Env "local" }}
                                 <a class="dropdown-item" href="/chat">Chat</a>
@@ -179,6 +176,9 @@
                             <a class="dropdown-item" href="/experience">Experience</a>
                             <a class="dropdown-item" href="/info">Info</a>
                             <a class="dropdown-item" href="/queues">Queues</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/api">API (Game DB)</a>
+                            <a class="dropdown-item" href="/steam-api">API (Steam)</a>
                         </div>
                     </li>
                 </ul>
