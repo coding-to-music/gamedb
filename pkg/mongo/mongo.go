@@ -256,7 +256,7 @@ func DeleteColumn(collection collection, column string) (err error) {
 	return err
 }
 
-func DeleteRows(collection collection, filter M) (err error) {
+func DeleteDocuments(collection collection, filter M) (err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
