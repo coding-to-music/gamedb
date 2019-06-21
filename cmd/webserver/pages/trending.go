@@ -31,7 +31,7 @@ func trendingHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps, err = countTrendingApps()
 	log.Err(err, r)
 
-	err = returnTemplate(w, r, "trending", t)
+	err = returnTemplate(w, r, "trending_apps", t)
 	log.Err(err, r)
 }
 

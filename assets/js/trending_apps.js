@@ -1,4 +1,4 @@
-const $trendingPage = $('#trending-page');
+const $trendingPage = $('#trending-apps-page');
 const $table = $('table.table-datatable2');
 
 if ($trendingPage.length > 0) {
