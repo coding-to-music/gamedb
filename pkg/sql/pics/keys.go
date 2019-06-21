@@ -82,6 +82,7 @@ var UFSKeys = map[string]PicsKey{
 	"hidecloudui": {Type: picsTypeBool},
 	"maxnumfiles": {Type: picsTypeNumber},
 	"quota":       {Type: picsTypeBytes},
+	"savefiles":   {Type: picsTypeJson},
 }
 
 type PicsKey struct {
@@ -103,8 +104,6 @@ func (kv KeyValue) TDClass() string {
 	switch kv.Type {
 	case picsTypeImage:
 		return "img"
-	case picsTypeJson:
-		return "json"
 	default:
 		return ""
 	}
@@ -186,7 +185,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				return val
 			}
 
-			return j
+			return template.HTML("<div class=\"json\">" + j + "</div>")
 
 		default:
 			return val
