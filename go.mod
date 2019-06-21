@@ -68,7 +68,7 @@ require (
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/robfig/cron v0.0.0-20180505203441-b41be1df6967
-	github.com/russross/blackfriday v2.0.1+incompatible
+	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/sendgrid/rest v2.4.1+incompatible
