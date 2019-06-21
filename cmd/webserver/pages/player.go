@@ -445,9 +445,9 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.AppID,                               // 0
 			helpers.GetAppIcon(app.AppID, app.Icon), // 1
 			app.AppName,                             // 2
-			helpers.GetTimeShort(int(app.PlayTime2Weeks.Minutes()), 2),  // 3
-			helpers.GetTimeShort(int(app.PlayTimeForever.Minutes()), 2), // 4
-			helpers.GetAppPath(app.AppID, app.AppName),                  // 5
+			helpers.GetTimeShort(app.PlayTime2Weeks, 2),  // 3
+			helpers.GetTimeShort(app.PlayTimeForever, 2), // 4
+			helpers.GetAppPath(app.AppID, app.AppName),        // 5
 		})
 	}
 

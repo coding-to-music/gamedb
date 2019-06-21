@@ -57,7 +57,7 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 				space = " "
 			}
 
-			code = append(code, "- "+space+app.AppName+" - "+app.PlayTime2Weeks.String())
+			code = append(code, "- "+space+app.AppName+" - "+helpers.GetTimeShort(app.PlayTime2Weeks, 2))
 		}
 
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

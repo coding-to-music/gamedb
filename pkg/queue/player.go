@@ -445,8 +445,8 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 				PlayerID:        player.ID,
 				AppID:           v.AppID,
 				AppName:         v.Name,
-				PlayTime2Weeks:  time.Duration(v.PlayTime2Weeks) * time.Minute,
-				PlayTimeForever: time.Duration(v.PlayTimeForever) * time.Minute,
+				PlayTime2Weeks:  v.PlayTime2Weeks,
+				PlayTimeForever: v.PlayTimeForever,
 				Icon:            v.ImgIconURL,
 				// Logo:            v.ImgLogoURL,
 			})

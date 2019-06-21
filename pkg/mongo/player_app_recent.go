@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"strconv"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,13 +9,13 @@ import (
 )
 
 type PlayerRecentApp struct {
-	PlayerID        int64         `bson:"player_id"`
-	AppID           int           `bson:"app_id"`
-	AppName         string        `bson:"name"`
-	PlayTime2Weeks  time.Duration `bson:"playtime_2_weeks"`
-	PlayTimeForever time.Duration `bson:"playtime_forever"`
-	Icon            string        `bson:"icon"`
-	Logo            string        `bson:"logo"`
+	PlayerID        int64  `bson:"player_id"`
+	AppID           int    `bson:"app_id"`
+	AppName         string `bson:"name"`
+	PlayTime2Weeks  int    `bson:"playtime_2_weeks"` // Minutes
+	PlayTimeForever int    `bson:"playtime_forever"` // Minutes
+	Icon            string `bson:"icon"`
+	Logo            string `bson:"logo"`
 }
 
 func (g PlayerRecentApp) BSON() (ret interface{}) {
