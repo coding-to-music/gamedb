@@ -81,8 +81,8 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, app := range apps {
 		response.AddRow([]interface{}{
-			app.ID,                                 // 0
-			app.GetName(),                          // 1
+			app.ID, // 0
+			helpers.InsertNewLines(app.GetName(), 20), // 1
 			app.GetIcon(),                          // 2
 			app.GetPath(),                          // 3
 			sql.GetPriceFormatted(app, code).Final, // 4
