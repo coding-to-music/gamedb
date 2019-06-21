@@ -10,7 +10,7 @@ require (
 	git.apache.org/thrift.git v0.12.0 // indirect
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
-	github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89
+	github.com/Jleagle/memcache-go v0.0.0-20190621123520-bbbc6e4985b5
 	github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233

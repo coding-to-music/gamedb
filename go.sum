@@ -24,6 +24,7 @@ github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e h1:3wS0Z3hJRP+1Ys
 github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
 github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89 h1:oxgneM6VUEWBQVvP7zbf8pnDI+351CtX1BAFsnIDB1M=
 github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
+github.com/Jleagle/memcache-go v0.0.0-20190621123520-bbbc6e4985b5/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
 github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d h1:aG+b0CIcmwlmPR2o+xJ9o6wBgyTL3hZ7PU85VPWNmi0=
 github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d/go.mod h1:vieJKSf3M8fjjl0NMIxV0tjylhHkhEZz9Hlw9dtgqeQ=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83 h1:u+ekQU2p89s6sgUhl8MkK6Ii7lCmdNmcKeXjlrTj/0U=
