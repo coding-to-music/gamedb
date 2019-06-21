@@ -624,7 +624,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 	for _, friend := range friendRows {
 		if friend.ID != 0 {
 
-			friendsToAdd[friend.ID].Avatar = player.Avatar
+			friendsToAdd[friend.ID].Avatar = friend.Avatar
 			friendsToAdd[friend.ID].Games = friend.GamesCount
 			friendsToAdd[friend.ID].Name = friend.GetName()
 			friendsToAdd[friend.ID].Level = friend.Level
