@@ -28,16 +28,12 @@ func trendingHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Trending", "")
 	t.addAssetHighCharts()
 
-	t.Apps, err = countTrendingApps()
-	log.Err(err, r)
-
 	err = returnTemplate(w, r, "trending_apps", t)
 	log.Err(err, r)
 }
 
 type trendingTemplate struct {
 	GlobalTemplate
-	Apps int
 }
 
 func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +41,8 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
+
+	query.limit(r)
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -60,7 +58,6 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
-	gorm = gorm.Where("player_trend >= 100 OR player_trend <= -100")
 	gorm = gorm.Order(query.getOrderSQL(columns, helpers.GetCountryCode(r)))
 	gorm = gorm.Limit(100)
 	gorm = gorm.Offset(query.getOffset())
@@ -71,13 +68,14 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var code = helpers.GetCountryCode(r)
 
-	count, err := countTrendingApps()
+	count, err := sql.CountApps()
 	log.Err(err)
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = int64(count)
 	response.RecordsFiltered = int64(count)
 	response.Draw = query.Draw
+	response.limit(r)
 
 	for _, app := range apps {
 		response.AddRow([]interface{}{
@@ -92,29 +90,6 @@ func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
-}
-
-func countTrendingApps() (count int, err error) {
-
-	var item = helpers.MemcacheTrendingAppsCount
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		var count int
-
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		gorm = gorm.Model(sql.App{})
-		gorm = gorm.Where("player_trend >= 100 OR player_trend <= -100")
-		gorm = gorm.Count(&count)
-
-		return count, gorm.Error
-	})
-
-	return count, err
 }
 
 func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
