@@ -24,6 +24,7 @@ github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e h1:3wS0Z3hJRP+1Ys
 github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
 github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89 h1:oxgneM6VUEWBQVvP7zbf8pnDI+351CtX1BAFsnIDB1M=
 github.com/Jleagle/memcache-go v0.0.0-20190306211229-e1529000ed89/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
+github.com/Jleagle/memcache-go v0.0.0-20190621123520-bbbc6e4985b5 h1:Wo2xvqX/c/we2RIB7x/l3Z6r6FYFL4V8c9mc//hgRCw=
 github.com/Jleagle/memcache-go v0.0.0-20190621123520-bbbc6e4985b5/go.mod h1:/T9ARJB9F/UV42OdFdHOB3YOOxwAgTUJ8gf3QHLraYY=
 github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d h1:aG+b0CIcmwlmPR2o+xJ9o6wBgyTL3hZ7PU85VPWNmi0=
 github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d/go.mod h1:vieJKSf3M8fjjl0NMIxV0tjylhHkhEZz9Hlw9dtgqeQ=
@@ -83,6 +84,7 @@ github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7 h1:zmAiXR9h1TCVN
 github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7/go.mod h1:Vgz4nKcG6+B7QcALsWZpmhyQTLSl7nwFGKSrbq2LxEo=
 github.com/dghubble/go-twitter v0.0.0-20190108053744-7fd79e2bcc65 h1:JLIPmd3ygBtv7d82s1sJJAhoig5Wuj2auiAGJp3uBF0=
 github.com/dghubble/go-twitter v0.0.0-20190108053744-7fd79e2bcc65/go.mod h1:6beqTZaXeBPti9pDBcBEqxfJc7uCbSafqZPRDPQOKoM=
+github.com/dghubble/go-twitter v0.0.0-20190621134507-53f972dc4b06 h1:zCQcrts46B3Rgl6GLhFEjLv4Zd+XRODwxHdTwLrd3dw=
 github.com/dghubble/go-twitter v0.0.0-20190621134507-53f972dc4b06/go.mod h1:6beqTZaXeBPti9pDBcBEqxfJc7uCbSafqZPRDPQOKoM=
 github.com/dghubble/oauth1 v0.5.0 h1:uJqX7Rzr3QRmp2slUWqI9Sm8NoP65AMiyXiijOWWLvQ=
 github.com/dghubble/oauth1 v0.5.0/go.mod h1:8V8BMV9DJRREZx/lUaHtrs7GUMXpzbMqJxINCasxYug=
@@ -185,6 +187,7 @@ github.com/hashicorp/golang-lru v0.5.1/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/influxdata/influxdb1-client v0.0.0-20190124185755-16c852ea613f h1:I5wo5v/+kpOcUmBuNGGvvHFJWfqkU6Z6WfJudA4vCVI=
 github.com/influxdata/influxdb1-client v0.0.0-20190124185755-16c852ea613f/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
+github.com/influxdata/influxdb1-client v0.0.0-20190621134543-8ff2fc3824fc h1:CcV0P/oIwQnEZcRykOBSCNJE9I+XbA7uZsRYzeUcoQs=
 github.com/influxdata/influxdb1-client v0.0.0-20190621134543-8ff2fc3824fc/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
 github.com/jellevandenhooff/dkim v0.0.0-20150330215556-f50fe3d243e1/go.mod h1:E0B/fFc00Y+Rasa88328GlI/XbtyysCtTHZS8h7IrBU=
 github.com/jinzhu/gorm v1.9.2 h1:lCvgEaqe/HVE+tjAR2mt4HbbHAZsQOv3XAZiEZV37iw=
@@ -228,6 +231,7 @@ github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/lib/pq v1.1.1/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e h1:9MlwzLdW7QSDrhDjFlsEYmxpFyIoXmYRon3dt0io31k=
 github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e/go.mod h1:7rIyQOR62GCctdiQpZ/zOJlFyk6y+94wXzv6RNZgaR4=
+github.com/logrusorgru/aurora v0.0.0-20190621143223-cea283e61946 h1:CRzcqPrN7ht+1ebPXfj3zQRUx7Tsj/z/851dCtd6nsw=
 github.com/logrusorgru/aurora v0.0.0-20190621143223-cea283e61946/go.mod h1:7rIyQOR62GCctdiQpZ/zOJlFyk6y+94wXzv6RNZgaR4=
 github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 h1:AsEBgzv3DhuYHI/GiQh2HxvTP71HCCE9E/tzGUzGdtU=
 github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5/go.mod h1:c2mYKRyMb1BPkO5St0c/ps62L4S0W2NAkaTXj9qEI+0=
@@ -339,6 +343,8 @@ github.com/shurcooL/reactions v0.0.0-20181006231557-f2e0b4ca5b82 h1:LneqU9PHDsg/
 github.com/shurcooL/reactions v0.0.0-20181006231557-f2e0b4ca5b82/go.mod h1:TCR1lToEk4d2s07G3XGfz2QrgHXg4RJBvjrOozvoWfk=
 github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95 h1:/vdW8Cb7EXrkqWGufVMES1OH2sU9gKVb2n9/1y5NMBY=
 github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
+github.com/shurcooL/sanitized_anchor_name v1.0.0 h1:PdmoCO6wvbs+7yrJyMORt4/BmY5IYyJwS/kOiWx8mHo=
+github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/shurcooL/users v0.0.0-20180125191416-49c67e49c537 h1:YGaxtkYjb8mnTvtufv2LKLwCQu2/C7qFB7UtrOlTWOY=
 github.com/shurcooL/users v0.0.0-20180125191416-49c67e49c537/go.mod h1:QJTqeLYEDaXHZDBsXlPCDqdhQuJkuw4NOtaxYe3xii4=
 github.com/shurcooL/webdavfs v0.0.0-20170829043945-18c3829fa133/go.mod h1:hKmq5kWdCj2z2KEozexVbfEZIWiTjhE0+UjmZgPqehw=
