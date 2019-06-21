@@ -50,7 +50,7 @@ require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/gosimple/slug v1.4.2
 	github.com/grpc-ecosystem/grpc-gateway v1.6.2 // indirect
-	github.com/influxdata/influxdb1-client v0.0.0-20190124185755-16c852ea613f
+	github.com/influxdata/influxdb1-client v0.0.0-20190621134543-8ff2fc3824fc
 	github.com/jinzhu/gorm v1.9.9
 	github.com/jinzhu/now v1.0.1
 	github.com/kennygrant/sanitize v1.2.4 // indirect
