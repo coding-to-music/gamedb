@@ -107,7 +107,13 @@ const dtDefaultOptions = {
         }
 
         $.ajax({
-            url: $this.attr('data-path'),
+            url: function () {
+                const path = $this.attr('data-path');
+                if (!path) {
+                    console.log('Table data-path not set');
+                }
+                return path;
+            }(),
             data: data,
             success: function (data, textStatus, jqXHR) {
 
