@@ -45,7 +45,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/gorilla/sessions v1.1.3
 	github.com/gorilla/websocket v1.4.0
-	github.com/gosimple/slug v1.4.2
+	github.com/gosimple/slug v1.5.0
 	github.com/influxdata/influxdb1-client v0.0.0-20190621134543-8ff2fc3824fc
 	github.com/jinzhu/gorm v1.9.9
 	github.com/jinzhu/now v1.0.1
