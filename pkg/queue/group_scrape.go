@@ -111,7 +111,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			if err != nil {
 				logError(err, groupID)
 			}
-			payload.ackRetry(msg)
+			payload.ack(msg)
 			return
 		}
 
