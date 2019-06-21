@@ -258,15 +258,15 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 		}
 	})
 
-	// Name
-	c.OnHTML("div.grouppage_header_name", func(e *colly.HTMLElement) {
-		x := e.DOM.First().First().First().Text()
-		group.Name = strings.TrimPrefix(x, "/ ")
-	})
-
 	// Abbreviation
 	c.OnHTML("div.grouppage_header_name span.grouppage_header_abbrev", func(e *colly.HTMLElement) {
 		group.Abbr = strings.TrimPrefix(e.Text, "/ ")
+	})
+
+	// Name - Must be after `Abbreviation` as we delete it here.
+	c.OnHTML("div.grouppage_header_name", func(e *colly.HTMLElement) {
+		e.DOM.Children().Remove()
+		group.Name = strings.TrimSpace(strings.TrimPrefix(e.DOM.Text(), "/ "))
 	})
 
 	// URL
