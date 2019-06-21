@@ -20,6 +20,8 @@ func PlayerRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", playerHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
+	r.Get("/recent.json", playerRecentAjaxHandler)
+	r.Get("/friends.json", playerFriendsAjaxHandler)
 	r.Get("/badges.json", playerBadgesAjaxHandler)
 	r.Get("/update.json", playersUpdateAjaxHandler)
 	r.Get("/history.json", playersHistoryAjaxHandler)
@@ -375,6 +377,161 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.output(w, r)
 
+}
+
+func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	playerID := chi.URLParam(r, "id")
+
+	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := DataTablesQuery{}
+	err = query.fillFromURL(r.URL.Query())
+	log.Err(err, r)
+
+	query.limit(r)
+
+	//
+	var wg sync.WaitGroup
+
+	// Get apps
+	var apps []mongo.PlayerRecentApp
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		columns := map[string]string{
+			"0": "name",
+			"1": "playtime_2_weeks",
+			"2": "playtime_forever",
+		}
+
+		var err error
+		apps, err = mongo.GetRecentApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns, nil))
+		log.Err(err)
+	}()
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountRecent(playerIDInt)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = total
+	response.RecordsFiltered = total
+	response.Draw = query.Draw
+	response.limit(r)
+
+	for _, app := range apps {
+		response.AddRow([]interface{}{
+			app.AppID,                               // 0
+			helpers.GetAppIcon(app.AppID, app.Icon), // 1
+			app.AppName,                             // 2
+			helpers.GetTimeShort(int(app.PlayTime2Weeks.Minutes()), 2),  // 3
+			helpers.GetTimeShort(int(app.PlayTimeForever.Minutes()), 2), // 4
+			helpers.GetAppPath(app.AppID, app.AppName),                  // 5
+		})
+	}
+
+	response.output(w, r)
+
+}
+
+func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	playerID := chi.URLParam(r, "id")
+
+	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := DataTablesQuery{}
+	err = query.fillFromURL(r.URL.Query())
+	log.Err(err, r)
+
+	query.limit(r)
+
+	//
+	var wg sync.WaitGroup
+
+	// Get apps
+	var friends []mongo.PlayerFriend
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		columns := map[string]string{
+			"1": "level",
+			"2": "games",
+			"3": "logged_off",
+			"4": "since",
+		}
+
+		var err error
+		friends, err = mongo.GetFriends(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns, nil))
+		log.Err(err)
+	}()
+
+	// Get total
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountFriends(playerIDInt)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = count
+	response.RecordsFiltered = count
+	response.Draw = query.Draw
+	response.limit(r)
+
+	for _, friend := range friends {
+		response.AddRow([]interface{}{
+			strconv.FormatInt(friend.PlayerID, 10), // 0
+			friend.GetPath(),                       // 1
+			friend.Avatar,                          // 2
+			friend.GetName(),                       // 3
+			friend.GetLevel(),                      // 4
+			friend.Scanned(),                       // 5
+			friend.Games,                           // 6
+			friend.GetLoggedOff(),                  // 7
+			friend.GetFriendSince(),                // 8
+		})
+	}
+
+	response.output(w, r)
 }
 
 func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {

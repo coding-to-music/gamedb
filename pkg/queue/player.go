@@ -416,7 +416,7 @@ func updatePlayerGames(player *mongo.Player) error {
 func updatePlayerRecentGames(player *mongo.Player) error {
 
 	// Get data
-	oldAppsSlice, err := mongo.GetRecentGames(player.ID, 0, 0, nil)
+	oldAppsSlice, err := mongo.GetRecentApps(player.ID, 0, 0, nil)
 	if err != nil {
 		return err
 	}

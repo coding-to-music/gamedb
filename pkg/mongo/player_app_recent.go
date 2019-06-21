@@ -38,6 +38,11 @@ func (g PlayerRecentApp) getKey() (ret interface{}) {
 	return strconv.FormatInt(g.PlayerID, 10) + "-" + strconv.Itoa(g.AppID)
 }
 
+func CountRecent(playerID int64) (count int64, err error) {
+
+	return CountDocuments(CollectionPlayerAppsRecent, M{"player_id": playerID}, 0)
+}
+
 func DeleteRecentApps(playerID int64, apps []int) (err error) {
 
 	if len(apps) < 1 {
@@ -91,9 +96,9 @@ func AddRecentApps(apps []PlayerRecentApp) (err error) {
 	return err
 }
 
-func GetRecentGames(playerID int64, offset int64, limit int64, sort M) (apps []PlayerRecentApp, err error) {
+func GetRecentApps(playerID int64, offset int64, limit int64, sort interface{}) (apps []PlayerRecentApp, err error) {
 
-	filter := M{"player_id": 1}
+	filter := M{"player_id": playerID}
 
 	client, ctx, err := getMongo()
 	if err != nil {

@@ -72,6 +72,11 @@ func (f PlayerFriend) GetLevel() string {
 	return "-"
 }
 
+func CountFriends(playerID int64) (count int64, err error) {
+
+	return CountDocuments(CollectionPlayerFriends, M{"player_id": playerID}, 0)
+}
+
 func DeleteFriends(playerID int64, friends []int64) (err error) {
 
 	if len(friends) < 1 {
@@ -125,9 +130,9 @@ func AddFriends(friends []*PlayerFriend) (err error) {
 	return err
 }
 
-func GetFriends(playerID int64, offset int64, limit int64, sort M) (friends []PlayerFriend, err error) {
+func GetFriends(playerID int64, offset int64, limit int64, sort interface{}) (friends []PlayerFriend, err error) {
 
-	filter := M{"player_id": 1}
+	filter := M{"player_id": playerID}
 
 	client, ctx, err := getMongo()
 	if err != nil {

@@ -56,6 +56,13 @@ if ($playerPage.length > 0) {
                 loadPlayerBadges();
             }
         }
+        if (to.attr('href') === '#friends') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+
+                loadPlayerFriends();
+            }
+        }
 
         // On any tab
         $.each(dataTables, function (index, value) {
@@ -75,7 +82,7 @@ if ($playerPage.length > 0) {
 
     function loadPlayerGames() {
 
-        const dt = $('#games table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const dt = $('#games #all-games').DataTable($.extend(true, {}, dtDefaultOptions, {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
@@ -116,6 +123,114 @@ if ($playerPage.length > 0) {
                         return row[6];
                     },
                 }
+            ]
+        }));
+
+        dataTables.push(dt);
+
+        const dt2 = $('#games #recent-games').DataTable($.extend(true, {}, dtDefaultOptions, {
+            "order": [[2, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-app-id', data[0]);
+                $(row).attr('data-link', data[5]);
+            },
+            "columnDefs": [
+                // Icon / Name
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<img src="' + row[1] + '" class="rounded square" alt="' + row[2] + '"><span>' + row[2] + '</span>';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    }
+                },
+                // Price
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[3].toLocaleString();
+                    },
+                },
+                // Time
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[4].toLocaleString();
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    }
+                },
+            ]
+        }));
+
+        dataTables.push(dt2);
+    }
+
+    function loadPlayerFriends() {
+
+        const dt = $('#friends table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+            "order": [[2, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[1]);
+            },
+            "columnDefs": [
+                // Icon / Friend
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<img src="' + row[2] + '" class="rounded square" data-src="/assets/img/no-player-image.jpg" alt="' + row[3] + '"><span>' + row[3] + '</span>';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderable": false,
+                },
+                // Level
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[4].toLocaleString();
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+                // Games
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        if (!row[5]) {
+                            return '-';
+                        } else if (row[6] === 0) {
+                            return $lockIcon;
+                        } else {
+                            return row[6].toLocaleString();
+                        }
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+                // Logged Off
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[7];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+                // Friend Since
+                {
+                    "targets": 4,
+                    "render": function (data, type, row) {
+                        return row[8];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    'orderSequence': ['asc', 'desc'],
+                },
             ]
         }));
 
