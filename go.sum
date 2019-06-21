@@ -190,6 +190,7 @@ github.com/mxpv/patreon-go v0.0.0-20180807002359-67dbab1ad14c h1:glRDvmNgmckYjQH
 github.com/mxpv/patreon-go v0.0.0-20180807002359-67dbab1ad14c/go.mod h1:ksYjm2GAbGlgIP7jO9Q5/AdyE4MwwEbgQ+lFMx3hyiM=
 github.com/nicklaw5/helix v0.5.1 h1:Z6y2RLlLtMljcsVw+q/A3x+1TS8qnFoj7ddnM69jnVk=
 github.com/nicklaw5/helix v0.5.1/go.mod h1:nRcok4VLg8ONQYW/iXBZ24wcfiJjTlDbhgk0ZatOrUY=
+github.com/nicklaw5/helix v0.5.2/go.mod h1:nRcok4VLg8ONQYW/iXBZ24wcfiJjTlDbhgk0ZatOrUY=
 github.com/nlopes/slack v0.5.0 h1:NbIae8Kd0NpqaEI3iUrsuS0KbcEDhzhc939jLW5fNm0=
 github.com/nlopes/slack v0.5.0/go.mod h1:jVI4BBK3lSktibKahxBF74txcK2vyvkza1z/+rRnVAM=
 github.com/olekukonko/tablewriter v0.0.1 h1:b3iUnf1v+ppJiOfNX4yxxqfWKMQPZR5yoh8urCTFX88=

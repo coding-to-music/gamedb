@@ -59,7 +59,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/mxpv/patreon-go v0.0.0-20180807002359-67dbab1ad14c
-	github.com/nicklaw5/helix v0.5.1
+	github.com/nicklaw5/helix v0.5.2
 	github.com/nlopes/slack v0.5.0
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
