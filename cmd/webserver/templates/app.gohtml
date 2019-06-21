@@ -703,7 +703,12 @@
                                             </thead>
                                             {{ range .Common }}
                                                 <tr>
-                                                    <td>{{ .Key }} {{ if ne .Description "" }}<small>({{ .Description }})</small>{{ end }}</td>
+                                                    <td>
+                                                        {{ .Key }}
+                                                        {{ if ne .Description "" }}
+                                                            <small>({{ .Description }})</small>
+                                                        {{ end }}
+                                                    </td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                 </tr>
                                             {{ end }}
@@ -746,12 +751,18 @@
                                                 </tr>
                                                 </thead>
                                                 {{ range $key, $value := .App.GetDepots.Depots }}
-                                                    <tr data-link="/depots/{{ .ID }}">
-                                                        <td>{{ .ID }}</td>
+                                                    <tr>
+                                                        <td><a href="/depots/{{ .ID }}">{{ .ID }}</a></td>
                                                         <td nowrap="nowrap">{{ .Name }}</td>
-                                                        <td class="json">{{ json .Configs }}</td>
-                                                        <td class="json">{{ json .Manifests }}</td>
-                                                        <td class="json">{{ .EncryptedManifests }}</td>
+                                                        <td>
+                                                            <div class="json">{{ json .Configs }}</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="json">{{ json .Manifests }}</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="json">{{ .EncryptedManifests }}</div>
+                                                        </td>
                                                         <td>{{ .MaxSize }}</td>
                                                         <td>{{ .App }}</td>
                                                         <td>{{ .DLCApp }}</td>
@@ -922,7 +933,9 @@
                                             {{ range $key, $value := .App.GetInstall }}
                                                 <tr>
                                                     <td>{{ $key }}</td>
-                                                    <td class="json">{{ json $value }}</td>
+                                                    <td>
+                                                        <div class="json">{{ json $value }}</div>
+                                                    </td>
                                                 </tr>
                                             {{ end }}
                                         </table>

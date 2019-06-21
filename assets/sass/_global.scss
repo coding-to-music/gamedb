@@ -339,8 +339,10 @@ body #toast-container > div {
 }
 
 //
-.json {
+div.json {
     white-space: pre;
+    max-height: 150px;
+    overflow-y: scroll;
 }
 
 // Trending charts
