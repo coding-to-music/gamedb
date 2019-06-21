@@ -81,19 +81,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	// Get friends
-	var friends []mongo.ProfileFriend
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		var err error
-		friends, err = player.GetFriends()
-		log.Err(err, r)
-
-	}(player)
-
 	// Number of players
 	var players int64
 	wg.Add(1)
@@ -104,41 +91,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		players, err = mongo.CountPlayers()
 		log.Err(err, r)
-
-	}(player)
-
-	// Get recent games
-	var recentGames []RecentlyPlayedGame
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		response, err := player.GetRecentGames()
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
-		for _, v := range response {
-
-			game := RecentlyPlayedGame{}
-			game.AppID = v.AppID
-			game.Name = v.Name
-			game.Weeks = v.PlayTime2Weeks
-			game.WeeksNice = helpers.GetTimeShort(v.PlayTime2Weeks, 2)
-			game.AllTime = v.PlayTimeForever
-			game.AllTimeNice = helpers.GetTimeShort(v.PlayTimeForever, 2)
-
-			if v.ImgIconURL == "" {
-				game.Icon = helpers.DefaultAppIcon
-			} else {
-				game.Icon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(v.AppID) + "/" + v.ImgIconURL + ".jpg"
-			}
-
-			recentGames = append(recentGames, game)
-		}
 
 	}(player)
 
@@ -233,11 +185,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
 	t.Player = player
-	t.Friends = friends
 	t.Apps = []mongo.PlayerApp{}
 	t.Badges = player.GetSpecialBadges()
 	t.BadgeStats = badgeStats
-	t.RecentGames = recentGames
 	t.GameStats = gameStats
 	t.Bans = bans
 	t.toasts = toasts
@@ -258,11 +208,9 @@ type playerTemplate struct {
 	Banners       map[string][]string
 	Bans          mongo.PlayerBans
 	DefaultAvatar string
-	Friends       []mongo.ProfileFriend
 	GameStats     mongo.PlayerAppStatsTemplate
 	Groups        []mongo.Group
 	Player        mongo.Player
-	RecentGames   []RecentlyPlayedGame
 	Wishlist      []sql.App
 	// Ranks       playerRanksTemplate
 }
@@ -271,17 +219,6 @@ type playerMissingTemplate struct {
 	GlobalTemplate
 	Player        mongo.Player
 	DefaultAvatar string
-}
-
-// RecentlyPlayedGame
-type RecentlyPlayedGame struct {
-	AllTime     int
-	AllTimeNice string
-	AppID       int
-	Icon        string
-	Name        string
-	Weeks       int
-	WeeksNice   string
 }
 
 // // playerRanksTemplate

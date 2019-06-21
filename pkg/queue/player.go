@@ -415,39 +415,61 @@ func updatePlayerGames(player *mongo.Player) error {
 
 func updatePlayerRecentGames(player *mongo.Player) error {
 
-	recentResponse, b, err := helpers.GetSteam().GetRecentlyPlayedGames(player.ID)
+	// Get data
+	oldAppsSlice, err := mongo.GetRecentGames(player.ID, 0, 0, nil)
+	if err != nil {
+		return err
+	}
+
+	oldAppsMaps := map[int]mongo.PlayerRecentApp{}
+	for _, app := range oldAppsSlice {
+		oldAppsMaps[app.AppID] = app
+	}
+
+	newAppsSlice, b, err := helpers.GetSteam().GetRecentlyPlayedGames(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
 		return err
 	}
 
-	var games []mongo.ProfileRecentGame
-	for _, v := range recentResponse.Games {
-		games = append(games, mongo.ProfileRecentGame{
-			AppID:           v.AppID,
-			Name:            v.Name,
-			PlayTime2Weeks:  v.PlayTime2Weeks,
-			PlayTimeForever: v.PlayTimeForever,
-			ImgIconURL:      v.ImgIconURL,
-			ImgLogoURL:      v.ImgLogoURL,
-		})
+	newAppsMap := map[int]steam.RecentlyPlayedGame{}
+	for _, app := range newAppsSlice {
+		newAppsMap[app.AppID] = app
 	}
 
-	b, err = json.Marshal(games)
+	// Apps to add
+	var appsToAdd []mongo.PlayerRecentApp
+	for _, v := range newAppsSlice {
+		if _, ok := oldAppsMaps[v.AppID]; !ok {
+			appsToAdd = append(appsToAdd, mongo.PlayerRecentApp{
+				PlayerID:        player.ID,
+				AppID:           v.AppID,
+				AppName:         v.Name,
+				PlayTime2Weeks:  time.Duration(v.PlayTime2Weeks) * time.Minute,
+				PlayTimeForever: time.Duration(v.PlayTimeForever) * time.Minute,
+				Icon:            v.ImgIconURL,
+				// Logo:            v.ImgLogoURL,
+			})
+		}
+	}
+
+	// Apps to remove
+	var appsToRem []int
+	for _, v := range oldAppsSlice {
+		if _, ok := newAppsMap[v.AppID]; !ok {
+			appsToRem = append(appsToRem, v.AppID)
+		}
+	}
+
+	// Update DB
+	err = mongo.DeleteRecentApps(player.ID, appsToRem)
 	if err != nil {
 		return err
 	}
 
-	// Upload
-	if len(b) > maxBytesToStore {
-		storagePath := helpers.PathRecentGames(player.ID)
-		err = helpers.Upload(storagePath, b)
-		if err != nil {
-			return err
-		}
-		player.GamesRecent = storagePath
-	} else {
-		player.GamesRecent = string(b)
+	err = mongo.AddRecentApps(appsToAdd)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -541,68 +563,93 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 func updatePlayerFriends(player *mongo.Player) error {
 
-	resp, b, err := helpers.GetSteam().GetFriendList(player.ID)
+	// Get data
+	oldFriendsSlice, err := mongo.GetFriends(player.ID, 0, 0, nil)
+	if err != nil {
+		return err
+	}
+
+	oldFriendsMap := map[int64]mongo.PlayerFriend{}
+	for _, friend := range oldFriendsSlice {
+		oldFriendsMap[friend.FriendID] = friend
+	}
+
+	newFriendsSlice, b, err := helpers.GetSteam().GetFriendList(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, []int{401})
 	if err != nil {
 		return err
 	}
 
-	player.FriendsCount = len(resp.Friends)
+	newFriendsMap := map[int64]steam.Friend{}
+	for _, friend := range newFriendsSlice {
+		newFriendsMap[int64(friend.SteamID)] = friend
+	}
 
-	// Make friend ID slice & map
-	var friendsMap = map[int64]*mongo.ProfileFriend{}
-	var friendsSlice []int64
-	for _, v := range resp.Friends {
-
-		friendsSlice = append(friendsSlice, int64(v.SteamID))
-
-		friendsMap[int64(v.SteamID)] = &mongo.ProfileFriend{
-			SteamID:     int64(v.SteamID),
-			FriendSince: v.FriendSince,
+	// Friends to add
+	var friendIDsToAdd []int64
+	var friendsToAdd = map[int64]*mongo.PlayerFriend{}
+	for _, v := range newFriendsSlice {
+		if _, ok := oldFriendsMap[int64(v.SteamID)]; !ok {
+			friendIDsToAdd = append(friendIDsToAdd, )
+			friendsToAdd[int64(v.SteamID)] = &mongo.PlayerFriend{
+				PlayerID:     player.ID,
+				FriendID:     int64(v.SteamID),
+				Relationship: v.Relationship,
+				FriendSince:  time.Unix(v.FriendSince, 0),
+			}
 		}
 	}
 
-	// Get friends from DS
-	friendRows, err := mongo.GetPlayersByID(friendsSlice, nil)
+	// Friends to remove
+	var friendsToRem []int64
+	for _, v := range oldFriendsSlice {
+		if _, ok := newFriendsMap[v.FriendID]; !ok {
+			friendsToRem = append(friendsToRem, v.FriendID)
+		}
+	}
+
+	// Fill in missing map the map
+	friendRows, err := mongo.GetPlayersByID(friendIDsToAdd, mongo.M{
+		"_id":             1,
+		"avatar":          1,
+		"games_count":     1,
+		"persona_name":    1,
+		"level":           1,
+		"time_logged_off": 1,
+	})
 	if err != nil {
 		return err
 	}
 
-	// Fill in the map
 	for _, friend := range friendRows {
 		if friend.ID != 0 {
 
-			friendsMap[friend.ID].Avatar = friend.GetAvatar()
-			friendsMap[friend.ID].Games = friend.GamesCount
-			friendsMap[friend.ID].Name = friend.GetName()
-			friendsMap[friend.ID].Level = friend.Level
-			friendsMap[friend.ID].LoggedOff = friend.GetLogoffUnix()
+			friendsToAdd[friend.ID].Avatar = player.Avatar
+			friendsToAdd[friend.ID].Games = friend.GamesCount
+			friendsToAdd[friend.ID].Name = friend.GetName()
+			friendsToAdd[friend.ID].Level = friend.Level
+			friendsToAdd[friend.ID].LoggedOff = friend.LastLogOff
 		}
 	}
 
-	// Make into map again, so it can be marshalled
-	var friends []mongo.ProfileFriend
-	for _, v := range friendsMap {
-		friends = append(friends, *v)
-	}
-
-	// Encode to JSON bytes
-	b, err = json.Marshal(friends)
+	// Update DB
+	err = mongo.DeleteFriends(player.ID, friendsToRem)
 	if err != nil {
 		return err
 	}
 
-	// Upload
-	if len(b) > maxBytesToStore {
-		storagePath := helpers.PathFriends(player.ID)
-		err = helpers.Upload(storagePath, b)
-		if err != nil {
-			return err
-		}
-		player.Friends = storagePath
-	} else {
-		player.Friends = string(b)
+	var friendsToAddSlice []*mongo.PlayerFriend
+	for _, v := range friendsToAdd {
+		friendsToAddSlice = append(friendsToAddSlice, v)
 	}
+
+	err = mongo.AddFriends(friendsToAddSlice)
+	if err != nil {
+		return err
+	}
+
+	//
+	player.FriendsCount = len(newFriendsSlice)
 
 	return nil
 }

@@ -4,12 +4,9 @@ import (
 	"errors"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 
-	"cloud.google.com/go/storage"
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,8 +32,6 @@ type Player struct {
 	Bans             string    `bson:"bans"`             // PlayerBans
 	CountryCode      string    `bson:"country_code"`     //
 	Donated          int       `bson:"donated"`          //
-	Friends          string    `bson:"friends"`          // []ProfileFriend
-	GamesRecent      string    `bson:"games_recent"`     // []ProfileRecentGame
 	GameStats        string    `bson:"game_stats"`       // PlayerAppStatsTemplate
 	Groups           []string  `bson:"groups"`           // []int - Can be greater than 64bit
 	LastLogOff       time.Time `bson:"time_logged_off"`  //
@@ -76,8 +71,6 @@ func (player Player) BSON() (ret interface{}) {
 		"bans":             player.Bans,
 		"country_code":     player.CountryCode,
 		"donated":          player.Donated,
-		"friends":          player.Friends,
-		"games_recent":     player.GamesRecent,
 		"game_stats":       player.GameStats,
 		"groups":           player.Groups,
 		"time_logged_off":  player.LastLogOff,
@@ -240,52 +233,6 @@ func (player Player) GetSpecialBadges() (badges []PlayerBadge) {
 	return badges
 }
 
-func (player Player) GetFriends() (friends []ProfileFriend, err error) {
-
-	if player.Friends == "" || player.Friends == "null" {
-		return
-	}
-
-	var bytes []byte
-
-	if helpers.IsStorageLocaion(player.Friends) {
-
-		bytes, err = helpers.Download(helpers.PathFriends(player.ID))
-		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
-		if err != nil {
-			return friends, err
-		}
-	} else {
-		bytes = []byte(player.Friends)
-	}
-
-	err = helpers.Unmarshal(bytes, &friends)
-	return friends, err
-}
-
-func (player Player) GetRecentGames() (games []ProfileRecentGame, err error) {
-
-	if player.GamesRecent == "" || player.GamesRecent == "null" {
-		return
-	}
-
-	var bytes []byte
-
-	if helpers.IsStorageLocaion(player.GamesRecent) {
-
-		bytes, err = helpers.Download(helpers.PathRecentGames(player.ID))
-		err = helpers.IgnoreErrors(err, storage.ErrObjectNotExist)
-		if err != nil {
-			return games, err
-		}
-	} else {
-		bytes = []byte(player.GamesRecent)
-	}
-
-	err = helpers.Unmarshal(bytes, &games)
-	return games, err
-}
-
 func (player Player) GetBans() (bans PlayerBans, err error) {
 
 	err = helpers.Unmarshal([]byte(player.Bans), &bans)
@@ -312,7 +259,7 @@ const (
 
 func (player Player) ShouldUpdate(userAgent string, updateType UpdateType) bool {
 
-	if !IsValidPlayerID(player.ID) {
+	if !helpers.IsValidPlayerID(player.ID) {
 		return false
 	}
 
@@ -363,7 +310,7 @@ func (player Player) OutputForJSON(rank string) (output []interface{}) {
 
 func GetPlayer(id int64) (player Player, err error) {
 
-	if !IsValidPlayerID(id) {
+	if !helpers.IsValidPlayerID(id) {
 		return player, ErrInvalidPlayerID
 	}
 
@@ -394,7 +341,7 @@ func SearchPlayer(s string, projection M) (player Player, err error) {
 	var filter M
 
 	i, _ := strconv.ParseInt(s, 10, 64)
-	if IsValidPlayerID(i) {
+	if helpers.IsValidPlayerID(i) {
 		filter = M{"_id": s}
 	} else {
 		filter = M{"$text": M{"$search": s}}
@@ -544,66 +491,6 @@ func RankPlayers(col string, colToUpdate string) (err error) {
 	return err
 }
 
-func IsValidPlayerID(id int64) bool {
-
-	if id == 0 {
-		return false
-	}
-
-	idString := strconv.FormatInt(id, 10)
-
-	if !strings.HasPrefix(idString, "76") {
-		return false
-	}
-
-	if len(idString) != 17 {
-		return false
-	}
-
-	return true
-}
-
-// ProfileFriend
-type ProfileFriend struct {
-	SteamID     int64  `json:"id"`
-	FriendSince int64  `json:"fs"`
-	Avatar      string `json:"ic"`
-	Name        string `json:"nm"`
-	Games       int    `json:"gm"`
-	Level       int    `json:"lv"`
-	LoggedOff   int64  `json:"lo"`
-}
-
-func (p ProfileFriend) Scanned() bool {
-	return p.LoggedOff > 0
-}
-
-func (p ProfileFriend) GetPath() string {
-	return helpers.GetPlayerPath(p.SteamID, p.Name)
-}
-
-func (p ProfileFriend) GetLoggedOff() string {
-	if p.Scanned() {
-		return time.Unix(p.LoggedOff, 0).Format(helpers.DateYearTime)
-	}
-	return "-"
-}
-
-func (p ProfileFriend) GetFriendSince() string {
-	return time.Unix(p.FriendSince, 0).Format(helpers.DateYearTime)
-}
-
-func (p ProfileFriend) GetName() string {
-	return helpers.GetPlayerName(p.SteamID, p.Name)
-}
-
-func (p ProfileFriend) GetLevel() string {
-	if p.Scanned() {
-		return humanize.Comma(int64(p.Level))
-	}
-	return "-"
-}
-
 // ProfileBadgeStats
 type ProfileBadgeStats struct {
 	PlayerXP                   int
@@ -611,16 +498,6 @@ type ProfileBadgeStats struct {
 	PlayerXPNeededToLevelUp    int
 	PlayerXPNeededCurrentLevel int
 	PercentOfLevel             int
-}
-
-// ProfileRecentGame
-type ProfileRecentGame struct {
-	AppID           int    `json:"i"`
-	Name            string `json:"n"`
-	PlayTime2Weeks  int    `json:"p"`
-	PlayTimeForever int    `json:"f"`
-	ImgIconURL      string `json:"c"`
-	ImgLogoURL      string `json:"l"`
 }
 
 // PlayerBans

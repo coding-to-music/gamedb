@@ -241,26 +241,26 @@
                                     <th scope="col">Friend Since</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .Friends }}
-                                    <tr data-link="{{ .GetPath }}">
-                                        <td class="img" data-sort="{{ .GetName }}">
-                                            <img src="{{ .Avatar }}" alt="{{ .GetName }}" class="avatar rounded square" data-src="{{ $.DefaultAvatar }}">
-                                            <span>{{ .GetName }}</span>
-                                        </td>
-                                        <td>{{ .GetLevel }}</td>
-                                        <td>
-                                            {{ if not .Scanned }}
-                                                -
-                                            {{ else if eq .Games 0 }}
-                                                <i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>
-                                            {{ else }}
-                                                {{ comma .Games }}
-                                            {{ end }}
-                                        </td>
-                                        <td data-sort="{{ .LoggedOff }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .LoggedOff }}"{{ end }}>{{ .GetLoggedOff }}</td>
-                                        <td data-sort="{{ .FriendSince }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .FriendSince }}"{{ end }}>{{ .GetFriendSince }}</td>
-                                    </tr>
-                                {{ end }}
+{{/*                                {{ range $key, $value := .Friends }}*/}}
+{{/*                                    <tr data-link="{{ .GetPath }}">*/}}
+{{/*                                        <td class="img" data-sort="{{ .GetName }}">*/}}
+{{/*                                            <img src="{{ .Avatar }}" alt="{{ .GetName }}" class="avatar rounded square" data-src="{{ $.DefaultAvatar }}">*/}}
+{{/*                                            <span>{{ .GetName }}</span>*/}}
+{{/*                                        </td>*/}}
+{{/*                                        <td>{{ .GetLevel }}</td>*/}}
+{{/*                                        <td>*/}}
+{{/*                                            {{ if not .Scanned }}*/}}
+{{/*                                                -*/}}
+{{/*                                            {{ else if eq .Games 0 }}*/}}
+{{/*                                                <i class="fa fa-lock text-muted" data-toggle="tooltip" data-placement="left" title="Private"></i>*/}}
+{{/*                                            {{ else }}*/}}
+{{/*                                                {{ comma .Games }}*/}}
+{{/*                                            {{ end }}*/}}
+{{/*                                        </td>*/}}
+{{/*                                        <td data-sort="{{ .LoggedOff }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .LoggedOff }}"{{ end }}>{{ .GetLoggedOff }}</td>*/}}
+{{/*                                        <td data-sort="{{ .FriendSince }}" nowrap="nowrap" {{ if .Scanned }}data-livestamp="{{ .FriendSince }}"{{ end }}>{{ .GetFriendSince }}</td>*/}}
+{{/*                                    </tr>*/}}
+{{/*                                {{ end }}*/}}
                             </table>
                         </div>
 
@@ -458,29 +458,29 @@
                         </div>
 
                         {{/* Recent Games */}}
-                        {{ if gt (len .RecentGames) 0}}
-                            <div class="table-responsive mb-4">
-                                <table class="table table-hover table-striped table-datatable mb-4" data-order='[[1, "desc"]]'>
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">Recent Games</th>
-                                        <th scope="col">2 Weeks</th>
-                                        <th scope="col">All Time</th>
-                                    </tr>
-                                    </thead>
-                                    {{ range $key, $value := .RecentGames }}
-                                        <tr data-link="/apps/{{ .AppID }}">
-                                            <td class="img">
-                                                <img src="{{ .Icon }}" alt="{{ .Name }}" class="rounded square">
-                                                <span>{{ .Name }}</span>
-                                            </td>
-                                            <td data-order="{{ .Weeks }}">{{ .WeeksNice }}</td>
-                                            <td data-order="{{ .AllTime }}">{{ .AllTimeNice }}</td>
-                                        </tr>
-                                    {{ end }}
-                                </table>
-                            </div>
-                        {{end}}
+{{/*                        {{ if gt (len .RecentGames) 0}}*/}}
+{{/*                            <div class="table-responsive mb-4">*/}}
+{{/*                                <table class="table table-hover table-striped table-datatable mb-4" data-order='[[1, "desc"]]'>*/}}
+{{/*                                    <thead class="thead-light">*/}}
+{{/*                                    <tr>*/}}
+{{/*                                        <th scope="col">Recent Games</th>*/}}
+{{/*                                        <th scope="col">2 Weeks</th>*/}}
+{{/*                                        <th scope="col">All Time</th>*/}}
+{{/*                                    </tr>*/}}
+{{/*                                    </thead>*/}}
+{{/*                                    {{ range $key, $value := .RecentGames }}*/}}
+{{/*                                        <tr data-link="/apps/{{ .AppID }}">*/}}
+{{/*                                            <td class="img">*/}}
+{{/*                                                <img src="{{ .Icon }}" alt="{{ .Name }}" class="rounded square">*/}}
+{{/*                                                <span>{{ .Name }}</span>*/}}
+{{/*                                            </td>*/}}
+{{/*                                            <td data-order="{{ .Weeks }}">{{ .WeeksNice }}</td>*/}}
+{{/*                                            <td data-order="{{ .AllTime }}">{{ .AllTimeNice }}</td>*/}}
+{{/*                                        </tr>*/}}
+{{/*                                    {{ end }}*/}}
+{{/*                                </table>*/}}
+{{/*                            </div>*/}}
+{{/*                        {{end}}*/}}
 
                         {{/* Games List */}}
                         <div class="table-responsive">

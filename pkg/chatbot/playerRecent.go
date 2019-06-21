@@ -25,7 +25,7 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 		return message, err
 	}
 
-	recent, err := player.GetRecentGames()
+	recent, err := mongo.GetRecentGames(player.ID, 0, 10, mongo.M{"playtime_2_weeks": -1})
 	if err != nil {
 		return message, err
 	}
@@ -48,7 +48,7 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 
 			if k == 0 {
 				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-					URL: helpers.GetAppIcon(app.AppID, app.ImgIconURL),
+					URL: helpers.GetAppIcon(app.AppID, helpers.GetAppIcon(app.AppID, app.Icon)),
 				}
 			}
 
@@ -57,7 +57,7 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 				space = " "
 			}
 
-			code = append(code, "- "+space+app.Name+" - "+helpers.GetTimeShort(app.PlayTime2Weeks, 2))
+			code = append(code, "- "+space+app.AppName+" - "+app.PlayTime2Weeks.String())
 		}
 
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

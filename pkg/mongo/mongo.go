@@ -44,18 +44,20 @@ func (c collection) String() string {
 }
 
 const (
-	CollectionAppArticles     collection = "app_articles"
-	CollectionApps            collection = "apps"
-	CollectionChanges         collection = "changes"
-	CollectionEvents          collection = "events"
-	CollectionGroups          collection = "groups"
-	CollectionPatreonWebhooks collection = "patreon_webhooks"
-	CollectionPlayerApps      collection = "player_apps"
-	CollectionPlayerBadges    collection = "player_badges"
-	CollectionPlayers         collection = "players"
-	CollectionProductPrices   collection = "product_prices"
-	CollectionWishlistApps    collection = "wishlist-apps"
-	CollectionWishlistTags    collection = "wishlist-tags"
+	CollectionAppArticles      collection = "app_articles"
+	CollectionApps             collection = "apps"
+	CollectionChanges          collection = "changes"
+	CollectionEvents           collection = "events"
+	CollectionGroups           collection = "groups"
+	CollectionPatreonWebhooks  collection = "patreon_webhooks"
+	CollectionPlayerApps       collection = "player_apps"
+	CollectionPlayerAppsRecent collection = "player_apps_recent"
+	CollectionPlayerBadges     collection = "player_badges"
+	CollectionPlayerFriends    collection = "player_friends"
+	CollectionPlayers          collection = "players"
+	CollectionProductPrices    collection = "product_prices"
+	CollectionWishlistApps     collection = "wishlist-apps"
+	CollectionWishlistTags     collection = "wishlist-tags"
 
 	// Stats
 	CollectionTags       collection = "tags"
