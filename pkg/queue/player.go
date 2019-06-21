@@ -590,7 +590,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 	var friendsToAdd = map[int64]*mongo.PlayerFriend{}
 	for _, v := range newFriendsSlice {
 		if _, ok := oldFriendsMap[int64(v.SteamID)]; !ok {
-			friendIDsToAdd = append(friendIDsToAdd, )
+			friendIDsToAdd = append(friendIDsToAdd, int64(v.SteamID))
 			friendsToAdd[int64(v.SteamID)] = &mongo.PlayerFriend{
 				PlayerID:     player.ID,
 				FriendID:     int64(v.SteamID),
