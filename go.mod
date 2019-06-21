@@ -95,7 +95,7 @@ require (
 	go.mongodb.org/mongo-driver v1.0.3
 	go.opencensus.io v0.22.0 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/build v0.0.0-20190621143301-c7084d3a2d60 // indirect
+	golang.org/x/build v0.0.0-20190621174925-01b32fab87c7 // indirect
 	golang.org/x/crypto v0.0.0-20190618222545-ea8f1a30c443
 	golang.org/x/exp v0.0.0-20190510132918-efd6b22b2522 // indirect
 	golang.org/x/image v0.0.0-20190618124811-92942e4437e2 // indirect
