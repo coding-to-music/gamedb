@@ -56,7 +56,7 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/kr/pty v1.1.5 // indirect
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
-	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e
+	github.com/logrusorgru/aurora v0.0.0-20190621143223-cea283e61946
 	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
 	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
