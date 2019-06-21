@@ -25,7 +25,7 @@ require (
 	github.com/cenkalti/backoff v2.1.1+incompatible
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
-	github.com/dghubble/go-twitter v0.0.0-20190108053744-7fd79e2bcc65
+	github.com/dghubble/go-twitter v0.0.0-20190621134507-53f972dc4b06
 	github.com/dghubble/oauth1 v0.5.0
 	github.com/dghubble/sling v1.2.0 // indirect
 	github.com/didip/tollbooth v4.0.0+incompatible
