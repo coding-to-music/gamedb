@@ -9,8 +9,14 @@
         {{ template "_social" .Group }}
 
         <h1 class="text-truncate" title="{{ .Group.Name }}">
-            <i class="fas fa-user-friends"></i> {{ .Group.Name }} <a href="{{ .Group.GetLink }}" target="_blank"><i class="fas fa-link"></i></a>
+            <i class="fas fa-user-friends"></i> {{ .Group.Name }}
+            <small>{{ .Group.Abbr }}</small>
         </h1>
+
+        {{ if ne .Group.Headline "" }}
+            <p class="lead">{{ .Group.Headline }}</p>
+        {{ end }}
+        <small><a href="{{ .Group.GetLink }}" target="_blank">View group on Steam <i class="fas fa-link"></i></a></small>
 
     </div>
 
@@ -27,7 +33,6 @@
                 <p><a href="/apps/{{ .Group.URL }}" class="btn btn-success">Go to App page</a></p>
             {{ end }}
 
-            <h5>{{ .Group.Headline }}</h5>
             <div>{{ .Summary }}</div>
 
         </div>
