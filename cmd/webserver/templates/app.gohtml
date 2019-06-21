@@ -946,14 +946,16 @@
                                 {{/* Localisation */}}
                                 <div class="tab-pane" id="dev-localisation" role="tabpanel">
 
-                                    <div class="clearfix">
-                                        {{ range $key, $value := .App.GetLocalization.RichPresence }}
-                                            <a class="btn btn-primary btn-sm float-left mr-1 mb-1" href="#{{ $key }}" role="button">{{ title $key }}</a>
-                                        {{ end }}
-                                    </div>
+                                    {{ if gt (len .App.GetLocalization.RichPresence) 1 }}
+                                        <div class="clearfix mb-2">
+                                            {{ range $key, $value := .App.GetLocalization.RichPresence }}
+                                                <a class="btn btn-primary btn-sm float-left mr-1 mb-1" href="#{{ $key }}" role="button">{{ title $key }}</a>
+                                            {{ end }}
+                                        </div>
+                                    {{ end }}
 
                                     {{ range $key, $value := .App.GetLocalization.RichPresence }}
-                                        <div class="table-responsive mt-2" id="{{ $key }}">
+                                        <div class="table-responsive mb-2" id="{{ $key }}">
                                             <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
                                                 <thead class="thead-light">
                                                 <tr>
