@@ -260,7 +260,8 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	// Name
 	c.OnHTML("div.grouppage_header_name", func(e *colly.HTMLElement) {
-		group.Name = strings.TrimPrefix(e.DOM.Children().First().Text(), "/ ")
+		x := e.DOM.First().First().First().Text()
+		group.Name = strings.TrimPrefix(x, "/ ")
 	})
 
 	// Abbreviation
