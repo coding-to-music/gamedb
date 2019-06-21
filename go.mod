@@ -3,7 +3,7 @@ module github.com/gamedb/gamedb
 // These two lines are here because ahmdrz/goinsta needs to tag their repo after a fix
 replace github.com/ahmdrz/goinsta/v2 => github.com/krylovsk/goinsta/v2 v2.4.0
 
-require github.com/ahmdrz/goinsta/v2 v2.4.0
+require github.com/ahmdrz/goinsta/v2 v2.4.2
 
 require (
 	cloud.google.com/go v0.40.0
