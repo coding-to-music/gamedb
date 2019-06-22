@@ -94,7 +94,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		commits = append(commits, commitStruct{
-			Message:   commit.Commit.GetMessage(),
+			Message:   helpers.InsertNewLines(commit.Commit.GetMessage(), 10),
 			Time:      commit.Commit.Author.Date.Unix(),
 			Deployed:  deployed,
 			Link:      commit.GetHTMLURL(),
