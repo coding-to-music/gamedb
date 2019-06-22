@@ -87,7 +87,7 @@ require (
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
-	github.com/yohcop/openid-go v0.0.0-20170901155220-cfc72ed89575
+	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.0.3
 	go.opencensus.io v0.22.0 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
