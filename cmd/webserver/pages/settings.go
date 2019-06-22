@@ -56,7 +56,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t := settingsTemplate{}
 	t.fill(w, r, "Settings", "")
 	t.addAssetPasswordStrength()
-	t.setFlashes(w, r, false)
+	t.setFlashes(w, r)
 	t.Domain = config.Config.GameDBDomain.Get()
 
 	// Get user
@@ -81,9 +81,6 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-
-	err = session.Save(w, r)
-	log.Err(err)
 
 	//
 	var wg sync.WaitGroup

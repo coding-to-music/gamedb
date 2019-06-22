@@ -30,7 +30,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	t := homeTemplate{}
 	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
-	t.setFlashes(w, r, true)
+	t.setFlashes(w, r)
 
 	var wg sync.WaitGroup
 

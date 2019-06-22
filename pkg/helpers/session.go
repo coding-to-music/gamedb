@@ -25,6 +25,9 @@ const (
 	SessionPlayerLevel = "player-level"
 	SessionPlayerName  = "player-name"
 
+	//
+	SessionLastPage = "last-page"
+
 	// Flash groups
 	SessionGood session.FlashGroup = "good"
 	SessionBad  session.FlashGroup = "bad"

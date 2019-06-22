@@ -55,6 +55,28 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err erro
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
+	// Set the last page
+	if r.Method == "GET" {
+		func() {
+			for _, prefix := range []string{"/currency", "/login", "/logout", "/signup", "/forgot", "/settings"} {
+				if strings.HasPrefix(r.URL.Path, prefix) {
+					return
+				}
+			}
+			err = session.Set(r, helpers.SessionLastPage, r.URL.Path)
+			if err != nil {
+				log.Err(err, r)
+			}
+		}()
+	}
+
+	// Save the session
+	err = session.Save(w, r)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	//
 	setHeaders(w, r, "text/html")
 
 	folder := config.Config.TemplatesPath.Get()
@@ -409,7 +431,7 @@ func (t *GlobalTemplate) addAssetPasswordStrength() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.2/pwstrength-bootstrap.min.js", Integrity: "sha256-BPKP4P2AbrV7hf80SHJAJkIvjt7X7MKFEPpA99uU6uQ="})
 }
 
-func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save bool) {
+func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -418,11 +440,6 @@ func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request, save
 
 	t.FlashesBad, err = session.GetFlashes(r, helpers.SessionBad)
 	log.Err(err, r)
-
-	if save && (len(t.FlashesGood) > 0 || len(t.FlashesBad) > 0) {
-		err = session.Save(w, r)
-		log.Err(err)
-	}
 }
 
 //

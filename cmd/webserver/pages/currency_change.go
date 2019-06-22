@@ -34,5 +34,14 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	val, err := session.Get(r, helpers.SessionLastPage)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	if val == "" {
+		val = "/"
+	}
+
+	http.Redirect(w, r, val, http.StatusFound)
 }

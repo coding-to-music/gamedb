@@ -25,7 +25,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	t := contactTemplate{}
 	t.fill(w, r, "Contact", "Get in touch with Game DB.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-	t.setFlashes(w, r, true)
+	t.setFlashes(w, r)
 
 	var err error
 

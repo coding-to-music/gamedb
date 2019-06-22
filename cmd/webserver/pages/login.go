@@ -101,7 +101,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t := loginTemplate{}
 	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-	t.setFlashes(w, r, true)
+	t.setFlashes(w, r)
 
 	t.LoginEmail, err = session.Get(r, "login-email")
 	log.Err(err, r)
@@ -186,7 +186,18 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err = session.Save(w, r)
 		log.Err(err, r)
 
-		http.Redirect(w, r, "/settings", http.StatusFound)
+		// Get last page
+		val, err := session.Get(r, helpers.SessionLastPage)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		if val == "" {
+			val = "/settings"
+		}
+
+		//
+		http.Redirect(w, r, val, http.StatusFound)
 
 	} else {
 
