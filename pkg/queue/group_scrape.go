@@ -84,7 +84,9 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		if group.Type == "" {
 			group.Type, err = getGroupType(groupID)
 			if err != nil || group.Type == "" {
-				logError(err, groupID)
+				if err != nil {
+					logError(err, groupID)
+				}
 				payload.ackRetry(msg)
 				return
 			}
