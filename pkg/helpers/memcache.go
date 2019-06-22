@@ -75,10 +75,7 @@ func ListenToPubSub() {
 		var ids []string
 
 		err := json.Unmarshal(m.Data, &ids)
-		if err != nil {
-			// Backwards compatibility, todo, remove later...
-			ids = []string{string(m.Data)}
-		}
+		log.Err(err)
 
 		for _, id := range ids {
 			err = mc.Delete(id)
