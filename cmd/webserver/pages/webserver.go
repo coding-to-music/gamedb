@@ -430,7 +430,7 @@ func middlewareAuthCheck() func(http.Handler) http.Handler {
 			loggedIn, err := isLoggedIn(r)
 			log.Err(err)
 
-			if loggedIn || err == nil {
+			if loggedIn && err == nil {
 				next.ServeHTTP(w, r)
 				return
 			}
