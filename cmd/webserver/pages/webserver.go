@@ -157,13 +157,14 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Title       string        // Page title
-	Description template.HTML // Page description
-	Path        string        // URL path
-	Env         string        // Environment
-	CSSFiles    []Asset
-	JSFiles     []Asset
-	Canonical   string
+	Title           string        // Page title
+	Description     template.HTML // Page description
+	Path            string        // URL path
+	Env             string        // Environment
+	CSSFiles        []Asset
+	JSFiles         []Asset
+	Canonical       string
+	ActiveCountries map[string]string
 
 	Background      string
 	BackgroundTitle string
@@ -208,6 +209,14 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Description = description
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
+	t.ActiveCountries = func() map[string]string {
+
+		currencies := map[string]string{}
+		for _, v := range helpers.GetActiveCountries() {
+			currencies[string(v)] = steam.Countries[v]
+		}
+		return currencies
+	}()
 
 	val, err := session.Get(r, helpers.SessionUserID)
 	log.Err(err, r)
