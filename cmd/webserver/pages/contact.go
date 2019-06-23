@@ -13,6 +13,12 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
+const (
+	contactSessionName    = "contact-name"
+	contactSessionEmail   = "contact-email"
+	contactSessionMessage = "contact-message"
+)
+
 func ContactRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", contactHandler)
@@ -29,10 +35,10 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
-	t.SessionName, err = session.Get(r, "contact-name")
+	t.SessionName, err = session.Get(r, contactSessionName)
 	log.Err(err)
 
-	t.SessionEmail, err = session.Get(r, "contact-email")
+	t.SessionEmail, err = session.Get(r, contactSessionEmail)
 	log.Err(err)
 
 	if t.SessionEmail == "" {
@@ -40,7 +46,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err)
 	}
 
-	t.SessionMessage, err = session.Get(r, "contact-message")
+	t.SessionMessage, err = session.Get(r, contactSessionMessage)
 	log.Err(err)
 
 	err = returnTemplate(w, r, "contact", t)
@@ -72,9 +78,9 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Backup
 		err = session.SetMany(r, map[string]string{
-			"contact-name":    r.PostForm.Get("name"),
-			"contact-email":   r.PostForm.Get("email"),
-			"contact-message": r.PostForm.Get("message"),
+			contactSessionName:    r.PostForm.Get("name"),
+			contactSessionEmail:   r.PostForm.Get("email"),
+			contactSessionMessage: r.PostForm.Get("message"),
 		})
 		log.Err(err, r)
 
@@ -117,9 +123,9 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Remove backup
 		err = session.SetMany(r, map[string]string{
-			"contact-name":    "",
-			"contact-email":   "",
-			"contact-message": "",
+			contactSessionName:    "",
+			contactSessionEmail:   "",
+			contactSessionMessage: "",
 		})
 		log.Err(err, r)
 

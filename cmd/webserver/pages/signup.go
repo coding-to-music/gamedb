@@ -19,6 +19,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const signupSessionEmail = "signup-email"
+
 func SignupRouter() http.Handler {
 
 	r := chi.NewRouter()
@@ -46,7 +48,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t.Domain = config.Config.GameDBDomain.Get()
 	t.setFlashes(w, r)
 
-	t.SignupEmail, err = session.Get(r, "signup-email")
+	t.SignupEmail, err = session.Get(r, signupSessionEmail)
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "signup", t)
@@ -78,7 +80,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		password2 := r.PostForm.Get("password2")
 
 		// Remember email
-		err = session.Set(r, "signup-email", email)
+		err = session.Set(r, signupSessionEmail, email)
 		if err != nil {
 			log.Err(err, r)
 		}

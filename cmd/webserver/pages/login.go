@@ -18,6 +18,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const loginSessionEmail = "login-email"
+
 func LoginRouter() http.Handler {
 
 	r := chi.NewRouter()
@@ -103,7 +105,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 	t.setFlashes(w, r)
 
-	t.LoginEmail, err = session.Get(r, "login-email")
+	t.LoginEmail, err = session.Get(r, loginSessionEmail)
 	log.Err(err, r)
 
 	err = returnTemplate(w, r, "login", t)
@@ -133,7 +135,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.PostForm.Get("password")
 
 		// Remember email
-		err = session.Set(r, "login-email", r.PostForm.Get("email"))
+		err = session.Set(r, loginSessionEmail, r.PostForm.Get("email"))
 		if err != nil {
 			log.Err(err, r)
 		}
