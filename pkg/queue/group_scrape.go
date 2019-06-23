@@ -83,11 +83,13 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		// Get `type` if missing
 		if group.Type == "" {
 			group.Type, err = getGroupType(groupID)
-			if err != nil || group.Type == "" {
-				if err != nil {
-					logError(err, groupID)
-				}
+			if err != nil {
+				logError(err, groupID)
 				payload.ackRetry(msg)
+				return
+			}
+			if group.Type == "" { // IDs like 11488905 don't redirect to get a type.
+				payload.ack(msg)
 				return
 			}
 		}
