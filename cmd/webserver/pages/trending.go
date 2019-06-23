@@ -11,10 +11,10 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func TrendingRouter() http.Handler {
+func trendingRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", trendingHandler)
-	r.Get("/trending.json", trendingAjaxHandler)
+	r.Get("/trending.json", trendingAppsAjaxHandler)
 	r.Get("/charts.json", trendingChartsAjaxHandler)
 	return r
 }
@@ -36,7 +36,7 @@ type trendingTemplate struct {
 	GlobalTemplate
 }
 
-func trendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())

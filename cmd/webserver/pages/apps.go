@@ -19,7 +19,8 @@ func AppsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", appsHandler)
 	r.Get("/apps.json", appsAjaxHandler)
-	r.Mount("/{id}", AppRouter())
+	r.Mount("/trending", trendingRouter())
+	r.Mount("/{id}", appRouter())
 	return r
 }
 

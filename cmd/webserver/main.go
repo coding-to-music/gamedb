@@ -121,7 +121,6 @@ func main() {
 	r.Mount("/stats", pages.StatsRouter())
 	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
-	r.Mount("/trending", pages.TrendingRouter())
 	r.Mount("/twitter", pages.TwitterRouter())
 	r.Mount("/upcoming", pages.UpcomingRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
@@ -140,6 +139,7 @@ func main() {
 
 	// Redirects
 	r.Get("/sitemap.xml", pages.RedirectHandler("/sitemap/index.xml"))
+	r.Get("/trending", pages.RedirectHandler("/apps/trending"))
 
 	// File server
 	fileServer(r, "/assets", http.Dir(config.Config.AssetsPath.Get()))
