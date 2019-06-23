@@ -421,11 +421,6 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 		return err
 	}
 
-	oldAppsMaps := map[int]mongo.PlayerRecentApp{}
-	for _, app := range oldAppsSlice {
-		oldAppsMaps[app.AppID] = app
-	}
-
 	newAppsSlice, b, err := helpers.GetSteam().GetRecentlyPlayedGames(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, nil)
 	if err != nil {
@@ -437,20 +432,18 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 		newAppsMap[app.AppID] = app
 	}
 
-	// Apps to add
+	// Apps to update
 	var appsToAdd []mongo.PlayerRecentApp
 	for _, v := range newAppsSlice {
-		if _, ok := oldAppsMaps[v.AppID]; !ok {
-			appsToAdd = append(appsToAdd, mongo.PlayerRecentApp{
-				PlayerID:        player.ID,
-				AppID:           v.AppID,
-				AppName:         v.Name,
-				PlayTime2Weeks:  v.PlayTime2Weeks,
-				PlayTimeForever: v.PlayTimeForever,
-				Icon:            v.ImgIconURL,
-				// Logo:            v.ImgLogoURL,
-			})
-		}
+		appsToAdd = append(appsToAdd, mongo.PlayerRecentApp{
+			PlayerID:        player.ID,
+			AppID:           v.AppID,
+			AppName:         v.Name,
+			PlayTime2Weeks:  v.PlayTime2Weeks,
+			PlayTimeForever: v.PlayTimeForever,
+			Icon:            v.ImgIconURL,
+			// Logo:            v.ImgLogoURL,
+		})
 	}
 
 	// Apps to remove
@@ -467,7 +460,7 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 		return err
 	}
 
-	err = mongo.AddRecentApps(appsToAdd)
+	err = mongo.UpdateRecentApps(appsToAdd)
 	if err != nil {
 		return err
 	}
@@ -569,11 +562,6 @@ func updatePlayerFriends(player *mongo.Player) error {
 		return err
 	}
 
-	oldFriendsMap := map[int64]mongo.PlayerFriend{}
-	for _, friend := range oldFriendsSlice {
-		oldFriendsMap[friend.FriendID] = friend
-	}
-
 	newFriendsSlice, b, err := helpers.GetSteam().GetFriendList(player.ID)
 	err = helpers.HandleSteamStoreErr(err, b, []int{401})
 	if err != nil {
@@ -589,14 +577,12 @@ func updatePlayerFriends(player *mongo.Player) error {
 	var friendIDsToAdd []int64
 	var friendsToAdd = map[int64]*mongo.PlayerFriend{}
 	for _, v := range newFriendsSlice {
-		if _, ok := oldFriendsMap[int64(v.SteamID)]; !ok {
-			friendIDsToAdd = append(friendIDsToAdd, int64(v.SteamID))
-			friendsToAdd[int64(v.SteamID)] = &mongo.PlayerFriend{
-				PlayerID:     player.ID,
-				FriendID:     int64(v.SteamID),
-				Relationship: v.Relationship,
-				FriendSince:  time.Unix(v.FriendSince, 0),
-			}
+		friendIDsToAdd = append(friendIDsToAdd, int64(v.SteamID))
+		friendsToAdd[int64(v.SteamID)] = &mongo.PlayerFriend{
+			PlayerID:     player.ID,
+			FriendID:     int64(v.SteamID),
+			Relationship: v.Relationship,
+			FriendSince:  time.Unix(v.FriendSince, 0),
 		}
 	}
 
@@ -643,7 +629,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 		friendsToAddSlice = append(friendsToAddSlice, v)
 	}
 
-	err = mongo.AddFriends(friendsToAddSlice)
+	err = mongo.UpdateFriends(friendsToAddSlice)
 	if err != nil {
 		return err
 	}

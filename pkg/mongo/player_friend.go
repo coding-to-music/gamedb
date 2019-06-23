@@ -103,7 +103,7 @@ func DeleteFriends(playerID int64, friends []int64) (err error) {
 	return err
 }
 
-func AddFriends(friends []*PlayerFriend) (err error) {
+func UpdateFriends(friends []*PlayerFriend) (err error) {
 
 	if len(friends) < 1 {
 		return nil

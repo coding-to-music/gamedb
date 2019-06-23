@@ -68,7 +68,7 @@ func DeleteRecentApps(playerID int64, apps []int) (err error) {
 	return err
 }
 
-func AddRecentApps(apps []PlayerRecentApp) (err error) {
+func UpdateRecentApps(apps []PlayerRecentApp) (err error) {
 
 	if len(apps) < 1 {
 		return nil
