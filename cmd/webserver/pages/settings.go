@@ -76,7 +76,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err)
 
 			if t.Player.PersonaName != "" {
-				err = session.Set(r, helpers.SessionPlayerName, t.Player.VanintyURL)
+				err = session.Set(r, helpers.SessionPlayerName, t.Player.PersonaName)
 				log.Err(err)
 			}
 		}
