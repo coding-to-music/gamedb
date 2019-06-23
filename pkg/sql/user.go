@@ -8,19 +8,31 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
+const (
+	UserLevel0 = 0
+	UserLevel1 = 1
+	UserLevel2 = 2
+	UserLevel3 = 3
+
+	UserLevelLimit0 = 10
+	UserLevelLimit1 = 20
+	UserLevelLimit2 = 40
+	UserLevelLimit3 = 0
+)
+
 type UserLevel int
 
 func (ul UserLevel) MaxResults(limit int64) int64 {
 
 	switch ul {
 	default:
-		return 10 * limit
-	case 1:
-		return 20 * limit
-	case 2:
-		return 40 * limit
-	case 3:
-		return 0
+		return UserLevelLimit0 * limit
+	case UserLevel1:
+		return UserLevelLimit1 * limit
+	case UserLevel2:
+		return UserLevelLimit2 * limit
+	case UserLevel3:
+		return UserLevelLimit3
 	}
 }
 
@@ -32,13 +44,6 @@ func (ul UserLevel) MaxOffset(limit int64) int64 {
 	}
 	return results - limit
 }
-
-const (
-	UserLevel0 UserLevel = 0
-	UserLevel1 UserLevel = 1
-	UserLevel2 UserLevel = 2
-	UserLevel3 UserLevel = 3
-)
 
 type User struct {
 	ID            int       `gorm:"not null;column:id;primary_key"`
