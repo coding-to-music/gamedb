@@ -29,28 +29,9 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
 
-	client, ctx := helpers.GetGithub()
-
-	operation := func() (err error) {
-
-		contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
-		for _, v := range contributors {
-			t.Total += v.GetTotal()
-		}
-
-		if t.Total == 0 {
-			return errors.New("no commits found")
-		}
-
-		return nil
-	}
-
-	policy := backoff.NewExponentialBackOff()
-
-	err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err, r) })
-	if err != nil {
-		log.Critical(err, r)
-	}
+	var err error
+	t.Total, err = getTotalCommits()
+	log.Err(err)
 
 	err = returnTemplate(w, r, "commits", t)
 	log.Err(err, r)
@@ -71,7 +52,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	client, ctx := helpers.GetGithub()
 
-	commitsResponse, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
+	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
 			Page:    query.getPage(commitsLimit),
 			PerPage: commitsLimit,
@@ -83,43 +64,8 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get commits
-	var commits []commitStruct
-
-	var deployed bool
-	for _, commit := range commitsResponse {
-
-		if commit.GetSHA() == config.Config.CommitHash.Get() {
-			deployed = true
-		}
-
-		commits = append(commits, commitStruct{
-			Message:   helpers.InsertNewLines(commit.Commit.GetMessage(), 10),
-			Time:      commit.Commit.Author.Date.Unix(),
-			Deployed:  deployed,
-			Link:      commit.GetHTMLURL(),
-			Highlight: commit.GetSHA() == config.Config.CommitHash.Get(),
-			Hash:      commit.GetSHA()[0:7],
-		})
-	}
-
 	// Get total
-	var total int
-	operation := func() (err error) {
-
-		contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "website")
-		for _, v := range contributors {
-			total += v.GetTotal()
-		}
-		if total == 0 {
-			return errors.New("no contributors found")
-		}
-		return nil
-	}
-
-	policy := backoff.NewExponentialBackOff()
-
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 2), func(err error, t time.Duration) { log.Info(err, r) })
+	total, err := getTotalCommits()
 	log.Err(err)
 
 	//
@@ -129,30 +75,52 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 	response.limit(r)
 
-	for _, v := range commits {
-		response.AddRow(v.OutputForJSON())
+	var deployed bool
+	for _, commit := range commits {
+
+		if commit.GetSHA() == config.Config.CommitHash.Get() {
+			deployed = true
+		}
+
+		response.AddRow([]interface{}{
+			helpers.InsertNewLines(commit.Commit.GetMessage(), 10),
+			commit.Commit.Author.Date.Unix(),
+			deployed,
+			commit.GetHTMLURL(),
+			commit.GetSHA() == config.Config.CommitHash.Get(),
+			commit.GetSHA()[0:7],
+		})
 	}
 
 	response.output(w, r)
 }
 
-type commitStruct struct {
-	Message   string
-	Deployed  bool
-	Time      int64
-	Link      string
-	Highlight bool
-	Hash      string
-}
+func getTotalCommits() (total int, err error) {
 
-func (commit commitStruct) OutputForJSON() (output []interface{}) {
+	client, ctx := helpers.GetGithub()
 
-	return []interface{}{
-		commit.Message,
-		commit.Time,
-		commit.Deployed,
-		commit.Link,
-		commit.Highlight,
-		commit.Hash,
-	}
+	var item = helpers.MemcacheTotalCommits
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
+
+		operation := func() (err error) {
+
+			contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "gamedb")
+			for _, v := range contributors {
+				total += v.GetTotal()
+			}
+			if total == 0 {
+				return errors.New("no commits found")
+			}
+			return nil
+		}
+
+		policy := backoff.NewExponentialBackOff()
+
+		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 4), func(err error, t time.Duration) { log.Info(err) })
+
+		return total, err
+	})
+
+	return total, err
 }
