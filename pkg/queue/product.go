@@ -353,19 +353,24 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 			documents = append(documents, price)
 		}
 
-		// Tweet
+		// Tweet / Post to Reddit
 		if code == steam.CountryUS && before.GetProductType() == helpers.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
 
 			appBefore, ok := before.(sql.App)
 			if ok && appBefore.IsOnSale() {
 
-				twitter := helpers.GetTwitter()
+				price := "Down from $" + helpers.FloatToString(float64(oldPrice)/100, 2)
 
-				_, _, err = twitter.Statuses.Update("Free game! Down from $"+helpers.FloatToString(float64(oldPrice)/100, 2)+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
+				_, _, err = helpers.GetTwitter().Statuses.Update("Free game! "+price+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 				if err != nil {
 					if !strings.Contains(err.Error(), "Status is a duplicate") {
 						logCritical(err)
 					}
+				}
+
+				err = helpers.PostToReddit("[FREE] "+before.GetName()+" ("+price+")", "https://gamedb.online"+before.GetPath())
+				if err != nil {
+					logCritical(err)
 				}
 			}
 		}

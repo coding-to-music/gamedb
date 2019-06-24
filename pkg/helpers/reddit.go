@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"log"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
@@ -9,30 +8,39 @@ import (
 )
 
 var (
-	redditSession *geddit.OAuthSession
+	redditSession *geddit.LoginSession
 	redditLock    sync.Mutex
 )
 
-func GetReddit() (session *geddit.OAuthSession, err error) {
+func getReddit() (session *geddit.LoginSession, err error) {
 
 	redditLock.Lock()
 	defer redditLock.Unlock()
 
 	if redditSession == nil {
 
-		sess, err := geddit.NewOAuthSession("", "", "jzelinskie/geddit", "", )
+		session, err = geddit.NewLoginSession(
+			config.Config.RedditUsername.Get(),
+			config.Config.RedditPassword.Get(),
+			"jzelinskie/geddit",
+		)
+
 		if err != nil {
-			log.Fatal(err)
+			return session, err
 		}
 
-		// Create new auth token for confidential clients (personal scripts/apps).
-		err = sess.LoginAuth(config.Config.RedditUsername.Get(), config.Config.RedditPassword.Get())
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		redditSession = sess
+		redditSession = session
 	}
 
 	return redditSession, err
+}
+
+func PostToReddit(title string, link string) (err error) {
+
+	sess, err := getReddit()
+	if err != nil {
+		return err
+	}
+
+	return sess.Submit(geddit.NewLinkSubmission("gamedb", title, link, true, &geddit.Captcha{}))
 }

@@ -20,6 +20,7 @@ require (
 	github.com/antchfx/xmlquery v1.0.0 // indirect
 	github.com/antchfx/xpath v1.0.0 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
+	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/bwmarrin/discordgo v0.19.0
 	github.com/cenkalti/backoff v2.2.0+incompatible
 	github.com/cockroachdb/apd v1.1.0 // indirect
@@ -50,6 +51,7 @@ require (
 	github.com/influxdata/influxdb1-client v0.0.0-20190621134543-8ff2fc3824fc
 	github.com/jinzhu/gorm v1.9.9
 	github.com/jinzhu/now v1.0.1
+	github.com/jzelinskie/geddit v0.0.0-20190613154237-4b3cacc98c40
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
@@ -69,6 +71,7 @@ require (
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/robfig/cron v1.2.0
+	github.com/rollbar/rollbar-go v1.1.0
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/satori/go.uuid v1.2.0

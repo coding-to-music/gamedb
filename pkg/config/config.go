@@ -78,12 +78,16 @@ func init() {
 	Config.RabbitManagmentPort.Set("RABBIT_MANAGEMENT_PORT")
 
 	// Reddit
-	Config.RedditUsername.Set("STEAM_REDDIT_USERNAME")
-	Config.RedditPassword.Set("STEAM_REDDIT_PASSWORD")
+	Config.RedditUsername.Set("REDDIT_USERNAME")
+	Config.RedditPassword.Set("REDDIT_PASSWORD")
 
 	// Recaptcha
 	Config.RecaptchaPublic.Set("RECAPTCHA_PUBLIC")
 	Config.RecaptchaPrivate.Set("RECAPTCHA_PRIVATE")
+
+	// Rollbar
+	Config.RollbarSecret.Set("ROLLBAR_PRIVATE")
+	Config.RollbarUser.Set("ROLLBAR_USER")
 
 	// Session
 	Config.SessionAuthentication.Set("SESSION_AUTHENTICATION")
@@ -197,6 +201,10 @@ type BaseConfig struct {
 	// Recaptcha
 	RecaptchaPrivate ConfigItem
 	RecaptchaPublic  ConfigItem
+
+	// Rollbar
+	RollbarSecret ConfigItem
+	RollbarUser   ConfigItem
 
 	// Sessions
 	SessionAuthentication ConfigItem
