@@ -74,7 +74,6 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		} else if productType == "package" {
 			gorm = gorm.Table("packages")
 		} else {
-			log.Err("no product type", r)
 			return
 		}
 
