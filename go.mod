@@ -25,7 +25,6 @@ require (
 	github.com/cenkalti/backoff v2.2.0+incompatible
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.1 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190621134507-53f972dc4b06
 	github.com/dghubble/oauth1 v0.5.0
@@ -81,8 +80,7 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94
-	github.com/stretchr/objx v0.1.1 // indirect
-	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.0 // indirect
