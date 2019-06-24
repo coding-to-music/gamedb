@@ -77,6 +77,10 @@ func init() {
 	Config.RabbitPort.Set("RABBIT_PORT")
 	Config.RabbitManagmentPort.Set("RABBIT_MANAGEMENT_PORT")
 
+	// Reddit
+	Config.RedditUsername.Set("STEAM_REDDIT_USERNAME")
+	Config.RedditPassword.Set("STEAM_REDDIT_PASSWORD")
+
 	// Recaptcha
 	Config.RecaptchaPublic.Set("RECAPTCHA_PUBLIC")
 	Config.RecaptchaPrivate.Set("RECAPTCHA_PRIVATE")
@@ -185,6 +189,10 @@ type BaseConfig struct {
 	RabbitHost          ConfigItem
 	RabbitPort          ConfigItem
 	RabbitManagmentPort ConfigItem
+
+	// Reddit
+	RedditUsername ConfigItem
+	RedditPassword ConfigItem
 
 	// Recaptcha
 	RecaptchaPrivate ConfigItem
