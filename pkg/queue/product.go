@@ -212,9 +212,9 @@ func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []pics.PI
 				logError(err)
 				branch.BuildID = buildID
 			case "timeupdated":
-				time, err := strconv.ParseInt(vv.Value.(string), 10, 64)
+				t, err := strconv.ParseInt(vv.Value.(string), 10, 64)
 				logError(err)
-				branch.TimeUpdated = time
+				branch.TimeUpdated = t
 			case "defaultforsubs":
 				branch.DefaultForSubs = vv.Value.(string)
 			case "unlockforsubs":
