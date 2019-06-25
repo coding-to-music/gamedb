@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/session-go/session"
-	"github.com/didip/tollbooth"
 	"github.com/didip/tollbooth/limiter"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -320,8 +319,92 @@ func (p apiCallParam) InputType() string {
 	return "text"
 }
 
+type apiRequest struct {
+	request *http.Request
+}
+
+func (r apiRequest) geKey() (key string, err error) {
+
+	key = r.request.URL.Query().Get("key")
+	if key == "" {
+		key, err = session.Get(r.request, helpers.SessionUserAPIKey)
+		if err != nil {
+			return key, err
+		}
+		if key == "" {
+			return key, errNoKey
+		}
+	}
+
+	if len(key) != 20 {
+		return key, errInvalidKey
+	}
+
+	return key, err
+}
+
+func (r apiRequest) geID() (id int64, err error) {
+
+	val := r.request.URL.Query().Get("id")
+	if val == "" {
+		id = 0
+	} else {
+
+		id, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return id, errInvalidID
+		}
+
+		if id < 1 {
+			return id, errInvalidID
+		}
+	}
+
+	return id, errInvalidID
+}
+
+func (r apiRequest) geOffset() (offset int64, err error) {
+
+	val := r.request.URL.Query().Get("offset")
+	if val == "" {
+		offset = 0
+	} else {
+
+		offset, err = strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return offset, errInvalidOffset
+		}
+
+		if offset < 0 {
+			return offset, errInvalidOffset
+		}
+	}
+
+	return offset, errInvalidOffset
+}
+
+func (r apiRequest) getLimit() (limit int64, err error) {
+
+	val := r.request.URL.Query().Get("limit")
+	if val == "" {
+		limit = 10
+	} else {
+
+		limit, err = strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return limit, errInvalidLimit
+		}
+
+		if limit < 1 || limit > 1000 {
+			return limit, errInvalidLimit
+		}
+	}
+
+	return limit, err
+}
+
 var errNoKey = errors.New("no key")
-var errOverID = errors.New("invalid id")
+var errInvalidID = errors.New("invalid id")
 var errOverLimit = errors.New("over rate limit")
 var errInvalidKey = errors.New("invalid key")
 var errWrongLevelKey = errors.New("wrong level key")
@@ -333,88 +416,33 @@ var lmt = limiter.New(&ops).SetMax(1).SetBurst(2)
 
 func handleAPICall(r *http.Request) (id int64, offset int64, limit int64, err error) {
 
-	q := r.URL.Query()
-
-	// Get key from url/session
-	key := q.Get("key")
-	if key == "" {
-		key, err = session.Get(r, helpers.SessionUserAPIKey)
-		if err != nil {
-			return id, offset, limit, err
-		}
-		if key == "" {
-			return id, offset, limit, errNoKey
-		}
-	}
-
-	if len(key) != 20 {
-		return id, offset, limit, errInvalidKey
-	}
-
-	// Rate limit
-	err = tollbooth.LimitByKeys(lmt, []string{key})
-	if err != nil {
-		// return id, offset, limit, errOverLimit // todo
-	}
-
-	// Check user ahs access to api
-	level, err := sql.GetUserFromKeyCache(key)
-	if err != nil {
-		return id, offset, limit, err
-	}
-	if level.PatreonLevel < 3 {
-		return id, offset, limit, errWrongLevelKey
-	}
-
-	// Read ID
-	val := q.Get("id")
-	if val == "" {
-		id = 0
-	} else {
-
-		id, err = strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			return id, offset, limit, errOverID
-		}
-
-		if id < 1 {
-			return id, offset, limit, errOverID
-		}
-	}
-
-	// Read offset
-	val = q.Get("offset")
-	if val == "" {
-		offset = 0
-	} else {
-
-		offset, err = strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			return id, offset, limit, errInvalidOffset
-		}
-
-		if offset < 0 {
-			return id, offset, limit, errInvalidOffset
-		}
-	}
-
-	// Read limit
-	val = q.Get("limit")
-	if val == "" {
-		limit = 10
-	} else {
-
-		limit, err = strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			return id, offset, limit, errInvalidLimit
-		}
-
-		if limit < 1 || limit > 1000 {
-			return id, offset, limit, errInvalidLimit
-		}
-	}
-
-	return id, offset, limit, err
+	// q := r.URL.Query()
+	//
+	// // Get key from url/session
+	//
+	// // Rate limit
+	// err = tollbooth.LimitByKeys(lmt, []string{key})
+	// if err != nil {
+	// 	// return id, offset, limit, errOverLimit // todo
+	// }
+	//
+	// // Check user ahs access to api
+	// level, err := sql.GetUserFromKeyCache(key)
+	// if err != nil {
+	// 	return id, offset, limit, err
+	// }
+	// if level.PatreonLevel < 3 {
+	// 	return id, offset, limit, errWrongLevelKey
+	// }
+	//
+	// // Read ID
+	//
+	// // Read offset
+	//
+	//
+	// // Read limit
+	//
+	return
 }
 
 func handleAPISQLSingle(r *http.Request, db *gorm.DB) (*gorm.DB, error) {
