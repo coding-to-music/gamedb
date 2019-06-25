@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"regexp"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -44,6 +45,8 @@ type productKeysTemplate struct {
 	Type  string
 }
 
+var keyRegex = regexp.MustCompile("[0-9a-z_]+") // To stop SQL injection
+
 func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
@@ -79,7 +82,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Search
 		key := query.getSearchString("key")
-		if key == "" {
+		if key == "" || !keyRegex.MatchString(key) {
 			return
 		}
 		value := query.getSearchString("value")
