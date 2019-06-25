@@ -267,7 +267,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
 
 		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
-		log.Err(err)
+		logError(err, message.ID)
 	}()
 
 	// Clear caches
@@ -279,7 +279,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		if app.ReleaseDateUnix > time.Now().Unix() && newApp {
 
 			err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingAppsCount.Key)
-			log.Err(err)
+			logError(err, message.ID)
 		}
 	}()
 
