@@ -1,6 +1,7 @@
 package sql
 
 import (
+	"encoding/json"
 	"errors"
 	"html/template"
 	"strconv"
@@ -673,6 +674,27 @@ func (app App) GetPublishers() (publishers []Publisher, err error) {
 	return GetPublishersByID(ids, []string{"id", "name"})
 }
 
+func (app App) GetNewBackground() string {
+
+	common := app.GetCommon()
+
+	if assets, ok := common["library_assets"]; ok {
+
+		assetMap := map[string]interface{}{}
+		err := json.Unmarshal([]byte(assets), &assetMap)
+		if err != nil {
+			log.Err(err)
+			return ""
+		}
+
+		if _, ok := assetMap["library_hero"]; ok {
+			return "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(app.ID) + "/library_hero.jpg"
+		}
+	}
+
+	return ""
+}
+
 func (app App) GetName() (name string) {
 	return helpers.GetAppName(app.ID, app.Name)
 }
@@ -704,7 +726,7 @@ func PopularApps() (apps []App, err error) {
 			return apps, err
 		}
 
-		db = db.Select([]string{"id", "name", "image_header", "player_peak_week"})
+		db = db.Select([]string{"id", "name", "image_header", "player_peak_week", "common"})
 		db = db.Where("type = ?", "game")
 		db = db.Order("player_peak_week desc")
 		db = db.Limit(30)
@@ -731,7 +753,7 @@ func PopularNewApps() (apps []App, err error) {
 		db = db.Where("type = ?", "game")
 		db = db.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
 		db = db.Order("player_peak_week desc")
-		db = db.Limit(20)
+		db = db.Limit(25)
 		db = db.Find(&apps)
 
 		return apps, err

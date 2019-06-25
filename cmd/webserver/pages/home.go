@@ -98,15 +98,22 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	// Background
-	if len(popularApps) > 0 {
+	// Choose a random background
+	var i int
+	for t.Background == "" {
+
+		// Stop getting stuck in the loop
+		i++
+		if i > 10 {
+			break
+		}
+
 		backgroundApp := popularApps[rand.Intn(len(popularApps))]
-		for t.Background == "" {
-			if backgroundApp.ID != 779340 { // todo, can remove when its there
-				t.Background = "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(backgroundApp.ID) + "/library_hero.jpg"
-				t.BackgroundTitle = backgroundApp.GetName()
-				t.BackgroundLink = backgroundApp.GetPath()
-			}
+		bg := backgroundApp.GetNewBackground()
+		if bg != "" {
+			t.Background = bg
+			t.BackgroundTitle = backgroundApp.GetName()
+			t.BackgroundLink = backgroundApp.GetPath()
 		}
 	}
 
