@@ -13,7 +13,7 @@
         "grunt-contrib-watch": "1.1.0",
         "grunt-notify": "0.4.5",
         "grunt-sass": "3.0.2",
-        "grunt-ts": "5.5.1",
+        "grunt-ts": "6.0.0-beta.22",
         "node-sass": "4.12.0",
         "typescript": "3.5.2"
     }
