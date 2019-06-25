@@ -8,16 +8,26 @@
 
         <h1 class="text-truncate"><i class="fas fa-gamepad"></i> {{ .App.GetName }}</h1>
 
-        <p class="lead">{{ .Description }}</p>
-        <p class="lead">
-            <a href="{{ .App.GetCommunityLink }}" data-toggle="tooltip" data-placement="top" title="Community Page" target="_blank"><i class="fas fa-users"></i></a>
-            <a href="{{ .App.GetStoreLink }}" data-toggle="tooltip" data-placement="top" title="Store Page" target="_blank"><i class="fas fa-shopping-cart"></i></a>
+        {{ if ne .Description "" }}
+            <p class="lead">{{ .Description }}</p>
+        {{ end }}
+
+        <small>
+            <a href="{{ .App.GetCommunityLink }}" data-toggle="tooltip" data-placement="top" title="Community Page" target="_blank">
+                <i class="fas fa-users"></i> Community Hub
+            </a>
+            <a href="{{ .App.GetStoreLink }}" data-toggle="tooltip" data-placement="top" title="Store Page" target="_blank">
+                <i class="fas fa-shopping-cart"></i> Store Page
+            </a>
             {{if ne .App.Homepage ""}}
-                <a href="{{ .App.Homepage }}" data-toggle="tooltip" data-placement="top" title="Official Website" target="_blank"><i class="fas fa-home"></i></a>
+                <a href="{{ .App.Homepage }}" data-toggle="tooltip" data-placement="top" title="Official Website" target="_blank">
+                    <i class="fas fa-home"></i> Homepage
+                </a>
             {{end}}
-            <a href="{{ .App.GetInstallLink }}" data-toggle="tooltip" data-placement="top" title="Install"><i class="fas fa-sign-in-alt"></i></a>
-            <a href="{{ .App.GetPCGamingWikiLink }}" data-toggle="tooltip" data-placement="top" title="PC Gaming Wiki" target="_blank"><i class="fab fa-wikipedia-w"></i></a>
-        </p>
+            <a href="{{ .App.GetInstallLink }}" data-toggle="tooltip" data-placement="top" title="Install">
+                <i class="fas fa-sign-in-alt"></i> Install
+            </a>
+        </small>
     </div>
 
     <div class="card">

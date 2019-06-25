@@ -1,4 +1,13 @@
 #app-page {
+
+    div.jumbotron {
+        small {
+            a {
+                @extend .mr-2;
+            }
+        }
+    }
+
     #details {
         img {
             width: 100%;
