@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -35,8 +36,10 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Articles, err = mongo.GetArticlesByApps(appIDs, 0, time.Now().AddDate(0, 0, -7))
 	log.Err(err, r)
 
-	t.Count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
+	count, err := mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
 	log.Err(err, r)
+
+	t.Count = rounding.NearestThousandFormat(float64(count))
 
 	err = returnTemplate(w, r, "news", t)
 	log.Err(err, r)
@@ -45,7 +48,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 type newsTemplate struct {
 	GlobalTemplate
 	Articles []mongo.Article
-	Count    int64
+	Count    string
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
