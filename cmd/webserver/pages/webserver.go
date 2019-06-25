@@ -394,7 +394,6 @@ func (t GlobalTemplate) IsAdmin() bool {
 }
 
 func (t GlobalTemplate) showAds() bool {
-	return false
 	return !config.IsLocal()
 }
 
