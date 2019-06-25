@@ -121,7 +121,6 @@ func main() {
 	r.Mount("/stats", pages.StatsRouter())
 	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
-	r.Mount("/twitter", pages.TwitterRouter())
 	r.Mount("/upcoming", pages.UpcomingRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
 	r.Mount("/wishlists", pages.WishlistsRouter())
