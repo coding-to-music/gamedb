@@ -7,10 +7,13 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
+	"github.com/nlopes/slack"
 )
 
 type rabbitMessageProduct struct {
@@ -361,6 +364,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 
 				price := "Down from $" + helpers.FloatToString(float64(oldPrice)/100, 2)
 
+				// Twitter
 				_, _, err = helpers.GetTwitter().Statuses.Update("Free game! "+price+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 				if err != nil {
 					if !strings.Contains(err.Error(), "Status is a duplicate") {
@@ -368,10 +372,17 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 					}
 				}
 
+				// Reddit
 				err = helpers.PostToReddit("[FREE] "+before.GetName()+" ("+price+")", "https://gamedb.online"+before.GetPath())
 				if err != nil {
 					logCritical(err)
 				}
+
+				// Slack message
+				err = slack.PostWebhook(config.Config.SlackSocialWebhook.Get(), &slack.WebhookMessage{
+					Text: "Free game: https://gamedb.online" + before.GetPath(),
+				})
+				log.Err(err)
 			}
 		}
 	}

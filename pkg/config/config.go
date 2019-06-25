@@ -110,7 +110,8 @@ func init() {
 	Config.SendGridAPIKey.Set("SENDGRID")
 	Config.SteamAPIKey.Set("API_KEY")
 	Config.WebserverPort.Set("PORT")
-	Config.SlackWebhook.Set("SLACK_GAMEDB_WEBHOOK")
+	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")
+	Config.SlackSocialWebhook.Set("SLACK_SOCIAL_WEBHOOK")
 
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
@@ -221,17 +222,18 @@ type BaseConfig struct {
 	TwitterConsumerSecret    ConfigItem
 
 	// Other
-	Environment     ConfigItem
-	GameDBDomain    ConfigItem
-	GameDBShortName ConfigItem
-	GithubToken     ConfigItem
-	MemcacheDSN     ConfigItem
-	SendGridAPIKey  ConfigItem
-	SteamAPIKey     ConfigItem
-	WebserverPort   ConfigItem
-	CommitHash      ConfigItem
-	NewReleaseDays  ConfigItem
-	SlackWebhook    ConfigItem
+	Environment        ConfigItem
+	GameDBDomain       ConfigItem
+	GameDBShortName    ConfigItem
+	GithubToken        ConfigItem
+	MemcacheDSN        ConfigItem
+	SendGridAPIKey     ConfigItem
+	SteamAPIKey        ConfigItem
+	WebserverPort      ConfigItem
+	CommitHash         ConfigItem
+	NewReleaseDays     ConfigItem
+	SlackGameDBWebhook ConfigItem
+	SlackSocialWebhook ConfigItem
 }
 
 // ConfigItem
