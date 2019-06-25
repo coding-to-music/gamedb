@@ -1016,6 +1016,7 @@ func updateBundles(app *sql.App) error {
 
 	var bundleIDs []string
 
+	//noinspection RegExpRedundantEscape
 	reg := regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
 
 	// Retry call
