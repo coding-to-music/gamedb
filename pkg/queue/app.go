@@ -289,6 +289,12 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	// Update mongo apps table
+	err = updateMongoTable(&app) // todo, put this somewhere better
+	if err != nil {
+		logError(err, message.ID)
+	}
+
 	//
 	payload.ack(msg)
 }
@@ -1140,4 +1146,31 @@ func updateAppTwitch(app *sql.App) error {
 	}
 
 	return nil
+}
+
+func updateMongoTable(app *sql.App) (err error) {
+
+	mongoApp, err := mongo.GetApp(app.ID)
+	if err != nil && err != mongo.ErrNoDocuments {
+		return err
+	}
+
+	// Achievements
+	achievements, err := app.GetAchievements()
+	if err != nil {
+		return err
+	}
+
+	var total float64
+	for _, achievement := range achievements {
+		total += achievement.Completed
+	}
+
+	mongoApp.AchievementsTotal = len(achievements)
+	mongoApp.AchievementsAverageCompletion = total / float64(len(achievements))
+
+	//
+
+	//
+	return mongoApp.Save()
 }
