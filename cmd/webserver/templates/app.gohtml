@@ -508,11 +508,11 @@
                             </tbody>
                         </table>
 
-                        <div id="reviews-chart">
+                        <div id="reviews-chart" class="mb-2">
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
 
-                        <h5>A selection of the {{ comma .Reviews.GetTotal }} reviews</h5>
+                        <h5>A selection of the {{ comma .Reviews.GetTotal }} reviews, see them all on the store page.</h5>
 
                         {{ range $key, $value := .Reviews.Reviews }}
 
