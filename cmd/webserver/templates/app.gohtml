@@ -752,7 +752,7 @@
                                                 </thead>
                                                 {{ range $key, $value := .App.GetDepots.Depots }}
                                                     <tr>
-                                                        <td><a href="/depots/{{ .ID }}">{{ .ID }}</a></td>
+                                                        <td>{{ .ID }}</td>
                                                         <td nowrap="nowrap">{{ .Name }}</td>
                                                         <td>
                                                             <div class="json">{{ json .Configs }}</div>
