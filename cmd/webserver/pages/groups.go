@@ -46,19 +46,9 @@ type groupsTemplate struct {
 	GlobalTemplate
 }
 
-func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func filterGroups(query DataTablesQuery) (filter mongo.M) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	query.limit(r)
-
-	// Make filter
-	var filter = mongo.M{}
+	filter = mongo.M{}
 
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
@@ -73,6 +63,29 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if typ == "group" || typ == "game" {
 		filter["type"] = typ
 	}
+
+	showErrors := query.getSearchString("errors")
+	if showErrors == "removed" {
+		filter["error"] = mongo.M{"$exists": true, "$ne": ""}
+	} else if showErrors == "notremoved" {
+		filter["error"] = mongo.M{"$exists": true, "$eq": ""}
+	}
+
+	return filter
+}
+
+func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := DataTablesQuery{}
+	err := query.fillFromURL(r.URL.Query())
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	query.limit(r)
+
+	var filter = filterGroups(query)
 
 	//
 	var wg sync.WaitGroup
@@ -90,14 +103,10 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// re := regexp.MustCompile("[[:^ascii:]]")
-		//
 		for k := range groups {
-			// groups[k].Headline = helpers.TruncateString(re.ReplaceAllLiteralString(groups[k].Headline, ""), 60)
 			groups[k].Name = helpers.InsertNewLines(groups[k].Name, 20)
 			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline, 10)
 		}
-
 	}(r)
 
 	// Get total
@@ -139,22 +148,9 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	// Make filter
-	var filter = mongo.M{}
+	var filter = filterGroups(query)
 
-	search := query.getSearchString("search")
-	if len(search) >= 2 {
-		filter["$or"] = mongo.A{
-			mongo.M{"$text": mongo.M{"$search": search}},
-			mongo.M{"_id": search},
-			mongo.M{"id": search},
-		}
-	}
-
-	typ := query.getSearchString("type")
-	if typ == "group" || typ == "game" {
-		filter["type"] = typ
-	}
+	filter["trending"] = mongo.M{"$ne": 0, "$exists": true}
 
 	//
 	var wg sync.WaitGroup
@@ -166,20 +162,16 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		groups, err = mongo.GetGroups(100, query.getOffset64(), mongo.D{{"members", -1}}, filter, nil)
+		groups, err = mongo.GetGroups(100, query.getOffset64(), mongo.D{{"trending", -1}}, filter, nil)
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
 
-		// re := regexp.MustCompile("[[:^ascii:]]")
-		//
 		for k := range groups {
-			// groups[k].Headline = helpers.TruncateString(re.ReplaceAllLiteralString(groups[k].Headline, ""), 60)
 			groups[k].Name = helpers.InsertNewLines(groups[k].Name, 20)
 			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline, 10)
 		}
-
 	}(r)
 
 	// Get total
