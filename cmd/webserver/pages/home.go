@@ -2,7 +2,6 @@ package pages
 
 import (
 	"html/template"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -42,18 +41,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Games, err = sql.PopularNewApps()
-		log.Err(err, r)
-	}()
-
-	// Popular games
-	var popularApps []sql.App
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		popularApps, err = sql.PopularApps()
 		log.Err(err, r)
 	}()
 
@@ -97,25 +84,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	wg.Wait()
-
-	// Choose a random background
-	var i int
-	for t.Background == "" {
-
-		// Stop getting stuck in the loop
-		i++
-		if i > 10 {
-			break
-		}
-
-		backgroundApp := popularApps[rand.Intn(len(popularApps))]
-		bg := backgroundApp.GetNewBackground()
-		if bg != "" {
-			t.Background = bg
-			t.BackgroundTitle = backgroundApp.GetName()
-			t.BackgroundLink = backgroundApp.GetPath()
-		}
-	}
 
 	//
 	err := returnTemplate(w, r, "home", t)

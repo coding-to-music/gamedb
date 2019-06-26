@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"math"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -343,6 +344,35 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	}
 
 	return t.metaImage
+}
+
+func (t GlobalTemplate) GetBackground() string {
+
+	popularApps, err := sql.PopularApps()
+	log.Err(err)
+
+	if len(popularApps) > 0 {
+
+		var i int
+		for t.Background == "" {
+
+			// Don't get stuck in the loop
+			i++
+			if i > 10 {
+				break
+			}
+
+			backgroundApp := popularApps[rand.Intn(len(popularApps))]
+			bg := backgroundApp.GetNewBackground()
+			if bg != "" {
+				t.Background = bg
+				t.BackgroundTitle = backgroundApp.GetName()
+				t.BackgroundLink = backgroundApp.GetPath()
+			}
+		}
+	}
+
+	return ""
 }
 
 func (t GlobalTemplate) GetCanonical() (text string) {
