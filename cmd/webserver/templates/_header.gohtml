@@ -104,8 +104,13 @@
                         </div>
                     </li>
 
-                    <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
-                        <a class="nav-link" href="/groups">Groups</a>
+                    <li class="nav-item dropdown {{if startsWith .Path "/groups"}}active{{end}}">
+                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/groups" data-toggle="dropdown">Groups</a>
+                        <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Groups</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item d-block d-lg-none" href="/groups">Groups</a>
+                            <a class="dropdown-item" href="/groups/trending">Trending</a>
+                        </div>
                     </li>
 
                     <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">
