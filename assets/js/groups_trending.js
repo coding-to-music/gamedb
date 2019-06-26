@@ -6,7 +6,7 @@ if ($('#groups-trending-page').length > 0) {
         return false;
     });
 
-    $('#type').on('change', function (e) {
+    $('#type, #errors').on('change', function (e) {
 
         $table.DataTable().draw();
         return false;
@@ -18,6 +18,7 @@ if ($('#groups-trending-page').length > 0) {
             data.search = {};
             data.search.search = $('#search').val();
             data.search.type = $('#type').val();
+            data.search.errors = $('#errors').val();
 
             dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
@@ -56,7 +57,7 @@ if ($('#groups-trending-page').length > 0) {
             {
                 "targets": 2,
                 "render": function (data, type, row) {
-                    return 1337;
+                    return row[10];
                 },
                 "orderable": false,
             },
