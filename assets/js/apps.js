@@ -147,7 +147,10 @@ if ($('#apps-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[4];
                 },
-                "orderable": false
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).addClass('d-none d-lg-table-cell');
+                },
+                "orderable": false,
             },
             // Players
             {
