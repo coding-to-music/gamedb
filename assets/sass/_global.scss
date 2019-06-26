@@ -8,7 +8,13 @@ body {
 
 body.bg {
     div.jumbotron {
+
         background-color: rgba(233, 236, 239, 0.9); // Using opacity makes images translucent too
+        margin-top: 1rem;
+
+        @include media-breakpoint-up(lg) {
+            margin-top: 0;
+        }
     }
 
     .container {
@@ -155,7 +161,6 @@ li.nav-item {
 
 .jumbotron {
     padding: 2rem;
-    margin-top: 1rem;
     margin-bottom: 1rem;
     overflow: hidden;
     position: relative;
