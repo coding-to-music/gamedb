@@ -25,7 +25,7 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	t := groupsTemplate{}
-	t.fill(w, r, "Groups", "")
+	t.fill(w, r, "Groups", "A database of all Steam groups")
 
 	err = returnTemplate(w, r, "groups", t)
 	log.Err(err, r)
@@ -36,7 +36,7 @@ func groupsTrendingHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	t := groupsTemplate{}
-	t.fill(w, r, "Trending Groups", "")
+	t.fill(w, r, "Trending Groups", "A database of all Steam groups")
 
 	err = returnTemplate(w, r, "groups_trending", t)
 	log.Err(err, r)
