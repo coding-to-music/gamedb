@@ -35,7 +35,7 @@ type Group struct {
 	Headline      string    `bson:"headline"`
 	Summary       string    `bson:"summary"`
 	Icon          string    `bson:"icon"`
-	Trending      int       `bson:"trending"`
+	Trending      int64     `bson:"trending"`
 	Members       int       `bson:"members"`
 	MembersInChat int       `bson:"members_in_chat"`
 	MembersInGame int       `bson:"members_in_game"`

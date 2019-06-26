@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"encoding/json"
 	"net/http"
 	"path"
 	"regexp"
@@ -8,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -122,6 +124,14 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		// Fix group data
 		if group.Summary == "No information given." {
 			group.Summary = ""
+		}
+
+		// Get trending value
+		err = getGroupTrending(&group)
+		if err != nil {
+			logError(err, groupID)
+			payload.ackRetry(msg)
+			return
 		}
 
 		// Update row
@@ -330,6 +340,46 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	})
 
 	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
+}
+
+func getGroupTrending(group *mongo.Group) (err error) {
+
+	// Trend value - https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
+
+	subBuilder := influxql.NewBuilder()
+	subBuilder.AddSelect("difference(last(members_count))", "")
+	subBuilder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementGroups.String())
+	subBuilder.AddWhere("group_id", "=", group.ID64)
+	subBuilder.AddWhere("time", ">=", "NOW() - 21d")
+	subBuilder.AddGroupByTime("1h")
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("cumulative_sum(difference)", "")
+	builder.SetFromSubQuery(subBuilder)
+
+	resp, err := helpers.InfluxQuery(builder.String())
+	if err != nil {
+		return err
+	}
+
+	var trendTotal int64
+
+	// Get the last value, todo, put into influx helper, like the ones below
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+		values := resp.Results[0].Series[0].Values
+		if len(values) > 0 {
+
+			last := values[len(values)-1]
+
+			trendTotal, err = last[1].(json.Number).Int64()
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	group.Trending = trendTotal
+	return nil
 }
 
 func saveGroupToMongo(group mongo.Group) (err error) {
