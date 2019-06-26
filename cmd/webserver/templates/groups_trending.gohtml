@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-sm-12 col-lg-6">
 
-                <h1><i class="fas fa-user-friends"></i> Groups</h1>
+                <h1><i class="fas fa-user-friends"></i> Trending Groups</h1>
 
             </div>
             <div class="col-sm-12 col-lg-6">
@@ -25,8 +25,8 @@
             </div>
             <div class="col-12">
 
-                <p class="lead">Groups are added when a player belonging to groups gets updated.</p>
-                <small>Join the <a href="https://steamcommunity.com/groups/gamedb" target="_blank">Game DB group</a></small>
+                <small>Groups are updated when a player in the group is updated, or the group is looked at.
+                    <br/>Join the <a href="https://steamcommunity.com/groups/gamedb" target="_blank">Game DB group</a></small>
 
             </div>
         </div>
@@ -45,6 +45,16 @@
                             <option value="">All Groups</option>
                             <option value="game">Only Game Groups</option>
                             <option value="group" selected>No Game Groups</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <div class="form-group">
+                        <label for="errors">Show Removed Groups</label>
+                        <select data-placeholder="Choose Group Type" class="form-control form-control-chosen" id="errors" name="errors">
+                            <option value="all">All Groups</option>
+                            <option value="removed">Only Removed Groups</option>
+                            <option value="notremoved" selected>Only Active Groups</option>
                         </select>
                     </div>
                 </div>
