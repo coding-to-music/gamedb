@@ -197,24 +197,15 @@ function websocketListener(page, onMessage) {
 }
 
 // Ads
-if (user.showAds) {
-
-    window.CHITIKA = {
-        'units': [
-            {"calltype": "async[2]", "publisher": "jleagle", "width": 160, "height": 600, "sid": "gamedb-right"},
-            {"calltype": "async[2]", "publisher": "jleagle", "width": 160, "height": 600, "sid": "gamedb-left"},
-            {"calltype": "async[2]", "publisher": "jleagle", "width": 728, "height": 90, "sid": "gamedb-top-big"},
-            {"calltype": "async[2]", "publisher": "jleagle", "width": 320, "height": 50, "sid": "gamedb-top-small"}
-        ]
-    };
-
-    $('div.container').eq(1)
-        .prepend('<div class="ad-right d-none d-xl-block" id="chitikaAdBlock-0"></div>')
-        .prepend('<div class="ad-left d-none d-xl-block" id="chitikaAdBlock-1"></div>');
-    $('#ad-top')
-        .prepend('<div class="ad-top-big d-none d-lg-block d-xl-none" id="chitikaAdBlock-2"></div>')
-        .prepend('<div class="ad-top-small d-block d-lg-none" id="chitikaAdBlock-3"></div>');
-}
+// if (user.showAds) {
+//
+//     $('div.container').eq(1)
+//         .prepend('<div class="ad-right d-none d-xl-block" id="chitikaAdBlock-0"></div>')
+//         .prepend('<div class="ad-left d-none d-xl-block" id="chitikaAdBlock-1"></div>');
+//     $('#ad-top')
+//         .prepend('<div class="ad-top-big d-none d-lg-block d-xl-none" id="chitikaAdBlock-2"></div>')
+//         .prepend('<div class="ad-top-small d-block d-lg-none" id="chitikaAdBlock-3"></div>');
+// }
 
 // Toasts
 if (isIterable(user.toasts)) {
