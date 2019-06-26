@@ -83,7 +83,12 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 			PasswordSet: true,
 		}
 
-		client, err = mongo.NewClient(options.Client().SetAuth(creds).ApplyURI(config.MongoDSN()))
+		ops := options.Client().
+			SetAuth(creds).
+			ApplyURI(config.MongoDSN()).
+			SetAppName("Game DB")
+
+		client, err = mongo.NewClient(ops)
 
 		if err != nil {
 			return client, ctx, err
