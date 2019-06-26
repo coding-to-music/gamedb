@@ -12,15 +12,13 @@
                 {{end}}
             </li>
 
-            {{ if eq .Env "local" }}
-                <li class="nav-item">
-                    {{if endsWith .Path "/trending" }}
-                        <span class="nav-link active" role="tab">Trending</span>
-                    {{else}}
-                        <a class="nav-link" href="/groups/trending" role="tab">Trending</a>
-                    {{end}}
-                </li>
-            {{end}}
+            <li class="nav-item">
+                {{if endsWith .Path "/trending" }}
+                    <span class="nav-link active" role="tab">Trending</span>
+                {{else}}
+                    <a class="nav-link" href="/groups/trending" role="tab">Trending</a>
+                {{end}}
+            </li>
 
         </ul>
     </div>
