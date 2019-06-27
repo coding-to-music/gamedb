@@ -667,10 +667,25 @@ func updateAppDetails(app *sql.App) error {
 
 				defer wg.Done()
 
-				code := helpers.GetResponseCode(response.Data.Background)
 				app.Background = ""
-				if code == 200 {
-					app.Background = response.Data.Background
+
+				common := app.GetCommon()
+				if assets, ok := common["library_assets"]; ok {
+
+					assetMap := map[string]interface{}{}
+					err := json.Unmarshal([]byte(assets), &assetMap)
+					if err != nil {
+						log.Err(err)
+						return
+					}
+
+					if _, ok := assetMap["library_hero"]; ok {
+
+						bg := "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(app.ID) + "/library_hero.jpg"
+						if helpers.GetResponseCode(bg) == 200 {
+							app.Background = bg
+						}
+					}
 				}
 			}()
 
