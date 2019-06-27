@@ -187,7 +187,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
 	t.toasts = toasts
-	t.setRandomBackground()
 	t.Apps = []mongo.PlayerApp{}
 	t.Badges = player.GetSpecialBadges()
 	t.BadgeStats = badgeStats

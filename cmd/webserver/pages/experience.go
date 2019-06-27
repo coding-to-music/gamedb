@@ -32,7 +32,6 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := experienceTemplate{}
 	t.fill(w, r, "Experience", "Check how much XP you need to go up a level")
-	t.setRandomBackground()
 
 	//
 	var chunks [][]level

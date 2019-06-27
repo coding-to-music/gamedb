@@ -52,7 +52,7 @@ require (
 	github.com/jinzhu/now v1.0.1
 	github.com/jzelinskie/geddit v0.0.0-20190613154237-4b3cacc98c40
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/kr/pretty v0.1.0 // indirect
+	github.com/kr/pretty v0.1.0
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
 	github.com/logrusorgru/aurora v0.0.0-20190621143223-cea283e61946
 	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
@@ -64,6 +64,7 @@ require (
 	github.com/nicklaw5/helix v0.5.2
 	github.com/nlopes/slack v0.5.0
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
+	github.com/oschwald/maxminddb-golang v1.3.1
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pkg/errors v0.8.1 // indirect

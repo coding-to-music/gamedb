@@ -40,7 +40,6 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := statsGenresTemplate{}
 	t.fill(w, r, "Genres", "")
-	t.setRandomBackground()
 	t.Genres = genres
 	t.Date = config.Value
 	t.Prices = prices

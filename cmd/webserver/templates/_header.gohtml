@@ -192,7 +192,7 @@
 
                     <li class="nav-item dropdown" id="header-flag">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                            <img src="/assets/img/flags/{{ lower .GetFUserCountry }}.png" alt="{{ .UserCountry }}">
+                            <img src="/assets/img/flags/{{ lower .GetUserCountry }}.png" alt="{{ .UserCountry }}">
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" id="header-settings">
                             {{ range $key, $value:= .ActiveCountries }}

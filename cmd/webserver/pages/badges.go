@@ -20,7 +20,6 @@ func badgesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := badgesTemplate{}
 	t.fill(w, r, "Badges", "")
-	t.setRandomBackground()
 
 	err := returnTemplate(w, r, "badges", t)
 	log.Err(err, r)

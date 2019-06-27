@@ -33,7 +33,6 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := steamAPITemplate{}
 	t.fill(w, r, "Steam API", "")
-	t.setRandomBackground()
 
 	var err error
 	var interfaces = Interfaces{}

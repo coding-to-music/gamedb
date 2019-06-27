@@ -19,7 +19,6 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := donateTemplate{}
 	t.fill(w, r, "Donate", "Databases take up a tonne of memory and space. Help pay for the server costs or just buy me a beer.")
-	t.setRandomBackground()
 	t.Pages = []int{
 		sql.UserLevelLimit0,
 		sql.UserLevelLimit1,

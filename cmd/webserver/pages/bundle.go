@@ -57,7 +57,6 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, bundle.Name, "")
 	t.Bundle = bundle
 	t.Canonical = bundle.GetPath()
-	t.setRandomBackground()
 
 	//
 	var wg sync.WaitGroup

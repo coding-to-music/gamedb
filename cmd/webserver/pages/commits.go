@@ -29,7 +29,6 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
-	t.setRandomBackground()
 
 	var err error
 	t.Total, err = getTotalCommits()

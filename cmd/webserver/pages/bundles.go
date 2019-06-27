@@ -28,7 +28,6 @@ func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := bundlesTemplate{}
 	t.fill(w, r, "Bundles", "The last "+template.HTML(humanize.Comma(int64(total)))+" bundles to be updated.")
-	t.setRandomBackground()
 
 	err = returnTemplate(w, r, "bundles", t)
 	log.Err(err, r)

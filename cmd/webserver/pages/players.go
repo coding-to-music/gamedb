@@ -27,7 +27,6 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := playersTemplate{}
-	t.setRandomBackground()
 
 	//
 	var wg sync.WaitGroup

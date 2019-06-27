@@ -120,7 +120,6 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	if len(appsSlice) == 1 {
 		t.Background = appsSlice[0].Background
 	}
-	t.setRandomBackground()
 	t.Package = pack
 	t.Apps = appsMap
 	t.Bundles = bundles

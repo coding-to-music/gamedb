@@ -27,7 +27,6 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := groupsTemplate{}
 	t.fill(w, r, "Groups", "A database of all Steam groups")
-	t.setRandomBackground()
 
 	err = returnTemplate(w, r, "groups", t)
 	log.Err(err, r)

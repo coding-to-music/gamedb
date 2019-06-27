@@ -22,7 +22,6 @@ func queuesHandler(w http.ResponseWriter, r *http.Request) {
 	t := queuesTemplate{}
 	t.fill(w, r, "Queues", "When new items get added to the site, they go through a queue to not overload the servers.")
 	t.addAssetHighCharts()
-	t.setRandomBackground()
 
 	err := returnTemplate(w, r, "queues", t)
 	log.Err(err, r)

@@ -55,7 +55,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t := loginTemplate{}
 	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.setFlashes(w, r)
-	t.setRandomBackground()
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 
 	t.LoginEmail, err = session.Get(r, loginSessionEmail)

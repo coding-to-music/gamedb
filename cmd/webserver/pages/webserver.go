@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"math"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -23,6 +24,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
+	"github.com/oschwald/maxminddb-golang"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
 )
@@ -80,6 +82,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	//
 	setHeaders(w, r, "text/html")
 
+	//
 	folder := config.Config.TemplatesPath.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/_apps_header.gohtml",
@@ -277,6 +280,10 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		t.UserCurrencySymbol = locale.CurrencySymbol
 	}
 
+	//
+	t.setRandomBackground()
+	t.setCountryCode()
+
 	// Pages
 	switch true {
 	case strings.HasPrefix(t.Path, "/contact"):
@@ -320,32 +327,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 }
 
-func (t GlobalTemplate) GetUserJSON() string {
-
-	stringMap := map[string]interface{}{
-		"userCountry":        t.UserCountry,
-		"userCurrencySymbol": t.UserCurrencySymbol,
-		"userLevel":          t.userLevel,
-		"isLoggedIn":         t.IsLoggedIn(),
-		"showAds":            t.showAds(),
-		"toasts":             t.toasts,
-	}
-
-	b, err := json.Marshal(stringMap)
-	log.Err(err)
-
-	return string(b)
-}
-
-func (t GlobalTemplate) GetMetaImage() (text string) {
-
-	if t.metaImage == "" {
-		return "https://gamedb.online/assets/img/sa-bg-500x500.png"
-	}
-
-	return t.metaImage
-}
-
 func (t *GlobalTemplate) setRandomBackground() {
 
 	if t.Background != "" {
@@ -374,6 +355,102 @@ func (t *GlobalTemplate) setRandomBackground() {
 	}
 }
 
+func (t *GlobalTemplate) setCountryCode() {
+
+	if t.UserCountry != "" {
+		return
+	}
+
+	r := t.request
+
+	country, err := session.Get(r, helpers.SessionUserCountry)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+	if country != "" {
+		return
+	}
+
+	db, err := maxminddb.Open(config.Config.AssetsPath.Get() + "/files/GeoLite2-Country.mmdb")
+	if err != nil {
+		log.Err(err)
+		return
+	}
+	defer func() {
+		// todo, should this just be left open?
+		err = db.Close()
+		log.Err(err)
+	}()
+
+	ip := net.ParseIP(r.RemoteAddr)
+
+	if ip != nil {
+
+		// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
+		var record struct {
+			Country struct {
+				ISOCode           string `maxminddb:"iso_code"`
+				IsInEuropeanUnion bool   `maxminddb:"is_in_european_union"`
+			} `maxminddb:"country"`
+		}
+
+		err = db.Lookup(ip, &record)
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		var cc string
+
+		if record.Country.IsInEuropeanUnion && record.Country.ISOCode != "GB" {
+			cc = "DE"
+		} else {
+			for _, v := range helpers.GetActiveCountries() {
+				if record.Country.ISOCode == string(v) {
+					cc = record.Country.ISOCode
+					break
+				}
+			}
+		}
+
+		if cc == "" {
+			cc = "US"
+		}
+
+		err = session.Set(r, helpers.SessionUserCountry, cc)
+		log.Err(err)
+
+		t.UserCountry = steam.CountryCode(cc)
+	}
+}
+
+func (t GlobalTemplate) GetUserJSON() string {
+
+	stringMap := map[string]interface{}{
+		"userCountry":        t.GetUserCountry(),
+		"userCurrencySymbol": t.UserCurrencySymbol,
+		"userLevel":          t.userLevel,
+		"isLoggedIn":         t.IsLoggedIn(),
+		"showAds":            t.showAds(),
+		"toasts":             t.toasts,
+	}
+
+	b, err := json.Marshal(stringMap)
+	log.Err(err)
+
+	return string(b)
+}
+
+func (t GlobalTemplate) GetMetaImage() (text string) {
+
+	if t.metaImage == "" {
+		return "https://gamedb.online/assets/img/sa-bg-500x500.png"
+	}
+
+	return t.metaImage
+}
+
 func (t GlobalTemplate) GetCanonical() (text string) {
 
 	if t.Canonical != "" {
@@ -386,7 +463,7 @@ func (t GlobalTemplate) GetFlag() (text string) {
 	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
 }
 
-func (t GlobalTemplate) GetFUserCountry() (text string) {
+func (t GlobalTemplate) GetUserCountry() (text string) {
 	return string(t.UserCountry)
 }
 

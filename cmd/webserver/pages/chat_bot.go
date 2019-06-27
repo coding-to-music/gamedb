@@ -28,7 +28,6 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	t := chatBotTemplate{}
 	t.fill(w, r, "Chat", "The Game DB community.")
 	t.Commands = chatbot.CommandRegister
-	t.setRandomBackground()
 
 	// Get amount of guilds
 	func() {

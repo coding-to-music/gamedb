@@ -26,7 +26,6 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	t := newReleasesTemplate{}
 	t.fill(w, r, "New Releases", "")
 	t.addAssetHighCharts()
-	t.setRandomBackground()
 	t.Days = config.Config.NewReleaseDays.GetInt()
 
 	t.Apps, err = countNewReleaseApps()
