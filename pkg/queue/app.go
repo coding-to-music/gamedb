@@ -1180,11 +1180,15 @@ func updateMongoTable(app *sql.App) (err error) {
 	}
 
 	var total float64
+	var count int
 	for _, achievement := range achievements {
-		total += achievement.Completed
+		if !achievement.IsHidden() {
+			count++
+			total += achievement.Completed
+		}
 	}
 
-	mongoApp.AchievementsTotal = len(achievements)
+	mongoApp.AchievementsCount = count
 	mongoApp.AchievementsAverageCompletion = total / float64(len(achievements))
 
 	// Playtime

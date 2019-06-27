@@ -6,7 +6,7 @@ import (
 
 type App struct {
 	ID                            int     `bson:"_id"`
-	AchievementsTotal             int     `bson:"achievements_total"`
+	AchievementsCount             int     `bson:"achievements_count"`
 	AchievementsAverageCompletion float64 `bson:"achievements_average_completion"`
 	PlaytimeTotal                 int64   `bson:"playtime_total"`   // Minutes
 	PlaytimeAverage               float64 `bson:"playtime_average"` // Minutes
@@ -16,7 +16,7 @@ func (a App) BSON() (ret interface{}) {
 
 	return M{
 		"_id":                             a.ID,
-		"achievements_total":              a.AchievementsTotal,
+		"achievements_total":              a.AchievementsCount,
 		"achievements_average_completion": a.AchievementsAverageCompletion,
 		"playtime_total":                  a.PlaytimeTotal,
 		"playtime_average":                a.PlaytimeAverage,
