@@ -267,7 +267,9 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
 
 		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
-		logError(err, message.ID)
+		if err != nil {
+			logError(err, message.ID)
+		}
 	}()
 
 	// Clear caches
