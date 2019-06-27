@@ -1169,6 +1169,7 @@ func updateMongoTable(app *sql.App) (err error) {
 	if err != nil && err != mongo.ErrNoDocuments {
 		return err
 	}
+	mongoApp.ID = app.ID // Incase it didn't exist
 
 	// Achievements
 	achievements, err := app.GetAchievements()
@@ -1184,7 +1185,19 @@ func updateMongoTable(app *sql.App) (err error) {
 	mongoApp.AchievementsTotal = len(achievements)
 	mongoApp.AchievementsAverageCompletion = total / float64(len(achievements))
 
-	//
+	// Playtime
+	players, err := mongo.GetAppPlayTimes(app.ID)
+	if err != nil {
+		return err
+	}
+
+	var minutes int64
+	for _, v := range players {
+		minutes += int64(v.AppTime)
+	}
+
+	mongoApp.PlaytimeTotal = minutes
+	mongoApp.PlaytimeAverage = float64(minutes) / float64(len(players))
 
 	//
 	return mongoApp.Save()
