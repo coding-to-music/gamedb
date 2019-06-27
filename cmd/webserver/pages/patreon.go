@@ -12,6 +12,7 @@ import (
 )
 
 func PatreonRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Post("/webhooks", patreonWebhookPostHandler)
 	return r

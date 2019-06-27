@@ -71,7 +71,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
 	t.Canonical = app.GetPath()
-	t.Background = app.GetNewBackground()
+	t.Background = app.Background
 
 	//
 	var wg sync.WaitGroup

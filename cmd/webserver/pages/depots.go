@@ -22,6 +22,7 @@ func depotsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := depotsTemplate{}
 	t.fill(w, r, "Depots", "")
+	t.setRandomBackground()
 
 	err := returnTemplate(w, r, "depots", t)
 	log.Err(err, r)

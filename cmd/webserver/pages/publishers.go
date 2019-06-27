@@ -39,6 +39,7 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := statsPublishersTemplate{}
 	t.fill(w, r, "Publishers", "Publishers handle marketing and advertising.")
+	t.setRandomBackground()
 	t.Publishers = publishers
 	t.Date = config.Value
 	t.Prices = prices

@@ -33,8 +33,9 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := forgotTemplate{}
 	t.fill(w, r, "Forgot Password", "")
-	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 	t.setFlashes(w, r)
+	t.setRandomBackground()
+	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 
 	t.LoginEmail, err = session.Get(r, "login-email")
 	log.Err(err, r)

@@ -57,6 +57,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Settings", "")
 	t.addAssetPasswordStrength()
 	t.setFlashes(w, r)
+	t.setRandomBackground()
 	t.Domain = config.Config.GameDBDomain.Get()
 
 	// Get user

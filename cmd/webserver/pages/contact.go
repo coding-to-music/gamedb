@@ -20,6 +20,7 @@ const (
 )
 
 func ContactRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", contactHandler)
 	r.Post("/", postContactHandler)
@@ -32,6 +33,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Contact", "Get in touch with Game DB.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 	t.setFlashes(w, r)
+	t.setRandomBackground()
 
 	var err error
 

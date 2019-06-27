@@ -14,6 +14,7 @@ import (
 )
 
 func StatsRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", statsHandler)
 	r.Get("/client-players.json", statsClientPlayersHandler)
@@ -29,6 +30,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	t := statsTemplate{}
 	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
 	t.addAssetHighCharts()
+	t.setRandomBackground()
 
 	var wg sync.WaitGroup
 

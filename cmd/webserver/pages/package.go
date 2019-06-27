@@ -48,7 +48,8 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	var apps = map[int]sql.App{}
+	var appsMap = map[int]sql.App{}
+	var appsSlice []sql.App
 	wg.Add(1)
 	go func() {
 
@@ -62,19 +63,18 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, v := range appIDs {
-			apps[v] = sql.App{ID: v}
+			appsMap[v] = sql.App{ID: v}
 		}
 
-		appRows, err := sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc"})
+		appsSlice, err = sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc", "common"})
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
 
-		for _, v := range appRows {
-			apps[v.ID] = v
+		for _, v := range appsSlice {
+			appsMap[v.ID] = v
 		}
-
 	}()
 
 	var bundles []sql.Bundle
@@ -117,8 +117,12 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, pack.GetName(), "")
 	t.metaImage = pack.GetMetaImage()
 	t.addAssetHighCharts()
+	if len(appsSlice) == 1 {
+		t.Background = appsSlice[0].Background
+	}
+	t.setRandomBackground()
 	t.Package = pack
-	t.Apps = apps
+	t.Apps = appsMap
 	t.Bundles = bundles
 	t.Canonical = pack.GetPath()
 

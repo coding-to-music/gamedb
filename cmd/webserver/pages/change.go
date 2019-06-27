@@ -43,6 +43,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps = map[int]sql.App{}
 	t.Packages = map[int]sql.Package{}
 	t.Canonical = change.GetPath()
+	t.setRandomBackground()
 
 	//
 	var wg sync.WaitGroup

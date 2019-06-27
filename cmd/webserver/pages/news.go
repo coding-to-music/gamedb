@@ -14,6 +14,7 @@ import (
 )
 
 func NewsRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", newsHandler)
 	r.Get("/news.json", newsAjaxHandler)
@@ -24,6 +25,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newsTemplate{}
 	t.fill(w, r, "News", "All the news from all the games, all in one place.")
+	t.setRandomBackground()
 
 	apps, err := sql.PopularApps()
 	log.Err(err, r)

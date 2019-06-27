@@ -12,6 +12,7 @@ import (
 )
 
 func NewReleasesRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", newReleasesHandler)
 	r.Get("/new-releases.json", newReleasesAjaxHandler)
@@ -25,6 +26,7 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	t := newReleasesTemplate{}
 	t.fill(w, r, "New Releases", "")
 	t.addAssetHighCharts()
+	t.setRandomBackground()
 	t.Days = config.Config.NewReleaseDays.GetInt()
 
 	t.Apps, err = countNewReleaseApps()

@@ -16,6 +16,7 @@ import (
 )
 
 func AppsRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", appsHandler)
 	r.Get("/apps.json", appsAjaxHandler)
@@ -32,6 +33,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Types = sql.GetTypesForSelect()
 	t.addAssetChosen()
 	t.addAssetSlider()
+	t.setRandomBackground()
 
 	//
 	var wg sync.WaitGroup

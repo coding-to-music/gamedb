@@ -10,6 +10,7 @@ import (
 )
 
 func DevelopersRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", developersHandler)
 	return r
@@ -39,6 +40,7 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := statsDevelopersTemplate{}
 	t.fill(w, r, "Developers", "All the software developers that create Steam content.")
+	t.setRandomBackground()
 	t.Developers = developers
 	t.Date = config.Value
 	t.Prices = prices

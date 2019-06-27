@@ -346,7 +346,11 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	return t.metaImage
 }
 
-func (t GlobalTemplate) GetBackground() string {
+func (t *GlobalTemplate) setRandomBackground() {
+
+	if t.Background != "" {
+		return
+	}
 
 	popularApps, err := sql.PopularApps()
 	log.Err(err)
@@ -363,16 +367,11 @@ func (t GlobalTemplate) GetBackground() string {
 			}
 
 			backgroundApp := popularApps[rand.Intn(len(popularApps))]
-			bg := backgroundApp.GetNewBackground()
-			if bg != "" {
-				t.Background = bg
-				t.BackgroundTitle = backgroundApp.GetName()
-				t.BackgroundLink = backgroundApp.GetPath()
-			}
+			t.Background = backgroundApp.Background
+			t.BackgroundTitle = backgroundApp.GetName()
+			t.BackgroundLink = backgroundApp.GetPath()
 		}
 	}
-
-	return ""
 }
 
 func (t GlobalTemplate) GetCanonical() (text string) {

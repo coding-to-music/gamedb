@@ -12,6 +12,7 @@ import (
 )
 
 func trendingRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", trendingHandler)
 	r.Get("/trending.json", trendingAppsAjaxHandler)
@@ -27,6 +28,7 @@ func trendingHandler(w http.ResponseWriter, r *http.Request) {
 	t := trendingTemplate{}
 	t.fill(w, r, "Trending", "")
 	t.addAssetHighCharts()
+	t.setRandomBackground()
 
 	err = returnTemplate(w, r, "trending_apps", t)
 	log.Err(err, r)

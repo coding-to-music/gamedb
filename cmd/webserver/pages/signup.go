@@ -44,9 +44,10 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := signupTemplate{}
 	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
-	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-	t.Domain = config.Config.GameDBDomain.Get()
 	t.setFlashes(w, r)
+	t.setRandomBackground()
+	t.Domain = config.Config.GameDBDomain.Get()
+	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 
 	t.SignupEmail, err = session.Get(r, signupSessionEmail)
 	log.Err(err, r)

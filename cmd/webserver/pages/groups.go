@@ -11,6 +11,7 @@ import (
 )
 
 func GroupsRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", groupsHandler)
 	r.Get("/trending", groupsTrendingHandler)
@@ -26,6 +27,7 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := groupsTemplate{}
 	t.fill(w, r, "Groups", "A database of all Steam groups")
+	t.setRandomBackground()
 
 	err = returnTemplate(w, r, "groups", t)
 	log.Err(err, r)

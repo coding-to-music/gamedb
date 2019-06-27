@@ -10,6 +10,7 @@ import (
 )
 
 func FranchiseRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", franchisesHandler)
 	r.Get("/{id}", franchiseHandler)

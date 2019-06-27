@@ -52,6 +52,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	t := groupTemplate{}
 	t.fill(w, r, group.GetName(), "")
 	t.addAssetHighCharts()
+	t.setRandomBackground()
 	t.Canonical = group.GetPath()
 
 	// Update group

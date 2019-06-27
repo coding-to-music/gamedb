@@ -82,6 +82,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Add Player", "Add yourself to the Steam DB.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 	t.setFlashes(w, r)
+	t.setRandomBackground()
 
 	//
 	err := returnTemplate(w, r, "add_player", t)

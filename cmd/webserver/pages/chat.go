@@ -64,6 +64,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Chat", "The Game DB community.")
 	t.ChannelID = id
 	t.addAssetJSON2HTML()
+	t.setRandomBackground()
 
 	//
 	var wg sync.WaitGroup

@@ -27,6 +27,7 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Price Changes", "Pick up a bargain.")
 	t.addAssetChosen()
 	t.addAssetSlider()
+	t.setRandomBackground()
 
 	err := returnTemplate(w, r, "price_changes", t)
 	log.Err(err, r)

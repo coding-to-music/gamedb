@@ -28,6 +28,7 @@ func packagesHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := packagesTemplate{}
 	t.fill(w, r, "Packages", "The last "+template.HTML(humanize.Comma(int64(total)))+" packages to be updated.")
+	t.setRandomBackground()
 
 	err = returnTemplate(w, r, "packages", t)
 	log.Err(err, r)

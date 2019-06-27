@@ -18,6 +18,7 @@ const (
 )
 
 func CommitsRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", commitsHandler)
 	r.Get("/commits.json", commitsAjaxHandler)
@@ -28,6 +29,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
+	t.setRandomBackground()
 
 	var err error
 	t.Total, err = getTotalCommits()

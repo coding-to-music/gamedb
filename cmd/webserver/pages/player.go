@@ -186,16 +186,17 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
-	t.Player = player
+	t.toasts = toasts
+	t.setRandomBackground()
 	t.Apps = []mongo.PlayerApp{}
 	t.Badges = player.GetSpecialBadges()
 	t.BadgeStats = badgeStats
-	t.GameStats = gameStats
 	t.Bans = bans
-	t.toasts = toasts
-	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 	t.Canonical = player.GetPath()
+	t.DefaultAvatar = helpers.DefaultPlayerAvatar
+	t.GameStats = gameStats
 	t.Groups = groups
+	t.Player = player
 	t.Wishlist = wishlist
 
 	err = returnTemplate(w, r, "player", t)

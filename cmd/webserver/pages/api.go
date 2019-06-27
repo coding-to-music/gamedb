@@ -268,6 +268,7 @@ var (
 )
 
 func APIRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", apiHandler)
 
@@ -285,6 +286,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	t := apiTemplate{}
 	t.fill(w, r, "API", "A list of API endpoints to access Steam data & Game DB data")
 	t.Calls = endpoints
+	t.setRandomBackground()
 
 	err := returnTemplate(w, r, "api", t)
 	log.Err(err, r)

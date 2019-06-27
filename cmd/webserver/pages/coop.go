@@ -17,6 +17,7 @@ const (
 )
 
 func CoopRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", coopHandler)
 	return r
@@ -26,6 +27,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := coopTemplate{}
 	t.fill(w, r, "Co-op", "Find a game to play with friends.")
+	t.setRandomBackground()
 	t.DefaultAvatar = helpers.DefaultAppIcon
 
 	// Get player ints

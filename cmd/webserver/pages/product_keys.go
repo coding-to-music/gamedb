@@ -12,6 +12,7 @@ import (
 )
 
 func ProductKeysRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", productKeysHandler)
 	r.Get("/product-keys.json", productKeysAjaxHandler)
@@ -25,6 +26,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := productKeysTemplate{}
 	t.fill(w, r, "Product Keys", "Search extended and common product keys")
+	t.setRandomBackground()
 	t.Type = q.Get("type")
 	t.Key = q.Get("key")
 	t.Value = q.Get("value")

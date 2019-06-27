@@ -10,6 +10,7 @@ import (
 )
 
 func TagsRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", statsTagsHandler)
 	return r
@@ -38,7 +39,8 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := statsTagsTemplate{}
-	t.fill(w, r, "Tags", "")
+	t.fill(w, r, "Tags", "Top Steam tags")
+	t.setRandomBackground()
 	t.Tags = tags
 	t.Date = config.Value
 	t.Prices = prices

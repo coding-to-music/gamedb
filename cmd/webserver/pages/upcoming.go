@@ -11,6 +11,7 @@ import (
 )
 
 func UpcomingRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", upcomingHandler)
 	r.Get("/upcoming.json", upcomingAjaxHandler)
@@ -24,6 +25,7 @@ func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := upcomingTemplate{}
 	t.fill(w, r, "Upcoming", "The apps you have to look forward to!")
+	t.setRandomBackground()
 
 	t.Apps, err = countUpcomingApps()
 	log.Err(err, r)
