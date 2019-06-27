@@ -40,54 +40,6 @@ func LoginRouter() http.Handler {
 	return r
 }
 
-func loginWithGoogleHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LoginHandler(w, r)
-}
-
-func loginWithDiscordHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionDiscord)
-	connection.LoginHandler(w, r)
-}
-
-func loginWithPatreonHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionPatreon)
-	connection.LoginHandler(w, r)
-}
-
-func loginWithSteamHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionSteam)
-	connection.LoginHandler(w, r)
-}
-
-func loginWithGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LoginCallbackHandler(w, r)
-}
-
-func loginWithDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LoginCallbackHandler(w, r)
-}
-
-func loginWithPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LoginCallbackHandler(w, r)
-}
-
-func loginWithSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LoginCallbackHandler(w, r)
-}
-
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := getUserFromSession(r)
@@ -252,4 +204,52 @@ func login(r *http.Request, user sql.User) (string, bool) {
 	}
 
 	return "You have been logged in", true
+}
+
+func loginWithGoogleHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginHandler(w, r)
+}
+
+func loginWithDiscordHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionDiscord)
+	connection.LoginHandler(w, r)
+}
+
+func loginWithPatreonHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionPatreon)
+	connection.LoginHandler(w, r)
+}
+
+func loginWithSteamHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionSteam)
+	connection.LoginHandler(w, r)
+}
+
+func loginWithGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginCallbackHandler(w, r)
+}
+
+func loginWithDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginCallbackHandler(w, r)
+}
+
+func loginWithPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginCallbackHandler(w, r)
+}
+
+func loginWithSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGoogle)
+	connection.LoginCallbackHandler(w, r)
 }
