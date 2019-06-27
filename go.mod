@@ -100,7 +100,7 @@ require (
 	golang.org/x/sys v0.0.0-20190626222941-04f50cda93cb // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
-	google.golang.org/genproto v0.0.0-20190627185724-8a5ba248b858 // indirect
+	google.golang.org/genproto v0.0.0-20190627211713-eb59cef1c072 // indirect
 	google.golang.org/grpc v1.21.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
