@@ -13,18 +13,18 @@
         {{ end }}
 
         <small>
-            <a href="{{ .App.GetCommunityLink }}" data-toggle="tooltip" data-placement="top" title="Community Page" target="_blank">
+            <a href="{{ .App.GetCommunityLink }}" target="_blank">
                 <i class="fas fa-users"></i> Community Hub
             </a>
-            <a href="{{ .App.GetStoreLink }}" data-toggle="tooltip" data-placement="top" title="Store Page" target="_blank">
+            <a href="{{ .App.GetStoreLink }}" target="_blank">
                 <i class="fas fa-shopping-cart"></i> Store Page
             </a>
             {{if ne .App.Homepage ""}}
-                <a href="{{ .App.Homepage }}" data-toggle="tooltip" data-placement="top" title="Official Website" target="_blank">
+                <a href="{{ .App.Homepage }}" target="_blank">
                     <i class="fas fa-home"></i> Homepage
                 </a>
             {{end}}
-            <a href="{{ .App.GetInstallLink }}" data-toggle="tooltip" data-placement="top" title="Install">
+            <a href="{{ .App.GetInstallLink }}">
                 <i class="fas fa-sign-in-alt"></i> Install
             </a>
         </small>
