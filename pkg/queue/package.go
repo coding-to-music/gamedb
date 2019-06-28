@@ -113,7 +113,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		if err == steam.ErrHTMLResponse {
 			logInfo(err, message.ID)
 		} else {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 		}
 
 		payload.ackRetry(msg)

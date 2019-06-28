@@ -81,7 +81,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 
 			err = saveAppPlayerToInflux(&app, viewers)
 			if err != nil {
-				logError(err, appID)
+				helpers.LogSteamErr(err, appID)
 				payload.ackRetry(msg)
 				return
 			}

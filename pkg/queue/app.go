@@ -127,21 +127,21 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		schema, err := updateAppSchema(&app)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updateAppAchievements(&app, schema)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updateAppNews(&app)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -155,21 +155,21 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppDetails(&app)
 		if err != nil && err != steam.ErrAppNotFound {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updateAppReviews(&app)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updateBundles(&app)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}

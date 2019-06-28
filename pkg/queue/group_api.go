@@ -66,7 +66,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 			payload.ack(msg)
 			return
 		} else {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}

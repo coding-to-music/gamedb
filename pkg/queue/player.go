@@ -108,7 +108,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 			if err == steam.ErrNoUserFound {
 				payload.ack(msg)
 			} else {
-				logError(err, message.ID)
+				helpers.LogSteamErr(err, message.ID)
 				payload.ackRetry(msg)
 			}
 
@@ -117,49 +117,49 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updatePlayerGames(&player)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerRecentGames(&player)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerBadges(&player)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerFriends(&player)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerLevel(&player)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerBans(&player)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerGroups(&player)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -173,7 +173,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updatePlayerWishlist(&player)
 		if err != nil {
-			logError(err, message.ID)
+			helpers.LogSteamErr(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}

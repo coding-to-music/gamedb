@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -36,10 +37,10 @@ func (l steamLogger) Write(i steam.Log) {
 
 func HandleSteamStoreErr(err error, bytes []byte, allowedCodes []int) error {
 
-	if err == steam.ErrHTMLResponse {
-		log.Err(err, string(bytes))
-		time.Sleep(time.Second * 30)
-	}
+	// if err == steam.ErrHTMLResponse {
+	// 	log.Err(err, string(bytes))
+	// 	time.Sleep(time.Second * 30)
+	// }
 
 	err2, ok := err.(steam.Error)
 	if ok {
@@ -48,4 +49,22 @@ func HandleSteamStoreErr(err error, bytes []byte, allowedCodes []int) error {
 		}
 	}
 	return err
+}
+
+func LogSteamErr(err error, interfaces ...interface{}) {
+
+	if config.IsProd() {
+
+		if strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
+			return
+		}
+
+		if strings.Contains(err.Error(), "unexpected end of JSON input") {
+			return
+		}
+	}
+
+	interfaces = append(interfaces, err)
+
+	log.Err(interfaces)
 }

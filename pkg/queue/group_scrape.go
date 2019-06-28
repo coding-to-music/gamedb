@@ -86,7 +86,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		if group.Type == "" {
 			group.Type, err = getGroupType(groupID)
 			if err != nil {
-				logError(err, groupID)
+				helpers.LogSteamErr(err, groupID)
 				payload.ackRetry(msg)
 				return
 			}
@@ -115,7 +115,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		if group.ID64 == "" {
 			err = produceGroupNew(groupID)
 			if err != nil {
-				logError(err, groupID)
+				helpers.LogSteamErr(err, groupID)
 			}
 			payload.ack(msg)
 			return
