@@ -133,7 +133,6 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 	if item, ok := keys[key]; ok {
 		switch item.Type {
 		case picsTypeBool:
-			log.Info(val)
 			b, _ := strconv.ParseBool(val)
 			if b {
 				return "Yes"
