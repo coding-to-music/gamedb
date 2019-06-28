@@ -6,6 +6,8 @@
         <h1><i class="fas fa-exchange-alt"></i> {{ .Change.GetName }}</h1>
     </div>
 
+    {{ template "_flashes" . }}
+
     <div class="card">
         {{ if and (eq (len .Apps) 0) (eq (len .Packages) 0) }}
             <div class="card-body">No apps or packages were updated on this change. ¯\_(ツ)_/¯</div>
