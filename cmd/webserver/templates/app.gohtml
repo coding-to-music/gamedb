@@ -343,6 +343,19 @@
                 {{/* App Achievements */}}
                 <div class="tab-pane" id="achievements" role="tabpanel">
 
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th scope="row" width="15%">Achievements</th>
+                            <td>{{ comma .App.AchievementsCount }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" nowrap="nowrap">Average Completion</th>
+                            <td>{{ commaf .App.AchievementsAverageCompletion }}%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
                     {{if gt (len .Achievements) 0}}
 
                         <div class="table-responsive">
@@ -354,6 +367,7 @@
                                     <th scope="col">Completed</th>
                                 </tr>
                                 </thead>
+                                <tbody>
                                 {{ range $key, $value := .Achievements }}
                                     <tr {{ if .IsHidden }}class="table-danger"{{ end }}>
                                         <td class="img" nowrap="nowrap">
@@ -364,6 +378,7 @@
                                         <td>{{ .Completed }}%</td>
                                     </tr>
                                 {{ end }}
+                                </tbody>
                             </table>
 
                         </div>
