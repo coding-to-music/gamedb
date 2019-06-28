@@ -127,21 +127,21 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		schema, err := updateAppSchema(&app)
 		if err != nil {
-			helpers.LogSteamErr(err, message.ID)
+			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updateAppAchievements(&app, schema)
 		if err != nil {
-			helpers.LogSteamErr(err, message.ID)
+			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updateAppNews(&app)
 		if err != nil {
-			helpers.LogSteamErr(err, message.ID)
+			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -155,21 +155,21 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppDetails(&app)
 		if err != nil && err != steam.ErrAppNotFound {
-			helpers.LogSteamErr(err, message.ID)
+			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updateAppReviews(&app)
 		if err != nil {
-			helpers.LogSteamErr(err, message.ID)
+			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
 
 		err = updateBundles(&app)
 		if err != nil {
-			helpers.LogSteamErr(err, message.ID)
+			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
 			return
 		}
@@ -496,7 +496,7 @@ func updateAppDetails(app *sql.App) error {
 
 		// Get app details
 		response, b, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
-		err = helpers.HandleSteamStoreErr(err, b, nil)
+		err = helpers.AllowSteamCodes(err, b, nil)
 		if err == steam.ErrAppNotFound {
 			continue
 		}
@@ -741,7 +741,7 @@ func updateAppDetails(app *sql.App) error {
 func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
 	resp, b, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
-	err = helpers.HandleSteamStoreErr(err, b, []int{403, 500})
+	err = helpers.AllowSteamCodes(err, b, []int{403, 500})
 	if err != nil {
 		return err
 	}
@@ -795,7 +795,7 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 
 	resp, b, err := helpers.GetSteam().GetSchemaForGame(app.ID)
-	err = helpers.HandleSteamStoreErr(err, b, []int{400, 403})
+	err = helpers.AllowSteamCodes(err, b, []int{400, 403})
 	if err != nil {
 		return schema, err
 	}
@@ -823,7 +823,7 @@ func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 func updateAppNews(app *sql.App) error {
 
 	resp, b, err := helpers.GetSteam().GetNews(app.ID, 10000)
-	err = helpers.HandleSteamStoreErr(err, b, []int{403})
+	err = helpers.AllowSteamCodes(err, b, []int{403})
 	if err != nil {
 		return err
 	}
@@ -882,7 +882,7 @@ func updateAppNews(app *sql.App) error {
 func updateAppReviews(app *sql.App) error {
 
 	resp, b, err := helpers.GetSteam().GetReviews(app.ID)
-	err = helpers.HandleSteamStoreErr(err, b, nil)
+	err = helpers.AllowSteamCodes(err, b, nil)
 	if err != nil {
 		return err
 	}

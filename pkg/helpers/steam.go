@@ -35,7 +35,7 @@ func (l steamLogger) Write(i steam.Log) {
 	}
 }
 
-func HandleSteamStoreErr(err error, bytes []byte, allowedCodes []int) error {
+func AllowSteamCodes(err error, bytes []byte, allowedCodes []int) error {
 
 	// if err == steam.ErrHTMLResponse {
 	// 	log.Err(err, string(bytes))
@@ -51,7 +51,7 @@ func HandleSteamStoreErr(err error, bytes []byte, allowedCodes []int) error {
 	return err
 }
 
-func LogSteamErr(err error, interfaces ...interface{}) {
+func LogSteamError(err error, interfaces ...interface{}) {
 
 	if config.IsProd() {
 

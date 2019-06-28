@@ -132,7 +132,7 @@ func (interfaces *Interfaces) addInterface(in steam.APIInterface, documented boo
 func (interfaces *Interfaces) addDocumented(w http.ResponseWriter, r *http.Request) (err error) {
 
 	steamResp, b, err := helpers.GetSteam().GetSupportedAPIList()
-	err = helpers.HandleSteamStoreErr(err, b, nil)
+	err = helpers.AllowSteamCodes(err, b, nil)
 	if err != nil {
 		return err
 	}

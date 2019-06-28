@@ -54,7 +54,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			resp, b, err := steam.ResolveVanityURL(search, 1)
-			err = helpers.HandleSteamStoreErr(err, b, nil)
+			err = helpers.AllowSteamCodes(err, b, nil)
 
 			if err == nil && resp.Success > 0 && resp.SteamID > 0 {
 

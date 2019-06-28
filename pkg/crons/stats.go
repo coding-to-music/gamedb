@@ -551,7 +551,7 @@ func (c Tags) Work() {
 
 	// Get tags from Steam
 	tagsResp, b, err := helpers.GetSteam().GetTags()
-	err = helpers.HandleSteamStoreErr(err, b, nil)
+	err = helpers.AllowSteamCodes(err, b, nil)
 	if err != nil {
 		cronLogErr(err)
 		return

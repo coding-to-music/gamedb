@@ -171,7 +171,7 @@ func adminQueueEveryApp() {
 	for keepGoing {
 
 		apps, b, err := helpers.GetSteam().GetAppList(1000, last, 0, "")
-		err = helpers.HandleSteamStoreErr(err, b, nil)
+		err = helpers.AllowSteamCodes(err, b, nil)
 		if err != nil {
 			log.Err(err)
 			return
@@ -364,7 +364,7 @@ func adminQueues(r *http.Request) {
 		if err == nil {
 
 			apps, b, err := helpers.GetSteam().GetAppList(100000, 0, ts, "")
-			err = helpers.HandleSteamStoreErr(err, b, nil)
+			err = helpers.AllowSteamCodes(err, b, nil)
 			log.Err(err, r)
 			if err == nil {
 

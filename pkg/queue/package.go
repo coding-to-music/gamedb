@@ -113,7 +113,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		if err == steam.ErrHTMLResponse {
 			logInfo(err, message.ID)
 		} else {
-			helpers.LogSteamErr(err, message.ID)
+			helpers.LogSteamError(err, message.ID)
 		}
 
 		payload.ackRetry(msg)
@@ -311,7 +311,7 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 
 		// Get package details
 		response, b, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
-		err = helpers.HandleSteamStoreErr(err, b, nil)
+		err = helpers.AllowSteamCodes(err, b, nil)
 		if err == steam.ErrPackageNotFound {
 			continue
 		}

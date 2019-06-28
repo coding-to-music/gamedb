@@ -89,7 +89,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
-		helpers.LogSteamErr(err, message.ID)
+		helpers.LogSteamError(err, message.ID)
 		payload.ackRetry(msg)
 		return
 	}

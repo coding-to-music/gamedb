@@ -81,7 +81,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 
 			err = saveAppPlayerToInflux(&app, viewers)
 			if err != nil {
-				helpers.LogSteamErr(err, appID)
+				helpers.LogSteamError(err, appID)
 				payload.ackRetry(msg)
 				return
 			}
@@ -145,7 +145,7 @@ func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 	}
 
 	count, b, err := appPlayerSteamClient.GetNumberOfCurrentPlayers(app.ID)
-	err = helpers.HandleSteamStoreErr(err, b, []int{404})
+	err = helpers.AllowSteamCodes(err, b, []int{404})
 	if err != nil {
 		return err
 	}

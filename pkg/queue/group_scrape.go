@@ -86,7 +86,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		if group.Type == "" {
 			group.Type, err = getGroupType(groupID)
 			if err != nil {
-				helpers.LogSteamErr(err, groupID)
+				helpers.LogSteamError(err, groupID)
 				payload.ackRetry(msg)
 				return
 			}
@@ -115,7 +115,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		if group.ID64 == "" {
 			err = produceGroupNew(groupID)
 			if err != nil {
-				helpers.LogSteamErr(err, groupID)
+				helpers.LogSteamError(err, groupID)
 			}
 			payload.ack(msg)
 			return
@@ -453,7 +453,7 @@ func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 	groupXMLRateLimit.Take()
 
 	resp, b, err := helpers.GetSteam().GetGroupByID(id)
-	err = helpers.HandleSteamStoreErr(err, b, nil)
+	err = helpers.AllowSteamCodes(err, b, nil)
 	if err != nil {
 		return err
 	}
