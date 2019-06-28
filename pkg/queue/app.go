@@ -768,7 +768,11 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 		delete(achievementsMap, v.Name)
 	}
 
-	app.AchievementsAverageCompletion = total / float64(len(schema.AvailableGameStats.Achievements))
+	if len(schema.AvailableGameStats.Achievements) == 0 {
+		app.AchievementsAverageCompletion = 0
+	} else {
+		app.AchievementsAverageCompletion = total / float64(len(schema.AvailableGameStats.Achievements))
+	}
 
 	// Add achievements that are in global but missing in schema
 	for k, v := range achievementsMap {
@@ -1187,13 +1191,21 @@ func updateAppPlaytimeStats(app *sql.App) (err error) {
 		return err
 	}
 
-	var minutes int64
-	for _, v := range players {
-		minutes += int64(v.AppTime)
-	}
+	if len(players) == 0 {
 
-	app.PlaytimeTotal = minutes
-	app.PlaytimeAverage = float64(minutes) / float64(len(players))
+		app.PlaytimeTotal = 0
+		app.PlaytimeAverage = 0
+
+	} else {
+
+		var minutes int64
+		for _, v := range players {
+			minutes += int64(v.AppTime)
+		}
+
+		app.PlaytimeTotal = minutes
+		app.PlaytimeAverage = float64(minutes) / float64(len(players))
+	}
 
 	return nil
 }
