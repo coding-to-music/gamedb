@@ -361,9 +361,7 @@ func (t *GlobalTemplate) setCountryCode() {
 		return
 	}
 
-	r := t.request
-
-	country, err := session.Get(r, helpers.SessionUserCountry)
+	country, err := session.Get(t.request, helpers.SessionUserCountry)
 	if err != nil {
 		log.Err(err)
 		return
@@ -383,7 +381,7 @@ func (t *GlobalTemplate) setCountryCode() {
 		log.Err(err)
 	}()
 
-	ip := net.ParseIP(r.RemoteAddr)
+	ip := net.ParseIP(t.request.RemoteAddr)
 
 	if ip != nil {
 
@@ -418,7 +416,7 @@ func (t *GlobalTemplate) setCountryCode() {
 			cc = "US"
 		}
 
-		err = session.Set(r, helpers.SessionUserCountry, cc)
+		err = session.Set(t.request, helpers.SessionUserCountry, cc)
 		log.Err(err)
 
 		t.UserCountry = steam.CountryCode(cc)
