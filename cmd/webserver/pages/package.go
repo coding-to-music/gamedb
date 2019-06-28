@@ -114,12 +114,12 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := packageTemplate{}
+	if len(appsSlice) == 1 {
+		t.Background = appsSlice[0].Background // Before fill()
+	}
 	t.fill(w, r, pack.GetName(), "")
 	t.metaImage = pack.GetMetaImage()
 	t.addAssetHighCharts()
-	if len(appsSlice) == 1 {
-		t.Background = appsSlice[0].Background
-	}
 	t.Package = pack
 	t.Apps = appsMap
 	t.Bundles = bundles

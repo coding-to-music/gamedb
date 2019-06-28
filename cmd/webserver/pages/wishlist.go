@@ -21,7 +21,6 @@ func wishlistsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := wishlistsTemplate{}
 	t.fill(w, r, "Wishlists", "Steam's most wishlisted games")
-	t.setRandomBackground()
 
 	err := returnTemplate(w, r, "wishlists", t)
 	log.Err(err, r)

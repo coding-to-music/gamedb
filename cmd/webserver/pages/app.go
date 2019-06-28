@@ -64,6 +64,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appTemplate{}
+	t.Background = app.Background // Before fill()
 	t.fill(w, r, app.GetName(), "")
 	t.metaImage = app.GetMetaImage()
 	t.addAssetCarousel()
@@ -71,7 +72,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
 	t.Canonical = app.GetPath()
-	t.Background = app.Background
 
 	//
 	var wg sync.WaitGroup
