@@ -201,6 +201,20 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		}
 	}()
 
+	// Calls to Mongo
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updateAppPlaytimeStats(&app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
 	wg.Wait()
 
 	if payload.actionTaken {
@@ -289,12 +303,6 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 	if payload.actionTaken {
 		return
-	}
-
-	// Update mongo apps table
-	err = updateMongoTable(&app) // todo, put this somewhere better
-	if err != nil {
-		logError(err, message.ID)
 	}
 
 	//
@@ -738,14 +746,18 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 		return err
 	}
 
+	app.AchievementsCount = len(resp.GlobalAchievementPercentage)
+
 	var achievementsMap = make(map[string]float64)
 	for _, v := range resp.GlobalAchievementPercentage {
 		achievementsMap[v.Name] = v.Percent
 	}
 
 	// Make template struct
+	var total float64
 	var achievements []sql.AppAchievement
 	for _, v := range schema.AvailableGameStats.Achievements {
+		total += achievementsMap[v.Name]
 		achievements = append(achievements, sql.AppAchievement{
 			Name:        v.DisplayName,
 			Icon:        v.Icon,
@@ -755,6 +767,8 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
 		delete(achievementsMap, v.Name)
 	}
+
+	app.AchievementsAverageCompletion = total / float64(len(schema.AvailableGameStats.Achievements))
 
 	// Add achievements that are in global but missing in schema
 	for k, v := range achievementsMap {
@@ -1165,31 +1179,7 @@ func updateAppTwitch(app *sql.App) error {
 	return nil
 }
 
-func updateMongoTable(app *sql.App) (err error) {
-
-	mongoApp, err := mongo.GetApp(app.ID)
-	if err != nil && err != mongo.ErrNoDocuments {
-		return err
-	}
-	mongoApp.ID = app.ID // Incase it didn't exist
-
-	// Achievements
-	achievements, err := app.GetAchievements()
-	if err != nil {
-		return err
-	}
-
-	var total float64
-	var count int
-	for _, achievement := range achievements {
-		if !achievement.IsHidden() {
-			count++
-			total += achievement.Completed
-		}
-	}
-
-	mongoApp.AchievementsCount = count
-	mongoApp.AchievementsAverageCompletion = total / float64(len(achievements))
+func updateAppPlaytimeStats(app *sql.App) (err error) {
 
 	// Playtime
 	players, err := mongo.GetAppPlayTimes(app.ID)
@@ -1202,9 +1192,8 @@ func updateMongoTable(app *sql.App) (err error) {
 		minutes += int64(v.AppTime)
 	}
 
-	mongoApp.PlaytimeTotal = minutes
-	mongoApp.PlaytimeAverage = float64(minutes) / float64(len(players))
+	app.PlaytimeTotal = minutes
+	app.PlaytimeAverage = float64(minutes) / float64(len(players))
 
-	//
-	return mongoApp.Save()
+	return nil
 }
