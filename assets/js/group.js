@@ -34,9 +34,9 @@ if ($groupPage.length > 0) {
             };
 
             Highcharts.chart('chart', {
-
                 chart: {
                     type: 'line',
+                    backgroundColor: 'rgba(0,0,0,0)',
                 },
                 title: {
                     text: ''

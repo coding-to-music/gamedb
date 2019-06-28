@@ -104,8 +104,8 @@ if ($trendingPage.length > 0 || $('#new-releases-page').length > 0) {
                             type: 'area',
                             margin: [0, 0, 0, 0],
                             skipClone: true,
-                            backgroundColor: null,
                             height: 32,
+                            backgroundColor: 'rgba(0,0,0,0)',
                         },
                         title: {
                             text: ''

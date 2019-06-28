@@ -213,6 +213,9 @@ if ($appPage.length > 0) {
     }
 
     const defaultAppChartOptions = {
+        chart: {
+            backgroundColor: 'rgba(0,0,0,0)',
+        },
         title: {
             text: ''
         },
@@ -314,6 +317,9 @@ if ($appPage.length > 0) {
     function loadAppPlayersChart() {
 
         const defaultAppChartOptions = {
+            chart: {
+                backgroundColor: 'rgba(0,0,0,0)',
+            },
             title: {
                 text: ''
             },
@@ -323,7 +329,6 @@ if ($appPage.length > 0) {
             credits: {
                 enabled: false
             },
-            plotOptions: {},
             xAxis: {
                 title: {text: ''},
                 type: 'datetime'

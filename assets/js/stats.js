@@ -2,7 +2,8 @@ if ($('#stats-page').length > 0) {
 
     const defaultStatsChartOptions = {
         chart: {
-            type: 'column'
+            type: 'column',
+            backgroundColor: 'rgba(0,0,0,0)',
         },
         title: {
             text: ''

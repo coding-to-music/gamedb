@@ -51,7 +51,8 @@ if ($priceChart.length > 0 && prices) {
 
         chart = Highcharts.chart('prices-chart', {
             chart: {
-                zoomType: 'x'
+                zoomType: 'x',
+                backgroundColor: 'rgba(0,0,0,0)',
             },
             title: {
                 text: ''

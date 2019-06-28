@@ -48,7 +48,8 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
 
         return Highcharts.chart(id, {
             chart: {
-                animation: false
+                animation: false,
+                backgroundColor: 'rgba(0,0,0,0)',
             },
             title: {
                 text: ''

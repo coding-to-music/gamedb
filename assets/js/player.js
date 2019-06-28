@@ -295,6 +295,7 @@ if ($playerPage.length > 0) {
         const defaultPlayerChartOptions = {
             chart: {
                 type: 'line',
+                backgroundColor: 'rgba(0,0,0,0)',
             },
             title: {
                 text: ''
