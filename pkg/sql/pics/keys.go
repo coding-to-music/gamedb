@@ -8,6 +8,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type PicsItemType string
@@ -55,17 +56,19 @@ var CommonKeys = map[string]PicsKey{
 }
 
 var ExtendedKeys = map[string]PicsKey{
-	"anti_cheat_support_url": {Type: picsTypeLink, Link: "$val$"},
-	"developer_url":          {Type: picsTypeLink, Link: "$val$"},
-	"gamemanualurl":          {Type: picsTypeLink, Link: "$val$"},
-	"homepage":               {Type: picsTypeLink, Link: "$val$"},
-	"isfreeapp":              {Type: picsTypeBool},
-	"loadallbeforelaunch":    {Type: picsTypeBool},
-	"noservers":              {Type: picsTypeBool},
-	"requiressse":            {Type: picsTypeBool},
-	"sourcegame":             {Type: picsTypeBool},
-	"vacmacmodulecache":      {Type: picsTypeLink, Link: "/apps/$val$"},
-	"vacmodulecache":         {Type: picsTypeLink, Link: "/apps/$val$"},
+	"anti_cheat_support_url":               {Type: picsTypeLink, Link: "$val$"},
+	"developer_url":                        {Type: picsTypeLink, Link: "$val$"},
+	"gamemanualurl":                        {Type: picsTypeLink, Link: "$val$"},
+	"homepage":                             {Type: picsTypeLink, Link: "$val$"},
+	"isfreeapp":                            {Type: picsTypeBool},
+	"loadallbeforelaunch":                  {Type: picsTypeBool},
+	"noservers":                            {Type: picsTypeBool},
+	"requiressse":                          {Type: picsTypeBool},
+	"sourcegame":                           {Type: picsTypeBool},
+	"vacmacmodulecache":                    {Type: picsTypeLink, Link: "/apps/$val$"},
+	"vacmodulecache":                       {Type: picsTypeLink, Link: "/apps/$val$"},
+	"allowcrossregiontradingandgifting":    {Type: picsTypeBool},
+	"allowpurchasefromrestrictedcountries": {Type: picsTypeBool},
 }
 
 var ConfigKeys = map[string]PicsKey{
@@ -130,7 +133,9 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 	if item, ok := keys[key]; ok {
 		switch item.Type {
 		case picsTypeBool:
-			if val == "1" {
+			log.Info(val)
+			b, _ := strconv.ParseBool(val)
+			if b {
 				return "Yes"
 			} else {
 				return "No"
