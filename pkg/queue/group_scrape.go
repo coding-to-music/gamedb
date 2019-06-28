@@ -170,6 +170,7 @@ var (
 func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err error) {
 
 	c := colly.NewCollector()
+	c.SetRequestTimeout(time.Second * 15)
 
 	// ID64
 	c.OnHTML("a[href^=\"steam:\"]", func(e *colly.HTMLElement) {
@@ -263,6 +264,7 @@ var (
 func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err error) {
 
 	c := colly.NewCollector()
+	c.SetRequestTimeout(time.Second * 15)
 
 	// ID64
 	c.OnHTML("[id^=commentthread_Clan_]", func(e *colly.HTMLElement) {
