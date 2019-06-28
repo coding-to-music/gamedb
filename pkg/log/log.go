@@ -15,6 +15,7 @@ import (
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/logrusorgru/aurora"
+	"github.com/rollbar/rollbar-go"
 )
 
 //noinspection GoUnusedConst
@@ -112,6 +113,12 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	rollbar.SetToken(config.Config.RollbarSecret.Get())
+	rollbar.SetEnvironment(config.Config.Environment.Get())
+	rollbar.SetCodeVersion(config.Config.CommitHash.Get())
+	rollbar.SetServerHost("gamedb.online")
+	rollbar.SetServerRoot("github.com/gamedb/gamedb")
 }
 
 func log(interfaces ...interface{}) {
@@ -165,6 +172,7 @@ func log(interfaces ...interface{}) {
 
 	if len(entry.texts) > 0 || entry.error != "" {
 
+		// Local
 		switch entry.severity {
 		case SeverityCritical:
 			logger.Println(aurora.Red(aurora.Bold(entry.toText(true))))
@@ -182,6 +190,7 @@ func log(interfaces ...interface{}) {
 
 		if config.IsProd() {
 
+			// Google
 			googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
 				Severity:  entry.severity.toGoole(),
 				Timestamp: entry.timestamp,
@@ -191,6 +200,9 @@ func log(interfaces ...interface{}) {
 					"key": config.GetSteamKeyTag(),
 				},
 			})
+
+			// Rollbar
+			rollbar.Log(rollbar.ERR, entry.toText(false))
 		}
 	}
 }
