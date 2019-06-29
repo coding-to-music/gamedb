@@ -81,6 +81,7 @@ var ConfigKeys = map[string]PicsKey{
 	"systemprofile":                {Type: picsTypeBool},
 	"verifyupdates":                {Type: picsTypeBool},
 	"vrcompositorsupport":          {Type: picsTypeBool},
+	"launchwithoutworkshopupdates": {Type: picsTypeBool},
 }
 
 var UFSKeys = map[string]PicsKey{
