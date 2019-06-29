@@ -66,5 +66,5 @@ func LogSteamError(err error, interfaces ...interface{}) {
 
 	interfaces = append(interfaces, err)
 
-	log.Err(interfaces)
+	log.Err(interfaces...)
 }
