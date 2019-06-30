@@ -48,7 +48,7 @@ require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/gosimple/slug v1.5.0
 	github.com/influxdata/influxdb1-client v0.0.0-20190621134543-8ff2fc3824fc
-	github.com/jinzhu/gorm v1.9.9
+	github.com/jinzhu/gorm v1.9.10
 	github.com/jinzhu/now v1.0.1
 	github.com/jzelinskie/geddit v0.0.0-20190613154237-4b3cacc98c40
 	github.com/kennygrant/sanitize v1.2.4 // indirect
