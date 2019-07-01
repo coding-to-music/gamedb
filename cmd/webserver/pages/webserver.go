@@ -354,7 +354,7 @@ func (t *GlobalTemplate) setRandomBackground() {
 			backgroundApp := popularApps[rand.Intn(len(popularApps))]
 			t.Background = backgroundApp.Background
 			t.BackgroundTitle = backgroundApp.GetName()
-			t.BackgroundLink = backgroundApp.GetPath()
+			// t.BackgroundLink = backgroundApp.GetPath()
 		}
 	}
 }
