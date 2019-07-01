@@ -51,20 +51,34 @@ func AllowSteamCodes(err error, bytes []byte, allowedCodes []int) error {
 	return err
 }
 
+// Downgrade some Steam errors to info.
 func LogSteamError(err error, interfaces ...interface{}) {
 
-	if config.IsProd() {
+	isError := func() bool {
 
-		if strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
-			return
+		if config.IsProd() {
+
+			if strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
+				return false
+			}
+
+			if strings.Contains(err.Error(), "unexpected end of JSON input") {
+				return false
+			}
+
+			if strings.Contains(err.Error(), "Bad Gateway") {
+				return false
+			}
 		}
 
-		if strings.Contains(err.Error(), "unexpected end of JSON input") {
-			return
-		}
-	}
+		return true
+	}()
 
 	interfaces = append(interfaces, err)
 
-	log.Err(interfaces...)
+	if isError {
+		log.Err(interfaces...)
+	} else {
+		log.Info(interfaces...)
+	}
 }
