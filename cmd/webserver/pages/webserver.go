@@ -380,10 +380,11 @@ func (t *GlobalTemplate) setCountryCodeFromIP() {
 		return
 	}
 	defer func() {
-		// todo, should this just be left open?
 		err = db.Close()
 		log.Err(err)
 	}()
+
+	log.Info("IP: " + t.request.RemoteAddr)
 
 	ip := net.ParseIP(t.request.RemoteAddr)
 
