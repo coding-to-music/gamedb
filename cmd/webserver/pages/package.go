@@ -150,7 +150,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Prices, err = t.Package.GetPrices()
 	log.Err(err)
 
-	t.Extended, err = pack.GetExtended()
+	t.Extended, err = t.Package.GetExtended().Formatted(pack.ID, pics.ExtendedKeys)
 	log.Err(err)
 
 	t.Controller, err = pack.GetController()
@@ -170,7 +170,7 @@ type packageTemplate struct {
 	Banners    map[string][]string
 	Controller pics.PICSController
 	DepotIDs   []int
-	Extended   pics.PICSKeyValues
+	Extended   []pics.KeyValue
 	Package    sql.Package
 	Price      sql.ProductPriceFormattedStruct
 	Prices     sql.ProductPrices

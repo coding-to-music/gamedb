@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/jinzhu/gorm"
 )
@@ -277,12 +278,14 @@ func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceStruct, 
 	return prices.Get(code)
 }
 
-func (pack Package) GetExtended() (extended pics.PICSKeyValues, err error) {
+func (pack Package) GetExtended() (extended pics.PICSKeyValues) {
 
 	extended = pics.PICSKeyValues{}
 
-	err = helpers.Unmarshal([]byte(pack.Extended), &extended)
-	return extended, err
+	err := helpers.Unmarshal([]byte(pack.Extended), &extended)
+	log.Err(err)
+
+	return extended
 }
 
 func (pack Package) GetController() (controller pics.PICSController, err error) {
