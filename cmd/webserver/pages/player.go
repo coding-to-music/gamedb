@@ -134,7 +134,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "name": 1, "members": 1, "icon": 1})
+		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "name": 1, "members": 1, "icon": 1, "type": 1, "url": 1})
 		log.Err(err, r)
 
 		sort.Slice(groups, func(i, j int) bool {
@@ -447,7 +447,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.AppName,                             // 2
 			helpers.GetTimeShort(app.PlayTime2Weeks, 2),  // 3
 			helpers.GetTimeShort(app.PlayTimeForever, 2), // 4
-			helpers.GetAppPath(app.AppID, app.AppName),        // 5
+			helpers.GetAppPath(app.AppID, app.AppName),   // 5
 		})
 	}
 
