@@ -213,6 +213,7 @@ func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packag
 	return nil
 }
 
+// todo, add packages to return
 func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
 
 	if config.IsProd() {
