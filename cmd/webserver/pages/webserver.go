@@ -333,6 +333,10 @@ func (t *GlobalTemplate) setRandomBackground() {
 		return
 	}
 
+	if strings.HasPrefix(t.request.URL.Path, "/admin") {
+		return
+	}
+
 	popularApps, err := sql.PopularApps()
 	log.Err(err)
 
