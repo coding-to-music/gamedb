@@ -202,7 +202,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var messages []websockets.ChatPayload
-	var i float32 = 0
+	var i float32
 	for _, v := range messagesResponse {
 
 		if v.Type == discordgo.MessageTypeDefault {
