@@ -139,9 +139,8 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			b, _ := strconv.ParseBool(val)
 			if b {
 				return "Yes"
-			} else {
-				return "No"
 			}
+			return "No"
 		case picsTypeLink:
 			item.Link = strings.ReplaceAll(item.Link, "$val$", val)
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
