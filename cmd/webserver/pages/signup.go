@@ -118,10 +118,10 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		_, err = sql.GetUserByKey("email", email, 0)
 		if err == nil {
 			return "An account with this email already exists", true
-		} else {
-			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
-			log.Err(err, r)
 		}
+
+		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		log.Err(err, r)
 
 		// Create user
 		db, err := sql.GetMySQLClient()
