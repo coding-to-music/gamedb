@@ -736,9 +736,9 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 
 								if dir == "desc" {
 									return mongo.D{{col, -1}}
-								} else {
-									return mongo.D{{col, 1}}
 								}
+
+								return mongo.D{{col, 1}}
 							}
 						}
 					}
