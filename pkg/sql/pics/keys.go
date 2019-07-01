@@ -17,41 +17,41 @@ const (
 	picsTypeLink   PicsItemType = "link"
 	picsTypeImage  PicsItemType = "image"
 	picsTypeTime   PicsItemType = "timestamp"
-	picsTypeJson   PicsItemType = "json"
+	picsTypeJSON   PicsItemType = "json"
 	picsTypeBytes  PicsItemType = "bytes"
 	picsTypeNumber PicsItemType = "number"
 	picsTypeApps   PicsItemType = "apps" // By comma
 )
 
 var CommonKeys = map[string]PicsKey{
-	"associations":            {Type: picsTypeJson},
-	"category":                {Type: picsTypeJson},
+	"associations":            {Type: picsTypeJSON},
+	"category":                {Type: picsTypeJSON},
 	"clienticns":              {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.icns"},
 	"clienticon":              {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.ico"},
 	"clienttga":               {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.tga"},
 	"community_hub_visible":   {Type: picsTypeBool},
 	"community_visible_stats": {Type: picsTypeBool},
-	"controllervr":            {Type: picsTypeJson},
-	"eulas":                   {Type: picsTypeJson},
+	"controllervr":            {Type: picsTypeJSON},
+	"eulas":                   {Type: picsTypeJSON},
 	"exfgls":                  {Type: picsTypeBool, Description: "Exclude from game library sharing"},
 	"gameid":                  {Type: picsTypeLink, Link: "/apps/$val$"},
-	"genres":                  {Type: picsTypeJson},
+	"genres":                  {Type: picsTypeJSON},
 	"has_adult_content":       {Type: picsTypeBool},
-	"header_image":            {Type: picsTypeJson},
+	"header_image":            {Type: picsTypeJSON},
 	"icon":                    {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
-	"languages":               {Type: picsTypeJson},
-	"library_assets":          {Type: picsTypeJson},
+	"languages":               {Type: picsTypeJSON},
+	"library_assets":          {Type: picsTypeJSON},
 	"linuxclienticon":         {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.zip"},
 	"logo":                    {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
 	"logo_small":              {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
 	"metacritic_fullurl":      {Type: picsTypeLink, Link: "$val$"},
 	"original_release_date":   {Type: picsTypeTime},
 	"primary_genre":           {Type: picsTypeLink, Link: "/apps?tags=$val$"},
-	"small_capsule":           {Type: picsTypeJson},
+	"small_capsule":           {Type: picsTypeJSON},
 	"steam_release_date":      {Type: picsTypeTime},
 	"store_asset_mtime":       {Type: picsTypeTime},
-	"store_tags":              {Type: picsTypeJson},
-	"supported_languages":     {Type: picsTypeJson},
+	"store_tags":              {Type: picsTypeJSON},
+	"supported_languages":     {Type: picsTypeJSON},
 	"workshop_visible":        {Type: picsTypeBool},
 }
 
@@ -75,8 +75,8 @@ var ExtendedKeys = map[string]PicsKey{
 
 var ConfigKeys = map[string]PicsKey{
 	"checkforupdatesbeforelaunch":  {Type: picsTypeBool},
-	"signedfiles":                  {Type: picsTypeJson},
-	"steamcontrollerconfigdetails": {Type: picsTypeJson},
+	"signedfiles":                  {Type: picsTypeJSON},
+	"steamcontrollerconfigdetails": {Type: picsTypeJSON},
 	"steamcontrollertemplateindex": {Type: picsTypeBool},
 	"systemprofile":                {Type: picsTypeBool},
 	"verifyupdates":                {Type: picsTypeBool},
@@ -88,7 +88,7 @@ var UFSKeys = map[string]PicsKey{
 	"hidecloudui": {Type: picsTypeBool},
 	"maxnumfiles": {Type: picsTypeNumber},
 	"quota":       {Type: picsTypeBytes},
-	"savefiles":   {Type: picsTypeJson},
+	"savefiles":   {Type: picsTypeJSON},
 }
 
 type PicsKey struct {
@@ -185,7 +185,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			return humanize.Comma(i)
 
-		case picsTypeJson:
+		case picsTypeJSON:
 
 			j, err := helpers.FormatJSON(val)
 			if err != nil {
