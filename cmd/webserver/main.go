@@ -72,12 +72,10 @@ func main() {
 	// Routes
 	r := chi.NewRouter()
 
-	r.Use(middlewareTime)
+	// r.Use(middlewareTime)
 	r.Use(middlewareCors())
-	r.Use(middleware.RealIP)
-	// r.Use(middleware.DefaultCompress) // http: superfluous response.WriteHeader call from github.com/go-chi/chi/middleware.(*compressResponseWriter).Write (compress.go:228)
-	r.Use(middleware.RedirectSlashes)
-	r.Use(middlewareLog)
+	r.Use(middleware.DefaultCompress)
+	// r.Use(middlewareLog)
 
 	// Pages
 	r.Get("/", pages.HomeHandler)
@@ -153,15 +151,17 @@ func main() {
 	helpers.KeepAlive()
 }
 
+//noinspection GoUnusedFunction
 func middlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if config.IsLocal() {
-			// log.Info(log.LogNameRequests, r.Method+" "+r.URL.Path)
+			log.Info(log.LogNameRequests, r.Method+" "+r.URL.Path)
 		}
 		next.ServeHTTP(w, r)
 	})
 }
 
+//noinspection GoUnusedFunction
 func middlewareTime(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
