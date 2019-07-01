@@ -66,9 +66,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		if !helpers.SliceHasInt64(foundPlayerIDs, v) {
 
 			err = queue.ProducePlayer(v)
-			if err != nil {
-				// log.Err(err, r)
-			} else {
+			if err == nil {
 				t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 			}
 		}
