@@ -72,6 +72,7 @@ func main() {
 	// Routes
 	r := chi.NewRouter()
 
+	r.Use(middleware.RealIP)
 	// r.Use(middlewareTime)
 	r.Use(middlewareCors())
 	r.Use(middleware.DefaultCompress)
