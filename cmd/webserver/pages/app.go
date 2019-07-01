@@ -437,7 +437,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerAppFilter := mongo.M{"app_id": idx, "app_time": mongo.M{"$gt": 0}}
 
-	playerApps, err := mongo.GetPlayerAppsByApp(idx, query.getOffset64(), playerAppFilter)
+	playerApps, err := mongo.GetPlayerAppsByApp(query.getOffset64(), playerAppFilter)
 	if err != nil {
 		log.Err(err, r)
 		return
