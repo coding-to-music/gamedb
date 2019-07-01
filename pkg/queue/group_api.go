@@ -62,14 +62,18 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	//
 	err = updateGroupFromXML(message.ID, &group)
 	if err != nil {
+
 		if err.Error() == "expected element type <memberList> but have <html>" {
+
 			payload.ack(msg)
-			return
+
 		} else {
+
 			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
-			return
 		}
+
+		return
 	}
 
 	//
