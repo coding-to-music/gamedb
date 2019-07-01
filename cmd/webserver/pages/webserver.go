@@ -282,7 +282,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	//
 	t.setRandomBackground()
-	t.setCountryCode()
+	t.setCountryCodeFromIP()
 
 	// Pages
 	switch true {
@@ -359,7 +359,7 @@ func (t *GlobalTemplate) setRandomBackground() {
 	}
 }
 
-func (t *GlobalTemplate) setCountryCode() {
+func (t *GlobalTemplate) setCountryCodeFromIP() {
 
 	if t.UserCountry != "" {
 		return
