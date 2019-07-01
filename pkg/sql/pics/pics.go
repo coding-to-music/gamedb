@@ -27,7 +27,7 @@ func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret [
 	}
 
 	sort.Slice(ret, func(i, j int) bool {
-		return i > j
+		return ret[i].Key < ret[j].Key
 	})
 
 	return ret, err
