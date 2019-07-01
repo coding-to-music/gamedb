@@ -3,6 +3,7 @@ package mongo
 import (
 	"errors"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -102,6 +103,14 @@ func (group Group) OutputForJSON() (output []interface{}) {
 
 func (group Group) GetPath() string {
 	return "/groups/" + group.ID64 + "/" + slug.Make(group.Name)
+}
+
+func (group Group) GetType() string {
+	return strings.Title(group.Type)
+}
+
+func (group Group) GetOfficial() bool {
+	return group.Type == GroupTypeGame
 }
 
 func (group Group) GetLink() string {
