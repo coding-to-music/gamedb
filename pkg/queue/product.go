@@ -250,7 +250,7 @@ func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []pics.PICSAppConfi
 		item := pics.PICSAppConfigLaunchItem{}
 		item.Order = v.Name
 
-		v.getAppLaunchItem(&item)
+		v.setAppLaunchItem(&item)
 
 		items = append(items, item)
 	}
@@ -258,7 +258,7 @@ func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []pics.PICSAppConfi
 	return items
 }
 
-func (i rabbitMessageProductKeyValues) getAppLaunchItem(launchItem *pics.PICSAppConfigLaunchItem) {
+func (i rabbitMessageProductKeyValues) setAppLaunchItem(launchItem *pics.PICSAppConfigLaunchItem) {
 
 	for _, v := range i.Children {
 
@@ -292,9 +292,9 @@ func (i rabbitMessageProductKeyValues) getAppLaunchItem(launchItem *pics.PICSApp
 				}
 			}
 		case "config":
-			v.getAppLaunchItem(launchItem)
+			v.setAppLaunchItem(launchItem)
 		default:
-			logWarning("getAppLaunchItem missing case: " + v.Name)
+			logWarning("setAppLaunchItem missing case: " + v.Name)
 		}
 	}
 }
