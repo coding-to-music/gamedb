@@ -284,10 +284,10 @@
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
-                                            {{ range $key, $value := .Extended }}
-                                                <tr data-link="/product-keys?type=package&key={{ $key }}&value={{ $value }}">
-                                                    <td>{{ $key }}</td>
-                                                    <td>{{ $value }}</td>
+                                            {{ range .Extended }}
+                                                <tr>
+                                                    <td><a href="/product-keys?type=package&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
+                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -328,7 +328,7 @@
                                             </tr>
                                             </thead>
                                             {{ range $key, $value := .DepotIDs }}
-                                                <tr data-link="/depots/{{ $value }}">
+                                                <tr>
                                                     <td>{{ $value }}</td>
                                                 </tr>
                                             {{ end }}
