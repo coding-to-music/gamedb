@@ -156,9 +156,9 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err)
 			return "/", "Your account has been deleted", ""
 
-		} else {
-			return "/settings", "", "Invalid player ID."
 		}
+
+		return "/settings", "", "Invalid player ID."
 	}()
 
 	if good != "" {
