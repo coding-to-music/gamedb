@@ -77,8 +77,13 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Fix links
+	summary := group.Summary
+	summary = strings.ReplaceAll(summary, "https://steamcommunity.com/linkfilter/?url=", "")
+
+	//
 	t.Group = group
-	t.Summary = helpers.RenderHTMLAndBBCode(group.Summary)
+	t.Summary = helpers.RenderHTMLAndBBCode(summary)
 	t.Group.Error = strings.Replace(t.Group.Error, "Click here for information on how to report groups on Steam.", "", 1)
 
 	err = returnTemplate(w, r, "group", t)
