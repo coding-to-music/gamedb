@@ -20,6 +20,7 @@ const (
 	picsTypeJson   PicsItemType = "json"
 	picsTypeBytes  PicsItemType = "bytes"
 	picsTypeNumber PicsItemType = "number"
+	picsTypeApps   PicsItemType = "apps" // By comma
 )
 
 var CommonKeys = map[string]PicsKey{
@@ -68,6 +69,8 @@ var ExtendedKeys = map[string]PicsKey{
 	"vacmodulecache":                       {Type: picsTypeLink, Link: "/apps/$val$"},
 	"allowcrossregiontradingandgifting":    {Type: picsTypeBool},
 	"allowpurchasefromrestrictedcountries": {Type: picsTypeBool},
+	"listofdlc":                            {Type: picsTypeApps},
+	"dlcavailableonstore":                  {Type: picsTypeBool},
 }
 
 var ConfigKeys = map[string]PicsKey{
@@ -189,6 +192,17 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			}
 
 			return template.HTML("<div class=\"json\">" + j + "</div>")
+
+		case picsTypeApps:
+
+			var ret []string
+
+			ids := strings.Split(val, ",")
+			for _, id := range ids {
+				ret = append(ret, `<a href="/apps/`+id+`" rel=\"nofollow\">`+id+`</a>`)
+			}
+
+			return template.HTML(strings.Join(ret, ", "))
 
 		default:
 			return val

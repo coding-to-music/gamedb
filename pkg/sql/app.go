@@ -311,6 +311,7 @@ func (app App) GetNewsIDs() (ids []int64, err error) {
 func (app App) GetExtended() (extended pics.PICSKeyValues) {
 
 	extended = pics.PICSKeyValues{}
+
 	err := helpers.Unmarshal([]byte(app.Extended), &extended)
 	log.Err(err)
 
