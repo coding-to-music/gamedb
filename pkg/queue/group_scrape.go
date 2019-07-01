@@ -106,7 +106,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 		// Skip if we cant find numbers
 		if !found {
-			logWarning("Group counts not found", groupID)
+			log.Info("Group counts not found", groupID)
 			payload.ackRetry(msg)
 			return
 		}
