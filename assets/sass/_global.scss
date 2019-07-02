@@ -363,6 +363,10 @@ div.json {
     overflow-y: scroll;
 }
 
+div.json.fullheight {
+    max-height: none;
+}
+
 // Trending charts
 td.chart {
     width: 210px;
