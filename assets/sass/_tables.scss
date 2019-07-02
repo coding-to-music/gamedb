@@ -109,7 +109,8 @@ table.table {
             margin-bottom: 8px;
             height: 32px;
             max-width: none;
-            display: inline;
+            display: inline-block;
+            vertical-align: middle;
         }
 
         img.square {
@@ -117,7 +118,7 @@ table.table {
         }
 
         span {
-            display: inline;
+            display: inline-block;
             margin: .75rem 0 .75rem 9px;
             font-size: 1rem;
             vertical-align: middle;
