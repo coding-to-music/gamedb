@@ -519,15 +519,18 @@ func ProduceGroup(IDs []string) (err error) {
 
 		if helpers.IsValidGroupID(v) {
 
-			item := helpers.MemcacheGroupInQueue(v)
+			if config.IsProd() {
 
-			_, err := mc.Get(item.Key)
-			if err == nil && config.IsProd() {
-				continue
+				item := helpers.MemcacheGroupInQueue(v)
+
+				_, err := mc.Get(item.Key)
+				if err == nil {
+					continue
+				}
+
+				err = mc.Set(&item)
+				log.Err(err)
 			}
-
-			err = mc.Set(&item)
-			log.Err(err)
 
 			prodIDs = append(prodIDs, v)
 		}
