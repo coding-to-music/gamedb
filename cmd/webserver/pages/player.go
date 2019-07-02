@@ -185,6 +185,11 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t.fill(w, r, player.PersonaName, "")
+	if player.BackgroundAppID > 0 {
+		t.Background = "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(player.BackgroundAppID) + "/library_hero.jpg"
+	} else {
+		t.Background = ""
+	}
 	t.addAssetHighCharts()
 	t.toasts = toasts
 	t.Apps = []mongo.PlayerApp{}

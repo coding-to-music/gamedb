@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"path"
+	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -391,6 +392,16 @@ func updatePlayerGames(player *mongo.Player) error {
 	err = mongo.UpdatePlayerApps(playerApps)
 	if err != nil {
 		return err
+	}
+
+	// Get top game for background
+	if len(appIDs) > 0 {
+
+		sort.Slice(appIDs, func(i, j int) bool {
+			return playerApps[i].AppTime > playerApps[j].AppTime
+		})
+
+		player.BackgroundAppID = appIDs[0]
 	}
 
 	// Save stats to player
