@@ -251,7 +251,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	//
 	c.OnError(func(r *colly.Response, err error) {
-		log.Err(err)
+		helpers.LogSteamError(err)
 	})
 
 	return foundNumbers, c.Visit("https://steamcommunity.com/gid/" + id)
@@ -338,7 +338,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	//
 	c.OnError(func(r *colly.Response, err error) {
-		log.Err(err)
+		helpers.LogSteamError(err)
 	})
 
 	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
