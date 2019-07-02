@@ -173,7 +173,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				return val
 			}
 
-			return humanize.IBytes(i) + " (" + val + " bytes)"
+			return humanize.Bytes(i) + " (" + val + " bytes)"
 
 		case picsTypeNumber:
 
