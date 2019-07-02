@@ -94,7 +94,7 @@ require (
 	golang.org/x/net v0.0.0-20190628195232-da137c7871d7 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sys v0.0.0-20190626222941-04f50cda93cb // indirect
-	google.golang.org/genproto v0.0.0-20190627211713-eb59cef1c072 // indirect
+	google.golang.org/genproto v0.0.0-20190702072343-710ae3a149df // indirect
 	google.golang.org/grpc v1.21.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
