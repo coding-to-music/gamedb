@@ -21,7 +21,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invaid Change ID.", Error: err})
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invaid Change ID."})
 		return
 	}
 
