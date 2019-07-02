@@ -1,0 +1,5 @@
+{{define "_webpack_header"}}
+    <% for (var css in htmlWebpackPlugin.files.css) { %>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[css] %>">
+    <% } %>
+{{end}}

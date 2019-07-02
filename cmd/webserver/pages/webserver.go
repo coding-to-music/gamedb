@@ -85,12 +85,14 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	//
 	folder := config.Config.TemplatesPath.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
+		folder+"/_webpack_header.gohtml",
+		folder+"/_webpack_footer.gohtml",
+		folder+"/_header.gohtml",
+		folder+"/_footer.gohtml",
 		folder+"/_apps_header.gohtml",
 		folder+"/_login_header.gohtml",
 		folder+"/_flashes.gohtml",
-		folder+"/_footer.gohtml",
 		folder+"/_groups_header.gohtml",
-		folder+"/_header.gohtml",
 		folder+"/_stats_header.gohtml",
 		folder+"/_social.gohtml",
 		folder+"/"+page+".gohtml",

@@ -1,0 +1,5 @@
+{{define "_webpack_footer"}}
+    <% for (var js in htmlWebpackPlugin.files.js) { %>
+    <script src="<%= htmlWebpackPlugin.files.js[js] %>" rel="stylesheet"></script>
+    <% } %>
+{{end}}
