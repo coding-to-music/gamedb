@@ -180,6 +180,8 @@ github.com/krylovsk/goinsta/v2 v2.4.0 h1:E7E82/YvjQpNR2KfJW3xwxIEGb2sFcsnCXuUjjy
 github.com/krylovsk/goinsta/v2 v2.4.0/go.mod h1:M6/Tnc41f4gn+rl9HxFaNY1c6Px5zQWHgyY6S/wSZFs=
 github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514 h1:eX436NDlsA6AHjeLIPvfrJJ6n6OnK/Ap32N8WH5NFwg=
 github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514/go.mod h1:LErrn9E6BDZ0rwAIrPk99+1+KCSU2X+fy+6xeCB1C5U=
+github.com/leekchan/accounting v0.0.0-20190702062932-a09595581342/go.mod h1:VfQkU+lPM8fjkGqiTn6R+4MX4A/pVwE1XGdDBqp0JFk=
+github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/lib/pq v1.1.1 h1:sJZmqHoEaY7f+NPP8pgLB/WxulyR3fewgCM2qaSlBb4=
 github.com/lib/pq v1.1.1/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/logrusorgru/aurora v0.0.0-20190621143223-cea283e61946 h1:CRzcqPrN7ht+1ebPXfj3zQRUx7Tsj/z/851dCtd6nsw=
