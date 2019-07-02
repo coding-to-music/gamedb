@@ -163,7 +163,12 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		groups, err = mongo.GetGroups(100, query.getOffset64(), mongo.D{{"trending", -1}}, filter, nil)
+		columns := map[string]string{
+			"1": "members",
+			"2": "trending",
+		}
+
+		groups, err = mongo.GetGroups(100, query.getOffset64(), query.getOrderMongo(columns, nil), filter, nil)
 		if err != nil {
 			log.Err(err, r)
 			return

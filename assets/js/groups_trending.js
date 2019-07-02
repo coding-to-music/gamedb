@@ -51,7 +51,7 @@ if ($('#groups-trending-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[5].toLocaleString();
                 },
-                "orderable": false,
+                "orderSequence": ["desc"],
             },
             // Trend Value
             {
@@ -59,7 +59,7 @@ if ($('#groups-trending-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[10].toLocaleString();
                 },
-                "orderable": false,
+                "orderSequence": ["desc", "asc"],
             },
             // Trend Chart
             {
