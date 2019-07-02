@@ -175,7 +175,7 @@ if ($('#price-changes-page').length > 0) {
                     const small = '<small>' + row[9] + '%</small>';
 
                     if (row[9] === 0) {
-                        return row[8];
+                        return row[8] + ' <small>∞%</small> ';
                     }
 
                     return row[8] + ' ' + small;
