@@ -1,9 +1,9 @@
 package helpers
 
 import (
-	"bytes"
 	"math/rand"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -55,16 +55,8 @@ func RandString(n int, chars string) string {
 }
 
 func InsertNewLines(s string, n int) string {
-	var buffer bytes.Buffer
-	var n1 = n - 1
-	var l1 = len(s) - 1
-	for i, r := range s {
-		buffer.WriteRune(r)
-		if i%n == n1 && i != l1 {
-			buffer.WriteString("<wbr />")
-		}
-	}
-	return buffer.String()
+	var r = regexp.MustCompile("(.{" + strconv.Itoa(n) + "})")
+	return r.ReplaceAllString(s, "$1<wbr />")
 }
 
 func ChunkStrings(strings []string, n int) (chunks [][]string) {
