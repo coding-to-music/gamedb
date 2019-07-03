@@ -87,6 +87,7 @@ var (
 type baseMessage struct {
 	Message       interface{} `json:"message"`
 	FirstSeen     time.Time   `json:"first_seen"`
+	LastSeen      time.Time   `json:"last_seen"`
 	Attempt       int         `json:"attempt"`
 	OriginalQueue queueName   `json:"original_queue"`
 	actionTaken   bool        `json:"-"`
@@ -95,15 +96,15 @@ type baseMessage struct {
 
 func (payload baseMessage) getNextAttempt() time.Time {
 
-	var min float64 = 1
-	var max float64 = 600
+	var min = time.Second
+	var max = time.Minute * 10
 
 	var seconds float64
 	seconds = math.Pow(1.5, float64(payload.Attempt))
-	seconds = math.Min(seconds, max)
-	seconds = math.Max(seconds, min)
+	seconds = math.Max(seconds, min.Seconds())
+	seconds = math.Min(seconds, max.Seconds())
 
-	return payload.FirstSeen.Add(time.Second * time.Duration(int64(seconds)))
+	return payload.LastSeen.Add(time.Second * time.Duration(int64(seconds)))
 }
 
 // Remove from queue
@@ -169,8 +170,6 @@ func (payload *baseMessage) ackRetry(msg amqp.Delivery) {
 		return
 	}
 	payload.actionTaken = true
-
-	payload.Attempt++
 
 	totalStr, err := durationfmt.Format(payload.getNextAttempt().Sub(payload.FirstSeen), "%mm %ss")
 	if err != nil {
@@ -314,12 +313,13 @@ func produce(payload baseMessage, queue queueName) (err error) {
 	if payload.OriginalQueue == "" {
 		payload.OriginalQueue = queue
 	}
+
 	if payload.FirstSeen.IsZero() {
 		payload.FirstSeen = time.Now()
 	}
-	if payload.Attempt == 0 {
-		payload.Attempt = 1
-	}
+
+	payload.Attempt++
+	payload.LastSeen = time.Now()
 
 	b, err := json.Marshal(payload)
 	if err != nil {
