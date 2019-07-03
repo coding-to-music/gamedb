@@ -59,7 +59,7 @@ if ($('#groups-trending-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[10].toLocaleString();
                 },
-                "orderSequence": ["desc", "asc"],
+                "orderSequence": ["asc", "desc"],
             },
             // Trend Chart
             {
