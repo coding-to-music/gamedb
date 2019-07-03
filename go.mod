@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.41.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
-	github.com/Jleagle/memcache-go v0.0.0-20190624135135-7b358ad3e388
+	github.com/Jleagle/memcache-go v0.0.0-20190624121436-7b358ad3e388
 	github.com/Jleagle/patreon-go v0.0.0-20190513114123-359f6ccef16d
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
@@ -23,7 +23,7 @@ require (
 	github.com/cenkalti/backoff v2.1.1+incompatible
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
-	github.com/dghubble/go-twitter v0.0.0-20190621134507-53f972dc4b06
+	github.com/dghubble/go-twitter v0.0.0-20190512073027-53f972dc4b06
 	github.com/dghubble/oauth1 v0.5.0
 	github.com/dghubble/sling v1.2.0 // indirect
 	github.com/didip/tollbooth v4.0.0+incompatible
@@ -43,14 +43,14 @@ require (
 	github.com/gorilla/sessions v1.1.3
 	github.com/gorilla/websocket v1.4.0
 	github.com/gosimple/slug v1.5.0
-	github.com/influxdata/influxdb1-client v0.0.0-20190621134543-8ff2fc3824fc
+	github.com/influxdata/influxdb1-client v0.0.0-20190402204710-8ff2fc3824fc
 	github.com/jinzhu/gorm v1.9.10
 	github.com/jinzhu/now v1.0.1
 	github.com/jzelinskie/geddit v0.0.0-20190613154237-4b3cacc98c40
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
-	github.com/leekchan/accounting v0.0.0-20190702062932-a09595581342
-	github.com/logrusorgru/aurora v0.0.0-20190621143223-cea283e61946
+	github.com/leekchan/accounting v0.0.0-20190702062627-a09595581342
+	github.com/logrusorgru/aurora v0.0.0-20190428105938-cea283e61946
 	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
 	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
@@ -80,7 +80,7 @@ require (
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.0 // indirect
-	github.com/temoto/robotstxt v0.0.0-20190703085347-155d088cef12 // indirect
+	github.com/temoto/robotstxt v0.0.0-20190703084111-155d088cef12 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
@@ -88,12 +88,9 @@ require (
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.0.3
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20190701105106-4def268fd1a4
-	golang.org/x/net v0.0.0-20190628195232-da137c7871d7 // indirect
+	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/sys v0.0.0-20190626222941-04f50cda93cb // indirect
-	google.golang.org/genproto v0.0.0-20190702072343-710ae3a149df // indirect
-	google.golang.org/grpc v1.22.0
+	google.golang.org/grpc v1.21.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
