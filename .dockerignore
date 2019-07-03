@@ -16,8 +16,6 @@ cmd/crons/crons
 cmd/webserver/webserver
 
 # Meta
-go.mod
-go.sum
 LICENSE.md
 package.json
 package-lock.json
