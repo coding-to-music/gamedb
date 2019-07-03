@@ -740,13 +740,14 @@ func updateAppDetails(app *sql.App) error {
 
 func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
+	app.AchievementsCount = len(schema.AvailableGameStats.Achievements)
+
+	//
 	resp, b, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 	err = helpers.AllowSteamCodes(err, b, []int{403, 500})
 	if err != nil {
 		return err
 	}
-
-	app.AchievementsCount = len(resp.GlobalAchievementPercentage)
 
 	var achievementsMap = make(map[string]float64)
 	for _, v := range resp.GlobalAchievementPercentage {
