@@ -188,7 +188,7 @@ func log(interfaces ...interface{}) {
 			logger.Println(entry.toText(false))
 		}
 
-		if config.IsProd() {
+		if !config.IsLocal() {
 
 			// Google
 			googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
