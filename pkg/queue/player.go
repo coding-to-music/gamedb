@@ -398,7 +398,11 @@ func updatePlayerGames(player *mongo.Player) error {
 	if len(appIDs) > 0 {
 
 		sort.Slice(appIDs, func(i, j int) bool {
-			return playerApps[i].AppTime > playerApps[j].AppTime
+
+			var appID1 = appIDs[i]
+			var appID2 = appIDs[j]
+
+			return playerApps[appID1].AppTime > playerApps[appID2].AppTime
 		})
 
 		player.BackgroundAppID = appIDs[0]
