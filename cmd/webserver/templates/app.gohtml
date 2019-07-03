@@ -345,6 +345,12 @@
                 {{/* App Achievements */}}
                 <div class="tab-pane" id="achievements" role="tabpanel">
 
+                    {{ if gt .App.AchievementsCount 5000 }}
+                        <div class="alert alert-primary" role="alert">
+                            <div>Apps are now limited to 5000 achievements. This app was created before the limit was put in place.</div>
+                        </div>
+                    {{ end }}
+
                     <table class="table">
                         <tbody>
                         <tr>

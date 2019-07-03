@@ -236,10 +236,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		primary = append(primary, "This app record is for the Steam client")
 	}
 
-	if len(t.Achievements) > 5000 {
-		primary = append(primary, "Apps are limited to 5000 achievements, but this app created more before the limit put in place")
-	}
-
 	if len(primary) > 0 {
 		banners["primary"] = primary
 	}
