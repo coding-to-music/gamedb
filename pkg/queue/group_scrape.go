@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/influxql"
@@ -134,19 +135,40 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
+		//
+		var wg sync.WaitGroup
+
 		// Update row
-		err = saveGroupToMongo(group)
-		if err != nil {
-			logError(err, groupID)
-			payload.ackRetry(msg)
-			return
-		}
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			err = saveGroupToMongo(group)
+			if err != nil {
+				logError(err, groupID)
+				payload.ackRetry(msg)
+				return
+			}
+		}()
 
 		// Save to Influx
-		err = saveGroupToInflux(group)
-		if err != nil {
-			logError(err, groupID)
-			payload.ackRetry(msg)
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			err = saveGroupToInflux(group)
+			if err != nil {
+				logError(err, groupID)
+				payload.ackRetry(msg)
+				return
+			}
+		}()
+
+		wg.Wait()
+
+		if payload.actionTaken {
 			return
 		}
 	}

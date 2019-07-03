@@ -3,6 +3,7 @@ package queue
 import (
 	"errors"
 	"strconv"
+	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -77,18 +78,37 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	}
 
 	//
-	err = saveGroupToMongo(group)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+	var wg sync.WaitGroup
 
-	//
-	err = saveGroupToInflux(group)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = saveGroupToMongo(group)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = saveGroupToInflux(group)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if payload.actionTaken {
 		return
 	}
 
