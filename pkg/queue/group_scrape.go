@@ -244,6 +244,8 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	})
 
 	// Error
+	group.Error = ""
+
 	c.OnHTML("#message h3", func(e *colly.HTMLElement) {
 		group.Error = e.Text
 		foundNumbers = true
@@ -331,6 +333,8 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	})
 
 	// Error
+	group.Error = ""
+
 	c.OnHTML("#message h3", func(e *colly.HTMLElement) {
 		group.Error = e.Text
 		foundMembers = true
