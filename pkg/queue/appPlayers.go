@@ -72,7 +72,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 		app, ok := appMap[appID]
 		if ok {
 
-			viewers, err := getAppTwitchStreamers(&app)
+			viewers, err := getAppTwitchStreamers(app.TwitchID)
 			if err != nil {
 				logError(err, appID)
 				payload.ackRetry(msg)
@@ -99,9 +99,9 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-func getAppTwitchStreamers(app *sql.App) (viewers int, err error) {
+func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 
-	if app.TwitchID > 0 {
+	if twitchID > 0 {
 
 		client, err := helpers.GetTwitch()
 		if err != nil {
@@ -113,7 +113,7 @@ func getAppTwitchStreamers(app *sql.App) (viewers int, err error) {
 		// Retrying as this call can fail
 		operation := func() (err error) {
 
-			resp, err = client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(app.TwitchID)}, Language: []string{"en"}})
+			resp, err = client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(twitchID)}, Language: []string{"en"}})
 			return err
 		}
 
