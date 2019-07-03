@@ -124,6 +124,17 @@ table.table {
             vertical-align: middle;
         }
     }
+
+    // Trending charts
+    td.chart {
+        width: 210px;
+
+        > div {
+            height: 32px;
+            margin: -4px;
+            width: 210px;
+        }
+    }
 }
 
 // This is to override the external style sheet

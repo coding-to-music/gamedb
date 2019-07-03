@@ -67,7 +67,10 @@ if ($('#groups-trending-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '';
+                    return '<div data-group-id="' + row[0] + '"><i class="fas fa-spinner fa-spin"></i></div>';
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).addClass('chart');
                 },
                 "orderable": false,
             },
@@ -81,4 +84,99 @@ if ($('#groups-trending-page').length > 0) {
             },
         ]
     }));
+
+    $trendingAppsTable.on('draw.dt', function (e, settings, processing) {
+        loadCharts();
+    });
+
+    function loadCharts() {
+
+        const vals = $('td.chart div[data-group-id]')
+            .map(function () {
+                return $(this).attr('data-group-id');
+            })
+            .get()
+            .join(',');
+
+        $.ajax({
+            type: "GET",
+            url: '/groups/trending/charts.json?ids=' + vals,
+            dataType: 'json',
+            success: function (datas, textStatus, jqXHR) {
+
+                if (datas === null) {
+                    return
+                }
+
+                $('div[data-group-id]').each(function (index) {
+
+                    let data = {};
+                    const appID = $(this).attr('data-group-id');
+
+                    if (datas !== null && appID in datas && 'max_members_count' in datas[appID]) {
+                        data = datas[appID]['max_members_count'];
+                    } else {
+                        data = [];
+                    }
+
+                    Highcharts.chart(this, {
+                        chart: {
+                            type: 'area',
+                            margin: [0, 0, 0, 0],
+                            skipClone: true,
+                            height: 32,
+                            backgroundColor: 'rgba(0,0,0,0)',
+                        },
+                        title: {
+                            text: ''
+                        },
+                        subtitle: {
+                            text: ''
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        legend: {
+                            enabled: false
+                        },
+                        xAxis: {
+                            title: {text: null},
+                            labels: {enabled: false},
+                            type: 'datetime',
+                        },
+                        yAxis: {
+                            allowDecimals: false,
+                            title: {text: null},
+                            labels: {enabled: false},
+                            // min: 0,
+                        },
+                        plotOptions: {
+                            series: {
+                                marker: {
+                                    enabled: false
+                                }
+                            }
+                        },
+                        tooltip: {
+                            hideDelay: 0,
+                            outside: true,
+                            shared: true,
+                            formatter: function () {
+                                return this.y.toLocaleString() + ' members at ' + moment(this.x).format("DD MMM YYYY @ HH:mm");
+                            },
+                            style: {
+                                'width': '500px',
+                            }
+                        },
+                        series: [
+                            {
+                                color: '#28a745',
+                                data: data,
+                            },
+                        ],
+                    });
+                });
+            },
+        });
+    }
 }

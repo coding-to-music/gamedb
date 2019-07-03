@@ -2,8 +2,10 @@ package pages
 
 import (
 	"net/http"
+	"strings"
 	"sync"
 
+	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -16,6 +18,7 @@ func GroupsRouter() http.Handler {
 	r.Get("/", groupsHandler)
 	r.Get("/trending", groupsTrendingHandler)
 	r.Get("/trending/trending.json", groupsTrendingAjaxHandler)
+	r.Get("/trending/charts.json", trendingGroupsAjaxHandler)
 	r.Get("/groups.json", groupsAjaxHandler)
 	r.Mount("/{id}", GroupRouter())
 	return r
@@ -38,6 +41,7 @@ func groupsTrendingHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := groupsTemplate{}
 	t.fill(w, r, "Trending Groups", "A database of all Steam groups")
+	t.addAssetHighCharts()
 
 	err = returnTemplate(w, r, "groups_trending", t)
 	log.Err(err, r)
@@ -175,7 +179,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for k := range groups {
-			groups[k].Name = helpers.InsertNewLines(groups[k].Name, 10)
+			groups[k].Name = helpers.InsertNewLines(groups[k].Name, 6)
 			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline, 10)
 		}
 	}(r)
@@ -206,4 +210,51 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
+}
+
+func trendingGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	idsString := r.URL.Query().Get("ids")
+	idsSlice := strings.Split(idsString, ",")
+
+	if len(idsSlice) == 0 {
+		return
+	}
+
+	if len(idsSlice) > 100 {
+		idsSlice = idsSlice[0:100]
+	}
+
+	var or []string
+	for _, v := range idsSlice {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			or = append(or, `"group_id" = '`+v+`'`)
+		}
+	}
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("max(members_count)", "max_members_count")
+	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementGroups.String())
+	builder.AddWhere("time", ">", "NOW()-28d")
+	builder.AddWhereRaw("(" + strings.Join(or, " OR ") + ")")
+	builder.AddGroupByTime("6h")
+	builder.AddGroupBy("group_id")
+	builder.SetFillLinear()
+
+	resp, err := helpers.InfluxQuery(builder.String())
+	if err != nil {
+		log.Err(err, r, builder.String())
+		return
+	}
+
+	ret := map[string]helpers.HighChartsJson{}
+	if len(resp.Results) > 0 {
+		for _, v := range resp.Results[0].Series {
+			ret[v.Tags["group_id"]] = helpers.InfluxResponseToHighCharts(v)
+		}
+	}
+
+	err = returnJSON(w, r, ret)
+	log.Err(err, r)
 }
