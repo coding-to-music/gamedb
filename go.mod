@@ -80,7 +80,7 @@ require (
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.0 // indirect
-	github.com/temoto/robotstxt v0.0.0-20190703084111-155d088cef12 // indirect
+	github.com/temoto/robotstxt v0.0.0-20190703202654-3a27da55453b // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
