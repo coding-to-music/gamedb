@@ -1,9 +1,6 @@
 module github.com/gamedb/gamedb
 
-// These two lines are here because ahmdrz/goinsta needs to tag their repo after a fix
-replace github.com/ahmdrz/goinsta/v2 => github.com/krylovsk/goinsta/v2 v2.4.0
-
-require github.com/ahmdrz/goinsta/v2 v2.4.2
+go 1.12
 
 require (
 	cloud.google.com/go v0.41.0
@@ -16,6 +13,7 @@ require (
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
 	github.com/Jleagle/steam-go v0.0.0-20190620210405-b7520ae60b2f
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
+	github.com/ahmdrz/goinsta/v2 v2.4.2
 	github.com/antchfx/htmlquery v1.0.0 // indirect
 	github.com/antchfx/xmlquery v1.0.0 // indirect
 	github.com/antchfx/xpath v0.0.0-20190129040759-c8489ed3251e // indirect
