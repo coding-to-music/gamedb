@@ -202,7 +202,9 @@ func log(interfaces ...interface{}) {
 			})
 
 			// Rollbar
-			rollbar.Log(rollbar.ERR, entry.toText(false))
+			if entry.severity == SeverityWarning || entry.severity == SeverityError || entry.severity == SeverityCritical {
+				rollbar.Log(rollbar.ERR, entry.toText(false))
+			}
 		}
 	}
 }
