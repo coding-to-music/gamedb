@@ -1,18 +1,20 @@
 if ($('#groups-page').length > 0) {
 
+    const $groupsTable = $('table.table-datatable2');
+
     $('form').on('submit', function (e) {
 
-        $table.DataTable().draw();
+        $groupsTable.DataTable().draw();
         return false;
     });
 
     $('#type, #errors').on('change', function (e) {
 
-        $table.DataTable().draw();
+        $groupsTable.DataTable().draw();
         return false;
     });
 
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    $groupsTable.DataTable($.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
             data.search = {};

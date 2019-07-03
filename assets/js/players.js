@@ -1,12 +1,14 @@
 if ($('#ranks-page').length > 0) {
 
+    const $playersTable = $('table.table-datatable2');
+
     $('form').on('submit', function (e) {
 
-        $table.DataTable().draw();
+        $playersTable.DataTable().draw();
         return false;
     });
 
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    $playersTable.DataTable($.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
             data.search = {};

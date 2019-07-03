@@ -1,9 +1,9 @@
-const $trendingPage = $('#trending-apps-page');
-const $table = $('table.table-datatable2');
+const $trendingAppsPage = $('#trending-apps-page');
+const $trendingAppsTable = $('table.table-datatable2');
 
-if ($trendingPage.length > 0) {
+if ($trendingAppsPage.length > 0) {
 
-    $table.DataTable($.extend(true, {}, dtDefaultOptions, {
+    $trendingAppsTable.DataTable($.extend(true, {}, dtDefaultOptions, {
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -63,9 +63,9 @@ if ($trendingPage.length > 0) {
     }));
 }
 
-if ($trendingPage.length > 0 || $('#new-releases-page').length > 0) {
+if ($trendingAppsPage.length > 0 || $('#new-releases-page').length > 0) {
 
-    $table.on('draw.dt', function (e, settings, processing) {
+    $trendingAppsTable.on('draw.dt', function (e, settings, processing) {
         loadCharts();
     });
 
