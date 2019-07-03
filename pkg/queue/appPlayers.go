@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/influxql"
@@ -79,17 +80,37 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				return
 			}
 
-			err = saveAppPlayerToInflux(&app, viewers)
-			if err != nil {
-				helpers.LogSteamError(err, appID)
-				payload.ackRetry(msg)
-				return
-			}
+			var wg sync.WaitGroup
 
-			err = updateAppPlayerInfoRow(&app)
-			if err != nil {
-				logError(err, appID)
-				payload.ackRetry(msg)
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				err = saveAppPlayerToInflux(&app, viewers)
+				if err != nil {
+					helpers.LogSteamError(err, appID)
+					payload.ackRetry(msg)
+					return
+				}
+			}()
+
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				err = updateAppPlayerInfoRow(&app)
+				if err != nil {
+					logError(err, appID)
+					payload.ackRetry(msg)
+					return
+				}
+			}()
+
+			wg.Wait()
+
+			if payload.actionTaken {
 				return
 			}
 		}
