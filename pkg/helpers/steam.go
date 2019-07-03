@@ -69,6 +69,10 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			if strings.Contains(err.Error(), "Bad Gateway") {
 				return false
 			}
+
+			if strings.Contains(err.Error(), "connection reset by peer") {
+				return false
+			}
 		}
 
 		return true
