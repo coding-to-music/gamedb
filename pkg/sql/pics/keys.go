@@ -151,9 +151,9 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			b, _ := strconv.ParseBool(val)
 			if b {
-				return "Yes"
+				return template.HTML("<i class=\"fas fa-check text-success\"></i>")
 			}
-			return "No"
+			return template.HTML("<i class=\"fas fa-times text-danger\"></i>")
 
 		case picsTypeLink:
 
