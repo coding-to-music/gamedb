@@ -64,19 +64,19 @@ if ($('#groups-trending-page').length > 0) {
                 "orderSequence": ["asc", "desc"],
             },
             // Trend Chart
-            {
-                "targets": 3,
-                "render": function (data, type, row) {
-                    return '<div data-group-id="' + row[0] + '"><i class="fas fa-spinner fa-spin"></i></div>';
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('chart');
-                },
-                "orderable": false,
-            },
+            // {
+            //     "targets": 3,
+            //     "render": function (data, type, row) {
+            //         return '<div data-group-id="' + row[0] + '"><i class="fas fa-spinner fa-spin"></i></div>';
+            //     },
+            //     "createdCell": function (td, cellData, rowData, row, col) {
+            //         $(td).addClass('chart');
+            //     },
+            //     "orderable": false,
+            // },
             // Link
             {
-                "targets": 4,
+                "targets": 3,
                 "render": function (data, type, row) {
                     return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
                 },
