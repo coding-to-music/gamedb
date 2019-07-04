@@ -1,26 +1,32 @@
 package pics
 
 import (
+	"encoding/json"
 	"html/template"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type PicsItemType string
 
 const (
-	picsTypeBool   PicsItemType = "bool"
-	picsTypeLink   PicsItemType = "link"
-	picsTypeImage  PicsItemType = "image"
-	picsTypeTime   PicsItemType = "timestamp"
-	picsTypeJSON   PicsItemType = "json"
-	picsTypeBytes  PicsItemType = "bytes"
-	picsTypeNumber PicsItemType = "number"
-	picsTypeApps   PicsItemType = "apps" // By comma
+	picsTypeBool             PicsItemType = "bool"
+	picsTypeLink             PicsItemType = "link"
+	picsTypeImage            PicsItemType = "image"
+	picsTypeTimestamp        PicsItemType = "timestamp"
+	picsTypeJSON             PicsItemType = "json"
+	picsTypeBytes            PicsItemType = "bytes"
+	picsTypeNumber           PicsItemType = "number"
+	picsTypeNumberListJSON   PicsItemType = "number-list-json"   // From comma string
+	picsTypeNumberListString PicsItemType = "number-list-string" // From JSON object
+	picsTypeTextListString   PicsItemType = "text-list-string"   // From comma string
+	picsTypeTitle            PicsItemType = "title"
 )
 
 var CommonKeys = map[string]PicsKey{
@@ -35,7 +41,7 @@ var CommonKeys = map[string]PicsKey{
 	"eulas":                   {Type: picsTypeJSON},
 	"exfgls":                  {Type: picsTypeBool, Description: "Exclude from game library sharing"},
 	"gameid":                  {Type: picsTypeLink, Link: "/apps/$val$"},
-	"genres":                  {Type: picsTypeJSON},
+	"genres":                  {Type: picsTypeNumberListJSON, Link: "/apps?genres=$val$"},
 	"has_adult_content":       {Type: picsTypeBool},
 	"header_image":            {Type: picsTypeJSON},
 	"icon":                    {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
@@ -45,14 +51,18 @@ var CommonKeys = map[string]PicsKey{
 	"logo":                    {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
 	"logo_small":              {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
 	"metacritic_fullurl":      {Type: picsTypeLink, Link: "$val$"},
-	"original_release_date":   {Type: picsTypeTime},
-	"primary_genre":           {Type: picsTypeLink, Link: "/apps?tags=$val$"},
+	"original_release_date":   {Type: picsTypeTimestamp},
+	"primary_genre":           {Type: picsTypeLink, Link: "/apps?genres=$val$"},
 	"small_capsule":           {Type: picsTypeJSON},
-	"steam_release_date":      {Type: picsTypeTime},
-	"store_asset_mtime":       {Type: picsTypeTime},
-	"store_tags":              {Type: picsTypeJSON},
+	"steam_release_date":      {Type: picsTypeTimestamp},
+	"store_asset_mtime":       {Type: picsTypeTimestamp},
+	"store_tags":              {Type: picsTypeNumberListJSON, Link: "/apps?tags=$val$"},
 	"supported_languages":     {Type: picsTypeJSON},
 	"workshop_visible":        {Type: picsTypeBool},
+	"releasestate":            {Type: picsTypeTitle},
+	"type":                    {Type: picsTypeTitle},
+	"controller_support":      {Type: picsTypeTitle},
+	"oslist":                  {Type: picsTypeTextListString},
 }
 
 var ExtendedKeys = map[string]PicsKey{
@@ -69,8 +79,10 @@ var ExtendedKeys = map[string]PicsKey{
 	"vacmodulecache":                       {Type: picsTypeLink, Link: "/apps/$val$"},
 	"allowcrossregiontradingandgifting":    {Type: picsTypeBool},
 	"allowpurchasefromrestrictedcountries": {Type: picsTypeBool},
-	"listofdlc":                            {Type: picsTypeApps},
+	"listofdlc":                            {Type: picsTypeNumberListString, Link: "/apps/$val$"},
 	"dlcavailableonstore":                  {Type: picsTypeBool},
+	"validoslist":                          {Type: picsTypeTextListString},
+	"languages":                            {Type: picsTypeTextListString},
 }
 
 var ConfigKeys = map[string]PicsKey{
@@ -136,12 +148,15 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 	if item, ok := keys[key]; ok {
 		switch item.Type {
 		case picsTypeBool:
+
 			b, _ := strconv.ParseBool(val)
 			if b {
 				return "Yes"
 			}
 			return "No"
+
 		case picsTypeLink:
+
 			item.Link = strings.ReplaceAll(item.Link, "$val$", val)
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
 
@@ -150,21 +165,22 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				blank = " rel=\"nofollow\" target=\"_blank\""
 			}
 
-			return template.HTML("<a href=\"" + item.Link + "\"" + blank + ">" + val + "</a>")
+			return template.HTML("<a href=\"" + item.Link + "\"" + blank + " rel=\"nofollow\">" + val + "</a>")
+
 		case picsTypeImage:
+
 			item.Link = strings.ReplaceAll(item.Link, "$val$", val)
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
 			return template.HTML("<img src=\"" + item.Link + "\" /><span><a href=\"" + item.Link + "\" rel=\"nofollow\" target=\"_blank\">" + val + "</a></span>")
-		case picsTypeTime:
+
+		case picsTypeTimestamp:
 
 			i, err := strconv.ParseInt(val, 10, 64)
 			if err != nil {
 				return val
 			}
 
-			t := time.Unix(i, 0).Format(helpers.DateTime) + " (" + val + ")"
-
-			return t
+			return template.HTML(time.Unix(i, 0).Format(helpers.DateTime) + " <small>(" + val + ")</small>")
 
 		case picsTypeBytes:
 
@@ -193,19 +209,83 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			return template.HTML("<div class=\"json\">" + j + "</div>")
 
-		case picsTypeApps:
+		case picsTypeNumberListString:
 
-			var ret []string
+			var idSlice []string
 
 			ids := strings.Split(val, ",")
 			for _, id := range ids {
-				ret = append(ret, `<a href="/apps/`+id+`" rel=\"nofollow\">`+id+`</a>`)
+				id = strings.TrimSpace(id)
+				idSlice = append(idSlice, id)
 			}
 
-			return template.HTML(strings.Join(ret, ", "))
+			sort.Slice(idSlice, func(i, j int) bool {
+				a, _ := strconv.Atoi(idSlice[i])
+				b, _ := strconv.Atoi(idSlice[j])
+				return a < b
+			})
 
-		default:
-			return val
+			if item.Link != "" {
+				for k, id := range idSlice {
+					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"nofollow\">" + id + "</a>"
+				}
+			}
+
+			return template.HTML(strings.Join(idSlice, ", "))
+
+		case picsTypeTitle:
+
+			return strings.Title(val)
+
+		case picsTypeNumberListJSON:
+
+			idMap := map[string]string{}
+
+			err := json.Unmarshal([]byte(val), &idMap)
+			log.Err(err)
+
+			var idSlice []string
+
+			for _, id := range idMap {
+				idSlice = append(idSlice, id)
+			}
+
+			sort.Slice(idSlice, func(i, j int) bool {
+				a, _ := strconv.Atoi(idSlice[i])
+				b, _ := strconv.Atoi(idSlice[j])
+				return a < b
+			})
+
+			if item.Link != "" {
+				for k, id := range idSlice {
+					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"nofollow\">" + id + "</a>"
+				}
+			}
+
+			return template.HTML(strings.Join(idSlice, ", "))
+
+		case picsTypeTextListString:
+
+			var idSlice []string
+
+			ids := strings.Split(val, ",")
+			for _, id := range ids {
+				id = strings.TrimSpace(id)
+				idSlice = append(idSlice, id)
+			}
+
+			sort.Slice(idSlice, func(i, j int) bool {
+				return idSlice[i] < idSlice[j]
+			})
+
+			if item.Link != "" {
+				for k, id := range idSlice {
+					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"nofollow\">" + id + "</a>"
+				}
+			}
+
+			return template.HTML(strings.Join(idSlice, ", "))
+
 		}
 	}
 
