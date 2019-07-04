@@ -6,6 +6,7 @@
     padding: 10px;
     border: 1px solid;
     border-color: #889180 #272f20 #272f20 #889180;
+    position: relative; // Needed to make z-index above background
 
     h1 {
         margin: 0;
