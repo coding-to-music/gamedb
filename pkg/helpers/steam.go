@@ -56,23 +56,20 @@ func LogSteamError(err error, interfaces ...interface{}) {
 
 	isError := func() bool {
 
-		if config.IsProd() {
+		if strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
+			return false
+		}
 
-			if strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
-				return false
-			}
+		if strings.Contains(err.Error(), "unexpected end of JSON input") {
+			return false
+		}
 
-			if strings.Contains(err.Error(), "unexpected end of JSON input") {
-				return false
-			}
+		if strings.Contains(err.Error(), "Bad Gateway") {
+			return false
+		}
 
-			if strings.Contains(err.Error(), "Bad Gateway") {
-				return false
-			}
-
-			if strings.Contains(err.Error(), "connection reset by peer") {
-				return false
-			}
+		if strings.Contains(err.Error(), "connection reset by peer") {
+			return false
 		}
 
 		return true
