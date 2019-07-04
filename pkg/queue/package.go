@@ -417,6 +417,8 @@ func savePackageToInflux(pack sql.Package) error {
 	price, err := pack.GetPrice(steam.CountryUS)
 	if err != nil && err != sql.ErrMissingCountryCode {
 		return err
+	} else if err != nil {
+		log.Err(err)
 	}
 
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
