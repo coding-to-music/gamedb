@@ -88,15 +88,18 @@ header {
 div.jumbotron.bottom {
 
     @extend .mt-3;
+    @extend .p-3;
 
     display: table;
     width: 100%;
 
     h1 {
         display: table-cell;
+        width: 1%;
 
         i {
-            @extend .mr-2;
+            @extend .ml-2;
+            @extend .mr-3;
         }
     }
 
