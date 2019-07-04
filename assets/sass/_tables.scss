@@ -48,6 +48,13 @@ table.table-datatable, table.table-datatable2 {
     }
 }
 
+// Loading div
+.dataTables_processing {
+    border: none !important;
+    background: transparent !important;
+}
+
+//
 table.table {
 
     thead {

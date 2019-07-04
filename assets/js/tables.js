@@ -143,7 +143,7 @@ const dtDefaultOptions = {
             cache: $this.attr('data-cache') !== "false"
         });
     },
-    "processing": false,
+    "processing": true,
     "serverSide": true,
     "pageLength": 100,
     "fixedHeader": true,
@@ -156,7 +156,7 @@ const dtDefaultOptions = {
     "stateSave": false,
     "orderMulti": false,
     "pagingType": getPagingType(),
-    "dom": '<"dt-pagination"p>t<"dt-pagination"p>',
+    "dom": '<"dt-pagination"p>tr<"dt-pagination"p>',
     "language": {
         "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
     },
