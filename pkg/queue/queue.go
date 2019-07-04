@@ -96,8 +96,8 @@ type baseMessage struct {
 
 func (payload baseMessage) getNextAttempt() time.Time {
 
-	var min = time.Second
-	var max = time.Minute * 10
+	var min = time.Second * 2
+	var max = time.Hour
 
 	var seconds float64
 	seconds = math.Pow(1.5, float64(payload.Attempt))
