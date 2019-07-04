@@ -109,8 +109,8 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for k := range groups {
-			groups[k].Name = helpers.InsertNewLines(groups[k].Name, 10)
-			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline, 10)
+			groups[k].Name = helpers.InsertNewLines(groups[k].Name)
+			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline)
 		}
 	}(r)
 
@@ -179,8 +179,8 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for k := range groups {
-			groups[k].Name = helpers.InsertNewLines(groups[k].Name, 6)
-			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline, 10)
+			groups[k].Name = helpers.InsertNewLines(groups[k].Name)
+			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline)
 		}
 	}(r)
 

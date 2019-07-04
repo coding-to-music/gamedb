@@ -84,7 +84,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response.AddRow([]interface{}{
-			helpers.InsertNewLines(commit.Commit.GetMessage(), 10),
+			helpers.InsertNewLines(commit.Commit.GetMessage()),
 			commit.Commit.Author.Date.Unix(),
 			deployed,
 			commit.GetHTMLURL(),

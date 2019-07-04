@@ -124,7 +124,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range priceChanges {
 
 		prices = append(prices, homePrice{
-			Name:   helpers.InsertNewLines(v.Name, 10),
+			Name:   helpers.InsertNewLines(v.Name),
 			ID:     v.AppID,
 			Link:   v.GetPath(),
 			Before: locale.Format(v.PriceBefore),

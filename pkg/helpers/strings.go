@@ -3,7 +3,6 @@ package helpers
 import (
 	"math/rand"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -54,9 +53,10 @@ func RandString(n int, chars string) string {
 	return string(b)
 }
 
-func InsertNewLines(s string, n int) string {
-	var r = regexp.MustCompile("(.{" + strconv.Itoa(n) + "})")
-	return r.ReplaceAllString(s, "$1<wbr />")
+var newLineRegex = regexp.MustCompile("(.{5})")
+
+func InsertNewLines(s string) string {
+	return newLineRegex.ReplaceAllString(s, "$1<wbr />")
 }
 
 func ChunkStrings(strings []string, n int) (chunks [][]string) {

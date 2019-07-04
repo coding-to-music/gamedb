@@ -115,7 +115,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for k := range priceChanges {
-			priceChanges[k].Name = helpers.InsertNewLines(priceChanges[k].Name, 20)
+			priceChanges[k].Name = helpers.InsertNewLines(priceChanges[k].Name)
 		}
 	}(r)
 
