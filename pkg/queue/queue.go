@@ -318,8 +318,10 @@ func produce(payload baseMessage, queue queueName) (err error) {
 		payload.FirstSeen = time.Now()
 	}
 
-	payload.Attempt++
-	payload.LastSeen = time.Now()
+	if queue != queueGoDelays && queue != queueGoFailed {
+		payload.LastSeen = time.Now()
+		payload.Attempt++
+	}
 
 	b, err := json.Marshal(payload)
 	if err != nil {
