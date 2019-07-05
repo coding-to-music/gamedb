@@ -138,8 +138,15 @@ if ($appPage.length > 0) {
             }
         });
 
-        // $carousel1.slick('setPosition');
-        // $carousel2.slick('setPosition');
+        // Fix layout when images lazy load
+        $('#carousel1 img').first().on('load', function () {
+            $carousel1.slick('setPosition');
+            $carousel2.slick('setPosition');
+        });
+        $('#carousel2 img').first().on('load', function () {
+            $carousel1.slick('setPosition');
+            $carousel2.slick('setPosition');
+        });
     }
 
     // News data table
