@@ -5,7 +5,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -27,7 +26,7 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 
 	price, err := app.GetPrice(steam.CountryUS)
 	if err != nil {
-		log.Err(err)
+		// log.Err(err)
 	}
 
 	message.Embed = &discordgo.MessageEmbed{

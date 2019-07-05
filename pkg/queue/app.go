@@ -1124,7 +1124,7 @@ func saveAppToInflux(app sql.App) (err error) {
 	if err != nil && err != sql.ErrMissingCountryCode {
 		return err
 	} else if err != nil {
-		log.Err(err)
+		// log.Err(err)
 	}
 
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
