@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -41,7 +42,7 @@ func (change Change) BSON() (ret interface{}) {
 
 func (change Change) GetName() (name string) {
 
-	return "Change " + strconv.Itoa(change.ID)
+	return "Change " + humanize.Comma(int64(change.ID))
 }
 
 func (change Change) GetPath() string {

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
@@ -113,10 +114,8 @@ func (pack Package) GetProductType() helpers.ProductType {
 
 func (pack Package) GetName() (name string) {
 
-	var IDString = strconv.FormatInt(int64(pack.ID), 10)
-
-	if (pack.Name == "") || (pack.Name == IDString) {
-		return "Package " + IDString
+	if (pack.Name == "") || (pack.Name == strconv.FormatInt(int64(pack.ID), 10)) {
+		return "Package " + humanize.Comma(int64(pack.ID))
 	}
 
 	return pack.Name

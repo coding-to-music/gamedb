@@ -3,6 +3,8 @@ package sql
 import (
 	"strconv"
 	"time"
+
+	"github.com/dustin/go-humanize"
 )
 
 type Category struct {
@@ -20,7 +22,7 @@ func (category Category) GetPath() string {
 func (category Category) GetName() (name string) {
 
 	if category.Name == "" {
-		return "Tag " + strconv.Itoa(category.ID)
+		return "Category " + humanize.Comma(int64(category.ID))
 	}
 
 	return category.Name

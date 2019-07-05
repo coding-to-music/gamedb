@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -42,7 +43,7 @@ func (bundle Bundle) GetName() string {
 	if bundle.Name != "" {
 		return bundle.Name
 	}
-	return "Bundle " + strconv.Itoa(bundle.ID)
+	return "Bundle " + humanize.Comma(int64(bundle.ID))
 }
 
 func (bundle Bundle) GetStoreLink() string {
@@ -84,7 +85,7 @@ func (bundle Bundle) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{
 		bundle.ID,
-		bundle.Name,
+		bundle.GetName(),
 		bundle.GetPath(),
 		strconv.FormatInt(bundle.UpdatedAt.Unix(), 10),
 		bundle.Discount,

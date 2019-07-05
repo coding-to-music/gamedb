@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
@@ -25,6 +26,10 @@ func (p Publisher) GetPath() string {
 }
 
 func (p Publisher) GetName() (name string) {
+	if p.Name == "" {
+		return "Publisher " + humanize.Comma(int64(p.ID))
+	}
+
 	return p.Name
 }
 

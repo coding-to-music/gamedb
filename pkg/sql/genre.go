@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
@@ -24,6 +25,10 @@ func (g Genre) GetPath() string {
 }
 
 func (g Genre) GetName() string {
+	if g.Name == "" {
+		return "Genre " + humanize.Comma(int64(g.ID))
+	}
+
 	return g.Name
 }
 

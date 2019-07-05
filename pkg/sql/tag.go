@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
@@ -27,7 +28,7 @@ func (tag Tag) GetPath() string {
 func (tag Tag) GetName() (name string) {
 
 	if tag.Name == "" {
-		return "Tag " + strconv.Itoa(tag.ID)
+		return "Tag " + humanize.Comma(int64(tag.ID))
 	}
 
 	return tag.Name
