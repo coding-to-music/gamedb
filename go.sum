@@ -258,11 +258,7 @@ github.com/tdewolff/parse v2.3.4+incompatible h1:x05/cnGwIMf4ceLuDMBOdQ1qGniMoxp
 github.com/tdewolff/parse v2.3.4+incompatible/go.mod h1:8oBwCsVmUkgHO8M5iCzSIDtpzXOT0WXX9cWhz+bIzJQ=
 github.com/tdewolff/test v1.0.0 h1:jOwzqCXr5ePXEPGJaq2ivoR6HOCi+D5TPfpoyg8yvmU=
 github.com/tdewolff/test v1.0.0/go.mod h1:DiQUlutnqlEvdvhSn2LPGy4TFwRauAaYDsL+683RNX4=
-github.com/temoto/robotstxt v0.0.0-20190703084111-155d088cef12 h1:KlU8avHIExXpvoFDyJqKy6qpHBsSfIMuzxG62ITJA5Y=
-github.com/temoto/robotstxt v0.0.0-20190703084111-155d088cef12/go.mod h1:aOux3gHPCftJ3KHq6Pz/AlDjYJ7Y+yKfm1gU/3B0u04=
-github.com/temoto/robotstxt v0.0.0-20190703202654-3a27da55453b/go.mod h1:aOux3gHPCftJ3KHq6Pz/AlDjYJ7Y+yKfm1gU/3B0u04=
-github.com/temoto/robotstxt v0.0.0-20190704064758-3f668f68d41c h1:gX/XcpBAHQoy6QSz1LP2F1KbKh+4ggLYarHj1ZRSai4=
-github.com/temoto/robotstxt v0.0.0-20190704064758-3f668f68d41c/go.mod h1:+1AmkuG3IYkh1kv0d2qEB9Le88ehNO0zwOr3ujewlOo=
+github.com/temoto/robotstxt v1.1.1 h1:Gh8RCs8ouX3hRSxxK7B1mO5RFByQ4CmJZDwgom++JaA=
 github.com/temoto/robotstxt v1.1.1/go.mod h1:+1AmkuG3IYkh1kv0d2qEB9Le88ehNO0zwOr3ujewlOo=
 github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
