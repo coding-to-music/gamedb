@@ -72,6 +72,10 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			return false
 		}
 
+		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") {
+			return false
+		}
+
 		return true
 	}()
 
