@@ -15,6 +15,108 @@ const prefix = "STEAM_"
 
 var Config BaseConfig
 
+type BaseConfig struct {
+	// Admin
+	AdminName    ConfigItem
+	AdminEmail   ConfigItem
+	AdminSteamID ConfigItem
+
+	// Discord
+	DiscordClientID      ConfigItem
+	DiscordClientSescret ConfigItem
+
+	DiscordRelayBotToken   ConfigItem
+	DiscordChatBotToken    ConfigItem
+	DiscordChangesBotToken ConfigItem
+
+	// Google
+	GoogleBucket  ConfigItem
+	GoogleProject ConfigItem
+
+	GoogleOauthClientID     ConfigItem
+	GoogleOauthClientSecret ConfigItem
+
+	// Influx
+	InfluxURL      ConfigItem
+	InfluxPassword ConfigItem
+	InfluxUsername ConfigItem
+
+	// Instagram
+	InstagramPassword ConfigItem
+	InstagramUsername ConfigItem
+
+	// Mongo
+	MongoHost     ConfigItem
+	MongoPort     ConfigItem
+	MongoUsername ConfigItem
+	MongoPassword ConfigItem
+	MongoDatabase ConfigItem
+
+	// MySQL
+	MySQLHost     ConfigItem
+	MySQLPort     ConfigItem
+	MySQLUsername ConfigItem
+	MySQLPassword ConfigItem
+	MySQLDatabase ConfigItem
+
+	// Paths
+	Path          ConfigItem
+	AssetsPath    ConfigItem
+	TemplatesPath ConfigItem
+
+	// Patreon
+	PatreonSecret       ConfigItem
+	PatreonClientID     ConfigItem
+	PatreonClientSecret ConfigItem
+
+	// Rabbit
+	RabbitUsername      ConfigItem
+	RabbitPassword      ConfigItem
+	RabbitHost          ConfigItem
+	RabbitPort          ConfigItem
+	RabbitManagmentPort ConfigItem
+
+	// Reddit
+	RedditUsername ConfigItem
+	RedditPassword ConfigItem
+
+	// Recaptcha
+	RecaptchaPrivate ConfigItem
+	RecaptchaPublic  ConfigItem
+
+	// Rollbar
+	RollbarSecret ConfigItem
+	RollbarUser   ConfigItem
+
+	// Sessions
+	SessionAuthentication ConfigItem
+	SessionEncryption     ConfigItem
+
+	// Twitch
+	TwitchClientID     ConfigItem
+	TwitchClientSecret ConfigItem
+
+	// Twitter
+	TwitterAccessToken       ConfigItem
+	TwitterAccessTokenSecret ConfigItem
+	TwitterConsumerKey       ConfigItem
+	TwitterConsumerSecret    ConfigItem
+
+	// Other
+	Environment        ConfigItem
+	GameDBDomain       ConfigItem
+	GameDBShortName    ConfigItem
+	GithubToken        ConfigItem
+	MemcacheDSN        ConfigItem
+	SendGridAPIKey     ConfigItem
+	SteamAPIKey        ConfigItem
+	WebserverPort      ConfigItem
+	CommitHash         ConfigItem
+	NewReleaseDays     ConfigItem
+	SlackGameDBWebhook ConfigItem
+	SlackSocialWebhook ConfigItem
+}
+
 func init() {
 
 	// Admin
@@ -132,108 +234,6 @@ func init() {
 		fmt.Println("Unknown environment")
 		os.Exit(1)
 	}
-}
-
-type BaseConfig struct {
-	// Admin
-	AdminName    ConfigItem
-	AdminEmail   ConfigItem
-	AdminSteamID ConfigItem
-
-	// Discord
-	DiscordClientID      ConfigItem
-	DiscordClientSescret ConfigItem
-
-	DiscordRelayBotToken   ConfigItem
-	DiscordChatBotToken    ConfigItem
-	DiscordChangesBotToken ConfigItem
-
-	// Google
-	GoogleBucket  ConfigItem
-	GoogleProject ConfigItem
-
-	GoogleOauthClientID     ConfigItem
-	GoogleOauthClientSecret ConfigItem
-
-	// Influx
-	InfluxURL      ConfigItem
-	InfluxPassword ConfigItem
-	InfluxUsername ConfigItem
-
-	// Instagram
-	InstagramPassword ConfigItem
-	InstagramUsername ConfigItem
-
-	// Mongo
-	MongoHost     ConfigItem
-	MongoPort     ConfigItem
-	MongoUsername ConfigItem
-	MongoPassword ConfigItem
-	MongoDatabase ConfigItem
-
-	// MySQL
-	MySQLHost     ConfigItem
-	MySQLPort     ConfigItem
-	MySQLUsername ConfigItem
-	MySQLPassword ConfigItem
-	MySQLDatabase ConfigItem
-
-	// Paths
-	Path          ConfigItem
-	AssetsPath    ConfigItem
-	TemplatesPath ConfigItem
-
-	// Patreon
-	PatreonSecret       ConfigItem
-	PatreonClientID     ConfigItem
-	PatreonClientSecret ConfigItem
-
-	// Rabbit
-	RabbitUsername      ConfigItem
-	RabbitPassword      ConfigItem
-	RabbitHost          ConfigItem
-	RabbitPort          ConfigItem
-	RabbitManagmentPort ConfigItem
-
-	// Reddit
-	RedditUsername ConfigItem
-	RedditPassword ConfigItem
-
-	// Recaptcha
-	RecaptchaPrivate ConfigItem
-	RecaptchaPublic  ConfigItem
-
-	// Rollbar
-	RollbarSecret ConfigItem
-	RollbarUser   ConfigItem
-
-	// Sessions
-	SessionAuthentication ConfigItem
-	SessionEncryption     ConfigItem
-
-	// Twitch
-	TwitchClientID     ConfigItem
-	TwitchClientSecret ConfigItem
-
-	// Twitter
-	TwitterAccessToken       ConfigItem
-	TwitterAccessTokenSecret ConfigItem
-	TwitterConsumerKey       ConfigItem
-	TwitterConsumerSecret    ConfigItem
-
-	// Other
-	Environment        ConfigItem
-	GameDBDomain       ConfigItem
-	GameDBShortName    ConfigItem
-	GithubToken        ConfigItem
-	MemcacheDSN        ConfigItem
-	SendGridAPIKey     ConfigItem
-	SteamAPIKey        ConfigItem
-	WebserverPort      ConfigItem
-	CommitHash         ConfigItem
-	NewReleaseDays     ConfigItem
-	SlackGameDBWebhook ConfigItem
-	SlackSocialWebhook ConfigItem
 }
 
 // ConfigItem
