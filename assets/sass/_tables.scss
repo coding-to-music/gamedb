@@ -108,8 +108,7 @@ table.table {
     }
 
     td.img {
-        padding: 0 .75rem 0 .75rem; // Remove top/bottom padding
-        font-size: 0; // Remove white space
+        padding: 0 0.75rem 0 0.75rem;
 
         img, div.avatar2 {
             margin-top: 8px;
@@ -127,7 +126,6 @@ table.table {
         span {
             display: inline-block;
             margin: .75rem 0 .75rem 9px;
-            font-size: 1rem;
             vertical-align: middle;
         }
     }
