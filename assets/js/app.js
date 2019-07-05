@@ -441,7 +441,7 @@ if ($appPage.length > 0) {
                     "targets": 1,
                     "render": function (data, type, row) {
                         if (row[3]) {
-                            return '<img data-toggle="tooltip" data-placement="left" title="' + row[7] + '" src="' + row[3] + '" class="rounded" alt="' + row[7] + '">';
+                            return '<img data-lazy="' + row[3] + '" data-lazy-alt="' + row[7] + '" data-toggle="tooltip" data-placement="left" title="' + row[7] + '" class="rounded">';
                         }
                         return '';
                     },
@@ -454,7 +454,7 @@ if ($appPage.length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return '<img src="' + row[5] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                        return '<img data-lazy="' + row[5] + '" data-lazy-alt="' + row[1] + '" class="rounded square"><span>' + row[1] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

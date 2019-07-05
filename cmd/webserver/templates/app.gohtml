@@ -568,7 +568,7 @@
                         <div id="carousel1">
                             {{ range $key, $value := .Screenshots }}
                                 <div>
-                                    <img src="{{ .PathFull }}" alt="Media {{ $key }}">
+                                    <img data-lazy="{{ .PathFull }}" data-lazy-alt="Media {{ $key }}">
                                 </div>
                             {{ end }}
                             {{ range $key, $value := .Movies }}
@@ -583,11 +583,11 @@
 
                         <div id="carousel2">
                             {{ range $key, $value := .Screenshots }}
-                                <div class="thumb"><img src="{{ .PathThumbnail }}" alt="Thumbnail {{ $key }}"></div>
+                                <div class="thumb"><img data-lazy="{{ .PathThumbnail }}" data-lazy-alt="Thumbnail {{ $key }}"></div>
                             {{ end }}
                             {{ range $key, $value := .Movies }}
                                 <div class="thumb">
-                                    <img src="{{ .PathThumbnail }}" alt="{{ .Title }}">
+                                    <img data-lazy="{{ .PathThumbnail }}" data-lazy-alt="{{ .Title }}">
                                     <i class="fas fa-play"></i>
                                 </div>
                             {{ end }}

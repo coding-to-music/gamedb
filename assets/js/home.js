@@ -98,7 +98,7 @@ if ($('#home-page').length > 0) {
                     {
                         '<>': 'td', 'class': 'img', 'html': [
                             {
-                                '<>': 'img', 'src': '${avatar}', 'class': 'rounded',
+                                '<>': 'img', 'data-lazy': '${avatar}', 'class': 'rounded',
                             },
                             {
                                 '<>': 'span', 'html': '${name}', 'class': 'text-truncate',
@@ -126,5 +126,7 @@ if ($('#home-page').length > 0) {
         );
 
         $container.find('tr').slice(15).remove();
+
+        observeLazyImages('#prices img[data-lazy]');
     }
 }

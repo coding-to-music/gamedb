@@ -39,7 +39,7 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<img data-src="/assets/img/no-app-image-square.jpg" src="' + row[3] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                    return '<img data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[3] + '" class="rounded square" data-lazy-alt="' + row[1] + '"><span>' + row[1] + '</span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

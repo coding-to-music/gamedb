@@ -85,7 +85,8 @@ $dataTables.on('page.dt', function (e, settings, processing) {
 
 $dataTables.on('draw.dt', function (e, settings) {
 
-    fixBrokenImages();
+    // fixBrokenImages();
+    observeLazyImages('tr img[data-lazy]');
 });
 
 function getPagingType() {
@@ -201,6 +202,7 @@ $dataTables2.on('page.dt', function (e, settings, processing) {
 $dataTables2.on('draw.dt', function (e, settings, processing) {
 
     highLightOwnedGames();
+    observeLazyImages('tr img[data-lazy]');
     fixBrokenImages();
 });
 

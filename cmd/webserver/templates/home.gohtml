@@ -82,7 +82,7 @@
 
                         {{ range $key, $value := .News }}
                             <li class="media mb-2" data-link="{{ .Link }}">
-                                <img src="{{ .Image }}" alt="{{ .Title }}" class="mr-3 mb-2 img rounded" loading="lazy">
+                                <img data-lazy="{{ .Image }}" class="mr-3 mb-2 img rounded">
                                 <div class="media-body">
                                     <h5 class="mt-0 mb-1">{{ .Title }}</h5>
                                     {{ .Contents }}
@@ -104,7 +104,7 @@
                 <div class="card-body p-0">
                     {{ range $key, $value := .Games }}
                         <a href="{{ .GetPath }}">
-                            <img src="{{ .HeaderImage }}" alt="{{ .GetName }}" loading="lazy">
+                            <img data-lazy="{{ .HeaderImage }}" data-lazy-alt="{{ .GetName }}">
                         </a>
                     {{ end }}
                 </div>
