@@ -156,7 +156,7 @@ const dtDefaultOptions = {
     "stateSave": false,
     "orderMulti": false,
     "pagingType": getPagingType(),
-    "dom": '<"dt-pagination"p>tr<"dt-pagination"p>',
+    "dom": '<"dt-pagination"p>t<"dt-pagination"p>r',
     "language": {
         "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
     },
