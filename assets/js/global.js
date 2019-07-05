@@ -76,16 +76,7 @@ $body.tooltip({
     selector: '[data-toggle="tooltip"]'
 });
 
-// JSON fields
-function isJson(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}
-
+//
 $('.json').each(function (i, value) {
 
     const json = $(this).text();
@@ -147,55 +138,6 @@ $top.click(function (e) {
 
 highLightOwnedGames();
 
-// Websocket helper
-function websocketListener(page, onMessage) {
-
-    if (window.WebSocket === undefined) {
-
-        console.log('Your browser does not support websockets');
-
-    } else {
-
-        const socket = new WebSocket((location.protocol === 'https:' ? "wss://gamedb.online" : "ws://" + location.host) + "/websocket/" + page);
-        const $badge = $('#live-badge');
-        let open = false;
-
-        socket.onopen = function (e) {
-            $badge.addClass('badge-success').removeClass('badge-secondary badge-danger');
-            console.log('Websocket opened');
-            open = true;
-        };
-
-        socket.onclose = function (e) {
-            if (open) {
-                $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
-                toast(false, 'Live functionality has stopped'); // onerror will trigger too
-                console.log('Websocket closed');
-            }
-        };
-
-        socket.onerror = function (e) {
-            if (open) {
-                $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
-                toast(false, 'Live functionality has stopped');
-            }
-        };
-
-        socket.onmessage = function (e) {
-            return onMessage(e)
-        };
-
-        // Click to close websocket manually
-        // $badge.on('click', function (e) {
-        //     if ($(this).hasClass('cursor-pointer')) {
-        //         socket.close(1000);
-        //         $badge.addClass('badge-danger').removeClass('badge-secondary badge-success cursor-pointer');
-        //         toast(false, 'Live functionality has stopped');
-        //     }
-        // });
-    }
-}
-
 // Ads
 // if (user.showAds) {
 //
@@ -222,20 +164,7 @@ $(document).ready(function () {
     }
 });
 
-function fixBrokenImages() {
 
-    $('img').one('error', function () {
-
-        const url = $(this).attr('data-src');
-        if (url) {
-            this.src = url;
-        }
-    });
-
-    $('img[src=""][data-src]').each(function (i, value) {
-        this.src = $(this).attr('data-src');
-    });
-}
 
 // Broken images
 $(document).ready(fixBrokenImages);
