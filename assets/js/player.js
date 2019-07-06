@@ -93,7 +93,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<img src="' + row[2] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                        return '<img data-lazy="' + row[2] + '" class="rounded square" data-lazy-alt="' + row[1] + '"><span>' + row[1] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -139,7 +139,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<img src="' + row[1] + '" class="rounded square" alt="' + row[2] + '"><span>' + row[2] + '</span>';
+                        return '<img data-lazy="' + row[1] + '" class="rounded square" data-lazy-alt="' + row[2] + '"><span>' + row[2] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -180,7 +180,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<img src="' + row[2] + '" class="rounded square" data-src="/assets/img/no-player-image.jpg" alt="' + row[3] + '"><span>' + row[3] + '</span>';
+                        return '<img data-lazy="' + row[2] + '" class="rounded square" data-src="/assets/img/no-player-image.jpg" data-lazy-alt="' + row[3] + '"><span>' + row[3] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -250,7 +250,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<img src="' + row[5] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                        return '<img data-lazy="' + row[5] + '" class="rounded square" data-lazy-alt="' + row[1] + '"><span>' + row[1] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

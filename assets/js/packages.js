@@ -10,7 +10,7 @@ if ($('#packages-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<img src="' + row[8] + '" class="rounded square" alt="' + row[2] + '"><span>' + row[2] + '</span>';
+                    return '<img data-lazy="' + row[8] + '" class="rounded square" data-lazy-alt="' + row[2] + '"><span>' + row[2] + '</span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

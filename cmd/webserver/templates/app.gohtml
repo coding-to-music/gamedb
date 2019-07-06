@@ -379,7 +379,7 @@
                                 {{ range $key, $value := .Achievements }}
                                     <tr {{ if .IsHidden }}class="table-danger"{{ end }}>
                                         <td class="img" nowrap="nowrap">
-                                            <img src="{{ .GetIcon }}" class="rounded square" alt="{{ .Name }}">
+                                            <img data-lazy="{{ .GetIcon }}" class="rounded square" data-lazy-alt="{{ .Name }}">
                                             <span>{{ .Name }}</span>
                                         </td>
                                         <td>{{ .Description }}</td>
