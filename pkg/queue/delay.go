@@ -30,21 +30,21 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	// Limits
 	if q.getMaxTime() > 0 && payload.FirstSeen.Add(q.getMaxTime()).Unix() < time.Now().Unix() {
 
-		logWarning("Message removed from delay queue (Over " + q.getMaxTime().String() + " / " + payload.FirstSeen.Add(q.getMaxTime()).String() + "): " + string(msg.Body))
+		logInfo("Message removed from delay queue (Over " + q.getMaxTime().String() + " / " + payload.FirstSeen.Add(q.getMaxTime()).String() + "): " + string(msg.Body))
 		payload.fail(msg)
 		return
 	}
 
 	if q.maxAttempts > 0 && payload.Attempt > q.maxAttempts {
 
-		logWarning("Message removed from delay queue (" + strconv.Itoa(payload.Attempt) + "/" + strconv.Itoa(q.maxAttempts) + " attempts): " + string(msg.Body))
+		logInfo("Message removed from delay queue (" + strconv.Itoa(payload.Attempt) + "/" + strconv.Itoa(q.maxAttempts) + " attempts): " + string(msg.Body))
 		payload.fail(msg)
 		return
 	}
 
 	if payload.OriginalQueue == queueGoDelays {
 
-		logWarning("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
+		logInfo("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
 		payload.fail(msg)
 		return
 	}
