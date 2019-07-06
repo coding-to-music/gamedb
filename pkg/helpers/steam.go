@@ -76,6 +76,10 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			return false
 		}
 
+		if strings.Contains(err.Error(), "TLS handshake timeout") {
+			return false
+		}
+
 		return true
 	}()
 
