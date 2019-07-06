@@ -85,6 +85,7 @@ header {
     }
 }
 
+// Info panels
 div.jumbotron.bottom {
 
     @extend .mt-3;
@@ -96,6 +97,7 @@ div.jumbotron.bottom {
     h1 {
         display: table-cell;
         width: 1%;
+        vertical-align: middle;
 
         i {
             @extend .ml-2;
