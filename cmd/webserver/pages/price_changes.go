@@ -54,7 +54,6 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var filter = mongo.D{
 		{"currency", string(code)},
-		{"created_at", mongo.M{"$gt": dateLimit}},
 	}
 
 	typex := query.getSearchString("type")
