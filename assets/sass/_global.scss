@@ -99,7 +99,7 @@ div.jumbotron.bottom {
         width: 1%;
         vertical-align: middle;
 
-        i {
+        i, svg {
             @extend .ml-2;
             @extend .mr-3;
         }
