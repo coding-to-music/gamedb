@@ -24,7 +24,7 @@ if ($('#groups-page').length > 0) {
 
             dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
-        "order": [[2, 'desc']],
+        "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
             if (data[7] === 'game' && !$('#type').val()) {
@@ -47,24 +47,21 @@ if ($('#groups-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Headline
+            // Members
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return row[4];
+                    return row[5].toLocaleString();
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('d-none d-lg-table-cell');
-                },
-                "orderable": false,
+                "orderSequence": ["desc"],
             },
-            // Members
+            // Trend Value
             {
                 "targets": 2,
                 "render": function (data, type, row) {
-                    return row[5].toLocaleString();
+                    return row[10].toLocaleString();
                 },
-                "orderable": false,
+                "orderSequence": ["asc", "desc"],
             },
             // Link
             {

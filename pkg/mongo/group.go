@@ -86,23 +86,6 @@ func (group *Group) SetID(id string) {
 	}
 }
 
-func (group Group) OutputForJSON() (output []interface{}) {
-
-	return []interface{}{
-		group.ID64,        // 0
-		group.GetName(),   // 1
-		group.GetPath(),   // 2
-		group.GetIcon(),   // 3
-		group.Headline,    // 4
-		group.Members,     // 5
-		group.URL,         // 6
-		group.Type,        // 7
-		group.GetLink(),   // 8
-		group.Error != "", // 9
-		group.Trending,    // 10
-	}
-}
-
 func (group Group) GetPath() string {
 	return "/groups/" + group.ID64 + "/" + slug.Make(group.Name)
 }
