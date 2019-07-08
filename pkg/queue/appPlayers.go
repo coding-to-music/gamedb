@@ -7,10 +7,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
@@ -73,23 +72,99 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 		app, ok := appMap[appID]
 		if ok {
 
-			viewers, err := getAppTwitchStreamers(app.TwitchID)
-			if err != nil {
-				logError(err, appID)
-				payload.ackRetry(msg)
+			var wg sync.WaitGroup
+
+			// Reads
+			wg.Add(1)
+			var viewers int
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				viewers, err = getAppTwitchStreamers(app.TwitchID)
+				if err != nil {
+					logError(err, appID)
+					payload.ackRetry(msg)
+					return
+				}
+			}()
+
+			wg.Add(1)
+			var appPlayersWeek int
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appPlayersWeek, err = getAppTopPlayersWeek(appID)
+				if err != nil {
+					log.Err(err, appID)
+					payload.ackRetry(msg)
+					return
+				}
+			}()
+
+			wg.Add(1)
+			var appPlayersAlltime int
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appPlayersAlltime, err = getAppTopPlayersAlltime(appID)
+				if err != nil {
+					log.Err(err, appID)
+					payload.ackRetry(msg)
+					return
+				}
+			}()
+
+			wg.Add(1)
+			var appTrend int64
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appTrend, err = getAppTrendValue(appID)
+				if err != nil {
+					log.Err(err, appID)
+					payload.ackRetry(msg)
+					return
+				}
+			}()
+
+			wg.Add(1)
+			var appPlayersNow int
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appPlayersNow, err = getAppOnlinePlayers(appID)
+				if err != nil {
+					helpers.LogSteamError(err, appID)
+					payload.ackRetry(msg)
+					return
+				}
+			}()
+
+			wg.Wait()
+
+			if payload.actionTaken {
 				return
 			}
 
-			var wg sync.WaitGroup
-
+			// Writes
 			wg.Add(1)
 			go func() {
 
 				defer wg.Done()
 
-				err = saveAppPlayerToInflux(&app, viewers)
+				err = saveAppPlayerToInflux(appID, viewers, appPlayersNow)
 				if err != nil {
-					helpers.LogSteamError(err, appID)
+					log.Err(err, appID)
 					payload.ackRetry(msg)
 					return
 				}
@@ -100,7 +175,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 
 				defer wg.Done()
 
-				err = updateAppPlayerInfoRow(&app)
+				err = updateAppPlayerInfoRow(appID, appTrend, appPlayersWeek, appPlayersAlltime)
 				if err != nil {
 					logError(err, appID)
 					payload.ackRetry(msg)
@@ -153,31 +228,43 @@ func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 	return viewers, nil
 }
 
-var appPlayerSteamClient *steam.Steam
+func getAppOnlinePlayers(appID int) (count int, err error) {
 
-func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
+	// var regexIntsOnly = regexp.MustCompile("[^0-9]+")
+	//
+	// c := colly.NewCollector()
+	// c.SetRequestTimeout(time.Second * 5)
+	//
+	// // ID64
+	// c.OnHTML(".apphub_NumInApp", func(e *colly.HTMLElement) {
+	// 	e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+	// 	log.Info(e.Text)
+	// })
+	//
+	// //
+	// c.OnError(func(r *colly.Response, err error) {
+	// 	helpers.LogSteamError(err)
+	// })
+	//
+	// err2 := c.Visit("https://steamcommunity.com/app/440")
+	// log.Err(err2)
 
-	if appPlayerSteamClient == nil {
+	client := helpers.GetSteamUnlimited()
 
-		appPlayerSteamClient = &steam.Steam{}
-		appPlayerSteamClient.SetKey(config.Config.SteamAPIKey.Get())
-		appPlayerSteamClient.SetUserAgent("gamedb.online#GetNumberOfCurrentPlayers")
-		appPlayerSteamClient.SetAPIRateLimit(time.Millisecond*1100, 10)
-	}
-
-	count, b, err := appPlayerSteamClient.GetNumberOfCurrentPlayers(app.ID)
+	count, b, err := client.GetNumberOfCurrentPlayers(appID)
 	err = helpers.AllowSteamCodes(err, b, []int{404})
-	if err != nil {
-		return err
-	}
+	return count, err
+}
+
+func saveAppPlayerToInflux(appID int, viewers int, players int) (err error) {
 
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(helpers.InfluxMeasurementApps),
 		Tags: map[string]string{
-			"app_id": strconv.Itoa(app.ID),
+			"app_id": strconv.Itoa(appID),
 		},
 		Fields: map[string]interface{}{
-			"player_count":   count,
+			"player_count":   players,
 			"twitch_viewers": viewers,
 		},
 		Time:      time.Now(),
@@ -187,26 +274,56 @@ func saveAppPlayerToInflux(app *sql.App, viewers int) (err error) {
 	return err
 }
 
-func updateAppPlayerInfoRow(app *sql.App) (err error) {
+func getAppTopPlayersWeek(appID int) (val int, err error) {
 
-	var builder *influxql.Builder
-	var resp *influx.Response
+	builder := influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.AddWhere("time", ">", "NOW() - 7d")
+	builder.AddWhere("app_id", "=", appID)
+	builder.SetFillNone()
+
+	resp, err := helpers.InfluxQuery(builder.String())
+	if err != nil {
+		return 0, err
+	}
+
+	return helpers.GetFirstInfluxInt(resp), nil
+}
+
+func getAppTopPlayersAlltime(appID int) (val int, err error) {
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.AddWhere("app_id", "=", appID)
+	builder.SetFillNone()
+
+	resp, err := helpers.InfluxQuery(builder.String())
+	if err != nil {
+		return 0, err
+	}
+
+	return helpers.GetFirstInfluxInt(resp), nil
+}
+
+func getAppTrendValue(appID int) (trend int64, err error) {
 
 	// Trend value - https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
 	subBuilder := influxql.NewBuilder()
 	subBuilder.AddSelect("difference(last(player_count))", "")
 	subBuilder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
-	subBuilder.AddWhere("app_id", "=", app.ID)
+	subBuilder.AddWhere("app_id", "=", appID)
 	subBuilder.AddWhere("time", ">=", "NOW() - 7d")
 	subBuilder.AddGroupByTime("1h")
 
-	builder = influxql.NewBuilder()
+	builder := influxql.NewBuilder()
 	builder.AddSelect("cumulative_sum(difference)", "")
 	builder.SetFromSubQuery(subBuilder)
 
-	resp, err = helpers.InfluxQuery(builder.String())
+	resp, err := helpers.InfluxQuery(builder.String())
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	var trendTotal int64
@@ -220,39 +337,15 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 
 			trendTotal, err = last[1].(json.Number).Int64()
 			if err != nil {
-				return err
+				return 0, err
 			}
 		}
 	}
 
-	// 7 Days
-	builder = influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW() - 7d")
-	builder.AddWhere("app_id", "=", app.ID)
-	builder.SetFillNone()
+	return trendTotal, nil
+}
 
-	resp, err = helpers.InfluxQuery(builder.String())
-	if err != nil {
-		return err
-	}
-
-	var week = helpers.GetFirstInfluxInt(resp)
-
-	// All time
-	builder = influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
-	builder.AddWhere("app_id", "=", app.ID)
-	builder.SetFillNone()
-
-	resp, err = helpers.InfluxQuery(builder.String())
-	if err != nil {
-		return err
-	}
-
-	var alltime = helpers.GetFirstInfluxInt(resp)
+func updateAppPlayerInfoRow(appID int, trend int64, week int, alltime int) (err error) {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -260,12 +353,12 @@ func updateAppPlayerInfoRow(app *sql.App) (err error) {
 	}
 
 	data := map[string]interface{}{
-		"player_trend":        int(trendTotal),
+		"player_trend":        int(trend),
 		"player_peak_week":    week,
 		"player_peak_alltime": alltime,
 	}
 
-	gorm.Table("apps").Where("id = ?", app.ID).Updates(data)
+	gorm.Table("apps").Where("id = ?", appID).Updates(data)
 
 	return gorm.Error
 }

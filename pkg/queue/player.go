@@ -112,7 +112,6 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 				helpers.LogSteamError(err, message.ID)
 				payload.ackRetry(msg)
 			}
-
 			return
 		}
 
@@ -178,7 +177,6 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 			payload.ackRetry(msg)
 			return
 		}
-
 	}()
 
 	wg.Wait()

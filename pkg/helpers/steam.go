@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -9,9 +10,21 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-var steamClient *steam.Steam
+var (
+	steamClient     *steam.Steam
+	steamClientLock sync.Mutex
+
+	steamClientUnlimited     *steam.Steam
+	steamClientUnlimitedLock sync.Mutex
+)
+
+type steamLogger struct {
+}
 
 func GetSteam() *steam.Steam {
+
+	steamClientLock.Lock()
+	defer steamClientLock.Unlock()
 
 	if steamClient == nil {
 
@@ -26,7 +39,20 @@ func GetSteam() *steam.Steam {
 	return steamClient
 }
 
-type steamLogger struct {
+func GetSteamUnlimited() *steam.Steam {
+
+	steamClientUnlimitedLock.Lock()
+	defer steamClientUnlimitedLock.Unlock()
+
+	if steamClientUnlimited == nil {
+
+		steamClientUnlimited = &steam.Steam{}
+		steamClientUnlimited.SetKey(config.Config.SteamAPIKey.Get())
+		steamClientUnlimited.SetUserAgent("gamedb.online")
+		steamClientUnlimited.SetLogger(steamLogger{})
+	}
+
+	return steamClientUnlimited
 }
 
 func (l steamLogger) Write(i steam.Log) {
