@@ -35,6 +35,7 @@ type Group struct {
 	Name          string    `bson:"name"`
 	Abbr          string    `bson:"abbreviation"`
 	URL           string    `bson:"url"`
+	AppID         int       `bson:"app_id"`
 	Headline      string    `bson:"headline"`
 	Summary       string    `bson:"summary"`
 	Icon          string    `bson:"icon"`
@@ -63,6 +64,7 @@ func (group Group) BSON() (ret interface{}) {
 		"name":            group.Name,
 		"abbreviation":    group.Abbr,
 		"url":             group.URL,
+		"app_id":          group.AppID,
 		"headline":        group.Headline,
 		"summary":         group.Summary,
 		"icon":            group.Icon,

@@ -209,6 +209,19 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 		group.Name = strings.TrimSpace(e.Text)
 	})
 
+	// App ID
+	c.OnHTML("#rightActionBlock a", func(e *colly.HTMLElement) {
+		var url = e.Attr("href")
+		if strings.HasSuffix(url, "/discussions") {
+			url = strings.TrimSuffix(url, "/discussions")
+			url = path.Base(url)
+			urli, err := strconv.Atoi(url)
+			if err == nil {
+				group.AppID = urli
+			}
+		}
+	})
+
 	// Headline
 	c.OnHTML("#profileBlock > h1", func(e *colly.HTMLElement) {
 		group.Headline = strings.TrimSpace(e.Text)
@@ -282,6 +295,8 @@ var (
 )
 
 func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err error) {
+
+	group.AppID = 0
 
 	c := colly.NewCollector()
 	c.SetRequestTimeout(time.Second * 15)
@@ -491,6 +506,12 @@ func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 	group.MembersInGame = int(resp.Details.MembersInGame)
 	group.MembersOnline = int(resp.Details.MembersOnline)
 	group.Type = resp.Type
+
+	// Try to get App ID from URL
+	i, err := strconv.Atoi(resp.Details.URL)
+	if err == nil && i > 0 {
+		group.AppID = i
+	}
 
 	// Get working icon
 	if helpers.GetResponseCode(resp.Details.AvatarFull) == 200 {
