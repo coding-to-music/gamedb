@@ -726,19 +726,37 @@ func updatePlayerWishlist(player *mongo.Player) error {
 		return err
 	}
 
+	// Make into a slice so we can sort
+	var appsSlice []wishlistItemPlusID
+	for k, v := range resp.Items {
+		i, err := strconv.Atoi(k)
+		log.Err(err)
+		if err == nil {
+			appsSlice = append(appsSlice, wishlistItemPlusID{
+				item:  v,
+				appID: i,
+			})
+		}
+	}
+
+	sort.Slice(appsSlice, func(i, j int) bool {
+		return appsSlice[i].item.Priority > appsSlice[j].item.Priority
+	})
+
 	var appIDs []int
 
-	for k := range resp.Items {
-
-		i, err := strconv.Atoi(k)
-		if err == nil && i > 0 {
-			appIDs = append(appIDs, i)
-		}
+	for _, appID := range appsSlice {
+		appIDs = append(appIDs, appID.appID)
 	}
 
 	player.Wishlist = appIDs
 
 	return nil
+}
+
+type wishlistItemPlusID struct {
+	item  steam.WishlistItem
+	appID int
 }
 
 func savePlayerMongo(player mongo.Player) error {

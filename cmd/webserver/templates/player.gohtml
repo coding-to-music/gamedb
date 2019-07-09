@@ -497,19 +497,23 @@
                         <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                             <thead class="thead-light">
                             <tr>
+                                <th scope="col"></th>
                                 <th scope="col">Recent Games</th>
                                 <th scope="col">State</th>
                                 <th scope="col">Release Date</th>
+                                <th scope="col">Price</th>
                             </tr>
                             </thead>
                             {{ range $key, $value := .Wishlist }}
-                                <tr data-link="/apps/{{ .ID }}">
+                                <tr data-link="/apps/{{ .App.ID }}">
+                                    <td data-sort="{{ $key }}" width="1%">{{ ordinalComma (inc $key) }}</td>
                                     <td class="img">
-                                        <img src="{{ .GetIcon }}" alt="{{ .GetName }}" class="rounded square">
-                                        <span>{{ .GetName }}</span>
+                                        <img src="{{ .App.GetIcon }}" alt="{{ .App.GetName }}" class="rounded square">
+                                        <span>{{ .App.GetName }}</span>
                                     </td>
-                                    <td>{{ .GetReleaseState }}</td>
-                                    <td>{{ .GetReleaseDateNice }}</td>
+                                    <td>{{ .App.GetReleaseState }}</td>
+                                    <td data-sort="{{ .App.ReleaseDateUnix }}">{{ .App.GetReleaseDateNice }}</td>
+                                    <td>{{ .Price.Final }}</td>
                                 </tr>
                             {{ end }}
                         </table>

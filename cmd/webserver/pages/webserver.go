@@ -164,19 +164,21 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
-		"join":       func(a []string) string { return strings.Join(a, ", ") },
-		"lower":      func(a string) string { return strings.ToLower(a) },
-		"comma":      func(a int) string { return humanize.Comma(int64(a)) },
-		"comma64":    func(a int64) string { return humanize.Comma(a) },
-		"commaf":     func(a float64) string { return humanize.Commaf(a) },
-		"bytes":      func(a uint64) string { return humanize.Bytes(a) },
-		"seconds":    func(a int64) string { return humanize.RelTime(time.Now(), time.Now().Add(time.Second*time.Duration(a)), "", "") },
-		"startsWith": func(a string, b string) bool { return strings.HasPrefix(a, b) },
-		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
-		"max":        func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
-		"html":       func(html string) template.HTML { return helpers.RenderHTMLAndBBCode(html) },
-		"json":       func(v interface{}) (string, error) { b, err := json.Marshal(v); log.Err(err); return string(b), err },
-		"title":      func(a string) string { return strings.Title(a) },
+		"join":         func(a []string) string { return strings.Join(a, ", ") },
+		"lower":        func(a string) string { return strings.ToLower(a) },
+		"comma":        func(a int) string { return humanize.Comma(int64(a)) },
+		"comma64":      func(a int64) string { return humanize.Comma(a) },
+		"commaf":       func(a float64) string { return humanize.Commaf(a) },
+		"bytes":        func(a uint64) string { return humanize.Bytes(a) },
+		"seconds":      func(a int64) string { return humanize.RelTime(time.Now(), time.Now().Add(time.Second*time.Duration(a)), "", "") },
+		"startsWith":   func(a string, b string) bool { return strings.HasPrefix(a, b) },
+		"endsWith":     func(a string, b string) bool { return strings.HasSuffix(a, b) },
+		"max":          func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
+		"html":         func(html string) template.HTML { return helpers.RenderHTMLAndBBCode(html) },
+		"json":         func(v interface{}) (string, error) { b, err := json.Marshal(v); log.Err(err); return string(b), err },
+		"title":        func(a string) string { return strings.Title(a) },
+		"inc":          func(i int) int { return i + 1 },
+		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
 	}
 }
 

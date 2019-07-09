@@ -44,6 +44,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var code = helpers.GetCountryCode(r)
+
 	// Find the player row
 	player, err := mongo.GetPlayer(idx)
 	if err != nil {
@@ -137,15 +139,22 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get wishlist
-	var wishlist []sql.App
+	var wishlist []playerWishlistItem
 	wg.Add(1)
 	go func(player mongo.Player) {
 
 		defer wg.Done()
 
-		var err error
-		wishlist, err = sql.GetAppsByID(player.Wishlist, []string{"id", "name", "icon", "release_state", "release_date_unix"})
+		wishlistApps, err := sql.GetAppsByID(player.Wishlist, []string{"id", "name", "icon", "release_state", "release_date_unix", "prices"})
 		log.Err(err)
+		if err == nil {
+			for _, v := range wishlistApps {
+				wishlist = append(wishlist, playerWishlistItem{
+					App:   v,
+					Price: sql.GetPriceFormatted(v, code),
+				})
+			}
+		}
 
 	}(player)
 
@@ -168,7 +177,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14)
 
 	// Game stats
-	gameStats, err := player.GetGameStats(helpers.GetCountryCode(r))
+	gameStats, err := player.GetGameStats(code)
 	log.Err(err, r)
 
 	// Make banners
@@ -225,7 +234,7 @@ type playerTemplate struct {
 	GameStats     mongo.PlayerAppStatsTemplate
 	Groups        []mongo.Group
 	Player        mongo.Player
-	Wishlist      []sql.App
+	Wishlist      []playerWishlistItem
 	// Ranks       playerRanksTemplate
 }
 
@@ -233,6 +242,11 @@ type playerMissingTemplate struct {
 	GlobalTemplate
 	Player        mongo.Player
 	DefaultAvatar string
+}
+
+type playerWishlistItem struct {
+	App   sql.App
+	Price sql.ProductPriceFormattedStruct
 }
 
 // // playerRanksTemplate
