@@ -185,10 +185,6 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-var (
-	gameGroupURL = regexp.MustCompile(`steamcommunity\.com/app/([0-9]+)`)
-)
-
 func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err error) {
 
 	c := colly.NewCollector()
@@ -201,10 +197,10 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	})
 
 	// URL
-	c.OnHTML("#rightActionBlock .actionItemIcon a", func(e *colly.HTMLElement) {
-		matches := gameGroupURL.FindStringSubmatch(e.Attr("href"))
-		if len(matches) > 1 {
-			group.URL = matches[1]
+	c.OnHTML("#eventsBlock a", func(e *colly.HTMLElement) {
+		if strings.HasSuffix(e.Attr("href"), "/events") {
+			var url = strings.TrimSuffix(e.Attr("href"), "/events")
+			group.URL = path.Base(url)
 		}
 	})
 
