@@ -85,8 +85,6 @@ func GetCountryCode(r *http.Request) steam.CountryCode {
 		log.Err(err)
 	}()
 
-	log.Info("IP: " + r.RemoteAddr)
-
 	ip := net.ParseIP(r.RemoteAddr)
 
 	if ip != nil {
@@ -107,8 +105,7 @@ func GetCountryCode(r *http.Request) steam.CountryCode {
 		}
 
 		for _, activeCountryCode := range GetActiveCountries() {
-
-			if record.Country.ISOCode == string(activeCountryCode) && steam.ValidCountryCode(steam.CountryCode(val)) {
+			if record.Country.ISOCode == string(activeCountryCode) && steam.ValidCountryCode(steam.CountryCode(activeCountryCode)) {
 				return activeCountryCode
 			}
 		}
