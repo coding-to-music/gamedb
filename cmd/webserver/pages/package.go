@@ -66,7 +66,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			appsMap[v] = sql.App{ID: v}
 		}
 
-		appsSlice, err = sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc", "common"})
+		appsSlice, err = sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc", "common", "background"})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -114,10 +114,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := packageTemplate{}
-	t.fill(w, r, pack.GetName(), "")
 	if len(appsSlice) == 1 {
-		t.Background = appsSlice[0].Background
+		t.setBackground(appsSlice[0], true, true)
 	}
+	t.fill(w, r, pack.GetName(), "")
 	t.metaImage = pack.GetMetaImage()
 	t.addAssetHighCharts()
 	t.Package = pack

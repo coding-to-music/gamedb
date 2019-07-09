@@ -191,6 +191,7 @@ type GlobalTemplate struct {
 	Canonical       string
 	ActiveCountries map[string]string
 
+	backgroundSet   bool
 	Background      string
 	BackgroundTitle string
 	BackgroundLink  string
@@ -284,7 +285,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	//
-	t.setRandomBackground()
+	t.setRandomBackground(true, false)
 
 	// Pages
 	switch true {
@@ -329,11 +330,36 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 }
 
-func (t *GlobalTemplate) setRandomBackground() {
+func (t *GlobalTemplate) setBackground(app sql.App, title bool, link bool) {
 
-	if t.Background != "" {
+	if t.backgroundSet {
 		return
 	}
+	t.backgroundSet = true
+
+	if app.Background != "" {
+		t.Background = app.Background
+	} else {
+		return
+	}
+	if title {
+		t.BackgroundTitle = app.GetName()
+	} else {
+		t.BackgroundTitle = ""
+	}
+	if link {
+		t.BackgroundLink = app.GetPath()
+	} else {
+		t.BackgroundLink = ""
+	}
+}
+
+func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
+
+	if t.backgroundSet {
+		return
+	}
+	t.backgroundSet = true
 
 	if strings.HasPrefix(t.request.URL.Path, "/admin") {
 		return
@@ -354,9 +380,7 @@ func (t *GlobalTemplate) setRandomBackground() {
 			}
 
 			backgroundApp := popularApps[rand.Intn(len(popularApps))]
-			t.Background = backgroundApp.Background
-			t.BackgroundTitle = backgroundApp.GetName()
-			// t.BackgroundLink = backgroundApp.GetPath()
+			t.setBackground(backgroundApp, title, link)
 		}
 	}
 }

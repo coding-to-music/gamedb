@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -50,16 +51,19 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := groupTemplate{}
-	t.fill(w, r, group.GetName(), "")
 
-	if group.Type == mongo.GroupTypeGame {
-		if group.URL != "" {
-			t.Background = "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + group.URL + "/library_hero.jpg"
-		} else {
-			t.Background = ""
+	// Get background app
+	if group.Type == mongo.GroupTypeGame && group.AppID > 0 {
+
+		var err error
+		app, err := sql.GetApp(group.AppID, []string{"id", "name", "background"})
+		log.Err(err)
+		if err == nil {
+			t.setBackground(app, true, true)
 		}
 	}
 
+	t.fill(w, r, group.GetName(), "")
 	t.addAssetHighCharts()
 	t.Canonical = group.GetPath()
 

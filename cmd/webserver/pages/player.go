@@ -32,7 +32,6 @@ func PlayerRouter() http.Handler {
 func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
-	var toasts []Toast
 
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -59,7 +58,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			tm.addAssetHighCharts()
 			tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 			tm.Player = player
-			tm.toasts = toasts
 			tm.DefaultAvatar = helpers.DefaultPlayerAvatar
 
 			err = returnTemplate(w, r, "player_missing", tm)
@@ -72,15 +70,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//
-	t := playerTemplate{}
-
-	// Queue profile for a refresh
-	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
-		err = queue.ProducePlayer(player.ID)
-		log.Err(err, r)
-		t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
-	}
-
 	var wg sync.WaitGroup
 
 	// Number of players
@@ -160,6 +149,19 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
+	// Get background app
+	var backgroundApp sql.App
+	wg.Add(1)
+	go func(player mongo.Player) {
+
+		defer wg.Done()
+
+		var err error
+		backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
+		log.Err(err)
+
+	}(player)
+
 	// Wait
 	wg.Wait()
 
@@ -181,20 +183,25 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		banners["primary"] = primary
 	}
 
-	t.Banners = banners
+	t := playerTemplate{}
+
+	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
+		err = queue.ProducePlayer(player.ID)
+		log.Err(err, r)
+		if err == nil {
+			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+		}
+	}
 
 	// Template
+	t.setBackground(backgroundApp, true, false)
 	t.fill(w, r, player.PersonaName, "")
-	if player.BackgroundAppID > 0 {
-		t.Background = "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(player.BackgroundAppID) + "/library_hero.jpg"
-	} else {
-		t.Background = ""
-	}
 	t.addAssetHighCharts()
-	t.toasts = toasts
+
 	t.Apps = []mongo.PlayerApp{}
 	t.Badges = player.GetSpecialBadges()
 	t.BadgeStats = badgeStats
+	t.Banners = banners
 	t.Bans = bans
 	t.Canonical = player.GetPath()
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
