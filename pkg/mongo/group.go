@@ -94,7 +94,7 @@ func (group Group) GetType() string {
 	return strings.Title(group.Type)
 }
 
-func (group Group) GetOfficial() bool {
+func (group Group) IsOfficial() bool {
 	return group.Type == GroupTypeGame
 }
 

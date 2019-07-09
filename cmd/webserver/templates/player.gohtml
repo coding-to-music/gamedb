@@ -375,7 +375,7 @@
                                         <span>{{ .Name }}</span>
                                     </td>
                                     <td>{{ comma .Members }}</td>
-                                    <td>{{ if .GetOfficial }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                    <td>{{ if .IsOfficial }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
                                     <td><a href="{{ .GetPath }}" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a></td>
                                 </tr>
                             {{ end }}
