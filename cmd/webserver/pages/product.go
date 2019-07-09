@@ -33,7 +33,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	var product sql.ProductInterface
 
 	if productType == helpers.ProductTypeApp {
-		product, err = sql.GetApp(idx, []string{})
+		product, err = sql.GetApp(idx, nil)
 	} else {
 		product, err = sql.GetPackage(idx)
 	}

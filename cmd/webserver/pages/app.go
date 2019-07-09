@@ -50,7 +50,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get app
-	app, err := sql.GetApp(idx, []string{})
+	app, err := sql.GetApp(idx, nil)
 	if err != nil {
 
 		if err == sql.ErrRecordNotFound {
@@ -338,7 +338,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		app, err := sql.GetApp(idx, []string{})
+		app, err := sql.GetApp(idx, nil)
 		if err != nil {
 			log.Err(err, r, idx)
 			return

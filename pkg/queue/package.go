@@ -179,7 +179,7 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 			return err
 		}
 
-		app, err := sql.GetApp(appIDs[0], []string{})
+		app, err := sql.GetApp(appIDs[0], nil)
 		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
 
 			pack.Name = app.GetName()
