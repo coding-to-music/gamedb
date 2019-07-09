@@ -59,7 +59,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	} else {
 
-		logInfo("Sending back in " + payload.getNextAttempt().Sub(time.Now()).String())
+		// logInfo("Sending " + msg.MessageId + " back in " + payload.getNextAttempt().Sub(time.Now()).String())
 		queue = queueGoDelays
 	}
 
