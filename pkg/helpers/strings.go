@@ -3,6 +3,7 @@ package helpers
 import (
 	"math/rand"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -40,6 +41,17 @@ func JoinInterface(i []interface{}) string {
 	}
 
 	return strings.Join(stringSlice, " | ")
+}
+
+func JoinInts(i []int) string {
+
+	var stringSlice []string
+
+	for _, v := range i {
+		stringSlice = append(stringSlice, strconv.Itoa(v))
+	}
+
+	return strings.Join(stringSlice, ",")
 }
 
 const Letters = "abcdefghijklmnopqrstuvwxyz"
