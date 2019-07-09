@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"math"
 	"math/rand"
-	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -24,7 +23,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"github.com/oschwald/maxminddb-golang"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
 )
@@ -274,6 +272,10 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.UserCountry = helpers.GetCountryCode(r)
 	log.Err(err, r)
 
+	// Save country incase its from Maxmind
+	err = session.Set(r, helpers.SessionUserCountry, string(t.UserCountry))
+	log.Err(err)
+
 	// Currency
 	locale, err := helpers.GetLocaleFromCountry(t.UserCountry)
 	log.Err(err, r)
@@ -283,7 +285,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	//
 	t.setRandomBackground()
-	t.setCountryCodeFromIP()
 
 	// Pages
 	switch true {
@@ -357,75 +358,6 @@ func (t *GlobalTemplate) setRandomBackground() {
 			t.BackgroundTitle = backgroundApp.GetName()
 			// t.BackgroundLink = backgroundApp.GetPath()
 		}
-	}
-}
-
-func (t *GlobalTemplate) setCountryCodeFromIP() {
-
-	if t.UserCountry != "" {
-		return
-	}
-
-	country, err := session.Get(t.request, helpers.SessionUserCountry)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-	if country != "" {
-		return
-	}
-
-	db, err := maxminddb.Open(config.Config.AssetsPath.Get() + "/files/GeoLite2-Country.mmdb")
-	if err != nil {
-		log.Err(err)
-		return
-	}
-	defer func() {
-		err = db.Close()
-		log.Err(err)
-	}()
-
-	log.Info("IP: " + t.request.RemoteAddr)
-
-	ip := net.ParseIP(t.request.RemoteAddr)
-
-	if ip != nil {
-
-		// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
-		var record struct {
-			Country struct {
-				ISOCode           string `maxminddb:"iso_code"`
-				IsInEuropeanUnion bool   `maxminddb:"is_in_european_union"`
-			} `maxminddb:"country"`
-		}
-
-		err = db.Lookup(ip, &record)
-		if err != nil {
-			log.Err(err)
-			return
-		}
-
-		var cc string
-
-		if record.Country.IsInEuropeanUnion && record.Country.ISOCode != "GB" {
-			cc = "DE"
-		} else {
-			for _, v := range helpers.GetActiveCountries() {
-				if record.Country.ISOCode == string(v) {
-					cc = record.Country.ISOCode
-					break
-				}
-			}
-		}
-
-		if cc == "" {
-			cc = "US"
-		}
-
-		err = session.Set(t.request, helpers.SessionUserCountry, cc)
-		log.Err(err)
-
-		t.UserCountry = steam.CountryCode(cc)
 	}
 }
 

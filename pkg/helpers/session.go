@@ -2,13 +2,17 @@ package helpers
 
 import (
 	"errors"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/oschwald/maxminddb-golang"
 )
 
 const (
@@ -48,29 +52,69 @@ func GetUserIDFromSesion(r *http.Request) (id int, err error) {
 	return strconv.Atoi(idx)
 }
 
+var ccLock sync.Mutex
+
 func GetCountryCode(r *http.Request) steam.CountryCode {
 
-	var cc string
+	ccLock.Lock()
+	defer ccLock.Unlock()
 
-	q := r.URL.Query().Get("cc")
-	if q != "" {
-		cc = strings.ToUpper(q)
-	} else {
-		val, err := session.Get(r, SessionUserCountry)
+	var fallback = steam.CountryUS
+
+	// Get from URL
+	q := strings.ToUpper(r.URL.Query().Get("cc"))
+	if q != "" && steam.ValidCountryCode(steam.CountryCode(q)) {
+		return steam.CountryCode(q)
+	}
+
+	// Get from session
+	val, err := session.Get(r, SessionUserCountry)
+	log.Err(err)
+	if err == nil && steam.ValidCountryCode(steam.CountryCode(val)) {
+		return steam.CountryCode(val)
+	}
+
+	// Get from Maxmind
+	db, err := maxminddb.Open(config.Config.AssetsPath.Get() + "/files/GeoLite2-Country.mmdb")
+	if err != nil {
 		log.Err(err)
-		if err == nil {
-			cc = val
+		return steam.CountryUS
+	}
+	defer func() {
+		err = db.Close()
+		log.Err(err)
+	}()
+
+	log.Info("IP: " + r.RemoteAddr)
+
+	ip := net.ParseIP(r.RemoteAddr)
+
+	if ip != nil {
+
+		// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
+		// Only using what we need is faster
+		var record struct {
+			Country struct {
+				ISOCode           string `maxminddb:"iso_code"`
+				IsInEuropeanUnion bool   `maxminddb:"is_in_european_union"`
+			} `maxminddb:"country"`
+		}
+
+		err = db.Lookup(ip, &record)
+		if err != nil {
+			log.Err(err)
+			return fallback
+		}
+
+		for _, activeCountryCode := range GetActiveCountries() {
+
+			if record.Country.ISOCode == string(activeCountryCode) && steam.ValidCountryCode(steam.CountryCode(val)) {
+				return activeCountryCode
+			}
 		}
 	}
 
-	if cc != "" {
-		_, ok := steam.Countries[steam.CountryCode(cc)]
-		if ok {
-			return steam.CountryCode(cc)
-		}
-	}
-
-	return steam.CountryUS
+	return fallback
 }
 
 func GetUserLevel(r *http.Request) int {
