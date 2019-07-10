@@ -193,6 +193,7 @@ type GlobalTemplate struct {
 	Canonical       string
 	ActiveCountries map[string]string
 
+	backgroundSet   bool
 	Background      string
 	BackgroundTitle string
 	BackgroundLink  string
@@ -333,6 +334,8 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 func (t *GlobalTemplate) setBackground(app sql.App, title bool, link bool) {
 
+	t.backgroundSet = true
+
 	if app.Background != "" {
 		t.Background = app.Background
 	} else {
@@ -351,6 +354,10 @@ func (t *GlobalTemplate) setBackground(app sql.App, title bool, link bool) {
 }
 
 func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
+
+	if t.backgroundSet {
+		return
+	}
 
 	if strings.HasPrefix(t.request.URL.Path, "/admin") {
 		return
