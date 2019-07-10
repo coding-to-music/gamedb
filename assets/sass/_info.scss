@@ -4,6 +4,35 @@
         .highlight {
             border-bottom: solid 3px #28a745;
         }
+
+        .social-link {
+            float: left;
+
+            i, svg {
+                font-size: 4rem;
+            }
+
+            i.fa-facebook-square, svg.fa-facebook-square {
+                color: #3b5998;
+            }
+
+            i.fa-github-square, svg.fa-github-square {
+                color: #4078c0;
+            }
+
+            i.fa-twitter-square, svg.fa-twitter-square {
+                color: #38A1F3;
+            }
+
+            i.fa-steam-square, svg.fa-steam-square {
+                color: #00adee;
+            }
+
+            i.fa-discord, svg.fa-discord {
+                color: #7289da;
+                margin-top: 5px;
+            }
+        }
     }
 
     #links {
