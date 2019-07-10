@@ -10,7 +10,7 @@ if ($('#changes-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return 'Change ' + row[0];
+                    return row[6];
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');

@@ -87,6 +87,7 @@ func (change Change) OutputForJSON(allApps map[int]string, allPackages map[int]s
 		apps,
 		packages,
 		change.GetPath(),
+		change.GetName(),
 	}
 }
 
