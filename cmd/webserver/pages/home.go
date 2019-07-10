@@ -28,7 +28,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeTemplate{}
 	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
-	t.setRandomBackground(true, true)
 	t.addAssetJSON2HTML()
 	t.setFlashes(w, r)
 
