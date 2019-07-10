@@ -19,7 +19,7 @@ if ($badgePage.length > 0) {
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return '<img src="' + row[2] + '" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                    return '<div class="icon-name"><div class="icon"><img src="' + row[2] + '" alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

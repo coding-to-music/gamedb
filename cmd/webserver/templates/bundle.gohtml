@@ -47,8 +47,10 @@
                         {{ range $key, $value := .Packages }}
                             <tr data-link="{{ .GetPath }}">
                                 <td class="img">
-                                    <img class="rounded square" src="/assets/img/no-app-image-square.jpg" alt="{{ .GetName }}">
-                                    <span>{{ .GetName }}</span>
+                                    <div class="icon-name">
+                                        <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{ .GetName }}"></div>
+                                        <div class="name">{{ .GetName }}</div>
+                                    </div>
                                 </td>
                                 <td>{{ .GetBillingType }}</td>
                                 <td>{{ .GetLicenseType }}</td>
@@ -75,8 +77,10 @@
                         {{ range $key, $value := .Apps }}
                             <tr data-link="{{.GetPath}}">
                                 <td data-app-id="{{ .ID }}" class="img">
-                                    <img class="rounded square" src="{{ .GetIcon }}" alt="{{.GetName}}">
-                                    <span>{{.GetName}}</span>
+                                    <div class="icon-name">
+                                        <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
+                                        <div class="name">{{ .GetName }}</div>
+                                    </div>
                                 </td>
                                 <td>{{ .GetType }}</td>
                                 <td class="platforms">{{ .GetPlatformImages }}</td>

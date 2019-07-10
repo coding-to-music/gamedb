@@ -48,7 +48,7 @@ if ($('#news-page').length > 0) {
                             row[8] = 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/' + row[6] + '/' + row[8] + '.jpg';
                         }
 
-                        return '<img src="' + row[8] + '" class="rounded square" alt="' + row[7] + '"><span>' + row[7] + '</span>';
+                        return '<div class="icon-name"><div class="icon"><img src="' + row[8] + '" alt="' + row[7] + '"></div><div class="name">' + row[7] + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

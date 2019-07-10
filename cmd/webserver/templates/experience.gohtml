@@ -50,8 +50,10 @@
                         {{ range $keyx, $valuex := $value }}
                             <tr data-level="{{ .Level }}">
                                 <td class="img">
-                                    <div class="{{ .GetAvatar2 }} square"></div>
-                                    <span>{{ comma .Level }}</span>
+                                    <div class="icon-name">
+                                        <div class="icon"><div class="{{ .GetAvatar2 }}"></div></div>
+                                        <div class="name">{{ comma .Level }}</div>
+                                    </div>
                                 </td>
                                 <td>{{ comma .Start }}</td>
                                 <td>{{ comma .End }}</td>

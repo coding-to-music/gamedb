@@ -105,9 +105,11 @@
                                         {{ if ne .Player.CountryCode "" }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap">Country</th>
-                                                <td class="img flag">
-                                                    <img class="rounded" data-toggle="tooltip" data-placement="top" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}">
-                                                    <span>{{ .Player.CountryCode }}</span>
+                                                <td class="img">
+                                                    <div class="icon-name">
+                                                        <div class="icon"><img data-toggle="tooltip" data-placement="top" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}"></div>
+                                                        <div class="name">{{ .Player.CountryCode }}</div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         {{ end }}
@@ -300,8 +302,10 @@
                                         {{ if eq .AppID 0 }}
                                             <tr data-link="{{ .GetPath }}">
                                                 <td class="img">
-                                                    <img src="{{ .GetBadgeIcon }}" alt="" class="img">
-                                                    <span>{{ .GetName }}</span>
+                                                    <div class="icon-name">
+                                                        <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="" class="img"></div>
+                                                        <div class="name">{{ .GetName }}</div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         {{ end }}
@@ -325,8 +329,10 @@
                                         {{ if ne .AppID 0 }}
                                             <tr data-link="{{ .GetPath }}">
                                                 <td class="img">
-                                                    <img src="{{ .GetBadgeIcon }}" alt="" class="img">
-                                                    <span>{{ .GetName }}</span>
+                                                    <div class="icon-name">
+                                                        <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="" class="img"></div>
+                                                        <div class="name">{{ .GetName }}</div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         {{ end }}
@@ -371,8 +377,10 @@
                             {{ range $key, $value := .Groups }}
                                 <tr data-link="{{ .GetPath }}">
                                     <td class="img">
-                                        <img src="{{ .Icon }}" alt="{{ .Name }}" class="rounded square">
-                                        <span>{{ .Name }}</span>
+                                        <div class="icon-name">
+                                            <div class="icon"><img src="{{ .Icon }}" alt="{{ .Name }}"></div>
+                                            <div class="name">{{ .Name }}</div>
+                                        </div>
                                     </td>
                                     <td>{{ comma .Members }}</td>
                                     <td>{{ if .IsOfficial }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
@@ -508,8 +516,10 @@
                                 <tr data-link="/apps/{{ .App.ID }}">
                                     <td data-sort="{{ $key }}" width="1%">{{ ordinalComma (inc $key) }}</td>
                                     <td class="img">
-                                        <img src="{{ .App.GetIcon }}" alt="{{ .App.GetName }}" class="rounded square">
-                                        <span>{{ .App.GetName }}</span>
+                                        <div class="icon-name">
+                                            <div class="icon"><img src="{{ .App.GetIcon }}" alt="{{ .App.GetName }}"></div>
+                                            <div class="name">{{ .App.GetName }}</div>
+                                        </div>
                                     </td>
                                     <td>{{ .App.GetReleaseState }}</td>
                                     <td data-sort="{{ .App.ReleaseDateUnix }}">{{ .App.GetReleaseDateNice }}</td>

@@ -10,7 +10,7 @@ if ($('#bundles-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<img src="/assets/img/no-app-image-square.jpg" class="rounded square" alt="' + row[1] + '"><span>' + row[1] + '</span>';
+                    return '<div class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

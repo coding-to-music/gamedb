@@ -68,8 +68,10 @@
                         {{ range $key, $value := .Games }}
                             <tr data-link="/apps/{{ .Game.ID }}">
                                 <td class="img" data-app-id="{{ .Game.ID }}">
-                                    <img src="{{.Game.GetIcon}}" class="rounded square" alt="{{ .Game.GetName }}">
-                                    <span>{{ .Game.GetName }}</span>
+                                    <div class="icon-name">
+                                        <div class="icon"><img src="{{.Game.GetIcon}}" alt="{{ .Game.GetName }}"></div>
+                                        <div class="name">{{ .Game.GetName }}</div>
+                                    </div>
                                 </td>
                                 <td class="platforms">{{ .Game.GetPlatformImages }}</td>
                                 <td>{{ comma (len .Game.GetAchievements) }}</td>

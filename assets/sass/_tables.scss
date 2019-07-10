@@ -80,6 +80,46 @@ table.table {
         }
     }
 
+    td.img {
+        @extend .pt-0;
+        @extend .pb-0;
+
+        div.icon-name {
+            display: table;
+
+            > div.icon {
+                display: table-cell;
+                vertical-align: middle;
+                width: 1%;
+
+                img, div.avatar2 {
+                    @extend .rounded;
+                }
+            }
+
+            > div.name {
+                @extend .pt-2;
+                @extend .pb-2;
+                display: table-cell;
+                vertical-align: middle;
+                padding-left: 9px;
+                min-width: 150px;
+            }
+        }
+
+        img, div.avatar2 {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            height: 32px;
+            max-width: none;
+            vertical-align: middle;
+        }
+
+        img.square {
+            width: 32px;
+        }
+    }
+
     td.platforms {
         font-size: 22px;
         line-height: 48px;
@@ -105,29 +145,6 @@ table.table {
     td.platforms.platforms-align span.space {
         display: inline-block;
         width: .875em;
-    }
-
-    td.img {
-        padding: 0 0.75rem 0 0.75rem;
-
-        img, div.avatar2 {
-            margin-top: 8px;
-            margin-bottom: 8px;
-            height: 32px;
-            max-width: none;
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        img.square {
-            width: 32px;
-        }
-
-        span {
-            display: inline-block;
-            margin: .75rem 0 .75rem 9px;
-            vertical-align: middle;
-        }
     }
 
     // Trending charts

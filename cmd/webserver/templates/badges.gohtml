@@ -40,9 +40,11 @@
                             <tbody>
                             {{ range $key, $value := .GetSpecialBadges }}
                                 <tr data-link="{{ .GetPath }}">
-                                    <td class="img" nowrap="nowrap" width="1%">
-                                        <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
-                                        <span>{{ .BadgeName }}</span>
+                                    <td class="img">
+                                        <div class="icon-name">
+                                            <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
+                                            <div class="name">{{ .BadgeName }}</div>
+                                        </div>
                                     </td>
                                     <td>{{ comma64 .GetSpecialPlayers }}</td>
                                     <td><a href="{{ .GetSpecialMax.GetPlayerPath }}">{{ .GetSpecialMax.PlayerName }}</a></td>
@@ -71,9 +73,11 @@
                             <tbody>
                             {{ range $key, $value := .GetEventBadges }}
                                 <tr data-link="{{ .GetPath }}">
-                                    <td class="img" nowrap="nowrap">
-                                        <img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}">
-                                        <span>{{ .BadgeName }}</span>
+                                    <td class="img">
+                                        <div class="icon-name">
+                                            <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
+                                            <div class="name">{{ .BadgeName }}</div>
+                                        </div>
                                     </td>
                                     <td>{{ comma64 .GetEventPlayers }}</td>
                                     <td><a href="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</a></td>

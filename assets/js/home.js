@@ -42,11 +42,15 @@ if ($('#home-page').length > 0) {
                                 {
                                     '<>': 'td', 'class': 'img', 'html': [
                                         {
-                                            '<>': 'img', 'src': '${avatar}', 'class': 'rounded'
-                                        },
-                                        {
-                                            '<>': 'span', 'html': '${name}'
-                                        },
+                                            '<>': 'div', 'class': 'icon-name', 'html': [
+                                                {
+                                                    '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}'}],
+                                                },
+                                                {
+                                                    '<>': 'div', 'class': 'name', 'html': '${name}'
+                                                }
+                                            ]
+                                        }
                                     ]
                                 },
                                 {
@@ -60,6 +64,8 @@ if ($('#home-page').length > 0) {
                             prepend: false,
                         }
                     );
+
+                    observeLazyImages('#players img[data-lazy]');
                 }
             },
         });
@@ -98,10 +104,14 @@ if ($('#home-page').length > 0) {
                     {
                         '<>': 'td', 'class': 'img', 'html': [
                             {
-                                '<>': 'img', 'data-lazy': '${avatar}', 'class': 'rounded',
-                            },
-                            {
-                                '<>': 'span', 'html': '${name}', 'class': 'text-truncate',
+                                '<>': 'div', 'class': 'icon-name', 'html': [
+                                    {
+                                        '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}'}]
+                                    },
+                                    {
+                                        '<>': 'div', 'class': 'name', 'html': '${name}'
+                                    }
+                                ],
                             },
                         ]
                     },

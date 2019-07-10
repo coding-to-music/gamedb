@@ -138,7 +138,7 @@ if ($('#price-changes-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<img data-lazy="' + row[4] + '" data-lazy-alt="' + row[3] + '" class="rounded square"><span>' + row[3] + '</span>';
+                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')

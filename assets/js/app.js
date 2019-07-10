@@ -454,11 +454,10 @@ if ($appPage.length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return '<img data-lazy="' + row[5] + '" data-lazy-alt="' + row[1] + '" class="rounded square"><span>' + row[1] + '</span>';
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
-                        $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false,
                 },

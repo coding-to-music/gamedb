@@ -139,8 +139,10 @@
                             {{ range $key, $value := .Apps }}
                                 <tr data-link="{{.GetPath}}">
                                     <td data-app-id="{{ .ID }}" class="img">
-                                        <img class="rounded square" src="{{ .GetIcon }}" alt="{{.GetName}}">
-                                        <span>{{.GetName}}</span>
+                                        <div class="icon-name">
+                                            <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
+                                            <div class="name">{{ .GetName }}</div>
+                                        </div>
                                     </td>
                                     <td>{{ .GetType }}</td>
                                     <td class="platforms">{{ .GetPlatformImages }}</td>
@@ -169,8 +171,10 @@
                             {{ range $key, $value := .Bundles }}
                                 <tr data-link="{{.GetPath}}">
                                     <td data-app-id="{{ .ID }}" class="img">
-                                        <img class="rounded square" src="/assets/img/no-app-image-square.jpg" alt="{{.Name}}">
-                                        <span>{{.Name}}</span>
+                                        <div class="icon-name">
+                                            <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.Name}}"></div>
+                                            <div class="name">{{ .Name }}</div>
+                                        </div>
                                     </td>
                                     <td>{{ .Discount }}%</td>
                                     <td>{{ .AppsCount }}</td>
@@ -203,9 +207,11 @@
                             </thead>
                             {{ range $key, $value := .Prices }}
                                 <tr data-code="{{ $key }}">
-                                    <td class="img flag">
-                                        <img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}" class="rounded">
-                                        <span>{{ .GetCountryName $key }}</span>
+                                    <td class="img">
+                                        <div class="icon-name">
+                                            <div class="icon"><img src="{{ .GetFlag $key }}" alt="{{ .GetCountryName $key }}"></div>
+                                            <div class="name">{{ .GetCountryName $key }}</div>
+                                        </div>
                                     </td>
                                     <td>{{ .GetFinal }}</td>
                                     <td>{{ .GetInitial }}</td>
