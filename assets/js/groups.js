@@ -61,7 +61,7 @@ if ($('#groups-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[10].toLocaleString();
                 },
-                "orderSequence": ["asc", "desc"],
+                "orderSequence": ["desc", "asc"],
             },
             // Link
             {
