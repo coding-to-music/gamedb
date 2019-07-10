@@ -33,20 +33,10 @@
                     font-size: 1rem;
                 }
 
-                img, br, iframe {
+                img, br, iframe, table {
                     display: none;
                 }
             }
-        }
-    }
-
-    .article-title {
-        cursor: pointer;
-    }
-
-    .modal-body {
-        img {
-            max-width: 100%;
         }
     }
 }
