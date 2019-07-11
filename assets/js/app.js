@@ -139,11 +139,11 @@ if ($appPage.length > 0) {
         });
 
         // Fix layout when images lazy load
-        $('#carousel1 img').first().on('load', function () {
+        $('#carousel1 img').on('load', function () {
             $carousel1.slick('setPosition');
             $carousel2.slick('setPosition');
         });
-        $('#carousel2 img').first().on('load', function () {
+        $('#carousel2 img').on('load', function () {
             $carousel1.slick('setPosition');
             $carousel2.slick('setPosition');
         });
