@@ -160,16 +160,19 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get background app
 	var backgroundApp sql.App
-	wg.Add(1)
-	go func(player mongo.Player) {
+	if player.BackgroundAppID > 0 {
+		wg.Add(1)
+		go func(player mongo.Player) {
 
-		defer wg.Done()
+			defer wg.Done()
 
-		var err error
-		backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
-		log.Err(err)
+			var err error
+			backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
+			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
+			log.Err(err)
 
-	}(player)
+		}(player)
+	}
 
 	// Wait
 	wg.Wait()
