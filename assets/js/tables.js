@@ -39,6 +39,8 @@ $dataTables.each(function (i) {
             const api = this.api();
             if (api.page.info().pages <= 1) {
                 $(this).parent().find('.dt-pagination').hide();
+            } else {
+                $(this).parent().find('.dt-pagination').show();
             }
         },
         "initComplete": function (settings, json) {
@@ -170,6 +172,8 @@ const dtDefaultOptions = {
         const api = this.api();
         if (api.page.info().pages <= 1) {
             $(this).parent().find('.dt-pagination').hide();
+        } else {
+            $(this).parent().find('.dt-pagination').show();
         }
 
         $(".paginate_button > a").on("focus", function () {
