@@ -168,7 +168,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
-	// Get total
+	// Get filtered total
 	var filtered int64
 	wg.Add(1)
 	go func() {
