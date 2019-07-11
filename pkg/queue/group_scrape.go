@@ -531,5 +531,5 @@ func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 		group.Icon = ""
 	}
 
-	return err
+	return nil
 }
