@@ -70,7 +70,8 @@ var (
 			queue: &groupQueueScrape{},
 		},
 		queueGoGroupsNew: {
-			queue: &groupQueueAPI{},
+			queue:   &groupQueueAPI{},
+			maxTime: time.Hour * 24 * 28,
 		},
 		queueGoPackages: {
 			queue: &packageQueue{},
