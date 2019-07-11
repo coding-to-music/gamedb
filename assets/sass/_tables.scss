@@ -91,23 +91,25 @@ table.table {
                 display: table-cell;
                 vertical-align: middle;
                 width: 1%;
-
-                img, div.avatar2 {
-                    @extend .rounded;
-                }
             }
 
             > div.name {
                 @extend .pt-2;
                 @extend .pb-2;
+                @extend .pl-2;
+
                 display: table-cell;
                 vertical-align: middle;
-                padding-left: 9px;
                 min-width: 150px;
+            }
+
+            > div.name.min {
+                min-width: auto;
             }
         }
 
         img, div.avatar2 {
+            @extend .rounded;
             margin-top: 8px;
             margin-bottom: 8px;
             height: 32px;
