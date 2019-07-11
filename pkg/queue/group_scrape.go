@@ -483,7 +483,7 @@ func getGroupType(id string) (string, error) {
 	return "", err
 }
 
-var groupXMLRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second*62), ratelimit.WithoutSlack)
+var groupXMLRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second*60), ratelimit.WithoutSlack)
 
 func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 
