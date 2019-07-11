@@ -521,9 +521,9 @@
                                             <div class="name">{{ .App.GetName }}</div>
                                         </div>
                                     </td>
-                                    <td>{{ .App.GetReleaseState }}</td>
-                                    <td data-sort="{{ .App.ReleaseDateUnix }}">{{ .App.GetReleaseDateNice }}</td>
-                                    <td>{{ .Price.Final }}</td>
+                                    <td nowrap="nowrap">{{ .App.GetReleaseState }}</td>
+                                    <td nowrap="nowrap" data-sort="{{ .App.ReleaseDateUnix }}">{{ .App.GetReleaseDateNice }}</td>
+                                    <td nowrap="nowrap">{{ .Price.Final }}</td>
                                 </tr>
                             {{ end }}
                         </table>
