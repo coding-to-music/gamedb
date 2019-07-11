@@ -441,7 +441,7 @@ if ($appPage.length > 0) {
                     "targets": 1,
                     "render": function (data, type, row) {
                         if (row[3]) {
-                            return '<img data-lazy="' + row[3] + '" data-lazy-alt="' + row[7] + '" data-toggle="tooltip" data-placement="left" title="' + row[7] + '" class="rounded">';
+                            return '<img data-lazy="' + row[3] + '" data-lazy-alt="' + row[7] + '" class="wide" data-toggle="tooltip" data-placement="left" title="' + row[7] + '" class="rounded">';
                         }
                         return '';
                     },

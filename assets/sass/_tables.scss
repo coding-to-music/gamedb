@@ -113,12 +113,13 @@ table.table {
             margin-top: 8px;
             margin-bottom: 8px;
             height: 32px;
+            width: 32px;
             max-width: none;
             vertical-align: middle;
         }
 
-        img.square {
-            width: 32px;
+        img.wide {
+            width: auto;
         }
     }
 

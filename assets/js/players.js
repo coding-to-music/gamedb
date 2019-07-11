@@ -72,7 +72,7 @@ if ($('#ranks-page').length > 0) {
                 "targets": 2,
                 "render": function (data, type, row) {
                     if (row[11]) {
-                        return '<img data-lazy="' + row[11] + '" data-lazy-alt="' + row[12] + '" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[12] + '">';
+                        return '<img data-lazy="' + row[11] + '" data-lazy-alt="' + row[12] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[12] + '">';
                     }
                     return '';
                 },
@@ -85,7 +85,7 @@ if ($('#ranks-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><div class="' + row[4] + ' square"></div></div><div class="name min">' + row[5].toLocaleString() + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><div class="' + row[4] + '"></div></div><div class="name min">' + row[5].toLocaleString() + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
