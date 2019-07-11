@@ -159,7 +159,11 @@ const dtDefaultOptions = {
     "pagingType": getPagingType(),
     "dom": '<"dt-pagination"p>t<"dt-pagination"p>r',
     "language": {
-        "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>'
+        "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>',
+        "paginate": {
+            "next": '<i class="fas fa-chevron-right"></i>',
+            "previous": '<i class="fas fa-chevron-left"></i>',
+        },
     },
     "drawCallback": function (settings, json) {
 
