@@ -92,6 +92,16 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var sort = query.getOrderMongo(columns, nil)
 	var filter = mongo.M{}
 
+	country := query.getSearchString("country")
+	if country != "" {
+		filter["country_code"] = country
+	}
+
+	state := query.getSearchString("state")
+	if country == "US" && state != "" {
+		filter["status_code"] = state
+	}
+
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
 		sort = nil

@@ -8,11 +8,32 @@ if ($('#ranks-page').length > 0) {
         return false;
     });
 
+    $('#country, #state').on('change', function (e) {
+
+        $playersTable.DataTable().draw();
+        toggleStateDropDown();
+        return false;
+    });
+
+    function toggleStateDropDown() {
+
+        $container = $('#state-container');
+        if ($('#country').val() === 'US') {
+            $container.removeClass('d-none');
+        } else {
+            $container.addClass('d-none');
+        }
+    }
+
+    toggleStateDropDown();
+
     $playersTable.DataTable($.extend(true, {}, dtDefaultOptions, {
         "ajax": function (data, callback, settings) {
 
             data.search = {};
             data.search.search = $('#search').val();
+            data.search.country = $('#country').val();
+            data.search.state = $('#state').val();
 
             dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
@@ -33,7 +54,7 @@ if ($('#ranks-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('font-weight-bold')
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Player
             {
@@ -44,27 +65,27 @@ if ($('#ranks-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Flag
             {
                 "targets": 2,
                 "render": function (data, type, row) {
                     if (row[11]) {
-                        return '<img data-lazy="' + row[11] + '" class="rounded" data-lazy-alt="' + row[12] + '" data-toggle="tooltip" data-placement="left" title="' + row[12] + '">';
+                        return '<img data-lazy="' + row[11] + '" data-lazy-alt="' + row[12] + '" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[12] + '">';
                     }
                     return '';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Avatar 2 / Level
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '<div class="' + row[4] + ' square"></div><span>' + row[5].toLocaleString() + '</span>';
+                    return '<div class="icon-name"><div class="icon"><div class="' + row[4] + ' square"></div></div><div class="name min">' + row[5].toLocaleString() + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
