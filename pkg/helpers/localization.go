@@ -142,3 +142,13 @@ func CountryCodeToName(code string) string {
 
 	return country.Name.Common
 }
+
+//
+func CountriesInContinent(continent string) (ret []string) {
+
+	countries := gountries.New().FindCountries(gountries.Country{Geo: gountries.Geo{Continent: continent}})
+	for _, country := range countries {
+		ret = append(ret, country.Alpha2)
+	}
+	return ret
+}

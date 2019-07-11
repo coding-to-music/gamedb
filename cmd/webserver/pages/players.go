@@ -3,6 +3,7 @@ package pages
 import (
 	"html/template"
 	"net/http"
+	"sort"
 	"sync"
 
 	"github.com/dustin/go-humanize"
@@ -11,7 +12,46 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"github.com/pariz/gountries"
 )
+
+const CAF = "C-AF"
+const CAN = "C-AN"
+const CAS = "C-AS"
+const CEU = "C-EU"
+const CNA = "C-NA"
+const CSA = "C-SA"
+const COC = "C-OC"
+
+type continent struct {
+	Key   string
+	Value string
+}
+
+// These strings must match the continents in the gountries library
+var continents = []continent{
+	{Key: CAF, Value: "Africa"},
+	{Key: CAN, Value: "Antarctica"},
+	{Key: CAS, Value: "Asia"},
+	{Key: CEU, Value: "Australia"},
+	{Key: CNA, Value: "Europe"},
+	{Key: CSA, Value: "North America"},
+	{Key: COC, Value: "South America"},
+}
+
+var countries []gountries.Country
+
+func init() {
+
+	countriesMap := gountries.New().FindAllCountries()
+	for _, v := range countriesMap {
+		countries = append(countries, v)
+	}
+
+	sort.Slice(countries, func(i, j int) bool {
+		return countries[i].Name.Common < countries[j].Name.Common
+	})
+}
 
 func PlayersRouter() http.Handler {
 	r := chi.NewRouter()
@@ -25,13 +65,10 @@ func PlayersRouter() http.Handler {
 
 func playersHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Template
-	t := playersTemplate{}
-
-	//
 	var wg sync.WaitGroup
 
 	// Get config
+	var date string
 	wg.Add(1)
 	go func() {
 
@@ -39,29 +76,32 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		config, err := sql.GetConfig(sql.ConfRanksUpdated)
 		log.Err(err, r)
-
 		if err == nil {
-			t.Date = config.Value
+			date = config.Value
 		}
-
 	}()
 
 	// Count players
+	var count int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		t.PlayersCount, err = mongo.CountPlayers()
+		count, err = mongo.CountPlayers()
 		log.Err(err, r)
-
 	}()
 
 	// Wait
 	wg.Wait()
 
+	t := playersTemplate{}
 	t.fill(w, r, "Players", "See where you come against the rest of the world ("+template.HTML(humanize.Comma(t.PlayersCount))+" players).")
+	t.Date = date
+	t.PlayersCount = count
+	t.Countries = countries
+	t.Continents = continents
 
 	err := returnTemplate(w, r, "players", t)
 	log.Err(err, r)
@@ -71,6 +111,8 @@ type playersTemplate struct {
 	GlobalTemplate
 	PlayersCount int64
 	Date         string
+	Countries    []gountries.Country
+	Continents   []continent
 }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -89,11 +131,25 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"7": "friends_count",
 	}
 
-	var sort = query.getOrderMongo(columns, nil)
+	var sortOrder = query.getOrderMongo(columns, nil)
 	var filter = mongo.M{}
 
 	country := query.getSearchString("country")
-	if country != "" {
+
+	var isContinent bool
+	for _, v := range continents {
+		if v.Key == country {
+			isContinent = true
+			countriesIn := helpers.CountriesInContinent(v.Value)
+			var countriesInA mongo.A
+			for _, v := range countriesIn {
+				countriesInA = append(countriesInA, v)
+			}
+			filter["country_code"] = mongo.M{"$in": countriesInA}
+			break
+		}
+	}
+	if !isContinent && country != "" {
 		filter["country_code"] = country
 	}
 
@@ -104,7 +160,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
-		sort = nil
+		sortOrder = nil
 		filter["$or"] = mongo.A{
 			mongo.M{"$text": mongo.M{"$search": search}},
 			mongo.M{"_id": search},
@@ -121,7 +177,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		players, err := mongo.GetPlayers(query.getOffset64(), 100, sort, filter, mongo.M{
+		players, err := mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, mongo.M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
@@ -207,6 +263,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.output(w, r)
 }
 
+// Rank struct
 type PlayerRow struct {
 	Player mongo.Player
 	Rank   int
