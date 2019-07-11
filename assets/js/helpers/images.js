@@ -18,12 +18,19 @@ function observeLazyImages(target) {
             if (entry.isIntersecting) {
 
                 const $target = $(entry.target);
-                const $alt = $target.attr('data-lazy-alt');
 
-                $target.attr('src', $target.attr('data-lazy'))
+                const $alt = $target.attr('data-lazy-alt');
                 if ($alt) {
                     $target.attr('alt', $alt)
                 }
+
+                const $title = $target.attr('data-lazy-title');
+                if ($title) {
+                    $target.attr('title', $title)
+                }
+
+                $target.attr('src', $target.attr('data-lazy'))
+
 
                 // the image is now in place, stop watching
                 self.unobserve(entry.target);
