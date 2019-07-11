@@ -294,19 +294,20 @@ func (player Player) ShouldUpdate(userAgent string, updateType UpdateType) bool 
 func (player Player) OutputForJSON(rank string) (output []interface{}) {
 
 	return []interface{}{
-		rank,                             //
-		strconv.FormatInt(player.ID, 10), //
-		player.PersonaName,               //
-		player.GetAvatar(),               //
-		player.GetAvatar2(),              //
-		player.Level,                     //
-		player.GamesCount,                //
-		player.BadgesCount,               //
-		player.GetTimeShort(),            //
-		player.GetTimeLong(),             //
-		player.FriendsCount,              //
-		player.GetFlag(),                 //
-		player.GetCountry(),              //
+		rank,                             // 0
+		strconv.FormatInt(player.ID, 10), // 1
+		player.PersonaName,               // 2
+		player.GetAvatar(),               // 3
+		player.GetAvatar2(),              // 4
+		player.Level,                     // 5
+		player.GamesCount,                // 6
+		player.BadgesCount,               // 7
+		player.GetTimeShort(),            // 8
+		player.GetTimeLong(),             // 9
+		player.FriendsCount,              // 10
+		player.GetFlag(),                 // 11
+		player.GetCountry(),              // 12
+		player.GetPath(),                 // 13
 	}
 }
 
