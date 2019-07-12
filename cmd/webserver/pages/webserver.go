@@ -392,6 +392,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"isLoggedIn":         t.IsLoggedIn(),
 		"showAds":            t.showAds(),
 		"toasts":             t.toasts,
+		"isLocal":            config.IsLocal(),
 	}
 
 	b, err := json.Marshal(stringMap)

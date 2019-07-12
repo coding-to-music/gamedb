@@ -32,6 +32,11 @@ function websocketListener(page, onMessage) {
         };
 
         socket.onmessage = function (e) {
+
+            if (user.isLocal) {
+                console.log('WS: ' + e.data);
+            }
+
             return onMessage(e)
         };
 
