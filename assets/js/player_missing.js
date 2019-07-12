@@ -1,11 +1,11 @@
-if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
+const $playerMissingPage = $('#player-missing-page');
 
-    const $playerPage = $('#player-missing-page');
+if ($playerMissingPage.length > 0) {
 
     websocketListener('profile', function (e) {
 
         const data = $.parseJSON(e.data);
-        if (data.Data.toString() === $playerPage.attr('data-id')) {
+        if (data.Data.toString() === $playerMissingPage.attr('data-id')) {
 
             toast(true, '', 'Player found!');
 

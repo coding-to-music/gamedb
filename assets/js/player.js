@@ -77,7 +77,6 @@ if ($playerPage.length > 0) {
         if (data.Data.toString() === $playerPage.attr('data-id')) {
             toast(true, 'Click to refresh', 'This player has been updated', -1, 'refresh');
         }
-
     });
 
     function loadPlayerGames() {
