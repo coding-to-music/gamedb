@@ -313,19 +313,26 @@ func (player Player) OutputForJSON(rank string) (output []interface{}) {
 
 func GetPlayer(id int64) (player Player, err error) {
 
-	if !helpers.IsValidPlayerID(id) {
-		return player, ErrInvalidPlayerID
-	}
+	var item = helpers.MemcachePlayer(id)
 
-	err = FindDocumentByKey(CollectionPlayers, "_id", id, nil, &player)
-	if err != nil {
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &player, func() (interface{}, error) {
+
+		if !helpers.IsValidPlayerID(id) {
+			return player, ErrInvalidPlayerID
+		}
+
+		err = FindDocumentByKey(CollectionPlayers, "_id", id, nil, &player)
+		if err != nil {
+			return player, err
+		}
+		if player.ID == 0 {
+			return player, ErrNoDocuments
+		}
+
+		player.ID = id
+
 		return player, err
-	}
-	if player.ID == 0 {
-		return player, ErrNoDocuments
-	}
-
-	player.ID = id
+	})
 
 	return player, err
 }

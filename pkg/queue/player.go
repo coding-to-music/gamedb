@@ -231,14 +231,23 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// Other bits
+	// Clear caches
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		// Send websocket
-		wsPayload := websockets.PubSubIDStringPayload{} // String as int64 too large for js
+		err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcachePlayer(player.ID).Key)
+		logError(err, message.ID)
+	}()
+
+	// Websocket
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		wsPayload := websockets.PubSubIDStringPayload{} // String, as int64 too large for js
 		wsPayload.ID = strconv.FormatInt(player.ID, 10)
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayer}
 

@@ -41,6 +41,7 @@ var (
 	MemcacheChange        = func(changeID int64) memcache.Item { return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
 	MemcacheGroup         = func(id string) memcache.Item { return memcache.Item{Key: "group-" + id, Expiration: 60 * 30} } // 30 mins, cant be infinite as we need the 'updatedAt' field to be fairly upto date
 	MemcachePackage       = func(id int) memcache.Item { return memcache.Item{Key: "package-" + strconv.Itoa(id), Expiration: 0} }
+	MemcachePlayer        = func(id int64) memcache.Item { return memcache.Item{Key: "player-" + strconv.FormatInt(id, 10), Expiration: 0} }
 	MemcacheConfigItem    = func(key string) memcache.Item { return memcache.Item{Key: "config-item-" + key, Expiration: 0} }
 	MemcacheAppPlayersRow = func(appID int) memcache.Item { return memcache.Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	MemcacheStatRowID     = func(c string, id int) memcache.Item { return memcache.Item{Key: c + "-stat-id-" + strconv.Itoa(id), Expiration: 60 * 60 * 24} }
@@ -49,6 +50,11 @@ var (
 	// Queue checks
 	MemcacheGroupInQueue = func(groupID string) memcache.Item { return memcache.Item{Key: "group-in-queue-" + groupID, Expiration: 60 * 60 * 24, Value: []byte("1")} }
 
+	// Badges
+	MemcacheBadgeMaxEvent     = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
+	MemcacheBadgeMaxEventFoil = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-foil-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
+	MemcacheBadgeMaxSpecial   = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-special-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
+
 	// Other
 	MemcacheQueues         = memcache.Item{Key: "queues", Expiration: 10}
 	MemcachePopularApps    = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
@@ -56,11 +62,6 @@ var (
 	MemcacheTrendingApps   = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
 	MemcacheTotalCommits   = memcache.Item{Key: "total-commits", Expiration: 60 * 60}
 	MemcacheUserLevelByKey = func(key string) memcache.Item { return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
-
-	// Badges
-	MemcacheBadgeMaxEvent     = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
-	MemcacheBadgeMaxEventFoil = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-foil-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
-	MemcacheBadgeMaxSpecial   = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-special-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
 )
 
 func GetMemcache() *memcache.Memcache {
