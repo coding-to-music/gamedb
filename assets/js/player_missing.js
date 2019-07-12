@@ -10,7 +10,6 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
             toast(true, '', 'Player found!');
 
             location.reload();
-
         }
     });
 }

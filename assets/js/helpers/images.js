@@ -60,3 +60,5 @@ function fixBrokenImages() {
         this.src = $(this).attr('data-src');
     });
 }
+
+$(document).ready(fixBrokenImages);
