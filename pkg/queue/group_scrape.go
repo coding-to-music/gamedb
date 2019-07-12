@@ -26,6 +26,9 @@ import (
 
 var (
 	regexIntsOnly = regexp.MustCompile("[^0-9]+")
+
+	groupXMLRateLimit    = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second*60), ratelimit.WithoutSlack)
+	groupScrapeRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second), ratelimit.WithoutSlack)
 )
 
 type groupMessage struct {
@@ -187,6 +190,8 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err error) {
 
+	groupScrapeRateLimit.Take()
+
 	c := colly.NewCollector()
 	c.SetRequestTimeout(time.Second * 15)
 
@@ -295,6 +300,8 @@ var (
 )
 
 func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err error) {
+
+	groupScrapeRateLimit.Take()
 
 	group.AppID = 0
 
@@ -462,6 +469,8 @@ func sendGroupWebsocket(ids []string) (err error) {
 
 func getGroupType(id string) (string, error) {
 
+	groupScrapeRateLimit.Take()
+
 	resp, err := http.Get("https://steamcommunity.com/gid/" + id)
 	if err != nil {
 		return "", err
@@ -482,8 +491,6 @@ func getGroupType(id string) (string, error) {
 
 	return "", err
 }
-
-var groupXMLRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second*60), ratelimit.WithoutSlack)
 
 func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 
