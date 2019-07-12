@@ -6,8 +6,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -97,9 +97,8 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	t := playersTemplate{}
-	t.fill(w, r, "Players", "See where you come against the rest of the world ("+template.HTML(humanize.Comma(t.PlayersCount))+" players).")
+	t.fill(w, r, "Players", "See where you come against the rest of the world ("+template.HTML(rounding.NearestThousandFormat(float64(count)))+" players).")
 	t.Date = date
-	t.PlayersCount = count
 	t.Countries = countries
 	t.Continents = continents
 
@@ -109,10 +108,9 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 type playersTemplate struct {
 	GlobalTemplate
-	PlayersCount int64
-	Date         string
-	Countries    []gountries.Country
-	Continents   []continent
+	Date       string
+	Countries  []gountries.Country
+	Continents []continent
 }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
