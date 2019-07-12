@@ -270,22 +270,6 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		// Send websocket
-		wsPayload := websockets.PubSubIDPayload{}
-		wsPayload.ID = message.ID
-		wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
-
-		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
-		if err != nil {
-			logError(err, message.ID)
-		}
-	}()
-
 	// Clear caches
 	wg.Add(1)
 	go func() {
@@ -295,6 +279,22 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		if app.ReleaseDateUnix > time.Now().Unix() && newApp {
 
 			err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingAppsCount.Key)
+			logError(err, message.ID)
+		}
+	}()
+
+	// Send websocket
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		wsPayload := websockets.PubSubIDPayload{}
+		wsPayload.ID = message.ID
+		wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
+
+		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+		if err != nil {
 			logError(err, message.ID)
 		}
 	}()
