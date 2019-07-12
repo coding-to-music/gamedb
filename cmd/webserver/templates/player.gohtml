@@ -81,45 +81,47 @@
                                 <div class="card-header">Details</div>
                                 <div class="card-body">
 
-                                    <table class="table mb-0">
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap">Level</th>
-                                            <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap">On Steam</th>
-                                            <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap">Signed Off</th>
-                                            <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetLogoffNice }}" data-livestamp="{{ .Player.GetLogoffUnix }}">{{ .Player.GetLogoffNice }}</span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap">Last Updated</th>
-                                            <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap">Profile</th>
-                                            <td><a target="_blank" href="{{ .Player.GetSteamCommunityLink }}"><i class="fab fa-steam-square"></i> {{ .Player.VanintyURL }}</a></td>
-                                        </tr>
-                                        {{ if ne .Player.CountryCode "" }}
+                                    <div class="table-responsive">
+                                        <table class="table mb-0">
                                             <tr>
-                                                <th scope="row" nowrap="nowrap">Country</th>
-                                                <td class="img">
-                                                    <div class="icon-name">
-                                                        <div class="icon"><img data-toggle="tooltip" data-placement="top" class="wide" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}"></div>
-                                                        <div class="name">{{ .Player.CountryCode }}</div>
-                                                    </div>
-                                                </td>
+                                                <th scope="row" nowrap="nowrap">Level</th>
+                                                <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
                                             </tr>
-                                        {{ end }}
-                                        {{ if eq .Player.CountryCode "US" }}
                                             <tr>
-                                                <th scope="row" nowrap="nowrap">State</th>
-                                                <td>{{ .Player.StateCode }}</td>
+                                                <th scope="row" nowrap="nowrap">On Steam</th>
+                                                <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span></td>
                                             </tr>
-                                        {{ end }}
-                                    </table>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap">Signed Off</th>
+                                                <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetLogoffNice }}" data-livestamp="{{ .Player.GetLogoffUnix }}">{{ .Player.GetLogoffNice }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap">Last Updated</th>
+                                                <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap">Profile</th>
+                                                <td><a target="_blank" href="{{ .Player.GetSteamCommunityLink }}"><i class="fab fa-steam-square"></i> {{ .Player.VanintyURL }}</a></td>
+                                            </tr>
+                                            {{ if ne .Player.CountryCode "" }}
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap">Country</th>
+                                                    <td class="img">
+                                                        <div class="icon-name">
+                                                            <div class="icon"><img data-toggle="tooltip" data-placement="top" class="wide" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}"></div>
+                                                            <div class="name min">{{ .Player.CountryCode }}</div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {{ end }}
+                                            {{ if eq .Player.CountryCode "US" }}
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap">State</th>
+                                                    <td>{{ .Player.StateCode }}</td>
+                                                </tr>
+                                            {{ end }}
+                                        </table>
+                                    </div>
 
                                 </div>
                             </div>
@@ -131,43 +133,45 @@
                                 <div class="card-header">Ranks</div>
                                 <div class="card-body">
 
-                                    <table class="table mb-0">
-                                        <tr>
-                                            <th scope="row">Level</th>
-                                            <td>
-                                                {{ .Player.GetLevelRank }}
-                                                {{/*                                                <small>Top {{ .Ranks.GetLevelPercent }}</small>*/}}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Games</th>
-                                            <td>
-                                                {{ .Player.GetGamesRank }}
-                                                {{/*                                                <small>Top {{ .Ranks.GetGamesPercent }}</small>*/}}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Badges</th>
-                                            <td>
-                                                {{ .Player.GetBadgesRank }}
-                                                {{/*                                                <small>Top {{ .Ranks.GetBadgesPercent }}</small>*/}}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Time</th>
-                                            <td>
-                                                {{ .Player.GetPlaytimeRank }}
-                                                {{/*                                                <small>Top {{ .Ranks.GetTimePercent }}</small>*/}}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Friends</th>
-                                            <td>
-                                                {{ .Player.GetFriendsRank }}
-                                                {{/*                                                <small>Top {{ .Ranks.GetFriendsPercent }}</small>*/}}
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table mb-0">
+                                            <tr>
+                                                <th scope="row">Level</th>
+                                                <td>
+                                                    {{ .Player.GetLevelRank }}
+                                                    {{/*                                                <small>Top {{ .Ranks.GetLevelPercent }}</small>*/}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Games</th>
+                                                <td>
+                                                    {{ .Player.GetGamesRank }}
+                                                    {{/*                                                <small>Top {{ .Ranks.GetGamesPercent }}</small>*/}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Badges</th>
+                                                <td>
+                                                    {{ .Player.GetBadgesRank }}
+                                                    {{/*                                                <small>Top {{ .Ranks.GetBadgesPercent }}</small>*/}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Time</th>
+                                                <td>
+                                                    {{ .Player.GetPlaytimeRank }}
+                                                    {{/*                                                <small>Top {{ .Ranks.GetTimePercent }}</small>*/}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Friends</th>
+                                                <td>
+                                                    {{ .Player.GetFriendsRank }}
+                                                    {{/*                                                <small>Top {{ .Ranks.GetFriendsPercent }}</small>*/}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
 
                                 </div>
                             </div>
@@ -179,32 +183,34 @@
                                 <div class="card-header">Bans</div>
                                 <div class="card-body">
 
-                                    <table class="table mb-0">
-                                        <tr>
-                                            <th scope="row">Community Banned</th>
-                                            <td>{{ if .Bans.CommunityBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">VAC Banned</th>
-                                            <td>{{ if .Bans.VACBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Game Bans</th>
-                                            <td>{{ comma .Bans.NumberOfGameBans }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">VAC Bans</th>
-                                            <td>{{ comma .Bans.NumberOfVACBans }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Economy Ban</th>
-                                            <td>{{ .Bans.EconomyBan }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Time Since Ban</th>
-                                            <td>{{ comma .Bans.DaysSinceLastBan }} days</td>
-                                        </tr>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table mb-0">
+                                            <tr>
+                                                <th scope="row">Community Banned</th>
+                                                <td>{{ if .Bans.CommunityBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">VAC Banned</th>
+                                                <td>{{ if .Bans.VACBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Game Bans</th>
+                                                <td>{{ comma .Bans.NumberOfGameBans }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">VAC Bans</th>
+                                                <td>{{ comma .Bans.NumberOfVACBans }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Economy Ban</th>
+                                                <td>{{ .Bans.EconomyBan }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Time Since Ban</th>
+                                                <td>{{ comma .Bans.DaysSinceLastBan }} days</td>
+                                            </tr>
+                                        </table>
+                                    </div>
 
                                 </div>
                             </div>
