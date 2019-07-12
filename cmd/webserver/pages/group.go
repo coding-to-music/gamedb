@@ -57,6 +57,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		app, err := sql.GetApp(group.AppID, []string{"id", "name", "background"})
+		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 		log.Err(err)
 		if err == nil {
 			t.setBackground(app, true, true)
