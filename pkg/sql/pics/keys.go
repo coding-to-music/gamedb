@@ -97,10 +97,11 @@ var ConfigKeys = map[string]PicsKey{
 }
 
 var UFSKeys = map[string]PicsKey{
-	"hidecloudui": {Type: picsTypeBool},
-	"maxnumfiles": {Type: picsTypeNumber},
-	"quota":       {Type: picsTypeBytes},
-	"savefiles":   {Type: picsTypeJSON},
+	"hidecloudui":   {Type: picsTypeBool},
+	"maxnumfiles":   {Type: picsTypeNumber},
+	"quota":         {Type: picsTypeBytes},
+	"savefiles":     {Type: picsTypeJSON},
+	"rootoverrides": {Type: picsTypeJSON},
 }
 
 type PicsKey struct {
