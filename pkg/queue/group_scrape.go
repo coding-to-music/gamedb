@@ -211,7 +211,10 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	// Name
 	c.OnHTML("#mainContents > h1", func(e *colly.HTMLElement) {
-		group.Name = strings.TrimSpace(e.Text)
+		var trimmed = strings.TrimSpace(e.Text)
+		if trimmed != "" {
+			group.Name = trimmed
+		}
 	})
 
 	// App ID
@@ -324,7 +327,10 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	// Name - Must be after `Abbreviation` as we delete it here.
 	c.OnHTML("div.grouppage_header_name", func(e *colly.HTMLElement) {
 		e.DOM.Children().Remove()
-		group.Name = strings.TrimSpace(strings.TrimPrefix(e.DOM.Text(), "/ "))
+		var trimmed = strings.TrimSpace(strings.TrimPrefix(e.DOM.Text(), "/ "))
+		if trimmed != "" {
+			group.Name = trimmed
+		}
 	})
 
 	// URL
@@ -504,7 +510,9 @@ func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 
 	group.SetID(id)
 	group.ID64 = resp.ID64
-	group.Name = resp.Details.Name
+	if resp.Details.Name != "" {
+		group.Name = resp.Details.Name
+	}
 	group.URL = resp.Details.URL
 	group.Headline = resp.Details.Headline
 	group.Summary = resp.Details.Summary
