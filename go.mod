@@ -24,7 +24,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190714004638-dc9b50841e5b
-	github.com/dghubble/oauth1 v0.5.0
+	github.com/dghubble/oauth1 v0.6.0
 	github.com/didip/tollbooth v4.0.0+incompatible
 	github.com/djherbis/fscache v0.8.1
 	github.com/dustin/go-humanize v1.0.0
