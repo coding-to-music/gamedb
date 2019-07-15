@@ -172,7 +172,8 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			item.Link = strings.ReplaceAll(item.Link, "$val$", val)
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
-			return template.HTML("<img src=\"" + item.Link + "\" /><span><a href=\"" + item.Link + "\" rel=\"nofollow\" target=\"_blank\">" + val + "</a></span>")
+
+			return template.HTML("<div class=\"icon-name\"><div class=\"icon\"><img class=\"wide\" src=\"" + item.Link + "\" /></div><div class=\"name\"><a href=\"" + item.Link + "\" rel=\"nofollow\" target=\"_blank\">" + val + "</a></div></div>")
 
 		case picsTypeTimestamp:
 
