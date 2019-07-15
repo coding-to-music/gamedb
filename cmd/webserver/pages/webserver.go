@@ -179,6 +179,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"title":        func(a string) string { return strings.Title(a) },
 		"inc":          func(i int) int { return i + 1 },
 		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
+		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
 	}
 }
 
