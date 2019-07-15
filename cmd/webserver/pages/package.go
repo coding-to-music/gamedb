@@ -148,16 +148,16 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Price = sql.GetPriceFormatted(pack, helpers.GetCountryCode(r))
 
 	t.Prices, err = t.Package.GetPrices()
-	log.Err(err)
+	log.Err(err, r)
 
 	t.Extended, err = t.Package.GetExtended().Formatted(pack.ID, pics.ExtendedKeys)
-	log.Err(err)
+	log.Err(err, r)
 
 	t.Controller, err = pack.GetController()
-	log.Err(err)
+	log.Err(err, r)
 
 	t.DepotIDs, err = pack.GetDepotIDs()
-	log.Err(err)
+	log.Err(err, r)
 
 	err = returnTemplate(w, r, "package", t)
 	log.Err(err, r)
