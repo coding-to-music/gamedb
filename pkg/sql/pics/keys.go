@@ -62,7 +62,7 @@ var CommonKeys = map[string]PicsKey{
 	"releasestate":            {Type: picsTypeTitle},
 	"type":                    {Type: picsTypeTitle},
 	"controller_support":      {Type: picsTypeTitle},
-	"oslist":                  {Type: picsTypeTextListString},
+	"oslist":                  {Type: picsTypeTextListString, Link: "/apps?platforms=$val$"},
 }
 
 var ExtendedKeys = map[string]PicsKey{
