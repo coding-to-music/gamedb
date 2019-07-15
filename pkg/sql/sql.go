@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -77,21 +76,4 @@ type mySQLLogger struct {
 func (logger mySQLLogger) Print(v ...interface{}) {
 	s := helpers.JoinInterface(v)
 	log.Debug(s, log.LogNameSQL)
-}
-
-func GetMeanPrice(code steam.CountryCode, prices string) (string, error) {
-
-	means := map[steam.CountryCode]float64{}
-
-	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Err(err)
-
-	err = helpers.Unmarshal([]byte(prices), &means)
-	if err == nil {
-		if val, ok := means[code]; ok {
-			return locale.CurrencySymbol + helpers.FloatToString(helpers.RoundFloatTo2DP(float64(val)/100), 2), err
-		}
-	}
-
-	return locale.CurrencySymbol + "0", err
 }
