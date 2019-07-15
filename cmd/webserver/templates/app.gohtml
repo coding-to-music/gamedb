@@ -809,12 +809,12 @@
                                                         <td>{{ .MaxSize }}</td>
                                                         <td>{{ .App }}</td>
                                                         <td>{{ .DLCApp }}</td>
-                                                        <td>{{ if .SystemDefined }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
-                                                        <td>{{ if .Optional }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
-                                                        <td>{{ if .SharedInstall }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
-                                                        <td>{{ if .SharedDepotType }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
-                                                        <td>{{ if .LVCache }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
-                                                        <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                                        <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .SharedDepotType }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .LVCache }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                     </tr>
                                                 {{ end }}
                                             </table>
@@ -843,8 +843,8 @@
                                                         <td nowrap="nowrap">{{ .Description }}</td>
                                                         <td>{{ .BuildID }}</td>
                                                         <td>{{ .TimeUpdated }}</td>
-                                                        <td>{{ if .PasswordRequired }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
-                                                        <td>{{ if .LCSRequired }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                                        <td>{{ if .PasswordRequired }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .LCSRequired }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                         <td>{{ .DefaultForSubs }}</td>
                                                         <td>{{ .UnlockForSubs }}</td>
                                                     </tr>
