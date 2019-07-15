@@ -3,6 +3,7 @@ package pages
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/cenkalti/backoff"
@@ -78,6 +79,10 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var deployed bool
 	for _, commit := range commits {
+
+		if strings.HasPrefix(commit.Commit.GetMessage(), "Merge pull request #63") {
+			continue
+		}
 
 		if commit.GetSHA() == config.Config.CommitHash.Get() {
 			deployed = true
