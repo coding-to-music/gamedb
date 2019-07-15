@@ -882,13 +882,13 @@
                                         <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
                                             <thead class="thead-light">
                                             <tr>
-                                                <th scope="col">Key</th>
+                                                <th scope="col" width="1%">Key</th>
                                                 <th scope="col">Value</th>
                                             </tr>
                                             </thead>
                                             {{ range $key, $value := .Config }}
                                                 <tr>
-                                                    <td>{{ .Key }}</td>
+                                                    <td nowrap="nowrap">{{ .Key }}</td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                 </tr>
                                             {{ end }}
