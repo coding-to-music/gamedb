@@ -98,7 +98,7 @@ var ProductCountryCodes = map[steam.ProductCC]ProductCountryCode{
 	steam.ProductCCEU: { // European Union
 		ProductCode:  steam.ProductCCEU,
 		CountryCodes: []string{"AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"},
-		CurrencyCode: steam.CurrencyUSD,
+		CurrencyCode: steam.CurrencyEUR,
 		Name:         "Euro",
 		Symbol:       "€",
 		Enabled:      true,
