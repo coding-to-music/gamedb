@@ -12,7 +12,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -238,7 +237,9 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		defer wg.Done()
 
 		err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcachePlayer(player.ID).Key)
-		logError(err, message.ID)
+		if err != nil {
+			logError(err, message.ID)
+		}
 	}()
 
 	// Websocket
@@ -252,7 +253,9 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayer}
 
 		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
-		log.Err(err)
+		if err != nil {
+			logError(err, message.ID)
+		}
 	}()
 
 	wg.Wait()
@@ -720,7 +723,7 @@ func updatePlayerGroups(player *mongo.Player) error {
 
 	// Queue groups for update
 	err = ProduceGroup(resp.GetIDs())
-	log.Err(err)
+	logError(err)
 
 	return nil
 }
@@ -739,7 +742,7 @@ func updatePlayerWishlist(player *mongo.Player) error {
 	var appsSlice []wishlistItemPlusID
 	for k, v := range resp.Items {
 		i, err := strconv.Atoi(k)
-		log.Err(err)
+		logError(err)
 		if err == nil {
 			appsSlice = append(appsSlice, wishlistItemPlusID{
 				item:  v,
