@@ -29,10 +29,9 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := helpers.GetCountryCode(r)
 	prices := map[int]string{}
 	for _, v := range genres {
-		price, err := v.GetMeanPrice(code)
+		price, err := v.GetMeanPrice(helpers.GetProductCC(r))
 		log.Err(err, r)
 		prices[v.ID] = price
 	}

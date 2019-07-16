@@ -69,7 +69,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
 
-	var code = helpers.GetCountryCode(r)
+	var code = helpers.GetProductCC(r)
 
 	count, err := countUpcomingApps()
 	log.Err(err)
@@ -83,13 +83,16 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, app := range apps {
+
+		price, _ := app.GetPrice(code)
+
 		response.AddRow([]interface{}{
 			app.ID,
 			app.GetName(),
 			app.GetIcon(),
 			app.GetPath(),
 			app.GetType(),
-			sql.GetPriceFormatted(app, code).Final,
+			price.GetFinal(),
 			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")",
 		})
 	}

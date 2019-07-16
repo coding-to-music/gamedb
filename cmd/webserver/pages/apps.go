@@ -226,7 +226,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	//
-	var code = helpers.GetCountryCode(r)
+	var code = helpers.GetProductCC(r)
 	var wg sync.WaitGroup
 
 	// Get apps
@@ -334,7 +334,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 
 			var column string
-			if code == steam.CountryUS {
+			if code == steam.ProductCCUS {
 				column = "prices_us" // This is an index, just for US
 			} else {
 				column = "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")"

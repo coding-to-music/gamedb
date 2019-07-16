@@ -14,13 +14,13 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		id = string(steam.CountryUS)
+		id = string(steam.ProductCCUS)
 	}
 
 	var err error
 
-	if _, ok := steam.Countries[steam.CountryCode(id)]; ok {
-		err = session.Set(r, helpers.SessionUserCountry, id)
+	if helpers.IsValidProdCC(steam.ProductCC(id)) {
+		err = session.Set(r, helpers.SessionUserProdCC, id)
 	} else {
 		err = session.SetFlash(r, helpers.SessionGood, "Invalid currency")
 	}

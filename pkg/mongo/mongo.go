@@ -259,11 +259,11 @@ func DeleteColumn(collection collection, column string) (err error) {
 	}
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
-	_, err = c.UpdateMany(ctx, M{}, M{"$unset": M{column: ""}})
+	_, err = c.UpdateMany(ctx, M{}, M{"$unset": M{column: 1}})
 	return err
 }
 
-func DeleteDocuments(collection collection, filter M) (err error) {
+func DeleteMany(collection collection, filter M) (err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {

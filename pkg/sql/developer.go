@@ -33,7 +33,7 @@ func (d Developer) GetName() (name string) {
 	return d.Name
 }
 
-func (d Developer) GetMeanPrice(code steam.CountryCode) (string, error) {
+func (d Developer) GetMeanPrice(code steam.ProductCC) (string, error) {
 	return GetMeanPrice(code, d.MeanPrice)
 }
 

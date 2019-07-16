@@ -204,7 +204,7 @@ func ListenToPubSub() {
 					continue
 				}
 
-				wsPage.Send(pack.OutputForJSON(steam.CountryUS))
+				wsPage.Send(pack.OutputForJSON(steam.ProductCCUS))
 
 			case PageBundles:
 

@@ -108,7 +108,7 @@ type homeNews struct {
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var filter = mongo.D{
-		{"currency", string(helpers.GetCountryCode(r))},
+		{"prod_cc", string(helpers.GetProductCC(r))},
 		{"app_id", bson.M{"$gt": 0}},
 		{"difference", bson.M{"$lt": 0}},
 	}
@@ -116,21 +116,17 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
 	log.Err(err, r)
 
-	locale, err := helpers.GetLocaleFromCountry(helpers.GetCountryCode(r))
-	log.Err(err)
-
 	var prices []homePrice
-
-	for _, v := range priceChanges {
+	for _, price := range priceChanges {
 
 		prices = append(prices, homePrice{
-			Name:   helpers.InsertNewLines(v.Name),
-			ID:     v.AppID,
-			Link:   v.GetPath(),
-			Before: locale.Format(v.PriceBefore),
-			After:  locale.Format(v.PriceAfter),
-			Time:   v.CreatedAt.Unix(),
-			Avatar: v.GetIcon(),
+			Name:   helpers.InsertNewLines(price.Name),                     // 0
+			ID:     price.AppID,                                            // 1
+			Link:   price.GetPath(),                                        // 2
+			Before: helpers.FormatPrice(price.Currency, price.PriceBefore), // 3
+			After:  helpers.FormatPrice(price.Currency, price.PriceAfter),  // 4
+			Time:   price.CreatedAt.Unix(),                                 // 5
+			Avatar: price.GetIcon(),                                        // 6
 		})
 	}
 

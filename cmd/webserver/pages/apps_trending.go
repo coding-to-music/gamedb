@@ -59,15 +59,13 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
-	gorm = gorm.Order(query.getOrderSQL(columns, helpers.GetCountryCode(r)))
+	gorm = gorm.Order(query.getOrderSQL(columns, helpers.GetProductCC(r)))
 	gorm = gorm.Limit(100)
 	gorm = gorm.Offset(query.getOffset())
 
 	var apps []sql.App
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
-
-	var code = helpers.GetCountryCode(r)
 
 	count, err := sql.CountApps()
 	log.Err(err)
@@ -78,15 +76,20 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 	response.limit(r)
 
+	var code = helpers.GetProductCC(r)
+
 	for _, app := range apps {
+
+		price, _ := app.GetPrice(code)
+
 		response.AddRow([]interface{}{
-			app.ID, // 0
+			app.ID,                                // 0
 			helpers.InsertNewLines(app.GetName()), // 1
-			app.GetIcon(),                          // 2
-			app.GetPath(),                          // 3
-			sql.GetPriceFormatted(app, code).Final, // 4
-			app.PlayerTrend,                        // 5
-			app.PlayerPeakWeek,                     // 6
+			app.GetIcon(),                         // 2
+			app.GetPath(),                         // 3
+			price.GetFinal(),                      // 4
+			app.PlayerTrend,                       // 5
+			app.PlayerPeakWeek,                    // 6
 		})
 	}
 

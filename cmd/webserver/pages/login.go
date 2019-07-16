@@ -175,7 +175,7 @@ func login(r *http.Request, user sql.User) (string, bool) {
 	sessionData := map[string]string{
 		helpers.SessionUserID:         strconv.Itoa(user.ID),
 		helpers.SessionUserEmail:      user.Email,
-		helpers.SessionUserCountry:    user.CountryCode,
+		helpers.SessionUserProdCC:     string(user.ProductCC),
 		helpers.SessionUserAPIKey:     user.APIKey,
 		helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		helpers.SessionUserLevel:      strconv.Itoa(int(user.PatreonLevel)),

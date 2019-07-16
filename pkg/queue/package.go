@@ -307,10 +307,10 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 
 	prices := sql.ProductPrices{}
 
-	for _, code := range helpers.GetActiveCountries() {
+	for _, cc := range helpers.ProductCountryCodes {
 
 		// Get package details
-		response, b, err := helpers.GetSteam().GetPackageDetails(pack.ID, code, steam.LanguageEnglish)
+		response, b, err := helpers.GetSteam().GetPackageDetails(pack.ID, cc.ProductCode, steam.LanguageEnglish)
 		err = helpers.AllowSteamCodes(err, b, nil)
 		if err == steam.ErrPackageNotFound {
 			continue
@@ -319,9 +319,9 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 			return err
 		}
 
-		prices.AddPriceFromPackage(code, response)
+		prices.AddPriceFromPackage(cc.ProductCode, response)
 
-		if code == steam.CountryUS {
+		if cc.ProductCode == steam.ProductCCUS {
 
 			// Controller
 			var controller = pics.PICSController{}
@@ -414,7 +414,7 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 
 func savePackageToInflux(pack sql.Package) error {
 
-	price, err := pack.GetPrice(steam.CountryUS)
+	price, err := pack.GetPrice(steam.ProductCCUS)
 	if err != nil && err != sql.ErrMissingCountryCode {
 		return err
 	} else if err != nil {

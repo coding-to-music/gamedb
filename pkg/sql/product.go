@@ -3,11 +3,9 @@ package sql
 import (
 	"errors"
 	"strconv"
-	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type ProductInterface interface {
@@ -15,7 +13,7 @@ type ProductInterface interface {
 	GetProductType() helpers.ProductType
 	GetName() string
 	GetIcon() string
-	GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error)
+	GetPrice(code steam.ProductCC) (price ProductPrice, err error)
 	GetPrices() (prices ProductPrices, err error)
 	GetPath() string
 	GetType() string
@@ -24,19 +22,15 @@ type ProductInterface interface {
 var ErrMissingCountryCode = errors.New("invalid code")
 
 //
-type ProductPrices map[steam.CountryCode]ProductPriceStruct
+type ProductPrices map[steam.ProductCC]ProductPrice
 
-func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam.PackageDetailsBody) {
+func (p *ProductPrices) AddPriceFromPackage(code steam.ProductCC, prices steam.PackageDetailsBody) {
 
 	if prices.Data.Price.Currency == "" {
-
-		locale, err := helpers.GetLocaleFromCountry(code)
-		log.Err(err)
-
-		prices.Data.Price.Currency = string(locale.CurrencyCode)
+		prices.Data.Price.Currency = helpers.GetProdCC(code).CurrencyCode
 	}
 
-	(*p)[code] = ProductPriceStruct{
+	(*p)[code] = ProductPrice{
 		Currency:        prices.Data.Price.Currency,
 		Initial:         prices.Data.Price.Initial,
 		Final:           prices.Data.Price.Final,
@@ -45,17 +39,13 @@ func (p *ProductPrices) AddPriceFromPackage(code steam.CountryCode, prices steam
 	}
 }
 
-func (p *ProductPrices) AddPriceFromApp(code steam.CountryCode, prices steam.AppDetailsBody) {
+func (p *ProductPrices) AddPriceFromApp(code steam.ProductCC, prices steam.AppDetailsBody) {
 
 	if prices.Data.PriceOverview.Currency == "" {
-
-		locale, err := helpers.GetLocaleFromCountry(code)
-		log.Err(err)
-
-		prices.Data.PriceOverview.Currency = string(locale.CurrencyCode)
+		prices.Data.PriceOverview.Currency = helpers.GetProdCC(code).CurrencyCode
 	}
 
-	(*p)[code] = ProductPriceStruct{
+	(*p)[code] = ProductPrice{
 		Currency:        prices.Data.PriceOverview.Currency,
 		Initial:         prices.Data.PriceOverview.Initial,
 		Final:           prices.Data.PriceOverview.Final,
@@ -63,93 +53,49 @@ func (p *ProductPrices) AddPriceFromApp(code steam.CountryCode, prices steam.App
 	}
 }
 
-func (p ProductPrices) Get(code steam.CountryCode) (price ProductPriceStruct, err error) {
+func (p ProductPrices) Get(code steam.ProductCC) (price ProductPrice, err error) {
 	if val, ok := p[code]; ok {
 		return val, err
 	}
 	return price, ErrMissingCountryCode
 }
 
-// ProductPriceStruct
-type ProductPriceStruct struct {
-	Currency        string `json:"currency"`
-	Initial         int    `json:"initial"`
-	Final           int    `json:"final"`
-	DiscountPercent int    `json:"discount_percent"`
-	Individual      int    `json:"individual"`
+//
+type ProductPrice struct {
+	Currency        steam.CurrencyCode `json:"currency"`
+	Initial         int                `json:"initial"`
+	Final           int                `json:"final"`
+	DiscountPercent int                `json:"discount_percent"`
+	Individual      int                `json:"individual"`
 }
 
-func (p ProductPriceStruct) GetInitial() string {
-
-	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
-	log.Err(err)
-
-	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
-	log.Err(err)
-
-	return locale.Format(p.Initial)
-}
-
-func (p ProductPriceStruct) GetFinal() string {
-
-	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
-	log.Err(err)
-
-	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
-	log.Err(err)
-
-	return locale.Format(p.Final)
-}
-
-func (p ProductPriceStruct) GetDiscountPercent() string {
+func (p ProductPrice) GetDiscountPercent() string {
 	return strconv.Itoa(p.DiscountPercent) + "%"
 }
 
-func (p ProductPriceStruct) GetIndividual() string {
-
-	code, err := helpers.GetLocaleFromCurrency(steam.CurrencyCode(p.Currency))
-	log.Err(err)
-
-	locale, err := helpers.GetLocaleFromCountry(code.CountryCode)
-	log.Err(err)
-
-	return locale.Format(p.Individual)
+func (p ProductPrice) GetCountryName(code steam.ProductCC) string {
+	return helpers.GetProdCC(code).Name
 }
 
-func (p ProductPriceStruct) GetCountryName(code steam.CountryCode) string {
-	locale, err := helpers.GetLocaleFromCountry(code)
-	log.Err(err)
-	return locale.CountryName
+func (p ProductPrice) GetFlag(code steam.ProductCC) string {
+	return "/assets/img/flags/" + helpers.GetProdCC(code).GetFlag() + ".png"
 }
 
-func (p ProductPriceStruct) GetFlag(code steam.CountryCode) string {
-	return "/assets/img/flags/" + strings.ToLower(string(code)) + ".png"
+func (p ProductPrice) GetInitial() string {
+	return p.format(p.Initial)
 }
 
-//
-type ProductPriceFormattedStruct struct {
-	Initial         string `json:"initial"`
-	Final           string `json:"final"`
-	DiscountPercent string `json:"discount_percent"`
-	Individual      string `json:"individual"`
+func (p ProductPrice) GetFinal() string {
+	return p.format(p.Final)
 }
 
-//
-func GetPriceFormatted(product ProductInterface, code steam.CountryCode) (ret ProductPriceFormattedStruct) {
+func (p ProductPrice) GetIndividual() string {
+	return p.format(p.Individual)
+}
 
-	price, err := product.GetPrice(code)
-	if err == nil {
-
-		locale, err := helpers.GetLocaleFromCountry(code)
-		if err == nil {
-			ret = ProductPriceFormattedStruct{
-				Initial:         locale.Format(price.Initial),
-				Final:           locale.Format(price.Final),
-				DiscountPercent: locale.Format(price.DiscountPercent),
-				Individual:      locale.Format(price.Individual),
-			}
-		}
+func (p ProductPrice) format(value int) string {
+	if p.Currency == "" {
+		return "-"
 	}
-
-	return ret
+	return helpers.FormatPrice(p.Currency, value)
 }

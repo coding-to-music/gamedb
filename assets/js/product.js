@@ -128,6 +128,6 @@ if ($priceChart.length > 0 && prices) {
             }]
         });
 
-        upateChart(user.userCountry);
+        upateChart(user.prodCC);
     }
 }

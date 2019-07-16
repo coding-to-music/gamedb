@@ -492,10 +492,14 @@ func updateAppDetails(app *sql.App) error {
 
 	prices := sql.ProductPrices{}
 
-	for _, code := range helpers.GetActiveCountries() {
+	for _, code := range helpers.ProductCountryCodes {
 
-		// Get app details
-		response, b, err := helpers.GetSteam().GetAppDetails(app.ID, code, steam.LanguageEnglish)
+		var filter []string
+		if code.ProductCode == steam.ProductCCUS {
+			filter = []string{"price_overview"}
+		}
+
+		response, b, err := helpers.GetSteam().GetAppDetails(app.ID, code.ProductCode, steam.LanguageEnglish, filter)
 		err = helpers.AllowSteamCodes(err, b, nil)
 		if err == steam.ErrAppNotFound {
 			continue
@@ -504,9 +508,9 @@ func updateAppDetails(app *sql.App) error {
 			return err
 		}
 
-		prices.AddPriceFromApp(code, response)
+		prices.AddPriceFromApp(code.ProductCode, response)
 
-		if code == steam.CountryUS {
+		if code.ProductCode == steam.ProductCCUS {
 
 			// Screenshots
 			var images []sql.AppImage
@@ -1115,7 +1119,7 @@ func updateBundles(app *sql.App) error {
 
 func saveAppToInflux(app sql.App) (err error) {
 
-	price, err := app.GetPrice(steam.CountryUS)
+	price, err := app.GetPrice(steam.ProductCCUS)
 	if err != nil && err != sql.ErrMissingCountryCode {
 		return err
 	}

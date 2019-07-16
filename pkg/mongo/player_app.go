@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"math"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -65,39 +66,30 @@ func (pa PlayerApp) GetTimeNice() string {
 	return helpers.GetTimeShort(pa.AppTime, 2)
 }
 
-func (pa PlayerApp) GetPriceFormatted(code steam.CountryCode) string {
+func (pa PlayerApp) GetPriceFormatted(code steam.ProductCC) string {
 
 	val, ok := pa.AppPrices[string(code)]
 	if ok {
-
-		locale, err := helpers.GetLocaleFromCountry(code)
-		log.Err(err)
-		return locale.Format(val)
-
+		return helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, val)
 	} else {
-		return ""
+		return "-"
 	}
 }
 
-func (pa PlayerApp) GetPriceHourFormatted(code steam.CountryCode) string {
+func (pa PlayerApp) GetPriceHourFormatted(code steam.ProductCC) string {
 
 	val, ok := pa.AppPriceHour[string(code)]
 	if ok {
-
 		if val < 0 {
 			return "∞"
 		}
-
-		locale, err := helpers.GetLocaleFromCountry(code)
-		log.Err(err)
-		return locale.FormatFloat(float64(val))
-
+		return helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(float64(val))))
 	} else {
-		return ""
+		return "-"
 	}
 }
 
-func (pa PlayerApp) OutputForJSON(code steam.CountryCode) (output []interface{}) {
+func (pa PlayerApp) OutputForJSON(code steam.ProductCC) (output []interface{}) {
 
 	return []interface{}{
 		pa.AppID,

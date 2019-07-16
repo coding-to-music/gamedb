@@ -12,16 +12,17 @@ import (
 )
 
 type ProductPrice struct {
-	CreatedAt         time.Time         `bson:"created_at"`
-	AppID             int               `bson:"app_id"`
-	PackageID         int               `bson:"package_id"`
-	Currency          steam.CountryCode `bson:"currency"`
-	Name              string            `bson:"name"`
-	Icon              string            `bson:"icon"`
-	PriceBefore       int               `bson:"price_before"`
-	PriceAfter        int               `bson:"price_after"`
-	Difference        int               `bson:"difference"`
-	DifferencePercent float64           `bson:"difference_percent"`
+	CreatedAt         time.Time          `bson:"created_at"`
+	AppID             int                `bson:"app_id"`
+	PackageID         int                `bson:"package_id"`
+	Currency          steam.CurrencyCode `bson:"currency"`
+	ProdCC            steam.ProductCC    `bson:"prod_cc"`
+	Name              string             `bson:"name"`
+	Icon              string             `bson:"icon"`
+	PriceBefore       int                `bson:"price_before"`
+	PriceAfter        int                `bson:"price_after"`
+	Difference        int                `bson:"difference"`
+	DifferencePercent float64            `bson:"difference_percent"`
 }
 
 func (price ProductPrice) BSON() (ret interface{}) {
@@ -31,6 +32,7 @@ func (price ProductPrice) BSON() (ret interface{}) {
 		"app_id":             price.AppID,
 		"package_id":         price.PackageID,
 		"currency":           price.Currency,
+		"prod_cc":            price.ProdCC,
 		"name":               price.Name,
 		"icon":               price.Icon,
 		"price_before":       price.PriceBefore,
@@ -66,30 +68,27 @@ func (price ProductPrice) GetPercentChange() float64 {
 
 func (price ProductPrice) OutputForJSON() (output []interface{}) {
 
-	locale, err := helpers.GetLocaleFromCountry(price.Currency)
-	log.Err(err)
-
 	return []interface{}{
-		price.AppID,                              // 0
-		price.PackageID,                          // 1
-		price.Currency,                           // 2
-		price.Name,                               // 3
-		price.GetIcon(),                          // 4
-		price.GetPath(),                          // 5
-		locale.Format(price.PriceBefore),         // 6
-		locale.Format(price.PriceAfter),          // 7
-		locale.Format(price.Difference),          // 8
-		price.GetPercentChange(),                 // 9
-		price.CreatedAt.Format(helpers.DateTime), // 10
-		price.CreatedAt.Unix(),                   // 11
-		price.Difference,                         // 12 Raw difference
+		price.AppID,     // 0
+		price.PackageID, // 1
+		price.Currency,  // 2
+		price.Name,      // 3
+		price.GetIcon(), // 4
+		price.GetPath(), // 5
+		helpers.FormatPrice(price.Currency, price.PriceBefore), // 6
+		helpers.FormatPrice(price.Currency, price.PriceAfter),  // 7
+		helpers.FormatPrice(price.Currency, price.Difference),  // 8
+		price.GetPercentChange(),                               // 9
+		price.CreatedAt.Format(helpers.DateTime),               // 10
+		price.CreatedAt.Unix(),                                 // 11
+		price.Difference,                                       // 12 Raw difference
 	}
 }
 
-func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.CountryCode) (prices []ProductPrice, err error) {
+func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.ProductCC) (prices []ProductPrice, err error) {
 
 	var filter = M{
-		"currency": string(cc),
+		"prod_cc": string(cc),
 	}
 
 	if productType == helpers.ProductTypeApp {

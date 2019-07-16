@@ -141,7 +141,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			Email:         email,
 			EmailVerified: false,
 			Password:      string(passwordBytes),
-			CountryCode:   string(steam.CountryUS),
+			ProductCC:     steam.ProductCCUS,
 			APIKey:        helpers.RandString(20, helpers.Numbers+helpers.Letters),
 		}
 

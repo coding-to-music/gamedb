@@ -223,7 +223,9 @@ func (app App) GetDaysToRelease() string {
 	return helpers.GetDaysToRelease(app.ReleaseDateUnix)
 }
 
-func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
+func (app App) OutputForJSON(code steam.ProductCC) (output []interface{}) {
+
+	price, _ := app.GetPrice(code)
 
 	return []interface{}{
 		app.ID,        // 0
@@ -232,8 +234,8 @@ func (app App) OutputForJSON(code steam.CountryCode) (output []interface{}) {
 		app.GetPath(), // 3
 		app.GetType(), // 4
 		helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
-		GetPriceFormatted(app, code).Final,        // 6
-		app.PlayerPeakWeek,                        // 7
+		price.GetFinal(),   // 6
+		app.PlayerPeakWeek, // 7
 	}
 }
 
@@ -288,7 +290,7 @@ func (app App) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-func (app App) GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error) {
+func (app App) GetPrice(code steam.ProductCC) (price ProductPrice, err error) {
 
 	prices, err := app.GetPrices()
 	if err != nil {

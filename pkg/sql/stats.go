@@ -14,7 +14,7 @@ func GetMeanPrice(code steam.ProductCC, prices string) (string, error) {
 	err := helpers.Unmarshal([]byte(prices), &means)
 	if err == nil {
 		if val, ok := means[code]; ok {
-			return helpers.FormatPrice(helpers.ProdCCToStruct(code).CurrencyCode, int(math.Round(val))), err
+			return helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(val))), err
 		}
 	}
 

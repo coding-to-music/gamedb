@@ -32,7 +32,7 @@ func (g Genre) GetName() string {
 	return g.Name
 }
 
-func (g Genre) GetMeanPrice(code steam.CountryCode) (string, error) {
+func (g Genre) GetMeanPrice(code steam.ProductCC) (string, error) {
 	return GetMeanPrice(code, g.MeanPrice)
 }
 

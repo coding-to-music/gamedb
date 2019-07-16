@@ -267,7 +267,7 @@ func (pack Package) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-func (pack Package) GetPrice(code steam.CountryCode) (price ProductPriceStruct, err error) {
+func (pack Package) GetPrice(code steam.ProductCC) (price ProductPrice, err error) {
 
 	prices, err := pack.GetPrices()
 	if err != nil {
@@ -334,7 +334,9 @@ func (pack Package) GetMetaImage() string {
 	return ""
 }
 
-func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{}) {
+func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
+
+	price, _ := pack.GetPrice(code)
 
 	return []interface{}{
 		pack.ID,
@@ -342,25 +344,10 @@ func (pack Package) OutputForJSON(code steam.CountryCode) (output []interface{})
 		pack.GetName(),
 		pack.GetComingSoon(),
 		pack.AppsCount,
-		GetPriceFormatted(pack, code).Final,
+		price.GetFinal(),
 		pack.ChangeNumberDate.Unix(),
 		pack.ChangeNumberDate.Format(helpers.DateYearTime),
 		pack.GetIcon(),
-	}
-}
-
-// Must be the same as app OutputForJSONUpcoming
-func (pack Package) OutputForJSONUpcoming(code steam.CountryCode) (output []interface{}) {
-
-	return []interface{}{
-		pack.ID,
-		pack.GetName(),
-		pack.GetIcon(),
-		pack.GetPath(),
-		pack.AppsCount,
-		GetPriceFormatted(pack, code).Final,
-		pack.GetDaysToRelease(),
-		pack.GetReleaseDateNice(),
 	}
 }
 

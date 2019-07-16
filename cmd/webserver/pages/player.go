@@ -44,7 +44,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var code = helpers.GetCountryCode(r)
+	var code = helpers.GetProductCC(r)
 
 	// Find the player row
 	player, err := mongo.GetPlayer(idx)
@@ -149,9 +149,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err)
 		if err == nil {
 			for _, v := range wishlistApps {
+
+				price, _ := v.GetPrice(code)
+
 				wishlist = append(wishlist, playerWishlistItem{
 					App:   v,
-					Price: sql.GetPriceFormatted(v, code),
+					Price: price,
 				})
 			}
 		}
@@ -249,7 +252,7 @@ type playerMissingTemplate struct {
 
 type playerWishlistItem struct {
 	App   sql.App
-	Price sql.ProductPriceFormattedStruct
+	Price sql.ProductPrice
 }
 
 // // playerRanksTemplate
@@ -343,7 +346,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	code := helpers.GetCountryCode(r)
+	code := helpers.GetProductCC(r)
 
 	//
 	var wg sync.WaitGroup

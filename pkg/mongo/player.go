@@ -241,7 +241,7 @@ func (player Player) GetBans() (bans PlayerBans, err error) {
 	return bans, err
 }
 
-func (player Player) GetGameStats(code steam.CountryCode) (stats PlayerAppStatsTemplate, err error) {
+func (player Player) GetGameStats(code steam.ProductCC) (stats PlayerAppStatsTemplate, err error) {
 
 	err = helpers.Unmarshal([]byte(player.GameStats), &stats)
 
@@ -528,28 +528,28 @@ type PlayerAppStatsTemplate struct {
 
 type playerAppStatsInnerTemplate struct {
 	Count     int
-	Price     map[steam.CountryCode]int
-	PriceHour map[steam.CountryCode]float64
+	Price     map[steam.ProductCC]int
+	PriceHour map[steam.ProductCC]float64
 	Time      int
-	Code      steam.CountryCode
+	Code      steam.ProductCC
 }
 
 func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int, priceHours map[string]float64) {
 
 	p.Count++
 
-	for code := range steam.Countries {
+	for _, code := range helpers.ProductCountryCodes {
 
 		if p.Price == nil {
-			p.Price = map[steam.CountryCode]int{}
+			p.Price = map[steam.ProductCC]int{}
 		}
 
 		if p.PriceHour == nil {
-			p.PriceHour = map[steam.CountryCode]float64{}
+			p.PriceHour = map[steam.ProductCC]float64{}
 		}
 
-		p.Price[code] = p.Price[code] + prices[string(code)]
-		p.PriceHour[code] = p.PriceHour[code] + priceHours[string(code)]
+		p.Price[code.ProductCode] = p.Price[code.ProductCode] + prices[string(code.ProductCode)]
+		p.PriceHour[code.ProductCode] = p.PriceHour[code.ProductCode] + priceHours[string(code.ProductCode)]
 		p.Time = p.Time + appTime
 	}
 }

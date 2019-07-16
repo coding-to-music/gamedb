@@ -19,7 +19,7 @@ const (
 	// Set if logged in
 	SessionUserID         = "user-id"
 	SessionUserEmail      = "user-email"
-	SessionUserCountry    = "user-country"
+	SessionUserProdCC     = "user-country"
 	SessionUserShowAlerts = "user-alerts"
 	SessionUserAPIKey     = "user-api-key"
 	SessionUserLevel      = "user-level"
@@ -54,31 +54,29 @@ func GetUserIDFromSesion(r *http.Request) (id int, err error) {
 
 var ccLock sync.Mutex
 
-func GetCountryCode(r *http.Request) steam.CountryCode {
+func GetProductCC(r *http.Request) steam.ProductCC {
 
 	ccLock.Lock()
 	defer ccLock.Unlock()
 
-	var fallback = steam.CountryUS
-
 	// Get from URL
 	q := strings.ToUpper(r.URL.Query().Get("cc"))
-	if q != "" && steam.ValidCountryCode(steam.CountryCode(q)) {
-		return steam.CountryCode(q)
+	if q != "" && steam.IsProductCC(q) {
+		return steam.ProductCC(q)
 	}
 
 	// Get from session
-	val, err := session.Get(r, SessionUserCountry)
+	val, err := session.Get(r, SessionUserProdCC)
 	log.Err(err)
-	if err == nil && steam.ValidCountryCode(steam.CountryCode(val)) {
-		return steam.CountryCode(val)
+	if err == nil && steam.IsProductCC(val) {
+		return steam.ProductCC(val)
 	}
 
 	// Get from Maxmind
 	db, err := maxminddb.Open(config.Config.AssetsPath.Get() + "/files/GeoLite2-Country.mmdb")
 	if err != nil {
 		log.Err(err)
-		return steam.CountryUS
+		return steam.ProductCCUS
 	}
 	defer func() {
 		err = db.Close()
@@ -101,17 +99,21 @@ func GetCountryCode(r *http.Request) steam.CountryCode {
 		err = db.Lookup(ip, &record)
 		if err != nil {
 			log.Err(err)
-			return fallback
+			return steam.ProductCCUS
 		}
 
-		for _, activeCountryCode := range GetActiveCountries() {
-			if record.Country.ISOCode == string(activeCountryCode) && steam.ValidCountryCode(steam.CountryCode(activeCountryCode)) {
-				return activeCountryCode
+		for _, cc := range ProductCountryCodes {
+			if cc.Enabled {
+				for _, code := range cc.CountryCodes {
+					if record.Country.ISOCode == string(code) {
+						return cc.ProductCode
+					}
+				}
 			}
 		}
 	}
 
-	return fallback
+	return steam.ProductCCUS
 }
 
 func GetUserLevel(r *http.Request) int {

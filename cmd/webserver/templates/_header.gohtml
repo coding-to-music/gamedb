@@ -186,14 +186,16 @@
 
                     <li class="nav-item dropdown" id="header-flag">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                            <img src="/assets/img/flags/{{ lower .GetUserCountry }}.png" alt="{{ .UserCountry }}">
+                            <img src="/assets/img/flags/{{ .UserProductCC.GetFlag }}.png" alt="{{ .UserProductCC.Name }}">
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" id="header-settings">
-                            {{ range $key, $value:= .ActiveCountries }}
-                                <a class="dropdown-item" href="/currency/{{ $key }}">
-                                    <img src="/assets/img/flags/{{ lower $key }}.png" alt="{{ $value }}">
-                                    {{ $value }}
-                                </a>
+                            {{ range $key, $value:= .ProductCCs }}
+                                {{ if .Enabled }}
+                                    <a class="dropdown-item" href="/currency/{{ .ProductCode }}">
+                                        <img src="/assets/img/flags/{{ .GetFlag }}.png" alt="{{ .Name }}">
+                                        {{ .Name }}
+                                    </a>
+                                {{ end }}
                             {{ end }}
                         </div>
                     </li>

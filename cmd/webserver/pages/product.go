@@ -43,14 +43,9 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	// Get code
-	code := steam.CountryCode(r.URL.Query().Get("code"))
-	if code == "" {
-		code = helpers.GetCountryCode(r)
-	}
-
-	if code == "" {
-		log.Err("no code given", r)
-		return
+	code := steam.ProductCC(r.URL.Query().Get("code"))
+	if code == "" || !helpers.IsValidProdCC(code) {
+		code = helpers.GetProductCC(r)
 	}
 
 	// Get prices
@@ -60,16 +55,9 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 		return
 	}
 
-	// Get locale
-	locale, err := helpers.GetLocaleFromCountry(code)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
 	// Make JSON response
 	var response productPricesAjaxResponse
-	response.Symbol = locale.CurrencySymbol
+	response.Symbol = helpers.GetProdCC(code).Symbol
 
 	for _, v := range pricesResp {
 		response.Prices = append(response.Prices, []float64{float64(v.CreatedAt.Unix() * 1000), float64(v.PriceAfter) / 100})

@@ -28,7 +28,7 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := helpers.GetCountryCode(r)
+	code := helpers.GetProductCC(r)
 	prices := map[int]string{}
 	for _, v := range publishers {
 		price, err := v.GetMeanPrice(code)

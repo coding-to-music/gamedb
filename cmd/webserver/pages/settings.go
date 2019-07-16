@@ -58,6 +58,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetPasswordStrength()
 	t.setFlashes(w, r)
 	t.Domain = config.Config.GameDBDomain.Get()
+	t.ProdCCs = helpers.GetProdCCs()
 
 	// Get user
 	t.User, err = getUserFromSession(r)
@@ -113,11 +114,6 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	// Countries
-	for _, v := range helpers.GetActiveCountries() {
-		t.Countries = append(t.Countries, []string{string(v), steam.Countries[v]})
-	}
-
 	// Template
 	err = returnTemplate(w, r, "settings", t)
 	log.Err(err, r)
@@ -125,11 +121,11 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 type settingsTemplate struct {
 	GlobalTemplate
-	User      sql.User
-	Player    mongo.Player
-	Games     string
-	Countries [][]string
-	Domain    string
+	User    sql.User
+	Player  mongo.Player
+	Games   string
+	ProdCCs []helpers.ProductCountryCode
+	Domain  string
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
@@ -198,7 +194,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		email := r.PostForm.Get("email")
 		password := r.PostForm.Get("password")
-		country := r.PostForm.Get("country_code")
+		prodCC := steam.ProductCC(r.PostForm.Get("prod_cc"))
 
 		// Email
 		if email != "" && email != user.Email {
@@ -232,10 +228,10 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Country code
-		if _, ok := steam.Countries[steam.CountryCode(country)]; ok {
-			user.CountryCode = country
+		if helpers.IsValidProdCC(prodCC) {
+			user.ProductCC = prodCC
 		} else {
-			user.CountryCode = string(steam.CountryUS)
+			user.ProductCC = steam.ProductCCUS
 		}
 
 		// Save hidden
@@ -266,17 +262,17 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 			"password":     user.Password,
 			"hide_profile": user.HideProfile,
 			"show_alerts":  user.ShowAlerts,
-			"country_code": user.CountryCode,
+			"country_code": user.ProductCC,
 		})
 
-		log.Err(db.Error, r)
 		if db.Error != nil {
+			log.Err(db.Error, r)
 			return "/settings", "", "Something went wrong saving your settings"
 		}
 
 		// Update session
 		err = session.SetMany(r, map[string]string{
-			helpers.SessionUserCountry:    user.CountryCode,
+			helpers.SessionUserProdCC:     string(user.ProductCC),
 			helpers.SessionUserEmail:      user.Email,
 			helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		})

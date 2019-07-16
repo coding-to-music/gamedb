@@ -30,10 +30,10 @@ import (
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
 	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Language", string(helpers.GetCountryCode(r))) // Used for varnish hash
-	w.Header().Set("X-Content-Type-Options", "nosniff")           // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")           // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")               // Protection from clickjacking
+	w.Header().Set("Language", string(helpers.GetProductCC(r))) // Used for varnish hash
+	w.Header().Set("X-Content-Type-Options", "nosniff")         // Protection from malicious exploitation via MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")         // Block access to the entire page when an XSS attack is suspected
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")             // Protection from clickjacking
 
 	if !strings.HasPrefix(r.URL.Path, "/esi") {
 		w.Header().Set("Surrogate-Control", "ESI/1.0") // Enable ESI
@@ -185,14 +185,14 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // GlobalTemplate is added to every other template
 type GlobalTemplate struct {
-	Title           string        // Page title
-	Description     template.HTML // Page description
-	Path            string        // URL path
-	Env             string        // Environment
-	CSSFiles        []Asset
-	JSFiles         []Asset
-	Canonical       string
-	ActiveCountries map[string]string
+	Title       string        // Page title
+	Description template.HTML // Page description
+	Path        string        // URL path
+	Env         string        // Environment
+	CSSFiles    []Asset
+	JSFiles     []Asset
+	Canonical   string
+	ProductCCs  []helpers.ProductCountryCode
 
 	backgroundSet   bool
 	Background      string
@@ -202,12 +202,11 @@ type GlobalTemplate struct {
 	FlashesGood []string
 	FlashesBad  []string
 
-	UserID             int
-	UserName           string
-	userEmail          string
-	UserCountry        steam.CountryCode
-	UserCurrencySymbol string
-	userLevel          string
+	UserID        int
+	UserName      string
+	userEmail     string
+	UserProductCC helpers.ProductCountryCode
+	userLevel     string
 
 	PlayerID   int64
 	PlayerName string
@@ -238,14 +237,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Description = description
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
-	t.ActiveCountries = func() map[string]string {
-
-		currencies := map[string]string{}
-		for _, v := range helpers.GetActiveCountries() {
-			currencies[string(v)] = steam.Countries[v]
-		}
-		return currencies
-	}()
+	t.ProductCCs = helpers.GetProdCCs()
 
 	val, err := session.Get(r, helpers.SessionUserID)
 	log.Err(err, r)
@@ -273,19 +265,12 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.UserName, err = session.Get(r, helpers.SessionPlayerName)
 	log.Err(err, r)
 
-	t.UserCountry = helpers.GetCountryCode(r)
+	t.UserProductCC = helpers.GetProdCC(helpers.GetProductCC(r))
 	log.Err(err, r)
 
 	// Save country incase its from Maxmind
-	err = session.Set(r, helpers.SessionUserCountry, string(t.UserCountry))
+	err = session.Set(r, helpers.SessionUserProdCC, string(t.UserProductCC.ProductCode))
 	log.Err(err)
-
-	// Currency
-	locale, err := helpers.GetLocaleFromCountry(t.UserCountry)
-	log.Err(err, r)
-	if err == nil {
-		t.UserCurrencySymbol = locale.CurrencySymbol
-	}
 
 	//
 	t.setRandomBackground(true, false)
@@ -387,10 +372,8 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 func (t GlobalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
-		"userCountry":        t.GetUserCountry(),
-		"userCurrencySymbol": t.UserCurrencySymbol,
-		"userLevel":          t.userLevel,
-		"isLoggedIn":         t.IsLoggedIn(),
+		"prodCC":             t.UserProductCC.ProductCode,
+		"userCurrencySymbol": t.UserProductCC.Symbol,
 		"showAds":            t.showAds(),
 		"toasts":             t.toasts,
 		"isLocal":            config.IsLocal(),
@@ -417,14 +400,6 @@ func (t GlobalTemplate) GetCanonical() (text string) {
 		return "https://gamedb.online" + t.Canonical
 	}
 	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
-}
-
-func (t GlobalTemplate) GetFlag() (text string) {
-	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
-}
-
-func (t GlobalTemplate) GetUserCountry() (text string) {
-	return string(t.UserCountry)
 }
 
 func (t GlobalTemplate) GetVersionHash() string {
@@ -641,7 +616,7 @@ func (q DataTablesQuery) getSearchSlice(k string) (search []string) {
 	return search
 }
 
-func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.CountryCode) (order string) {
+func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.ProductCC) (order string) {
 
 	var ret []string
 
@@ -725,7 +700,7 @@ func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) 
 	return col
 }
 
-func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.CountryCode, columns map[string]string) *gorm.DB {
+func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.ProductCC, columns map[string]string) *gorm.DB {
 
 	db = db.Order(q.getOrderSQL(columns, code))
 	db = db.Offset(q.Start)

@@ -33,7 +33,7 @@ func (p Publisher) GetName() (name string) {
 	return p.Name
 }
 
-func (p Publisher) GetMeanPrice(code steam.CountryCode) (string, error) {
+func (p Publisher) GetMeanPrice(code steam.ProductCC) (string, error) {
 	return GetMeanPrice(code, p.MeanPrice)
 }
 

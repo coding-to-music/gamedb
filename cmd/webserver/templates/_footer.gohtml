@@ -77,7 +77,7 @@
         gtag('js', new Date());
         gtag('config', 'UA-125104-31');
         {{ if .IsLoggedIn }}
-        gtag('set', {'user_cc': '{{ .UserCountry }}'});
+        gtag('set', {'user_cc': '{{ .UserProductCC.ProductCode }}'});
         gtag('set', {'user_id': {{ .UserID }}});
         {{ end }}
     </script>

@@ -44,7 +44,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	//
-	var code = helpers.GetCountryCode(r)
+	var code = helpers.GetProductCC(r)
 	var wg sync.WaitGroup
 
 	// Get apps

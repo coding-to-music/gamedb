@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -48,12 +47,10 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get ranks
-	var code = helpers.GetCountryCode(r)
-
-	var dateLimit = time.Now().AddDate(0, 0, -30)
+	var code = helpers.GetProductCC(r)
 
 	var filter = mongo.D{
-		{"currency", string(code)},
+		{"prod_cc", string(code)},
 	}
 
 	typex := query.getSearchString("type")
@@ -138,10 +135,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, mongo.M{
-			"currency":   string(code),
-			"created_at": mongo.M{"$gt": dateLimit},
-		}, 0)
+		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, mongo.M{"prod_cc": string(code)}, 0)
 		log.Err(err, r)
 	}(r)
 

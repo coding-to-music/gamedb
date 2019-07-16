@@ -302,17 +302,17 @@ func (i rabbitMessageProductKeyValues) setAppLaunchItem(launchItem *pics.PICSApp
 func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (err error) {
 
 	var prices sql.ProductPrices
-	var price sql.ProductPriceStruct
+	var price sql.ProductPrice
 	var documents []mongo.Document
 
-	for code := range steam.Countries {
+	for _, productCC := range helpers.ProductCountryCodes {
 
 		var oldPrice, newPrice int
 
 		prices, err = before.GetPrices()
 		if err == nil {
 
-			price, err = prices.Get(code)
+			price, err = prices.Get(productCC.ProductCode)
 			if err != nil {
 				continue // Only compare if there is an old price to compare to
 			}
@@ -323,7 +323,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		prices, err = after.GetPrices()
 		if err == nil {
 
-			price, err = prices.Get(code)
+			price, err = prices.Get(productCC.ProductCode)
 			if err != nil {
 				continue // Only compare if there is a new price to compare to
 
@@ -347,7 +347,8 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 			price.Name = after.GetName()
 			price.Icon = after.GetIcon()
 			price.CreatedAt = time.Now()
-			price.Currency = code
+			price.Currency = productCC.CurrencyCode
+			price.ProdCC = productCC.ProductCode
 			price.PriceBefore = oldPrice
 			price.PriceAfter = newPrice
 			price.Difference = newPrice - oldPrice
@@ -357,7 +358,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		}
 
 		// Tweet / Post to Reddit
-		if code == steam.CountryUS && before.GetProductType() == helpers.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
+		if productCC.ProductCode == steam.ProductCCUS && before.GetProductType() == helpers.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
 
 			appBefore, ok := before.(sql.App)
 			if ok && appBefore.IsOnSale() {

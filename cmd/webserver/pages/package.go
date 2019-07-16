@@ -144,8 +144,9 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// Get price
-	t.Price = sql.GetPriceFormatted(pack, helpers.GetCountryCode(r))
+	// Functions that get called multiple times in the template
+	t.Price, err = pack.GetPrice(helpers.GetProductCC(r))
+	log.Err(err, r)
 
 	t.Prices, err = t.Package.GetPrices()
 	log.Err(err, r)
@@ -159,6 +160,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.DepotIDs, err = pack.GetDepotIDs()
 	log.Err(err, r)
 
+	//
 	err = returnTemplate(w, r, "package", t)
 	log.Err(err, r)
 }
@@ -172,7 +174,7 @@ type packageTemplate struct {
 	DepotIDs   []int
 	Extended   []pics.KeyValue
 	Package    sql.Package
-	Price      sql.ProductPriceFormattedStruct
+	Price      sql.ProductPrice
 	Prices     sql.ProductPrices
 }
 

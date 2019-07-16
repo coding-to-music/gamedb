@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"math"
 	"net/http"
 	"sync"
 	"time"
@@ -77,7 +78,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var code = helpers.GetCountryCode(r)
+		var code = helpers.GetProductCC(r)
 		var rows []statsAppTypeTotalsRow
 
 		gorm = gorm.Select([]string{"type", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
@@ -90,12 +91,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		if gorm.Error == nil {
 
 			for _, v := range rows {
-
-				locale, err := helpers.GetLocaleFromCountry(code)
-				log.Err(err, r)
-				if err == nil {
-					t.Totals[v.Type] = locale.Format(int(v.Total))
-				}
+				t.Totals[v.Type] = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(v.Total)))
 			}
 		}
 	}()

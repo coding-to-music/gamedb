@@ -65,7 +65,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"5": "player_trend",
 	}
 
-	var code = helpers.GetCountryCode(r)
+	var code = helpers.GetProductCC(r)
 
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})
@@ -89,14 +89,17 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	for _, app := range apps {
+
+		price, _ := app.GetPrice(code)
+
 		response.AddRow([]interface{}{
-			app.ID,                                 // 0
-			app.GetName(),                          // 1
-			app.GetIcon(),                          // 2
-			app.GetPath(),                          // 3
-			app.GetType(),                          // 4
-			sql.GetPriceFormatted(app, code).Final, // 5
-			app.GetReleaseDateNice(),               // 6
+			app.ID,                   // 0
+			app.GetName(),            // 1
+			app.GetIcon(),            // 2
+			app.GetPath(),            // 3
+			app.GetType(),            // 4
+			price.GetFinal(),         // 5
+			app.GetReleaseDateNice(), // 6
 			helpers.RoundFloatTo2DP(app.ReviewsScore), // 7
 			app.PlayerPeakWeek,                        // 8
 		})

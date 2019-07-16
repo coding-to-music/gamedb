@@ -88,17 +88,17 @@ func (c Genres) Work() {
 					name:       genreName,
 					count:      1,
 					totalScore: app.ReviewsScore,
-					totalPrice: map[steam.CountryCode]int{},
+					totalPrice: map[steam.ProductCC]int{},
 				}
 			}
 
-			for code := range steam.Countries {
-				price, err := app.GetPrice(code)
+			for _, code := range helpers.ProductCountryCodes {
+				price, err := app.GetPrice(code.ProductCode)
 				if err != nil {
 					// cronLogErr(err, r)
 					continue
 				}
-				newGenres[genreID].totalPrice[code] += price.Final
+				newGenres[genreID].totalPrice[code.ProductCode] += price.Final
 			}
 		}
 	}
@@ -256,17 +256,17 @@ func (c Publishers) Work() {
 				newPublishers[appPublisherID] = &statsRow{
 					name:       publisherName,
 					count:      1,
-					totalPrice: map[steam.CountryCode]int{},
+					totalPrice: map[steam.ProductCC]int{},
 					totalScore: app.ReviewsScore,
 				}
 			}
 
-			for code := range steam.Countries {
-				price, err := app.GetPrice(code)
+			for _, code := range helpers.ProductCountryCodes {
+				price, err := app.GetPrice(code.ProductCode)
 				if err != nil {
 					continue
 				}
-				newPublishers[appPublisherID].totalPrice[code] += price.Final
+				newPublishers[appPublisherID].totalPrice[code.ProductCode] += price.Final
 			}
 		}
 	}
@@ -424,18 +424,18 @@ func (c Developers) Work() {
 				newDevelopers[appDeveloperID] = &statsRow{
 					name:       developersName,
 					count:      1,
-					totalPrice: map[steam.CountryCode]int{},
+					totalPrice: map[steam.ProductCC]int{},
 					totalScore: app.ReviewsScore,
 				}
 			}
 
-			for code := range steam.Countries {
-				price, err := app.GetPrice(code)
+			for _, code := range helpers.ProductCountryCodes {
+				price, err := app.GetPrice(code.ProductCode)
 				if err != nil {
 					// cronLogErr(err, r)
 					continue
 				}
-				newDevelopers[appDeveloperID].totalPrice[code] += price.Final
+				newDevelopers[appDeveloperID].totalPrice[code.ProductCode] += price.Final
 			}
 		}
 	}
@@ -589,18 +589,18 @@ func (c Tags) Work() {
 				newTags[tagID] = &statsRow{
 					name:       strings.TrimSpace(steamTagMap[tagID]),
 					count:      1,
-					totalPrice: map[steam.CountryCode]int{},
+					totalPrice: map[steam.ProductCC]int{},
 					totalScore: app.ReviewsScore,
 				}
 			}
 
-			for code := range steam.Countries {
-				price, err := app.GetPrice(code)
+			for _, code := range helpers.ProductCountryCodes {
+				price, err := app.GetPrice(code.ProductCode)
 				if err != nil {
 					// cronLogErr(err, r)
 					continue
 				}
-				newTags[tagID].totalPrice[code] += price.Final
+				newTags[tagID].totalPrice[code.ProductCode] += price.Final
 			}
 		}
 	}
@@ -686,13 +686,13 @@ func (c Tags) Work() {
 type statsRow struct {
 	name       string
 	count      int
-	totalPrice map[steam.CountryCode]int
+	totalPrice map[steam.ProductCC]int
 	totalScore float64
 }
 
 func (t statsRow) getMeanPrice() string {
 
-	means := map[steam.CountryCode]float64{}
+	means := map[steam.ProductCC]float64{}
 
 	for code, total := range t.totalPrice {
 		means[code] = float64(total) / float64(t.count)
