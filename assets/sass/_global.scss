@@ -32,6 +32,12 @@ body.bg {
 header {
     background-color: rgba(27, 39, 56, 0.9);
     position: relative;
+
+    a.dropdown-item {
+        img {
+            margin-left: -10px;
+        }
+    }
 }
 
 @include media-breakpoint-up(lg) {
