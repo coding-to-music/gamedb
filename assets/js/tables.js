@@ -91,15 +91,6 @@ $dataTables.on('draw.dt', function (e, settings) {
     observeLazyImages('tr img[data-lazy]');
 });
 
-function getPagingType() {
-
-    if (user.userLevel === "0") {
-        return 'simple_numbers'
-    } else {
-        return 'simple_numbers'
-    }
-}
-
 // Server side
 const dtDefaultOptions = {
     "ajax": function (data, callback, settings, $ctx = null) {
@@ -158,7 +149,7 @@ const dtDefaultOptions = {
     "lengthChange": false,
     "stateSave": false,
     "orderMulti": false,
-    "pagingType": getPagingType(),
+    "pagingType": 'simple_numbers',
     "dom": '<"dt-pagination"p>t<"dt-pagination"p>r',
     "language": {
         "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>',
