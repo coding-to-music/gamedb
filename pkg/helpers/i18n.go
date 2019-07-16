@@ -30,9 +30,9 @@ func (pcc ProductCountryCode) GetFlag() string {
 	case steam.ProductCCUK:
 		return "gb"
 	case steam.ProductCCAZ:
-		return "sasia"
-	case steam.ProductCCPK:
 		return "cis"
+	case steam.ProductCCPK:
+		return "sasia"
 	default:
 		return strings.ToLower(pcc.CountryCodes[0])
 	}
