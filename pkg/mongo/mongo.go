@@ -274,3 +274,15 @@ func DeleteDocuments(collection collection, filter M) (err error) {
 	_, err = c.DeleteMany(ctx, filter)
 	return err
 }
+
+func UpdateMany(collection collection, update M, filter M) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return nil
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
+	_, err = c.UpdateMany(ctx, filter, update)
+	return err
+}
