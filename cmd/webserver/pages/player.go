@@ -403,8 +403,17 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 	response.limit(r)
 
-	for _, v := range playerApps {
-		response.AddRow(v.OutputForJSON(code))
+	for _, pa := range playerApps {
+		response.AddRow([]interface{}{
+			pa.AppID,
+			pa.AppName,
+			pa.GetIcon(),
+			pa.AppTime,
+			pa.GetTimeNice(),
+			pa.GetPriceFormatted(code),
+			pa.GetPriceHourFormatted(code),
+			pa.GetPath(),
+		})
 	}
 
 	response.output(w, r)
@@ -628,8 +637,18 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
 
-	for _, v := range badges {
-		response.AddRow(v.OutputForJSON())
+	for _, badge := range badges {
+		response.AddRow([]interface{}{
+			badge.AppID,        // 0
+			badge.AppName,      // 1
+			badge.GetAppPath(), // 2
+			badge.BadgeCompletionTime.Format("2006-01-02 15:04:05"), // 3
+			badge.BadgeFoil,     // 4
+			badge.BadgeIcon,     // 5
+			badge.BadgeLevel,    // 6
+			badge.BadgeScarcity, // 7
+			badge.BadgeXP,       // 8
+		})
 	}
 
 	response.output(w, r)

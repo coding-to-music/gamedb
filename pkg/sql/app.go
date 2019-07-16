@@ -223,22 +223,6 @@ func (app App) GetDaysToRelease() string {
 	return helpers.GetDaysToRelease(app.ReleaseDateUnix)
 }
 
-func (app App) OutputForJSON(code steam.ProductCC) (output []interface{}) {
-
-	price, _ := app.GetPrice(code)
-
-	return []interface{}{
-		app.ID,        // 0
-		app.GetName(), // 1
-		app.GetIcon(), // 2
-		app.GetPath(), // 3
-		app.GetType(), // 4
-		helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
-		price.GetFinal(),   // 6
-		app.PlayerPeakWeek, // 7
-	}
-}
-
 func (app App) GetReleaseState() (ret string) {
 
 	switch app.ReleaseState {

@@ -89,20 +89,6 @@ func (pa PlayerApp) GetPriceHourFormatted(code steam.ProductCC) string {
 	}
 }
 
-func (pa PlayerApp) OutputForJSON(code steam.ProductCC) (output []interface{}) {
-
-	return []interface{}{
-		pa.AppID,
-		pa.AppName,
-		pa.GetIcon(),
-		pa.AppTime,
-		pa.GetTimeNice(),
-		pa.GetPriceFormatted(code),
-		pa.GetPriceHourFormatted(code),
-		pa.GetPath(),
-	}
-}
-
 func GetPlayerAppsByApp(offset int64, filter interface{}) (apps []PlayerApp, err error) {
 
 	return getPlayerApps(offset, 100, filter, M{"app_time": -1}, M{"_id": -1, "player_id": 1, "app_time": 1})

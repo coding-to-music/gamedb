@@ -414,8 +414,20 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw
 
-	for _, v := range apps {
-		response.AddRow(v.OutputForJSON(code))
+	for _, app := range apps {
+
+		price, _ := app.GetPrice(code)
+
+		response.AddRow([]interface{}{
+			app.ID,        // 0
+			app.GetName(), // 1
+			app.GetIcon(), // 2
+			app.GetPath(), // 3
+			app.GetType(), // 4
+			helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
+			price.GetFinal(),   // 6
+			app.PlayerPeakWeek, // 7
+		})
 	}
 
 	response.output(w, r)

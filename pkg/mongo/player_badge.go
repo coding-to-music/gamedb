@@ -180,20 +180,6 @@ func (pb PlayerBadge) getEventMax(foil bool) (max PlayerBadge, err error) {
 	return max, err
 }
 
-func (pb PlayerBadge) OutputForJSON() []interface{} {
-	return []interface{}{
-		pb.AppID,        // 0
-		pb.AppName,      // 1
-		pb.GetAppPath(), // 2
-		pb.BadgeCompletionTime.Format("2006-01-02 15:04:05"), // 3
-		pb.BadgeFoil,     // 4
-		pb.BadgeIcon,     // 5
-		pb.BadgeLevel,    // 6
-		pb.BadgeScarcity, // 7
-		pb.BadgeXP,       // 8
-	}
-}
-
 func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 
 	if badges == nil || len(badges) == 0 {

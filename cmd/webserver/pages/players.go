@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 	"sort"
+	"strconv"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -255,7 +256,22 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range playerRows {
 
-		response.AddRow(v.Player.OutputForJSON(v.GetRank()))
+		response.AddRow([]interface{}{
+			v.GetRank(),                        // 0
+			strconv.FormatInt(v.Player.ID, 10), // 1
+			v.Player.PersonaName,               // 2
+			v.Player.GetAvatar(),               // 3
+			v.Player.GetAvatar2(),              // 4
+			v.Player.Level,                     // 5
+			v.Player.GamesCount,                // 6
+			v.Player.BadgesCount,               // 7
+			v.Player.GetTimeShort(),            // 8
+			v.Player.GetTimeLong(),             // 9
+			v.Player.FriendsCount,              // 10
+			v.Player.GetFlag(),                 // 11
+			v.Player.GetCountry(),              // 12
+			v.Player.GetPath(),                 // 13
+		})
 	}
 
 	response.output(w, r)

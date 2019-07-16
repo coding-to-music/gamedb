@@ -291,26 +291,6 @@ func (player Player) ShouldUpdate(userAgent string, updateType UpdateType) bool 
 	return false
 }
 
-func (player Player) OutputForJSON(rank string) (output []interface{}) {
-
-	return []interface{}{
-		rank,                             // 0
-		strconv.FormatInt(player.ID, 10), // 1
-		player.PersonaName,               // 2
-		player.GetAvatar(),               // 3
-		player.GetAvatar2(),              // 4
-		player.Level,                     // 5
-		player.GamesCount,                // 6
-		player.BadgesCount,               // 7
-		player.GetTimeShort(),            // 8
-		player.GetTimeLong(),             // 9
-		player.FriendsCount,              // 10
-		player.GetFlag(),                 // 11
-		player.GetCountry(),              // 12
-		player.GetPath(),                 // 13
-	}
-}
-
 func GetPlayer(id int64) (player Player, err error) {
 
 	var item = helpers.MemcachePlayer(id)
