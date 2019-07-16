@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"sort"
+	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -33,7 +34,7 @@ func (pcc ProductCountryCode) GetFlag() string {
 	case steam.ProductCCPK:
 		return "cis"
 	default:
-		return pcc.CountryCodes[0]
+		return strings.ToLower(pcc.CountryCodes[0])
 	}
 }
 
