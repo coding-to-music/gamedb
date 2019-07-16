@@ -220,8 +220,16 @@
                                         </div>
                                     </td>
                                     <td>{{ .GetFinal }}</td>
-                                    <td>{{ .GetInitial }}</td>
-                                    <td>{{ .GetDiscountPercent }}</td>
+                                    <td>
+                                        {{ if ne .GetFinal .GetInitial }}
+                                            {{ .GetInitial }}
+                                        {{ end }}
+                                    </td>
+                                    <td>
+                                        {{ if ne .GetFinal .GetInitial }}
+                                            {{ .GetDiscountPercent }}
+                                        {{ end }}
+                                    </td>
                                 </tr>
                             {{ end }}
                         </table>
