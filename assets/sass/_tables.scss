@@ -85,6 +85,7 @@ table.table {
     td.img {
         @extend .pt-0;
         @extend .pb-0;
+        padding-left: 4px;
 
         div.icon-name {
             display: table;
@@ -110,8 +111,17 @@ table.table {
             }
         }
 
-        img, div.avatar2 {
+        img {
             @extend .rounded;
+            margin-top: 6px;
+            margin-bottom: 6px;
+            height: 36px;
+            width: 36px;
+            max-width: none;
+            vertical-align: middle;
+        }
+
+        div.avatar2 {
             margin-top: 8px;
             margin-bottom: 8px;
             height: 32px;
