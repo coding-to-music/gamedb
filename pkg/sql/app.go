@@ -894,7 +894,7 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 	}
 
 	ids = helpers.Unique(ids)
-
+	
 	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err
@@ -904,7 +904,7 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 		db = db.Select(columns)
 	}
 
-	db = db.Order("FIELD(ID," + helpers.JoinInts(ids) + ")")
+	db = db.Order("FIELD(id," + helpers.JoinInts(ids) + ")")
 
 	db.Where("id IN (?)", ids).Find(&apps)
 
