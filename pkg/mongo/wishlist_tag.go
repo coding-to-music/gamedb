@@ -36,7 +36,7 @@ func GetWishlistTags() (tags []WishlistTag, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionWishlistTags.String())
 
-	o := options.Find().SetSort(M{"count": -1})
+	o := options.Find().SetSort(D{{"count", -1}})
 
 	cur, err := c.Find(ctx, M{}, o)
 	if err != nil {

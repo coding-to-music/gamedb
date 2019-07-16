@@ -75,9 +75,9 @@ func GetPatreonWebhooks(offset int64, limit int64, sort bool, filter interface{}
 		ops.SetLimit(limit)
 	}
 	if sort {
-		ops.SetSort(M{"created_at": 1})
+		ops.SetSort(D{{"created_at", 1}})
 	} else {
-		ops.SetSort(M{"created_at": -1})
+		ops.SetSort(D{{"created_at", -1}})
 	}
 
 	if projection != nil {

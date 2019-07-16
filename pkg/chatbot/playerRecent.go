@@ -25,7 +25,7 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 		return message, err
 	}
 
-	recent, err := mongo.GetRecentApps(player.ID, 0, 10, mongo.M{"playtime_2_weeks": -1})
+	recent, err := mongo.GetRecentApps(player.ID, 0, 10, mongo.D{{"playtime_2_weeks", -1}})
 	if err != nil {
 		return message, err
 	}

@@ -91,7 +91,7 @@ func (pa PlayerApp) GetPriceHourFormatted(code steam.ProductCC) string {
 
 func GetPlayerAppsByApp(offset int64, filter interface{}) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, 100, filter, M{"app_time": -1}, M{"_id": -1, "player_id": 1, "app_time": 1})
+	return getPlayerApps(offset, 100, filter, D{{"app_time", -1}}, M{"_id": -1, "player_id": 1, "app_time": 1})
 }
 
 func GetPlayerApps(playerID int64, offset int64, limit int64, sort D) (apps []PlayerApp, err error) {
@@ -118,7 +118,7 @@ func GetAppPlayTimes(appID int) (apps []PlayerApp, err error) {
 	return getPlayerApps(0, 0, M{"app_id": appID}, nil, M{"_id": -1, "app_time": 1})
 }
 
-func getPlayerApps(offset int64, limit int64, filter interface{}, sort interface{}, projection interface{}) (apps []PlayerApp, err error) {
+func getPlayerApps(offset int64, limit int64, filter interface{}, sort D, projection interface{}) (apps []PlayerApp, err error) {
 
 	if filter == nil {
 		filter = M{}

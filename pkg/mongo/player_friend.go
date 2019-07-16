@@ -130,7 +130,7 @@ func UpdateFriends(friends []*PlayerFriend) (err error) {
 	return err
 }
 
-func GetFriends(playerID int64, offset int64, limit int64, sort interface{}) (friends []PlayerFriend, err error) {
+func GetFriends(playerID int64, offset int64, limit int64, sort D) (friends []PlayerFriend, err error) {
 
 	filter := M{"player_id": playerID}
 

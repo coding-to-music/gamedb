@@ -210,14 +210,14 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 }
 
 func GetPlayerEventBadges(offset int64, filter interface{}) (badges []PlayerBadge, err error) {
-	return getBadges(offset, 100, filter, M{"badge_completion_time": -1}, nil)
+	return getBadges(offset, 100, filter, D{{"badge_completion_time", -1}}, nil)
 }
 
 func GetBadgePlayers(offset int64, filter interface{}) (badges []PlayerBadge, err error) {
-	return getBadges(offset, 100, filter, M{"badge_level": -1, "badge_completion_time": 1}, nil)
+	return getBadges(offset, 100, filter, D{{"badge_level", -1}, {"badge_completion_time", 1}}, nil)
 }
 
-func getBadges(offset int64, limit int64, filter interface{}, sort interface{}, projection interface{}) (badges []PlayerBadge, err error) {
+func getBadges(offset int64, limit int64, filter interface{}, sort D, projection interface{}) (badges []PlayerBadge, err error) {
 
 	if filter == nil {
 		filter = M{}

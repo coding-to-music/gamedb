@@ -130,7 +130,7 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents.String())
 
-	cur, err := c.Find(ctx, M{"user_id": userID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(M{"created_at": -1}))
+	cur, err := c.Find(ctx, M{"user_id": userID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(D{{"created_at", -1}}))
 	if err != nil {
 		return events, err
 	}

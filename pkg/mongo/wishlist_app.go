@@ -41,7 +41,7 @@ func GetWishlistApps(offset int64) (apps []WishlistApp, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionWishlistApps.String())
 
-	o := options.Find().SetSort(M{"count": -1}).SetLimit(100).SetSkip(offset)
+	o := options.Find().SetSort(D{{"count", -1}}).SetLimit(100).SetSkip(offset)
 
 	cur, err := c.Find(ctx, M{}, o)
 	if err != nil {

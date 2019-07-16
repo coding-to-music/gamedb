@@ -134,7 +134,7 @@ func getArticles(offset int64, limit int64, filter interface{}) (news []Article,
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppArticles.String())
 
-	ops := options.Find().SetSort(M{"date": -1})
+	ops := options.Find().SetSort(D{{"date", -1}})
 	if limit > 0 {
 		ops.SetLimit(limit)
 	}

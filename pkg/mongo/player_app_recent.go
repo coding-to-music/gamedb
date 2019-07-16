@@ -95,7 +95,7 @@ func UpdateRecentApps(apps []PlayerRecentApp) (err error) {
 	return err
 }
 
-func GetRecentApps(playerID int64, offset int64, limit int64, sort interface{}) (apps []PlayerRecentApp, err error) {
+func GetRecentApps(playerID int64, offset int64, limit int64, sort D) (apps []PlayerRecentApp, err error) {
 
 	filter := M{"player_id": playerID}
 

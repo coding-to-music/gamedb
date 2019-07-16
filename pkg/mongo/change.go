@@ -124,7 +124,7 @@ func GetChanges(offset int64) (changes []Change, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionChanges.String())
 
-	cur, err := c.Find(ctx, M{}, options.Find().SetLimit(100).SetSkip(offset).SetSort(M{"_id": -1}))
+	cur, err := c.Find(ctx, M{}, options.Find().SetLimit(100).SetSkip(offset).SetSort(D{{"_id", -1}}))
 	if err != nil {
 		return changes, err
 	}
