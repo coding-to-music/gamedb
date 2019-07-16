@@ -27,6 +27,13 @@ var version string
 
 func main() {
 
+	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "eu", "currency": "EUR"}, mongo.M{"currency": "DE"})
+	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "cn", "currency": "CNY"}, mongo.M{"currency": "CN"})
+	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "ru", "currency": "RUB"}, mongo.M{"currency": "RU"})
+	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "us", "currency": "USD"}, mongo.M{"currency": "US"})
+	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "uk", "currency": "GBP"}, mongo.M{"currency": "GB"})
+	// log.Err(err2)
+
 	rand.Seed(time.Now().Unix())
 
 	//

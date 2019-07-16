@@ -283,6 +283,6 @@ func UpdateMany(collection collection, update M, filter M) (err error) {
 	}
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
-	_, err = c.UpdateMany(ctx, filter, update)
+	_, err = c.UpdateMany(ctx, filter, M{"$set": update}, options.Update())
 	return err
 }
