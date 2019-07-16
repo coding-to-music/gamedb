@@ -221,7 +221,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// Save to databases
+	// Save prices to Mongo
 	wg.Add(1)
 	go func() {
 
@@ -235,6 +235,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		}
 	}()
 
+	// Save app to MySQL
 	wg.Add(1)
 	go func() {
 
@@ -251,6 +252,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		}
 	}()
 
+	// Save app score etc to Influx
 	wg.Add(1)
 	go func() {
 
