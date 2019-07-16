@@ -52,6 +52,8 @@ table.table-datatable, table.table-datatable2 {
 .dataTables_processing {
     border: none !important;
     background: transparent !important;
+    z-index: 100;
+    text-align: center;
 }
 
 //
