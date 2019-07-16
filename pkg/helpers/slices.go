@@ -50,6 +50,7 @@ func SliceHasString(slice []string, i string) bool {
 	return false
 }
 
+// todo, keep order by doing https://codereview.stackexchange.com/questions/191238/return-unique-items-in-a-go-slice
 func Unique(arg []int) []int {
 
 	tempMap := make(map[int]uint8)
