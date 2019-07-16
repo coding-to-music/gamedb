@@ -501,7 +501,7 @@ func updateAppDetails(app *sql.App) error {
 		}
 
 		var filter []string
-		if code.ProductCode == steam.ProductCCUS {
+		if code.ProductCode != steam.ProductCCUS {
 			filter = []string{"price_overview"}
 		}
 
