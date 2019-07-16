@@ -751,12 +751,13 @@ func updatePlayerWishlist(player *mongo.Player) error {
 		}
 	}
 
+	// Fix order
 	sort.Slice(appsSlice, func(i, j int) bool {
 		return appsSlice[i].item.Priority > appsSlice[j].item.Priority
 	})
 
+	// Turn into app IDs
 	var appIDs []int
-
 	for _, appID := range appsSlice {
 		appIDs = append(appIDs, appID.appID)
 	}
