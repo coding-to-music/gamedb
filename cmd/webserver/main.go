@@ -27,12 +27,39 @@ var version string
 
 func main() {
 
-	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "eu", "currency": "EUR"}, mongo.M{"currency": "DE"})
-	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "cn", "currency": "CNY"}, mongo.M{"currency": "CN"})
-	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "ru", "currency": "RUB"}, mongo.M{"currency": "RU"})
-	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "us", "currency": "USD"}, mongo.M{"currency": "US"})
-	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"prod_cc": "uk", "currency": "GBP"}, mongo.M{"currency": "GB"})
-	// log.Err(err2)
+	// db, err2 := sql.GetMySQLClient()
+	// if err2 != nil {
+	// 	log.Info(err2)
+	// 	return
+	// }
+	//
+	// db = db.Where("JSON_EXTRACT(prices, '$.DE') IS NOT NULL")
+	// // db = db.Where("id = ?", 8)
+	// db = db.Order("id asc")
+	//
+	// var apps []sql.App
+	// db = db.Find(&apps)
+	// if db.Error != nil {
+	// 	log.Info(db.Error)
+	// 	return
+	// }
+	//
+	// for _, app := range apps {
+	//
+	// 	app.Prices = strings.Replace(app.Prices, `"CN"`, `"cn"`, 1)
+	// 	app.Prices = strings.Replace(app.Prices, `"DE"`, `"eu"`, 1)
+	// 	app.Prices = strings.Replace(app.Prices, `"GB"`, `"uk"`, 1)
+	// 	app.Prices = strings.Replace(app.Prices, `"RU"`, `"ru"`, 1)
+	// 	app.Prices = strings.Replace(app.Prices, `"US"`, `"us"`, 1)
+	//
+	// 	db = db.Save(&app)
+	// 	if db.Error != nil {
+	// 		log.Info(db.Error, app.ID)
+	// 		return
+	// 	}
+	// }
+	//
+	// return
 
 	rand.Seed(time.Now().Unix())
 
