@@ -237,7 +237,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Description = description
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
-	t.ProductCCs = helpers.GetProdCCs()
+	t.ProductCCs = helpers.GetProdCCs(true)
 
 	val, err := session.Get(r, helpers.SessionUserID)
 	log.Err(err, r)

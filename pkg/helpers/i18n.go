@@ -345,10 +345,12 @@ func GetProdCC(cc steam.ProductCC) ProductCountryCode {
 	return ProductCountryCodes[steam.ProductCCUS]
 }
 
-func GetProdCCs() (ccs []ProductCountryCode) {
+func GetProdCCs(activeOnly bool) (ccs []ProductCountryCode) {
 
 	for _, v := range ProductCountryCodes {
-		ccs = append(ccs, v)
+		if !activeOnly || v.Enabled {
+			ccs = append(ccs, v)
+		}
 	}
 
 	sort.Slice(ccs, func(i, j int) bool {
