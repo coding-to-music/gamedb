@@ -83,6 +83,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"dlcavailableonstore":                  {Type: picsTypeBool},
 	"validoslist":                          {Type: picsTypeTextListString},
 	"languages":                            {Type: picsTypeTextListString},
+	"visibleonlywheninstalled":             {Type: picsTypeBool},
 }
 
 var ConfigKeys = map[string]PicsKey{
