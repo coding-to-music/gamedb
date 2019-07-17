@@ -158,6 +158,10 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 		case picsTypeLink:
 
+			if val == "" {
+				return ""
+			}
+
 			item.Link = strings.ReplaceAll(item.Link, "$val$", val)
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
 
@@ -169,6 +173,10 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			return template.HTML("<a href=\"" + item.Link + "\"" + blank + " rel=\"nofollow\">" + val + "</a>")
 
 		case picsTypeImage:
+
+			if val == "" {
+				return ""
+			}
 
 			item.Link = strings.ReplaceAll(item.Link, "$val$", val)
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
