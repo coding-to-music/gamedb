@@ -363,7 +363,10 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 					tags = helpers.StringSliceToIntSlice(stringTags)
 				}
 				if vv.Name == "name" {
-					app.SetNameIfEmpty(vv.Value.(string))
+					name := strings.TrimSpace(vv.Value.(string))
+					if name != "" {
+						app.Name = name
+					}
 				}
 
 				common[vv.Name] = vv.String()
@@ -724,7 +727,10 @@ func updateAppDetails(app *sql.App) error {
 			wg.Wait()
 
 			// Other
-			app.SetNameIfEmpty(response.Data.Name)
+			if app.Name == "" && response.Data.Name != "" {
+				app.Name = strings.TrimSpace(response.Data.Name)
+			}
+
 			app.Type = response.Data.Type
 			app.IsFree = response.Data.IsFree
 			app.ShortDescription = response.Data.ShortDescription

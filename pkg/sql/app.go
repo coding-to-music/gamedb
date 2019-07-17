@@ -677,13 +677,6 @@ func (app App) GetMetaImage() string {
 	return ss[0].PathFull
 }
 
-func (app *App) SetNameIfEmpty(name string) {
-
-	if app.Name == "" && name != "" {
-		app.Name = strings.TrimSpace(name)
-	}
-}
-
 func PopularApps() (apps []App, err error) {
 
 	var item = helpers.MemcachePopularApps
@@ -894,7 +887,7 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 	}
 
 	ids = helpers.Unique(ids)
-	
+
 	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err
