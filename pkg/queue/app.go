@@ -497,11 +497,7 @@ func updateAppDetails(app *sql.App) error {
 
 	prices := sql.ProductPrices{}
 
-	for _, code := range helpers.ProductCountryCodes {
-
-		if !code.Enabled {
-			continue
-		}
+	for _, code := range helpers.GetProdCCs(true) {
 
 		var filter []string
 		if code.ProductCode != steam.ProductCCUS {
