@@ -27,40 +27,6 @@ var version string
 
 func main() {
 
-	// db, err2 := sql.GetMySQLClient()
-	// if err2 != nil {
-	// 	log.Info(err2)
-	// 	return
-	// }
-	//
-	// db = db.Where("JSON_EXTRACT(prices, '$.DE') IS NOT NULL")
-	// // db = db.Where("id = ?", 8)
-	// db = db.Order("id asc")
-	//
-	// var apps []sql.App
-	// db = db.Find(&apps)
-	// if db.Error != nil {
-	// 	log.Info(db.Error)
-	// 	return
-	// }
-	//
-	// for _, app := range apps {
-	//
-	// 	app.Prices = strings.Replace(app.Prices, `"CN"`, `"cn"`, 1)
-	// 	app.Prices = strings.Replace(app.Prices, `"DE"`, `"eu"`, 1)
-	// 	app.Prices = strings.Replace(app.Prices, `"GB"`, `"uk"`, 1)
-	// 	app.Prices = strings.Replace(app.Prices, `"RU"`, `"ru"`, 1)
-	// 	app.Prices = strings.Replace(app.Prices, `"US"`, `"us"`, 1)
-	//
-	// 	db = db.Save(&app)
-	// 	if db.Error != nil {
-	// 		log.Info(db.Error, app.ID)
-	// 		return
-	// 	}
-	// }
-	//
-	// return
-
 	rand.Seed(time.Now().Unix())
 
 	//
