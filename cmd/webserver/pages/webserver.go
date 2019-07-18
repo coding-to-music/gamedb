@@ -57,18 +57,12 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err erro
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
 	// Set the last page
-	if r.Method == "GET" {
-		func() {
-			for _, prefix := range []string{"/currency", "/login", "/logout", "/signup", "/forgot", "/settings"} {
-				if strings.HasPrefix(r.URL.Path, prefix) {
-					return
-				}
-			}
-			err = session.Set(r, helpers.SessionLastPage, r.URL.Path)
-			if err != nil {
-				log.Err(err, r)
-			}
-		}()
+	if r.Method == "GET" && page != "error" {
+
+		err = session.Set(r, helpers.SessionLastPage, r.URL.Path)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 
 	// Save the session
@@ -377,6 +371,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"showAds":            t.showAds(),
 		"toasts":             t.toasts,
 		"isLocal":            config.IsLocal(),
+		"isAdmin":            t.IsAdmin(),
 	}
 
 	b, err := json.Marshal(stringMap)
