@@ -326,7 +326,6 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 			price, err = prices.Get(productCC.ProductCode)
 			if err != nil {
 				continue // Only compare if there is a new price to compare to
-
 			}
 
 			newPrice = price.Final
