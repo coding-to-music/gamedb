@@ -309,10 +309,10 @@ func GetPlayer(id int64) (player Player, err error) {
 			return player, ErrNoDocuments
 		}
 
-		player.ID = id
-
 		return player, err
 	})
+
+	player.ID = id
 
 	return player, err
 }
