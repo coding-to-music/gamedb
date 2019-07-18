@@ -230,6 +230,8 @@ func init() {
 
 	case EnvConsumer:
 
+		Config.MemcacheDSN.SetDefault("memcache:11211")
+
 	default:
 		fmt.Println("Unknown environment")
 		os.Exit(1)

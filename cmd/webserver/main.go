@@ -37,7 +37,7 @@ func main() {
 
 	log.Info("Starting PubSub")
 	go websockets.ListenToPubSub()
-	go helpers.ListenToPubSub()
+	go helpers.ListenToPubSubMemcache()
 
 	//
 	config.Config.CommitHash.SetDefault(version)

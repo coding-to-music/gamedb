@@ -68,7 +68,7 @@ func GetMemcache() *memcache.Memcache {
 	return memcacheClient
 }
 
-func ListenToPubSub() {
+func ListenToPubSubMemcache() {
 
 	mc := GetMemcache()
 

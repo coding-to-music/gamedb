@@ -14,6 +14,9 @@ func main() {
 
 	// debug.SetGCPercent(1)
 
+	log.Info("Listening to PubSub for memcache")
+	go helpers.ListenToPubSubMemcache()
+
 	if config.IsLocal() {
 		log.Info("Starting consumers profiling")
 		go func() {
