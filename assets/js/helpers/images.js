@@ -16,23 +16,7 @@ function observeLazyImages(target) {
         // iterate over each entry
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-
-                const $target = $(entry.target);
-
-                const $alt = $target.attr('data-lazy-alt');
-                if ($alt) {
-                    $target.attr('alt', $alt)
-                }
-
-                const $title = $target.attr('data-lazy-title');
-                if ($title) {
-                    $target.attr('title', $title)
-                }
-
-                $target.attr('src', $target.attr('data-lazy'))
-
-
-                // the image is now in place, stop watching
+                loadImage($(entry.target));
                 self.unobserve(entry.target);
             }
         });
@@ -59,6 +43,21 @@ function fixBrokenImages() {
     $('img[src=""][data-src]').each(function (i, value) {
         this.src = $(this).attr('data-src');
     });
+}
+
+function loadImage($target) {
+
+    const $alt = $target.attr('data-lazy-alt');
+    if ($alt) {
+        $target.attr('alt', $alt)
+    }
+
+    const $title = $target.attr('data-lazy-title');
+    if ($title) {
+        $target.attr('title', $title)
+    }
+
+    $target.attr('src', $target.attr('data-lazy'))
 }
 
 $(document).ready(fixBrokenImages);

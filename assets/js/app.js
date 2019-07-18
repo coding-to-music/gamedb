@@ -85,6 +85,10 @@ if ($appPage.length > 0) {
     // Media carousels
     function loadMedia() {
 
+        $('#carousel1 img, #carousel2 img').each(function (index) {
+            loadImage($(this));
+        });
+
         const $carousel1 = $('#carousel1');
         const $carousel2 = $('#carousel2');
 

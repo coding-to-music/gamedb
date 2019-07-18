@@ -53,7 +53,7 @@
                                                     <label for="country">Country</label>
                                                     <select class="form-control" id="country" name="prod_cc">
                                                         {{ range $key, $value := .ProdCCs }}
-                                                            <option value="{{ .ProductCode }}" {{ if eq $.User.CountryCode .ProductCode }} selected{{ end }}>{{ .Name }}</option>
+                                                            <option value="{{ .ProductCode }}" {{ if eq $.UserProductCC.ProductCode .ProductCode }} selected{{ end }}>{{ .Name }}</option>
                                                         {{ end }}
                                                     </select>
                                                     <small class="form-text text-muted">Used for currency</small>
