@@ -55,6 +55,7 @@ func (p *ProductPrices) AddPriceFromApp(code steam.ProductCC, prices steam.AppDe
 
 func (p ProductPrices) Get(code steam.ProductCC) (price ProductPrice, err error) {
 	if val, ok := p[code]; ok {
+		val.Exists = true
 		return val, err
 	}
 	return price, ErrMissingCountryCode
@@ -62,6 +63,7 @@ func (p ProductPrices) Get(code steam.ProductCC) (price ProductPrice, err error)
 
 //
 type ProductPrice struct {
+	Exists          bool               `json:"-"`
 	Currency        steam.CurrencyCode `json:"currency"`
 	Initial         int                `json:"initial"`
 	Final           int                `json:"final"`
@@ -94,7 +96,7 @@ func (p ProductPrice) GetIndividual() string {
 }
 
 func (p ProductPrice) format(value int) string {
-	if p.Currency == "" {
+	if p.Currency == "" || !p.Exists {
 		return "-"
 	}
 	return helpers.FormatPrice(p.Currency, value)
