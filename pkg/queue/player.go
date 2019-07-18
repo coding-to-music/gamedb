@@ -91,7 +91,6 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	player.RealName = message.PICSProfileInfo.RealName
 	player.StateCode = message.PICSProfileInfo.StateName
 	player.CountryCode = message.PICSProfileInfo.CountryName
-	player.UpdatedAt = time.Now()
 
 	//
 	var wg sync.WaitGroup
