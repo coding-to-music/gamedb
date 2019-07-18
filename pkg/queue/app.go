@@ -1127,16 +1127,22 @@ func updateBundles(app *sql.App) error {
 
 func saveAppToInflux(app sql.App) (err error) {
 
-	price, err := app.GetPrice(steam.ProductCCUS)
-	if err != nil && err != sql.ErrMissingCountryCode {
+	reviews, err := app.GetReviews()
+	if err != nil {
 		return err
 	}
 
-	reviews, err := app.GetReviews()
-	if err != nil && err != sql.ErrMissingCountryCode {
-		return err
-	} else if err != nil {
-		// log.Err(err)
+	fields := map[string]interface{}{
+		"reviews_score":    app.ReviewsScore,
+		"reviews_positive": reviews.Positive,
+		"reviews_negative": reviews.Negative,
+	}
+
+	price := app.GetPrice(steam.ProductCCUS)
+	if price.Exists {
+		fields["price_us_initial"] = price.Initial
+		fields["price_us_final"] = price.Final
+		fields["price_us_discount"] = price.DiscountPercent
 	}
 
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
@@ -1144,14 +1150,7 @@ func saveAppToInflux(app sql.App) (err error) {
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},
-		Fields: map[string]interface{}{
-			"reviews_score":     app.ReviewsScore,
-			"reviews_positive":  reviews.Positive,
-			"reviews_negative":  reviews.Negative,
-			"price_us_initial":  price.Initial,
-			"price_us_final":    price.Final,
-			"price_us_discount": price.DiscountPercent,
-		},
+		Fields:    fields,
 		Time:      time.Now(),
 		Precision: "m",
 	})

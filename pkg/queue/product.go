@@ -312,8 +312,8 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		prices, err = before.GetPrices()
 		if err == nil {
 
-			price, err = prices.Get(productCC.ProductCode)
-			if err != nil {
+			price = prices.Get(productCC.ProductCode)
+			if price.Exists {
 				continue // Only compare if there is an old price to compare to
 			}
 
@@ -323,8 +323,8 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		prices, err = after.GetPrices()
 		if err == nil {
 
-			price, err = prices.Get(productCC.ProductCode)
-			if err != nil {
+			price = prices.Get(productCC.ProductCode)
+			if price.Exists {
 				continue // Only compare if there is a new price to compare to
 			}
 

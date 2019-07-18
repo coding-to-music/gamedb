@@ -80,14 +80,12 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, app := range apps {
 
-		price, _ := app.GetPrice(code)
-
 		response.AddRow([]interface{}{
 			app.ID,                                // 0
 			helpers.InsertNewLines(app.GetName()), // 1
 			app.GetIcon(),                         // 2
 			app.GetPath(),                         // 3
-			price.GetFinal(),                      // 4
+			app.GetPrice(code).GetFinal(),         // 4
 			app.PlayerTrend,                       // 5
 			app.PlayerPeakWeek,                    // 6
 		})

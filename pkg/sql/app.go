@@ -274,11 +274,11 @@ func (app App) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-func (app App) GetPrice(code steam.ProductCC) (price ProductPrice, err error) {
+func (app App) GetPrice(code steam.ProductCC) (price ProductPrice) {
 
 	prices, err := app.GetPrices()
 	if err != nil {
-		return price, err
+		return price
 	}
 
 	return prices.Get(code)

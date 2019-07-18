@@ -196,8 +196,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Functions that get called multiple times in the template
-	t.Price, err = app.GetPrice(helpers.GetProductCC(r))
-	log.Err(err, r)
+	t.Price = app.GetPrice(helpers.GetProductCC(r))
 
 	t.Achievements, err = t.App.GetAchievements()
 	log.Err(err, r)

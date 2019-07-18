@@ -414,14 +414,12 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 
 func savePackageToInflux(pack sql.Package) error {
 
-	price, err := pack.GetPrice(steam.ProductCCUS)
-	if err != nil && err != sql.ErrMissingCountryCode {
-		return err
-	} else if err != nil {
-		// log.Err(err)
+	price := pack.GetPrice(steam.ProductCCUS)
+	if !price.Exists {
+		return nil
 	}
 
-	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
+	_, err := helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(helpers.InfluxMeasurementPackages),
 		Tags: map[string]string{
 			"package_id": strconv.Itoa(pack.ID),

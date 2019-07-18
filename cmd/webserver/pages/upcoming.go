@@ -84,15 +84,13 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, app := range apps {
 
-		price, _ := app.GetPrice(code)
-
 		response.AddRow([]interface{}{
 			app.ID,
 			app.GetName(),
 			app.GetIcon(),
 			app.GetPath(),
 			app.GetType(),
-			price.GetFinal(),
+			app.GetPrice(code).GetFinal(),
 			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")",
 		})
 	}

@@ -1,7 +1,6 @@
 package sql
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -13,13 +12,11 @@ type ProductInterface interface {
 	GetProductType() helpers.ProductType
 	GetName() string
 	GetIcon() string
-	GetPrice(code steam.ProductCC) (price ProductPrice, err error)
+	GetPrice(code steam.ProductCC) (price ProductPrice)
 	GetPrices() (prices ProductPrices, err error)
 	GetPath() string
 	GetType() string
 }
-
-var ErrMissingCountryCode = errors.New("invalid code")
 
 //
 type ProductPrices map[steam.ProductCC]ProductPrice
@@ -53,12 +50,14 @@ func (p *ProductPrices) AddPriceFromApp(code steam.ProductCC, prices steam.AppDe
 	}
 }
 
-func (p ProductPrices) Get(code steam.ProductCC) (price ProductPrice, err error) {
+func (p ProductPrices) Get(code steam.ProductCC) (price ProductPrice) {
+
 	if val, ok := p[code]; ok {
 		val.Exists = true
-		return val, err
+		return val
 	}
-	return price, ErrMissingCountryCode
+
+	return price
 }
 
 //

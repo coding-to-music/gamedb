@@ -145,8 +145,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Functions that get called multiple times in the template
-	t.Price, err = pack.GetPrice(helpers.GetProductCC(r))
-	log.Err(err, r)
+	t.Price = pack.GetPrice(helpers.GetProductCC(r))
 
 	t.Prices, err = t.Package.GetPrices()
 	log.Err(err, r)

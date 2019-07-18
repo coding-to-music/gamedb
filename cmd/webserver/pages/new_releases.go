@@ -90,16 +90,14 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, app := range apps {
 
-		price, _ := app.GetPrice(code)
-
 		response.AddRow([]interface{}{
-			app.ID,                   // 0
-			app.GetName(),            // 1
-			app.GetIcon(),            // 2
-			app.GetPath(),            // 3
-			app.GetType(),            // 4
-			price.GetFinal(),         // 5
-			app.GetReleaseDateNice(), // 6
+			app.ID,                        // 0
+			app.GetName(),                 // 1
+			app.GetIcon(),                 // 2
+			app.GetPath(),                 // 3
+			app.GetType(),                 // 4
+			app.GetPrice(code).GetFinal(), // 5
+			app.GetReleaseDateNice(),      // 6
 			helpers.RoundFloatTo2DP(app.ReviewsScore), // 7
 			app.PlayerPeakWeek,                        // 8
 		})

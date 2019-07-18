@@ -24,8 +24,6 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 		return message, err
 	}
 
-	price, _ := app.GetPrice(steam.ProductCCUS)
-
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  app.GetName(),
 		URL:    "https://gamedb.online" + app.GetPath(),
@@ -40,7 +38,7 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 			},
 			{
 				Name:  "Price",
-				Value: price.GetFinal(),
+				Value: app.GetPrice(steam.ProductCCUS).GetFinal(),
 			},
 			{
 				Name:  "Review Score",

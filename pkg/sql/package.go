@@ -267,11 +267,11 @@ func (pack Package) GetPrices() (prices ProductPrices, err error) {
 	return prices, err
 }
 
-func (pack Package) GetPrice(code steam.ProductCC) (price ProductPrice, err error) {
+func (pack Package) GetPrice(code steam.ProductCC) (price ProductPrice) {
 
 	prices, err := pack.GetPrices()
 	if err != nil {
-		return price, err
+		return price
 	}
 
 	return prices.Get(code)
@@ -336,15 +336,13 @@ func (pack Package) GetMetaImage() string {
 
 func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
 
-	price, _ := pack.GetPrice(code)
-
 	return []interface{}{
 		pack.ID,
 		pack.GetPath(),
 		pack.GetName(),
 		pack.GetComingSoon(),
 		pack.AppsCount,
-		price.GetFinal(),
+		pack.GetPrice(code).GetFinal(),
 		pack.ChangeNumberDate.Unix(),
 		pack.ChangeNumberDate.Format(helpers.DateYearTime),
 		pack.GetIcon(),

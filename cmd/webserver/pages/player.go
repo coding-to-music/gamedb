@@ -150,11 +150,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			for _, v := range wishlistApps {
 
-				price, _ := v.GetPrice(code)
-
 				wishlist = append(wishlist, playerWishlistItem{
 					App:   v,
-					Price: price,
+					Price: v.GetPrice(code),
 				})
 			}
 		}

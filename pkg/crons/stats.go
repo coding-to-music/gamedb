@@ -93,12 +93,10 @@ func (c Genres) Work() {
 			}
 
 			for _, code := range helpers.ProductCountryCodes {
-				price, err := app.GetPrice(code.ProductCode)
-				if err != nil {
-					// cronLogErr(err, r)
-					continue
+				price := app.GetPrice(code.ProductCode)
+				if price.Exists {
+					newGenres[genreID].totalPrice[code.ProductCode] += price.Final
 				}
-				newGenres[genreID].totalPrice[code.ProductCode] += price.Final
 			}
 		}
 	}
@@ -262,11 +260,10 @@ func (c Publishers) Work() {
 			}
 
 			for _, code := range helpers.ProductCountryCodes {
-				price, err := app.GetPrice(code.ProductCode)
-				if err != nil {
-					continue
+				price := app.GetPrice(code.ProductCode)
+				if price.Exists {
+					newPublishers[appPublisherID].totalPrice[code.ProductCode] += price.Final
 				}
-				newPublishers[appPublisherID].totalPrice[code.ProductCode] += price.Final
 			}
 		}
 	}
@@ -430,12 +427,10 @@ func (c Developers) Work() {
 			}
 
 			for _, code := range helpers.ProductCountryCodes {
-				price, err := app.GetPrice(code.ProductCode)
-				if err != nil {
-					// cronLogErr(err, r)
-					continue
+				price := app.GetPrice(code.ProductCode)
+				if price.Exists {
+					newDevelopers[appDeveloperID].totalPrice[code.ProductCode] += price.Final
 				}
-				newDevelopers[appDeveloperID].totalPrice[code.ProductCode] += price.Final
 			}
 		}
 	}
@@ -595,12 +590,10 @@ func (c Tags) Work() {
 			}
 
 			for _, code := range helpers.ProductCountryCodes {
-				price, err := app.GetPrice(code.ProductCode)
-				if err != nil {
-					// cronLogErr(err, r)
-					continue
+				price := app.GetPrice(code.ProductCode)
+				if price.Exists {
+					newTags[tagID].totalPrice[code.ProductCode] += price.Final
 				}
-				newTags[tagID].totalPrice[code.ProductCode] += price.Final
 			}
 		}
 	}

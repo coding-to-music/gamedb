@@ -64,14 +64,10 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	// Add current price
-	price, err := product.GetPrice(code)
-	err = helpers.IgnoreErrors(err, sql.ErrMissingCountryCode)
-	if err != nil {
-		log.Err(err, r)
-		return
+	price := product.GetPrice(code)
+	if price.Exists {
+		response.Prices = append(response.Prices, []float64{float64(time.Now().Unix()) * 1000, float64(price.Final) / 100})
 	}
-
-	response.Prices = append(response.Prices, []float64{float64(time.Now().Unix()) * 1000, float64(price.Final) / 100})
 
 	// Sort prices for Highcharts
 	sort.Slice(response.Prices, func(i, j int) bool {
