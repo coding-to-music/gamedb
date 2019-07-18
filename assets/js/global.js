@@ -73,7 +73,7 @@ $('.navbar .dropdown').hover(
 
 // Local logging
 function logLocal() {
-    if (user.isLocal) {
+    if (user.isLocal || user.isAdmin) {
         console.log(...arguments);
     }
 }
