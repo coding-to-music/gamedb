@@ -1,52 +1,105 @@
-function websocketListener(page, onMessage) {
+let _websocket;
 
+function websocketListener(page, onMessage, attempt = 1) {
+
+    // Checks
     if (window.WebSocket === undefined) {
+        if (user.isLocal) {
+            log.console('Your browser does not support websockets');
+        }
+        return;
+    }
 
-        console.log('Your browser does not support websockets');
+    if (_websocket && _websocket.readyState === WebSocket.OPEN) {
+        logLocal('Websocket already open');
+        return;
+    }
 
-    } else {
+    // Save websocket details for connecting later
+    _websocketPage = page;
+    _websocketHandler = onMessage;
 
-        const socket = new WebSocket((location.protocol === 'https:' ? "wss://gamedb.online" : "ws://" + location.host) + "/websocket/" + page);
-        const $badge = $('#live-badge');
-        let open = false;
+    // Connect
+    _websocket = new WebSocket((location.protocol === 'https:' ? "wss://gamedb.online" : "ws://" + location.host) + "/websocket/" + page);
 
-        socket.onopen = function (e) {
-            $badge.addClass('badge-success').removeClass('badge-secondary badge-danger');
-            console.log('Websocket opened');
-            open = true;
-        };
+    let $badge = $('#live-badge');
 
-        socket.onclose = function (e) {
-            if (open) {
-                $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
-                toast(false, 'Live functionality has stopped'); // onerror will trigger too
-                console.log('Websocket closed');
+    _websocket.onopen = function (e) {
+
+        logLocal('websocket opened');
+
+        $badge.addClass('badge-success cursor-pointer');
+        $badge.removeClass('badge-secondary badge-danger');
+
+        if (attempt > 1) {
+            toast(true, 'Live functionality is back');
+        }
+
+        attempt = 1;
+    };
+
+    _websocket.onclose = function (e) {
+        logLocal('Websocket closed', e);
+        closeWebsocket($badge, attempt, e, 'onclose');
+    };
+
+    _websocket.onerror = function (e) {
+        logLocal('Websocket error', e);
+        closeWebsocket($badge, attempt, e, 'onerror');
+    };
+
+    _websocket.onmessage = function (e) {
+        logLocal('WS: ' + e.data);
+        return onMessage(e)
+    };
+
+    // Click to open/close websocket
+    if (attempt === 1) {
+        $badge.on('click', function (e) {
+
+            // Open
+            if ($(this).hasClass('badge-danger')) {
+
+                logLocal('Websocket opened manually');
+
+                websocketListener(page, onMessage, 2);
+
+                $badge.addClass('badge-success');
+                $badge.removeClass('badge-secondary badge-danger');
+
+            } else if ($(this).hasClass('badge-success')) {
+
+                logLocal('Websocket closed manually', e);
+                if (_websocket !== null) {
+                    _websocket.close(1000);
+                }
+                e.code = 1000;
+                closeWebsocket($badge, 1, e, 'manual');
             }
-        };
+        });
+    }
 
-        socket.onerror = function (e) {
-            if (open) {
-                $badge.addClass('badge-danger').removeClass('badge-secondary badge-success');
+    const closeWebsocket = function closeWebsocket($badge, attempt, e, type) {
+
+        logLocal(type, attempt);
+
+        _websocket = null;
+
+        $badge.addClass('badge-danger');
+        $badge.removeClass('badge-secondary badge-success');
+
+        if (type === 'onclose' || type === 'manual') {
+
+            if (attempt === 1) {
                 toast(false, 'Live functionality has stopped');
             }
-        };
 
-        socket.onmessage = function (e) {
+            if (e.code !== 1000) {
 
-            if (user.isLocal) {
-                console.log('WS: ' + e.data);
+                setTimeout(function () {
+                    websocketListener(page, onMessage, attempt + 1);
+                }, 5000);
             }
-
-            return onMessage(e)
-        };
-
-        // Click to close websocket manually
-        // $badge.on('click', function (e) {
-        //     if ($(this).hasClass('cursor-pointer')) {
-        //         socket.close(1000);
-        //         $badge.addClass('badge-danger').removeClass('badge-secondary badge-success cursor-pointer');
-        //         toast(false, 'Live functionality has stopped');
-        //     }
-        // });
+        }
     }
 }
