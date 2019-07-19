@@ -13,7 +13,7 @@ type Wishlists struct {
 }
 
 func (c Wishlists) ID() CronEnum {
-	return CronWishlist
+	return CronWishlists
 }
 
 func (c Wishlists) Name() string {
