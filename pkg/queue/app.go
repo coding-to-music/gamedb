@@ -171,7 +171,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		err = updateBundles(&app)
+		err = updateBundlesAndOffers(&app)
 		if err != nil {
 			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
@@ -1079,7 +1079,10 @@ func updateAppSteamSpy(app *sql.App) error {
 	return nil
 }
 
-func updateBundles(app *sql.App) error {
+//noinspection RegExpRedundantEscape
+var bundlesRegex = regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
+
+func updateBundlesAndOffers(app *sql.App) error {
 
 	// This app causes infinite redirects..
 	if app.ID == 12820 {
@@ -1093,16 +1096,13 @@ func updateBundles(app *sql.App) error {
 
 	var bundleIDs []string
 
-	//noinspection RegExpRedundantEscape
-	reg := regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
-
 	// Retry call
 	operation := func() (err error) {
 
 		bundleIDs = []string{}
 
 		c := colly.NewCollector(
-			colly.URLFilters(reg),
+			colly.URLFilters(bundlesRegex),
 		)
 
 		c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
