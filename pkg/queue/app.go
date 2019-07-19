@@ -1105,9 +1105,34 @@ func updateBundlesAndOffers(app *sql.App) error {
 			colly.URLFilters(bundlesRegex),
 		)
 
+		// Bundles
 		c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
 			bundleIDs = append(bundleIDs, e.Attr("value"))
 		})
+
+		// // Offers
+		// var offers []mongo.Offer
+		//
+		// c.OnHTML("div.game_area_purchase_game_wrapper", func(e *colly.HTMLElement) {
+		//
+		// 	offer := mongo.Offer{}
+		//
+		// 	e.ForEach("[name=subid]", func(_ int, el *colly.HTMLElement) {
+		//
+		// 		i, err := strconv.Atoi(el.Attr("value"))
+		// 		if err != nil {
+		// 			log.Err(err)
+		// 		} else {
+		// 			offer.SubID = i
+		// 		}
+		// 	})
+		//
+		// 	e.ForEach("game_purchase_discount_countdown", func(_ int, el *colly.HTMLElement) {
+		//
+		// 	})
+		//
+		// 	offers = append(offers, offer)
+		// })
 
 		err = c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
 		if err != nil {
