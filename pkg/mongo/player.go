@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"errors"
+	"math"
 	"sort"
 	"strconv"
 	"time"
@@ -245,8 +246,8 @@ func (player Player) GetGameStats(code steam.ProductCC) (stats PlayerAppStatsTem
 
 	err = helpers.Unmarshal([]byte(player.GameStats), &stats)
 
-	stats.All.Code = code
-	stats.Played.Code = code
+	stats.All.ProductCC = code
+	stats.Played.ProductCC = code
 
 	return stats, err
 }
@@ -511,40 +512,40 @@ type playerAppStatsInnerTemplate struct {
 	Price     map[steam.ProductCC]int
 	PriceHour map[steam.ProductCC]float64
 	Time      int
-	Code      steam.ProductCC
+	ProductCC steam.ProductCC
 }
 
 func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int, priceHours map[string]float64) {
 
 	p.Count++
 
-	for _, code := range helpers.ProductCountryCodes {
+	if p.Price == nil {
+		p.Price = map[steam.ProductCC]int{}
+	}
 
-		if p.Price == nil {
-			p.Price = map[steam.ProductCC]int{}
-		}
+	if p.PriceHour == nil {
+		p.PriceHour = map[steam.ProductCC]float64{}
+	}
 
-		if p.PriceHour == nil {
-			p.PriceHour = map[steam.ProductCC]float64{}
-		}
-
+	for _, code := range helpers.GetProdCCs(true) {
 		p.Price[code.ProductCode] = p.Price[code.ProductCode] + prices[string(code.ProductCode)]
 		p.PriceHour[code.ProductCode] = p.PriceHour[code.ProductCode] + priceHours[string(code.ProductCode)]
 		p.Time = p.Time + appTime
 	}
 }
 
-func (p playerAppStatsInnerTemplate) GetAveragePrice() float64 {
-	return helpers.RoundFloatTo2DP(float64(p.Price[p.Code]) / float64(p.Count))
+func (p playerAppStatsInnerTemplate) GetAveragePrice() string {
+	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, int(math.Round(float64(p.Price[p.ProductCC])/float64(p.Count))))
 }
 
-func (p playerAppStatsInnerTemplate) GetTotalPrice() float64 {
-	return helpers.RoundFloatTo2DP(float64(p.Price[p.Code]))
+func (p playerAppStatsInnerTemplate) GetTotalPrice() string {
+	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, p.Price[p.ProductCC])
 }
 
-func (p playerAppStatsInnerTemplate) GetAveragePriceHour() float64 {
-	return helpers.RoundFloatTo2DP(p.PriceHour[p.Code] / float64(p.Count))
+func (p playerAppStatsInnerTemplate) GetAveragePriceHour() string {
+	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, int(p.PriceHour[p.ProductCC]/float64(p.Count)))
 }
+
 func (p playerAppStatsInnerTemplate) GetAverageTime() string {
 	return helpers.GetTimeShort(int(float64(p.Time)/float64(p.Count)), 2)
 }
