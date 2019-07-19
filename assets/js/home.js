@@ -21,9 +21,10 @@ if ($('#home-page').length > 0) {
         $.ajax({
             url: '/home/' + sort + '/players.json',
             dataType: 'json',
-            cache: false,
+            cache: true,
             success: function (data, textStatus, jqXHR) {
 
+                // Reset, for when changing order
                 $('#players .fa-spin').addClass('d-none');
                 $('#players table').removeClass('d-none');
                 $('#players tbody tr').remove();
@@ -77,8 +78,10 @@ if ($('#home-page').length > 0) {
         dataType: 'json',
         cache: false,
         success: function (data, textStatus, jqXHR) {
+
             $('#prices .fa-spin').remove();
             $('#prices table').removeClass('d-none');
+
             if (isIterable(data)) {
                 for (const v of data) {
                     addPriceRow(v, false);
