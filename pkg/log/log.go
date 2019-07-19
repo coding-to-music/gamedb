@@ -80,7 +80,7 @@ func (e entry) toText(includeStack bool) string {
 	ret = append(ret, strings.ToUpper(string(e.severity)))
 
 	// Environment
-	if !config.IsLocal() || true{
+	if !config.IsLocal() {
 		ret = append(ret, strings.ToUpper(config.Config.Environment.Get()[0:4]))
 		ret = append(ret, strings.ToUpper(path.Base(os.Args[0])[0:4]))
 	}
