@@ -6,6 +6,7 @@ import (
 	l "log"
 	"net/http"
 	"os"
+	"path"
 	"reflect"
 	"runtime/debug"
 	"strconv"
@@ -75,13 +76,14 @@ func (e entry) toText(includeStack bool) string {
 
 	var ret []string
 
-	// Environment
-	if !config.IsLocal() {
-		ret = append(ret, strings.Title(config.Config.Environment.Get()))
-	}
-
 	// Severity
-	ret = append(ret, strings.Title(string(e.severity)))
+	ret = append(ret, strings.ToUpper(string(e.severity)))
+
+	// Environment
+	if !config.IsLocal() || true{
+		ret = append(ret, strings.ToUpper(config.Config.Environment.Get()[0:4]))
+		ret = append(ret, strings.ToUpper(path.Base(os.Args[0])[0:4]))
+	}
 
 	// Request
 	if e.request != nil {
