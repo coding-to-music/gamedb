@@ -37,8 +37,8 @@ func (offer Offer) BSON() (ret interface{}) {
 		"updated_at": offer.UpdatedAt,
 		"app_id":     offer.AppID,
 		"sub_id":     offer.SubID,
-		"ends":       offer.End,
-		"type":       offer.Type,
+		"ends":       offer.OfferEnd,
+		"type":       offer.OfferType,
 	}
 }
 
