@@ -219,6 +219,7 @@ type GlobalTemplate struct {
 	request   *http.Request
 	metaImage string
 	toasts    []Toast
+	hideAds   bool
 }
 
 func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
@@ -430,7 +431,12 @@ func (t GlobalTemplate) IsAdmin() bool {
 }
 
 func (t GlobalTemplate) showAds() bool {
-	return !config.IsLocal()
+
+	if config.IsLocal() {
+		return false
+	}
+
+	return !t.hideAds
 }
 
 func (t *GlobalTemplate) addToast(toast Toast) {
