@@ -125,6 +125,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		defer wg.Done()
 
+		var err error
+
 		schema, err := updateAppSchema(&app)
 		if err != nil {
 			helpers.LogSteamError(err, message.ID)
@@ -152,6 +154,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	go func() {
 
 		defer wg.Done()
+
+		var err error
 
 		err = updateAppDetails(&app)
 		if err != nil && err != steam.ErrAppNotFound {
@@ -181,6 +185,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		defer wg.Done()
 
+		var err error
+
 		err = updateAppSteamSpy(&app)
 		if err != nil {
 			logInfo(err, message.ID)
@@ -192,6 +198,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	go func() {
 
 		defer wg.Done()
+
+		var err error
 
 		err = updateAppTwitch(&app)
 		if err != nil {
@@ -206,6 +214,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	go func() {
 
 		defer wg.Done()
+
+		var err error
 
 		err = updateAppPlaytimeStats(&app)
 		if err != nil {
@@ -226,6 +236,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	go func() {
 
 		defer wg.Done()
+
+		var err error
 
 		err = savePriceChanges(appBeforeUpdate, app)
 		if err != nil {
@@ -258,6 +270,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		defer wg.Done()
 
+		var err error
+
 		err = saveAppToInflux(app)
 		if err != nil {
 			logError(err, message.ID)
@@ -278,6 +292,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		defer wg.Done()
 
+		var err error
+
 		if app.ReleaseDateUnix > time.Now().Unix() && newApp {
 
 			err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingAppsCount.Key)
@@ -290,6 +306,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	go func() {
 
 		defer wg.Done()
+
+		var err error
 
 		wsPayload := websockets.PubSubIDPayload{}
 		wsPayload.ID = message.ID
