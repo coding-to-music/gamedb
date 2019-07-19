@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"reflect"
@@ -39,6 +40,13 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 	}
 
 	return err
+}
+
+func UnmarshalStrict(data []byte, v interface{}) error {
+
+	d := json.NewDecoder(bytes.NewReader(data))
+	d.DisallowUnknownFields()
+	return d.Decode(v)
 }
 
 func FormatJSON(unformatted string) (formatted string, err error) {
