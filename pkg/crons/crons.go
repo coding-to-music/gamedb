@@ -22,7 +22,7 @@ var (
 	CronPublishers          CronEnum = "update-stats-publishers"
 	CronSteamClientPlayers  CronEnum = "update-steam-client-players"
 	CronTags                CronEnum = "update-stats-tags"
-	CronWishlist            CronEnum = "update-wishlist"
+	CronWishlists           CronEnum = "update-wishlist"
 
 	CronRegister = map[CronEnum]CronInterface{
 		CronAppPlayers:          AppPlayers{},
@@ -35,7 +35,7 @@ var (
 		CronPublishers:          Publishers{},
 		CronSteamClientPlayers:  SteamClientPlayers{},
 		CronTags:                Tags{},
-		CronWishlist:            Wishlists{},
+		CronWishlists:           Wishlists{},
 	}
 )
 
