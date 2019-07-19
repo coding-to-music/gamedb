@@ -69,7 +69,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 			contents := string(helpers.RenderHTMLAndBBCode(v.Contents))
 			contents = p.Sanitize(contents)
-			contents = helpers.TruncateString(contents, 300)
+			contents = helpers.TruncateString(contents, 300, "...")
 			contents = strings.TrimSpace(contents)
 
 			t.News = append(t.News, homeNews{

@@ -178,7 +178,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14)
+	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14, "...")
 
 	// Game stats
 	gameStats, err := player.GetGameStats(code)

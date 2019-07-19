@@ -7,13 +7,13 @@ import (
 	"strings"
 )
 
-func TruncateString(str string, size int) string {
+func TruncateString(str string, size int, tail string) string {
 	ret := str
 	if len(str) > size {
-		if size > 3 {
-			size -= 3
+		if size > len(tail) {
+			size -= len(tail)
 		}
-		ret = str[0:size] + "..."
+		ret = str[0:size] + tail
 	}
 	return ret
 }
