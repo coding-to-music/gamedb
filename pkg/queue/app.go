@@ -531,6 +531,11 @@ func updateAppDetails(app *sql.App) error {
 			return err
 		}
 
+		// Check for missing fields
+		err = helpers.UnmarshalStrict(b, &map[string]steam.AppDetailsBody{})
+		log.Warning(err)
+
+		//
 		prices.AddPriceFromApp(code.ProductCode, response)
 
 		if code.ProductCode == steam.ProductCCUS {
