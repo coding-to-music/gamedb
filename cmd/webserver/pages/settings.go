@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"sync"
@@ -107,8 +108,10 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			appIDs = append(appIDs, v.AppID)
 		}
 
-		t.Games = string(helpers.MarshalLog(appIDs))
+		b, err := json.Marshal(appIDs)
+		log.Err(err)
 
+		t.Games = string(b)
 	}()
 
 	// Wait

@@ -15,12 +15,6 @@ func IsJSON(str string) bool {
 	return Unmarshal([]byte(str), &js) == nil
 }
 
-func MarshalLog(v interface{}) []byte {
-	bytes, err := json.Marshal(v)
-	log.Err(err)
-	return bytes
-}
-
 // Wraps json.Unmarshal and adds logging
 func Unmarshal(data []byte, v interface{}) (err error) {
 
