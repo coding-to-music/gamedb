@@ -226,21 +226,25 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 		// Queue for an update
 		player, err := mongo.GetPlayer(idInt64)
 		if err != nil {
+
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			log.Err(err)
+
 		} else {
-
-			if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateManual) {
-				err = queue.ProducePlayer(player.ID)
-				log.Err(err, r)
-
-				// Queued flash
-				err = session.SetFlash(r, helpers.SessionGood, "Player has been queued for an update")
-				log.Err(err)
-			}
 
 			err = session.Set(r, helpers.SessionPlayerName, player.PersonaName)
 			log.Err(err)
+		}
+
+		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
+
+			err = queue.ProducePlayer(player.ID)
+			if err != nil {
+				log.Err(err, r)
+			} else {
+				err = session.SetFlash(r, helpers.SessionGood, "Player has been queued for an update")
+				log.Err(err, r)
+			}
 		}
 
 		// Add player to session

@@ -260,13 +260,9 @@ const (
 	PlayerUpdateAdmin  UpdateType = "admin"
 )
 
-func (player Player) ShouldUpdate(userAgent string, updateType UpdateType) bool {
+func (player Player) NeedsUpdate(updateType UpdateType) bool {
 
 	if !helpers.IsValidPlayerID(player.ID) {
-		return false
-	}
-
-	if helpers.IsBot(userAgent) {
 		return false
 	}
 

@@ -198,10 +198,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := playerTemplate{}
 
-	if player.ShouldUpdate(r.UserAgent(), mongo.PlayerUpdateAuto) {
+	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
+
 		err = queue.ProducePlayer(player.ID)
-		log.Err(err, r)
-		if err == nil {
+
+		if err != nil {
+			log.Err(err, r)
+		} else {
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 		}
 	}
@@ -656,9 +659,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	message, err, success := func(r *http.Request) (string, error, bool) {
 
-		if helpers.IsBot(r.UserAgent()) {
-			return "Bots can't update players", nil, false
-		}
+		// todo, csrf
 
 		idx, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 		if err != nil {
@@ -687,7 +688,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			updateType = mongo.PlayerUpdateAdmin
 		}
 
-		if !player.ShouldUpdate(r.UserAgent(), updateType) {
+		if !player.NeedsUpdate(updateType) {
 			return "Player can't be updated yet", nil, false
 		}
 
