@@ -40,7 +40,7 @@ require (
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.0
-	github.com/gosimple/slug v1.5.0
+	github.com/gosimple/slug v1.6.0
 	github.com/influxdata/influxdb1-client v0.0.0-20190402204710-8ff2fc3824fc
 	github.com/jinzhu/gorm v1.9.10
 	github.com/jinzhu/now v1.0.1
