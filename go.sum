@@ -83,6 +83,7 @@ github.com/dghubble/go-twitter v0.0.0-20190512073027-53f972dc4b06 h1:eg2cM+xR5Bg
 github.com/dghubble/go-twitter v0.0.0-20190512073027-53f972dc4b06/go.mod h1:6beqTZaXeBPti9pDBcBEqxfJc7uCbSafqZPRDPQOKoM=
 github.com/dghubble/go-twitter v0.0.0-20190714004638-dc9b50841e5b h1:Tuq1KtCRjqse5LX2nNnTit6xwD3lBI+3ZUw7Hr9PaOk=
 github.com/dghubble/go-twitter v0.0.0-20190714004638-dc9b50841e5b/go.mod h1:xfg4uS5LEzOj8PgZV7SQYRHbG7jPUnelEiaAVJxmhJE=
+github.com/dghubble/go-twitter v0.0.0-20190721003407-39e5462e111f/go.mod h1:xfg4uS5LEzOj8PgZV7SQYRHbG7jPUnelEiaAVJxmhJE=
 github.com/dghubble/oauth1 v0.5.0 h1:uJqX7Rzr3QRmp2slUWqI9Sm8NoP65AMiyXiijOWWLvQ=
 github.com/dghubble/oauth1 v0.5.0/go.mod h1:8V8BMV9DJRREZx/lUaHtrs7GUMXpzbMqJxINCasxYug=
 github.com/dghubble/oauth1 v0.6.0 h1:m1yC01Ohc/eF38jwZ8JUjL1a+XHHXtGQgK+MxQbmSx0=
