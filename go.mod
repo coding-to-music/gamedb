@@ -77,7 +77,7 @@ require (
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
-	github.com/tdewolff/test v1.0.0 // indirect
+	github.com/tdewolff/test v1.0.1 // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
