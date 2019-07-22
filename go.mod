@@ -47,8 +47,7 @@ require (
 	github.com/jinzhu/now v1.0.1
 	github.com/jzelinskie/geddit v0.0.0-20190613154237-4b3cacc98c40
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/kr/pretty v0.1.0
-	github.com/leekchan/accounting v0.0.0-20190702062627-a09595581342
+	github.com/kr/pretty v0.1.0 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20190428105938-cea283e61946
 	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
 	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
@@ -62,10 +61,10 @@ require (
 	github.com/oschwald/maxminddb-golang v1.3.1
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
+	github.com/pkg/errors v0.8.1 // indirect
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/robfig/cron v1.2.0
-	github.com/robfig/cron/v3 v3.0.0
 	github.com/rollbar/rollbar-go v1.1.0
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
@@ -90,6 +89,7 @@ require (
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/text v0.3.2
+	golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7
 	google.golang.org/grpc v1.21.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
