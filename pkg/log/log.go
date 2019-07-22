@@ -77,7 +77,7 @@ func (e entry) toText(includeStack bool) string {
 	var ret []string
 
 	// Severity
-	ret = append(ret, strings.ToUpper(string(e.severity)))
+	ret = append(ret, strings.ToUpper(string(e.severity)[0:4]))
 
 	// Environment
 	if !config.IsLocal() {
