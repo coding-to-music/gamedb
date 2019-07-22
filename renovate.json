@@ -11,5 +11,8 @@
     ],
     "postUpdateOptions": [
         "gomodTidy"
+    ],
+    "labels": [
+        "dependencies"
     ]
 }
