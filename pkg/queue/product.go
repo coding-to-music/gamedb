@@ -305,7 +305,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 	var price sql.ProductPrice
 	var documents []mongo.Document
 
-	for _, productCC := range helpers.ProductCountryCodes {
+	for _, productCC := range helpers.GetProdCCs(true) {
 
 		var oldPrice, newPrice int
 
@@ -313,7 +313,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		if err == nil {
 
 			price = prices.Get(productCC.ProductCode)
-			if price.Exists {
+			if !price.Exists {
 				continue // Only compare if there is an old price to compare to
 			}
 
@@ -324,7 +324,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		if err == nil {
 
 			price = prices.Get(productCC.ProductCode)
-			if price.Exists {
+			if !price.Exists {
 				continue // Only compare if there is a new price to compare to
 			}
 

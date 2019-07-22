@@ -188,7 +188,7 @@ func ReplaceDocument(collection collection, filter interface{}, document Documen
 // Will skip documents that already exist
 func InsertDocuments(collection collection, documents []Document) (resp *mongo.InsertManyResult, err error) {
 
-	if len(documents) < 1 {
+	if documents == nil || len(documents) < 1 {
 		return resp, nil
 	}
 
