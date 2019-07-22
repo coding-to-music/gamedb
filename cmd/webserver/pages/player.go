@@ -494,7 +494,6 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
-
 }
 
 func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
