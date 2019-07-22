@@ -212,6 +212,7 @@
                             </tr>
                             </thead>
                             {{ range $key, $value := .Prices }}
+                                {{ $price := $.Prices.Get $key }}
                                 <tr data-code="{{ $key }}">
                                     <td class="img">
                                         <div class="icon-name">
@@ -219,15 +220,15 @@
                                             <div class="name">{{ .GetCountryName $key }}</div>
                                         </div>
                                     </td>
-                                    <td>{{ .GetFinal }}</td>
+                                    <td>{{ $price.GetFinal }}</td>
                                     <td>
-                                        {{ if ne .GetFinal .GetInitial }}
-                                            {{ .GetInitial }}
+                                        {{ if ne $price.GetFinal $price.GetInitial }}
+                                            {{ $price.GetInitial }}
                                         {{ end }}
                                     </td>
                                     <td>
-                                        {{ if ne .GetFinal .GetInitial }}
-                                            {{ .GetDiscountPercent }}
+                                        {{ if ne $price.GetFinal $price.GetInitial }}
+                                            {{ $price.GetDiscountPercent }}
                                         {{ end }}
                                     </td>
                                 </tr>
