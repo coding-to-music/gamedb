@@ -65,22 +65,30 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	err = updateGroupFromXML(message.ID, &group)
 	if err != nil {
 
-		_, ok := err.(*xml.SyntaxError)
+		var ok bool
+
+		// expected element type <memberList> but have <html>
+		_, ok = err.(xml.UnmarshalError)
 		if ok {
 
 			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
-
-		} else if err.Error() == "expected element type <memberList> but have <html>" {
-
 			payload.ack(msg)
+			return
 
-		} else {
-
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
 		}
 
+		// XML syntax error on line 7
+		_, ok = err.(*xml.SyntaxError)
+		if ok {
+
+			helpers.LogSteamError(err, message.ID)
+			payload.ack(msg)
+			return
+
+		}
+
+		helpers.LogSteamError(err, message.ID)
+		payload.ackRetry(msg)
 		return
 	}
 
