@@ -427,7 +427,7 @@ func (app App) GetInstallLink() template.URL {
 }
 
 func (app App) GetMetacriticLink() template.URL {
-	return template.URL("http://www.metacritic.com/game/" + app.MetacriticURL)
+	return template.URL("https://www.metacritic.com/game/" + app.MetacriticURL)
 }
 
 func (app App) GetScreenshots() (screenshots []AppImage, err error) {
