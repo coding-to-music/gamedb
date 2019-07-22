@@ -38,7 +38,7 @@ require (
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/go-github v17.0.0+incompatible
+	github.com/google/go-github/v27 v27.0.1
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.0
 	github.com/gosimple/slug v1.6.0
@@ -75,8 +75,7 @@ require (
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94
 	github.com/stretchr/objx v0.1.1 // indirect
-	github.com/tdewolff/minify v2.3.6+incompatible
-	github.com/tdewolff/parse v2.3.4+incompatible // indirect
+	github.com/tdewolff/minify/v2 v2.5.1
 	github.com/tdewolff/test v1.0.1 // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
@@ -87,10 +86,11 @@ require (
 	go.mongodb.org/mongo-driver v1.0.4
 	go.uber.org/atomic v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
+	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
+	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7
-	google.golang.org/grpc v1.21.1
+	google.golang.org/grpc v1.22.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43

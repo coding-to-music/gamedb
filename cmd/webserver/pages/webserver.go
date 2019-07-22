@@ -23,8 +23,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"github.com/tdewolff/minify"
-	"github.com/tdewolff/minify/html"
+	"github.com/tdewolff/minify/v2"
+	"github.com/tdewolff/minify/v2/html"
 )
 
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {

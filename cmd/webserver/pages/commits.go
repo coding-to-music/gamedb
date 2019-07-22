@@ -11,7 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v27/github"
 )
 
 const (
