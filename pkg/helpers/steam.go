@@ -106,6 +106,10 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			return false
 		}
 
+		if strings.Contains(err.Error(), "XML syntax error") {
+			return false
+		}
+
 		return true
 	}()
 

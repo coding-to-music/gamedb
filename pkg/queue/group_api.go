@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"encoding/xml"
 	"errors"
 	"strconv"
 	"sync"
@@ -64,7 +65,13 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	err = updateGroupFromXML(message.ID, &group)
 	if err != nil {
 
-		if err.Error() == "expected element type <memberList> but have <html>" {
+		_, ok := err.(*xml.SyntaxError)
+		if ok {
+
+			helpers.LogSteamError(err, message.ID)
+			payload.ackRetry(msg)
+
+		} else if err.Error() == "expected element type <memberList> but have <html>" {
 
 			payload.ack(msg)
 
