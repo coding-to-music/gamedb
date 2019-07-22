@@ -378,11 +378,13 @@ func updatePlayerGames(player *mongo.Player) error {
 
 		for code, vv := range prices {
 
+			vv = prices.Get(code)
+
 			appPrices[v.ID][string(code)] = vv.Final
 			if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime == 0 {
 				appPriceHour[v.ID][string(code)] = -1
 			} else if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime > 0 {
-				appPriceHour[v.ID][string(code)] = (float64(appPrices[v.ID][string(code)]) / 100) / (float64(playerApps[v.ID].AppTime) / 60)
+				appPriceHour[v.ID][string(code)] = (float64(appPrices[v.ID][string(code)]) / 100) / (float64(playerApps[v.ID].AppTime) / 60) * 100
 			} else {
 				appPriceHour[v.ID][string(code)] = 0
 			}
