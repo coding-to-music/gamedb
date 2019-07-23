@@ -3,7 +3,7 @@ const $playerPage = $('#player-page');
 if ($playerPage.length > 0) {
 
     // Update link
-    $('a[data-update-id]').on('click', function (e) {
+    $('#update-button').on('click', function (e) {
 
         e.preventDefault();
 
@@ -12,7 +12,10 @@ if ($playerPage.length > 0) {
         $('i', $link).addClass('fa-spin');
 
         $.ajax({
-            url: '/players/' + $(this).attr('data-update-id') + '/update.json',
+            url: '/players/' + $playerPage.attr('data-id') + '/update.json',
+            data: {
+                'csrf': $(this).attr('data-csrf'),
+            },
             dataType: 'json',
             cache: false,
             success: function (data, textStatus, jqXHR) {

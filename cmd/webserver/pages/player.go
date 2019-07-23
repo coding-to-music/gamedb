@@ -14,10 +14,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"github.com/justinas/nosurf"
 )
 
 func PlayerRouter() http.Handler {
 	r := chi.NewRouter()
+	r.Use(middlewareCSRF) // Just used for update button
 	r.Get("/", playerHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
 	r.Get("/recent.json", playerRecentAjaxHandler)
@@ -220,6 +222,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Banners = banners
 	t.Bans = bans
 	t.Canonical = player.GetPath()
+	t.CSRF = nosurf.Token(r)
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 	t.GameStats = gameStats
 	t.Groups = groups
@@ -237,6 +240,7 @@ type playerTemplate struct {
 	BadgeStats    mongo.ProfileBadgeStats
 	Banners       map[string][]string
 	Bans          mongo.PlayerBans
+	CSRF          string
 	DefaultAvatar string
 	GameStats     mongo.PlayerAppStatsTemplate
 	Groups        []mongo.Group
@@ -658,7 +662,9 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	message, err, success := func(r *http.Request) (string, error, bool) {
 
-		// todo, csrf
+		if !nosurf.VerifyToken(nosurf.Token(r), r.URL.Query().Get("csrf")) {
+			return "Invalid CSRF token, please refresh", nil, false
+		}
 
 		idx, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 		if err != nil {

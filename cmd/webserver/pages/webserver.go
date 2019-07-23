@@ -22,6 +22,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/jinzhu/gorm"
+	"github.com/justinas/nosurf"
 	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/html"
@@ -523,6 +524,16 @@ func middlewareAdminCheck() func(http.Handler) http.Handler {
 			Error404Handler(w, r)
 		})
 	}
+}
+
+func middlewareCSRF(h http.Handler) http.Handler {
+
+	ns := nosurf.New(h)
+	ns.ExemptFunc(func(r *http.Request) bool {
+		return !strings.Contains(r.URL.Path, "update.json")
+	})
+
+	return ns
 }
 
 // DataTablesAjaxResponse
