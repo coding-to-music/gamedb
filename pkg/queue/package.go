@@ -307,7 +307,7 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 
 	prices := sql.ProductPrices{}
 
-	for _, cc := range helpers.ProductCountryCodes {
+	for _, cc := range helpers.GetProdCCs(true) {
 
 		// Get package details
 		response, b, err := helpers.GetSteam().GetPackageDetails(pack.ID, cc.ProductCode, steam.LanguageEnglish)
