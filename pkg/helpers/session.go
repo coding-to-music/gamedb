@@ -102,12 +102,10 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 			return steam.ProductCCUS
 		}
 
-		for _, cc := range ProductCountryCodes {
-			if cc.Enabled {
-				for _, code := range cc.CountryCodes {
-					if record.Country.ISOCode == string(code) {
-						return cc.ProductCode
-					}
+		for _, cc := range GetProdCCs(true) {
+			for _, code := range cc.CountryCodes {
+				if record.Country.ISOCode == string(code) {
+					return cc.ProductCode
 				}
 			}
 		}
