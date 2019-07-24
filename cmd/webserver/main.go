@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -19,7 +18,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
-	"github.com/gorilla/sessions"
 )
 
 //noinspection GoUnusedGlobalVariable
@@ -45,29 +43,7 @@ func main() {
 	// Setup Recaptcha
 	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())
 
-	// Setup sessions
-	sessionInit := session.Init{
-		CookieName:        "gamedb-session",
-		AuthenticationKey: config.Config.SessionAuthentication.Get(),
-		EncryptionKey:     config.Config.SessionEncryption.Get(),
-	}
-
-	if config.IsProd() {
-		sessionInit.CookieOptions = sessions.Options{
-			MaxAge:   2592000, // 30 days
-			Domain:   "gamedb.online",
-			Path:     "/",
-			Secure:   true,
-			HttpOnly: true,
-		}
-	} else {
-		sessionInit.CookieOptions = sessions.Options{
-			MaxAge: 2592000, // 30 days
-			Path:   "/",
-		}
-	}
-
-	session.Initialise(sessionInit)
+	helpers.InitSession()
 
 	// Routes
 	r := chi.NewRouter()

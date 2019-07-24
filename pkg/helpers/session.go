@@ -7,11 +7,13 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gorilla/sessions"
 	"github.com/oschwald/maxminddb-golang"
 )
 
@@ -35,7 +37,50 @@ const (
 	// Flash groups
 	SessionGood session.FlashGroup = "good"
 	SessionBad  session.FlashGroup = "bad"
+
+	// Cookies
+	SessionCookieName = "gamedb-session"
 )
+
+func InitSession() {
+
+	// Setup sessions
+	sessionInit := session.Init{
+		CookieName:        SessionCookieName,
+		AuthenticationKey: config.Config.SessionAuthentication.Get(),
+		EncryptionKey:     config.Config.SessionEncryption.Get(),
+	}
+
+	if config.IsProd() {
+		sessionInit.CookieOptions = sessions.Options{
+			MaxAge:   2592000, // 30 days
+			Domain:   "gamedb.online",
+			Path:     "/",
+			Secure:   true,
+			HttpOnly: true,
+		}
+	} else {
+		sessionInit.CookieOptions = sessions.Options{
+			MaxAge: 2592000, // 30 days
+			Path:   "/",
+		}
+	}
+
+	session.Initialise(sessionInit)
+}
+
+// Expires the session cookie if it's corrupt
+func HandleSessionError(w http.ResponseWriter, r *http.Request, err error) {
+
+	if err != nil && strings.Contains(err.Error(), "base64 decode failed") {
+
+		cook, _ := r.Cookie(SessionCookieName)
+		cook.Expires = time.Now().Add(-time.Second)
+		cook.Value = ""
+
+		http.SetCookie(w, cook)
+	}
+}
 
 //
 func GetUserIDFromSesion(r *http.Request) (id int, err error) {
