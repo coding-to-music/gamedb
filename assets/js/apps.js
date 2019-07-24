@@ -124,7 +124,7 @@ if ($('#apps-page').length > 0) {
 
             dtDefaultOptions.ajax(data, callback, settings, $(this));
         },
-        "order": [[2, 'desc']],
+        "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
