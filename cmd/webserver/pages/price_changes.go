@@ -109,10 +109,6 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 			return
 		}
-
-		for k := range priceChanges {
-			priceChanges[k].Name = helpers.InsertNewLines(priceChanges[k].Name)
-		}
 	}(r)
 
 	// Get filtered count
