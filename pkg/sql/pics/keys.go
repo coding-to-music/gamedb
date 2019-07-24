@@ -84,6 +84,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"validoslist":                          {Type: picsTypeTextListString},
 	"languages":                            {Type: picsTypeTextListString},
 	"visibleonlywheninstalled":             {Type: picsTypeBool},
+	"visibleonlywhensubscribed":            {Type: picsTypeBool},
 }
 
 var ConfigKeys = map[string]PicsKey{
