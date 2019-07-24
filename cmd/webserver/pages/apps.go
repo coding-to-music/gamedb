@@ -334,9 +334,11 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 
 			var column string
-			if code == steam.ProductCCUS {
-				column = "prices_us" // This is an index, just for US
-			} else {
+
+			switch code {
+			case steam.ProductCCUS, steam.ProductCCUK, steam.ProductCCEU: // Indexed columns
+				column = "prices_" + string(code)
+			default:
 				column = "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")"
 			}
 
@@ -346,7 +348,6 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if high < 100*100 {
 				gorm = gorm.Where("COALESCE("+column+", 0) <= ?", high)
 			}
-
 		}
 
 		// Score range
@@ -365,7 +366,6 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if high < 100 {
 				gorm = gorm.Where("reviews_score <= ?", high)
 			}
-
 		}
 
 		// Search
@@ -390,7 +390,6 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		// Get rows
 		gorm = gorm.Find(&apps)
 		log.Err(gorm.Error)
-
 	}()
 
 	// Get total
