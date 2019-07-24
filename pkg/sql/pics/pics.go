@@ -32,3 +32,21 @@ func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret [
 
 	return ret, err
 }
+
+type KeyValue struct {
+	Key            string
+	Value          string
+	ValueFormatted interface{}
+	Type           PicsItemType
+	Description    string
+}
+
+func (kv KeyValue) TDClass() string {
+
+	switch kv.Type {
+	case picsTypeImage:
+		return "img"
+	default:
+		return ""
+	}
+}
