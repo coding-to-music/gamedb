@@ -21,6 +21,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/go-chi/cors"
 	"github.com/jinzhu/gorm"
 	"github.com/justinas/nosurf"
 	"github.com/mitchellh/mapstructure"
@@ -534,6 +535,34 @@ func middlewareCSRF(h http.Handler) http.Handler {
 	})
 
 	return ns
+}
+
+//noinspection GoUnusedExportedFunction
+func MiddlewareLog(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if config.IsLocal() {
+			log.Info(log.LogNameRequests, r.Method+" "+r.URL.Path)
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+//noinspection GoUnusedExportedFunction
+func MiddlewareTime(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		r.Header.Set("start-time", strconv.FormatInt(time.Now().UnixNano(), 10))
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+// todo, check this is alright
+func MiddlewareCors() func(next http.Handler) http.Handler {
+	return cors.New(cors.Options{
+		AllowedOrigins: []string{config.Config.GameDBDomain.Get()}, // Use this to allow specific origin hosts
+		AllowedMethods: []string{"GET", "POST"},
+	}).Handler
 }
 
 // DataTablesAjaxResponse

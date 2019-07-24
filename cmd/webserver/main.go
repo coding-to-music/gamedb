@@ -5,7 +5,6 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -17,7 +16,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/cors"
 )
 
 //noinspection GoUnusedGlobalVariable
@@ -47,10 +45,9 @@ func main() {
 
 	// Routes
 	r := chi.NewRouter()
-
-	r.Use(middleware.RealIP)
+	r.Use(middleware.RedirectSlashes)
 	// r.Use(middlewareTime)
-	r.Use(middlewareCors())
+	r.Use(pages.MiddlewareCors())
 	r.Use(middleware.DefaultCompress)
 	// r.Use(middlewareLog)
 
@@ -126,34 +123,6 @@ func main() {
 	log.Critical(err)
 
 	helpers.KeepAlive()
-}
-
-//noinspection GoUnusedFunction
-func middlewareLog(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if config.IsLocal() {
-			log.Info(log.LogNameRequests, r.Method+" "+r.URL.Path)
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
-//noinspection GoUnusedFunction
-func middlewareTime(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		r.Header.Set("start-time", strconv.FormatInt(time.Now().UnixNano(), 10))
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-// todo, check this is alright
-func middlewareCors() func(next http.Handler) http.Handler {
-	return cors.New(cors.Options{
-		AllowedOrigins: []string{config.Config.GameDBDomain.Get()}, // Use this to allow specific origin hosts
-		AllowedMethods: []string{"GET", "POST"},
-	}).Handler
 }
 
 // FileServer conveniently sets up a http.FileServer handler to serve
