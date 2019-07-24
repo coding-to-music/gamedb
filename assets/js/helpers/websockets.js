@@ -4,7 +4,7 @@ function websocketListener(page, onMessage, attempt = 1) {
 
     // Checks
     if (window.WebSocket === undefined) {
-        if (user.isLocal) {
+        if (user.log) {
             log.console('Your browser does not support websockets');
         }
         return;

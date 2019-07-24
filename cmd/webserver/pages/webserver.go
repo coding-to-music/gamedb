@@ -371,10 +371,8 @@ func (t GlobalTemplate) GetUserJSON() string {
 	stringMap := map[string]interface{}{
 		"prodCC":             t.UserProductCC.ProductCode,
 		"userCurrencySymbol": t.UserProductCC.Symbol,
-		"showAds":            t.showAds(),
 		"toasts":             t.toasts,
-		"isLocal":            config.IsLocal(),
-		"isAdmin":            t.IsAdmin(),
+		"log":                config.IsLocal() || t.IsAdmin(),
 	}
 
 	b, err := json.Marshal(stringMap)

@@ -103,7 +103,7 @@ const dtDefaultOptions = {
         $.ajax({
             url: function () {
                 const path = $this.attr('data-path');
-                if (!path && user.isLocal) {
+                if (!path && user.log) {
                     console.log('Table data-path not set');
                 }
                 return path;
