@@ -23,6 +23,7 @@ func main() {
 	err = c.AddFunc("0 0 */5 * * *", crons.AppPlayers{}.Work)
 	log.Critical(err)
 
+	// Every 6 hours
 	err = c.AddFunc("0 0 */6 * * *", crons.AutoPlayerRefreshes{}.Work)
 	log.Critical(err)
 
