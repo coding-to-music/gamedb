@@ -430,7 +430,7 @@ func (t GlobalTemplate) IsAdmin() bool {
 	return isAdmin(t.request)
 }
 
-func (t GlobalTemplate) showAds() bool {
+func (t GlobalTemplate) ShowAds() bool {
 
 	if config.IsLocal() {
 		return false
