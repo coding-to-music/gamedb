@@ -897,8 +897,6 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 		db = db.Select(columns)
 	}
 
-	db = db.Order("FIELD(id," + helpers.JoinInts(ids) + ")")
-
 	db.Where("id IN (?)", ids).Find(&apps)
 
 	return apps, db.Error
