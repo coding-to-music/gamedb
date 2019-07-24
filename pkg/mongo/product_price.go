@@ -45,9 +45,9 @@ func (price ProductPrice) BSON() (ret interface{}) {
 func (price ProductPrice) GetPath() string {
 
 	if price.AppID != 0 {
-		return helpers.GetAppPath(price.AppID, price.Name)
+		return helpers.GetAppPath(price.AppID, price.Name) + "#prices"
 	} else if price.PackageID != 0 {
-		return helpers.GetPackagePath(price.PackageID, price.Name)
+		return helpers.GetPackagePath(price.PackageID, price.Name) + "#prices"
 	}
 
 	return ""
