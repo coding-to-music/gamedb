@@ -27,6 +27,7 @@ const (
 	picsTypeNumberListString PicsItemType = "number-list-string" // From JSON object
 	picsTypeTextListString   PicsItemType = "text-list-string"   // From comma string
 	picsTypeTitle            PicsItemType = "title"
+	picsTypeCustom           PicsItemType = "custom"
 )
 
 var CommonKeys = map[string]PicsKey{
@@ -63,6 +64,7 @@ var CommonKeys = map[string]PicsKey{
 	"type":                    {Type: picsTypeTitle},
 	"controller_support":      {Type: picsTypeTitle},
 	"oslist":                  {Type: picsTypeTextListString, Link: "/apps?platforms=$val$"},
+	"metacritic_score":        {Type: picsTypeCustom},
 }
 
 var ExtendedKeys = map[string]PicsKey{
@@ -279,6 +281,25 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			}
 
 			return template.HTML(strings.Join(idSlice, ", "))
+
+		case picsTypeCustom:
+
+			switch key {
+			case "supported_languages":
+				return val
+			case "small_capsule":
+				return val
+			case "header_image":
+				return val
+			case "category":
+				return val
+			case "languages":
+				return val
+			case "associations":
+				return val
+			case "metacritic_score":
+				return val + "/100"
+			}
 
 		}
 	}

@@ -1,5 +1,3 @@
 package pics
 
-type System struct{
-
-}
+type System map[string]map[string]string
