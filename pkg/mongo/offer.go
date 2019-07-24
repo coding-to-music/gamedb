@@ -8,20 +8,22 @@ import (
 )
 
 type Offer struct {
-	CreatedAt      time.Time               `bson:"created_at"`
-	UpdatedAt      time.Time               `bson:"updated_at"`
-	SubID          int                     `bson:"sub_id"`
-	SubOrder       int                     `bson:"sub_order"`
-	AppID          int                     `bson:"app_id"`
-	AppRating      int                     `bson:"app_rating"`
-	AppReleaseDate time.Time               `bson:"app_date"`
-	AppPrices      map[steam.ProductCC]int `bson:"app_prices"`
-	AppLowestPrice map[steam.ProductCC]int `bson:"app_lowest_price"`
-	AppPlayersWeek int                     `bson:"app_players"`
-	OfferStart     time.Time               `bson:"offer_start"`
-	OfferEnd       time.Time               `bson:"offer_end"`
-	OfferType      string                  `bson:"offer_type"`
-	OfferPercent   int                     `bson:"offer_percent"`
+	CreatedAt        time.Time               `bson:"created_at"`
+	UpdatedAt        time.Time               `bson:"updated_at"`
+	SubID            int                     `bson:"sub_id"`
+	SubOrder         int                     `bson:"sub_order"`
+	AppID            int                     `bson:"app_id"`
+	AppRating        int                     `bson:"app_rating"`
+	AppReleaseDate   time.Time               `bson:"app_date"`
+	AppPrices        map[steam.ProductCC]int `bson:"app_prices"`
+	AppLowestPrice   map[steam.ProductCC]int `bson:"app_lowest_price"`
+	AppPlayersWeek   int                     `bson:"app_players"`
+	OfferStart       time.Time               `bson:"offer_start"`
+	OfferEnd         time.Time               `bson:"offer_end"`
+	OfferEndEstimate bool                    `bson:"offer_end_estimate"`
+	OfferType        string                  `bson:"offer_type"`
+	OfferPercent     int                     `bson:"offer_percent"`
+	OfferOrder       int                     `bson:"offer_order"` // Order in the API response
 }
 
 func (offer Offer) BSON() (ret interface{}) {
