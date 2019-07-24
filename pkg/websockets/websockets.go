@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gorilla/websocket"
 	"github.com/satori/go.uuid"
@@ -214,12 +215,25 @@ func ListenToPubSub() {
 				log.Err(err)
 
 				bundle, err := sql.GetBundle(idPayload.ID, nil)
-				if err != nil {
-					log.Err(err)
-					continue
+				log.Err(err)
+				if err == nil {
+					wsPage.Send(bundle.OutputForJSON())
 				}
 
-				wsPage.Send(bundle.OutputForJSON())
+			case PagePrices:
+
+				idsPayload := PubSubIDStringsPayload{}
+
+				err = helpers.Unmarshal(m.Data, &idsPayload)
+				log.Err(err)
+
+				prices, err := mongo.GetPricesByID(idsPayload.IDs)
+				log.Err(err)
+				if err == nil {
+					for _, v := range prices {
+						wsPage.Send(v.OutputForJSON())
+					}
+				}
 
 			default:
 				log.Err("no handler for page: " + string(page))

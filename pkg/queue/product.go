@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/nlopes/slack"
 )
 
@@ -387,6 +388,23 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		}
 	}
 
-	_, err = mongo.InsertDocuments(mongo.CollectionProductPrices, documents)
+	result, err := mongo.InsertDocuments(mongo.CollectionProductPrices, documents)
+	if err == nil {
+
+		// Send websockets to prices page
+		var priceIDs []string
+		for _, v := range result.InsertedIDs {
+			priceIDs = append(priceIDs, v.(string))
+		}
+
+		wsPayload := websockets.PubSubIDStringsPayload{}
+		wsPayload.IDs = priceIDs
+		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
+
+		_, err2 := helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+		if err2 != nil {
+			logError(err2)
+		}
+	}
 	return err
 }

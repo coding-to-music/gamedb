@@ -150,21 +150,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, price := range priceChanges {
 
-		response.AddRow([]interface{}{
-			price.AppID,     // 0
-			price.PackageID, // 1
-			price.Currency,  // 2
-			price.Name,      // 3
-			price.GetIcon(), // 4
-			price.GetPath(), // 5
-			helpers.FormatPrice(price.Currency, price.PriceBefore), // 6
-			helpers.FormatPrice(price.Currency, price.PriceAfter),  // 7
-			helpers.FormatPrice(price.Currency, price.Difference),  // 8
-			price.GetPercentChange(),                               // 9
-			price.CreatedAt.Format(helpers.DateTime),               // 10
-			price.CreatedAt.Unix(),                                 // 11
-			price.Difference,                                       // 12 Raw difference
-		})
+		response.AddRow(price.OutputForJSON())
 	}
 
 	response.output(w, r)

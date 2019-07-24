@@ -63,7 +63,39 @@ func (price ProductPrice) GetPercentChange() float64 {
 		return 0
 	}
 	return helpers.RoundFloatTo2DP(price.DifferencePercent)
+}
 
+func (price ProductPrice) OutputForJSON() (output []interface{}) {
+
+	return []interface{}{
+		price.AppID,     // 0
+		price.PackageID, // 1
+		price.Currency,  // 2
+		price.Name,      // 3
+		price.GetIcon(), // 4
+		price.GetPath(), // 5
+		helpers.FormatPrice(price.Currency, price.PriceBefore), // 6
+		helpers.FormatPrice(price.Currency, price.PriceAfter),  // 7
+		helpers.FormatPrice(price.Currency, price.Difference),  // 8
+		price.GetPercentChange(),                               // 9
+		price.CreatedAt.Format(helpers.DateTime),               // 10
+		price.CreatedAt.Unix(),                                 // 11
+		price.Difference,                                       // 12 Raw difference
+	}
+}
+
+func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
+
+	if IDs == nil || len(IDs) < 1 {
+		return prices, nil
+	}
+
+	var idsBSON A
+	for _, v := range IDs {
+		idsBSON = append(idsBSON, v)
+	}
+
+	return getProductPrices(M{"_id": M{"$in": idsBSON}}, 0, 0, true)
 }
 
 func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.ProductCC) (prices []ProductPrice, err error) {
