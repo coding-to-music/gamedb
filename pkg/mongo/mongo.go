@@ -46,6 +46,7 @@ func (c collection) String() string {
 const (
 	CollectionAppArticles      collection = "app_articles"
 	CollectionApps             collection = "apps"
+	CollectionChangeItems      collection = "change_items"
 	CollectionChanges          collection = "changes"
 	CollectionEvents           collection = "events"
 	CollectionGroups           collection = "groups"
@@ -54,6 +55,8 @@ const (
 	CollectionPlayerAppsRecent collection = "player_apps_recent"
 	CollectionPlayerBadges     collection = "player_badges"
 	CollectionPlayerFriends    collection = "player_friends"
+	CollectionPlayerGroups     collection = "player_groups"
+	CollectionPlayerWishlist   collection = "player_wishlist"
 	CollectionPlayers          collection = "players"
 	CollectionProductPrices    collection = "product_prices"
 	CollectionWishlistApps     collection = "wishlist-apps"
