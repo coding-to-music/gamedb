@@ -145,17 +145,6 @@ $top.click(function (e) {
 
 highLightOwnedGames();
 
-// Ads
-// if (user.showAds) {
-//
-//     $('div.container').eq(1)
-//         .prepend('<div class="ad-right d-none d-xl-block" id="chitikaAdBlock-0"></div>')
-//         .prepend('<div class="ad-left d-none d-xl-block" id="chitikaAdBlock-1"></div>');
-//     $('#ad-top')
-//         .prepend('<div class="ad-top-big d-none d-lg-block d-xl-none" id="chitikaAdBlock-2"></div>')
-//         .prepend('<div class="ad-top-small d-block d-lg-none" id="chitikaAdBlock-3"></div>');
-// }
-
 // Toasts
 if (isIterable(user.toasts)) {
     for (const v of user.toasts) {

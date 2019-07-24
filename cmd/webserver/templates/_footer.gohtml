@@ -13,9 +13,42 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js" integrity="sha256-fTuUgtT7O2rqoImwjrhDgbXTKUwyxxujIMRIK7TbuNU=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.js" integrity="sha256-pl1bSrtlqtN/MCyW8XUTYuJCKohp9/iJESVW1344SBM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha256-yNbKY1y6h2rbVcQtf0b8lq4a+xpktyFc3pSYoGAY1qQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/livestamp/1.1.2/livestamp.min.js" integrity="sha256-8r65KJgULBDiZhwDydfWrEkx3yyV/grGsGzaekobngI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/js/all.js" integrity="sha256-S1WJaJce5DQaJRMMO9igZPd6WRgObuRlQXE8i7yKOd8=" crossorigin="anonymous"></script>
+    {{ range .JSFiles }}
+        <script src="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous"></script>
+    {{ end }}
+
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/rg-1.1.0/datatables.min.js"></script>
+
+    <script>const user = JSON.parse({{ .GetUserJSON }});</script>
+    {{ template "_webpack_footer" . }}
+
+    {{/* Google Analytics */}}
+    <script src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-125104-31');
+        {{ if .IsLoggedIn }}
+        gtag('set', {'user_cc': '{{ .UserProductCC.ProductCode }}'});
+        gtag('set', {'user_id': {{ .UserID }}});
+        {{ end }}
+    </script>
+
     {{/* Facebook */}}
     <div id="fb-root"></div>
-    <script async>
+    <script>
         (function (d, s, id) {
             let js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
@@ -27,7 +60,7 @@
     </script>
 
     {{/* Twitter */}}
-    <script async>
+    <script>
         window.twttr = (function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0],
                 t = window.twttr || {};
@@ -46,48 +79,14 @@
         }(document, "script", "twitter-wjs"));
     </script>
 
-    {{/* Dependencies */}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js" integrity="sha256-fTuUgtT7O2rqoImwjrhDgbXTKUwyxxujIMRIK7TbuNU=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.js" integrity="sha256-pl1bSrtlqtN/MCyW8XUTYuJCKohp9/iJESVW1344SBM=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha256-yNbKY1y6h2rbVcQtf0b8lq4a+xpktyFc3pSYoGAY1qQ=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/livestamp/1.1.2/livestamp.min.js" integrity="sha256-8r65KJgULBDiZhwDydfWrEkx3yyV/grGsGzaekobngI=" crossorigin="anonymous"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/js/all.js" integrity="sha256-S1WJaJce5DQaJRMMO9igZPd6WRgObuRlQXE8i7yKOd8=" crossorigin="anonymous"></script>
-    {{ range .JSFiles }}
-        <script src="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous"></script>
+    {{ if .ShowAds }}
+        <script>
+            // Must be var
+            var infolinks_pid = 3185749;
+            var infolinks_wsid = 0;
+        </script>
+        <script src="https://resources.infolinks.com/js/infolinks_main.js"></script>
     {{ end }}
-    <script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/rg-1.1.0/datatables.min.js"></script>
-
-    {{/* Load JS */}}
-    <script>
-        const user = JSON.parse({{ .GetUserJSON }});
-    </script>
-    {{ template "_webpack_footer" . }}
-
-    {{/* Google */}}
-    <script src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-        gtag('config', 'UA-125104-31');
-        {{ if .IsLoggedIn }}
-        gtag('set', {'user_cc': '{{ .UserProductCC.ProductCode }}'});
-        gtag('set', {'user_id': {{ .UserID }}});
-        {{ end }}
-    </script>
-
-    <script type="text/javascript">
-        // Must be var
-        var infolinks_pid = 3185749;
-        var infolinks_wsid = 0;
-    </script>
-    <script defer type="text/javascript" src="https://resources.infolinks.com/js/infolinks_main.js"></script>
 
     </body>
     </html>
