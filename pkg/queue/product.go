@@ -393,8 +393,12 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 
 		// Send websockets to prices page
 		var priceIDs []string
-		for _, v := range result.InsertedIDs {
-			priceIDs = append(priceIDs, v.(string))
+		if result.InsertedIDs != nil {
+			for _, v := range result.InsertedIDs {
+				if s, ok := v.(string); ok {
+					priceIDs = append(priceIDs, s)
+				}
+			}
 		}
 
 		wsPayload := websockets.PubSubIDStringsPayload{}
