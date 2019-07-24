@@ -13,6 +13,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/v27/github"
 )
@@ -24,10 +25,20 @@ func init() {
 func SteamAPIRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", steamAPIHandler)
+	r.Get("/swagger.yaml", steamAPISwaggerHandler)
 	return r
 }
 
-var addMutex sync.Mutex
+func steamAPISwaggerHandler(w http.ResponseWriter, r *http.Request) {
+
+	swagger := openapi3.Swagger{}
+
+	b, err := swagger.MarshalJSON()
+	log.Err(err)
+
+	_, err = w.Write(b)
+	log.Err(err)
+}
 
 func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -91,6 +102,8 @@ type Param struct {
 	Optional    bool   `json:"optional"`
 	Description string `json:"description"`
 }
+
+var addMutex sync.Mutex
 
 func (interfaces *Interfaces) addInterface(in steam.APIInterface, documented bool) {
 
