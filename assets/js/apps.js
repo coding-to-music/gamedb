@@ -142,19 +142,19 @@ if ($('#apps-page').length > 0) {
                 "orderable": false,
             },
             // Type
-            {
-                "targets": 1,
-                "render": function (data, type, row) {
-                    return row[4];
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('d-none d-lg-table-cell');
-                },
-                "orderable": false,
-            },
+            // {
+            //     "targets": 1,
+            //     "render": function (data, type, row) {
+            //         return row[4];
+            //     },
+            //     "createdCell": function (td, cellData, rowData, row, col) {
+            //         $(td).addClass('d-none d-lg-table-cell');
+            //     },
+            //     "orderable": false,
+            // },
             // Players
             {
-                "targets": 2,
+                "targets": 1,
                 "render": function (data, type, row) {
                     return row[7].toLocaleString();
                 },
@@ -162,7 +162,7 @@ if ($('#apps-page').length > 0) {
             },
             // Score
             {
-                "targets": 3,
+                "targets": 2,
                 "render": function (data, type, row) {
                     return row[5] + '%';
                 },
@@ -170,7 +170,7 @@ if ($('#apps-page').length > 0) {
             },
             // Price
             {
-                "targets": 4,
+                "targets": 3,
                 "render": function (data, type, row) {
                     return row[6];
                 },

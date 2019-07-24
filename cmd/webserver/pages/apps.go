@@ -246,7 +246,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		gorm = gorm.Model(sql.App{})
-		gorm = gorm.Select([]string{"id", "name", "icon", "type", "reviews_score", "prices", "player_peak_week"})
+		gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "prices", "player_peak_week"})
 
 		// Types
 		types := query.getSearchSlice("types")
@@ -382,9 +382,9 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Limit(100)
 		gorm = query.setOrderOffsetGorm(gorm, code, map[string]string{
 			"0": "name",
-			"2": "player_peak_week",
-			"3": "reviews_score",
-			"4": "price",
+			"1": "player_peak_week",
+			"2": "reviews_score",
+			"3": "price",
 		})
 
 		// Get rows
@@ -420,7 +420,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetName(), // 1
 			app.GetIcon(), // 2
 			app.GetPath(), // 3
-			app.GetType(), // 4
+			"",            // 4
 			helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
 			app.GetPrice(code).GetFinal(),             // 6
 			app.PlayerPeakWeek,                        // 7
