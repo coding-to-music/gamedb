@@ -27,5 +27,7 @@ type EULA map[string]struct {
 }
 
 type SupportedLanguages map[string]struct {
+	FullAudio ctypes.CBool `json:"full_audio"`
+	Subtitles ctypes.CBool `json:"subtitles"`
 	Supported ctypes.CBool `json:"supported"`
 }
