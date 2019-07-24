@@ -393,21 +393,25 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 
 		// Send websockets to prices page
 		var priceIDs []string
-		if result.InsertedIDs != nil {
+		if result != nil {
+
 			for _, v := range result.InsertedIDs {
 				if s, ok := v.(string); ok {
 					priceIDs = append(priceIDs, s)
 				}
 			}
-		}
 
-		wsPayload := websockets.PubSubIDStringsPayload{}
-		wsPayload.IDs = priceIDs
-		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
+			if len(priceIDs) > 0 {
 
-		_, err2 := helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
-		if err2 != nil {
-			logError(err2)
+				wsPayload := websockets.PubSubIDStringsPayload{}
+				wsPayload.IDs = priceIDs
+				wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
+
+				_, err2 := helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+				if err2 != nil {
+					logError(err2)
+				}
+			}
 		}
 	}
 	return err
