@@ -247,6 +247,9 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			err := json.Unmarshal([]byte(val), &idMap)
 			log.Err(err)
 
+			// Check for missing fields
+			go log.Err(helpers.UnmarshalStrict([]byte(val), &idMap))
+
 			var idSlice []string
 
 			for _, id := range idMap {
@@ -273,6 +276,9 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			err := json.Unmarshal([]byte(val), &idMap)
 			log.Err(err)
+
+			// Check for missing fields
+			go log.Err(helpers.UnmarshalStrict([]byte(val), &idMap))
 
 			var idSlice []string
 
@@ -341,6 +347,9 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					err := json.Unmarshal([]byte(val), &langs)
 					log.Err(err)
 
+					// Check for missing fields
+					go log.Err(helpers.UnmarshalStrict([]byte(val), &langs))
+
 					var items []string
 					for code, lang := range langs {
 
@@ -382,6 +391,9 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					err := json.Unmarshal([]byte(val), &categories)
 					log.Err(err)
 
+					// Check for missing fields
+					go log.Err(helpers.UnmarshalStrict([]byte(val), &categories))
+
 					var items []int
 					for k := range categories {
 
@@ -406,6 +418,9 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					err := json.Unmarshal([]byte(val), &languages)
 					log.Err(err)
 
+					// Check for missing fields
+					go log.Err(helpers.UnmarshalStrict([]byte(val), &languages))
+
 					var items []string
 					for k, v := range languages {
 						if v == "1" {
@@ -427,6 +442,9 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					associations := Associations{}
 					err := json.Unmarshal([]byte(val), &associations)
 					log.Err(err)
+
+					// Check for missing fields
+					go log.Err(helpers.UnmarshalStrict([]byte(val), &associations))
 
 					var items []string
 					for _, v := range associations {
