@@ -777,7 +777,11 @@
                                 <div class="tab-pane" id="dev-system-requirements" role="tabpanel">
 
                                     <h5>System Requirements</h5>
-                                    <div class="json fullheight">{{ .App.SystemRequirements }}</div>
+                                    <ul class="mb-0 pl-3">
+                                        {{ range .App.GetSystemRequirements }}
+                                            <li>{{ .Key }}: <span class="font-weight-bold">{{ .Format }}</span></li>
+                                        {{ end }}
+                                    </ul>
 
                                 </div>
 

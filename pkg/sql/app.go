@@ -3,6 +3,7 @@ package sql
 import (
 	"errors"
 	"html/template"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -363,13 +364,47 @@ func (app App) GetLocalization() (localization pics.Localisation) {
 	return localization
 }
 
-func (app App) GetSystemRequirements() (systemRequirements map[string]interface{}, err error) {
+func (app App) GetSystemRequirements() (ret []SystemRequirement, err error) {
 
-	systemRequirements = map[string]interface{}{}
+	systemRequirements := map[string]interface{}{}
 
 	err = helpers.Unmarshal([]byte(app.SystemRequirements), &systemRequirements)
 	log.Err(err)
-	return systemRequirements, err
+
+	flattened := helpers.FlattenMap(systemRequirements)
+
+	for k, v := range flattened {
+		if val, ok := v.(string); ok {
+			ret = append(ret, SystemRequirement{Key: k, Val: val})
+		}
+	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].Key < ret[j].Key
+	})
+
+	return ret, err
+}
+
+type SystemRequirement struct {
+	Key string
+	Val string
+}
+
+func (sr SystemRequirement) Format() template.HTML {
+
+	switch sr.Val {
+	case "0":
+		return `<i class="fas fa-times text-danger"></i>`
+	case "1":
+		return `<i class="fas fa-check text-success"></i>`
+	case "warn":
+		return `<span class="text-warning">Warn</span>`
+	case "deny":
+		return `<span class="text-danger">Deny</span>`
+	default:
+		return template.HTML(sr.Val)
+	}
 }
 
 func (app App) IsOnSale() bool {
