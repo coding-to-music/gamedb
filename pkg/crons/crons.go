@@ -18,6 +18,7 @@ var (
 	CronDevelopers          CronEnum = "update-stats-developers"
 	CronGenres              CronEnum = "update-stats-genres"
 	CronInstagram           CronEnum = "post-to-instagram"
+	CronBadgesCache         CronEnum = "clear-badges-cache"
 	CronPlayerRanks         CronEnum = "update-player-ranks"
 	CronPublishers          CronEnum = "update-stats-publishers"
 	CronSteamClientPlayers  CronEnum = "update-steam-client-players"
@@ -31,6 +32,7 @@ var (
 		CronDevelopers:          Developers{},
 		CronGenres:              Genres{},
 		CronInstagram:           Instagram{},
+		CronBadgesCache:         SetBadgeCache{},
 		CronPlayerRanks:         PlayerRanks{},
 		CronPublishers:          Publishers{},
 		CronSteamClientPlayers:  SteamClientPlayers{},

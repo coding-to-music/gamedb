@@ -227,14 +227,7 @@ func CountDocuments(collection collection, filter interface{}, ttl int32) (count
 		filter = M{}
 	}
 
-	b, err := json.Marshal(filter)
-	log.Err(err)
-
-	h := md5.Sum(b)
-
-	key := hex.EncodeToString(h[:])
-
-	item := helpers.MemcacheMongoCount(collection.String() + "-" + key)
+	item := helpers.MemcacheMongoCount(mongoFilterToMemcacheKey(collection, filter))
 	if ttl > 0 {
 		item.Expiration = ttl
 	}
@@ -246,12 +239,46 @@ func CountDocuments(collection collection, filter interface{}, ttl int32) (count
 			return count, err
 		}
 
-		c := client.Database(MongoDatabase).Collection(collection.String())
-
-		return c.CountDocuments(ctx, filter, options.Count())
+		return client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
 	})
 
 	return count, err
+}
+
+func SetCountDocuments(collection collection, filter interface{}, ttl int32) error {
+
+	item := helpers.MemcacheMongoCount(mongoFilterToMemcacheKey(collection, filter))
+	if ttl > 0 {
+		item.Expiration = ttl
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	count, err := client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
+	if err != nil {
+		return err
+	}
+
+	return helpers.GetMemcache().SetInterface(item.Key, count, ttl)
+}
+
+func mongoFilterToMemcacheKey(collection collection, filter interface{}) string {
+
+	if filter == nil {
+		filter = M{}
+	}
+
+	b, err := json.Marshal(filter)
+	log.Err(err)
+
+	h := md5.Sum(b)
+
+	key := hex.EncodeToString(h[:])
+
+	return collection.String() + "-" + key
 }
 
 func DeleteColumn(collection collection, column string) (err error) {

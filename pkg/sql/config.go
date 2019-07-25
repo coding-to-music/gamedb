@@ -24,6 +24,7 @@ const (
 	ConfWishlistUpdated    ConfigType = "wishlist-updated"
 	ConfClearUpcomingCache ConfigType = "clear-upcoming-cache"
 	ConfInstagram          ConfigType = "posted-to-instagram"
+	ConfBadgeCache         ConfigType = "set-badge-cache"
 	ConfAutoProfile        ConfigType = "auto-profiles-updated"
 
 	//

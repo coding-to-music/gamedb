@@ -115,36 +115,68 @@ func (pb PlayerBadge) GetPlayerIcon() string {
 }
 
 func (pb PlayerBadge) GetSpecialPlayers() (int64, error) {
-
-	return CountDocuments(CollectionPlayerBadges, M{"app_id": 0, "badge_id": pb.BadgeID}, 60*60*24*24)
+	return CountDocuments(CollectionPlayerBadges, pb.specialPlayersCountFilter(), 60*60*24*24)
 }
 
+func (pb PlayerBadge) SetSpecialPlayers() error {
+	return SetCountDocuments(CollectionPlayerBadges, pb.specialPlayersCountFilter(), 60*60*24*24)
+}
+
+func (pb PlayerBadge) specialPlayersCountFilter() M {
+	return M{"app_id": 0, "badge_id": pb.BadgeID}
+}
+
+// Cached
 func (pb PlayerBadge) GetSpecialMax() (max PlayerBadge, err error) {
 
 	var item = helpers.MemcacheBadgeMaxSpecial(pb.BadgeID)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
-
-		err = GetFirstDocument(
-			CollectionPlayerBadges,
-			M{"app_id": 0, "badge_id": pb.BadgeID},
-			M{"badge_level": -1, "badge_completion_time": 1},
-			M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
-			&max,
-		)
-
-		return max, err
-
+		return pb.getSpecialMax()
 	})
 
 	return max, err
 }
 
-func (pb PlayerBadge) GetEventPlayers() (int64, error) {
+// Not cached
+func (pb PlayerBadge) getSpecialMax() (max PlayerBadge, err error) {
 
-	return CountDocuments(CollectionPlayerBadges, M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}}, 60*60*24*24)
+	err = GetFirstDocument(
+		CollectionPlayerBadges,
+		M{"app_id": 0, "badge_id": pb.BadgeID},
+		M{"badge_level": -1, "badge_completion_time": 1},
+		M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+		&max,
+	)
+
+	return max, err
 }
 
+func (pb PlayerBadge) SetSpecialMax() (err error) {
+
+	item := helpers.MemcacheBadgeMaxSpecial(pb.BadgeID)
+
+	max, err := pb.getSpecialMax()
+	if err != nil {
+		return err
+	}
+
+	return helpers.GetMemcache().SetInterface(item.Key, max, 60*60*24)
+}
+
+func (pb PlayerBadge) GetEventPlayers() (int64, error) {
+	return CountDocuments(CollectionPlayerBadges, pb.eventPlayersCountFilter(), 60*60*24*24)
+}
+
+func (pb PlayerBadge) SetEventPlayers() error {
+	return SetCountDocuments(CollectionPlayerBadges, pb.eventPlayersCountFilter(), 60*60*24*24)
+}
+
+func (pb PlayerBadge) eventPlayersCountFilter() M {
+	return M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}}
+}
+
+// Cached
 func (pb PlayerBadge) GetEventMax() (max PlayerBadge, err error) {
 
 	var item = helpers.MemcacheBadgeMaxEvent(pb.AppID)
@@ -156,6 +188,19 @@ func (pb PlayerBadge) GetEventMax() (max PlayerBadge, err error) {
 	return max, err
 }
 
+func (pb PlayerBadge) SetEventMax() (err error) {
+
+	item := helpers.MemcacheBadgeMaxEvent(pb.AppID)
+
+	max, err := pb.getEventMax(false)
+	if err != nil {
+		return err
+	}
+
+	return helpers.GetMemcache().SetInterface(item.Key, max, 60*60*24)
+}
+
+// Cached
 func (pb PlayerBadge) GetEventMaxFoil() (max PlayerBadge, err error) {
 
 	var item = helpers.MemcacheBadgeMaxEventFoil(pb.AppID)
@@ -165,6 +210,18 @@ func (pb PlayerBadge) GetEventMaxFoil() (max PlayerBadge, err error) {
 	})
 
 	return max, err
+}
+
+func (pb PlayerBadge) SetEventMaxFoil() (err error) {
+
+	item := helpers.MemcacheBadgeMaxEventFoil(pb.AppID)
+
+	max, err := pb.getEventMax(true)
+	if err != nil {
+		return err
+	}
+
+	return helpers.GetMemcache().SetInterface(item.Key, max, 60*60*24)
 }
 
 func (pb PlayerBadge) getEventMax(foil bool) (max PlayerBadge, err error) {

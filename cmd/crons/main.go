@@ -1,6 +1,9 @@
 package main
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/gamedb/gamedb/pkg/crons"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -11,12 +14,17 @@ func main() {
 
 	log.Info("Starting crons")
 
+	rand.Seed(time.Now().Unix())
+
 	var err error
 
 	c := cron.New()
 
 	// Every 10 minutes
 	err = c.AddFunc("0 */10 * * * *", crons.SteamClientPlayers{}.Work)
+	log.Critical(err)
+
+	err = c.AddFunc("0 */10 * * * *", crons.SetBadgeCache{}.Work)
 	log.Critical(err)
 
 	// Every 5 hours
