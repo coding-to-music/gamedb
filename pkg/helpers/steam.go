@@ -110,6 +110,10 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			return false
 		}
 
+		if strings.Contains(err.Error(), "expected element type <memberList> but have <html>") {
+			return false
+		}
+
 		return true
 	}()
 
