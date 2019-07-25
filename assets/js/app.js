@@ -15,6 +15,28 @@ if ($appPage.length > 0) {
         $(this).hide();
     });
 
+    // Show dev raw row
+    $('#dev table.table tbody').on('click', 'td i, td svg', function () {
+
+        const table = $(this).closest('table').DataTable()
+        const $tr = $(this).closest('tr');
+        const row = table.row($tr);
+
+        if (row.child.isShown()) {
+
+            row.child.hide();
+            $tr.removeClass('shown');
+
+        } else {
+
+            row.child(function () {
+                console.log($tr.data('raw'));
+                return '<div class="wbba">' + $tr.data('raw') + '</div>';
+            }).show();
+            $tr.addClass('shown');
+        }
+    });
+
     // On tab change
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 

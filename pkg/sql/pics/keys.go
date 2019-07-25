@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -28,11 +29,12 @@ const (
 	picsTypeTextListString   PicsItemType = "text-list-string"   // From comma string
 	picsTypeTitle            PicsItemType = "title"
 	picsTypeCustom           PicsItemType = "custom"
+	picsTypeMap              PicsItemType = "map"
 )
 
 var CommonKeys = map[string]PicsKey{
-	"associations":            {Type: picsTypeJSON},
-	"category":                {Type: picsTypeJSON},
+	"associations":            {Type: picsTypeCustom},
+	"category":                {Type: picsTypeCustom},
 	"clienticns":              {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.icns"},
 	"clienticon":              {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.ico"},
 	"clienttga":               {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.tga"},
@@ -44,9 +46,9 @@ var CommonKeys = map[string]PicsKey{
 	"gameid":                  {Type: picsTypeLink, Link: "/apps/$val$"},
 	"genres":                  {Type: picsTypeNumberListJSON, Link: "/apps?genres=$val$"},
 	"has_adult_content":       {Type: picsTypeBool},
-	"header_image":            {Type: picsTypeJSON},
+	"header_image":            {Type: picsTypeMap},
 	"icon":                    {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
-	"languages":               {Type: picsTypeJSON},
+	"languages":               {Type: picsTypeCustom},
 	"library_assets":          {Type: picsTypeJSON},
 	"linuxclienticon":         {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.zip"},
 	"logo":                    {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
@@ -54,11 +56,11 @@ var CommonKeys = map[string]PicsKey{
 	"metacritic_fullurl":      {Type: picsTypeLink, Link: "$val$"},
 	"original_release_date":   {Type: picsTypeTimestamp},
 	"primary_genre":           {Type: picsTypeLink, Link: "/apps?genres=$val$"},
-	"small_capsule":           {Type: picsTypeJSON},
+	"small_capsule":           {Type: picsTypeMap},
 	"steam_release_date":      {Type: picsTypeTimestamp},
 	"store_asset_mtime":       {Type: picsTypeTimestamp},
 	"store_tags":              {Type: picsTypeNumberListJSON, Link: "/apps?tags=$val$"},
-	"supported_languages":     {Type: picsTypeJSON},
+	"supported_languages":     {Type: picsTypeCustom},
 	"workshop_visible":        {Type: picsTypeBool},
 	"releasestate":            {Type: picsTypeTitle},
 	"type":                    {Type: picsTypeTitle},
@@ -83,7 +85,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"allowpurchasefromrestrictedcountries": {Type: picsTypeBool},
 	"listofdlc":                            {Type: picsTypeNumberListString, Link: "/apps/$val$"},
 	"dlcavailableonstore":                  {Type: picsTypeBool},
-	"validoslist":                          {Type: picsTypeTextListString},
+	"validoslist":                          {Type: picsTypeTextListString, Link: "/apps?platforms=$val$"},
 	"languages":                            {Type: picsTypeTextListString},
 	"visibleonlywheninstalled":             {Type: picsTypeBool},
 	"visibleonlywhensubscribed":            {Type: picsTypeBool},
@@ -98,6 +100,7 @@ var ConfigKeys = map[string]PicsKey{
 	"verifyupdates":                {Type: picsTypeBool},
 	"vrcompositorsupport":          {Type: picsTypeBool},
 	"launchwithoutworkshopupdates": {Type: picsTypeBool},
+	"usemms":                       {Type: picsTypeBool},
 }
 
 var UFSKeys = map[string]PicsKey{
@@ -176,7 +179,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				return val
 			}
 
-			return template.HTML(time.Unix(i, 0).Format(helpers.DateTime) + " <small>(" + val + ")</small>")
+			return time.Unix(i, 0).Format(helpers.DateTime)
 
 		case picsTypeBytes:
 
@@ -185,7 +188,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				return val
 			}
 
-			return humanize.Bytes(i) + " (" + val + " bytes)"
+			return humanize.Bytes(i)
 
 		case picsTypeNumber:
 
@@ -282,25 +285,135 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			return template.HTML(strings.Join(idSlice, ", "))
 
+		case picsTypeMap:
+
+			if val != "" {
+
+				m := map[string]string{}
+				err := json.Unmarshal([]byte(val), &m)
+				log.Err(err)
+
+				var items []string
+				for k, v := range m {
+					items = append(items, "<li><span class=font-weight-bold>"+k+"</span>: "+v+"</li>")
+				}
+
+				return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
+			}
+
 		case picsTypeCustom:
 
 			switch key {
 			case "supported_languages":
-				return val
-			case "small_capsule":
-				return val
-			case "header_image":
-				return val
+
+				if val != "" {
+
+					langs := SupportedLanguages{}
+					err := json.Unmarshal([]byte(val), &langs)
+					log.Err(err)
+
+					var items []string
+					for _, v := range steam.LanguageCodes {
+
+						var item = v.Title()
+						var features []string
+
+						if lang, ok := langs[v]; ok {
+
+							if lang.Supported {
+								item += " <i class=\"fas fa-check text-success\"></i>"
+							} else {
+								item += " <i class=\"fas fa-times text-danger\"></i>"
+							}
+
+							if lang.FullAudio {
+								features = append(features, "Full Audio")
+							}
+							if lang.Subtitles {
+								features = append(features, "Subtitles")
+							}
+
+							if len(features) > 0 {
+								item += " + " + strings.Join(features, ", ")
+							}
+
+						} else {
+							item += " <i class=\"fas fa-times text-danger\"></i>"
+						}
+
+						items = append(items, item)
+					}
+
+					return template.HTML(strings.Join(items, "<br />"))
+				}
+
 			case "category":
-				return val
+
+				if val != "" {
+
+					categories := map[string]string{}
+					err := json.Unmarshal([]byte(val), &categories)
+					log.Err(err)
+
+					var items []int
+					for k := range categories {
+
+						i, err := strconv.Atoi(strings.Replace(k, "category_", "", 1))
+						if err == nil {
+							items = append(items, i)
+						}
+					}
+
+					sort.Slice(items, func(i, j int) bool {
+						return items[i] < items[j]
+					})
+
+					return helpers.JoinInts(items, ", ")
+				}
+
 			case "languages":
-				return val
+
+				if val != "" {
+
+					languages := map[string]string{}
+					err := json.Unmarshal([]byte(val), &languages)
+					log.Err(err)
+
+					var items []string
+					for k, v := range languages {
+						if v == "1" {
+							items = append(items, k)
+						}
+					}
+
+					sort.Slice(items, func(i, j int) bool {
+						return items[i] < items[j]
+					})
+
+					return strings.Join(items, ", ")
+				}
+
 			case "associations":
-				return val
+
+				if val != "" {
+
+					associations := Associations{}
+					err := json.Unmarshal([]byte(val), &associations)
+					log.Err(err)
+
+					var items []string
+					for _, v := range associations {
+						items = append(items, "<li><span class=font-weight-bold>"+strings.Title(v.Type)+"</span>: "+v.Name+"</li>")
+					}
+
+					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
+				}
+
 			case "metacritic_score":
-				return val + "/100"
+				return template.HTML(val + "<small>/100</small>")
 			}
 
+			return val
 		}
 	}
 

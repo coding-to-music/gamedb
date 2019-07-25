@@ -684,7 +684,7 @@
 
                         </div>
                         <div class="card-body">
-                            <div class="tab-content" id="tab-content-dev">
+                            <div class="tab-content">
 
                                 {{/* Details */}}
                                 <div class="tab-pane show active" id="dev-details" role="tabpanel">
@@ -729,12 +729,14 @@
                                             <tr>
                                                 <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
+                                                <th scope="col" width="1%">Raw</th>
                                             </tr>
                                             </thead>
                                             {{ range .Extended }}
-                                                <tr>
-                                                    <td><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
+                                                <tr data-raw="{{ escape .Value }}">
+                                                    <td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                    <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -751,17 +753,19 @@
                                             <tr>
                                                 <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
+                                                <th scope="col" width="1%">Raw</th>
                                             </tr>
                                             </thead>
                                             {{ range .Common }}
-                                                <tr>
-                                                    <td>
+                                                <tr data-raw="{{ escape .Value }}">
+                                                    <td nowrap="nowrap">
                                                         {{ .Key }}
                                                         {{ if ne .Description "" }}
                                                             <small>({{ .Description }})</small>
                                                         {{ end }}
                                                     </td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                    <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -893,12 +897,14 @@
                                             <tr>
                                                 <th scope="col" width="1%">Key</th>
                                                 <th scope="col">Value</th>
+                                                <th scope="col" width="1%">Raw</th>
                                             </tr>
                                             </thead>
                                             {{ range $key, $value := .Config }}
-                                                <tr>
+                                                <tr data-raw="{{ escape .Value }}">
                                                     <td nowrap="nowrap">{{ .Key }}</td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                    <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                             {{ end }}
                                         </table>
@@ -916,12 +922,14 @@
                                             <tr>
                                                 <th scope="col">Key</th>
                                                 <th scope="col">Value</th>
+                                                <th scope="col" width="1%">Raw</th>
                                             </tr>
                                             </thead>
                                             {{ range .UFS }}
-                                                <tr>
-                                                    <td>{{ .Key }}</td>
+                                                <tr data-raw="{{ escape .Value }}">
+                                                    <td nowrap="nowrap">{{ .Key }}</td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                    <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                             {{ end }}
                                         </table>

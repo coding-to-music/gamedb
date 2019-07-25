@@ -1,6 +1,7 @@
 package pics
 
 import (
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/Jleagle/unmarshal-go/ctypes"
 )
 
@@ -26,7 +27,7 @@ type EULA map[string]struct {
 	URL  string `json:"url"`
 }
 
-type SupportedLanguages map[string]struct {
+type SupportedLanguages map[steam.LanguageCode]struct {
 	FullAudio ctypes.CBool `json:"full_audio"`
 	Subtitles ctypes.CBool `json:"subtitles"`
 	Supported ctypes.CBool `json:"supported"`

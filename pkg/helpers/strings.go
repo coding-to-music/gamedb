@@ -43,7 +43,7 @@ func JoinInterface(i []interface{}) string {
 	return strings.Join(stringSlice, " | ")
 }
 
-func JoinInts(i []int) string {
+func JoinInts(i []int, sep string) string {
 
 	var stringSlice []string
 
@@ -51,7 +51,7 @@ func JoinInts(i []int) string {
 		stringSlice = append(stringSlice, strconv.Itoa(v))
 	}
 
-	return strings.Join(stringSlice, ",")
+	return strings.Join(stringSlice, sep)
 }
 
 const Letters = "abcdefghijklmnopqrstuvwxyz"

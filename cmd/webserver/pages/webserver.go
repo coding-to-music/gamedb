@@ -3,6 +3,7 @@ package pages
 import (
 	"bytes"
 	"encoding/json"
+	"html"
 	"html/template"
 	"math"
 	"math/rand"
@@ -26,7 +27,7 @@ import (
 	"github.com/justinas/nosurf"
 	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify/v2"
-	"github.com/tdewolff/minify/v2/html"
+	minhtml "github.com/tdewolff/minify/v2/html"
 )
 
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
@@ -106,7 +107,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	if config.IsProd() {
 
 		m := minify.New()
-		m.Add("text/html", &html.Minifier{
+		m.Add("text/html", &minhtml.Minifier{
 			KeepConditionalComments: false,
 			KeepDefaultAttrVals:     true,
 			KeepDocumentTags:        true,
@@ -176,6 +177,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"inc":          func(i int) int { return i + 1 },
 		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
 		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
+		"escape":       func(text string) string { return html.EscapeString(text) },
 	}
 }
 
