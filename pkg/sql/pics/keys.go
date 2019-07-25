@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -17,56 +16,60 @@ import (
 type PicsItemType string
 
 const (
-	picsTypeBool             PicsItemType = "bool"
-	picsTypeLink             PicsItemType = "link"
-	picsTypeImage            PicsItemType = "image"
-	picsTypeTimestamp        PicsItemType = "timestamp"
-	picsTypeJSON             PicsItemType = "json"
-	picsTypeBytes            PicsItemType = "bytes"
-	picsTypeNumber           PicsItemType = "number"
-	picsTypeNumberListJSON   PicsItemType = "number-list-json"   // From comma string
-	picsTypeNumberListString PicsItemType = "number-list-string" // From JSON object
-	picsTypeTextListString   PicsItemType = "text-list-string"   // From comma string
-	picsTypeTitle            PicsItemType = "title"
-	picsTypeCustom           PicsItemType = "custom"
-	picsTypeMap              PicsItemType = "map"
+	picsTypeBool               PicsItemType = "bool"
+	picsTypeLink               PicsItemType = "link"
+	picsTypeImage              PicsItemType = "image"
+	picsTypeTimestamp          PicsItemType = "timestamp"
+	picsTypeJSON               PicsItemType = "json"
+	picsTypeBytes              PicsItemType = "bytes"
+	picsTypeNumber             PicsItemType = "number"
+	picsTypeNumberListJSON     PicsItemType = "number-list-json"      // From JSON object
+	picsTypeNumberListJSONKeys PicsItemType = "number-list-json-keys" // From JSON object keys
+	picsTypeNumberListString   PicsItemType = "number-list-string"    // From comma string
+	picsTypeTextListString     PicsItemType = "text-list-string"      // From comma string
+	picsTypeTitle              PicsItemType = "title"
+	picsTypeCustom             PicsItemType = "custom"
+	picsTypeMap                PicsItemType = "map"
 )
 
 var CommonKeys = map[string]PicsKey{
-	"associations":            {Type: picsTypeCustom},
-	"category":                {Type: picsTypeCustom},
-	"clienticns":              {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.icns"},
-	"clienticon":              {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.ico"},
-	"clienttga":               {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.tga"},
-	"community_hub_visible":   {Type: picsTypeBool},
-	"community_visible_stats": {Type: picsTypeBool},
-	"controllervr":            {Type: picsTypeJSON},
-	"eulas":                   {Type: picsTypeJSON},
-	"exfgls":                  {Type: picsTypeBool, Description: "Exclude from game library sharing"},
-	"gameid":                  {Type: picsTypeLink, Link: "/apps/$val$"},
-	"genres":                  {Type: picsTypeNumberListJSON, Link: "/apps?genres=$val$"},
-	"has_adult_content":       {Type: picsTypeBool},
-	"header_image":            {Type: picsTypeMap},
-	"icon":                    {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
-	"languages":               {Type: picsTypeCustom},
-	"library_assets":          {Type: picsTypeJSON},
-	"linuxclienticon":         {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.zip"},
-	"logo":                    {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
-	"logo_small":              {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
-	"metacritic_fullurl":      {Type: picsTypeLink, Link: "$val$"},
-	"original_release_date":   {Type: picsTypeTimestamp},
-	"primary_genre":           {Type: picsTypeLink, Link: "/apps?genres=$val$"},
-	"small_capsule":           {Type: picsTypeMap},
-	"steam_release_date":      {Type: picsTypeTimestamp},
-	"store_asset_mtime":       {Type: picsTypeTimestamp},
-	"store_tags":              {Type: picsTypeNumberListJSON, Link: "/apps?tags=$val$"},
-	"supported_languages":     {Type: picsTypeCustom},
-	"workshop_visible":        {Type: picsTypeBool},
-	"releasestate":            {Type: picsTypeTitle},
-	"type":                    {Type: picsTypeTitle},
-	"controller_support":      {Type: picsTypeTitle},
-	"oslist":                  {Type: picsTypeTextListString, Link: "/apps?platforms=$val$"},
-	"metacritic_score":        {Type: picsTypeCustom},
+	"associations":               {Type: picsTypeCustom},
+	"category":                   {Type: picsTypeCustom},
+	"clienticns":                 {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.icns"},
+	"clienticon":                 {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.ico"},
+	"clienttga":                  {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.tga"},
+	"community_hub_visible":      {Type: picsTypeBool},
+	"community_visible_stats":    {Type: picsTypeBool},
+	"controllervr":               {Type: picsTypeNumberListJSONKeys},
+	"eulas":                      {Type: picsTypeJSON},
+	"exfgls":                     {Type: picsTypeBool, Description: "Exclude from game library sharing"},
+	"gameid":                     {Type: picsTypeLink, Link: "/apps/$val$"},
+	"genres":                     {Type: picsTypeNumberListJSON, Link: "/apps?genres=$val$"},
+	"has_adult_content":          {Type: picsTypeBool},
+	"header_image":               {Type: picsTypeMap},
+	"icon":                       {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
+	"languages":                  {Type: picsTypeCustom},
+	"library_assets":             {Type: picsTypeJSON},
+	"playareavr":                 {Type: picsTypeJSON},
+	"openvr_controller_bindings": {Type: picsTypeJSON},
+	"linuxclienticon":            {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.zip"},
+	"logo":                       {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
+	"logo_small":                 {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
+	"metacritic_fullurl":         {Type: picsTypeLink, Link: "$val$"},
+	"original_release_date":      {Type: picsTypeTimestamp},
+	"primary_genre":              {Type: picsTypeLink, Link: "/apps?genres=$val$"},
+	"small_capsule":              {Type: picsTypeMap},
+	"steam_release_date":         {Type: picsTypeTimestamp},
+	"store_asset_mtime":          {Type: picsTypeTimestamp},
+	"store_tags":                 {Type: picsTypeNumberListJSON, Link: "/apps?tags=$val$"},
+	"supported_languages":        {Type: picsTypeCustom},
+	"workshop_visible":           {Type: picsTypeBool},
+	"releasestate":               {Type: picsTypeTitle},
+	"type":                       {Type: picsTypeTitle},
+	"controller_support":         {Type: picsTypeTitle},
+	"oslist":                     {Type: picsTypeTextListString, Link: "/apps?platforms=$val$"},
+	"metacritic_score":           {Type: picsTypeCustom},
+	"onlyvrsupport":              {Type: picsTypeBool},
 }
 
 var ExtendedKeys = map[string]PicsKey{
@@ -89,6 +92,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"languages":                            {Type: picsTypeTextListString},
 	"visibleonlywheninstalled":             {Type: picsTypeBool},
 	"visibleonlywhensubscribed":            {Type: picsTypeBool},
+	"vrheadsetstreaming":                   {Type: picsTypeBool},
 }
 
 var ConfigKeys = map[string]PicsKey{
@@ -263,6 +267,31 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			return template.HTML(strings.Join(idSlice, ", "))
 
+		case picsTypeNumberListJSONKeys:
+
+			idMap := map[string]string{}
+
+			err := json.Unmarshal([]byte(val), &idMap)
+			log.Err(err)
+
+			var idSlice []string
+
+			for k := range idMap {
+				idSlice = append(idSlice, k)
+			}
+
+			sort.Slice(idSlice, func(i, j int) bool {
+				return idSlice[i] < idSlice[j]
+			})
+
+			if item.Link != "" {
+				for k, id := range idSlice {
+					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"nofollow\">" + id + "</a>"
+				}
+			}
+
+			return strings.Join(idSlice, ", ")
+
 		case picsTypeTextListString:
 
 			var idSlice []string
@@ -290,7 +319,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			if val != "" {
 
 				m := map[string]string{}
-				err := json.Unmarshal([]byte(val), &m)
+				err := helpers.Unmarshal([]byte(val), &m)
 				log.Err(err)
 
 				var items []string
@@ -313,38 +342,36 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					log.Err(err)
 
 					var items []string
-					for _, v := range steam.LanguageCodes {
+					for code, lang := range langs {
 
-						var item = v.Title()
+						var item = code.Title()
 						var features []string
 
-						if lang, ok := langs[v]; ok {
+						// if lang.Supported {
+						// 	item += " <i class=\"fas fa-check text-success\"></i>"
+						// } else {
+						// 	item += " <i class=\"fas fa-times text-danger\"></i>"
+						// }
 
-							if lang.Supported {
-								item += " <i class=\"fas fa-check text-success\"></i>"
-							} else {
-								item += " <i class=\"fas fa-times text-danger\"></i>"
-							}
+						if lang.FullAudio {
+							features = append(features, "Full Audio")
+						}
+						if lang.Subtitles {
+							features = append(features, "Subtitles")
+						}
 
-							if lang.FullAudio {
-								features = append(features, "Full Audio")
-							}
-							if lang.Subtitles {
-								features = append(features, "Subtitles")
-							}
-
-							if len(features) > 0 {
-								item += " + " + strings.Join(features, ", ")
-							}
-
-						} else {
-							item += " <i class=\"fas fa-times text-danger\"></i>"
+						if len(features) > 0 {
+							item += " + " + strings.Join(features, ", ")
 						}
 
 						items = append(items, item)
 					}
 
-					return template.HTML(strings.Join(items, "<br />"))
+					sort.Slice(items, func(i, j int) bool {
+						return items[i] < items[j]
+					})
+
+					return template.HTML(strings.Join(items, ", "))
 				}
 
 			case "category":
