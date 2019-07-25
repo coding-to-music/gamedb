@@ -30,7 +30,6 @@ if ($appPage.length > 0) {
         } else {
 
             row.child(function () {
-                console.log($tr.data('raw'));
                 return '<div class="wbba">' + $tr.data('raw') + '</div>';
             }).show();
             $tr.addClass('shown');

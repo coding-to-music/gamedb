@@ -32,7 +32,7 @@ function websocketListener(page, onMessage, attempt = 1) {
         $badge.removeClass('badge-secondary badge-danger');
 
         if (attempt > 1) {
-            toast(true, 'Live functionality is back');
+            toast(true, 'Some events may have been missed', 'Live functionality is back');
         }
 
         attempt = 1;
