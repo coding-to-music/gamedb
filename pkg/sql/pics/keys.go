@@ -295,7 +295,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 				var items []string
 				for k, v := range m {
-					items = append(items, "<li><span class=font-weight-bold>"+k+"</span>: "+v+"</li>")
+					items = append(items, "<li>"+k+": <span class=font-weight-bold>"+v+"</span></li>")
 				}
 
 				return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
@@ -403,7 +403,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 					var items []string
 					for _, v := range associations {
-						items = append(items, "<li><span class=font-weight-bold>"+strings.Title(v.Type)+"</span>: "+v.Name+"</li>")
+						items = append(items, "<li>"+strings.Title(v.Type)+": <span class=font-weight-bold>"+v.Name+"</span></li>")
 					}
 
 					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
