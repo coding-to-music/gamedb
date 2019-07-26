@@ -10,14 +10,15 @@ import (
 )
 
 const (
-	UserLevel0 = 0
+	UserLevel0 = 0 // Free
 	UserLevel1 = 1
 	UserLevel2 = 2
 	UserLevel3 = 3
 
-	UserLevelLimit0 = 10
-	UserLevelLimit1 = 20
-	UserLevelLimit2 = 40
+	// Pages
+	UserLevelLimit0 = 10 // Free
+	UserLevelLimit1 = 10
+	UserLevelLimit2 = 0
 	UserLevelLimit3 = 0
 )
 
