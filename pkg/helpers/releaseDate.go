@@ -8,23 +8,23 @@ import (
 	"github.com/jinzhu/now"
 )
 
+var releaseDates = []string{
+	"Jan 2, 2006",
+	"2 Jan, 2006",
+	"Jan 2006",
+	"2006",
+}
+
 func getReleaseDate(date string) (t time.Time, err error) {
 
 	if date == "" {
 		return t, errors.New("blank")
 	}
 
-	t, err = time.Parse("Jan 2, 2006", date)
-	if err != nil {
-
-		t, err = time.Parse("2 Jan, 2006", date)
-		if err != nil {
-
-			t, err = time.Parse("Jan 2006", date)
-			if err != nil {
-
-				t, err = time.Parse("2006", date)
-			}
+	for _, v := range releaseDates {
+		t, err = time.Parse(v, date)
+		if err == nil {
+			break
 		}
 	}
 
