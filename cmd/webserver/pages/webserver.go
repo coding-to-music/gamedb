@@ -32,15 +32,30 @@ import (
 
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 
-	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Language", string(helpers.GetProductCC(r))) // Used for varnish hash
-	w.Header().Set("X-Content-Type-Options", "nosniff")         // Protection from malicious exploitation via MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")         // Block access to the entire page when an XSS attack is suspected
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")             // Protection from clickjacking
-
-	if !strings.HasPrefix(r.URL.Path, "/esi") {
-		w.Header().Set("Surrogate-Control", "ESI/1.0") // Enable ESI
+	csp := []string{
+		"default-src 'self'",
+		"script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://platform.twitter.com https://www.google.com https://www.gstatic.com",
+		"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com",
+		"media-src https://steamcdn-a.akamaihd.net",
+		"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+		"frame-src https://platform.twitter.com https://staticxx.facebook.com https://www.facebook.com https://www.youtube.com https://www.google.com",
+		"connect-src 'self' ws: wss:",
 	}
+
+	if strings.HasPrefix(r.URL.Path, "/news") {
+		csp = append(csp, "img-src 'self' data: *")
+	} else {
+		csp = append(csp, "img-src 'self' data: https://cdnjs.cloudflare.com https://steamcdn-a.akamaihd.net http://cdn.akamai.steamstatic.com https://steamcommunity-a.akamaihd.net https://www.google-analytics.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.google.co.uk https://syndication.twitter.com https://cdn.discordapp.com")
+	}
+
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("X-Content-Type-Options", "nosniff")                // MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")                // XSS
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")                    // Clickjacking
+	w.Header().Set("Content-Security-Policy", strings.Join(csp, "; ")) // XSS
+	w.Header().Set("Referrer-Policy", "no-referrer-when-downgrade")
+	w.Header().Set("Feature-Policy", "geolocation 'none'; midi 'none'; sync-xhr 'none'; microphone 'none'; camera 'none'; magnetometer 'none'; gyroscope 'none'; speaker 'none'; fullscreen 'none'; payment 'none';")
+	w.Header().Set("Server", "")
 }
 
 func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err error) {
