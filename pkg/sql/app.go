@@ -411,8 +411,6 @@ func (app App) IsOnSale() bool {
 
 	common := app.GetCommon()
 
-	log.Debug("app_retired_publisher_request", "."+common.GetValue("app_retired_publisher_request")+".")
-
 	if common.GetValue("app_retired_publisher_request") == "1" {
 		return false
 	}
