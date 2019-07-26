@@ -13,118 +13,119 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-type PicsItemType string
+type PicsKeyFormatType string
 
 const (
-	picsTypeBool               PicsItemType = "bool"
-	picsTypeLink               PicsItemType = "link"
-	picsTypeImage              PicsItemType = "image"
-	picsTypeTimestamp          PicsItemType = "timestamp"
-	picsTypeJSON               PicsItemType = "json"
-	picsTypeBytes              PicsItemType = "bytes"
-	picsTypeNumber             PicsItemType = "number"
-	picsTypeNumberListJSON     PicsItemType = "number-list-json"      // From JSON object
-	picsTypeNumberListJSONKeys PicsItemType = "number-list-json-keys" // From JSON object keys
-	picsTypeNumberListString   PicsItemType = "number-list-string"    // From comma string
-	picsTypeTextListString     PicsItemType = "text-list-string"      // From comma string
-	picsTypeTitle              PicsItemType = "title"
-	picsTypeCustom             PicsItemType = "custom"
-	picsTypeMap                PicsItemType = "map"
+	picsTypeBool               PicsKeyFormatType = "bool"
+	picsTypeBytes              PicsKeyFormatType = "bytes"
+	picsTypeCustom             PicsKeyFormatType = "custom"
+	picsTypeImage              PicsKeyFormatType = "image"
+	picsTypeJSON               PicsKeyFormatType = "json"
+	picsTypeLink               PicsKeyFormatType = "link"
+	picsTypeMap                PicsKeyFormatType = "map"
+	picsTypeNumber             PicsKeyFormatType = "number"
+	picsTypeNumberListJSON     PicsKeyFormatType = "number-list-json"      // From JSON object
+	picsTypeNumberListJSONKeys PicsKeyFormatType = "number-list-json-keys" // From JSON object keys
+	picsTypeNumberListString   PicsKeyFormatType = "number-list-string"    // From comma string
+	picsTypeTextListString     PicsKeyFormatType = "text-list-string"      // From comma string
+	picsTypeTimestamp          PicsKeyFormatType = "timestamp"
+	picsTypeTitle              PicsKeyFormatType = "title"
 )
 
 var CommonKeys = map[string]PicsKey{
-	"associations":               {Type: picsTypeCustom},
-	"category":                   {Type: picsTypeCustom},
-	"clienticns":                 {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.icns"},
-	"clienticon":                 {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.ico"},
-	"clienttga":                  {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.tga"},
-	"community_hub_visible":      {Type: picsTypeBool},
-	"community_visible_stats":    {Type: picsTypeBool},
-	"controllervr":               {Type: picsTypeNumberListJSONKeys},
-	"eulas":                      {Type: picsTypeJSON},
-	"exfgls":                     {Type: picsTypeBool, Description: "Exclude from game library sharing"},
-	"gameid":                     {Type: picsTypeLink, Link: "/apps/$val$"},
-	"genres":                     {Type: picsTypeNumberListJSON, Link: "/apps?genres=$val$"},
-	"has_adult_content":          {Type: picsTypeBool},
-	"header_image":               {Type: picsTypeMap},
-	"icon":                       {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
-	"languages":                  {Type: picsTypeCustom},
-	"library_assets":             {Type: picsTypeJSON},
-	"playareavr":                 {Type: picsTypeJSON},
-	"openvr_controller_bindings": {Type: picsTypeJSON},
-	"linuxclienticon":            {Type: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.zip"},
-	"logo":                       {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
-	"logo_small":                 {Type: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
-	"metacritic_fullurl":         {Type: picsTypeLink, Link: "$val$"},
-	"original_release_date":      {Type: picsTypeTimestamp},
-	"primary_genre":              {Type: picsTypeLink, Link: "/apps?genres=$val$"},
-	"small_capsule":              {Type: picsTypeMap},
-	"steam_release_date":         {Type: picsTypeTimestamp},
-	"store_asset_mtime":          {Type: picsTypeTimestamp},
-	"store_tags":                 {Type: picsTypeNumberListJSON, Link: "/apps?tags=$val$"},
-	"supported_languages":        {Type: picsTypeCustom},
-	"workshop_visible":           {Type: picsTypeBool},
-	"releasestate":               {Type: picsTypeTitle},
-	"type":                       {Type: picsTypeTitle},
-	"controller_support":         {Type: picsTypeTitle},
-	"oslist":                     {Type: picsTypeTextListString, Link: "/apps?platforms=$val$"},
-	"metacritic_score":           {Type: picsTypeCustom},
-	"onlyvrsupport":              {Type: picsTypeBool},
+	"app_retired_publisher_request": {FormatType: picsTypeBool},
+	"associations":                  {FormatType: picsTypeCustom},
+	"category":                      {FormatType: picsTypeCustom},
+	"clienticns":                    {FormatType: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.icns"},
+	"clienticon":                    {FormatType: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.ico"},
+	"clienttga":                     {FormatType: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.tga"},
+	"community_hub_visible":         {FormatType: picsTypeBool},
+	"community_visible_stats":       {FormatType: picsTypeBool},
+	"controller_support":            {FormatType: picsTypeTitle},
+	"controllervr":                  {FormatType: picsTypeNumberListJSONKeys},
+	"eulas":                         {FormatType: picsTypeJSON},
+	"exfgls":                        {FormatType: picsTypeBool, Description: "Exclude from game library sharing"},
+	"gameid":                        {FormatType: picsTypeLink, Link: "/apps/$val$"},
+	"genres":                        {FormatType: picsTypeNumberListJSON, Link: "/apps?genres=$val$"},
+	"has_adult_content":             {FormatType: picsTypeBool},
+	"header_image":                  {FormatType: picsTypeMap},
+	"icon":                          {FormatType: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
+	"languages":                     {FormatType: picsTypeCustom},
+	"library_assets":                {FormatType: picsTypeJSON},
+	"linuxclienticon":               {FormatType: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.zip"},
+	"logo":                          {FormatType: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
+	"logo_small":                    {FormatType: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
+	"metacritic_fullurl":            {FormatType: picsTypeLink, Link: "$val$"},
+	"metacritic_score":              {FormatType: picsTypeCustom},
+	"onlyvrsupport":                 {FormatType: picsTypeBool},
+	"openvr_controller_bindings":    {FormatType: picsTypeJSON},
+	"original_release_date":         {FormatType: picsTypeTimestamp},
+	"oslist":                        {FormatType: picsTypeTextListString, Link: "/apps?platforms=$val$"},
+	"playareavr":                    {FormatType: picsTypeJSON},
+	"primary_genre":                 {FormatType: picsTypeLink, Link: "/apps?genres=$val$"},
+	"releasestate":                  {FormatType: picsTypeTitle},
+	"small_capsule":                 {FormatType: picsTypeMap},
+	"steam_release_date":            {FormatType: picsTypeTimestamp},
+	"store_asset_mtime":             {FormatType: picsTypeTimestamp},
+	"store_tags":                    {FormatType: picsTypeNumberListJSON, Link: "/apps?tags=$val$"},
+	"supported_languages":           {FormatType: picsTypeCustom},
+	"type":                          {FormatType: picsTypeTitle},
+	"workshop_visible":              {FormatType: picsTypeBool},
 }
 
 var ExtendedKeys = map[string]PicsKey{
-	"anti_cheat_support_url":               {Type: picsTypeLink, Link: "$val$"},
-	"developer_url":                        {Type: picsTypeLink, Link: "$val$"},
-	"gamemanualurl":                        {Type: picsTypeLink, Link: "$val$"},
-	"homepage":                             {Type: picsTypeLink, Link: "$val$"},
-	"isfreeapp":                            {Type: picsTypeBool},
-	"loadallbeforelaunch":                  {Type: picsTypeBool},
-	"noservers":                            {Type: picsTypeBool},
-	"requiressse":                          {Type: picsTypeBool},
-	"sourcegame":                           {Type: picsTypeBool},
-	"vacmacmodulecache":                    {Type: picsTypeLink, Link: "/apps/$val$"},
-	"vacmodulecache":                       {Type: picsTypeLink, Link: "/apps/$val$"},
-	"allowcrossregiontradingandgifting":    {Type: picsTypeBool},
-	"allowpurchasefromrestrictedcountries": {Type: picsTypeBool},
-	"listofdlc":                            {Type: picsTypeNumberListString, Link: "/apps/$val$"},
-	"dlcavailableonstore":                  {Type: picsTypeBool},
-	"validoslist":                          {Type: picsTypeTextListString, Link: "/apps?platforms=$val$"},
-	"languages":                            {Type: picsTypeTextListString},
-	"visibleonlywheninstalled":             {Type: picsTypeBool},
-	"visibleonlywhensubscribed":            {Type: picsTypeBool},
-	"vrheadsetstreaming":                   {Type: picsTypeBool},
+	"allowcrossregiontradingandgifting":    {FormatType: picsTypeBool},
+	"allowpurchasefromrestrictedcountries": {FormatType: picsTypeBool},
+	"anti_cheat_support_url":               {FormatType: picsTypeLink, Link: "$val$"},
+	"developer_url":                        {FormatType: picsTypeLink, Link: "$val$"},
+	"dlcavailableonstore":                  {FormatType: picsTypeBool},
+	"gamemanualurl":                        {FormatType: picsTypeLink, Link: "$val$"},
+	"homepage":                             {FormatType: picsTypeLink, Link: "$val$"},
+	"isfreeapp":                            {FormatType: picsTypeBool},
+	"languages":                            {FormatType: picsTypeTextListString},
+	"listofdlc":                            {FormatType: picsTypeNumberListString, Link: "/apps/$val$"},
+	"loadallbeforelaunch":                  {FormatType: picsTypeBool},
+	"noservers":                            {FormatType: picsTypeBool},
+	"requiressse":                          {FormatType: picsTypeBool},
+	"sourcegame":                           {FormatType: picsTypeBool},
+	"vacmacmodulecache":                    {FormatType: picsTypeLink, Link: "/apps/$val$"},
+	"vacmodulecache":                       {FormatType: picsTypeLink, Link: "/apps/$val$"},
+	"validoslist":                          {FormatType: picsTypeTextListString, Link: "/apps?platforms=$val$"},
+	"visibleonlywheninstalled":             {FormatType: picsTypeBool},
+	"visibleonlywhensubscribed":            {FormatType: picsTypeBool},
+	"vrheadsetstreaming":                   {FormatType: picsTypeBool},
 }
 
 var ConfigKeys = map[string]PicsKey{
-	"checkforupdatesbeforelaunch":  {Type: picsTypeBool},
-	"signedfiles":                  {Type: picsTypeJSON},
-	"steamcontrollerconfigdetails": {Type: picsTypeJSON},
-	"steamcontrollertemplateindex": {Type: picsTypeBool},
-	"systemprofile":                {Type: picsTypeBool},
-	"verifyupdates":                {Type: picsTypeBool},
-	"vrcompositorsupport":          {Type: picsTypeBool},
-	"launchwithoutworkshopupdates": {Type: picsTypeBool},
-	"usemms":                       {Type: picsTypeBool},
+	"checkforupdatesbeforelaunch":  {FormatType: picsTypeBool},
+	"launchwithoutworkshopupdates": {FormatType: picsTypeBool},
+	"signedfiles":                  {FormatType: picsTypeJSON},
+	"steamcontrollerconfigdetails": {FormatType: picsTypeJSON},
+	"steamcontrollertemplateindex": {FormatType: picsTypeBool},
+	"systemprofile":                {FormatType: picsTypeBool},
+	"usemms":                       {FormatType: picsTypeBool},
+	"verifyupdates":                {FormatType: picsTypeBool},
+	"vrcompositorsupport":          {FormatType: picsTypeBool},
 }
 
 var UFSKeys = map[string]PicsKey{
-	"hidecloudui":   {Type: picsTypeBool},
-	"maxnumfiles":   {Type: picsTypeNumber},
-	"quota":         {Type: picsTypeBytes},
-	"savefiles":     {Type: picsTypeJSON},
-	"rootoverrides": {Type: picsTypeJSON},
+	"hidecloudui":   {FormatType: picsTypeBool},
+	"maxnumfiles":   {FormatType: picsTypeNumber},
+	"quota":         {FormatType: picsTypeBytes},
+	"savefiles":     {FormatType: picsTypeJSON},
+	"rootoverrides": {FormatType: picsTypeJSON},
 }
 
 type PicsKey struct {
-	Type        PicsItemType
+	FormatType  PicsKeyFormatType
 	Link        string
 	Description string
 }
 
-func getType(key string, keys map[string]PicsKey) PicsItemType {
+func getType(key string, keys map[string]PicsKey) PicsKeyFormatType {
 
 	if val, ok := keys[key]; ok {
-		return val.Type
+		return val.FormatType
 	}
 	return ""
 }
@@ -140,7 +141,7 @@ func getDescription(key string, keys map[string]PicsKey) string {
 func FormatVal(key string, val string, appID int, keys map[string]PicsKey) interface{} {
 
 	if item, ok := keys[key]; ok {
-		switch item.Type {
+		switch item.FormatType {
 		case picsTypeBool:
 
 			b, _ := strconv.ParseBool(val)
