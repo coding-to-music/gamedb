@@ -30,7 +30,7 @@ func (c CommandPlayer) Output(input string) (message discordgo.MessageSend, err 
 		URL:    "https://gamedb.online" + player.GetPath(),
 		Author: author,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: player.GetAvatar(),
+			URL: "https://gamedb.online" + player.GetAvatar(),
 		},
 		Fields: []*discordgo.MessageEmbedField{
 			{

@@ -3,6 +3,7 @@ package mongo
 import (
 	"errors"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -54,7 +55,8 @@ func (price ProductPrice) GetPath() string {
 }
 
 func (price ProductPrice) GetIcon() string {
-	return helpers.GetAppIcon(price.AppID, price.Icon)
+	icon := helpers.GetAppIcon(price.AppID, price.Icon)
+	return strings.TrimPrefix(icon, "https://gamedb.online")
 }
 
 func (price ProductPrice) GetPercentChange() float64 {

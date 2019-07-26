@@ -48,7 +48,7 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 
 			if k == 0 {
 				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-					URL: helpers.GetAppIcon(app.AppID, helpers.GetAppIcon(app.AppID, app.Icon)),
+					URL: "https://gamedb.online" + helpers.GetAppIcon(app.AppID, app.Icon),
 				}
 			}
 

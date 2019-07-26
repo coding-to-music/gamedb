@@ -57,7 +57,7 @@ func (article Article) GetDate() string {
 func (article Article) GetIcon() string {
 
 	if strings.HasPrefix(article.AppIcon, "http") || strings.HasPrefix(article.AppIcon, "/") {
-		return article.AppIcon
+		return strings.TrimPrefix(article.AppIcon, "https://gamedb.online")
 	} else if article.AppIcon != "" {
 		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(article.AppID) + "/" + article.AppIcon + ".jpg"
 	} else {

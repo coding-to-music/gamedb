@@ -39,7 +39,7 @@ func (CommandAppsPopular) Output(input string) (message discordgo.MessageSend, e
 
 		if k == 0 {
 			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-				URL: v.GetHeaderImage(),
+				URL: "https://gamedb.online" + v.GetHeaderImage(),
 			}
 		}
 

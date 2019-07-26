@@ -40,7 +40,7 @@ func (CommandAppsTrending) Output(input string) (message discordgo.MessageSend, 
 
 		if k == 0 {
 			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-				URL: v.GetHeaderImage(),
+				URL: "https://gamedb.online" + v.GetHeaderImage(),
 			}
 		}
 
