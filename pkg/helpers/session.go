@@ -44,26 +44,24 @@ const (
 
 func InitSession() {
 
-	// Setup sessions
-	sessionInit := session.Init{
-		CookieName:        SessionCookieName,
-		AuthenticationKey: config.Config.SessionAuthentication.Get(),
-		EncryptionKey:     config.Config.SessionEncryption.Get(),
+	sessionInit := session.Init{}
+	sessionInit.AuthenticationKey = config.Config.SessionAuthentication.Get()
+	sessionInit.EncryptionKey = config.Config.SessionEncryption.Get()
+	sessionInit.CookieName = SessionCookieName
+	sessionInit.CookieOptions = sessions.Options{
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   2419200, // 30 days
+		Path:     "/",
+		Domain:   "", // https://scotthelme.co.uk/tough-cookies/
 	}
 
 	if config.IsProd() {
-		sessionInit.CookieOptions = sessions.Options{
-			MaxAge:   2592000, // 30 days
-			Domain:   "gamedb.online",
-			Path:     "/",
-			Secure:   true,
-			HttpOnly: true,
-		}
+		sessionInit.CookieName = "__Host-" + sessionInit.CookieName // https://scotthelme.co.uk/tough-cookies/
+		sessionInit.CookieOptions.Path = "/"
+		sessionInit.CookieOptions.Secure = true
 	} else {
-		sessionInit.CookieOptions = sessions.Options{
-			MaxAge: 2592000, // 30 days
-			Path:   "/",
-		}
+		sessionInit.CookieOptions.Secure = false
 	}
 
 	session.Initialise(sessionInit)
