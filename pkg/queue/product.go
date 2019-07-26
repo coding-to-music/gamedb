@@ -389,28 +389,29 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 	}
 
 	result, err := mongo.InsertDocuments(mongo.CollectionProductPrices, documents)
-	if err == nil {
 
-		// Send websockets to prices page
+	// Send websockets to prices page
+	if err == nil && result != nil {
+
+		log.Debug("mongo.InsertDocuments", helpers.JoinInterface(result.InsertedIDs))
+
 		var priceIDs []string
-		if result != nil {
 
-			for _, v := range result.InsertedIDs {
-				if s, ok := v.(string); ok {
-					priceIDs = append(priceIDs, s)
-				}
+		for _, v := range result.InsertedIDs {
+			if s, ok := v.(string); ok {
+				priceIDs = append(priceIDs, s)
 			}
+		}
 
-			if len(priceIDs) > 0 {
+		if len(priceIDs) > 0 {
 
-				wsPayload := websockets.PubSubIDStringsPayload{}
-				wsPayload.IDs = priceIDs
-				wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
+			wsPayload := websockets.PubSubIDStringsPayload{}
+			wsPayload.IDs = priceIDs
+			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
 
-				_, err2 := helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
-				if err2 != nil {
-					logError(err2)
-				}
+			_, err2 := helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+			if err2 != nil {
+				logError(err2)
 			}
 		}
 	}
