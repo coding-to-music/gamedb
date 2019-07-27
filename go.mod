@@ -49,7 +49,6 @@ require (
 	github.com/justinas/nosurf v0.0.0-20190416172904-05988550ea18
 	github.com/jzelinskie/geddit v0.0.0-20190613154237-4b3cacc98c40
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/kr/pty v1.1.8 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20190428105938-cea283e61946
 	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
 	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
@@ -76,7 +75,6 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94
-	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/tdewolff/minify/v2 v2.5.1
 	github.com/tdewolff/test v1.0.1 // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
@@ -92,7 +90,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
 	golang.org/x/text v0.3.2
-	google.golang.org/grpc v1.22.0
+	google.golang.org/grpc v1.22.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
