@@ -88,7 +88,7 @@ require (
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/net v0.0.0-20190727083149-ca1201d0de80 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
+	golang.org/x/sys v0.0.0-20190727083343-fc99dfbffb4e // indirect
 	golang.org/x/text v0.3.2
 	google.golang.org/grpc v1.22.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
