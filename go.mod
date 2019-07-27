@@ -75,6 +75,7 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94
+	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/tdewolff/minify/v2 v2.5.1
 	github.com/tdewolff/test v1.0.3 // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
