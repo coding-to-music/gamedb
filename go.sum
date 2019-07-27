@@ -267,8 +267,8 @@ github.com/tdewolff/minify/v2 v2.5.1/go.mod h1:ltNgpU7tnfgNCIHP1D0aS8g9IV0qP7WWP
 github.com/tdewolff/parse/v2 v2.3.8 h1:vjTRdg0BIGQHU5TNNc9zZpJ7ZANsmvacBw3VxHZ8Jl8=
 github.com/tdewolff/parse/v2 v2.3.8/go.mod h1:HansaqmN4I/U7L6/tUp0NcwT2tFO0F4EAWYGSDzkYNk=
 github.com/tdewolff/test v1.0.0/go.mod h1:DiQUlutnqlEvdvhSn2LPGy4TFwRauAaYDsL+683RNX4=
-github.com/tdewolff/test v1.0.1 h1:TZ/KO8XgfxNWYrSIw0MIPDl1F5lt9LGqxm95kk1eN/4=
-github.com/tdewolff/test v1.0.1/go.mod h1:DiQUlutnqlEvdvhSn2LPGy4TFwRauAaYDsL+683RNX4=
+github.com/tdewolff/test v1.0.3 h1:oQqvxCCoUexB1bWZzvCzWG2VTqOIvWBV1JVg2OOFQi0=
+github.com/tdewolff/test v1.0.3/go.mod h1:6DAvZliBAAnD7rhVgwaM7DE5/d9NMOAJ09SqYqeK4QE=
 github.com/temoto/robotstxt v1.1.1 h1:Gh8RCs8ouX3hRSxxK7B1mO5RFByQ4CmJZDwgom++JaA=
 github.com/temoto/robotstxt v1.1.1/go.mod h1:+1AmkuG3IYkh1kv0d2qEB9Le88ehNO0zwOr3ujewlOo=
 github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
