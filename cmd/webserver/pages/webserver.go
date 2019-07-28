@@ -41,12 +41,7 @@ func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 		"frame-src https://platform.twitter.com https://staticxx.facebook.com https://www.facebook.com https://www.youtube.com https://www.google.com",
 		"connect-src 'self' ws: wss:",
 		"manifest-src 'self'",
-	}
-
-	if strings.HasPrefix(r.URL.Path, "/news") {
-		csp = append(csp, "img-src 'self' data: *")
-	} else {
-		csp = append(csp, "img-src 'self' data: https://cdnjs.cloudflare.com https://steamcdn-a.akamaihd.net http://cdn.akamai.steamstatic.com https://steamcommunity-a.akamaihd.net https://www.google-analytics.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.google.co.uk https://syndication.twitter.com https://cdn.discordapp.com")
+		"img-src 'self' data: https://cdnjs.cloudflare.com https://steamcdn-a.akamaihd.net http://cdn.akamai.steamstatic.com https://steamcommunity-a.akamaihd.net https://www.google-analytics.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.google.co.uk https://syndication.twitter.com https://cdn.discordapp.com *", // Need * because Google Analytics has different TLDs for different countries / hotlinking news article images
 	}
 
 	w.Header().Set("Content-Type", contentType)
