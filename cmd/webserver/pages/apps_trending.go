@@ -86,7 +86,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetIcon(),                         // 2
 			app.GetPath(),                         // 3
 			app.GetPrice(code).GetFinal(),         // 4
-			app.PlayerTrend,                       // 5
+			helpers.TrendValue(app.PlayerTrend),   // 5
 			app.PlayerPeakWeek,                    // 6
 		})
 	}
