@@ -74,18 +74,18 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	appIDs, err := bundle.GetAppIDs()
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+	// appIDs, err := bundle.GetAppIDs()
+	// if err != nil {
+	// 	logError(err, message.ID)
+	// 	payload.ackRetry(msg)
+	// 	return
+	// }
 
-	if message.AppID > 0 && helpers.SliceHasInt(appIDs, message.AppID) {
-		logInfo("Skipping, bundle already has app")
-		payload.ack(msg)
-		return
-	}
+	// if message.AppID > 0 && helpers.SliceHasInt(appIDs, message.AppID) {
+	// 	logInfo("Skipping, bundle already has app")
+	// 	payload.ack(msg)
+	// 	return
+	// }
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
