@@ -104,6 +104,7 @@ table.table {
                 display: table-cell;
                 vertical-align: middle;
                 min-width: 150px;
+                word-break: break-word;
             }
 
             > div.name.min {

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -90,11 +89,6 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Err(err, r)
 			return
-		}
-
-		for k := range groups {
-			groups[k].Name = helpers.InsertNewLines(groups[k].Name)
-			groups[k].Headline = helpers.InsertNewLines(groups[k].Headline)
 		}
 	}(r)
 
