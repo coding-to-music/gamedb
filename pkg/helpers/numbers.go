@@ -33,3 +33,14 @@ func OrdinalComma(i int) string {
 
 	return humanize.Comma(int64(i)) + ord
 }
+
+func TrendValue(i int64) string {
+
+	if i > 0 {
+		return "+" + humanize.Comma(i)
+	} else if i == 0 {
+		return "-"
+	} else {
+		return humanize.Comma(i)
+	}
+}

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -115,17 +116,17 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, group := range groups {
 		response.AddRow([]interface{}{
-			group.ID64,        // 0
-			group.GetName(),   // 1
-			group.GetPath(),   // 2
-			group.GetIcon(),   // 3
-			group.Headline,    // 4
-			group.Members,     // 5
-			group.URL,         // 6
-			group.Type,        // 7
-			group.GetLink(),   // 8
-			group.Error != "", // 9
-			group.Trending,    // 10
+			group.ID64,                         // 0
+			group.GetName(),                    // 1
+			group.GetPath(),                    // 2
+			group.GetIcon(),                    // 3
+			group.Headline,                     // 4
+			group.Members,                      // 5
+			group.URL,                          // 6
+			group.Type,                         // 7
+			group.GetLink(),                    // 8
+			group.Error != "",                  // 9
+			helpers.TrendValue(group.Trending), // 10
 		})
 	}
 
