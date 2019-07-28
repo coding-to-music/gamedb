@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/nlopes/slack"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type rabbitMessageProduct struct {
@@ -399,8 +400,8 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 
 			log.Debug("mongo.InsertDocuments", v)
 
-			if s, ok := v.(string); ok {
-				priceIDs = append(priceIDs, s)
+			if s, ok := v.(primitive.ObjectID); ok {
+				priceIDs = append(priceIDs, string(s[:]))
 			}
 		}
 
