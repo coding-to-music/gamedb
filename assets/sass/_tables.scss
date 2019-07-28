@@ -141,7 +141,7 @@ table.table {
         line-height: 48px;
         padding: 0 .75rem 0 .75rem; // Remove top/bottom padding
 
-        i, svg {
+        i, svg, a {
             @extend .mr-1;
         }
 
