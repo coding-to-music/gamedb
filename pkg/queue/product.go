@@ -393,11 +393,12 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 	// Send websockets to prices page
 	if err == nil && result != nil {
 
-		log.Debug("mongo.InsertDocuments", helpers.JoinInterface(result.InsertedIDs))
-
 		var priceIDs []string
 
 		for _, v := range result.InsertedIDs {
+
+			log.Debug("mongo.InsertDocuments", v)
+
 			if s, ok := v.(string); ok {
 				priceIDs = append(priceIDs, s)
 			}
