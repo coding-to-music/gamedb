@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	l "log"
+	"net"
 	"net/http"
 	"os"
 	"path"
@@ -144,6 +145,8 @@ func log(interfaces ...interface{}) {
 		case nil:
 			continue
 		case []byte:
+			entry.texts = append(entry.texts, string(val))
+		case net.IP:
 			entry.texts = append(entry.texts, string(val))
 		case bool:
 			entry.texts = append(entry.texts, strconv.FormatBool(val))
