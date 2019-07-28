@@ -80,9 +80,10 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if group.Error != "" {
-			return
-		}
+		// An error does not mean group is deleted, keep queueing
+		// if group.Error != "" {
+		// 	return
+		// }
 
 		err = queue.ProduceGroup([]string{group.ID64})
 		if err != nil {
