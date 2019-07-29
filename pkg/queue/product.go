@@ -397,15 +397,14 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		var priceIDs []string
 
 		for _, v := range result.InsertedIDs {
-
-			log.Debug("mongo.InsertDocuments", v)
-
 			if s, ok := v.(primitive.ObjectID); ok {
 				priceIDs = append(priceIDs, string(s[:]))
 			}
 		}
 
 		if len(priceIDs) > 0 {
+
+			log.Debug(priceIDs)
 
 			wsPayload := websockets.PubSubIDStringsPayload{}
 			wsPayload.IDs = priceIDs

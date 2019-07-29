@@ -148,6 +148,8 @@ func log(interfaces ...interface{}) {
 			entry.texts = append(entry.texts, string(val))
 		case net.IP:
 			entry.texts = append(entry.texts, string(val))
+		case []string:
+			entry.texts = append(entry.texts, strings.Join(val, ","))
 		case bool:
 			entry.texts = append(entry.texts, strconv.FormatBool(val))
 		case time.Duration:
