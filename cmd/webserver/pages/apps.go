@@ -185,45 +185,13 @@ type appsTemplate struct {
 	Genres     []sql.Genre
 	Publishers []sql.Publisher
 	Developers []sql.Developer
-	Columns    []TableColumn
 }
-
-type TableColumn struct {
-	Name    string
-	Columns []string
-}
-
-// var (
-// 	allColumns = map[string]TableColumn{
-// 		"name":    {Name: "Name", Columns: []string{"id", "name", "icon"}},
-// 		"type":    {Name: "Type", Columns: []string{"type"}},
-// 		"score":   {Name: "Score", Columns: []string{"score"}},
-// 		"price":   {Name: "Price", Columns: []string{"price"}},
-// 		"updated": {Name: "Updated At", Columns: []string{"updated"}},
-// 	}
-//
-// 	defaultColumns = []string{"name", "type", "score", "price", "updated"}
-// )
 
 func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
-
-	// Get columns
-	// if len(query.Columns) == 0 {
-	// 	query.Columns = defaultColumns
-	// }
-	//
-	// var columns = []string{"id"}
-	// for _, v := range query.Columns {
-	//
-	// 	_, ok := allColumns[v]
-	// 	if ok {
-	// 		columns = append(columns, allColumns[v].Columns...)
-	// 	}
-	// }
 
 	//
 	var code = helpers.GetProductCC(r)
