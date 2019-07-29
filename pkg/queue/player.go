@@ -373,7 +373,7 @@ func updatePlayerGames(player *mongo.Player) error {
 	for _, gameRow := range gameRows {
 
 		// Set games by type
-		if _, ok := player.GamesByType[gameRow.Type]; ok {
+		if _, ok := player.GamesByType[gameRow.GetType()]; ok {
 			player.GamesByType[gameRow.GetType()]++
 		} else {
 			player.GamesByType[gameRow.GetType()] = 1

@@ -76,6 +76,7 @@ func (player Player) BSON() (ret interface{}) {
 		"country_code":      player.CountryCode,
 		"donated":           player.Donated,
 		"game_stats":        player.GameStats,
+		"games_by_type":     player.GamesByType,
 		"groups":            player.Groups,
 		"time_logged_off":   player.LastLogOff,
 		"bans_game":         player.NumberOfGameBans,
