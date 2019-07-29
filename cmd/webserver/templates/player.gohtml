@@ -408,9 +408,9 @@
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <td width="40%"></td>
-                                        <td width="30%" class="font-weight-bold">All</td>
-                                        <td width="30%" class="font-weight-bold">Played</td>
+                                        <th width="40%"></th>
+                                        <th width="30%">All</th>
+                                        <th width="30%">Played</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -418,6 +418,11 @@
                                         <th scope="row" nowrap="nowrap">Average Time</th>
                                         <td>{{ .GameStats.All.GetAverageTime }}</td>
                                         <td>{{ .GameStats.Played.GetAverageTime }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap">Total Time</th>
+                                        <td>{{ .GameStats.All.GetTotalTime }}</td>
+                                        <td>{{ .GameStats.Played.GetTotalTime }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" nowrap="nowrap">Average Price</th>
@@ -429,6 +434,11 @@
                                         <td>{{ .GameStats.All.GetAveragePriceHour }}</td>
                                         <td>{{ .GameStats.Played.GetAveragePriceHour }}</td>
                                     </tr>
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap">Total Price</th>
+                                        <td>{{ .GameStats.All.GetTotalPrice }}</td>
+                                        <td>{{ .GameStats.Played.GetTotalPrice }}</td>
+                                    </tr>
                                     </tbody>
                                 </table>
 
@@ -438,22 +448,17 @@
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <td width="40%"></td>
-                                        <td width="30%" class="font-weight-bold">All</td>
-                                        <td width="30%" class="font-weight-bold">Played</td>
+                                        <th>Game Type</th>
+                                        <th>Count</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap">Total Time</th>
-                                        <td>{{ .GameStats.All.GetTotalTime }}</td>
-                                        <td>{{ .GameStats.Played.GetTotalTime }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap">Total Price</th>
-                                        <td>{{ .GameStats.All.GetTotalPrice }}</td>
-                                        <td>{{ .GameStats.Played.GetTotalPrice }}</td>
-                                    </tr>
+                                    {{ range $key, $value := .Player.GamesByType }}
+                                        <tr>
+                                            <td>{{ $key }}</td>
+                                            <td>{{ $value }}</td>
+                                        </tr>
+                                    {{ end }}
                                     </tbody>
                                 </table>
                             </div>

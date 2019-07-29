@@ -363,14 +363,24 @@ func updatePlayerGames(player *mongo.Player) error {
 	player.PlayTime = playtime
 
 	// Getting missing price info from MySQL
-	gameRows, err := sql.GetAppsByID(appIDs, []string{"id", "prices"})
+	gameRows, err := sql.GetAppsByID(appIDs, []string{"id", "prices", "type"})
 	if err != nil {
 		return err
 	}
 
-	for _, v := range gameRows {
+	player.GamesByType = map[string]float64{}
 
-		prices, err := v.GetPrices()
+	for _, gameRow := range gameRows {
+
+		// Set games by type
+		if _, ok := player.GamesByType[gameRow.Type]; ok {
+			player.GamesByType[gameRow.GetType()]++
+		} else {
+			player.GamesByType[gameRow.GetType()] = 1
+		}
+
+		//
+		prices, err := gameRow.GetPrices()
 		if err != nil {
 			logError(err)
 			continue
@@ -380,22 +390,22 @@ func updatePlayerGames(player *mongo.Player) error {
 
 			vv = prices.Get(code)
 
-			appPrices[v.ID][string(code)] = vv.Final
-			if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime == 0 {
-				appPriceHour[v.ID][string(code)] = -1
-			} else if appPrices[v.ID][string(code)] > 0 && playerApps[v.ID].AppTime > 0 {
-				appPriceHour[v.ID][string(code)] = (float64(appPrices[v.ID][string(code)]) / 100) / (float64(playerApps[v.ID].AppTime) / 60) * 100
+			appPrices[gameRow.ID][string(code)] = vv.Final
+			if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime == 0 {
+				appPriceHour[gameRow.ID][string(code)] = -1
+			} else if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime > 0 {
+				appPriceHour[gameRow.ID][string(code)] = (float64(appPrices[gameRow.ID][string(code)]) / 100) / (float64(playerApps[gameRow.ID].AppTime) / 60) * 100
 			} else {
-				appPriceHour[v.ID][string(code)] = 0
+				appPriceHour[gameRow.ID][string(code)] = 0
 			}
 		}
 
 		//
-		err = mapstructure.Decode(appPrices[v.ID], &playerApps[v.ID].AppPrices)
+		err = mapstructure.Decode(appPrices[gameRow.ID], &playerApps[gameRow.ID].AppPrices)
 		logError(err)
 
 		//
-		err = mapstructure.Decode(appPriceHour[v.ID], &playerApps[v.ID].AppPriceHour)
+		err = mapstructure.Decode(appPriceHour[gameRow.ID], &playerApps[gameRow.ID].AppPriceHour)
 		logError(err)
 	}
 
