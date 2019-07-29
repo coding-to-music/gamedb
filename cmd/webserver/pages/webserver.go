@@ -38,7 +38,7 @@ func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 		"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com",
 		"media-src https://steamcdn-a.akamaihd.net",
 		"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
-		"frame-src https://platform.twitter.com https://staticxx.facebook.com https://www.facebook.com https://www.youtube.com https://www.google.com",
+		"frame-src https://platform.twitter.com https://staticxx.facebook.com https://www.facebook.com https://www.youtube.com https://www.google.com https://www.patreon.com",
 		"connect-src 'self' ws: wss:",
 		"manifest-src 'self'",
 		"img-src 'self' data: https://cdnjs.cloudflare.com https://steamcdn-a.akamaihd.net http://cdn.akamai.steamstatic.com https://steamcommunity-a.akamaihd.net https://www.google-analytics.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.google.co.uk https://syndication.twitter.com https://cdn.discordapp.com *", // Need * because Google Analytics has different TLDs for different countries / hotlinking news article images
