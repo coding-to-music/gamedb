@@ -150,6 +150,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}()
 
 	// Calls to store.steampowered.com
+	var offers []mongo.Offer
 	wg.Add(1)
 	go func() {
 
@@ -157,7 +158,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		var err error
 
-		err = updateAppDetails(&app)
+		offers, err = updateAppDetails(&app)
 		if err != nil && err != steam.ErrAppNotFound {
 			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
@@ -240,6 +241,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		var err error
 
 		err = savePriceChanges(appBeforeUpdate, app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = saveOffers(appBeforeUpdate, offers)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
@@ -511,7 +519,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 	return nil
 }
 
-func updateAppDetails(app *sql.App) error {
+func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 
 	prices := sql.ProductPrices{}
 
@@ -528,7 +536,7 @@ func updateAppDetails(app *sql.App) error {
 			continue
 		}
 		if err != nil {
-			return err
+			return offers, err
 		}
 
 		// Check for missing fields
@@ -555,7 +563,7 @@ func updateAppDetails(app *sql.App) error {
 
 			b, err := json.Marshal(images)
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			app.Screenshots = string(b)
@@ -572,7 +580,7 @@ func updateAppDetails(app *sql.App) error {
 
 			b, err = json.Marshal(videos)
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			app.Movies = string(b)
@@ -580,7 +588,7 @@ func updateAppDetails(app *sql.App) error {
 			// DLC
 			b, err = json.Marshal(response.Data.DLC)
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			app.DLC = string(b)
@@ -589,7 +597,7 @@ func updateAppDetails(app *sql.App) error {
 			// Packages
 			b, err = json.Marshal(response.Data.Packages)
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			app.Packages = string(b)
@@ -597,7 +605,7 @@ func updateAppDetails(app *sql.App) error {
 			// Publishers
 			gorm, err := sql.GetMySQLClient()
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			var publisherIDs []int
@@ -605,21 +613,21 @@ func updateAppDetails(app *sql.App) error {
 				var publisher sql.Publisher
 				gorm = gorm.Unscoped().FirstOrCreate(&publisher, sql.Publisher{Name: strings.TrimSpace(v)})
 				if gorm.Error != nil {
-					return gorm.Error
+					return offers, gorm.Error
 				}
 				publisherIDs = append(publisherIDs, publisher.ID)
 			}
 
 			b, err = json.Marshal(publisherIDs)
 			if err != nil {
-				return err
+				return offers, err
 			}
 			app.Publishers = string(b)
 
 			// Developers
 			gorm, err = sql.GetMySQLClient()
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			var developerIDs []int
@@ -627,14 +635,14 @@ func updateAppDetails(app *sql.App) error {
 				var developer sql.Developer
 				gorm = gorm.Unscoped().FirstOrCreate(&developer, sql.Developer{Name: strings.TrimSpace(v)})
 				if gorm.Error != nil {
-					return gorm.Error
+					return offers, gorm.Error
 				}
 				developerIDs = append(developerIDs, developer.ID)
 			}
 
 			b, err = json.Marshal(developerIDs)
 			if err != nil {
-				return err
+				return offers, err
 			}
 			app.Developers = string(b)
 
@@ -646,7 +654,7 @@ func updateAppDetails(app *sql.App) error {
 
 			b, err = json.Marshal(categories)
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			app.Categories = string(b)
@@ -654,7 +662,7 @@ func updateAppDetails(app *sql.App) error {
 			// Genres
 			gorm, err = sql.GetMySQLClient()
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			var genreIDs []int
@@ -662,14 +670,14 @@ func updateAppDetails(app *sql.App) error {
 				var genre sql.Genre
 				gorm = gorm.Unscoped().Assign(sql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, sql.Genre{ID: int(v.ID)})
 				if gorm.Error != nil {
-					return gorm.Error
+					return offers, gorm.Error
 				}
 				genreIDs = append(genreIDs, genre.ID)
 			}
 
 			b, err = json.Marshal(genreIDs)
 			if err != nil {
-				return err
+				return offers, err
 			}
 			app.Genres = string(b)
 
@@ -688,7 +696,7 @@ func updateAppDetails(app *sql.App) error {
 			// Platforms
 			b, err = json.Marshal(platforms)
 			if err != nil {
-				return err
+				return offers, err
 			}
 
 			app.Platforms = string(b)
@@ -701,13 +709,14 @@ func updateAppDetails(app *sql.App) error {
 
 			b, err = json.Marshal(demos)
 			if err != nil {
-				return err
+				return offers, err
 			}
 			app.DemoIDs = string(b)
 
 			// Images
 			var wg sync.WaitGroup
 
+			// Save background image
 			wg.Add(1)
 			go func() {
 
@@ -735,6 +744,7 @@ func updateAppDetails(app *sql.App) error {
 				}
 			}()
 
+			// Save header image
 			wg.Add(1)
 			go func() {
 
@@ -764,17 +774,35 @@ func updateAppDetails(app *sql.App) error {
 			app.ReleaseDate = response.Data.ReleaseDate.Date
 			app.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			app.ComingSoon = response.Data.ReleaseDate.ComingSoon
+
+			// Save offers
+			for _, v := range response.Data.PackageGroups {
+				for kk, vv := range v.Subs {
+
+					prices, err := app.GetPrices()
+					log.Err(err)
+
+					offers = append(offers, mongo.Offer{
+						SubID:          vv.PackageID,
+						SubOrder:       kk + 1,
+						AppID:          app.ID,
+						AppRating:      app.ReviewsScore,
+						AppReleaseDate: time.Unix(app.ReleaseDateUnix, 0),
+						AppPrices:      prices.Map(),
+					})
+				}
+			}
 		}
 	}
 
 	b, err := json.Marshal(prices)
 	if err != nil {
-		return err
+		return offers, err
 	}
 
 	app.Prices = string(b)
 
-	return nil
+	return offers, nil
 }
 
 func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
@@ -1272,6 +1300,11 @@ func updateAppPlaytimeStats(app *sql.App) (err error) {
 		app.PlaytimeTotal = minutes
 		app.PlaytimeAverage = float64(minutes) / float64(len(players))
 	}
+
+	return nil
+}
+
+func saveOffers(app sql.App, offers []mongo.Offer) (err error) {
 
 	return nil
 }

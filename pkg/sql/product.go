@@ -60,6 +60,17 @@ func (p ProductPrices) Get(code steam.ProductCC) (price ProductPrice) {
 	return price
 }
 
+func (p ProductPrices) Map() (prices map[steam.ProductCC]int) {
+
+	prices = map[steam.ProductCC]int{}
+
+	for k, v := range p {
+		prices[k] = v.Final
+	}
+
+	return prices
+}
+
 //
 type ProductPrice struct {
 	Exists          bool               `json:"-"`
