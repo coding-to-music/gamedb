@@ -13,10 +13,12 @@
         <div class="card-body">
 
             {{ if ne .Bundle.Image ""}}
-                <img class="rounded" src="{{ .Bundle.Image }}" alt="{{ .Bundle.GetName }}">
+                <div id="bundle-image">
+                    <img class="rounded" src="{{ .Bundle.Image }}" alt="{{ .Bundle.GetName }}">
+                </div>
             {{ end }}
 
-            <table class="table mt-3">
+            <table class="table mt-3 mb-3">
                 <tr>
                     <th scope="row" nowrap="nowrap" width="1%">Discount</th>
                     <td>{{ .Bundle.Discount }}%</td>

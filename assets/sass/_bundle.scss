@@ -1,5 +1,8 @@
 #bundle-page {
-    table.dataTable {
-        @extend .mt-3; // Overwrites external css
+    #bundle-image {
+        text-align: center;
+        img{
+            max-width: 100%;
+        }
     }
 }
