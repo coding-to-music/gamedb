@@ -12,10 +12,10 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
-	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
@@ -74,18 +74,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// appIDs, err := bundle.GetAppIDs()
-	// if err != nil {
-	// 	logError(err, message.ID)
-	// 	payload.ackRetry(msg)
-	// 	return
-	// }
-
-	// if message.AppID > 0 && helpers.SliceHasInt(appIDs, message.AppID) {
-	// 	logInfo("Skipping, bundle already has app")
-	// 	payload.ack(msg)
-	// 	return
-	// }
+	oldBundle := bundle
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
@@ -103,7 +92,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Save to InfluxDB
-	err = saveBundleToInflux(bundle)
+	err = savePriceToMongo(bundle, oldBundle)
 	if err != nil {
 		logError(err, message.ID)
 		payload.ackRetry(msg)
@@ -157,12 +146,16 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 
 	// Discount
 	c.OnHTML(".game_purchase_discount .bundle_base_discount", func(e *colly.HTMLElement) {
-		bundle.Discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
+		var discount int
+		discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
+		bundle.SetDiscount(discount)
 	})
 
 	// Bigger discount
 	c.OnHTML(".game_purchase_discount .discount_pct", func(e *colly.HTMLElement) {
-		bundle.Discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
+		var discount int
+		discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
+		bundle.SetDiscount(discount)
 	})
 
 	// Apps
@@ -213,19 +206,16 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 	return nil
 }
 
-func saveBundleToInflux(bundle sql.Bundle) (err error) {
+func savePriceToMongo(bundle sql.Bundle, oldBundle sql.Bundle) (err error) {
 
-	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(helpers.InfluxMeasurementApps),
-		Tags: map[string]string{
-			"bundle_id": strconv.Itoa(bundle.ID),
-		},
-		Fields: map[string]interface{}{
-			"discount": bundle.Discount,
-		},
-		Time:      time.Now(),
-		Precision: "m",
-	})
+	if bundle.Discount != oldBundle.Discount {
+
+		_, err = mongo.InsertDocument(mongo.CollectionBundlePrices, mongo.BundlePrice{
+			CreatedAt: time.Now(),
+			BundleID:  bundle.ID,
+			Discount:  bundle.Discount,
+		})
+	}
 
 	return err
 }
