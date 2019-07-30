@@ -94,6 +94,9 @@ var ExtendedKeys = map[string]PicsKey{
 	"visibleonlywheninstalled":             {FormatType: picsTypeBool},
 	"visibleonlywhensubscribed":            {FormatType: picsTypeBool},
 	"vrheadsetstreaming":                   {FormatType: picsTypeBool},
+	"showcdkeyinmenu":                      {FormatType: picsTypeBool},
+	"showcdkeyonlaunch":                    {FormatType: picsTypeBool},
+	"supportscdkeycopytoclipboard":         {FormatType: picsTypeBool},
 }
 
 var ConfigKeys = map[string]PicsKey{
