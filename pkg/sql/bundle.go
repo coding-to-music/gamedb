@@ -41,11 +41,11 @@ func (bundle *Bundle) SetDiscount(discount int) {
 
 	bundle.Discount = discount
 
-	if discount > bundle.HighestDiscount {
+	if discount < bundle.HighestDiscount {
 		bundle.HighestDiscount = discount
 	}
 
-	if discount < bundle.LowestDiscount {
+	if discount > bundle.LowestDiscount || bundle.LowestDiscount == 0 {
 		bundle.LowestDiscount = discount
 	}
 }
