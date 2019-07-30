@@ -34,17 +34,17 @@ const (
 	LogNameSteam     LogName = "steam-calls"
 
 	// Severities
-	SeverityDebug    Severity = "debug"
-	SeverityInfo     Severity = "info"
-	SeverityWarning  Severity = "warning"
-	SeverityError    Severity = "error" // Default
-	SeverityCritical Severity = "critical"
+	SeverityDebug    Severity = 1
+	SeverityInfo     Severity = 2
+	SeverityWarning  Severity = 3
+	SeverityError    Severity = 4 // Default
+	SeverityCritical Severity = 5
 )
 
 type LogName string
 type Service string
 type Option int
-type Severity string
+type Severity int
 
 func (s Severity) toGoole() (severity logging.Severity) {
 
@@ -73,7 +73,7 @@ type entry struct {
 	timestamp time.Time
 }
 
-func (e entry) toText(includeStack bool) string {
+func (e entry) toText(severity Severity) string {
 
 	var ret []string
 
@@ -103,7 +103,7 @@ func (e entry) toText(includeStack bool) string {
 	str := strings.Join(ret, " - ")
 
 	// Stack
-	if includeStack {
+	if severity > 3 {
 		str += "\n" + string(debug.Stack())
 	}
 
@@ -161,7 +161,7 @@ func log(interfaces ...interface{}) {
 		case float32:
 			entry.texts = append(entry.texts, strconv.FormatFloat(float64(val), 'f', -1, 32))
 		case float64:
-			entry.texts = append(entry.texts, strconv.FormatFloat(float64(val), 'f', -1, 64))
+			entry.texts = append(entry.texts, strconv.FormatFloat(val, 'f', -1, 64))
 		case string:
 			entry.texts = append(entry.texts, val)
 		case *http.Request:
@@ -187,17 +187,17 @@ func log(interfaces ...interface{}) {
 		// Local
 		switch entry.severity {
 		case SeverityCritical:
-			logger.Println(aurora.Red(aurora.Bold(entry.toText(true))))
+			logger.Println(aurora.Red(aurora.Bold(entry.toText(entry.severity))))
 		case SeverityError:
-			logger.Println(aurora.Red(entry.toText(true)))
+			logger.Println(aurora.Red(entry.toText(entry.severity)))
 		case SeverityWarning:
-			logger.Println(aurora.Yellow(entry.toText(true)))
+			logger.Println(aurora.Yellow(entry.toText(entry.severity)))
 		case SeverityInfo:
-			logger.Println(entry.toText(false))
+			logger.Println(entry.toText(entry.severity))
 		case SeverityDebug:
-			logger.Println(aurora.Green(entry.toText(false)))
+			logger.Println(aurora.Green(entry.toText(entry.severity)))
 		default:
-			logger.Println(entry.toText(false))
+			logger.Println(entry.toText(entry.severity))
 		}
 
 		if !config.IsLocal() {
@@ -206,7 +206,7 @@ func log(interfaces ...interface{}) {
 			googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
 				Severity:  entry.severity.toGoole(),
 				Timestamp: entry.timestamp,
-				Payload:   entry.toText(true),
+				Payload:   entry.toText(entry.severity),
 				Labels: map[string]string{
 					"env": config.Config.Environment.Get(),
 					"key": config.GetSteamKeyTag(),
@@ -215,7 +215,7 @@ func log(interfaces ...interface{}) {
 
 			// Rollbar
 			if entry.severity == SeverityWarning || entry.severity == SeverityError || entry.severity == SeverityCritical {
-				rollbar.Log(rollbar.ERR, entry.toText(false))
+				rollbar.Log(rollbar.ERR, entry.toText(SeverityInfo))
 			}
 		}
 	}
