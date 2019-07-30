@@ -62,7 +62,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		gorm = gorm.Model(&sql.Bundle{})
-		gorm = gorm.Select([]string{"id", "name", "updated_at", "discount", "app_ids", "package_ids"})
+		gorm = gorm.Select([]string{"id", "name", "updated_at", "discount", "highest_discount", "app_ids", "package_ids"})
 
 		gorm = query.setOrderOffsetGorm(gorm, "", map[string]string{
 			"0": "name",
