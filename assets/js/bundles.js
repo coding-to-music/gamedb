@@ -4,13 +4,23 @@ if ($('#bundles-page').length > 0) {
         "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
+
+            if (data[7]) {
+                $(row).addClass('table-success');
+            }
         },
         "columnDefs": [
             // Icon / Name
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+
+                    let tagName = row[1];
+                    if (row[7]) {
+                        tagName = tagName + ' <span class="badge badge-success">Lowest</span>';
+                    }
+
+                    return '<div class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + tagName + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

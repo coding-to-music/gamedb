@@ -65,6 +65,10 @@ func (bundle Bundle) GetStoreLink() string {
 	return "https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID) + "?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
 }
 
+func (bundle Bundle) GetCreatedNice() string {
+	return bundle.CreatedAt.Format(helpers.DateYearTime)
+}
+
 func (bundle Bundle) GetUpdatedNice() string {
 	return bundle.UpdatedAt.Format(helpers.DateYearTime)
 }
@@ -102,10 +106,10 @@ func (bundle Bundle) OutputForJSON() (output []interface{}) {
 		bundle.GetName(), // 1
 		bundle.GetPath(), // 2
 		strconv.FormatInt(bundle.UpdatedAt.Unix(), 10), // 3
-		bundle.Discount,                           // 4
-		bundle.AppsCount(),                        // 5
-		bundle.PackagesCount(),                    // 6
-		bundle.HighestDiscount == bundle.Discount, // 7 Is best discount
+		bundle.Discount,        // 4
+		bundle.AppsCount(),     // 5
+		bundle.PackagesCount(), // 6
+		bundle.HighestDiscount == bundle.Discount && bundle.Discount != 0, // Highest ever discount
 	}
 }
 
