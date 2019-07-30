@@ -404,7 +404,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 
 		if len(priceIDs) > 0 {
 
-			log.Debug(priceIDs)
+			log.Debug("price_ids", priceIDs)
 
 			wsPayload := websockets.PubSubIDStringsPayload{}
 			wsPayload.IDs = priceIDs
