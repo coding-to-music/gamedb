@@ -490,7 +490,7 @@ func adminDev() {
 		})
 
 		// Save to mongo
-		var last int
+		var last = 1 // A value that will never match the first price
 		for _, v := range prices {
 
 			bundle.SetDiscount(v.Percent)
