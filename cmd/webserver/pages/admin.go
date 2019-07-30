@@ -423,8 +423,7 @@ func adminDev() {
 		return
 	}
 
-	gorm = gorm.Select([]string{"id"})
-	gorm = gorm.Where("id = ?", 10093)
+	gorm = gorm.Select([]string{"*"}) // Need everything so when we save we dont lose data
 	gorm = gorm.Order("id asc")
 
 	// Get rows
