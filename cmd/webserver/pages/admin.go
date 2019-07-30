@@ -504,6 +504,8 @@ func adminDev() {
 				}
 
 				priceDocuments = append(priceDocuments, document)
+
+				last = v.Percent
 			}
 		}
 
