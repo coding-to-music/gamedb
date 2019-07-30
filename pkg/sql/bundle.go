@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -51,14 +50,14 @@ func (bundle *Bundle) SetDiscount(discount int) {
 }
 
 func (bundle Bundle) GetPath() string {
-	return "/bundles/" + strconv.Itoa(bundle.ID) + "/" + slug.Make(bundle.Name)
+	return "/bundles/" + strconv.Itoa(bundle.ID) + "/" + slug.Make(bundle.GetName())
 }
 
 func (bundle Bundle) GetName() string {
 	if bundle.Name != "" {
 		return bundle.Name
 	}
-	return "Bundle " + humanize.Comma(int64(bundle.ID))
+	return "Bundle " + strconv.Itoa(bundle.ID)
 }
 
 func (bundle Bundle) GetStoreLink() string {
