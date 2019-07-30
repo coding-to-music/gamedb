@@ -45,10 +45,11 @@ func main() {
 
 	// Routes
 	r := chi.NewRouter()
-	r.Use(middleware.RedirectSlashes)
 	// r.Use(middlewareTime)
 	r.Use(pages.MiddlewareCors())
+	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.DefaultCompress)
+	r.Use(pages.MiddlewareRealIP)
 	// r.Use(middlewareLog)
 
 	// Pages

@@ -576,6 +576,19 @@ func MiddlewareCors() func(next http.Handler) http.Handler {
 	}).Handler
 }
 
+func MiddlewareRealIP(h http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		rip := r.Header.Get(http.CanonicalHeaderKey("X-Real-IP"))
+		if rip != "" {
+			r.RemoteAddr = rip
+		}
+		h.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
 // DataTablesAjaxResponse
 type DataTablesAjaxResponse struct {
 	Draw            string          `json:"draw"`

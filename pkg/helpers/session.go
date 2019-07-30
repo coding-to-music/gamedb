@@ -145,6 +145,8 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 			return steam.ProductCCUS
 		}
 
+		log.Debug("ip_info", r.RemoteAddr, record.Country.ISOCode)
+
 		for _, cc := range GetProdCCs(true) {
 			for _, code := range cc.CountryCodes {
 				if record.Country.ISOCode == string(code) {
