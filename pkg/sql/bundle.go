@@ -99,14 +99,26 @@ func (bundle Bundle) PackagesCount() int {
 func (bundle Bundle) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{
-		bundle.ID,
-		bundle.GetName(),
-		bundle.GetPath(),
-		strconv.FormatInt(bundle.UpdatedAt.Unix(), 10),
-		bundle.Discount,
-		bundle.AppsCount(),
-		bundle.PackagesCount(),
+		bundle.ID,        // 0
+		bundle.GetName(), // 1
+		bundle.GetPath(), // 2
+		strconv.FormatInt(bundle.UpdatedAt.Unix(), 10), // 3
+		bundle.Discount,                           // 4
+		bundle.AppsCount(),                        // 5
+		bundle.PackagesCount(),                    // 6
+		bundle.HighestDiscount == bundle.Discount, // 7 Is best discount
 	}
+}
+
+func (bundle Bundle) Save() error {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	db = db.Save(&bundle)
+	return db.Error
 }
 
 func GetBundle(id int, columns []string) (bundle Bundle, err error) {
