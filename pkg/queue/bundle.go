@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -83,19 +84,41 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	var wg sync.WaitGroup
+
 	// Save new data
-	gorm = gorm.Save(&bundle)
-	if gorm.Error != nil {
-		logError(gorm.Error, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		gorm = gorm.Save(&bundle)
+		if gorm.Error != nil {
+			logError(gorm.Error, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
 
 	// Save to InfluxDB
-	err = savePriceToMongo(bundle, oldBundle)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		err = savePriceToMongo(bundle, oldBundle)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if payload.actionTaken {
 		return
 	}
 
