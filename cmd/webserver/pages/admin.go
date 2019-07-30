@@ -2,7 +2,6 @@ package pages
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"runtime"
 	"sort"
@@ -477,10 +476,12 @@ func adminDev() {
 				continue
 			}
 
-			prices = append(prices, price{
-				Time:    t,
-				Percent: i,
-			})
+			prices = append(prices, price{Time: t, Percent: i})
+		}
+
+		if len(prices) == 0 {
+			log.Info(bundle.ID, "no prices")
+			continue
 		}
 
 		// Sort prices, oldest first
@@ -488,7 +489,7 @@ func adminDev() {
 			return prices[i].Time.Unix() < prices[j].Time.Unix()
 		})
 
-		// Sav to mongo
+		// Save to mongo
 		var last int
 		for _, v := range prices {
 
@@ -506,12 +507,13 @@ func adminDev() {
 			}
 		}
 
-		// _, err = mongo.InsertDocuments(mongo.CollectionBundlePrices, priceDocuments)
+		_, err = mongo.InsertDocuments(mongo.CollectionBundlePrices, priceDocuments)
 
-		// Update bundle
-		fmt.Println(prices)
-
-		// bundle.save()
+		err = bundle.Save()
+		if err != nil {
+			log.Err(err)
+			continue
+		}
 	}
 
 	//
