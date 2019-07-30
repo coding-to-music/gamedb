@@ -2,10 +2,13 @@ package pages
 
 import (
 	"net/http"
+	"sort"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -15,6 +18,7 @@ func BundleRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", bundleHandler)
+	r.Get("/prices.json", bundlePricesAjaxHandler)
 	r.Get("/{slug}", bundleHandler)
 	return r
 }
@@ -55,6 +59,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := bundleTemplate{}
 	t.fill(w, r, bundle.Name, "")
+	t.addAssetHighCharts()
 	t.Bundle = bundle
 	t.Canonical = bundle.GetPath()
 
@@ -125,4 +130,49 @@ type bundleTemplate struct {
 	Bundle   sql.Bundle
 	Apps     []sql.App
 	Packages []sql.Package
+}
+
+func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id", r)
+		return
+	}
+
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		log.Err("invalid id", r)
+		return
+	}
+
+	// Get prices
+	pricesResp, err := mongo.GetBundlePrices(idx)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	// Make JSON response
+	var prices [][]int64
+
+	for _, v := range pricesResp {
+		prices = append(prices, []int64{v.CreatedAt.Unix() * 1000, int64(v.Discount)})
+	}
+
+	// Add current price
+	price, err := sql.GetBundle(idx, []string{"discount"})
+	log.Err(err)
+	if err == nil {
+		prices = append(prices, []int64{time.Now().Unix() * 1000, int64(price.Discount)})
+	}
+
+	// Sort prices for Highcharts
+	sort.Slice(prices, func(i, j int) bool {
+		return prices[i][0] < prices[j][0]
+	})
+
+	// Return
+	err = returnJSON(w, r, prices)
+	log.Err(err, r)
 }

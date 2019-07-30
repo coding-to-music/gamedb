@@ -1,8 +1,13 @@
 #bundle-page {
     #bundle-image {
         text-align: center;
-        img{
+
+        img {
             max-width: 100%;
         }
+    }
+
+    #prices-chart {
+        height: 200px;
     }
 }
