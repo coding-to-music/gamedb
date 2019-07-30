@@ -80,7 +80,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var deployed bool
 	for _, commit := range commits {
 
-		if strings.HasPrefix(commit.Commit.GetMessage(), "Merge pull request #63") {
+		if strings.HasPrefix(commit.Commit.GetMessage(), "Merge pull request #") {
 			continue
 		}
 
