@@ -21,15 +21,21 @@
             <table class="table mt-3 mb-3">
                 <tr>
                     <th scope="row" nowrap="nowrap" width="1%">Discount</th>
-                    <td>{{ .Bundle.Discount }}%</td>
+
+                    <td>Current: <strong>{{ .Bundle.Discount }}%</strong></td>
+                    <td>Lowest: <strong>{{ .Bundle.LowestDiscount }}%</strong></td>
+                    <td>Highest: <strong>{{ .Bundle.HighestDiscount }}%</strong></td>
+
                 </tr>
                 <tr>
                     <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
-                    <td>{{ .Bundle.GetUpdatedNice }}</td>
+                    <td colspan="3">{{ .Bundle.GetUpdatedNice }}</td>
                 </tr>
                 <tr>
                     <th scope="row" nowrap="nowrap" width="1%">Store Page</th>
-                    <td><a href="{{ .Bundle.GetStoreLink }}" target="_blank">https://store.steampowered.com/bundle/{{ .Bundle.ID }}</a></td>
+                    <td colspan="3">
+                        <a href="{{ .Bundle.GetStoreLink }}" target="_blank">https://store.steampowered.com/bundle/{{ .Bundle.ID }}</a>
+                    </td>
                 </tr>
             </table>
 

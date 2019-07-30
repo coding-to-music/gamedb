@@ -13,14 +13,16 @@ import (
 )
 
 type Bundle struct {
-	ID         int
-	CreatedAt  time.Time `gorm:"not null;column:created_at;type:datetime"`
-	UpdatedAt  time.Time `gorm:"not null;column:updated_at;type:datetime"`
-	Name       string
-	Discount   int
-	AppIDs     string
-	PackageIDs string
-	Image      string
+	ID              int       `gorm:"not null;column:id"`
+	CreatedAt       time.Time `gorm:"not null;column:created_at;type:datetime"`
+	UpdatedAt       time.Time `gorm:"not null;column:updated_at;type:datetime"`
+	Name            string    `gorm:"not null;column:name"`
+	Discount        int       `gorm:"not null;column:discount"`
+	HighestDiscount int       `gorm:"not null;column:highest_discount"`
+	LowestDiscount  int       `gorm:"not null;column:lowest_discount"`
+	AppIDs          string    `gorm:"not null;column:app_ids"`
+	PackageIDs      string    `gorm:"not null;column:package_ids"`
+	Image           string    `gorm:"not null;column:image"`
 }
 
 func (bundle *Bundle) BeforeSave(scope *gorm.Scope) error {
@@ -33,6 +35,19 @@ func (bundle *Bundle) BeforeSave(scope *gorm.Scope) error {
 	}
 
 	return nil
+}
+
+func (bundle *Bundle) SetDiscount(discount int) {
+
+	bundle.Discount = discount
+
+	if discount > bundle.HighestDiscount {
+		bundle.HighestDiscount = discount
+	}
+
+	if discount < bundle.LowestDiscount {
+		bundle.LowestDiscount = discount
+	}
 }
 
 func (bundle Bundle) GetPath() string {
