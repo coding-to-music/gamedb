@@ -4,6 +4,13 @@
 
     <div class="jumbotron">
         <h1 class="text-truncate"><i class="fas fa-cubes"></i> {{ .Bundle.GetName }}</h1>
+
+        <small>
+            <a href="{{ .Bundle.GetStoreLink }}" target="_blank">
+                <i class="fas fa-shopping-cart"></i>
+                Store Page
+            </a>
+        </small>
     </div>
 
     {{ template "_flashes" . }}
@@ -28,14 +35,12 @@
 
                 </tr>
                 <tr>
-                    <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
-                    <td colspan="3">{{ .Bundle.GetUpdatedNice }}</td>
+                    <th scope="row" nowrap="nowrap" width="1%">First seen on Game DB</th>
+                    <td colspan="3">{{ .Bundle.GetCreatedNice }}</td>
                 </tr>
                 <tr>
-                    <th scope="row" nowrap="nowrap" width="1%">Store Page</th>
-                    <td colspan="3">
-                        <a href="{{ .Bundle.GetStoreLink }}" target="_blank">https://store.steampowered.com/bundle/{{ .Bundle.ID }}</a>
-                    </td>
+                    <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
+                    <td colspan="3">{{ .Bundle.GetUpdatedNice }}</td>
                 </tr>
             </table>
 
