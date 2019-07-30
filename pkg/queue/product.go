@@ -359,7 +359,11 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		}
 
 		// Tweet / Post to Reddit
-		if productCC.ProductCode == steam.ProductCCUS && before.GetProductType() == helpers.ProductTypeApp && helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) && oldPrice > 0 && newPrice == 0 {
+		if productCC.ProductCode == steam.ProductCCUS &&
+			before.GetProductType() == helpers.ProductTypeApp &&
+			helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) &&
+			helpers.PercentageChange(oldPrice, newPrice) < -80 &&
+			newPrice > 0 {
 
 			appBefore, ok := before.(sql.App)
 			if ok && appBefore.IsOnSale() {
