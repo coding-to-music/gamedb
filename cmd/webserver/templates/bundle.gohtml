@@ -18,7 +18,7 @@
                 </div>
             {{ end }}
 
-            <table class="table mt-3 mb-3">
+            <table class="table mt-3">
                 <tr>
                     <th scope="row" nowrap="nowrap" width="1%">Discount</th>
 
@@ -41,8 +41,8 @@
 
             {{if gt (len .Packages) 0}}
 
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped table-datatable mb-0" id="packages" data-order='[[0, "asc"]]'>
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover table-striped table-datatable" id="packages" data-order='[[0, "asc"]]'>
                         <thead class="thead-light">
                         <tr>
                             <th scope="col">Packages</th>
@@ -73,8 +73,8 @@
 
             {{if gt (len .Apps) 0}}
 
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped table-datatable mb-0" id="apps" data-order='[[0, "asc"]]'>
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover table-striped table-datatable" id="apps" data-order='[[0, "asc"]]'>
                         <thead class="thead-light">
                         <tr>
                             <th scope="col">Apps</th>
