@@ -21,7 +21,6 @@ func StatsRouter() http.Handler {
 	r.Get("/client-players.json", statsClientPlayersHandler)
 	r.Get("/release-dates.json", statsDatesHandler)
 	r.Get("/app-scores.json", statsScoresHandler)
-	r.Get("/app-types.json", statsTypesHandler)
 	return r
 }
 
@@ -210,41 +209,5 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsAppScore struct {
 	Score int
-	Count int
-}
-
-func statsTypesHandler(w http.ResponseWriter, r *http.Request) {
-
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-
-		log.Err(err, r)
-		return
-	}
-
-	var types []statsAppType
-
-	gorm = gorm.Select([]string{"type", "count(type) as count"})
-	gorm = gorm.Table("apps")
-	gorm = gorm.Group("type")
-	gorm = gorm.Order("count desc")
-	gorm = gorm.Find(&types)
-
-	log.Err(gorm.Error, r)
-
-	var ret [][]interface{}
-
-	for _, v := range types {
-		app := sql.App{}
-		app.Type = v.Type
-		ret = append(ret, []interface{}{app.GetType(), v.Count})
-	}
-
-	err = returnJSON(w, r, ret)
-	log.Err(err, r)
-}
-
-type statsAppType struct {
-	Type  string
 	Count int
 }
