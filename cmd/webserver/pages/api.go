@@ -1,175 +1,175 @@
 package pages
 
 import (
-	"errors"
 	"net/http"
-	"regexp"
-	"strconv"
-	"time"
 
-	"github.com/Jleagle/session-go/session"
-	"github.com/didip/tollbooth/limiter"
-	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/api"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
-	"github.com/jinzhu/gorm"
 )
 
 var (
-	paramAPIKey = apiCallParam{Name: "key", Type: "string"}
-	paramID     = apiCallParam{Name: "id", Type: "int"}
-	paramOffset = apiCallParam{Name: "offset", Type: "int"}
-	paramLimit  = apiCallParam{Name: "limit", Type: "int"}
-
-	endpoints = []apiCall{
+	endpoints = []api.APICall{
 		{
 			Title: "App - Players",
 			Path:  "app-players",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamLimit,
+				api.ParamPage,
+				api.ParamID,
 			},
 		},
 		{
 			Title: "App - Price Changes",
 			Path:  "app-prices",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamPage,
+				api.ParamLimit,
+				api.ParamID,
 			},
 		},
 		{
 			Title: "Apps",
 			Path:  "apps",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamPage,
+				api.ParamLimit,
+				api.ParamID,
+				api.ParamPlayers,
+				api.ParamScore,
+				api.ParamCategory,
+				api.ParamReleaseDate,
+				api.ParamTrending,
 			},
-			Handler: apiAppsHandler,
+			Handler: ApiAppsHandler,
 		},
 		{
 			Title: "Articles",
 			Path:  "articles",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamPage,
+				api.ParamLimit,
 			},
 		},
 		{
 			Title: "Bundles",
 			Path:  "bundles",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamPage,
+				api.ParamLimit,
 			},
 		},
 		{
 			Title: "Changes",
 			Path:  "changes",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamPage,
+				api.ParamLimit,
 			},
 		},
 		{
 			Title: "Groups",
 			Path:  "groups",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamPage,
+				api.ParamLimit,
 			},
 		},
 		{
 			Title: "Packages",
 			Path:  "packages",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamPage,
+				api.ParamLimit,
 			},
 		},
 		{
 			Title: "Player - Badges",
 			Path:  "player-badges",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamID,
+				api.ParamPage,
+				api.ParamLimit,
 			},
 		},
 		{
 			Title: "Player - Games",
 			Path:  "player-apps",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamID,
+				api.ParamPage,
+				api.ParamLimit,
 			},
 		},
 		{
 			Title: "Player - History",
 			Path:  "player-history",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamID,
+				api.ParamPage,
+				api.ParamLimit,
 			},
+		},
+		{
+			Title:  "Player - Update",
+			Path:   "player-update",
+			Params: []api.APICallParam{},
 		},
 		{
 			Title: "Players",
 			Path:  "players",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
+				api.ParamPage,
+				api.ParamLimit,
 			},
 		},
 		{
 			Title: "Stats - Categories",
 			Path:  "steam-stats",
-			Params: []apiCallParam{
-				paramAPIKey,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
 			},
 		},
 		{
 			Title: "Stats - Genres",
 			Path:  "steam-stats",
-			Params: []apiCallParam{
-				paramAPIKey,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
 			},
 		},
 		{
 			Title: "Stats - Publishers",
 			Path:  "steam-stats",
-			Params: []apiCallParam{
-				paramAPIKey,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
 			},
 		},
 		{
 			Title: "Stats - Steam",
 			Path:  "steam-stats",
-			Params: []apiCallParam{
-				paramAPIKey,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
 			},
 		},
 		{
 			Title: "Stats - Tags",
 			Path:  "steam-stats",
-			Params: []apiCallParam{
-				paramAPIKey,
+			Params: []api.APICallParam{
+				api.ParamAPIKey,
 			},
 		},
 	}
@@ -179,6 +179,7 @@ func APIRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", apiHandler)
+	r.Get("/swagger.json", apiSwaggerHandler)
 
 	for _, v := range endpoints {
 		if v.Handler != nil {
@@ -201,235 +202,56 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 type apiTemplate struct {
 	GlobalTemplate
-	Calls []apiCall
+	Calls []api.APICall
 }
 
-type apiCall struct {
-	Title   string
-	Version int
-	Path    string
-	Params  []apiCallParam
-	Handler http.HandlerFunc
-}
+func apiSwaggerHandler(w http.ResponseWriter, r *http.Request) {
 
-func (c apiCall) Hashtag() string {
-	return regexp.MustCompile("[^a-zA-Z0-9]+").ReplaceAllString(c.Title, "")
-}
-
-func (c apiCall) GetPath() string {
-	return "/" + c.VersionString() + "/" + c.Path
-}
-
-func (c apiCall) VersionString() string {
-	if c.Version == 0 {
-		c.Version = 1
-	}
-	return "v" + strconv.Itoa(c.Version)
-}
-
-type apiCallParam struct {
-	Name    string
-	Type    string
-	Default string
-}
-
-func (p apiCallParam) InputType() string {
-	if helpers.SliceHasString([]string{"int", "uint"}, p.Type) {
-		return "number"
-	}
-	return "text"
-}
-
-type apiRequest struct {
-	request *http.Request
-}
-
-func (r apiRequest) geKey() (key string, err error) {
-
-	key = r.request.URL.Query().Get("key")
-	if key == "" {
-		key, err = session.Get(r.request, helpers.SessionUserAPIKey)
-		if err != nil {
-			return key, err
-		}
-		if key == "" {
-			return key, errNoKey
-		}
+	swagger := openapi3.Swagger{
+		OpenAPI: "3.0",
+		Info: openapi3.Info{
+			Title: "Steam DB API",
+			Contact: &openapi3.Contact{
+				URL: "https://gamedb.online/contact",
+			},
+		},
+		Servers: []*openapi3.Server{
+			{URL: "https://gamedb.online/api"},
+		},
+		Paths: openapi3.Paths{
+			"/prefix/{pathArg}/suffix": &openapi3.PathItem{
+				Post: &openapi3.Operation{
+					// Parameters: openapi3.Parameters{
+					// 	{
+					// 		Value: &openapi3.Parameter{
+					// 			In:     "query",
+					// 			Name:   "pathArg",
+					// 			Schema: openapi3.NewStringSchema().WithMaxLength(2).NewRef(),
+					// 		},
+					// 	},
+					// 	{
+					// 		Value: &openapi3.Parameter{
+					// 			In:     "query",
+					// 			Name:   "queryArg",
+					// 			Schema: openapi3.NewStringSchema().WithMaxLength(2).NewRef(),
+					// 		},
+					// 	},
+					// },
+				},
+			},
+		},
 	}
 
-	if len(key) != 20 {
-		return key, errInvalidKey
-	}
+	b, err := swagger.MarshalJSON()
+	log.Err(err)
 
-	return key, err
+	_, err = w.Write(b)
+	log.Err(err)
 }
 
-func (r apiRequest) geID() (id int64, err error) {
+func ApiAppsHandler(w http.ResponseWriter, r *http.Request) {
 
-	val := r.request.URL.Query().Get("id")
-	if val == "" {
-		id = 0
-	} else {
-
-		id, err := strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			return id, errInvalidID
-		}
-
-		if id < 1 {
-			return id, errInvalidID
-		}
-	}
-
-	return id, errInvalidID
-}
-
-func (r apiRequest) geOffset() (offset int64, err error) {
-
-	val := r.request.URL.Query().Get("offset")
-	if val == "" {
-		offset = 0
-	} else {
-
-		offset, err = strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			return offset, errInvalidOffset
-		}
-
-		if offset < 0 {
-			return offset, errInvalidOffset
-		}
-	}
-
-	return offset, errInvalidOffset
-}
-
-func (r apiRequest) getLimit() (limit int64, err error) {
-
-	val := r.request.URL.Query().Get("limit")
-	if val == "" {
-		limit = 10
-	} else {
-
-		limit, err = strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			return limit, errInvalidLimit
-		}
-
-		if limit < 1 || limit > 1000 {
-			return limit, errInvalidLimit
-		}
-	}
-
-	return limit, err
-}
-
-var errNoKey = errors.New("no key")
-var errInvalidID = errors.New("invalid id")
-var errOverLimit = errors.New("over rate limit")
-var errInvalidKey = errors.New("invalid key")
-var errWrongLevelKey = errors.New("wrong level key")
-var errInvalidOffset = errors.New("invalid offset")
-var errInvalidLimit = errors.New("invalid limit")
-
-var ops = limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
-var lmt = limiter.New(&ops).SetMax(1).SetBurst(2)
-
-func handleAPICall(r *http.Request) (id int64, offset int64, limit int64, err error) {
-
-	// q := r.URL.Query()
-	//
-	// // Get key from url/session
-	//
-	// // Rate limit
-	// err = tollbooth.LimitByKeys(lmt, []string{key})
-	// if err != nil {
-	// 	// return id, offset, limit, errOverLimit // todo
-	// }
-	//
-	// // Check user ahs access to api
-	// level, err := sql.GetUserFromKeyCache(key)
-	// if err != nil {
-	// 	return id, offset, limit, err
-	// }
-	// if level.PatreonLevel < 3 {
-	// 	return id, offset, limit, errWrongLevelKey
-	// }
-	//
-	// // Read ID
-	//
-	// // Read offset
-	//
-	//
-	// // Read limit
-	//
-	return
-}
-
-func handleAPISQLSingle(r *http.Request, db *gorm.DB) (*gorm.DB, error) {
-
-	id, _, _, err := handleAPICall(r)
-	if err != nil {
-		return db, err
-	}
-
-	db = db.Where("id = ?", id)
-
-	return db, db.Error
-}
-
-func handleAPISQLMany(r *http.Request, db *gorm.DB) (*gorm.DB, error) {
-
-	_, offset, limit, err := handleAPICall(r)
-	if err != nil {
-		return db, err
-	}
-
-	db = db.Limit(limit)
-	db = db.Offset(offset)
-
-	return db, db.Error
-}
-
-type apiApp struct {
-	ID         int               `json:"id"`
-	Name       string            `json:"name"`
-	Tags       []int             `json:"tags"`
-	Genres     []int             `json:"genres"`
-	Developers []int             `json:"developers"`
-	Publishers []int             `json:"publishers"`
-	Prices     sql.ProductPrices `json:"prices"`
-}
-
-func (apiApp *apiApp) fill(sqlApp sql.App) (err error) {
-
-	apiApp.ID = sqlApp.ID
-	apiApp.Name = sqlApp.GetName()
-	apiApp.Tags, err = sqlApp.GetTagIDs()
-	if err != nil {
-		return err
-	}
-	apiApp.Genres, err = sqlApp.GetGenreIDs()
-	if err != nil {
-		return err
-	}
-	apiApp.Developers, err = sqlApp.GetDeveloperIDs()
-	if err != nil {
-		return err
-	}
-	apiApp.Publishers, err = sqlApp.GetPublisherIDs()
-	if err != nil {
-		return err
-	}
-	apiApp.Prices, err = sqlApp.GetPrices()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func apiAppsHandler(w http.ResponseWriter, r *http.Request) {
+	call, err := api.NewAPICall(r)
 
 	db, err := sql.GetMySQLClient()
 	if err != nil {
@@ -438,26 +260,25 @@ func apiAppsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db = db.Select([]string{"id", "name", "tags", "genres", "developers", "categories", "prices"})
-	db = db.Order("id asc")
-	db, err = handleAPISQLMany(r, db)
+	db, err = call.SetSQLLimitOffset(db)
 	if err != nil {
 		log.Err(err)
 		return
 	}
 
-	var sqlApps []sql.App
-	db = db.Find(&sqlApps)
+	var apps []sql.App
+	db = db.Find(&apps)
 	if db.Error != nil {
 		log.Err(db.Error)
 		return
 	}
 
 	//noinspection GoPreferNilSlice
-	var apiApps = []apiApp{}
+	var apiApps = []api.ApiApp{}
 
-	for _, v := range sqlApps {
-		apiApp := apiApp{}
-		err = apiApp.fill(v)
+	for _, v := range apps {
+		apiApp := api.ApiApp{}
+		err = apiApp.Fill(v)
 		log.Err(err)
 
 		apiApps = append(apiApps, apiApp)
@@ -467,15 +288,7 @@ func apiAppsHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
-func apiPackageHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
 func apiPackagesHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func apiBundleHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
@@ -483,15 +296,7 @@ func apiBundlesHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func apiPlayerHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
 func apiPlayersHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func apiGroupHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 

@@ -42,6 +42,7 @@ const (
 	InfluxMeasurementRabbitQueue InfluxMeasurement = "rabbitmq_queue"
 	InfluxMeasurementStats       InfluxMeasurement = "stats"
 	InfluxMeasurementTags        InfluxMeasurement = "tags"
+	InfluxMeasurementAPICalls    InfluxMeasurement = "api_calls"
 )
 
 var (
