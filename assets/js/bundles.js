@@ -5,9 +5,9 @@ if ($('#bundles-page').length > 0) {
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
 
-            if (data[7]) {
-                $(row).addClass('table-success');
-            }
+            // if (data[7]) {
+            //     $(row).addClass('table-success');
+            // }
         },
         "columnDefs": [
             // Icon / Name
