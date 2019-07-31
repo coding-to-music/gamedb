@@ -359,19 +359,20 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		}
 
 		// Tweet / Post to Reddit
+		var percentIncrease = helpers.PercentageChange(oldPrice, newPrice)
+
 		if productCC.ProductCode == steam.ProductCCUS &&
 			before.GetProductType() == helpers.ProductTypeApp &&
 			helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) &&
-			helpers.PercentageChange(oldPrice, newPrice) <= -80 &&
-			newPrice > 0 {
+			percentIncrease <= -80 &&
+			oldPrice > newPrice && // Incase it goes from -90% to -80%
+			newPrice > 0 { // Free games are usually just removed from the store
 
 			appBefore, ok := before.(sql.App)
 			if ok && appBefore.IsOnSale() {
 
-				price := "Down from $" + helpers.FloatToString(float64(oldPrice)/100, 2)
-
 				// Twitter
-				_, _, err = helpers.GetTwitter().Statuses.Update("Free game! "+price+" gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
+				_, _, err = helpers.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"] gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 				if err != nil {
 					if !strings.Contains(err.Error(), "Status is a duplicate") {
 						logCritical(err)
@@ -379,14 +380,14 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 				}
 
 				// Reddit
-				err = helpers.PostToReddit("[FREE] "+before.GetName()+" ("+price+")", "https://gamedb.online"+before.GetPath())
+				err = helpers.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"] "+before.GetName()+" ("+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
 				if err != nil {
 					logCritical(err)
 				}
 
 				// Slack message
 				err = slack.PostWebhook(config.Config.SlackSocialWebhook.Get(), &slack.WebhookMessage{
-					Text: "Free game: https://gamedb.online" + before.GetPath(),
+					Text: "https://gamedb.online" + before.GetPath(),
 				})
 				log.Err(err)
 			}
