@@ -44,7 +44,7 @@
                     <div class="card mt-3" id="{{ .Hashtag }}">
                         <div class="card-body">
 
-                            <form action="/api/{{ .Path }}" target="_blank" method="GET">
+                            <form action="/api{{ .GetPath }}" target="_blank" method="GET">
 
                                 <div class="card mb-4">
                                     <h4 class="card-header">{{ .Title }}</h4>
@@ -54,7 +54,7 @@
                                                 <span class="input-group-text">GET</span>
                                             </div>
                                             <!--suppress HtmlFormInputWithoutLabel -->
-                                            <input type="text" class="form-control endpoint" value="https://gamedb.online/api/{{ .Path }}">
+                                            <input type="text" class="form-control endpoint" value="https://gamedb.online/api{{ .GetPath }}">
                                             <div class="input-group-append">
                                                 <button class="btn btn-success" type="submit">Go</button>
                                             </div>

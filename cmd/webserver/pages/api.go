@@ -274,7 +274,7 @@ func APIRouter() http.Handler {
 
 	for _, v := range endpoints {
 		if v.Handler != nil {
-			r.Get("/"+v.Path, v.Handler)
+			r.Get(v.GetPath(), v.Handler)
 		}
 	}
 
@@ -298,6 +298,7 @@ type apiTemplate struct {
 
 type apiCall struct {
 	Title   string
+	Version int
 	Path    string
 	Params  []apiCallParam
 	Handler http.HandlerFunc
@@ -305,6 +306,17 @@ type apiCall struct {
 
 func (c apiCall) Hashtag() string {
 	return regexp.MustCompile("[^a-zA-Z0-9]+").ReplaceAllString(c.Title, "")
+}
+
+func (c apiCall) GetPath() string {
+	return "/" + c.VersionString() + "/" + c.Path
+}
+
+func (c apiCall) VersionString() string {
+	if c.Version == 0 {
+		c.Version = 1
+	}
+	return "v" + strconv.Itoa(c.Version)
 }
 
 type apiCallParam struct {
