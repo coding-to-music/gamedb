@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -59,6 +60,16 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
+		t.BundlesCount, err = sql.CountBundles()
+		log.Err(err, r)
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
 		t.PackagesCount, err = sql.CountPackages()
 		log.Err(err, r)
 	}()
@@ -69,30 +80,44 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		t.Totals = map[string]string{}
-
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
+		var err error
 		var code = helpers.GetProductCC(r)
-		var rows []statsAppTypeTotalsRow
+		var item = helpers.MemcacheStatsAppTypes(code)
 
-		gorm = gorm.Select([]string{"type", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
-		gorm = gorm.Table("apps")
-		gorm = gorm.Group("type")
-		gorm = gorm.Where("type in (?)", []string{"game", "dlc"})
-		gorm = gorm.Find(&rows)
+		err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &t.Totals, func() (interface{}, error) {
 
-		log.Err(gorm.Error, r)
-		if gorm.Error == nil {
+			var totals []statsAppTypeTotalsRow
 
-			for _, v := range rows {
-				t.Totals[v.Type] = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(v.Total)))
+			gorm, err := sql.GetMySQLClient()
+			if err != nil {
+				return totals, err
 			}
-		}
+
+			gorm = gorm.Select([]string{"type", "count(type) as count", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
+			gorm = gorm.Table("apps")
+			gorm = gorm.Group("type")
+			gorm = gorm.Find(&totals)
+
+			if gorm.Error != nil {
+				log.Err(gorm.Error, r)
+				return nil, gorm.Error
+			}
+
+			for k := range totals {
+
+				app := sql.App{}
+				app.Type = totals[k].Type
+				totals[k].TypeFormatted = app.GetType()
+
+				totals[k].CountFormatted = humanize.Comma(totals[k].Count)
+
+				totals[k].TotalFormatted = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(totals[k].Total)))
+			}
+
+			return totals, nil
+		})
+
+		log.Err(err)
 	}()
 
 	wg.Wait()
@@ -104,14 +129,19 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 type statsTemplate struct {
 	GlobalTemplate
 	AppsCount     int
+	BundlesCount  int
 	PackagesCount int
 	PlayersCount  int64
-	Totals        map[string]string
+	Totals        []statsAppTypeTotalsRow
 }
 
 type statsAppTypeTotalsRow struct {
-	Type  string  `gorm:"column:type"`
-	Total float64 `gorm:"column:total;type:float64"`
+	Type           string  `gorm:"column:type"`
+	Total          float64 `gorm:"column:total;type:float64"`
+	Count          int64   `gorm:"column:count;type:int"`
+	TypeFormatted  string  `gorm:"-"`
+	TotalFormatted string  `gorm:"-"`
+	CountFormatted string  `gorm:"-"`
 }
 
 func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {

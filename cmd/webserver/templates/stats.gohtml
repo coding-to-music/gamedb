@@ -14,25 +14,44 @@
 
             <div class="row">
                 <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                    <a href="/apps" role="button" class="btn btn-success btn-block mb-4">Total Apps<br/>{{ comma .AppsCount}}</a>
+                    <a href="/apps" role="button" class="btn btn-success btn-block">Total Apps<br/>{{ comma .AppsCount}}</a>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                    <a href="/packages" role="button" class="btn btn-success btn-block mb-4">Total Packages<br/>{{ comma .PackagesCount}}</a>
+                    <a href="/packages" role="button" class="btn btn-success btn-block">Total Packages<br/>{{ comma .PackagesCount}}</a>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                    <a href="/players" role="button" class="btn btn-success btn-block mb-4">Total Players<br/>{{ comma64 .PlayersCount}}</a>
+                    <a href="/players" role="button" class="btn btn-success btn-block">Total Players<br/>{{ comma64 .PlayersCount}}</a>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                    <a href="/apps?types=game" role="button" class="btn btn-success btn-block mb-4">Total price of all Games<br/>{{ index .Totals "game" }}</a>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                    <a href="/apps?types=dlc" role="button" class="btn btn-success btn-block mb-4">Total price of all DLCs<br/>{{ index .Totals "dlc" }}</a>
+                    <a href="/bundles" role="button" class="btn btn-success btn-block">Total Bundles<br/>{{ comma .BundlesCount}}</a>
                 </div>
             </div>
 
-            <h5>Players Online</h5>
+            <h5 class="">Players Online</h5>
             <div class="chart" id="client-players">
                 <i class="fas fa-spinner fa-spin"></i>
+            </div>
+
+            <h5>App Types</h5>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-datatable table-smx" data-order='[[1, "desc"]]'>
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col" nowrap="nowrap">Type</th>
+                        <th scope="col" nowrap="nowrap">Count</th>
+                        <th scope="col" nowrap="nowrap">Total Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $key, $value := .Totals }}
+                        <tr>
+                            <td><a href="/apps?types={{ .Type }}">{{ .TypeFormatted }}</a></td>
+                            <td>{{ .CountFormatted }}</td>
+                            <td>{{ .TotalFormatted }}</td>
+                        </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
             </div>
 
             <h5>Release Dates</h5>
