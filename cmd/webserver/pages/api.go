@@ -24,15 +24,6 @@ var (
 
 	endpoints = []apiCall{
 		{
-			Title: "App",
-			Path:  "app",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-			},
-			Handler: apiAppHandler,
-		},
-		{
 			Title: "App - Players",
 			Path:  "app-players",
 			Params: []apiCallParam{
@@ -53,14 +44,6 @@ var (
 			},
 		},
 		{
-			Title: "App - Reviews",
-			Path:  "app-reviews",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-			},
-		},
-		{
 			Title: "Apps",
 			Path:  "apps",
 			Params: []apiCallParam{
@@ -71,55 +54,12 @@ var (
 			Handler: apiAppsHandler,
 		},
 		{
-			Title: "Apps - New releases",
-			Path:  "new-releases",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
-			},
-		},
-		{
-			Title: "Apps - Trending",
-			Path:  "trending-apps",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
-			},
-		},
-		{
-			Title: "Apps - Keys",
-			Path:  "app-keys",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramOffset,
-				paramLimit,
-			},
-		},
-		{
-			Title: "Article",
-			Path:  "article",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-			},
-		},
-		{
 			Title: "Articles",
 			Path:  "articles",
 			Params: []apiCallParam{
 				paramAPIKey,
 				paramOffset,
 				paramLimit,
-			},
-		},
-		{
-			Title: "Bundle",
-			Path:  "bundle",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
 			},
 		},
 		{
@@ -132,28 +72,12 @@ var (
 			},
 		},
 		{
-			Title: "Change",
-			Path:  "change",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-			},
-		},
-		{
 			Title: "Changes",
 			Path:  "changes",
 			Params: []apiCallParam{
 				paramAPIKey,
 				paramOffset,
 				paramLimit,
-			},
-		},
-		{
-			Title: "Group",
-			Path:  "group",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
 			},
 		},
 		{
@@ -166,28 +90,12 @@ var (
 			},
 		},
 		{
-			Title: "Package",
-			Path:  "package",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
-			},
-		},
-		{
 			Title: "Packages",
 			Path:  "packages",
 			Params: []apiCallParam{
 				paramAPIKey,
 				paramOffset,
 				paramLimit,
-			},
-		},
-		{
-			Title: "Player",
-			Path:  "player",
-			Params: []apiCallParam{
-				paramAPIKey,
-				paramID,
 			},
 		},
 		{
@@ -519,41 +427,6 @@ func (apiApp *apiApp) fill(sqlApp sql.App) (err error) {
 	}
 
 	return nil
-}
-
-func apiAppHandler(w http.ResponseWriter, r *http.Request) {
-
-	db, err := sql.GetMySQLClient()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	db = db.Select([]string{"id", "name", "tags", "genres", "developers", "categories", "prices"})
-	db = db.Order("id asc")
-	db = db.Table("apps")
-	db, err = handleAPISQLSingle(r, db)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	var app sql.App
-	db = db.Find(&app)
-	if db.Error != nil {
-		log.Err(db.Error)
-		return
-	}
-
-	apiApp := apiApp{}
-	err = apiApp.fill(app)
-	if db.Error != nil {
-		log.Err(db.Error)
-		return
-	}
-
-	err = returnJSON(w, r, apiApp)
-	log.Err(err)
 }
 
 func apiAppsHandler(w http.ResponseWriter, r *http.Request) {
