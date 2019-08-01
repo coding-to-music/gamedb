@@ -8,10 +8,13 @@ import (
 	"github.com/jinzhu/now"
 )
 
-var releaseDates = []string{
-	"Jan 2, 2006",
+var releaseDateFormats = []string{
+	"2 Jan 2006",
 	"2 Jan, 2006",
+	"Jan 2, 2006",
 	"Jan 2006",
+	"January 2, 2006",
+	"January 2006",
 	"2006",
 }
 
@@ -21,7 +24,13 @@ func getReleaseDate(date string) (t time.Time, err error) {
 		return t, errors.New("blank")
 	}
 
-	for _, v := range releaseDates {
+	// for k, v := range map[string]string{"Q1 ": "January ", "Q2 ": "April ", "Q3 ": "July ", "Q4 ": "October "} {
+	// 	if strings.HasPrefix(date, k) {
+	// 		date = strings.Replace(date, k, v, 1)
+	// 	}
+	// }
+
+	for _, v := range releaseDateFormats {
 		t, err = time.Parse(v, date)
 		if err == nil {
 			break
