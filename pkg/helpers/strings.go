@@ -70,6 +70,7 @@ func JoinInts(i []int, sep string) string {
 }
 
 const Letters = "abcdefghijklmnopqrstuvwxyz"
+const LettersCaps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const Numbers = "0123456789"
 
 func RandString(n int, chars string) string {
