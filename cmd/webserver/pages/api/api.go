@@ -34,14 +34,6 @@ var (
 	ParamLimit     = APICallParam{Name: "limit", Type: "int"}
 	ParamSortField = APICallParam{Name: "sort_field", Type: "string"}
 	ParamSortOrder = APICallParam{Name: "sort_order", Type: "string"}
-
-	// Extra params
-	ParamID          = APICallParam{Name: "id", Type: "int"}
-	ParamPlayers     = APICallParam{Name: "players", Type: "int"}
-	ParamScore       = APICallParam{Name: "score", Type: "int"}
-	ParamCategory    = APICallParam{Name: "category", Type: "int"}
-	ParamReleaseDate = APICallParam{Name: "release_date", Type: "int"}
-	ParamTrending    = APICallParam{Name: "trending", Type: "int"}
 )
 
 type APIRequest struct {
@@ -81,15 +73,16 @@ func NewAPICall(r *http.Request) (api APIRequest, err error) {
 
 func (r APIRequest) geKey() (key string, err error) {
 
-	key = r.request.URL.Query().Get("key")
+	key = r.getQueryString(ParamAPIKey.Name, "")
 	if key == "" {
 		key, err = session.Get(r.request, helpers.SessionUserAPIKey)
 		if err != nil {
 			return key, err
 		}
-		if key == "" {
-			return key, ErrNoKey
-		}
+	}
+
+	if key == "" {
+		return key, ErrNoKey
 	}
 
 	if len(key) != 20 {
@@ -128,12 +121,21 @@ func (r APIRequest) saveToInflux(success bool) (err error) {
 	return err
 }
 
-func (r APIRequest) getQueryString(key string) string {
-	return r.request.URL.Query().Get(key)
+func (r APIRequest) getQueryString(key string, fallback string) string {
+	val := r.request.URL.Query().Get(key)
+	if val == "" {
+		return fallback
+	}
+	return val
 }
 
-func (r APIRequest) getQueryInt(key string) (int64, error) {
-	return strconv.ParseInt(r.request.URL.Query().Get(key), 10, 64)
+func (r APIRequest) getQueryInt(key string, fallback int64) (val int64, err error) {
+	v := r.request.URL.Query().Get(key)
+	if v == "" {
+		return fallback, err
+	} else {
+		return strconv.ParseInt(v, 10, 64)
+	}
 }
 
 func (r APIRequest) SetSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
@@ -141,7 +143,7 @@ func (r APIRequest) SetSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
 	var err error
 
 	// Limit
-	limit, err := r.getQueryInt("limit")
+	limit, err := r.getQueryInt(ParamLimit.Name, 10)
 	if err != nil {
 		return db, err
 	}
@@ -151,8 +153,8 @@ func (r APIRequest) SetSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
 
 	db = db.Limit(limit)
 
-	// Offset
-	offset, err := r.getQueryInt("offset")
+	// Page
+	offset, err := r.getQueryInt(ParamPage.Name, 1)
 	if err != nil {
 		return db, err
 	}
@@ -160,25 +162,25 @@ func (r APIRequest) SetSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
 		return db, errors.New("invalid offset")
 	}
 
-	db = db.Offset(offset)
+	db = db.Offset((offset - 1) * limit)
 
 	return db, db.Error
 }
 
 func (r APIRequest) setSQLOrder(db *gorm.DB, allowed []string) (*gorm.DB, error) {
 
-	field := r.getQueryString(ParamSortField.Name)
-	if !helpers.SliceHasString(allowed, field) {
-		return db, errors.New("invalid limit")
+	field := r.getQueryString(ParamSortField.Name, "id")
+	if field != "id" && !helpers.SliceHasString(allowed, field) {
+		return db, errors.New("invalid sort field")
 	}
 
-	switch r.getQueryString(ParamSortField.Name) {
-	case "ascending", "asc", "1":
+	switch r.getQueryString(ParamSortOrder.Name, "asc") {
+	case "asc":
 		db = db.Order(field + " ASC")
-	case "descending", "desc", "0", "-1":
+	case "desc":
 		db = db.Order(field + " DESC")
 	default:
-		db = db.Order("id asc")
+		return db, errors.New("invalid sort order")
 	}
 
 	return db, db.Error

@@ -5,7 +5,6 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
 )
@@ -19,7 +18,7 @@ var (
 				api.ParamAPIKey,
 				api.ParamLimit,
 				api.ParamPage,
-				api.ParamID,
+				{Name: "id", Type: "int"},
 			},
 		},
 		{
@@ -29,7 +28,7 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
-				api.ParamID,
+				{Name: "id", Type: "int"},
 			},
 		},
 		{
@@ -39,14 +38,18 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
-				api.ParamID,
-				api.ParamPlayers,
-				api.ParamScore,
-				api.ParamCategory,
-				api.ParamReleaseDate,
-				api.ParamTrending,
+				{Name: "id", Type: "int"},
+				{Name: "min_players", Type: "int"},
+				{Name: "max_players", Type: "int"},
+				{Name: "min_score", Type: "int"},
+				{Name: "max_score", Type: "int"},
+				{Name: "category", Type: "int"},
+				{Name: "min_release_date", Type: "timestamp"},
+				{Name: "max_release_date", Type: "timestamp"},
+				{Name: "min_trending", Type: "int"},
+				{Name: "max_trending", Type: "int"},
 			},
-			Handler: ApiAppsHandler,
+			Handler: ApiEndpointHandler(api.ApiAppsHandler),
 		},
 		{
 			Title: "Articles",
@@ -98,9 +101,9 @@ var (
 			Path:  "player-badges",
 			Params: []api.APICallParam{
 				api.ParamAPIKey,
-				api.ParamID,
 				api.ParamPage,
 				api.ParamLimit,
+				{Name: "id", Type: "int"},
 			},
 		},
 		{
@@ -108,9 +111,9 @@ var (
 			Path:  "player-apps",
 			Params: []api.APICallParam{
 				api.ParamAPIKey,
-				api.ParamID,
 				api.ParamPage,
 				api.ParamLimit,
+				{Name: "id", Type: "int"},
 			},
 		},
 		{
@@ -118,9 +121,9 @@ var (
 			Path:  "player-history",
 			Params: []api.APICallParam{
 				api.ParamAPIKey,
-				api.ParamID,
 				api.ParamPage,
 				api.ParamLimit,
+				{Name: "id", Type: "int"},
 			},
 		},
 		{
@@ -249,57 +252,30 @@ func apiSwaggerHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
-func ApiAppsHandler(w http.ResponseWriter, r *http.Request) {
+func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err error)) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 
-	call, err := api.NewAPICall(r)
+		call, err := api.NewAPICall(r)
+		if err != nil {
+			err = returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
+			log.Err(err)
+			return
+		}
 
-	db, err := sql.GetMySQLClient()
-	if err != nil {
+		resp, err := callback(call)
+		if err != nil {
+			err = returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
+			log.Err(err)
+			return
+		}
+
+		err = returnJSON(w, r, ApiEndpointResponse{Data: resp})
 		log.Err(err)
 		return
 	}
-
-	db = db.Select([]string{"id", "name", "tags", "genres", "developers", "categories", "prices"})
-	db, err = call.SetSQLLimitOffset(db)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	var apps []sql.App
-	db = db.Find(&apps)
-	if db.Error != nil {
-		log.Err(db.Error)
-		return
-	}
-
-	//noinspection GoPreferNilSlice
-	var apiApps = []api.ApiApp{}
-
-	for _, v := range apps {
-		apiApp := api.ApiApp{}
-		err = apiApp.Fill(v)
-		log.Err(err)
-
-		apiApps = append(apiApps, apiApp)
-	}
-
-	err = returnJSON(w, r, apiApps)
-	log.Err(err)
 }
 
-func apiPackagesHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func apiBundlesHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func apiPlayersHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func apiGroupsHandler(w http.ResponseWriter, r *http.Request) {
-
+type ApiEndpointResponse struct {
+	Error string      `json:"error"`
+	Data  interface{} `json:"data"`
 }
