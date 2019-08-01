@@ -74,6 +74,6 @@ type mySQLLogger struct {
 }
 
 func (logger mySQLLogger) Print(v ...interface{}) {
-	s := helpers.JoinInterface(v)
+	s := helpers.InterfaceToString(v)
 	log.Debug(s, log.LogNameSQL)
 }

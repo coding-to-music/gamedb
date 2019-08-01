@@ -1,10 +1,14 @@
 package helpers
 
 import (
+	"fmt"
 	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func TruncateString(str string, size int, tail string) string {
@@ -28,19 +32,30 @@ func GetHashTag(string string) (ret string) {
 	return "#" + reg.ReplaceAllString(string, "")
 }
 
-func JoinInterface(i []interface{}) string {
-
-	var stringSlice []string
-
-	for _, v := range i {
-
-		s, ok := v.(string)
-		if ok {
-			stringSlice = append(stringSlice, s)
+func InterfaceToString(i interface{}) string {
+	switch i.(type) {
+	case time.Duration:
+		return i.(time.Duration).String()
+	case time.Time:
+		return i.(time.Time).String()
+	case bool:
+		return strconv.FormatBool(i.(bool))
+	case int:
+		return strconv.Itoa(i.(int))
+	case int64:
+		return strconv.FormatInt(i.(int64), 10)
+	case string:
+		return i.(string)
+	case []interface{}:
+		var sli []string
+		for _, v := range i.([]interface{}) {
+			sli = append(sli, InterfaceToString(v))
 		}
+		return "(" + strings.Join(sli, ",") + ")"
+	default:
+		log.Info("Can't convert val to " + fmt.Sprintf("%T", i))
+		return ""
 	}
-
-	return strings.Join(stringSlice, " | ")
 }
 
 func JoinInts(i []int, sep string) string {
