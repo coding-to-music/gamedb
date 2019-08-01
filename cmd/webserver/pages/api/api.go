@@ -67,14 +67,17 @@ func (r APIRequest) geKey() (key string, err error) {
 
 	key = r.getQueryString(ParamAPIKey.Name, "")
 	if key == "" {
-		key, err = session.Get(r.request, helpers.SessionUserAPIKey)
-		if err != nil {
-			return key, err
+		key = r.request.Header.Get(ParamAPIKey.Name)
+		if key == "" {
+			key, err = session.Get(r.request, helpers.SessionUserAPIKey)
+			if err != nil {
+				return key, err
+			}
 		}
 	}
 
 	if key == "" {
-		return key, errors.New("invalid key")
+		return key, errors.New("no key")
 	}
 
 	if len(key) != 20 {
