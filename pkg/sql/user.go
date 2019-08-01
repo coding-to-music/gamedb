@@ -65,6 +65,17 @@ type User struct {
 	APIKey        string          `gorm:"not null;column:api_key"`
 }
 
+func (user User) Save() error {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	db = db.Save(&user)
+	return db.Error
+}
+
 func UpdateUserCol(userID int, column string, value interface{}) (err error) {
 
 	if userID == 0 {
