@@ -28,6 +28,16 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
+	// Get last page
+	lastPage, err := session.Get(r, helpers.SessionLastPage)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	if lastPage == "" {
+		lastPage = "/"
+	}
+
 	// Logout
 	err = session.DeleteAll(r)
 	log.Err(err, r)
@@ -38,16 +48,6 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.Save(w, r)
 	log.Err(err, r)
 
-	// Get last page
-	val, err := session.Get(r, helpers.SessionLastPage)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	if val == "" {
-		val = "/"
-	}
-
 	//
-	http.Redirect(w, r, val, http.StatusFound)
+	http.Redirect(w, r, lastPage, http.StatusFound)
 }
