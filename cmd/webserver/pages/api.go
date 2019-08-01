@@ -11,200 +11,198 @@ import (
 	"github.com/go-chi/chi"
 )
 
-var (
-	endpoints = []api.APICall{
-		{
-			Title: "App - Players",
-			Path:  "app-players",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-				{Name: "id", Type: "int"},
-			},
+var endpoints = []api.APICall{
+	{
+		Title: "App - Players",
+		Path:  "app-players",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
+			{Name: "id", Type: "int"},
 		},
-		{
-			Title: "App - Price Changes",
-			Path:  "app-prices",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-				{Name: "id", Type: "int"},
-			},
+	},
+	{
+		Title: "App - Price Changes",
+		Path:  "app-prices",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
+			{Name: "id", Type: "int"},
 		},
-		{
-			Title: "Apps",
-			Path:  "apps",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-				{Name: "id", Type: "int"},
-				{Name: "category", Type: "int"},
-				{Name: "tag", Type: "int"},
-				{Name: "genre", Type: "int"},
-				{Name: "min_players", Type: "int"},
-				{Name: "max_players", Type: "int"},
-				{Name: "min_score", Type: "int"},
-				{Name: "max_score", Type: "int"},
-				{Name: "min_release_date", Type: "timestamp"},
-				{Name: "max_release_date", Type: "timestamp"},
-				{Name: "min_trending", Type: "int"},
-				{Name: "max_trending", Type: "int"},
-			},
-			Handler: ApiEndpointHandler(api.ApiAppsHandler),
+	},
+	{
+		Title: "Apps",
+		Path:  "apps",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
+			{Name: "id", Type: "int"},
+			{Name: "category", Type: "int"},
+			{Name: "tag", Type: "int"},
+			{Name: "genre", Type: "int"},
+			{Name: "min_players", Type: "int"},
+			{Name: "max_players", Type: "int"},
+			{Name: "min_score", Type: "int"},
+			{Name: "max_score", Type: "int"},
+			{Name: "min_release_date", Type: "timestamp"},
+			{Name: "max_release_date", Type: "timestamp"},
+			{Name: "min_trending", Type: "int"},
+			{Name: "max_trending", Type: "int"},
 		},
-		{
-			Title: "Articles",
-			Path:  "articles",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-			},
+		Handler: ApiEndpointHandler(api.ApiAppsHandler),
+	},
+	{
+		Title: "Articles",
+		Path:  "articles",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
 		},
-		{
-			Title: "Bundles",
-			Path:  "bundles",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-			},
+	},
+	{
+		Title: "Bundles",
+		Path:  "bundles",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
 		},
-		{
-			Title: "Changes",
-			Path:  "changes",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-			},
+	},
+	{
+		Title: "Changes",
+		Path:  "changes",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
 		},
-		{
-			Title: "Groups",
-			Path:  "groups",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-			},
+	},
+	{
+		Title: "Groups",
+		Path:  "groups",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
 		},
-		{
-			Title: "Packages",
-			Path:  "packages",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-			},
+	},
+	{
+		Title: "Packages",
+		Path:  "packages",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
 		},
-		{
-			Title: "Player - Badges",
-			Path:  "player-badges",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-				{Name: "id", Type: "int"},
-			},
+	},
+	{
+		Title: "Player - Badges",
+		Path:  "player-badges",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
+			{Name: "id", Type: "int"},
 		},
-		{
-			Title: "Player - Games",
-			Path:  "player-apps",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-				{Name: "id", Type: "int"},
-			},
+	},
+	{
+		Title: "Player - Games",
+		Path:  "player-apps",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
+			{Name: "id", Type: "int"},
 		},
-		{
-			Title: "Player - History",
-			Path:  "player-history",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-				{Name: "id", Type: "int"},
-			},
+	},
+	{
+		Title: "Player - History",
+		Path:  "player-history",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
+			{Name: "id", Type: "int"},
 		},
-		{
-			Title:  "Player - Update",
-			Path:   "player-update",
-			Params: []api.APICallParam{},
+	},
+	{
+		Title:  "Player - Update",
+		Path:   "player-update",
+		Params: []api.APICallParam{},
+	},
+	{
+		Title: "Players",
+		Path:  "players",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
+			api.ParamPage,
+			api.ParamLimit,
+			api.ParamSortField,
+			api.ParamSortOrder,
 		},
-		{
-			Title: "Players",
-			Path:  "players",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-				api.ParamPage,
-				api.ParamLimit,
-				api.ParamSortField,
-				api.ParamSortOrder,
-			},
+	},
+	{
+		Title: "Stats - Categories",
+		Path:  "steam-stats",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
 		},
-		{
-			Title: "Stats - Categories",
-			Path:  "steam-stats",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-			},
+	},
+	{
+		Title: "Stats - Genres",
+		Path:  "steam-stats",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
 		},
-		{
-			Title: "Stats - Genres",
-			Path:  "steam-stats",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-			},
+	},
+	{
+		Title: "Stats - Publishers",
+		Path:  "steam-stats",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
 		},
-		{
-			Title: "Stats - Publishers",
-			Path:  "steam-stats",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-			},
+	},
+	{
+		Title: "Stats - Steam",
+		Path:  "steam-stats",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
 		},
-		{
-			Title: "Stats - Steam",
-			Path:  "steam-stats",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-			},
+	},
+	{
+		Title: "Stats - Tags",
+		Path:  "steam-stats",
+		Params: []api.APICallParam{
+			api.ParamAPIKey,
 		},
-		{
-			Title: "Stats - Tags",
-			Path:  "steam-stats",
-			Params: []api.APICallParam{
-				api.ParamAPIKey,
-			},
-		},
-	}
-)
+	},
+}
 
 func APIRouter() http.Handler {
 
