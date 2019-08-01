@@ -73,7 +73,12 @@
                                             <tbody>
                                             {{ range $key, $value := .Params }}
                                                 <tr>
-                                                    <td><input type="{{ .InputType }}" name="{{ .Name }}"></td>
+                                                    <td>
+                                                        <input
+                                                                type="{{ .InputType }}"
+                                                                name="{{ .Name }}"
+                                                                {{ if eq .Name "key" }}value="{{ $.Key }}"{{ end }}>
+                                                    </td>
                                                     <td>{{ .Name }}</td>
                                                     <td>{{ .Type }}</td>
                                                 </tr>
