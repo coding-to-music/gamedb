@@ -76,7 +76,7 @@ func UpdateUserCol(userID int, column string, value interface{}) (err error) {
 		return err
 	}
 
-	var user = User{ID: 1}
+	var user = User{ID: userID}
 
 	db = db.Model(&user).Update(column, value)
 	return db.Error
