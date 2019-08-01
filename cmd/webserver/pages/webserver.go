@@ -3,6 +3,7 @@ package pages
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"html"
 	"html/template"
 	"math"
@@ -815,8 +816,11 @@ func isAdmin(r *http.Request) bool {
 func getUserFromSession(r *http.Request) (user sql.User, err error) {
 
 	userID, err := helpers.GetUserIDFromSesion(r)
-	if err != nil || userID == 0 {
+	if err != nil {
 		return user, err
+	}
+	if userID == 0 {
+		return user, errors.New("invalid user id")
 	}
 
 	return sql.GetUserByID(userID)
