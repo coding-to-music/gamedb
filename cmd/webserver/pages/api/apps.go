@@ -87,6 +87,24 @@ func ApiAppsHandler(call APIRequest) (ret interface{}, err error) {
 		db = db.Where("JSON_CONTAINS(tags, ?) = 1", "["+strconv.FormatInt(i, 10)+"]")
 	}
 
+	// Category
+	i, err = call.getQueryInt("category", 0)
+	if err != nil {
+		return apps, errors.New("invalid category")
+	}
+	if i > 0 {
+		db = db.Where("JSON_CONTAINS(categories, ?) = 1", "["+strconv.FormatInt(i, 10)+"]")
+	}
+
+	// Genre
+	i, err = call.getQueryInt("genre", 0)
+	if err != nil {
+		return apps, errors.New("invalid genre")
+	}
+	if i > 0 {
+		db = db.Where("JSON_CONTAINS(genres, ?) = 1", "["+strconv.FormatInt(i, 10)+"]")
+	}
+
 	// Min players
 	i, err = call.getQueryInt("min_players", 0)
 	if err != nil {
@@ -123,12 +141,41 @@ func ApiAppsHandler(call APIRequest) (ret interface{}, err error) {
 		db = db.Where("release_date_unix <= ?", i)
 	}
 
-	// {Name: "category", Type: "int"},
-	// {Name: "genre", Type: "int"},
-	// {Name: "min_score", Type: "int"},
-	// {Name: "max_score", Type: "int"},
-	// {Name: "min_trending", Type: "int"},
-	// {Name: "max_trending", Type: "int"},
+	// Min review score
+	i, err = call.getQueryInt("min_score", 0)
+	if err != nil {
+		return apps, errors.New("invalid review score")
+	}
+	if i > 0 {
+		db = db.Where("reviews_score >= ?", i)
+	}
+
+	// Max review score
+	i, err = call.getQueryInt("max_score", 0)
+	if err != nil {
+		return apps, errors.New("invalid review score")
+	}
+	if i > 0 {
+		db = db.Where("reviews_score <= ?", i)
+	}
+
+	// Min trending value
+	i, err = call.getQueryInt("min_trending", 0)
+	if err != nil {
+		return apps, errors.New("invalid trending value")
+	}
+	if i > 0 {
+		db = db.Where("player_trend >= ?", i)
+	}
+
+	// Max trending value
+	i, err = call.getQueryInt("max_trending", 0)
+	if err != nil {
+		return apps, errors.New("invalid trending value")
+	}
+	if i > 0 {
+		db = db.Where("player_trend <= ?", i)
+	}
 
 	//
 	var sqlApps []sql.App
