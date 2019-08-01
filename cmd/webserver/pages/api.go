@@ -16,8 +16,10 @@ var (
 			Path:  "app-players",
 			Params: []api.APICallParam{
 				api.ParamAPIKey,
-				api.ParamLimit,
 				api.ParamPage,
+				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 				{Name: "id", Type: "int"},
 			},
 		},
@@ -28,6 +30,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 				{Name: "id", Type: "int"},
 			},
 		},
@@ -38,12 +42,16 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 				{Name: "id", Type: "int"},
+				{Name: "category", Type: "int"},
+				{Name: "tag", Type: "int"},
+				{Name: "genre", Type: "int"},
 				{Name: "min_players", Type: "int"},
 				{Name: "max_players", Type: "int"},
 				{Name: "min_score", Type: "int"},
 				{Name: "max_score", Type: "int"},
-				{Name: "category", Type: "int"},
 				{Name: "min_release_date", Type: "timestamp"},
 				{Name: "max_release_date", Type: "timestamp"},
 				{Name: "min_trending", Type: "int"},
@@ -58,6 +66,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 			},
 		},
 		{
@@ -67,6 +77,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 			},
 		},
 		{
@@ -76,6 +88,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 			},
 		},
 		{
@@ -85,6 +99,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 			},
 		},
 		{
@@ -94,6 +110,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 			},
 		},
 		{
@@ -103,6 +121,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 				{Name: "id", Type: "int"},
 			},
 		},
@@ -113,6 +133,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 				{Name: "id", Type: "int"},
 			},
 		},
@@ -123,6 +145,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 				{Name: "id", Type: "int"},
 			},
 		},
@@ -138,6 +162,8 @@ var (
 				api.ParamAPIKey,
 				api.ParamPage,
 				api.ParamLimit,
+				api.ParamSortField,
+				api.ParamSortOrder,
 			},
 		},
 		{
@@ -257,20 +283,34 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 
 		call, err := api.NewAPICall(r)
 		if err != nil {
+
 			err = returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
 			log.Err(err)
+
+			err = call.SaveToInflux(false, err)
+			log.Err(err)
+
 			return
 		}
 
 		resp, err := callback(call)
 		if err != nil {
+
 			err = returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
 			log.Err(err)
+
+			err = call.SaveToInflux(false, err)
+			log.Err(err)
+
 			return
 		}
 
 		err = returnJSON(w, r, ApiEndpointResponse{Data: resp})
 		log.Err(err)
+
+		err = call.SaveToInflux(true, nil)
+		log.Err(err)
+
 		return
 	}
 }

@@ -17,16 +17,9 @@ import (
 )
 
 var (
+	// Limiters
 	ops = limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
 	lmt = limiter.New(&ops).SetMax(1).SetBurst(2)
-
-	// Errors
-	ErrNoKey         = errors.New("no key")
-	ErrOverLimit     = errors.New("over rate limit")
-	ErrInvalidKey    = errors.New("invalid key")
-	ErrWrongLevelKey = errors.New("wrong level key")
-	ErrInvalidOffset = errors.New("invalid offset")
-	ErrInvalidLimit  = errors.New("invalid limit")
 
 	// Core params
 	ParamAPIKey    = APICallParam{Name: "key", Type: "string"}
@@ -37,16 +30,17 @@ var (
 )
 
 type APIRequest struct {
-	request *http.Request
+	request   *http.Request
+	userEmail string
 }
 
 func NewAPICall(r *http.Request) (api APIRequest, err error) {
 
-	x := APIRequest{request: r}
+	call := APIRequest{request: r}
 
-	key, err := x.geKey()
+	key, err := call.geKey()
 	if err != nil {
-		return x, err
+		return call, err
 	}
 
 	// Rate limit
@@ -55,20 +49,18 @@ func NewAPICall(r *http.Request) (api APIRequest, err error) {
 		// return id, offset, limit, errOverLimit // todo
 	}
 
-	// Check user ahs access to api
-	level, err := sql.GetUserFromKeyCache(key)
+	// Check user has access to api
+	user, err := sql.GetUserFromKeyCache(key)
 	if err != nil {
-		return x, err
+		return call, err
 	}
-	if level.PatreonLevel < 3 {
-		return x, ErrWrongLevelKey
+	if user.PatreonLevel < 3 {
+		return call, errors.New("invalid user level")
 	}
 
-	if err != nil {
-		return x, err
-	}
+	call.userEmail = user.Email
 
-	return x, nil
+	return call, nil
 }
 
 func (r APIRequest) geKey() (key string, err error) {
@@ -82,40 +74,46 @@ func (r APIRequest) geKey() (key string, err error) {
 	}
 
 	if key == "" {
-		return key, ErrNoKey
+		return key, errors.New("invalid key")
 	}
 
 	if len(key) != 20 {
-		return key, ErrInvalidKey
+		return key, errors.New("invalid key")
 	}
 
 	return key, err
 }
 
-func (r APIRequest) saveToInflux(success bool) (err error) {
+func (r APIRequest) SaveToInflux(success bool, callError error) (err error) {
 
-	key, err := r.geKey()
-	if err != nil {
-		return err
-	}
-
+	// Fields
 	fields := map[string]interface{}{}
-
 	if success {
 		fields["success"] = 1
 	} else {
 		fields["error"] = 1
 	}
 
+	// Tags
+	key, _ := r.geKey()
+
+	tags := map[string]string{
+		"path":       r.request.URL.Path,
+		"key":        key,
+		"user_email": r.userEmail,
+	}
+
+	if callError != nil {
+		tags["error"] = callError.Error()
+	}
+
+	// Save to Influx
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, client.Point{
 		Measurement: string(helpers.InfluxMeasurementAPICalls),
-		Tags: map[string]string{
-			"path": r.request.URL.Path,
-			"key":  key,
-		},
-		Fields:    fields,
-		Time:      time.Now(),
-		Precision: "u",
+		Tags:        tags,
+		Fields:      fields,
+		Time:        time.Now(),
+		Precision:   "u",
 	})
 
 	return err
@@ -138,7 +136,7 @@ func (r APIRequest) getQueryInt(key string, fallback int64) (val int64, err erro
 	}
 }
 
-func (r APIRequest) SetSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
+func (r APIRequest) setSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
 
 	var err error
 
@@ -147,7 +145,7 @@ func (r APIRequest) SetSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
 	if err != nil {
 		return db, err
 	}
-	if limit <= 0 {
+	if limit <= 0 || limit > 1000 {
 		return db, errors.New("invalid limit")
 	}
 
@@ -167,10 +165,11 @@ func (r APIRequest) SetSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
 	return db, db.Error
 }
 
-func (r APIRequest) setSQLOrder(db *gorm.DB, allowed []string) (*gorm.DB, error) {
+func (r APIRequest) setSQLOrder(db *gorm.DB, allowed func(in string) (out string)) (*gorm.DB, error) {
 
 	field := r.getQueryString(ParamSortField.Name, "id")
-	if field != "id" && !helpers.SliceHasString(allowed, field) {
+	fieldReal := allowed(field)
+	if fieldReal == "" {
 		return db, errors.New("invalid sort field")
 	}
 
