@@ -6,7 +6,6 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -142,8 +141,8 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			Email:         email,
 			EmailVerified: false,
 			Password:      string(passwordBytes),
-			ProductCC:     steam.ProductCCUS,
-			APIKey:        helpers.RandString(20, helpers.Numbers+helpers.Letters),
+			ProductCC:     helpers.GetProductCC(r),
+			APIKey:        helpers.RandString(20, helpers.Numbers+helpers.LettersCaps),
 		}
 
 		db = db.Create(&user)
