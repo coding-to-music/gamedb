@@ -178,9 +178,9 @@ func (r APIRequest) setSQLOrder(db *gorm.DB, allowed func(in string) (out string
 
 	switch r.getQueryString(ParamSortOrder.Name, "asc") {
 	case "asc":
-		db = db.Order(field + " ASC")
+		db = db.Order(fieldReal + " ASC")
 	case "desc":
-		db = db.Order(field + " DESC")
+		db = db.Order(fieldReal + " DESC")
 	default:
 		return db, errors.New("invalid sort order")
 	}
