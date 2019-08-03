@@ -15,7 +15,7 @@ require (
 	github.com/Jleagle/steam-go v0.0.0-20190725114643-eb3f2528ea49
 	github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
-	github.com/ahmdrz/goinsta/v2 v2.4.2
+	github.com/ahmdrz/goinsta/v2 v2.4.4
 	github.com/antchfx/htmlquery v1.0.0 // indirect
 	github.com/antchfx/xmlquery v1.0.0 // indirect
 	github.com/antchfx/xpath v0.0.0-20190129040759-c8489ed3251e // indirect
