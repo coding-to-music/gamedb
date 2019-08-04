@@ -28,6 +28,7 @@ func SettingsRouter() http.Handler {
 	r.Post("/update", settingsPostHandler)
 	r.Post("/delete", deletePostHandler)
 	r.Get("/events.json", settingsEventsAjaxHandler)
+	r.Get("/new-key", settingsNewKeyHandler)
 	r.Get("/donations.json", settingsDonationsAjaxHandler)
 
 	// r.Get("/link-steam", linkSteamHandler)
@@ -300,6 +301,61 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 
 	http.Redirect(w, r, redirect, http.StatusFound)
+}
+
+func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	good, bad := func() (good string, bad string) {
+
+		// Get user
+		user, err := getUserFromSession(r)
+		log.Err(err)
+		if err != nil {
+			return "", "User not found"
+		}
+
+		user.SetAPIKey()
+
+		// Save user
+		db, err := sql.GetMySQLClient()
+		log.Err(err)
+		if err != nil {
+			return "", "We had trouble saving your settings (1001)"
+		}
+
+		db = db.Model(&user).Update("api_key", user.APIKey)
+		if db.Error != nil {
+			log.Err(db.Error, r)
+			return "", "We had trouble saving your settings (1002)"
+		}
+
+		// Update session
+		err = session.SetMany(r, map[string]string{
+			helpers.SessionUserAPIKey: user.APIKey,
+		})
+		if err != nil {
+			log.Err(err, r)
+			return "", "We had trouble saving your settings (1003)"
+		}
+
+		return "New API key generated", ""
+	}()
+
+	if good != "" {
+		err = session.SetFlash(r, helpers.SessionGood, good)
+		log.Err(err)
+	}
+	if bad != "" {
+		err = session.SetFlash(r, helpers.SessionBad, bad)
+		log.Err(err)
+	}
+
+	err = session.Save(w, r)
+	log.Err(err)
+
+	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {

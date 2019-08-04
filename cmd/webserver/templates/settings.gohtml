@@ -94,7 +94,7 @@
 
                         <div class="col-12 col-lg-6">
 
-                            <div class="card" id="connections">
+                            <div class="card mb-3" id="connections">
                                 <div class="card-header">Connections</div>
                                 <div class="card-body">
 
@@ -155,6 +155,19 @@
                                             </a>
                                         {{ end }}
                                     </p>
+
+                                </div>
+                            </div>
+
+                            <div class="card" id="api">
+                                <div class="card-header">API</div>
+                                <div class="card-body">
+
+                                    <p>API key: {{ .User.APIKey }}</p>
+
+                                    <a href="/settings/new-key" role="button" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-retweet"></i> Generate new key
+                                    </a>
 
                                 </div>
                             </div>

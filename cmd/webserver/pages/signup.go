@@ -142,8 +142,9 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			EmailVerified: false,
 			Password:      string(passwordBytes),
 			ProductCC:     helpers.GetProductCC(r),
-			APIKey:        helpers.RandString(20, helpers.Numbers+helpers.LettersCaps),
 		}
+
+		user.SetAPIKey()
 
 		db = db.Create(&user)
 

@@ -65,6 +65,10 @@ type User struct {
 	APIKey        string          `gorm:"not null;column:api_key"`
 }
 
+func (user *User) SetAPIKey() {
+	user.APIKey = helpers.RandString(20, helpers.Numbers+helpers.LettersCaps)
+}
+
 func (user User) Save() error {
 
 	db, err := GetMySQLClient()
