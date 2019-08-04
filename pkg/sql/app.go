@@ -257,8 +257,12 @@ func (app App) GetPICSUpdatedNice() string {
 
 	d := app.ChangeNumberDate
 
-	// Empty dates
-	if d.IsZero() || d.Unix() == -62167219200 {
+	// 1 January 0000 00:00:00
+	if d.Unix() == 0 {
+		return "-"
+	}
+
+	if d.IsZero() {
 		return "-"
 	}
 	return d.Format(helpers.DateYearTime)
