@@ -553,7 +553,7 @@ func middlewareCSRF(h http.Handler) http.Handler {
 func MiddlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if config.IsLocal() {
-			log.Info(log.LogNameRequests, r.Method+" "+r.URL.Path)
+			log.Info(log.LogNameRequests, r.Method+" "+r.URL.String())
 		}
 		next.ServeHTTP(w, r)
 	})
