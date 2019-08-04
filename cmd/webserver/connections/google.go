@@ -71,7 +71,7 @@ func (g google) getConfig(login bool) oauth2.Config {
 
 	var redirectURL string
 	if login {
-		redirectURL = config.Config.GameDBDomain.Get() + "/settings/google-callback"
+		redirectURL = config.Config.GameDBDomain.Get() + "/login/google-callback"
 	} else {
 		redirectURL = config.Config.GameDBDomain.Get() + "/settings/google-callback"
 	}
