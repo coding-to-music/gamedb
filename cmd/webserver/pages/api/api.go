@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/session-go/session"
-	"github.com/didip/tollbooth"
 	"github.com/didip/tollbooth/limiter"
+	"github.com/didip/tollbooth/v5"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/influxdata/influxdb1-client"
