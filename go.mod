@@ -49,7 +49,7 @@ require (
 	github.com/justinas/nosurf v0.0.0-20190416172904-05988550ea18
 	github.com/jzelinskie/geddit v0.0.0-20190613154237-4b3cacc98c40
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/logrusorgru/aurora v0.0.0-20190428105938-cea283e61946
+	github.com/logrusorgru/aurora v0.0.0-20190804165540-94edacc10f9b
 	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
 	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
