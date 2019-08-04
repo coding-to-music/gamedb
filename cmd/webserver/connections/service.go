@@ -82,7 +82,7 @@ func unlink(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event
 	}()
 
 	userID, err := helpers.GetUserIDFromSesion(r)
-	if err != nil || userID == 0 {
+	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1001)")
 		log.Err(err)
@@ -172,7 +172,7 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 	}
 
 	userID, err := helpers.GetUserIDFromSesion(r)
-	if err != nil || userID == 0 {
+	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1004)")
 		log.Err(err)

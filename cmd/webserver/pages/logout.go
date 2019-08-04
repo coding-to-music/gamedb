@@ -21,7 +21,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make event
 	userID, err := helpers.GetUserIDFromSesion(r)
-	if err != nil || userID == 0 {
+	if err != nil {
 		log.Err(err, r)
 	} else {
 		err = mongo.CreateUserEvent(r, userID, mongo.EventLogout)
