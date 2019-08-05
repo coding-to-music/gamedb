@@ -1,6 +1,6 @@
 {{define "group"}} {{ template "_header" . }}
 
-<div class="container" id="group-page" data-id="{{ .Group.ID64 }}" data-path="{{ .Group.GetPath }}">
+<div class="container" id="group-page" data-group-id="{{ .Group.ID64 }}" data-path="{{ .Group.GetPath }}">
 
     <div class="jumbotron">
 
@@ -31,7 +31,7 @@
                 <div class="alert alert-danger" role="alert">{{ .Group.Error }}</div>
             {{ end }}
 
-            <div id="chart"></div>
+            <div id="group-chart"></div>
 
             {{ if eq .Group.Type "game" }}
                 <p><a href="/apps/{{ .Group.AppID }}" class="btn btn-success">Go to App page</a></p>

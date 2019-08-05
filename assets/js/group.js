@@ -10,11 +10,14 @@ if ($groupPage.length > 0) {
             toast(true, 'Click to refresh', 'This group has been updated', -1, 'refresh');
         }
     });
+}
+
+if ($appPage.length > 0 || $groupPage.length > 0) {
 
     // Load chart
     $.ajax({
         type: "GET",
-        url: '/groups/' + $groupPage.attr('data-id') + '/time.json',
+        url: '/groups/' + $groupPage.attr('data-group-id') + '/time.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
@@ -33,7 +36,7 @@ if ($groupPage.length > 0) {
                 // min: 0,
             };
 
-            Highcharts.chart('chart', {
+            Highcharts.chart('group-chart', {
                 chart: {
                     type: 'line',
                     backgroundColor: 'rgba(0,0,0,0)',
@@ -100,8 +103,6 @@ if ($groupPage.length > 0) {
                     // },
                 ],
             });
-
         },
     });
-
 }

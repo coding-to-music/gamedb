@@ -48,6 +48,7 @@ type App struct {
 	GameID                        int       `gorm:"not null;column:game_id"`                          //
 	GameName                      string    `gorm:"not null;column:game_name"`                        //
 	Genres                        string    `gorm:"not null;column:genres;type:json"`                 // []int
+	GroupID                       string    `gorm:"not null;column:group_id;type:varchar"`            //
 	HeaderImage                   string    `gorm:"not null;column:image_header"`                     //
 	Homepage                      string    `gorm:"not null;column:homepage"`                         //
 	Icon                          string    `gorm:"not null;column:icon"`                             //

@@ -1,6 +1,6 @@
 {{define "app"}} {{ template "_header" . }}
 
-<div class="container" id="app-page" data-bg="{{ .App.Background }}" data-id="{{ .App.ID }}" data-path="{{ .App.GetPath }}">
+<div class="container" id="app-page" data-group-id="{{ .App.GroupID }}" data-bg="{{ .App.Background }}" data-id="{{ .App.ID }}" data-path="{{ .App.GetPath }}">
 
     <div class="jumbotron">
 
@@ -301,6 +301,13 @@
 
                         </div>
                     </div>
+
+                    {{ if ne .App.GroupID "" }}
+                        <h5>Official Group Members</h5>
+                        <div id="group-chart">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    {{ end }}
 
                     {{/* Top players table */}}
                     <h5>Top Game DB Players</h5>
