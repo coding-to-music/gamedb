@@ -25,24 +25,26 @@
                 </div>
             {{ end }}
 
-            <table class="table mt-3">
-                <tr>
-                    <th scope="row" nowrap="nowrap" width="1%">Discount</th>
+            <div class="table-responsive">
+                <table class="table mt-3">
+                    <tr>
+                        <th scope="row" nowrap="nowrap" width="1%">Discount</th>
 
-                    <td>Current: <strong>{{ .Bundle.Discount }}%</strong></td>
-                    <td>Highest: <strong>{{ .Bundle.HighestDiscount }}%</strong></td>
-                    <td>Lowest: <strong>{{ .Bundle.LowestDiscount }}%</strong></td>
+                        <td>Current: <strong>{{ .Bundle.Discount }}%</strong></td>
+                        <td>Highest: <strong>{{ .Bundle.HighestDiscount }}%</strong></td>
+                        <td>Lowest: <strong>{{ .Bundle.LowestDiscount }}%</strong></td>
 
-                </tr>
-                <tr>
-                    <th scope="row" nowrap="nowrap" width="1%">First seen on Game DB</th>
-                    <td colspan="3">{{ .Bundle.GetCreatedNice }}</td>
-                </tr>
-                <tr>
-                    <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
-                    <td colspan="3">{{ .Bundle.GetUpdatedNice }}</td>
-                </tr>
-            </table>
+                    </tr>
+                    <tr>
+                        <th scope="row" nowrap="nowrap" width="1%">First seen on Game DB</th>
+                        <td>{{ .Bundle.GetCreatedNice }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
+                        <td>{{ .Bundle.GetUpdatedNice }}</td>
+                    </tr>
+                </table>
+            </div>
 
             <div id="prices-chart" class="mt-3"></div>
 
