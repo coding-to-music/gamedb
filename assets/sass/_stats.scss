@@ -1,7 +1,7 @@
 #stats-page {
 
-    h5 {
-        @extend .mt-3;
+    .chart, table.table, .btn.btn-success {
+        margin-bottom: 1rem;
     }
 
     .chart {

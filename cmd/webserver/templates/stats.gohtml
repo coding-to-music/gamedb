@@ -3,7 +3,7 @@
 <div class="container" id="stats-page">
 
     <div class="jumbotron">
-        <h1><i class="fas fa-chart-bar"></i> Stats</h1>
+        <h1 class="mb-0"><i class="fas fa-chart-bar"></i> Stats</h1>
     </div>
 
     {{ template "_flashes" . }}
@@ -13,16 +13,16 @@
         <div class="card-body">
 
             <div class="row">
-                <div class="col-12 col-sm-6 col-lg-4 col-xl mb-3 mb-xl-0">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
                     <a href="/apps" role="button" class="btn btn-success btn-block">Total Apps<br/>{{ comma .AppsCount}}</a>
                 </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl mb-3 mb-xl-0">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
                     <a href="/packages" role="button" class="btn btn-success btn-block">Total Packages<br/>{{ comma .PackagesCount}}</a>
                 </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl mb-3 mb-xl-0">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
                     <a href="/bundles" role="button" class="btn btn-success btn-block">Total Bundles<br/>{{ comma .BundlesCount}}</a>
                 </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl mb-3 mb-xl-0">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
                     <a href="/players" role="button" class="btn btn-success btn-block">Total Players<br/>{{ comma64 .PlayersCount}}</a>
                 </div>
             </div>
@@ -60,7 +60,7 @@
             </div>
 
             <h5>App Scores</h5>
-            <div class="chart" id="scores">
+            <div class="chart mb-0" id="scores">
                 <i class="fas fa-spinner fa-spin"></i>
             </div>
 
