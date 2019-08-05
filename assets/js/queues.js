@@ -35,8 +35,10 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
                     value.series[0].setData(data[index]['sum_messages']);
                 });
 
+                $('#live-badge').addClass('badge-success').removeClass('badge-secondary badge-danger');
             },
             error: function (xhr, ajaxOptions, thrownError) {
+
                 clearTimeout(timer);
                 $('#live-badge').addClass('badge-danger').removeClass('badge-secondary badge-success');
                 toast(false, 'Live functionality has stopped');
