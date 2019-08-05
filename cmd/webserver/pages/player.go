@@ -266,74 +266,74 @@ type playerWishlistItem struct {
 // 	Players int64
 // }
 //
-// // func (p playerRanksTemplate) format(rank int) string {
-// //
-// // 	ord := humanize.Ordinal(rank)
-// // 	if ord == "0th" {
-// // 		return "-"
-// // 	}
-// // 	return ord
-// // }
-// //
-// // func (p playerRanksTemplate) GetLevel() string {
-// // 	return p.format(p.Ranks.LevelRank)
-// // }
-// //
-// // func (p playerRanksTemplate) GetGames() string {
-// // 	return p.format(p.Ranks.GamesRank)
-// // }
-// //
-// // func (p playerRanksTemplate) GetBadges() string {
-// // 	return p.format(p.Ranks.BadgesRank)
-// // }
-// //
-// // func (p playerRanksTemplate) GetTime() string {
-// // 	return p.format(p.Ranks.PlayTimeRank)
-// // }
-// //
-// // func (p playerRanksTemplate) GetFriends() string {
-// // 	return p.format(p.Ranks.FriendsRank)
-// // }
-// //
-// // func (p playerRanksTemplate) formatPercent(rank int) string {
-// //
-// // 	if rank == 0 {
-// // 		return ""
-// // 	}
-// //
-// // 	precision := 0
-// // 	if rank <= 10 {
-// // 		precision = 3
-// // 	} else if rank <= 100 {
-// // 		precision = 2
-// // 	} else if rank <= 1000 {
-// // 		precision = 1
-// // 	}
-// //
-// // 	percent := (float64(rank) / float64(p.Players)) * 100
-// // 	return helpers.FloatToString(percent, precision) + "%"
-// //
-// // }
-// //
-// // func (p playerRanksTemplate) GetLevelPercent() string {
-// // 	return p.formatPercent(p.Ranks.LevelRank)
-// // }
-// //
-// // func (p playerRanksTemplate) GetGamesPercent() string {
-// // 	return p.formatPercent(p.Ranks.GamesRank)
-// // }
-// //
-// // func (p playerRanksTemplate) GetBadgesPercent() string {
-// // 	return p.formatPercent(p.Ranks.BadgesRank)
-// // }
-// //
-// // func (p playerRanksTemplate) GetTimePercent() string {
-// // 	return p.formatPercent(p.Ranks.PlayTimeRank)
-// // }
-// //
-// // func (p playerRanksTemplate) GetFriendsPercent() string {
-// // 	return p.formatPercent(p.Ranks.FriendsRank)
-// // }
+// func (p playerRanksTemplate) format(rank int) string {
+//
+// 	ord := humanize.Ordinal(rank)
+// 	if ord == "0th" {
+// 		return "-"
+// 	}
+// 	return ord
+// }
+//
+// func (p playerRanksTemplate) GetLevel() string {
+// 	return p.format(p.Ranks.LevelRank)
+// }
+//
+// func (p playerRanksTemplate) GetGames() string {
+// 	return p.format(p.Ranks.GamesRank)
+// }
+//
+// func (p playerRanksTemplate) GetBadges() string {
+// 	return p.format(p.Ranks.BadgesRank)
+// }
+//
+// func (p playerRanksTemplate) GetTime() string {
+// 	return p.format(p.Ranks.PlayTimeRank)
+// }
+//
+// func (p playerRanksTemplate) GetFriends() string {
+// 	return p.format(p.Ranks.FriendsRank)
+// }
+//
+// func (p playerRanksTemplate) formatPercent(rank int) string {
+//
+// 	if rank == 0 {
+// 		return ""
+// 	}
+//
+// 	precision := 0
+// 	if rank <= 10 {
+// 		precision = 3
+// 	} else if rank <= 100 {
+// 		precision = 2
+// 	} else if rank <= 1000 {
+// 		precision = 1
+// 	}
+//
+// 	percent := (float64(rank) / float64(p.Players)) * 100
+// 	return helpers.FloatToString(percent, precision) + "%"
+//
+// }
+//
+// func (p playerRanksTemplate) GetLevelPercent() string {
+// 	return p.formatPercent(p.Ranks.LevelRank)
+// }
+//
+// func (p playerRanksTemplate) GetGamesPercent() string {
+// 	return p.formatPercent(p.Ranks.GamesRank)
+// }
+//
+// func (p playerRanksTemplate) GetBadgesPercent() string {
+// 	return p.formatPercent(p.Ranks.BadgesRank)
+// }
+//
+// func (p playerRanksTemplate) GetTimePercent() string {
+// 	return p.formatPercent(p.Ranks.PlayTimeRank)
+// }
+//
+// func (p playerRanksTemplate) GetFriendsPercent() string {
+// 	return p.formatPercent(p.Ranks.FriendsRank)
+// }
 
 func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
