@@ -196,6 +196,11 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
+
+                        if (row[4] === '' || row[4] === '-') {
+                            $('#add-missing-friends').removeClass('d-none');
+                        }
+
                         return row[4].toLocaleString();
                     },
                     'orderSequence': ['desc', 'asc'],

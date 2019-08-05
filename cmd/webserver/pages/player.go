@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
+	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -21,6 +22,7 @@ func PlayerRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middlewareCSRF) // Just used for update button
 	r.Get("/", playerHandler)
+	r.Get("/add-friends", playerAddFriendsHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
 	r.Get("/recent.json", playerRecentAjaxHandler)
 	r.Get("/friends.json", playerFriendsAjaxHandler)
@@ -213,6 +215,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t.setBackground(backgroundApp, true, false)
+	t.setFlashes(w, r)
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
 
@@ -334,6 +337,66 @@ type playerWishlistItem struct {
 // func (p playerRanksTemplate) GetFriendsPercent() string {
 // 	return p.formatPercent(p.Ranks.FriendsRank)
 // }
+
+func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+
+	defer func() {
+
+		err := session.Save(w, r)
+		log.Err(err)
+
+		http.Redirect(w, r, "/players/"+id+"#friends", http.StatusFound)
+	}()
+
+	idx, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return
+	}
+
+	user, err := getUserFromSession(r)
+	if err != nil {
+		return
+	}
+
+	if strconv.FormatInt(user.SteamID, 10) != id {
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid user")
+		log.Err(err)
+		// return // todo
+	}
+
+	if user.PatreonLevel < 2 {
+		err = session.SetFlash(r, helpers.SessionBad, "Invalid user level")
+		log.Err(err)
+		// return // todo
+	}
+
+	//
+	var friendIDs []int64
+	var friendIDsMap = map[int64]bool{}
+
+	friends, err := mongo.GetFriends(idx, 0, 0, nil)
+	for _, v := range friends {
+		friendIDs = append(friendIDs, v.FriendID)
+		friendIDsMap[v.FriendID] = true
+	}
+
+	// Remove players we already have
+	players, err := mongo.GetPlayersByID(friendIDs, mongo.M{"_id": 1})
+	for _, v := range players {
+		delete(friendIDsMap, v.ID)
+	}
+
+	// Queue the rest
+	for k := range friendIDsMap {
+		err = queue.ProducePlayer(k)
+		log.Err(err)
+	}
+
+	err = session.SetFlash(r, helpers.SessionGood, strconv.Itoa(len(friendIDsMap))+" friends queued")
+	log.Err(err)
+}
 
 func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
