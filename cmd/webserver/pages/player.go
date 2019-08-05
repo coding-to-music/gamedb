@@ -363,13 +363,13 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	if strconv.FormatInt(user.SteamID, 10) != id {
 		err = session.SetFlash(r, helpers.SessionBad, "Invalid user")
 		log.Err(err)
-		// return // todo
+		return
 	}
 
 	if user.PatreonLevel < 2 {
 		err = session.SetFlash(r, helpers.SessionBad, "Invalid user level")
 		log.Err(err)
-		// return // todo
+		return
 	}
 
 	//
