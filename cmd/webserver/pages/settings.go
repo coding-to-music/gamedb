@@ -58,7 +58,6 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t := settingsTemplate{}
 	t.fill(w, r, "Settings", "")
 	t.addAssetPasswordStrength()
-	t.setFlashes(w, r)
 	t.Domain = config.Config.GameDBDomain.Get()
 	t.ProdCCs = helpers.GetProdCCs(true)
 

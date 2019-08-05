@@ -284,6 +284,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	//
 	t.setRandomBackground(true, false)
+	t.setFlashes()
 
 	// Pages
 	switch true {
@@ -377,6 +378,18 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 			t.setBackground(backgroundApp, title, link)
 		}
 	}
+}
+
+func (t *GlobalTemplate) setFlashes() {
+
+	var r = t.request
+	var err error
+
+	t.FlashesGood, err = session.GetFlashes(r, helpers.SessionGood)
+	log.Err(err, r)
+
+	t.FlashesBad, err = session.GetFlashes(r, helpers.SessionBad)
+	log.Err(err, r)
 }
 
 func (t GlobalTemplate) GetUserJSON() string {
@@ -483,17 +496,6 @@ func (t *GlobalTemplate) addAssetCarousel() {
 
 func (t *GlobalTemplate) addAssetPasswordStrength() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.2/pwstrength-bootstrap.min.js", Integrity: "sha256-BPKP4P2AbrV7hf80SHJAJkIvjt7X7MKFEPpA99uU6uQ="})
-}
-
-func (t *GlobalTemplate) setFlashes(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	t.FlashesGood, err = session.GetFlashes(r, helpers.SessionGood)
-	log.Err(err, r)
-
-	t.FlashesBad, err = session.GetFlashes(r, helpers.SessionBad)
-	log.Err(err, r)
 }
 
 //

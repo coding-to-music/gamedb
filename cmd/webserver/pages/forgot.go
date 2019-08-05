@@ -33,7 +33,6 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := forgotTemplate{}
 	t.fill(w, r, "Forgot Password", "")
-	t.setFlashes(w, r)
 	t.hideAds = true
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 

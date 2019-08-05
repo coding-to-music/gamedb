@@ -215,7 +215,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t.setBackground(backgroundApp, true, false)
-	t.setFlashes(w, r)
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
 
