@@ -793,7 +793,7 @@ func (q DataTablesQuery) getPage(perPage int) int {
 		return 1
 	}
 
-	return int(i/perPage) + 1
+	return (i / perPage) + 1
 }
 
 // Toasts

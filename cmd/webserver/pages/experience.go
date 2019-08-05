@@ -67,7 +67,8 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
 func getExperienceRows() (chunked [][]level) {
 
-	var rows []level
+	//noinspection GoPreferNilSlice
+	var rows = []level{}
 	xp := 0
 
 	for i := 0; i <= totalRows+1; i++ {
