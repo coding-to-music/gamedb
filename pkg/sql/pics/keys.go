@@ -43,7 +43,7 @@ var CommonKeys = map[string]PicsKey{
 	"community_visible_stats":       {FormatType: picsTypeBool},
 	"controller_support":            {FormatType: picsTypeTitle},
 	"controllervr":                  {FormatType: picsTypeNumberListJSONKeys},
-	"eulas":                         {FormatType: picsTypeJSON},
+	"eulas":                         {FormatType: picsTypeCustom},
 	"exfgls":                        {FormatType: picsTypeBool, Description: "Exclude from game library sharing"},
 	"gameid":                        {FormatType: picsTypeLink, Link: "/apps/$val$"},
 	"genres":                        {FormatType: picsTypeNumberListJSON, Link: "/apps?genres=$val$"},
@@ -343,6 +343,22 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 		case picsTypeCustom:
 
 			switch key {
+			case "eulas":
+
+				if val != "" {
+
+					eulas := EULAs{}
+					err := json.Unmarshal([]byte(val), &eulas)
+					log.Err(err)
+
+					var items []string
+					for _, eula := range eulas {
+						items = append(items, `<li><a target="_blank" href="`+eula.URL+`">`+eula.Name+`</a></li>`)
+					}
+
+					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
+				}
+
 			case "supported_languages":
 
 				if val != "" {

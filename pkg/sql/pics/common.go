@@ -10,6 +10,12 @@ type Associations map[string]struct {
 	Type string `json:"type"`
 }
 
+type EULAs map[string]struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
 type LibraryAssets struct {
 	LibraryCapsule string `json:"library_capsule"`
 	LibraryHero    string `json:"library_hero"`
@@ -19,12 +25,6 @@ type LibraryAssets struct {
 		PinnedPosition string `json:"pinned_position"`
 		WidthPct       string `json:"width_pct"`
 	} `json:"logo_position"`
-}
-
-type EULA map[string]struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	URL  string `json:"url"`
 }
 
 type SupportedLanguages map[steam.LanguageCode]struct {
