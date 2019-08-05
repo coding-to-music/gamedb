@@ -107,6 +107,7 @@ if ($playerPage.length > 0) {
                     "render": function (data, type, row) {
                         return row[5];
                     },
+                    'orderSequence': ['desc', 'asc'],
                 },
                 // Time
                 {
@@ -116,7 +117,8 @@ if ($playerPage.length > 0) {
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
-                    }
+                    },
+                    'orderSequence': ['desc', 'asc'],
                 },
                 // Price/Time
                 {
@@ -124,6 +126,7 @@ if ($playerPage.length > 0) {
                     "render": function (data, type, row) {
                         return row[6];
                     },
+                    'orderSequence': ['desc', 'asc'],
                 }
             ]
         }));
