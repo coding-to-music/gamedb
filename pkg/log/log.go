@@ -64,6 +64,24 @@ func (s Severity) toGoole() (severity logging.Severity) {
 	}
 }
 
+func (s Severity) string() string {
+
+	switch s {
+	case SeverityDebug:
+		return "Debug"
+	case SeverityInfo:
+		return "Info"
+	case SeverityWarning:
+		return "Warning"
+	case SeverityError:
+		return "Error"
+	case SeverityCritical:
+		return "Critical"
+	default:
+		return "Error"
+	}
+}
+
 type entry struct {
 	request   *http.Request
 	texts     []string
@@ -78,7 +96,7 @@ func (e entry) toText(severity Severity) string {
 	var ret []string
 
 	// Severity
-	ret = append(ret, strings.ToUpper(string(e.severity)))
+	ret = append(ret, e.severity.string())
 
 	// Environment
 	if !config.IsLocal() {
