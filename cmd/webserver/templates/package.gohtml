@@ -102,19 +102,19 @@
                             <table class="table">
                                 <tr>
                                     <th>Initial Price</th>
-                                    <td>{{ .Price.Initial }}</td>
+                                    <td>{{ .Price.GetInitial }}</td>
                                 </tr>
                                 <tr>
                                     <th>Final Price</th>
-                                    <td>{{ .Price.Final }}</td>
+                                    <td>{{ .Price.GetFinal }}</td>
                                 </tr>
                                 <tr>
                                     <th>Discount Percent</th>
-                                    <td>{{ .Price.DiscountPercent }}</td>
+                                    <td>{{ .Price.GetDiscountPercent }}</td>
                                 </tr>
                                 <tr>
                                     <th>Individual Price</th>
-                                    <td>{{ .Price.Individual }}</td>
+                                    <td>{{ .Price.GetIndividual }}</td>
                                 </tr>
                             </table>
 

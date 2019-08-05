@@ -534,7 +534,7 @@
                                     </td>
                                     <td nowrap="nowrap">{{ .App.GetReleaseState }}</td>
                                     <td nowrap="nowrap" data-sort="{{ .App.ReleaseDateUnix }}">{{ .App.GetReleaseDateNice }}</td>
-                                    <td nowrap="nowrap">{{ .Price.Final }}</td>
+                                    <td nowrap="nowrap">{{ .Price.GetFinal }}</td>
                                 </tr>
                             {{ end }}
                         </table>
