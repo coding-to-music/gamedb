@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dustin/go-humanize"
 	"github.com/gosimple/slug"
 )
 
@@ -68,7 +67,7 @@ func GetPlayerName(id int64, name string) string {
 	if name != "" {
 		return name
 	} else if id > 0 {
-		return "Player " + humanize.Comma(id)
+		return "Player " + strconv.FormatInt(id, 10)
 	} else {
 		return "Unknown Player"
 	}
