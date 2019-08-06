@@ -9,39 +9,45 @@ import (
 )
 
 type App struct {
-	ID         int               `json:"id"`
-	Name       string            `json:"name"`
-	Tags       []int             `json:"tags"`
-	Genres     []int             `json:"genres"`
-	Developers []int             `json:"developers"`
-	Publishers []int             `json:"publishers"`
-	Prices     sql.ProductPrices `json:"prices"`
+	ID             int               `json:"id"`
+	Name           string            `json:"name"`
+	Tags           []int             `json:"tags"`
+	Genres         []int             `json:"genres"`
+	Developers     []int             `json:"developers"`
+	Publishers     []int             `json:"publishers"`
+	Prices         sql.ProductPrices `json:"prices"`
+	PlayersMax     int               `json:"players_max"`
+	PlayersWeekMax int               `json:"players_week_max"`
+	PlayersWeekAvg float64           `json:"players_week_avg"`
 }
 
-func (apiApp *App) Fill(sqlApp sql.App) (err error) {
+func (app *App) Fill(sqlApp sql.App) (err error) {
 
-	apiApp.ID = sqlApp.ID
-	apiApp.Name = sqlApp.GetName()
-	apiApp.Tags, err = sqlApp.GetTagIDs()
+	app.ID = sqlApp.ID
+	app.Name = sqlApp.GetName()
+	app.Tags, err = sqlApp.GetTagIDs()
 	if err != nil {
 		return err
 	}
-	apiApp.Genres, err = sqlApp.GetGenreIDs()
+	app.Genres, err = sqlApp.GetGenreIDs()
 	if err != nil {
 		return err
 	}
-	apiApp.Developers, err = sqlApp.GetDeveloperIDs()
+	app.Developers, err = sqlApp.GetDeveloperIDs()
 	if err != nil {
 		return err
 	}
-	apiApp.Publishers, err = sqlApp.GetPublisherIDs()
+	app.Publishers, err = sqlApp.GetPublisherIDs()
 	if err != nil {
 		return err
 	}
-	apiApp.Prices, err = sqlApp.GetPrices()
+	app.Prices, err = sqlApp.GetPrices()
 	if err != nil {
 		return err
 	}
+	app.PlayersMax = sqlApp.PlayerPeakAllTime
+	app.PlayersWeekMax = sqlApp.PlayerPeakWeek
+	app.PlayersWeekAvg = sqlApp.PlayerAverageWeek
 
 	return nil
 }
@@ -51,20 +57,44 @@ func ApiAppsHandler(call APIRequest) (ret interface{}, err error) {
 	//noinspection GoPreferNilSlice
 	apps := []App{}
 
-	//
+	// Select columns
 	db, err := sql.GetMySQLClient()
 	if err != nil {
 		return apps, err
 	}
 
-	db = db.Select([]string{"id", "name", "tags", "genres", "developers", "categories", "prices"})
+	db = db.Select([]string{
+		"id",
+		"name",
+		"tags",
+		"genres",
+		"developers",
+		"categories",
+		"prices",
+		"player_peak_alltime",
+		"player_peak_week",
+		"player_avg_week",
+	})
 
+	// Limit & Offset (page)
 	db, err = call.setSQLLimitOffset(db)
 	if err != nil {
 		return apps, err
 	}
 
-	db, err = call.setSQLOrder(db, mutateAppsOrder)
+	// Order field & order
+	db, err = call.setSQLOrder(db, func(in string) (out string) {
+		switch in {
+		case "id", "name":
+			return in
+		case "players":
+			return "player_peak_week"
+		case "release_date":
+			return "release_date_unix"
+		default:
+			return ""
+		}
+	})
 	if err != nil {
 		return apps, err
 	}
@@ -193,18 +223,4 @@ func ApiAppsHandler(call APIRequest) (ret interface{}, err error) {
 	}
 
 	return apps, nil
-}
-
-func mutateAppsOrder(in string) (out string) {
-
-	switch in {
-	case "id", "name":
-		return in
-	case "players":
-		return "player_peak_week"
-	case "release_date":
-		return "release_date_unix"
-	default:
-		return ""
-	}
 }
