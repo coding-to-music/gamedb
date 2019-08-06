@@ -19,7 +19,7 @@ func GroupRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", groupHandler)
-	r.Get("/time.json", groupAjaxHandler)
+	r.Get("/members.json", groupAjaxHandler)
 	r.Get("/{slug}", groupHandler)
 	return r
 }

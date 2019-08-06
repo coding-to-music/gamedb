@@ -66,6 +66,7 @@ if ($appPage.length > 0) {
                 to.attr('loaded', 1);
                 loadAppPlayersChart();
                 loadAppPlayerTimes();
+                loadGroupChart();
             }
         }
         if (to.attr('href') === '#reviews') {

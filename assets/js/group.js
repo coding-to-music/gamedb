@@ -10,14 +10,21 @@ if ($groupPage.length > 0) {
             toast(true, 'Click to refresh', 'This group has been updated', -1, 'refresh');
         }
     });
+
+    loadGroupChart();
 }
 
-if ($appPage.length > 0 || $groupPage.length > 0) {
+function loadGroupChart() {
+
+    const $groupChart = $('#group-chart');
+    if ($groupChart.length === 0) {
+        return
+    }
 
     // Load chart
     $.ajax({
         type: "GET",
-        url: '/groups/' + $groupPage.attr('data-group-id') + '/time.json',
+        url: '/groups/' + $groupPage.attr('data-group-id') + '/members.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
