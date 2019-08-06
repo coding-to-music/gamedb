@@ -178,3 +178,26 @@ func GetFirstInfluxInt(resp *influx.Response) int {
 
 	return 0
 }
+
+func GetFirstInfluxFloat(resp *influx.Response) float64 {
+
+	if resp != nil &&
+		len(resp.Results) > 0 &&
+		len(resp.Results[0].Series) > 0 &&
+		len(resp.Results[0].Series[0].Values) > 0 &&
+		len(resp.Results[0].Series[0].Values[0]) > 1 {
+
+		switch v := resp.Results[0].Series[0].Values[0][1].(type) {
+		case float64:
+			return v
+		case json.Number:
+			i, err := v.Float64()
+			log.Err(err)
+			return i
+		default:
+			log.Warning("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
+		}
+	}
+
+	return 0
+}

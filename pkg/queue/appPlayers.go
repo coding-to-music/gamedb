@@ -106,6 +106,21 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 			}()
 
 			wg.Add(1)
+			var appPlayersWeekAverage float64
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appPlayersWeekAverage, err = getAppAveragePlayersWeek(appID)
+				if err != nil {
+					log.Err(err, appID)
+					payload.ackRetry(msg)
+					return
+				}
+			}()
+
+			wg.Add(1)
 			var appPlayersAlltime int
 			go func() {
 
@@ -156,7 +171,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				return
 			}
 
-			// Writes
+			// Save counts to Influx
 			wg.Add(1)
 			go func() {
 
@@ -170,12 +185,13 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				}
 			}()
 
+			// Save to MySQL
 			wg.Add(1)
 			go func() {
 
 				defer wg.Done()
 
-				err = updateAppPlayerInfoRow(appID, appTrend, appPlayersWeek, appPlayersAlltime)
+				err = updateAppPlayerInfoRow(appID, appTrend, appPlayersWeek, appPlayersAlltime, appPlayersWeekAverage)
 				if err != nil {
 					logError(err, appID)
 					payload.ackRetry(msg)
@@ -291,6 +307,22 @@ func getAppTopPlayersWeek(appID int) (val int, err error) {
 	return helpers.GetFirstInfluxInt(resp), nil
 }
 
+func getAppAveragePlayersWeek(appID int) (val float64, err error) {
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("mean(player_count)", "mean_player_count")
+	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.AddWhere("time", ">", "NOW() - 7d")
+	builder.AddWhere("app_id", "=", appID)
+
+	resp, err := helpers.InfluxQuery(builder.String())
+	if err != nil {
+		return 0, err
+	}
+
+	return helpers.GetFirstInfluxFloat(resp), nil
+}
+
 func getAppTopPlayersAlltime(appID int) (val int, err error) {
 
 	builder := influxql.NewBuilder()
@@ -345,7 +377,7 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	return trendTotal, nil
 }
 
-func updateAppPlayerInfoRow(appID int, trend int64, week int, alltime int) (err error) {
+func updateAppPlayerInfoRow(appID int, trend int64, week int, alltime int, average float64) (err error) {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -353,9 +385,10 @@ func updateAppPlayerInfoRow(appID int, trend int64, week int, alltime int) (err 
 	}
 
 	data := map[string]interface{}{
-		"player_trend":        int(trend),
+		"player_trend":        trend,
 		"player_peak_week":    week,
 		"player_peak_alltime": alltime,
+		"player_avg_week":     average,
 	}
 
 	gorm.Table("apps").Where("id = ?", appID).Updates(data)
