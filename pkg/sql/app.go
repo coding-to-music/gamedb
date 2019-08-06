@@ -424,7 +424,7 @@ func (app App) IsOnSale() bool {
 	return true
 }
 
-func (app App) GetOnlinePlayers() (players int, err error) {
+func (app App) GetOnlinePlayers() (players int64, err error) {
 
 	var item = helpers.MemcacheAppPlayersRow(app.ID)
 
