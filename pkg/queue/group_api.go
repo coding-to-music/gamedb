@@ -65,7 +65,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	//
 	var wg sync.WaitGroup
 
-	//
+	// Read from steamcommunity.com
 	wg.Add(1)
 	go func() {
 
@@ -100,6 +100,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		}
 	}()
 
+	// Read from MySQL
 	wg.Add(1)
 	var app sql.App
 	go func() {
@@ -108,28 +109,11 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		var err error
 
-		if group.Type == mongo.GroupTypeGame && group.AppID > 0 {
-			app, err = sql.GetApp(group.AppID, []string{"id"})
-			if err != nil {
-				log.Err(err)
-				return
-			}
-
-			app.GroupID = group.ID64
-
-			// todo, put this into a save block later on...
-			// todo, put into other group queue too
-			db, err := sql.GetMySQLClient()
-			if err != nil {
-				log.Err(err)s
-				return
-			}
-
-			db = db.Model(&app).Update("group_id", group.ID64)
-			if db.Error != nil {
-				log.Err(db.Error)
-				return
-			}
+		app, err = getAppFromGroup(group)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
 		}
 	}()
 
@@ -139,6 +123,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	// Save to Mongo
 	wg.Add(1)
 	go func() {
 
@@ -152,6 +137,21 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		}
 	}()
 
+	// Save to MySQL
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = saveAppsGroupID(app, group.ID64)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+	}()
+
+	// Save to Influx
 	wg.Add(1)
 	go func() {
 
@@ -171,7 +171,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	//
+	// Send PubSub
 	err = helpers.RemoveKeyFromMemCacheViaPubSub(
 		helpers.MemcacheGroup(group.ID64).Key,
 		helpers.MemcacheGroup(strconv.Itoa(group.ID)).Key,

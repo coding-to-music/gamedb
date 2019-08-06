@@ -440,6 +440,36 @@ func saveGroupToMongo(group mongo.Group) (err error) {
 	return err
 }
 
+func getAppFromGroup(group mongo.Group) (app sql.App, err error) {
+
+	if group.Type == mongo.GroupTypeGame && group.AppID > 0 {
+
+		app, err = sql.GetApp(group.AppID, []string{"id"})
+		if err != nil {
+			return
+		}
+
+		app.GroupID = group.ID64
+	}
+
+	return app, err
+}
+
+func saveAppsGroupID(app sql.App, groupID string) (err error) {
+
+	if app.ID == 0 || groupID == "" || app.GroupID == groupID {
+		return nil
+	}
+
+	db, err := sql.GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	db = db.Model(&app).Update("group_id", groupID)
+	return db.Error
+}
+
 func saveGroupToInflux(group mongo.Group) (err error) {
 
 	fields := map[string]interface{}{
