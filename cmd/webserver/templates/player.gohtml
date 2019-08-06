@@ -383,7 +383,7 @@
                                 <th scope="col">Group</th>
                                 <th scope="col">Members</th>
                                 <th scope="col">Official</th>
-                                <th scope="col">Link</th>
+                                <th scope="col" data-disabled>Link</th>
                             </tr>
                             </thead>
                             {{ range $key, $value := .Groups }}
@@ -395,7 +395,7 @@
                                         </div>
                                     </td>
                                     <td>{{ comma .Members }}</td>
-                                    <td>{{ if .IsOfficial }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
+                                    <td data-sort="{{ if .IsOfficial }}1{{ else }}0{{ end }}">{{ if .IsOfficial }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{ end }}</td>
                                     <td><a href="{{ .GetPath }}" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a></td>
                                 </tr>
                             {{ end }}
