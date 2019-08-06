@@ -156,7 +156,7 @@ func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
 	return resp
 }
 
-func GetFirstInfluxInt(resp *influx.Response) int {
+func GetFirstInfluxInt(resp *influx.Response) int64 {
 
 	if resp != nil &&
 		len(resp.Results) > 0 &&
@@ -166,11 +166,13 @@ func GetFirstInfluxInt(resp *influx.Response) int {
 
 		switch v := resp.Results[0].Series[0].Values[0][1].(type) {
 		case int:
+			return int64(v)
+		case int64:
 			return v
 		case json.Number:
 			i, err := v.Int64()
 			log.Err(err)
-			return int(i)
+			return i
 		default:
 			log.Warning("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
 		}

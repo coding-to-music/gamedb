@@ -91,7 +91,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 			}()
 
 			wg.Add(1)
-			var appPlayersWeek int
+			var appPlayersWeek int64
 			go func() {
 
 				defer wg.Done()
@@ -121,7 +121,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 			}()
 
 			wg.Add(1)
-			var appPlayersAlltime int
+			var appPlayersAlltime int64
 			go func() {
 
 				defer wg.Done()
@@ -290,7 +290,7 @@ func saveAppPlayerToInflux(appID int, viewers int, players int) (err error) {
 	return err
 }
 
-func getAppTopPlayersWeek(appID int) (val int, err error) {
+func getAppTopPlayersWeek(appID int) (val int64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
@@ -323,7 +323,7 @@ func getAppAveragePlayersWeek(appID int) (val float64, err error) {
 	return helpers.GetFirstInfluxFloat(resp), nil
 }
 
-func getAppTopPlayersAlltime(appID int) (val int, err error) {
+func getAppTopPlayersAlltime(appID int) (val int64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
@@ -377,7 +377,7 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	return trendTotal, nil
 }
 
-func updateAppPlayerInfoRow(appID int, trend int64, week int, alltime int, average float64) (err error) {
+func updateAppPlayerInfoRow(appID int, trend int64, week int64, alltime int64, average float64) (err error) {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
