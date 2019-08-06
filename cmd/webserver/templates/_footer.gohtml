@@ -96,9 +96,10 @@
 
     {{ if .ShowAds }}
         <script>
-            // Must be var
-            var infolinks_pid = 3185749;
-            var infolinks_wsid = 0;
+            $('small.small-print').css('margin-bottom', '140px');
+
+            const infolinks_pid = 3185749;
+            const infolinks_wsid = 0;
         </script>
         <script src="https://resources.infolinks.com/js/infolinks_main.js"></script>
     {{ end }}
