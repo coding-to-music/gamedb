@@ -608,9 +608,13 @@ func (app App) GetReviews() (reviews AppReviewSummary, err error) {
 
 func (app App) GetGenreIDs() (genres []int, err error) {
 
-	genres = []int{} // Needed for marshalling into type
-
 	err = helpers.Unmarshal([]byte(app.Genres), &genres)
+
+	// Needed for marshalling into array
+	if len(genres) == 0 {
+		genres = []int{}
+	}
+
 	return genres, err
 }
 
@@ -628,10 +632,13 @@ func (app App) GetGenres() (genres []Genre, err error) {
 
 func (app App) GetCategoryIDs() (categories []int, err error) {
 
-	categories = []int{} // Needed for marshalling into type
-
 	err = helpers.Unmarshal([]byte(app.Categories), &categories)
-	log.Err(err)
+
+	// Needed for marshalling into array
+	if len(categories) == 0 {
+		categories = []int{}
+	}
+
 	return categories, err
 }
 
@@ -665,10 +672,13 @@ func (app App) GetTags() (tags []Tag, err error) {
 
 func (app App) GetDeveloperIDs() (developers []int, err error) {
 
-	developers = []int{} // Needed for marshalling into type
-
 	err = helpers.Unmarshal([]byte(app.Developers), &developers)
-	log.Err(err)
+
+	// Needed for marshalling into array
+	if len(developers) == 0 {
+		developers = []int{}
+	}
+
 	return developers, err
 }
 
