@@ -44,9 +44,8 @@ func NewAPICall(r *http.Request) (api APIRequest, err error) {
 	}
 
 	// Rate limit
-	err = tollbooth.LimitByKeys(lmt, []string{key})
-	if err != nil {
-		// return id, offset, limit, errOverLimit // todo
+	if lmt.LimitReached(key) {
+		return call, errors.New("rate limit reached")
 	}
 
 	// Check user has access to api
