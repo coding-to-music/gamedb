@@ -58,7 +58,7 @@ var endpoints = []api.APICall{
 			{Name: "min_trending", Type: "int"},
 			{Name: "max_trending", Type: "int"},
 		},
-		Handler: ApiEndpointHandler(api.ApiAppsHandler),
+		Handler: ApiEndpointHandler(api.AppsHandler),
 	},
 	{
 		Title: "Articles",

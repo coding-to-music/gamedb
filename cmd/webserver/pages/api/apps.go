@@ -52,7 +52,7 @@ func (app *App) Fill(sqlApp sql.App) (err error) {
 	return nil
 }
 
-func ApiAppsHandler(call APIRequest) (ret interface{}, err error) {
+func AppsHandler(call APIRequest) (ret interface{}, err error) {
 
 	//noinspection GoPreferNilSlice
 	apps := []App{}
