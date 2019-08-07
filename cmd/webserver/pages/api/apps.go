@@ -120,110 +120,146 @@ func AppsHandler(call APIRequest) (ret interface{}, err error) {
 	}
 
 	// ID
-	i, err := call.getQueryInt("id", 0)
-	if err != nil {
-		return apps, errors.New("invalid id")
-	}
-	if i > 0 {
+	i, err := call.getQueryInt("id")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid id")
+		}
 		db = db.Where("id = ?", i)
 	}
 
 	// Tag
-	i, err = call.getQueryInt("tag", 0)
-	if err != nil {
-		return apps, errors.New("invalid tag")
-	}
-	if i > 0 {
+	i, err = call.getQueryInt("tag")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid tag")
+		}
 		db = db.Where("JSON_CONTAINS(tags, ?) = 1", "["+strconv.FormatInt(i, 10)+"]")
 	}
 
 	// Category
-	i, err = call.getQueryInt("category", 0)
-	if err != nil {
-		return apps, errors.New("invalid category")
-	}
-	if i > 0 {
+	i, err = call.getQueryInt("category")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid category")
+		}
 		db = db.Where("JSON_CONTAINS(categories, ?) = 1", "["+strconv.FormatInt(i, 10)+"]")
 	}
 
 	// Genre
-	i, err = call.getQueryInt("genre", 0)
-	if err != nil {
-		return apps, errors.New("invalid genre")
-	}
-	if i > 0 {
+	i, err = call.getQueryInt("genre")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid genre")
+		}
 		db = db.Where("JSON_CONTAINS(genres, ?) = 1", "["+strconv.FormatInt(i, 10)+"]")
 	}
 
 	// Min players
-	i, err = call.getQueryInt("min_players", -1)
-	if err != nil {
-		return apps, errors.New("invalid min players")
-	}
-	if i >= 0 {
+	i, err = call.getQueryInt("min_players")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 0 {
+			return apps, errors.New("invalid min players")
+		}
 		db = db.Where("player_peak_week >= ?", i)
 	}
 
 	// Max players
-	i, err = call.getQueryInt("max_players", 0)
-	if err != nil {
-		return apps, errors.New("invalid max players")
-	}
-	if i > 0 {
+	i, err = call.getQueryInt("max_players")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid max players")
+		}
 		db = db.Where("player_peak_week <= ?", i)
 	}
 
 	// Min release date
-	i, err = call.getQueryInt("min_release_date", -1)
-	if err != nil {
-		return apps, errors.New("invalid release date")
-	}
-	if i >= 0 {
+	i, err = call.getQueryInt("min_release_date")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 0 {
+			return apps, errors.New("invalid release date")
+		}
 		db = db.Where("release_date_unix >= ?", i)
 	}
 
 	// Max release date
-	i, err = call.getQueryInt("max_release_date", 0)
-	if err != nil {
-		return apps, errors.New("invalid release date")
-	}
-	if i > 0 {
+	i, err = call.getQueryInt("max_release_date")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid release date")
+		}
 		db = db.Where("release_date_unix <= ?", i)
 	}
 
 	// Min review score
-	i, err = call.getQueryInt("min_score", -1)
-	if err != nil {
-		return apps, errors.New("invalid review score")
-	}
-	if i >= 0 {
+	i, err = call.getQueryInt("min_score")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 0 {
+			return apps, errors.New("invalid review score")
+		}
 		db = db.Where("reviews_score >= ?", i)
 	}
 
 	// Max review score
-	i, err = call.getQueryInt("max_score", 0)
-	if err != nil {
-		return apps, errors.New("invalid review score")
-	}
-	if i > 0 {
+	i, err = call.getQueryInt("max_score")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid review score")
+		}
 		db = db.Where("reviews_score <= ?", i)
 	}
 
 	// Min trending value
-	i, err = call.getQueryInt("min_trending", 0)
-	if err != nil {
-		return apps, errors.New("invalid trending value")
-	}
-	if i > 0 {
+	i, err = call.getQueryInt("min_trending")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 0 {
+			return apps, errors.New("invalid trending value")
+		}
 		db = db.Where("player_trend >= ?", i)
 	}
 
 	// Max trending value
-	i, err = call.getQueryInt("max_trending", 0)
-	if err != nil {
-		return apps, errors.New("invalid trending value")
-	}
-	if i > 0 {
+	i, err = call.getQueryInt("max_trending")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid trending value")
+		}
 		db = db.Where("player_trend <= ?", i)
 	}
 

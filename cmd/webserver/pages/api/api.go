@@ -67,8 +67,8 @@ func NewAPICall(r *http.Request) (api APIRequest, err error) {
 
 func (r APIRequest) geKey() (key string, err error) {
 
-	key = r.getQueryString(ParamAPIKey.Name, "")
-	if key == "" {
+	key, err = r.getQueryString(ParamAPIKey.Name)
+	if err != nil {
 		key = r.request.Header.Get(ParamAPIKey.Name)
 		if key == "" {
 			key, err = session.Get(r.request, helpers.SessionUserAPIKey)
@@ -128,18 +128,20 @@ func (r APIRequest) SaveToInflux(success bool, callError error) (err error) {
 	return err
 }
 
-func (r APIRequest) getQueryString(key string, fallback string) string {
-	val := r.request.URL.Query().Get(key)
+var errParamNotSet = errors.New("param not set")
+
+func (r APIRequest) getQueryString(key string) (val string, err error) {
+	val = r.request.URL.Query().Get(key)
 	if val == "" {
-		return fallback
+		return val, errParamNotSet
 	}
-	return val
+	return val, nil
 }
 
-func (r APIRequest) getQueryInt(key string, fallback int64) (val int64, err error) {
+func (r APIRequest) getQueryInt(key string) (val int64, err error) {
 	v := r.request.URL.Query().Get(key)
 	if v == "" {
-		return fallback, err
+		return 0, errParamNotSet
 	} else {
 		return strconv.ParseInt(v, 10, 64)
 	}
@@ -150,8 +152,10 @@ func (r APIRequest) setSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
 	var err error
 
 	// Limit
-	limit, err := r.getQueryInt(ParamLimit.Name, 10)
-	if err != nil {
+	limit, err := r.getQueryInt(ParamLimit.Name)
+	if err == errParamNotSet {
+		limit = 10
+	} else if err != nil {
 		return db, err
 	}
 	if limit <= 0 || limit > 1000 {
@@ -161,28 +165,38 @@ func (r APIRequest) setSQLLimitOffset(db *gorm.DB) (*gorm.DB, error) {
 	db = db.Limit(limit)
 
 	// Page
-	offset, err := r.getQueryInt(ParamPage.Name, 1)
-	if err != nil {
+	page, err := r.getQueryInt(ParamPage.Name)
+	if err == errParamNotSet {
+		page = 1
+	} else if err != nil {
 		return db, err
 	}
-	if limit <= 0 {
-		return db, errors.New("invalid offset")
+	if page < 1 {
+		return db, errors.New("invalid page")
 	}
 
-	db = db.Offset((offset - 1) * limit)
+	db = db.Offset((page - 1) * limit)
 
 	return db, db.Error
 }
 
 func (r APIRequest) setSQLOrder(db *gorm.DB, allowed func(in string) (out string)) (*gorm.DB, error) {
 
-	field := r.getQueryString(ParamSortField.Name, "id")
+	field, err := r.getQueryString(ParamSortField.Name)
+	if err != nil {
+		field = "id"
+	}
 	fieldReal := allowed(field)
 	if fieldReal == "" {
 		return db, errors.New("invalid sort field")
 	}
 
-	switch r.getQueryString(ParamSortOrder.Name, "asc") {
+	v, err := r.getQueryString(ParamSortOrder.Name)
+	if err != nil {
+		v = "asc"
+	}
+
+	switch v {
 	case "asc":
 		db = db.Order(fieldReal + " ASC")
 	case "desc":
@@ -199,6 +213,7 @@ type APICallParam struct {
 	Name    string
 	Type    string
 	Default string
+	Comment string
 }
 
 func (p APICallParam) InputType() string {

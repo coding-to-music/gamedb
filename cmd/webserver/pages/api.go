@@ -58,6 +58,8 @@ var endpoints = []api.APICall{
 			{Name: "max_score", Type: "int"},
 			{Name: "min_trending", Type: "int"},
 			{Name: "max_trending", Type: "int"},
+			{Name: "min_avg_players", Type: "int", Comment: "Avg over last 7 days"},
+			{Name: "max_avg_players", Type: "int", Comment: "Avg over last 7 days"},
 		},
 		Handler: ApiEndpointHandler(api.AppsHandler),
 	},
