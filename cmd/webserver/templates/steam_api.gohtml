@@ -116,11 +116,11 @@
                                                                 <tr>
                                                                     <td>
                                                                         {{ if or (eq .Type "uint32") (eq .Type "uint64") (eq .Type "int32") (eq .Type "int64") }}
-                                                                            <input type="number" name="{{ $paramName }}">
+                                                                            <input class="api-field" type="number" name="{{ $paramName }}">
                                                                         {{ else if eq .Type "bool" }}
-                                                                            <input type="checkbox" name="{{ $paramName }}" value="1">
+                                                                            <input class="api-field" type="checkbox" name="{{ $paramName }}" value="1">
                                                                         {{ else }}
-                                                                            <input type="text" name="{{ $paramName }}">
+                                                                            <input class="api-field" type="text" name="{{ $paramName }}">
                                                                         {{ end }}
                                                                     </td>
                                                                     <td>{{ $paramName }}</td>
