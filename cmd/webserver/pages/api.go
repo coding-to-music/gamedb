@@ -287,10 +287,10 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 		if err != nil {
 
 			err = returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
-			log.Err(err)
+			log.Err(err, r)
 
 			err = call.SaveToInflux(false, err)
-			log.Err(err)
+			log.Err(err, r)
 
 			return
 		}
@@ -299,19 +299,19 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 		if err != nil {
 
 			err = returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
-			log.Err(err)
+			log.Err(err, r)
 
 			err = call.SaveToInflux(false, err)
-			log.Err(err)
+			log.Err(err, r)
 
 			return
 		}
 
 		err = returnJSON(w, r, ApiEndpointResponse{Data: resp})
-		log.Err(err)
+		log.Err(err, r)
 
 		err = call.SaveToInflux(true, nil)
-		log.Err(err)
+		log.Err(err, r)
 
 		return
 	}
