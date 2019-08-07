@@ -41,7 +41,7 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 			if err != nil {
 				return err
 			}
-			conn = conn.LogMode(false)
+			conn = conn.LogMode(true)
 			conn = conn.Set("gorm:association_autoupdate", false)
 			conn = conn.Set("gorm:association_autocreate", false)
 			conn = conn.Set("gorm:association_save_reference", false)

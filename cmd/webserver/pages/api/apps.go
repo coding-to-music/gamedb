@@ -136,7 +136,7 @@ func ApiAppsHandler(call APIRequest) (ret interface{}, err error) {
 	}
 
 	// Min players
-	i, err = call.getQueryInt("min_players", 0)
+	i, err = call.getQueryInt("min_players", -1)
 	if err != nil {
 		return apps, errors.New("invalid min players")
 	}
@@ -149,16 +149,16 @@ func ApiAppsHandler(call APIRequest) (ret interface{}, err error) {
 	if err != nil {
 		return apps, errors.New("invalid max players")
 	}
-	if i >= 0 {
+	if i > 0 {
 		db = db.Where("player_peak_week <= ?", i)
 	}
 
 	// Min release date
-	i, err = call.getQueryInt("min_release_date", 0)
+	i, err = call.getQueryInt("min_release_date", -1)
 	if err != nil {
 		return apps, errors.New("invalid release date")
 	}
-	if i > 0 {
+	if i >= 0 {
 		db = db.Where("release_date_unix >= ?", i)
 	}
 
@@ -172,11 +172,11 @@ func ApiAppsHandler(call APIRequest) (ret interface{}, err error) {
 	}
 
 	// Min review score
-	i, err = call.getQueryInt("min_score", 0)
+	i, err = call.getQueryInt("min_score", -1)
 	if err != nil {
 		return apps, errors.New("invalid review score")
 	}
-	if i > 0 {
+	if i >= 0 {
 		db = db.Where("reviews_score >= ?", i)
 	}
 
