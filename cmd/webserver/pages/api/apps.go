@@ -9,16 +9,21 @@ import (
 )
 
 type App struct {
-	ID             int               `json:"id"`
-	Name           string            `json:"name"`
-	Tags           []int             `json:"tags"`
-	Genres         []int             `json:"genres"`
-	Developers     []int             `json:"developers"`
-	Publishers     []int             `json:"publishers"`
-	Prices         sql.ProductPrices `json:"prices"`
-	PlayersMax     int               `json:"players_max"`
-	PlayersWeekMax int               `json:"players_week_max"`
-	PlayersWeekAvg float64           `json:"players_week_avg"`
+	ID              int               `json:"id"`
+	Name            string            `json:"name"`
+	Tags            []int             `json:"tags"`
+	Genres          []int             `json:"genres"`
+	Categories      []int             `json:"categories"`
+	Developers      []int             `json:"developers"`
+	Publishers      []int             `json:"publishers"`
+	Prices          sql.ProductPrices `json:"prices"`
+	PlayersMax      int               `json:"players_max"`
+	PlayersWeekMax  int               `json:"players_week_max"`
+	PlayersWeekAvg  float64           `json:"players_week_avg"`
+	ReleaseDate     int64             `json:"release_date"`
+	ReviewsPositive int               `json:"reviews_positive"`
+	ReviewsNegative int               `json:"reviews_negative"`
+	ReviewsScore    float64           `json:"reviews_score"`
 }
 
 func (app *App) Fill(sqlApp sql.App) (err error) {
@@ -37,6 +42,10 @@ func (app *App) Fill(sqlApp sql.App) (err error) {
 	if err != nil {
 		return err
 	}
+	app.Categories, err = sqlApp.GetCategoryIDs()
+	if err != nil {
+		return err
+	}
 	app.Publishers, err = sqlApp.GetPublisherIDs()
 	if err != nil {
 		return err
@@ -48,6 +57,14 @@ func (app *App) Fill(sqlApp sql.App) (err error) {
 	app.PlayersMax = sqlApp.PlayerPeakAllTime
 	app.PlayersWeekMax = sqlApp.PlayerPeakWeek
 	app.PlayersWeekAvg = sqlApp.PlayerAverageWeek
+	app.ReleaseDate = sqlApp.ReleaseDateUnix
+	reviews, err := sqlApp.GetReviews()
+	if err != nil {
+		return err
+	}
+	app.ReviewsPositive = reviews.Positive
+	app.ReviewsNegative = reviews.Negative
+	app.ReviewsScore = sqlApp.ReviewsScore
 
 	return nil
 }
@@ -74,6 +91,9 @@ func AppsHandler(call APIRequest) (ret interface{}, err error) {
 		"player_peak_alltime",
 		"player_peak_week",
 		"player_avg_week",
+		"release_date_unix",
+		"reviews",
+		"reviews_score",
 	})
 
 	// Limit & Offset (page)
