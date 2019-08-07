@@ -54,7 +54,7 @@
                                                 <span class="input-group-text">GET</span>
                                             </div>
                                             <!--suppress HtmlFormInputWithoutLabel -->
-                                            <input type="text" class="form-control endpoint" value="https://gamedb.online/api{{ .GetPath }}">
+                                            <input type="text" class="form-control endpoint" value="{{ $.Base }}/api{{ .GetPath }}">
                                             <div class="input-group-append">
                                                 <button class="btn btn-success" type="submit">Go</button>
                                             </div>

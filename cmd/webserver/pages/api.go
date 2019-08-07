@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -225,6 +226,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "API", "A list of API endpoints to access Steam data & Game DB data")
 	t.Calls = endpoints
 	t.Key, _ = session.Get(r, helpers.SessionUserAPIKey)
+	t.Base = config.Config.GameDBDomain.Get()
 
 	err := returnTemplate(w, r, "api", t)
 	log.Err(err, r)
@@ -234,6 +236,7 @@ type apiTemplate struct {
 	GlobalTemplate
 	Calls []api.APICall
 	Key   string
+	Base  string
 }
 
 func apiSwaggerHandler(w http.ResponseWriter, r *http.Request) {
