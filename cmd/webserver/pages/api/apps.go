@@ -191,6 +191,30 @@ func AppsHandler(call APIRequest) (ret interface{}, err error) {
 		db = db.Where("player_peak_week <= ?", i)
 	}
 
+	// Min avg players
+	i, err = call.getQueryInt("min_avg_players")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 0 {
+			return apps, errors.New("invalid min avg players")
+		}
+		db = db.Where("player_avg_week >= ?", i)
+	}
+
+	// Max avg players
+	i, err = call.getQueryInt("max_avg_players")
+	if err != errParamNotSet {
+		if err != nil {
+			return apps, err
+		}
+		if i < 1 {
+			return apps, errors.New("invalid max avg players")
+		}
+		db = db.Where("player_avg_week <= ?", i)
+	}
+
 	// Min release date
 	i, err = call.getQueryInt("min_release_date")
 	if err != errParamNotSet {
