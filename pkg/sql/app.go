@@ -642,6 +642,18 @@ func (app App) GetCategoryIDs() (categories []int, err error) {
 	return categories, err
 }
 
+func (app App) GetCategories() (categories []Category, err error) {
+
+	categories = []Category{} // Needed for marshalling into type
+
+	ids, err := app.GetCategoryIDs()
+	if err != nil {
+		return categories, err
+	}
+
+	return GetCategoriesByID(ids, []string{"id", "name"})
+}
+
 func (app App) GetTagIDs() (tags []int, err error) {
 
 	tags = []int{} // Needed for marshalling into type

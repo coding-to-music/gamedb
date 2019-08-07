@@ -109,6 +109,17 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}(app)
 
+	// // Categories
+	// wg.Add(1)
+	// go func(app sql.App) {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	t.Tags, err = app.GetCategoryIDs()
+	// 	log.Err(err, r)
+	// }(app)
+
 	// Genres
 	wg.Add(1)
 	go func(app sql.App) {
@@ -265,6 +276,7 @@ type appTemplate struct {
 	App          sql.App
 	Banners      map[string][]string
 	Bundles      []sql.Bundle
+	Categories   []sql.Category
 	Common       []pics.KeyValue
 	Config       []pics.KeyValue
 	Demos        []sql.App

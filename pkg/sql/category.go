@@ -43,6 +43,29 @@ func GetAllCategories() (categories []Category, err error) {
 	return categories, nil
 }
 
+func GetCategoriesByID(ids []int, columns []string) (categories []Category, err error) {
+
+	if len(ids) == 0 {
+		return categories, err
+	}
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return categories, err
+	}
+
+	if len(columns) > 0 {
+		db = db.Select(columns)
+	}
+
+	db = db.Where("id IN (?)", ids)
+	db = db.Order("name ASC")
+	db = db.Limit(100)
+	db = db.Find(&categories)
+
+	return categories, db.Error
+}
+
 // func GetTagsForSelect() (tags []Tag, err error) {
 //
 // 	var item = helpers.MemcacheTagKeyNames
@@ -61,29 +84,6 @@ func GetAllCategories() (categories []Category, err error) {
 // 	})
 //
 // 	return tags, err
-// }
-//
-// func GetTagsByID(ids []int, columns []string) (tags []Tag, err error) {
-//
-// 	if len(ids) == 0 {
-// 		return tags, err
-// 	}
-//
-// 	db, err := GetMySQLClient()
-// 	if err != nil {
-// 		return tags, err
-// 	}
-//
-// 	if len(columns) > 0 {
-// 		db = db.Select(columns)
-// 	}
-//
-// 	db = db.Where("id IN (?)", ids)
-// 	db = db.Order("name ASC")
-// 	db = db.Limit(100)
-// 	db = db.Find(&tags)
-//
-// 	return tags, db.Error
 // }
 //
 // func DeleteTags(ids []int) (err error) {
