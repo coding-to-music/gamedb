@@ -486,12 +486,12 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 									localization.RichPresence[vvv.Name].AddToken(vvvvv.Name, vvvvv.Value.(string))
 								}
 							} else {
-								log.Warning("Missing localization language key")
+								log.Warning("Missing localization language key", message.ID)
 							}
 						}
 					}
 				} else {
-					log.Warning("Missing localization key")
+					log.Warning("Missing localization key", message.ID)
 				}
 			}
 
