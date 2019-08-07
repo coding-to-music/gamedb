@@ -51,6 +51,9 @@ func NewAPICall(r *http.Request) (api APIRequest, err error) {
 
 	// Check user has access to api
 	user, err := sql.GetUserFromKeyCache(key)
+	if err == sql.ErrRecordNotFound {
+		return call, errors.New("invalid key: " + key)
+	}
 	if err != nil {
 		return call, err
 	}
