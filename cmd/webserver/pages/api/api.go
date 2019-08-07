@@ -9,7 +9,7 @@ import (
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/didip/tollbooth/limiter"
-	"github.com/didip/tollbooth/v5"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/influxdata/influxdb1-client"
@@ -90,6 +90,10 @@ func (r APIRequest) geKey() (key string, err error) {
 }
 
 func (r APIRequest) SaveToInflux(success bool, callError error) (err error) {
+
+	if config.IsLocal() {
+		return
+	}
 
 	// Fields
 	fields := map[string]interface{}{}
