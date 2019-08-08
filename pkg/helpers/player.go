@@ -64,6 +64,7 @@ func GetPlayerPath(id int64, name string) string {
 }
 
 func GetPlayerName(id int64, name string) string {
+	name = strings.TrimSpace(name)
 	if name != "" {
 		return name
 	} else if id > 0 {
