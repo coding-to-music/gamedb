@@ -100,59 +100,67 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 	ccLock.Lock()
 	defer ccLock.Unlock()
 
-	// Get from URL
-	q := strings.ToUpper(r.URL.Query().Get("cc"))
-	if q != "" && steam.IsProductCC(q) {
-		return steam.ProductCC(q)
-	}
+	cc := func() steam.ProductCC {
 
-	// Get from session
-	val, err := session.Get(r, SessionUserProdCC)
-	log.Err(err)
-	if err == nil && steam.IsProductCC(val) {
-		return steam.ProductCC(val)
-	}
-
-	// Get from Maxmind
-	db, err := maxminddb.Open(config.Config.AssetsPath.Get() + "/files/GeoLite2-Country.mmdb")
-	if err != nil {
-		log.Err(err)
-		return steam.ProductCCUS
-	}
-	defer func() {
-		err = db.Close()
-		log.Err(err)
-	}()
-
-	ip := net.ParseIP(r.RemoteAddr)
-
-	if ip != nil {
-
-		// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
-		// Only using what we need is faster
-		var record struct {
-			Country struct {
-				ISOCode           string `maxminddb:"iso_code"`
-				IsInEuropeanUnion bool   `maxminddb:"is_in_european_union"`
-			} `maxminddb:"country"`
+		// Get from URL
+		q := strings.ToUpper(r.URL.Query().Get("cc"))
+		if q != "" && steam.IsProductCC(q) {
+			return steam.ProductCC(q)
 		}
 
-		err = db.Lookup(ip, &record)
+		// Get from session
+		val, err := session.Get(r, SessionUserProdCC)
+		log.Err(err)
+		if err == nil && steam.IsProductCC(val) {
+			return steam.ProductCC(val)
+		}
+
+		// Get from Maxmind
+		db, err := maxminddb.Open(config.Config.AssetsPath.Get() + "/files/GeoLite2-Country.mmdb")
 		if err != nil {
 			log.Err(err)
 			return steam.ProductCCUS
 		}
+		defer func() {
+			err = db.Close()
+			log.Err(err)
+		}()
 
-		for _, cc := range GetProdCCs(true) {
-			for _, code := range cc.CountryCodes {
-				if record.Country.ISOCode == string(code) {
-					return cc.ProductCode
+		ip := net.ParseIP(r.RemoteAddr)
+
+		if ip != nil {
+
+			// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
+			// Only using what we need is faster
+			var record struct {
+				Country struct {
+					ISOCode           string `maxminddb:"iso_code"`
+					IsInEuropeanUnion bool   `maxminddb:"is_in_european_union"`
+				} `maxminddb:"country"`
+			}
+
+			err = db.Lookup(ip, &record)
+			if err != nil {
+				log.Err(err)
+				return steam.ProductCCUS
+			}
+
+			for _, cc := range GetProdCCs(true) {
+				for _, code := range cc.CountryCodes {
+					if record.Country.ISOCode == string(code) {
+						return cc.ProductCode
+					}
 				}
 			}
 		}
-	}
 
-	return steam.ProductCCUS
+		return steam.ProductCCUS
+	}()
+
+	err := session.Set(r, SessionUserProdCC, string(cc))
+	log.Err(err)
+
+	return cc
 }
 
 func GetUserLevel(r *http.Request) int {

@@ -278,10 +278,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.UserProductCC = helpers.GetProdCC(helpers.GetProductCC(r))
 	log.Err(err, r)
 
-	// Save country incase its from Maxmind
-	err = session.Set(r, helpers.SessionUserProdCC, string(t.UserProductCC.ProductCode))
-	log.Err(err)
-
 	//
 	t.setRandomBackground(true, false)
 	t.setFlashes()
