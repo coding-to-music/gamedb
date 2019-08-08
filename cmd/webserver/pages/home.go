@@ -200,6 +200,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		case "level":
 			homePlayer.Rank = player.GetLevelRank()
 			homePlayer.Value = humanize.Comma(int64(player.Level))
+			homePlayer.Class = helpers.GetPlayerAvatar2(player.Level)
 		case "games":
 			homePlayer.Rank = player.GetGamesRank()
 			homePlayer.Value = humanize.Comma(int64(player.GamesCount))
@@ -224,4 +225,5 @@ type homePlayer struct {
 	Value  string `json:"value"`
 	Link   string `json:"link"`
 	Avatar string `json:"avatar"`
+	Class  string `json:"class"`
 }

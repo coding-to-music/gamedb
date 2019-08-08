@@ -55,7 +55,25 @@ if ($('#home-page').length > 0) {
                                     ]
                                 },
                                 {
-                                    '<>': 'td', 'html': '${value}', 'nowrap': 'nowrap'
+                                    '<>': 'td', 'nowrap': 'nowrap', 'class': function () {
+                                        if (sort === 'level') {
+                                            return 'img';
+                                        } else {
+                                            return '';
+                                        }
+                                    }, 'html': function () {
+
+                                        switch (sort) {
+                                            case 'level':
+                                                return '<div class="icon-name"><div class="icon"><div class="' + this.class + '"></div></div><div class="name min">' + this.value + '</div></div>';
+                                            case 'games':
+                                                return this.value + ' games';
+                                            case 'badges':
+                                                return this.value + ' badges';
+                                            default:
+                                                return this.value;
+                                        }
+                                    },
                                 },
                             ]
                         },
