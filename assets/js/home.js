@@ -55,9 +55,7 @@ if ($('#home-page').length > 0) {
                                     ]
                                 },
                                 {
-                                    '<>': 'td', 'html': function () {
-                                        return this.value.toLocaleString();
-                                    }
+                                    '<>': 'td', 'html': '${value}', 'nowrap': 'nowrap'
                                 },
                             ]
                         },

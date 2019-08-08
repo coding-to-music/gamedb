@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -198,16 +199,16 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		switch id {
 		case "level":
 			homePlayer.Rank = player.GetLevelRank()
-			homePlayer.Value = player.Level
+			homePlayer.Value = humanize.Comma(int64(player.Level))
 		case "games":
 			homePlayer.Rank = player.GetGamesRank()
-			homePlayer.Value = player.GamesCount
+			homePlayer.Value = humanize.Comma(int64(player.GamesCount))
 		case "badges":
 			homePlayer.Rank = player.GetBadgesRank()
-			homePlayer.Value = player.BadgesCount
+			homePlayer.Value = humanize.Comma(int64(player.BadgesCount))
 		case "time":
 			homePlayer.Rank = player.GetPlaytimeRank()
-			homePlayer.Value = player.PlayTime
+			homePlayer.Value = helpers.GetTimeLong(player.PlayTime, 2)
 		}
 
 		resp = append(resp, homePlayer)
@@ -220,7 +221,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 type homePlayer struct {
 	Rank   string `json:"rank"`
 	Name   string `json:"name"`
-	Value  int    `json:"value"`
+	Value  string `json:"value"`
 	Link   string `json:"link"`
 	Avatar string `json:"avatar"`
 }
