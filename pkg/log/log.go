@@ -100,8 +100,8 @@ func (e entry) toText(severity Severity) string {
 
 	// Environment
 	if !config.IsLocal() {
-		ret = append(ret, strings.ToUpper(config.Config.Environment.Get()))
-		ret = append(ret, strings.ToUpper(path.Base(os.Args[0])))
+		ret = append(ret, config.Config.Environment.Get())
+		ret = append(ret, path.Base(os.Args[0]))
 	}
 
 	// Request
