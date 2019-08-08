@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/session-go/session"
@@ -204,6 +205,33 @@ func (r APIRequest) setSQLOrder(db *gorm.DB, allowed func(in string) (out string
 	default:
 		return db, errors.New("invalid sort order")
 	}
+
+	return db, db.Error
+}
+
+func (r APIRequest) setSQLSelect(db *gorm.DB, allowed []string) (*gorm.DB, error) {
+
+	var use []string
+	field, err := r.getQueryString("filter")
+	if err != nil {
+		use = allowed
+	} else {
+		for _, v := range strings.Split(field, ",") {
+			v = strings.TrimSpace(v)
+			for _, vv := range allowed {
+				if v == vv {
+					use = append(use, vv)
+					break
+				}
+			}
+		}
+
+		if len(use) == 0 {
+			return db, errors.New("invalid filter")
+		}
+	}
+
+	db = db.Select(use)
 
 	return db, db.Error
 }

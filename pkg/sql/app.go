@@ -277,7 +277,12 @@ func (app App) GetIcon() (ret string) {
 func (app App) GetPrices() (prices ProductPrices, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Prices), &prices)
-	log.Err(err)
+
+	// Needed for marshalling into array
+	if len(prices) == 0 {
+		prices = ProductPrices{}
+	}
+
 	return prices, err
 }
 

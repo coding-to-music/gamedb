@@ -74,13 +74,13 @@ func AppsHandler(call APIRequest) (ret interface{}, err error) {
 	//noinspection GoPreferNilSlice
 	apps := []App{}
 
-	// Select columns
 	db, err := sql.GetMySQLClient()
 	if err != nil {
 		return apps, err
 	}
 
-	db = db.Select([]string{
+	// Select columns
+	db, err = call.setSQLSelect(db, []string{
 		"id",
 		"name",
 		"tags",
@@ -95,6 +95,9 @@ func AppsHandler(call APIRequest) (ret interface{}, err error) {
 		"reviews",
 		"reviews_score",
 	})
+	if err != nil {
+		return apps, err
+	}
 
 	// Limit & Offset (page)
 	db, err = call.setSQLLimitOffset(db)
