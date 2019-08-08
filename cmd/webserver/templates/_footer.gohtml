@@ -95,12 +95,13 @@
     {{/*    </script>*/}}
 
     {{ if .ShowAds }}
+        <!--suppress ES6ConvertVarToLetConst -->
         <script>
             $('small.small-print').css('margin-bottom', '140px');
 
-            // Must be var
-            let infolinks_pid = 3185749;
-            let infolinks_wsid = 0;
+            // Must be vars
+            var infolinks_pid = 3185749;
+            var infolinks_wsid = 0;
         </script>
         <script src="https://resources.infolinks.com/js/infolinks_main.js"></script>
     {{ end }}
