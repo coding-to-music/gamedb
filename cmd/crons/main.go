@@ -20,11 +20,12 @@ func main() {
 
 	c := cron.New()
 
-	// Every 10 minutes
-	err = c.AddFunc("0 */10 * * * *", crons.SteamClientPlayers{}.Work)
+	// Every 5 minutes
+	err = c.AddFunc("0 */5 * * * *", crons.SetBadgeCache{}.Work)
 	log.Critical(err)
 
-	err = c.AddFunc("0 */10 * * * *", crons.SetBadgeCache{}.Work)
+	// Every 10 minutes
+	err = c.AddFunc("0 */10 * * * *", crons.SteamClientPlayers{}.Work)
 	log.Critical(err)
 
 	// Every 5 hours
