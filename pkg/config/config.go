@@ -29,6 +29,10 @@ type BaseConfig struct {
 	DiscordChatBotToken    ConfigItem
 	DiscordChangesBotToken ConfigItem
 
+	// Facebook
+	FacebookAppID     ConfigItem
+	FacebookAppSecret ConfigItem
+
 	// Google
 	GoogleBucket  ConfigItem
 	GoogleProject ConfigItem
@@ -131,6 +135,10 @@ func init() {
 	Config.DiscordChatBotToken.Set("DISCORD_BOT_TOKEN")
 	Config.DiscordRelayBotToken.Set("DISCORD_RELAY_TOKEN")
 	Config.DiscordChangesBotToken.Set("DISCORD_CHANGES_BOT_TOKEN")
+
+	// Facebook
+	Config.FacebookAppID.Set("FACEBOOK_APP_ID")
+	Config.FacebookAppID.Set("FACEBOOK_APP_SECRET")
 
 	// Google
 	Config.GoogleBucket.Set("GOOGLE_BUCKET")
