@@ -44,7 +44,7 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.0
 	github.com/gosimple/slug v1.6.0
-	github.com/influxdata/influxdb1-client v0.0.0-20190402204710-8ff2fc3824fc
+	github.com/influxdata/influxdb1-client v0.0.0-20190810005404-fc22c7df067e
 	github.com/jinzhu/gorm v1.9.10
 	github.com/jinzhu/now v1.0.1
 	github.com/justinas/nosurf v0.0.0-20190416172904-05988550ea18
