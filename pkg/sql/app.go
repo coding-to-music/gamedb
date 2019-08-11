@@ -55,6 +55,8 @@ type App struct {
 	ID                            int       `gorm:"not null;column:id;primary_key"`                   //
 	Install                       string    `gorm:"not null;column:install"`                          // map[string]interface{}
 	IsFree                        bool      `gorm:"not null;column:is_free;type:tinyint(1)"`          //
+	Items                         int       `gorm:"not null;column:items;type:int"`                   //
+	ItemsModified                 time.Time `gorm:"not null;column:items_modified;type:datetime"`     //
 	Launch                        string    `gorm:"not null;column:launch"`                           // []db.PICSAppConfigLaunchItem
 	Localization                  string    `gorm:"not null;column:localization"`                     // map[string]interface{}
 	Logo                          string    `gorm:"not null;column:logo"`                             //

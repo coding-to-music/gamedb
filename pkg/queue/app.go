@@ -120,6 +120,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	var wg sync.WaitGroup
 
 	// Calls to api.steampowered.com
+	var newItems []steam.ItemDefArchive
 	wg.Add(1)
 	go func() {
 
@@ -142,6 +143,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		}
 
 		err = updateAppNews(&app)
+		if err != nil {
+			helpers.LogSteamError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		newItems, err = updateAppItems(&app)
 		if err != nil {
 			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
@@ -211,6 +219,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}()
 
 	// Calls to Mongo
+	var currentAppItems []int
 	wg.Add(1)
 	go func() {
 
@@ -219,6 +228,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		var err error
 
 		err = updateAppPlaytimeStats(&app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		currentAppItems, err = getCurrentAppItems(app.ID)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
@@ -241,6 +257,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		var err error
 
 		err = savePriceChanges(appBeforeUpdate, app)
+		if err != nil {
+			logError(err, message.ID)
+			payload.ackRetry(msg)
+			return
+		}
+
+		err = saveAppItems(newItems, currentAppItems)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
@@ -888,6 +911,27 @@ func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 	return resp, nil
 }
 
+func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
+
+	meta, _, err := helpers.GetSteam().GetItemDefMeta(app.ID)
+	if err != nil {
+		return archive, err
+	}
+
+	if meta.Response.Modified > app.ItemsModified.Unix() {
+
+		archive, _, err = helpers.GetSteam().GetItemDefArchive(app.ID, meta.Response.Digest)
+		if err != nil {
+			return archive, err
+		}
+	}
+
+	app.Items = len(archive)
+	app.ItemsModified = time.Unix(meta.Response.Modified, 0)
+
+	return archive, nil
+}
+
 func updateAppNews(app *sql.App) error {
 
 	resp, b, err := helpers.GetSteam().GetNews(app.ID, 10000)
@@ -1277,6 +1321,16 @@ func updateAppTwitch(app *sql.App) error {
 	return nil
 }
 
+func getCurrentAppItems(appID int) (items []int, err error) {
+
+	resp, err := mongo.GetAppItems(appID, 0, 0, mongo.M{"item_def_id": 1})
+	for _, v := range resp {
+		items = append(items, v.ItemDefID)
+	}
+
+	return items, err
+}
+
 func updateAppPlaytimeStats(app *sql.App) (err error) {
 
 	// Playtime
@@ -1305,6 +1359,11 @@ func updateAppPlaytimeStats(app *sql.App) (err error) {
 }
 
 func saveOffers(app sql.App, offers []mongo.Offer) (err error) {
+
+	return nil
+}
+
+func saveAppItems(newItems []steam.ItemDefArchive, currentItemIDs []int) (err error) {
 
 	return nil
 }

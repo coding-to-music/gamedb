@@ -24,6 +24,7 @@ func appRouter() http.Handler {
 	r.Get("/news.json", appNewsAjaxHandler)
 	r.Get("/prices.json", appPricesAjaxHandler)
 	r.Get("/players.json", appPlayersAjaxHandler)
+	r.Get("/items.json", appItemsAjaxHandler)
 	r.Get("/reviews.json", appReviewsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
 	r.Get("/{slug}", appHandler)
@@ -397,6 +398,123 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	productPricesAjaxHandler(w, r, helpers.ProductTypeApp)
+}
+
+func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	// id := chi.URLParam(r, "id")
+	// if id == "" {
+	// 	log.Err("invalid id", r)
+	// 	return
+	// }
+	//
+	// idx, err := strconv.Atoi(id)
+	// if err != nil {
+	// 	log.Err(err, r)
+	// 	return
+	// }
+	//
+	// query := DataTablesQuery{}
+	// err = query.fillFromURL(r.URL.Query())
+	// log.Err(err, r)
+	//
+	// query.limit(r)
+	//
+	// playerAppFilter := mongo.M{"app_id": idx, "app_time": mongo.M{"$gt": 0}}
+	//
+	// playerApps, err := mongo.GetPlayerAppsByApp(query.getOffset64(), playerAppFilter)
+	// if err != nil {
+	// 	log.Err(err, r)
+	// 	return
+	// }
+	//
+	// if len(playerApps) < 1 {
+	// 	return
+	// }
+	//
+	// var playerIDsMap = map[int64]int{}
+	// var playerIDsSlice []int64
+	// for _, v := range playerApps {
+	// 	playerIDsMap[v.PlayerID] = v.AppTime
+	// 	playerIDsSlice = append(playerIDsSlice, v.PlayerID)
+	// }
+	//
+	// //
+	// var wg sync.WaitGroup
+	//
+	// // Get players
+	// var playersAppRows []appTimeAjax
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	players, err := mongo.GetPlayersByID(playerIDsSlice, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
+	// 	if err != nil {
+	// 		log.Err(err)
+	// 		return
+	// 	}
+	//
+	// 	for _, player := range players {
+	//
+	// 		if _, ok := playerIDsMap[player.ID]; !ok {
+	// 			continue
+	// 		}
+	//
+	// 		playersAppRows = append(playersAppRows, appTimeAjax{
+	// 			ID:      player.ID,
+	// 			Name:    player.PersonaName,
+	// 			Avatar:  player.Avatar,
+	// 			Time:    playerIDsMap[player.ID],
+	// 			Country: player.CountryCode,
+	// 		})
+	// 	}
+	//
+	// 	sort.Slice(playersAppRows, func(i, j int) bool {
+	// 		return playersAppRows[i].Time > playersAppRows[j].Time
+	// 	})
+	//
+	// 	for k := range playersAppRows {
+	// 		playersAppRows[k].Rank = query.getOffset() + k + 1
+	// 	}
+	// }()
+	//
+	// // Get total
+	// var total int64
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, playerAppFilter, 0)
+	// 	log.Err(err, r)
+	// }()
+	//
+	// // Wait
+	// wg.Wait()
+	//
+	// response := DataTablesAjaxResponse{}
+	// response.RecordsTotal = total
+	// response.RecordsFiltered = total
+	// response.Draw = query.Draw
+	// response.limit(r)
+	//
+	// for _, v := range playersAppRows {
+	//
+	// 	response.AddRow([]interface{}{
+	// 		strconv.FormatInt(v.ID, 10),          // 0
+	// 		v.Name,                               // 1
+	// 		helpers.GetTimeLong(v.Time, 3),       // 2
+	// 		helpers.GetPlayerFlagPath(v.Country), // 3
+	// 		helpers.OrdinalComma(v.Rank),         // 4
+	// 		helpers.GetPlayerAvatar(v.Avatar),    // 5
+	// 		helpers.GetPlayerPath(v.ID, v.Name),  // 6
+	// 		helpers.CountryCodeToName(v.Country), // 7
+	// 	})
+	// }
+	//
+	// response.output(w, r)
 }
 
 // Player counts chart

@@ -26,6 +26,16 @@ github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50 h1:QkHMYi6HhE8H
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50/go.mod h1:6XUIBoc/yO+w//k1YvVfZY6bsiG4Z/7l31B54EeSh/c=
 github.com/Jleagle/steam-go v0.0.0-20190725114643-eb3f2528ea49 h1:2P6DDNcxnnOhv3IZbv5Kd0J38Ar9ScZb+q2SMPJl9/M=
 github.com/Jleagle/steam-go v0.0.0-20190725114643-eb3f2528ea49/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190809213334-3debad2f5495 h1:vVZW/YnGAN4l2FVmh2nkoKA0xPS7EOwX6o0w7A0hma4=
+github.com/Jleagle/steam-go v0.0.0-20190809213334-3debad2f5495/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190809215744-6da2d4a284f9 h1:M812PpX35v+VslDyLclmerf4Y2o7dTVyE1pLmv04GvA=
+github.com/Jleagle/steam-go v0.0.0-20190809215744-6da2d4a284f9/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190810090850-c3505d87d8cc h1:nZGVbh2h5Vjmvi4yR3+1DcBdpag4H4c9z4rfR5VPLo0=
+github.com/Jleagle/steam-go v0.0.0-20190810090850-c3505d87d8cc/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190811182523-3e006b1d9292 h1:ply/r6z96OyZENO2dBcWxpvhIbONLRtrC2z4CWhvzhY=
+github.com/Jleagle/steam-go v0.0.0-20190811182523-3e006b1d9292/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
+github.com/Jleagle/steam-go v0.0.0-20190811191016-d15ca239affb h1:hLXMgVymuC5IxheYjfpq42HfZ3Pe2n3JZP5j4Coq2Gk=
+github.com/Jleagle/steam-go v0.0.0-20190811191016-d15ca239affb/go.mod h1:LCl5IQ30qkDx0F0UzMQliijIMfHZdPCB9V0GyF9GUMM=
 github.com/Jleagle/unmarshal-go v0.0.0-20190127220637-8ab9c10d2f0a/go.mod h1:+hHDI4094ErQxmLu6+WeGWi7XMfc+Vr8FEPy5WyYPJU=
 github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9 h1:9XBNLl2K0jcQTKojALrFctO6AeF3NH2TFv7JjslCjr0=
 github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9/go.mod h1:uj173bb7OmVLObjyg6vHW/6F5QbA8G51veCJI1tCmpI=
