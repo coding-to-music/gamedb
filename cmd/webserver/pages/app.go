@@ -253,15 +253,17 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	// Make banners
-	banners := make(map[string][]string)
-	var primary []string
-
-	if app.ID == 753 {
-		primary = append(primary, "This app record is for the Steam client")
+	var banners = map[string][]string{
+		"primary": []string{},
+		"warning": []string{},
 	}
 
-	if len(primary) > 0 {
-		banners["primary"] = primary
+	if app.ID == 753 {
+		banners["primary"] = append(banners["primary"], "This app record is for the Steam client")
+	}
+
+	if app.GetCommon().GetValue("app_retired_publisher_request") == "1" {
+		banners["warning"] = append(banners["warning"], "At the request of the publisher, Masplado is no longer available for sale on Steam.")
 	}
 
 	t.Banners = banners
