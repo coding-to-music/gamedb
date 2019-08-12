@@ -21,7 +21,15 @@
                     </div>
 
                 </div>
-                <div class="col-12"><p class="lead">{{ .Description }}</p></div>
+                <div class="col-12">
+                    <p class="lead">{{ .Description }}</p>
+                    <small id="presets">
+                        <a href="/apps?types=game&price-low=0.00&price-high=0.00">Free Games</a>,
+                        <a href="/apps?platforms=linux">Linux Games</a>,
+                        <a href="/apps?developers=3589">Valve Games</a>,
+                        <a href="/apps?tags=5153">Kickstarted Games</a>
+                    </small>
+                </div>
             </div>
         </div>
 
@@ -140,7 +148,7 @@
                         <thead class="thead-light">
                         <tr>
                             <th scope="col" nowrap="nowrap">Game</th>
-{{/*                            <th scope="col" nowrap="nowrap" class="d-none d-lg-table-cell">Type</th>*/}}
+                            {{/*<th scope="col" nowrap="nowrap" class="d-none d-lg-table-cell">Type</th>*/}}
                             <th scope="col" nowrap="nowrap">Players</th>
                             <th scope="col" nowrap="nowrap">Score</th>
                             <th scope="col" nowrap="nowrap" id="user-currency-symbol">Price</th>
