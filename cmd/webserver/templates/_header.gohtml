@@ -107,6 +107,12 @@
                         </div>
                     </li>
 
+                    {{ if eq .Env "local" }}
+                    <li class="nav-item {{if startsWith .Path "/offers" }}active{{end}}">
+                        <a class="nav-link" href="/offers">Offers</a>
+                    </li>
+                    {{ end }}
+
                     <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
                         <a class="nav-link" href="/groups">Groups</a>
                     </li>

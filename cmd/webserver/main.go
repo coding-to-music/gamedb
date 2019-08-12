@@ -82,6 +82,7 @@ func main() {
 	r.Mount("/logout", pages.LogoutRouter())
 	r.Mount("/new-releases", pages.NewReleasesRouter())
 	r.Mount("/news", pages.NewsRouter())
+	r.Mount("/offers", pages.OffersRouter())
 	r.Mount("/packages", pages.PackagesRouter())
 	r.Mount("/patreon", pages.PatreonRouter())
 	r.Mount("/players", pages.PlayersRouter())
