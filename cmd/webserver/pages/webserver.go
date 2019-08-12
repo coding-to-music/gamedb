@@ -395,6 +395,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"userCurrencySymbol": t.UserProductCC.Symbol,
 		"toasts":             t.toasts,
 		"log":                config.IsLocal() || t.IsAdmin(),
+		"isLoggedIn":         t.IsLoggedIn(),
 	}
 
 	b, err := json.Marshal(stringMap)
@@ -445,7 +446,7 @@ func (t GlobalTemplate) IsSidebarPage() bool {
 }
 
 func (t GlobalTemplate) IsLoggedIn() bool {
-	return t.UserID != 0
+	return t.UserID > 0
 }
 
 func (t GlobalTemplate) IsAdmin() bool {
