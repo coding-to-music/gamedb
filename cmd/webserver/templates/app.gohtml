@@ -411,7 +411,7 @@
                                 </thead>
                                 <tbody>
                                 {{ range $key, $value := .Achievements }}
-                                    <tr {{ if nt .Active }}class="table-danger"{{ end }}>
+                                    <tr {{ if not .Active }}class="table-danger"{{ end }}>
                                         <td class="img">
                                             <div class="icon-name">
                                                 <div class="icon"><img data-lazy="{{ .GetIcon }}" data-lazy-alt="{{ .Name }}"></div>
