@@ -41,7 +41,7 @@ type Player struct {
 	NumberOfGameBans int                `bson:"bans_game"`         //
 	NumberOfVACBans  int                `bson:"bans_cav"`          //
 	PersonaName      string             `bson:"persona_name"`      //
-	PrimaryClanID    int                `bson:"primary_clan_id"`   //
+	PrimaryClanID    string             `bson:"primary_clan_id"`   //
 	RealName         string             `bson:"real_name"`         //
 	StateCode        string             `bson:"status_code"`       //
 	TimeCreated      time.Time          `bson:"time_created"`      //

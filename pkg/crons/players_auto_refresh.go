@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
@@ -34,16 +35,33 @@ func (c AutoPlayerRefreshes) Work() {
 	}
 
 	var users []sql.User
-	gorm = gorm.Select([]string{"steam_id"}).Where("patreon_level >= ?", 3).Where("steam_id > ?", 0).Find(&users)
+	gorm = gorm.Select([]string{"steam_id", "steam_id"}).Where("patreon_level >= ?", 3).Where("steam_id > ?", 0).Find(&users)
 	if gorm.Error != nil {
 		log.Err(gorm.Error)
 		return
 	}
 
-	for _, v := range users {
-		err := queue.ProducePlayer(v.SteamID)
+	var playerIDs []int64
+
+	for _, user := range users {
+
+		playerIDs = append(playerIDs, user.SteamID)
+
+		err := queue.ProducePlayer(user.SteamID)
 		log.Err(err)
 	}
+
+	var groupIDs []string
+
+	players, err := mongo.GetPlayersByID(playerIDs, mongo.M{"primary_clan_id": 1})
+	for _, v := range players {
+		if v.PrimaryClanID != "" {
+			groupIDs = append(groupIDs, v.PrimaryClanID)
+		}
+	}
+
+	err = queue.ProduceGroup(groupIDs)
+	log.Err(err)
 
 	cronLogInfo("Auto updated " + strconv.Itoa(len(users)) + " players")
 
