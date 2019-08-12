@@ -1038,6 +1038,28 @@ func CountApps() (count int, err error) {
 	return count, err
 }
 
+func CountAppsWithAchievements() (count int, err error) {
+
+	var item = helpers.MemcacheAppsWithAchievementsCount
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		var count int
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return count, err
+		}
+
+		db.Model(&App{}).Where("achievements_count > 0").Count(&count)
+
+		return count, db.Error
+	})
+
+	return count, err
+}
+
+//
 type AppImage struct {
 	PathFull      string `json:"f"`
 	PathThumbnail string `json:"t"`
@@ -1054,6 +1076,7 @@ type AppAchievement struct {
 	Icon        string  `json:"i"`
 	Description string  `json:"d"`
 	Completed   float64 `json:"c"`
+	Active      bool    `json:"a"`
 }
 
 func (a AppAchievement) GetIcon() string {
@@ -1061,11 +1084,6 @@ func (a AppAchievement) GetIcon() string {
 		return a.Icon
 	}
 	return helpers.DefaultAppIcon
-}
-
-func (a AppAchievement) IsHidden() bool {
-
-	return a.Icon == "" && a.Description == ""
 }
 
 type AppStat struct {

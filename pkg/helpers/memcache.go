@@ -20,17 +20,18 @@ var (
 
 var (
 	// Counts
-	MemcacheAppsCount             = memcache.Item{Key: "apps-count", Expiration: 86400}
-	MemcachePackagesCount         = memcache.Item{Key: "packages-count", Expiration: 86400}
-	MemcacheBundlesCount          = memcache.Item{Key: "bundles-count", Expiration: 86400}
-	MemcacheUpcomingAppsCount     = memcache.Item{Key: "upcoming-apps-count", Expiration: 86400}
-	MemcacheNewReleaseAppsCount   = memcache.Item{Key: "newly-released-apps-count", Expiration: 86400}
-	MemcacheUpcomingPackagesCount = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
-	MemcachePlayersCount          = memcache.Item{Key: "players-count", Expiration: 86400 * 1}
-	MemcachePricesCount           = memcache.Item{Key: "prices-count", Expiration: 86400 * 7}
-	MemcacheMongoCount            = func(key string) memcache.Item { return memcache.Item{Key: "mongo-count-" + key, Expiration: 60 * 60} }
-	MemcacheUserEventsCount       = func(userID int) memcache.Item { return memcache.Item{Key: "players-events-count-" + strconv.Itoa(userID), Expiration: 86400} }
-	MemcachePatreonWebhooksCount  = func(userID int) memcache.Item { return memcache.Item{Key: "patreon-webhooks-count-" + strconv.Itoa(userID), Expiration: 86400} }
+	MemcacheAppsCount                 = memcache.Item{Key: "apps-count", Expiration: 86400}
+	MemcacheAppsWithAchievementsCount = memcache.Item{Key: "apps-achievements-count", Expiration: 86400}
+	MemcachePackagesCount             = memcache.Item{Key: "packages-count", Expiration: 86400}
+	MemcacheBundlesCount              = memcache.Item{Key: "bundles-count", Expiration: 86400}
+	MemcacheUpcomingAppsCount         = memcache.Item{Key: "upcoming-apps-count", Expiration: 86400}
+	MemcacheNewReleaseAppsCount       = memcache.Item{Key: "newly-released-apps-count", Expiration: 86400}
+	MemcacheUpcomingPackagesCount     = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
+	MemcachePlayersCount              = memcache.Item{Key: "players-count", Expiration: 86400 * 1}
+	MemcachePricesCount               = memcache.Item{Key: "prices-count", Expiration: 86400 * 7}
+	MemcacheMongoCount                = func(key string) memcache.Item { return memcache.Item{Key: "mongo-count-" + key, Expiration: 60 * 60} }
+	MemcacheUserEventsCount           = func(userID int) memcache.Item { return memcache.Item{Key: "players-events-count-" + strconv.Itoa(userID), Expiration: 86400} }
+	MemcachePatreonWebhooksCount      = func(userID int) memcache.Item { return memcache.Item{Key: "patreon-webhooks-count-" + strconv.Itoa(userID), Expiration: 86400} }
 
 	// Apps Page Dropdowns
 	MemcacheTagKeyNames       = memcache.Item{Key: "tag-key-names", Expiration: 86400 * 7}

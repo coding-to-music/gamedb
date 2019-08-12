@@ -854,6 +854,7 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 			Icon:        v.Icon,
 			Description: v.Description,
 			Completed:   helpers.RoundFloatTo2DP(achievementsMap[v.Name]),
+			Active:      true,
 		})
 
 		delete(achievementsMap, v.Name)
