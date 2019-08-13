@@ -32,7 +32,7 @@ type Document interface {
 
 type (
 	D bson.D
-	E bson.E
+	// E bson.E
 	M bson.M
 	A bson.A
 )
