@@ -919,7 +919,7 @@ func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
 		return archive, err
 	}
 
-	if meta.Response.Modified > app.ItemsModified.Unix() && meta.Response.Digest != "" {
+	if meta.Response.Digest != "" && meta.Response.Digest != app.ItemsDigest {
 
 		archive, _, err = helpers.GetSteam().GetItemDefArchive(app.ID, meta.Response.Digest)
 		if err != nil {
@@ -928,7 +928,7 @@ func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
 	}
 
 	app.Items = len(archive)
-	app.ItemsModified = time.Unix(meta.Response.Modified, 0)
+	app.ItemsDigest = meta.Response.Digest
 
 	return archive, nil
 }
