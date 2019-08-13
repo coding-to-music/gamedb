@@ -322,7 +322,8 @@ func updatePlayerSummary(player *mongo.Player) error {
 	player.PersonaName = summary.PersonaName
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
 	player.LastLogOff = time.Unix(summary.LastLogOff, 0)
-	player.PrimaryClanID = summary.PrimaryClanID
+	player.PrimaryClanID, _ = strconv.Atoi(summary.PrimaryClanID)
+	player.PrimaryClanIDString = summary.PrimaryClanID
 
 	return err
 }

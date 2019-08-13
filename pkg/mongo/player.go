@@ -26,28 +26,29 @@ var (
 // }
 
 type Player struct {
-	ID               int64              `bson:"_id"`               //
-	Avatar           string             `bson:"avatar"`            //
-	BackgroundAppID  int                `bson:"background_app_id"` //
-	BadgeIDs         []int              `bson:"badge_ids"`         // []int - Only special badges
-	BadgeStats       string             `bson:"badge_stats"`       // ProfileBadgeStats
-	Bans             string             `bson:"bans"`              // PlayerBans
-	CountryCode      string             `bson:"country_code"`      //
-	Donated          int                `bson:"donated"`           //
-	GameStats        string             `bson:"game_stats"`        // PlayerAppStatsTemplate
-	GamesByType      map[string]float64 `bson:"games_by_type"`     //
-	Groups           []string           `bson:"groups"`            // []int - Can be greater than 64bit
-	LastLogOff       time.Time          `bson:"time_logged_off"`   //
-	NumberOfGameBans int                `bson:"bans_game"`         //
-	NumberOfVACBans  int                `bson:"bans_cav"`          //
-	PersonaName      string             `bson:"persona_name"`      //
-	PrimaryClanID    string             `bson:"primary_clan_id"`   //
-	RealName         string             `bson:"real_name"`         //
-	StateCode        string             `bson:"status_code"`       //
-	TimeCreated      time.Time          `bson:"time_created"`      //
-	UpdatedAt        time.Time          `bson:"updated_at"`        //
-	VanintyURL       string             `bson:"vanity_url"`        //
-	Wishlist         []int              `bson:"wishlist_app_ids"`  //
+	ID                  int64              `bson:"_id"`                    //
+	Avatar              string             `bson:"avatar"`                 //
+	BackgroundAppID     int                `bson:"background_app_id"`      //
+	BadgeIDs            []int              `bson:"badge_ids"`              // []int - Only special badges
+	BadgeStats          string             `bson:"badge_stats"`            // ProfileBadgeStats
+	Bans                string             `bson:"bans"`                   // PlayerBans
+	CountryCode         string             `bson:"country_code"`           //
+	Donated             int                `bson:"donated"`                //
+	GameStats           string             `bson:"game_stats"`             // PlayerAppStatsTemplate
+	GamesByType         map[string]float64 `bson:"games_by_type"`          //
+	Groups              []string           `bson:"groups"`                 // []int - Can be greater than 64bit
+	LastLogOff          time.Time          `bson:"time_logged_off"`        //
+	NumberOfGameBans    int                `bson:"bans_game"`              //
+	NumberOfVACBans     int                `bson:"bans_cav"`               //
+	PersonaName         string             `bson:"persona_name"`           //
+	PrimaryClanID       int                `bson:"primary_clan_id"`        //
+	PrimaryClanIDString string             `bson:"primary_clan_id_string"` //
+	RealName            string             `bson:"real_name"`              //
+	StateCode           string             `bson:"status_code"`            //
+	TimeCreated         time.Time          `bson:"time_created"`           //
+	UpdatedAt           time.Time          `bson:"updated_at"`             //
+	VanintyURL          string             `bson:"vanity_url"`             //
+	Wishlist            []int              `bson:"wishlist_app_ids"`       //
 
 	// Ranked
 	BadgesCount  int `bson:"badges_count"`
@@ -67,27 +68,28 @@ type Player struct {
 func (player Player) BSON() (ret interface{}) {
 
 	return M{
-		"_id":               player.ID,
-		"avatar":            player.Avatar,
-		"background_app_id": player.BackgroundAppID,
-		"badge_ids":         player.BadgeIDs,
-		"badge_stats":       player.BadgeStats,
-		"bans":              player.Bans,
-		"country_code":      player.CountryCode,
-		"donated":           player.Donated,
-		"game_stats":        player.GameStats,
-		"games_by_type":     player.GamesByType,
-		"groups":            player.Groups,
-		"time_logged_off":   player.LastLogOff,
-		"bans_game":         player.NumberOfGameBans,
-		"bans_cav":          player.NumberOfVACBans,
-		"persona_name":      player.PersonaName,
-		"primary_clan_id":   player.PrimaryClanID,
-		"status_code":       player.StateCode,
-		"time_created":      player.TimeCreated,
-		"updated_at":        time.Now(),
-		"vanity_url":        player.VanintyURL,
-		"wishlist_app_ids":  player.Wishlist,
+		"_id":                    player.ID,
+		"avatar":                 player.Avatar,
+		"background_app_id":      player.BackgroundAppID,
+		"badge_ids":              player.BadgeIDs,
+		"badge_stats":            player.BadgeStats,
+		"bans":                   player.Bans,
+		"country_code":           player.CountryCode,
+		"donated":                player.Donated,
+		"game_stats":             player.GameStats,
+		"games_by_type":          player.GamesByType,
+		"groups":                 player.Groups,
+		"time_logged_off":        player.LastLogOff,
+		"bans_game":              player.NumberOfGameBans,
+		"bans_cav":               player.NumberOfVACBans,
+		"persona_name":           player.PersonaName,
+		"primary_clan_id":        player.PrimaryClanID,
+		"primary_clan_id_string": player.PrimaryClanIDString,
+		"status_code":            player.StateCode,
+		"time_created":           player.TimeCreated,
+		"updated_at":             time.Now(),
+		"vanity_url":             player.VanintyURL,
+		"wishlist_app_ids":       player.Wishlist,
 		// "real_name":        player.RealName, // Don't need
 
 		// Ranked
