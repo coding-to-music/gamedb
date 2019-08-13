@@ -216,7 +216,7 @@ type GlobalTemplate struct {
 	UserName      string
 	userEmail     string
 	UserProductCC helpers.ProductCountryCode
-	userLevel     string
+	userLevel     int
 
 	PlayerID   int64
 	PlayerName string
@@ -264,13 +264,17 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		log.Err(err, r)
 	}
 
+	val, err = session.Get(r, helpers.SessionUserLevel)
+	log.Err(err, r)
+	if val != "" {
+		t.userLevel, err = strconv.Atoi(val)
+		log.Err(err, r)
+	}
+
 	t.PlayerName, err = session.Get(r, helpers.SessionPlayerName)
 	log.Err(err)
 
 	t.userEmail, err = session.Get(r, helpers.SessionUserEmail)
-	log.Err(err, r)
-
-	t.userLevel, err = session.Get(r, helpers.SessionUserLevel)
 	log.Err(err, r)
 
 	t.UserName, err = session.Get(r, helpers.SessionPlayerName)
@@ -460,7 +464,7 @@ func (t GlobalTemplate) ShowAds() bool {
 		return false
 	}
 
-	if strings.HasPrefix(t.request.URL.Path, "/admin") {
+	if t.userLevel > 0 {
 		return false
 	}
 

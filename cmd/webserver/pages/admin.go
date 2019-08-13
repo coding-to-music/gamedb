@@ -87,6 +87,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := adminTemplate{}
 	t.fill(w, r, "Admin", "")
+	t.hideAds = true
 	t.Configs = configs
 	t.Goroutines = runtime.NumGoroutine()
 	t.Websockets = websockets.Pages
