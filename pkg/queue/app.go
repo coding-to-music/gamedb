@@ -509,7 +509,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 									localization.RichPresence[vvv.Name].AddToken(vvvvv.Name, vvvvv.Value.(string))
 								}
 							} else {
-								log.Warning("Missing localization language key", message.ID)
+								log.Warning("Missing localization language key", message.ID, vvvv.Name)
 							}
 						}
 					}
