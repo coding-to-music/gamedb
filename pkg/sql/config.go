@@ -15,6 +15,7 @@ func (c ConfigType) String() string {
 const (
 	// Crons
 	ConfTagsUpdated        ConfigType = "refresh-tags"
+	ConfCategoriesUpdated  ConfigType = "refresh-categories"
 	ConfGenresUpdated      ConfigType = "refresh-genres"
 	ConfClientPlayers      ConfigType = "check-people-on-steam"
 	ConfPublishersUpdated  ConfigType = "refresh-publishers"

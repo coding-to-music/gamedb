@@ -1,0 +1,57 @@
+package pages
+
+import (
+	"net/http"
+
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/go-chi/chi"
+)
+
+func CategoriesRouter() http.Handler {
+
+	r := chi.NewRouter()
+	r.Get("/", statsCategoriesHandler)
+	return r
+}
+
+func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Get config
+	config, err := sql.GetConfig(sql.ConfCategoriesUpdated)
+	err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+	log.Err(err, r)
+
+	// Get categories
+	categories, err := sql.GetAllCategories()
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the categories.", Error: err})
+		return
+	}
+
+	code := helpers.GetProductCC(r)
+	prices := map[int]string{}
+	for _, category := range categories {
+		price, err := category.GetMeanPrice(code)
+		log.Err(err, r)
+		prices[category.ID] = price
+	}
+
+	// Template
+	t := statsCategoriesTemplate{}
+	t.fill(w, r, "Categories", "Top Steam Categories")
+	t.Categories = categories
+	t.Date = config.Value
+	t.Prices = prices
+
+	err = returnTemplate(w, r, "categories", t)
+	log.Err(err, r)
+}
+
+type statsCategoriesTemplate struct {
+	GlobalTemplate
+	Categories []sql.Category
+	Date       string
+	Prices     map[int]string
+}

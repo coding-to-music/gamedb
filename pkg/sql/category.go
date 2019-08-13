@@ -4,7 +4,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
 type Category struct {
@@ -13,6 +15,9 @@ type Category struct {
 	UpdatedAt time.Time  `gorm:"not null"`
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
+	Apps      int        `gorm:"not null"`
+	MeanPrice string     `gorm:"not null"` // map[steam.CountryCode]float64
+	MeanScore float64    `gorm:"not null"`
 }
 
 func (category Category) GetPath() string {
@@ -26,6 +31,14 @@ func (category Category) GetName() (name string) {
 	}
 
 	return category.Name
+}
+
+func (category Category) GetMeanPrice(code steam.ProductCC) (string, error) {
+	return GetMeanPrice(code, category.MeanPrice)
+}
+
+func (category Category) GetMeanScore() string {
+	return helpers.FloatToString(category.MeanScore, 2) + "%"
 }
 
 func GetAllCategories() (categories []Category, err error) {
