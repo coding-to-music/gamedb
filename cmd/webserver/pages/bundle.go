@@ -56,17 +56,11 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Template
-	t := bundleTemplate{}
-	t.fill(w, r, bundle.Name, "")
-	t.addAssetHighCharts()
-	t.Bundle = bundle
-	t.Canonical = bundle.GetPath()
-
 	//
 	var wg sync.WaitGroup
 
 	// Get apps
+	var apps []sql.App
 	wg.Add(1)
 	go func(bundle sql.Bundle) {
 
@@ -78,14 +72,14 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		t.Apps, err = sql.GetAppsByID(appIDs, []string{})
+		apps, err = sql.GetAppsByID(appIDs, []string{})
 		log.Err(err, r)
 
 		// Queue missing apps
-		if len(appIDs) != len(t.Apps) {
+		if len(appIDs) != len(apps) {
 			for _, v := range appIDs {
 				var found = false
-				for _, vv := range t.Apps {
+				for _, vv := range apps {
 					if v == vv.ID {
 						found = true
 						break
@@ -98,10 +92,10 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-
 	}(bundle)
 
 	// Get packages
+	var packages []sql.Package
 	wg.Add(1)
 	go func() {
 
@@ -113,7 +107,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		t.Packages, err = sql.GetPackages(appIDs, []string{})
+		packages, err = sql.GetPackages(appIDs, []string{})
 		log.Err(err, r)
 
 	}()
@@ -121,6 +115,22 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
+	// Template
+	t := bundleTemplate{}
+	for _, v := range apps {
+		if v.Background != "" {
+			t.setBackground(v, true, true)
+			break
+		}
+	}
+	t.fill(w, r, bundle.Name, "")
+	t.addAssetHighCharts()
+	t.Bundle = bundle
+	t.Canonical = bundle.GetPath()
+	t.Apps = apps
+	t.Packages = packages
+
+	//
 	err = returnTemplate(w, r, "bundle", t)
 	log.Err(err, r)
 }
