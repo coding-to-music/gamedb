@@ -919,7 +919,7 @@ func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
 		return archive, err
 	}
 
-	if meta.Response.Modified > app.ItemsModified.Unix() {
+	if meta.Response.Modified > app.ItemsModified.Unix() && meta.Response.Digest != "" {
 
 		archive, _, err = helpers.GetSteam().GetItemDefArchive(app.ID, meta.Response.Digest)
 		if err != nil {
