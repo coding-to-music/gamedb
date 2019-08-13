@@ -25,8 +25,6 @@ import (
 )
 
 var (
-	regexIntsOnly = regexp.MustCompile("[^0-9]+")
-
 	groupXMLRateLimit    = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second*60), ratelimit.WithoutSlack)
 	groupScrapeRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second), ratelimit.WithoutSlack)
 )
@@ -197,7 +195,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	// ID64
 	c.OnHTML("a[href^=\"steam:\"]", func(e *colly.HTMLElement) {
-		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		e.Text = helpers.RegexIntsOnly.ReplaceAllString(e.Text, "")
 		group.ID64 = path.Base(e.Attr("href"))
 	})
 
@@ -261,10 +259,10 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	// Members / Members In Chat
 	c.OnHTML("#profileBlock .linkStandard", func(e *colly.HTMLElement) {
 		if strings.Contains(strings.ToLower(e.Text), "chat") {
-			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+			e.Text = helpers.RegexIntsOnly.ReplaceAllString(e.Text, "")
 			group.MembersInChat, err = strconv.Atoi(e.Text)
 		} else {
-			e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+			e.Text = helpers.RegexIntsOnly.ReplaceAllString(e.Text, "")
 			group.Members, err = strconv.Atoi(e.Text)
 			foundNumbers = true
 		}
@@ -272,13 +270,13 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	// Members In Game
 	c.OnHTML("#profileBlock .membersInGame", func(e *colly.HTMLElement) {
-		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		e.Text = helpers.RegexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersInGame, err = strconv.Atoi(e.Text)
 	})
 
 	// Members Online
 	c.OnHTML("#profileBlock .membersOnline", func(e *colly.HTMLElement) {
-		e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
+		e.Text = helpers.RegexIntsOnly.ReplaceAllString(e.Text, "")
 		group.MembersOnline, err = strconv.Atoi(e.Text)
 	})
 
@@ -359,23 +357,23 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	// Members
 	c.OnHTML("div.membercount.members .count", func(e *colly.HTMLElement) {
-		group.Members, err = strconv.Atoi(regexIntsOnly.ReplaceAllString(e.Text, ""))
+		group.Members, err = strconv.Atoi(helpers.RegexIntsOnly.ReplaceAllString(e.Text, ""))
 		foundMembers = true
 	})
 
 	// Members In Game
 	c.OnHTML("div.membercount.ingame .count", func(e *colly.HTMLElement) {
-		group.MembersInGame, err = strconv.Atoi(regexIntsOnly.ReplaceAllString(e.Text, ""))
+		group.MembersInGame, err = strconv.Atoi(helpers.RegexIntsOnly.ReplaceAllString(e.Text, ""))
 	})
 
 	// Members Online
 	c.OnHTML("div.membercount.online .count", func(e *colly.HTMLElement) {
-		group.MembersOnline, err = strconv.Atoi(regexIntsOnly.ReplaceAllString(e.Text, ""))
+		group.MembersOnline, err = strconv.Atoi(helpers.RegexIntsOnly.ReplaceAllString(e.Text, ""))
 	})
 
 	// Members In Chat
 	c.OnHTML("div.joinchat_membercount .count", func(e *colly.HTMLElement) {
-		group.MembersInChat, err = strconv.Atoi(regexIntsOnly.ReplaceAllString(e.Text, ""))
+		group.MembersInChat, err = strconv.Atoi(helpers.RegexIntsOnly.ReplaceAllString(e.Text, ""))
 	})
 
 	// Error

@@ -164,7 +164,8 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.PICSDepots) {
 				logError(err)
 				depot.DLCApp = appID
 			case "depotfromapp":
-				app, err := strconv.Atoi(vv.Value.(string))
+				id := helpers.RegexIntsOnly.ReplaceAllString(vv.Value.(string), "")
+				app, err := strconv.Atoi(id)
 				logError(err)
 				depot.App = app
 			case "systemdefined":
