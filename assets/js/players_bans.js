@@ -1,4 +1,4 @@
-if ($('#players-page').length > 0) {
+if ($('#player-bans-page').length > 0) {
 
     const $playersTable = $('table.table-datatable2');
 
@@ -42,7 +42,7 @@ if ($('#players-page').length > 0) {
         },
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-link', data[13]);
+            $(row).attr('data-link', data[6]);
         },
         "columnDefs": [
             // Rank
@@ -60,8 +60,8 @@ if ($('#players-page').length > 0) {
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    if (row[11]) {
-                        return '<img data-lazy="' + row[11] + '" data-lazy-alt="' + row[12] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[12] + '">';
+                    if (row[4]) {
+                        return '<img data-lazy="' + row[4] + '" data-lazy-alt="' + row[5] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[5] + '">';
                     }
                     return '';
                 },
@@ -81,71 +81,33 @@ if ($('#players-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Avatar 2 / Level
+            // Game Bans
             {
                 "targets": 3,
-                "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><div class="' + row[4] + '"></div></div><div class="name min">' + row[5].toLocaleString() + '</div></div>'
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('img');
-                },
-                "orderSequence": ["desc"],
-            },
-            // Games
-            {
-                "targets": 4,
-                "render": function (data, type, row) {
-
-                    if (row[6]) {
-                        return row[6].toLocaleString();
-                    }
-                    return $lockIcon;
-                },
-                "orderSequence": ["desc"],
-            },
-            // Badges
-            {
-                "targets": 5,
                 "render": function (data, type, row) {
                     return row[7].toLocaleString();
                 },
                 "orderSequence": ["desc"],
             },
-            // Time
+            // VAC Bans
             {
-                "targets": 6,
+                "targets": 4,
                 "render": function (data, type, row) {
-
-                    if (row[8] === '-') {
-                        return $lockIcon;
-                    }
-
-                    return row[8];
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-
-                    $(td).attr('nowrap', 'nowrap');
-
-                    if (rowData[8] !== '0m') {
-                        $(td).attr('data-toggle', 'tooltip').attr('data-placement', 'left').attr('title', rowData[9]);
-                    }
+                    return row[8].toLocaleString();
                 },
                 "orderSequence": ["desc"],
             },
-            // Friends
+            // Last Ban
             {
-                "targets": 7,
+                "targets": 5,
                 "render": function (data, type, row) {
-
-                    if (row[10] === 0) {
-                        return $lockIcon;
-                    }
-
-                    return row[10].toLocaleString();
+                    return '';
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 "orderSequence": ["desc"],
-            }
+            },
         ]
     }));
 }

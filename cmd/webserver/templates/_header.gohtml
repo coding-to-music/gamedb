@@ -101,14 +101,15 @@
                         <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Players</a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item d-block d-lg-none" href="/players">Players</a>
+                            <a class="dropdown-item" href="/players/bans">Bans</a>
                             <a class="dropdown-item" href="/players/add">Add Player</a>
                         </div>
                     </li>
 
                     {{ if eq .Env "local" }}
-                    <li class="nav-item {{if startsWith .Path "/offers" }}active{{end}}">
-                        <a class="nav-link" href="/offers">Offers</a>
-                    </li>
+                        <li class="nav-item {{if startsWith .Path "/offers" }}active{{end}}">
+                            <a class="nav-link" href="/offers">Offers</a>
+                        </li>
                     {{ end }}
 
                     <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
@@ -126,6 +127,7 @@
                             <a class="dropdown-item d-block d-lg-none" href="/stats">Stats</a>
                             <a class="dropdown-item" href="/tags">Tags</a>
                             <a class="dropdown-item" href="/genres">Genres</a>
+                            <a class="dropdown-item" href="/categories">Categories</a>
                             <a class="dropdown-item" href="/publishers">Publishers</a>
                             <a class="dropdown-item" href="/developers">Developers</a>
                         </div>

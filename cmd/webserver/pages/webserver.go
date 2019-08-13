@@ -93,6 +93,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
 		folder+"/_webpack_header.gohtml",
 		folder+"/_webpack_footer.gohtml",
+		folder+"/_players_header.gohtml",
 		folder+"/_header.gohtml",
 		folder+"/_footer.gohtml",
 		folder+"/_apps_header.gohtml",

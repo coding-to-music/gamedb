@@ -1,0 +1,34 @@
+{{define "_players_header"}}
+
+    <div class="card-header">
+
+        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+
+            <li class="nav-item">
+                {{if endsWith .Path "/players" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-users"></i> Players</span>
+                {{else}}
+                    <a class="nav-link" href="/players" role="tab"><i class="fas fa-users"></i> Players</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if endsWith .Path "/players/bans" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-ban"></i> Bans</span>
+                {{else}}
+                    <a class="nav-link" href="/players/bans" role="tab"><i class="fas fa-ban"></i> Bans</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if startsWith .Path "/players/add" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-plus-circle"></i> Add Player</span>
+                {{else}}
+                    <a class="nav-link" href="/players/add" role="tab"><i class="fas fa-plus-circle"></i> Add Player</a>
+                {{end}}
+            </li>
+
+        </ul>
+    </div>
+
+{{end}}

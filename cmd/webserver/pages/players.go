@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/pariz/gountries"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 const CAF = "C-AF"
@@ -58,6 +59,8 @@ func PlayersRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", playersHandler)
 	r.Get("/add", playerAddHandler)
+	r.Get("/bans", playerBansHandler)
+	r.Get("/bans/bans.json", playerBansAjaxHandler)
 	r.Post("/add", playerAddHandler)
 	r.Get("/players.json", playersAjaxHandler)
 	r.Mount("/{id:[0-9]+}", PlayerRouter())
@@ -176,6 +179,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		var err error
+
 		players, err := mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, mongo.M{
 			"_id":          1,
 			"persona_name": 1,
@@ -290,4 +295,173 @@ func (pr PlayerRow) GetRank() string {
 	}
 
 	return helpers.OrdinalComma(pr.Rank)
+}
+
+func playerBansHandler(w http.ResponseWriter, r *http.Request) {
+
+	var wg sync.WaitGroup
+
+	// Count players
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountPlayersWithBan()
+		log.Err(err, r)
+	}()
+
+	// Wait
+	wg.Wait()
+
+	t := playerBansTemplate{}
+	t.fill(w, r, "Player Bans", "")
+	t.Countries = countries
+	t.Continents = continents
+
+	err := returnTemplate(w, r, "players_bans", t)
+	log.Err(err, r)
+}
+
+type playerBansTemplate struct {
+	GlobalTemplate
+	Date       string
+	Countries  []gountries.Country
+	Continents []continent
+}
+
+func playerBansAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := DataTablesQuery{}
+	err := query.fillFromURL(r.URL.Query())
+	log.Err(err, r)
+
+	query.limit(r)
+
+	var columns = map[string]string{
+		"3": "bans_game",
+		"4": "bans_cav",
+		"5": "bans_last",
+	}
+
+	var sortOrder = query.getOrderMongo(columns, nil)
+	var filter = mongo.D{
+		{
+			"$or",
+			mongo.A{
+				mongo.M{"bans_game": mongo.M{"$gt": 0}},
+				mongo.M{"bans_cav": mongo.M{"$gt": 0}},
+			},
+		},
+	}
+
+	country := query.getSearchString("country")
+
+	var isContinent bool
+	for _, v := range continents {
+		if v.Key == country {
+			isContinent = true
+			countriesIn := helpers.CountriesInContinent(v.Value)
+			var countriesInA mongo.A
+			for _, v := range countriesIn {
+				countriesInA = append(countriesInA, v)
+			}
+			filter = append(filter, bson.E{Key: "country_code", Value: mongo.M{"$in": countriesInA}})
+			break
+		}
+	}
+	if !isContinent && country != "" {
+		filter = append(filter, bson.E{Key: "country_code", Value: country})
+	}
+
+	state := query.getSearchString("state")
+	if country == "US" && state != "" {
+		filter = append(filter, bson.E{Key: "status_code", Value: state})
+	}
+
+	search := query.getSearchString("search")
+	if len(search) >= 2 {
+		sortOrder = nil
+		filter = append(filter, bson.E{Key: "$or", Value: mongo.A{
+			mongo.M{"$text": mongo.M{"$search": search}},
+			mongo.M{"_id": search},
+		}})
+	}
+
+	//
+	var wg sync.WaitGroup
+
+	// Get players
+	var players []mongo.Player
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		players, err = mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, mongo.M{
+			"_id":          1,
+			"persona_name": 1,
+			"avatar":       1,
+			"country_code": 1,
+			"bans_game":    1,
+			"bans_cav":     1,
+		}, nil)
+		log.Err(err)
+	}()
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		total, err = mongo.CountPlayersWithBan()
+		log.Err(err, r)
+	}()
+
+	// Get filtered total
+	var filtered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		filtered, err = mongo.CountDocuments(mongo.CollectionPlayers, filter, 0)
+		log.Err(err, r)
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = total
+	response.RecordsFiltered = filtered
+	response.Draw = query.Draw
+	response.limit(r)
+
+	for k, player := range players {
+
+		response.AddRow([]interface{}{
+			query.getOffset() + k + 1,        // 0
+			strconv.FormatInt(player.ID, 10), // 1
+			player.PersonaName,               // 2
+			player.GetAvatar(),               // 3
+			player.GetFlag(),                 // 4
+			player.GetCountry(),              // 5
+			player.GetPath(),                 // 6
+			player.NumberOfGameBans,          // 7
+			player.NumberOfVACBans,           // 8
+		})
+	}
+
+	response.output(w, r)
 }

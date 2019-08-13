@@ -350,7 +350,7 @@ func SearchPlayer(s string, projection M) (player Player, err error) {
 	return player, err
 }
 
-func GetPlayers(offset int64, limit int64, sort D, filter M, projection M, ops *options.FindOptions) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, filter interface{}, projection M, ops *options.FindOptions) (players []Player, err error) {
 
 	return getPlayers(offset, limit, sort, filter, projection, ops)
 }
@@ -441,6 +441,25 @@ func CountPlayers() (count int64, err error) {
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		return CountDocuments(CollectionPlayers, M{}, 0)
+	})
+
+	return count, err
+}
+
+func CountPlayersWithBan() (count int64, err error) {
+
+	var item = helpers.MemcachePlayersCount
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		filter := M{
+			"$or": A{
+				M{"bans_game": M{"$gt": 0}},
+				M{"bans_cav": M{"$gt": 0}},
+			},
+		}
+
+		return CountDocuments(CollectionPlayers, filter, 0)
 	})
 
 	return count, err
