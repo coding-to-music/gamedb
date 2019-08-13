@@ -460,6 +460,10 @@ func (t GlobalTemplate) ShowAds() bool {
 		return false
 	}
 
+	if strings.HasPrefix(t.request.URL.Path, "/admin") {
+		return false
+	}
+
 	return !t.hideAds
 }
 
