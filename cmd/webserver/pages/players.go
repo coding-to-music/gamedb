@@ -317,7 +317,7 @@ func playerBansHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	t := playerBansTemplate{}
-	t.fill(w, r, "Player Bans", "")
+	t.fill(w, r, "Player Bans", "Who has been banned the most?")
 	t.Countries = countries
 	t.Continents = continents
 
