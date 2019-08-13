@@ -12,7 +12,7 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20190813171148-ccde7cedb218
+	github.com/Jleagle/steam-go v0.0.0-20190813172859-ae0fa9e51004
 	github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.4
