@@ -415,7 +415,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 
 		for _, v := range result.InsertedIDs {
 			if s, ok := v.(primitive.ObjectID); ok {
-				priceIDs = append(priceIDs, string(s[:]))
+				priceIDs = append(priceIDs, s.Hex())
 			}
 		}
 
