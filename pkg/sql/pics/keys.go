@@ -115,7 +115,7 @@ var UFSKeys = map[string]PicsKey{
 	"hidecloudui":   {FormatType: picsTypeBool},
 	"maxnumfiles":   {FormatType: picsTypeNumber},
 	"quota":         {FormatType: picsTypeBytes},
-	"savefiles":     {FormatType: picsTypeJSON},
+	"savefiles":     {FormatType: picsTypeCustom},
 	"rootoverrides": {FormatType: picsTypeJSON},
 }
 
@@ -251,9 +251,6 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			err := json.Unmarshal([]byte(val), &idMap)
 			log.Err(err)
 
-			// Check for missing fields
-			go log.Err(helpers.UnmarshalStrict([]byte(val), &idMap))
-
 			var idSlice []string
 
 			for _, id := range idMap {
@@ -280,9 +277,6 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			err := json.Unmarshal([]byte(val), &idMap)
 			log.Err(err)
-
-			// Check for missing fields
-			go log.Err(helpers.UnmarshalStrict([]byte(val), &idMap))
 
 			var idSlice []string
 
@@ -367,9 +361,6 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					err := json.Unmarshal([]byte(val), &langs)
 					log.Err(err)
 
-					// Check for missing fields
-					go log.Err(helpers.UnmarshalStrict([]byte(val), &langs))
-
 					var items []string
 					for code, lang := range langs {
 
@@ -411,9 +402,6 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					err := json.Unmarshal([]byte(val), &categories)
 					log.Err(err)
 
-					// Check for missing fields
-					go log.Err(helpers.UnmarshalStrict([]byte(val), &categories))
-
 					var items []int
 					for k := range categories {
 
@@ -438,9 +426,6 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					err := json.Unmarshal([]byte(val), &languages)
 					log.Err(err)
 
-					// Check for missing fields
-					go log.Err(helpers.UnmarshalStrict([]byte(val), &languages))
-
 					var items []string
 					for k, v := range languages {
 						if v == "1" {
@@ -463,9 +448,6 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					err := json.Unmarshal([]byte(val), &associations)
 					log.Err(err)
 
-					// Check for missing fields
-					go log.Err(helpers.UnmarshalStrict([]byte(val), &associations))
-
 					var items []string
 					for _, v := range associations {
 						items = append(items, "<li>"+strings.Title(v.Type)+": <span class=font-weight-bold>"+v.Name+"</span></li>")
@@ -475,7 +457,25 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				}
 
 			case "metacritic_score":
+
 				return template.HTML(val + "<small>/100</small>")
+
+			case "savefiles":
+
+				if val != "" {
+
+					files := saveFiles{}
+					err := json.Unmarshal([]byte(val), &files)
+					log.Err(err)
+
+					var items []string
+					for _, file := range files {
+						items = append(items, `<li><strong>Path: </strong>`+file.Path+`, <strong>Pattern: </strong>`+file.Pattern+`, <strong>Recursive: </strong>`+file.Recursive+`, <strong>Root: </strong>`+file.Root+`</li>`)
+					}
+
+					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
+				}
+
 			}
 
 			return val
