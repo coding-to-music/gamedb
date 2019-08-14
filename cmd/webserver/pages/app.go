@@ -263,7 +263,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if app.GetCommon().GetValue("app_retired_publisher_request") == "1" {
-		banners["warning"] = append(banners["warning"], "At the request of the publisher, Masplado is no longer available for sale on Steam.")
+		banners["warning"] = append(banners["warning"], "At the request of the publisher, "+app.GetName()+" is no longer available for sale on Steam.")
 	}
 
 	t.Banners = banners
