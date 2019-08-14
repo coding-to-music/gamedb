@@ -58,6 +58,11 @@ function loadImage($target) {
     }
 
     $target.attr('src', $target.attr('data-lazy'))
+
+    //
+    $target.removeAttr("data-lazy-alt")
+    $target.removeAttr("data-lazy-title")
+    $target.removeAttr("data-lazy")
 }
 
 $(document).ready(fixBrokenImages);
