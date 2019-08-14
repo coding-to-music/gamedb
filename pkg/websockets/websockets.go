@@ -95,13 +95,15 @@ func (p *Page) Send(data interface{}) {
 	p.Lock()
 	defer p.Unlock()
 
-	if p.CountConnections() > 0 {
+	count := p.CountConnections()
+	if count > 0 {
 
 		var connsToDelete []uuid.UUID
 
 		payload := WebsocketPayload{}
 		payload.Page = p.name
 		payload.Data = data
+		payload.Subs = count
 
 		for k, v := range p.connections {
 
@@ -129,6 +131,7 @@ type WebsocketPayload struct {
 	Data  interface{}
 	Page  WebsocketPage
 	Error string
+	Subs  int
 }
 
 // Converts pubsub messages into websockets
