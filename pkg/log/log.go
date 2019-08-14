@@ -226,9 +226,8 @@ func log(interfaces ...interface{}) {
 				Timestamp: entry.timestamp,
 				Payload:   entry.toText(entry.severity),
 				Labels: map[string]string{
-					"env":      config.Config.Environment.Get(),
-					"key":      config.GetSteamKeyTag(),
-					"severity": entry.severity.string(),
+					"env": config.Config.Environment.Get(),
+					"key": config.GetSteamKeyTag(),
 				},
 			})
 
