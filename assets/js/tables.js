@@ -236,4 +236,6 @@ function addDataTablesRow(options, data, limit, $table) {
     $table.prepend($row);
 
     $table.find('tbody tr').slice(limit).remove();
+
+    observeLazyImages('table.table img[data-lazy]');
 }
