@@ -245,10 +245,13 @@
 
 </div>
 
-{{ if ne .Games "" }}
-    <script>
-        localStorage.setItem("games", '{{ .Games }}');
-    </script>
-{{ end }}
+<script>
+    {{ if ne .Games "" }}
+    localStorage.setItem("games", '{{ .Games }}');
+    {{ end }}
+    {{ if ne .Groups "" }}
+    localStorage.setItem("groups", '{{ .Groups }}');
+    {{ end }}
+</script>
 
 {{ template "_footer" . }} {{end}}

@@ -65,23 +65,16 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.User, err = getUserFromSession(r)
 	log.Err(err)
 
-	// Set Steam name to session if missing, can happen after linking
-	if t.User.SteamID != 0 {
+	if t.User.SteamID > 0 {
 
-		name, err := session.Get(r, helpers.SessionPlayerName)
+		// Get player
+		t.Player, err = mongo.GetPlayer(t.User.SteamID)
+		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		log.Err(err)
 
-		if name == "" && err == nil {
-
-			t.Player, err = mongo.GetPlayer(t.User.SteamID)
-			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			log.Err(err)
-
-			if t.Player.PersonaName != "" {
-				err = session.Set(r, helpers.SessionPlayerName, t.Player.PersonaName)
-				log.Err(err)
-			}
-		}
+		// Set Steam player name to session if missing, can happen after linking
+		err = session.Set(r, helpers.SessionPlayerName, t.Player.PersonaName)
+		log.Err(err)
 	}
 
 	//
@@ -93,11 +86,11 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		if t.User.SteamID == 0 {
+		if t.Player.ID == 0 {
 			return
 		}
 
-		playerApps, err := mongo.GetPlayerApps(t.User.SteamID, 0, 0, mongo.D{})
+		playerApps, err := mongo.GetPlayerApps(t.Player.ID, 0, 0, mongo.D{})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -112,6 +105,22 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err)
 
 		t.Games = string(b)
+	}()
+
+	// Get groups
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		if t.Player.ID == 0 {
+			return
+		}
+
+		b, err := json.Marshal(t.Player.Groups)
+		log.Err(err)
+
+		t.Groups = string(b)
 	}()
 
 	// Wait
@@ -129,6 +138,7 @@ type settingsTemplate struct {
 	Games   string
 	ProdCCs []helpers.ProductCountryCode
 	Domain  string
+	Groups  string
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
