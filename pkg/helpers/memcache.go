@@ -64,7 +64,7 @@ var (
 	MemcacheTrendingApps   = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
 	MemcacheTotalCommits   = memcache.Item{Key: "total-commits", Expiration: 60 * 60}
 	MemcacheStatsAppTypes  = func(code steam.ProductCC) memcache.Item { return memcache.Item{Key: "stats-app-types-" + string(code), Expiration: 60 * 60 * 25} }
-	MemcacheUserLevelByKey = func(key string) memcache.Item { return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
+	MemcacheUserByAPIKey   = func(key string) memcache.Item { return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
 )
 
 func GetMemcache() *memcache.Memcache {

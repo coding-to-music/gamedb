@@ -138,7 +138,7 @@ func DeleteUser(id int64) (err error) {
 
 func GetUserFromKeyCache(key string) (user User, err error) {
 
-	var item = helpers.MemcacheUserLevelByKey(key)
+	var item = helpers.MemcacheUserByAPIKey(key)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &user, func() (interface{}, error) {
 
