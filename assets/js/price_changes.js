@@ -208,6 +208,11 @@ if ($('#price-changes-page').length > 0) {
         if (info.page === 0) { // Page 1
 
             const data = $.parseJSON(e.data);
+
+            if (data[13] !== user.prodCC) {
+                return;
+            }
+
             addDataTablesRow(options, data.Data, info.length, $table);
         }
     });

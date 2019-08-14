@@ -84,6 +84,7 @@ func (price ProductPrice) OutputForJSON() (output []interface{}) {
 		price.CreatedAt.Format(helpers.DateTime),               // 10
 		price.CreatedAt.Unix(),                                 // 11
 		price.Difference,                                       // 12 Raw difference
+		price.ProdCC,                                           // 13
 	}
 }
 
