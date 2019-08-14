@@ -209,11 +209,10 @@ if ($('#price-changes-page').length > 0) {
 
             const data = $.parseJSON(e.data);
 
-            if (data[13] !== user.prodCC) {
-                return;
+            // Check cc matches
+            if (data.Data[13] === user.prodCC) {
+                addDataTablesRow(options, data.Data, info.length, $table);
             }
-
-            addDataTablesRow(options, data.Data, info.length, $table);
         }
     });
 }
