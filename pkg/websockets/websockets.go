@@ -229,7 +229,7 @@ func ListenToPubSub() {
 
 				prices, err := mongo.GetPricesByID(idsPayload.IDs)
 
-				log.Debug("price_ids", len(prices))
+				log.Debug("price_ids", len(prices), idsPayload.IDs)
 
 				log.Err(err)
 				if err == nil {

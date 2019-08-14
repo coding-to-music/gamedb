@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -93,8 +94,13 @@ func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
 	}
 
 	var idsBSON A
-	for _, v := range IDs {
-		idsBSON = append(idsBSON, v)
+	for _, ID := range IDs {
+
+		objectID, err := primitive.ObjectIDFromHex(ID)
+		log.Err(err)
+		if err == nil {
+			idsBSON = append(idsBSON, objectID)
+		}
 	}
 
 	return getProductPrices(M{"_id": M{"$in": idsBSON}}, 0, 0, true)
