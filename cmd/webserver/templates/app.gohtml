@@ -37,53 +37,53 @@
 
             <ul class="nav nav-tabs card-header-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
+                    <a class="nav-link nav-link-small active" data-toggle="tab" href="#details" role="tab">Details</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#players" role="tab">Players</a>
+                    <a class="nav-link nav-link-small" data-toggle="tab" href="#players" role="tab">Players</a>
                 </li>
                 {{if gt (len .Prices) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#prices" role="tab">Prices</a>
                     </li>
                 {{end}}
                 {{if gt (len .DLCs) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC</a>
                     </li>
                 {{end}}
                 {{if gt (len .Packages) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages</a>
                     </li>
                 {{end}}
                 {{if gt (len .Bundles) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
                     </li>
                 {{end}}
                 {{if gt (len .Achievements) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
                     </li>
                 {{end}}
                 {{if gt (len .NewsIDs) 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#news" role="tab">News</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#news" role="tab">News</a>
                     </li>
                 {{end}}
                 {{if gt .Reviews.GetTotal 0}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
                     </li>
                 {{end}}
                 {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}}
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media</a>
                     </li>
                 {{end}}
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
+                    <a class="nav-link nav-link-small" data-toggle="tab" href="#dev" role="tab">Dev</a>
                 </li>
             </ul>
 
@@ -649,56 +649,56 @@
 
                             <ul class="nav nav-tabs card-header-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
+                                    <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
                                 </li>
                                 {{if gt (len .App.GetExtended) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-extended" role="tab">Extended</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-extended" role="tab">Extended</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetCommon) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-common" role="tab">Common</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-common" role="tab">Common</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetConfig) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-config" role="tab">Config</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-config" role="tab">Config</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetUFS) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-ufs" role="tab">UFS</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-ufs" role="tab">UFS</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetInstall) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-install" role="tab">Install</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
                                     </li>
                                 {{ end }}
                                 {{ if .App.GetLocalization.HasLanguages }}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .Stats) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
                                     </li>
                                 {{ end }}
                                 {{ if and (ne .App.SystemRequirements "") (ne .App.SystemRequirements "{}") }}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-system-requirements" role="tab">System</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-system-requirements" role="tab">System</a>
                                     </li>
                                 {{ end }}
                                 {{ if or (gt (len .App.GetDepots.Depots) 0) (gt (len .App.GetDepots.Branches) 0) (gt (len .App.GetDepots.Extra) 0)}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
                                     </li>
                                 {{ end }}
                                 {{ if gt (len .App.GetLaunch) 0}}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
                                     </li>
                                 {{ end }}
                             </ul>
