@@ -138,7 +138,17 @@ if ($('#price-changes-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></div>'
+
+                    let tagName = row[3];
+                    if ($('#type').val() == 'all') {
+                        if (row[0] > 0) {
+                            tagName = tagName + ' <span class="badge badge-success float-right">App</span>';
+                        } else if (row[1] > 0) {
+                            tagName = tagName + ' <span class="badge badge-success float-right">Package</span>';
+                        }
+                    }
+
+                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-lazy-alt="' + row[3] + '"></div><div class="name">' + tagName + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')
