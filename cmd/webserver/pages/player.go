@@ -129,7 +129,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "name": 1, "members": 1, "icon": 1, "type": 1, "url": 1})
+		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "id": 1, "name": 1, "members": 1, "icon": 1, "type": 1, "url": 1})
 		log.Err(err, r)
 
 		sort.Slice(groups, func(i, j int) bool {
@@ -149,7 +149,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		wishlistApps, err := sql.GetAppsByID(player.Wishlist, []string{"id", "name", "icon", "release_state", "release_date_unix", "prices"})
+		var wishlistApps []sql.App
+		var err error
+		wishlistApps, err = sql.GetAppsByID(player.Wishlist, []string{"id", "name", "icon", "release_state", "release_date_unix", "prices"})
 		log.Err(err)
 		if err == nil {
 			for _, v := range wishlistApps {
