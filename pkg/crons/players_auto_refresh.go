@@ -53,9 +53,9 @@ func (c AutoPlayerRefreshes) Work() {
 
 	var groupIDs []string
 
-	players, err := mongo.GetPlayersByID(playerIDs, mongo.M{"primary_clan_id": 1})
+	players, err := mongo.GetPlayersByID(playerIDs, mongo.M{"primary_clan_id_string": 1})
 	for _, v := range players {
-		if v.PrimaryClanID > 0 {
+		if v.PrimaryClanIDString != "" {
 			groupIDs = append(groupIDs, strconv.Itoa(v.PrimaryClanID))
 		}
 	}
