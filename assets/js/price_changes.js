@@ -218,10 +218,15 @@ if ($('#price-changes-page').length > 0) {
         if (info.page === 0) { // Page 1
 
             const data = $.parseJSON(e.data);
+            const type = $('#type').val();
 
             // Check cc matches
             if (data.Data[13] === user.prodCC) {
-                addDataTablesRow(options, data.Data, info.length, $table);
+                // Check product type
+                if (type === 'all' || (type === 'apps' && data.Data[0] > 0) || (type === 'packages' && data.Data[1] > 0)) {
+                    // Add row
+                    addDataTablesRow(options, data.Data, info.length, $table);
+                }
             }
         }
     });
