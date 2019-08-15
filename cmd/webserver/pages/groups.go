@@ -127,6 +127,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			group.GetLink(),                    // 8
 			group.Error != "",                  // 9
 			helpers.TrendValue(group.Trending), // 10
+			group.ID,                           // 11
 		})
 	}
 

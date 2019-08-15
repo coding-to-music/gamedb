@@ -26,6 +26,8 @@ if ($('#groups-page').length > 0) {
         },
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
+            $(row).attr('data-group-id64', data[0]);
+            $(row).attr('data-group-id', data[11]);
             $(row).attr('data-link', data[2]);
             if (data[7] === 'game' && !$('#type').val()) {
                 $(row).addClass('table-primary');
