@@ -92,6 +92,10 @@ func (pack Package) GetPath() string {
 	return helpers.GetPackagePath(pack.ID, pack.GetName())
 }
 
+func (pack Package) GetLink() string {
+	return "https://store.steampowered.com/sub/" + strconv.Itoa(pack.ID) + "/?curator_clanid=&utm_source=GameDB" // todo curator_clanid
+}
+
 func (pack Package) GetID() int {
 	return pack.ID
 }

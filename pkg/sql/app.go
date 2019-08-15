@@ -454,12 +454,12 @@ func (app App) GetOnlinePlayers() (players int64, err error) {
 
 func (app App) GetCommunityLink() string {
 	name := config.Config.GameDBShortName.Get()
-	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
+	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
 }
 
 func (app App) GetStoreLink() string {
 	name := config.Config.GameDBShortName.Get()
-	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "/?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
+	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
 }
 
 func (app App) GetPCGamingWikiLink() string {
