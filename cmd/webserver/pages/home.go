@@ -2,6 +2,7 @@ package pages
 
 import (
 	"html/template"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -120,13 +121,13 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	for _, price := range priceChanges {
 
 		prices = append(prices, homePrice{
-			Name:   helpers.InsertNewLines(price.Name),                     // 0
-			ID:     price.AppID,                                            // 1
-			Link:   price.GetPath(),                                        // 2
-			Before: helpers.FormatPrice(price.Currency, price.PriceBefore), // 3
-			After:  helpers.FormatPrice(price.Currency, price.PriceAfter),  // 4
-			Time:   price.CreatedAt.Unix(),                                 // 5
-			Avatar: price.GetIcon(),                                        // 6
+			Name:     helpers.InsertNewLines(price.Name),                    // 0
+			ID:       price.AppID,                                           // 1
+			Link:     price.GetPath(),                                       // 2
+			After:    helpers.FormatPrice(price.Currency, price.PriceAfter), // 3
+			Discount: math.Round(price.DifferencePercent),                   // 4
+			Time:     price.CreatedAt.Unix(),                                // 5
+			Avatar:   price.GetIcon(),                                       // 6
 		})
 	}
 
@@ -135,13 +136,13 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type homePrice struct {
-	Name   string `json:"name"`
-	ID     int    `json:"id"`
-	Link   string `json:"link"`
-	Before string `json:"before"`
-	After  string `json:"after"`
-	Time   int64  `json:"time"`
-	Avatar string `json:"avatar"`
+	Name     string  `json:"name"`
+	ID       int     `json:"id"`
+	Link     string  `json:"link"`
+	After    string  `json:"after"`
+	Discount float64 `json:"discount"`
+	Time     int64   `json:"time"`
+	Avatar   string  `json:"avatar"`
 }
 
 func homePlayersHandler(w http.ResponseWriter, r *http.Request) {

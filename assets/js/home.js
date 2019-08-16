@@ -98,11 +98,7 @@ if ($('#home-page').length > 0) {
             $('#prices .fa-spin').remove();
             $('#prices table').removeClass('d-none');
 
-            if (isIterable(data)) {
-                for (const v of data) {
-                    addPriceRow(v, false);
-                }
-            }
+            addPriceRow(data, false);
         },
     });
 
@@ -113,7 +109,15 @@ if ($('#home-page').length > 0) {
         if (data.Data[13] === user.prodCC) { // CC
             if (data.Data[12] < 0) { // Drops
                 if (data.Data[0] > 0) { // Apps
-                    addPriceRow(data.Data, true);
+                    addPriceRow([{
+                        "name": data.Data[3],
+                        "id": data.Data[0],
+                        "link": data.Data[5],
+                        "after": data.Data[7],
+                        "discount": data.Data[14],
+                        "time": data.Data[11],
+                        "avatar": data.Data[4],
+                    }], true);
                 }
             }
         }
@@ -142,10 +146,10 @@ if ($('#home-page').length > 0) {
                         ]
                     },
                     {
-                        '<>': 'td', 'html': '${before}', 'nowrap': 'nowrap'
+                        '<>': 'td', 'html': '${after}', 'nowrap': 'nowrap'
                     },
                     {
-                        '<>': 'td', 'html': '${after}', 'nowrap': 'nowrap'
+                        '<>': 'td', 'html': '${discount}%', 'nowrap': 'nowrap'
                     },
                     {
                         '<>': 'td', 'nowrap': 'nowrap', 'html': [
