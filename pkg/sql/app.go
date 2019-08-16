@@ -890,6 +890,10 @@ type AppType struct {
 
 func GetApp(id int, columns []string) (app App, err error) {
 
+	if id == 0 {
+		id = 753
+	}
+
 	if !helpers.IsValidAppID(id) {
 		return app, ErrInvalidAppID
 	}
