@@ -114,6 +114,7 @@ if ($('#apps-page').length > 0) {
 
             data.search.tags = $('#tags').val();
             data.search.genres = $('#genres').val();
+            data.search.categories = $('#categories').val();
             data.search.developers = $('#developers').val();
             data.search.publishers = $('#publishers').val();
             data.search.platforms = $('#platforms').val();

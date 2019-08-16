@@ -46,7 +46,7 @@
                         <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
                         </select>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group">
                             <label for="tags">Tag
                                 <small>(<a href="/tags" class="stop-prop">Tags</a>)</small>
@@ -58,7 +58,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group">
                             <label for="genres">Genre
                                 <small>(<a href="/genres" class="stop-prop">Genres</a>)</small>
@@ -70,7 +70,29 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="categories">Categories
+                                <small>(<a href="/categories" class="stop-prop">Categories</a>)</small>
+                            </label>
+                            <select multiple data-placeholder="Choose Categories" class="form-control form-control-chosen" id="categories" name="categories">
+                                {{ range $key, $value := .Categories }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="types">Type</label>
+                            <select multiple data-placeholder="Choose Types" class="form-control form-control-chosen" id="types" name="types">
+                                {{ range $key, $value := .Types }}
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group">
                             <label for="developers">Developer
                                 <small>(<a href="/developers" class="stop-prop">Developers</a>)</small>
@@ -82,7 +104,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group">
                             <label for="publishers">Publisher
                                 <small>(<a href="/publishers" class="stop-prop">Publishers</a>)</small>
@@ -94,7 +116,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group">
                             <label for="platforms">Operating System</label>
                             <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="platforms" name="platforms">
@@ -105,17 +127,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
-                        <div class="form-group">
-                            <label for="types">Type</label>
-                            <select multiple data-placeholder="Choose Types" class="form-control form-control-chosen" id="types" name="types">
-                                {{ range $key, $value := .Types }}
-                                    <option value="{{ .ID }}">{{ .Name }}</option>
-                                {{ end }}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group slider">
                             <label id="price-label">Price</label>
                             <div id="price-slider"></div>
@@ -123,7 +135,7 @@
                             <input type="hidden" name="price-high" id="price-high">
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group slider">
                             <label id="score-label">Score</label>
                             <div id="score-slider"></div>
@@ -131,7 +143,7 @@
                             <input type="hidden" name="score-high" id="score-high">
                         </div>
                     </div>
-                    {{/*                    <div class="col-sm-6 col-md-4 col-lg-3">*/}}
+                    {{/*                    <div class="col-sm-6 col-md-4 col-lg-3x">*/}}
                     {{/*                        <div class="form-group">*/}}
                     {{/*                            <label for="tags">Columns</label>*/}}
                     {{/*                            <select multiple data-placeholder="Choose Columns" class="form-control form-control-chosen" id="columns" name="columns">*/}}

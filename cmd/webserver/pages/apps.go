@@ -71,7 +71,17 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Genres, err = sql.GetGenresForSelect()
 		log.Err(err, r)
+	}()
 
+	// Get categories
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Categories, err = sql.GetCategoriesForSelect()
+		log.Err(err, r)
 	}()
 
 	// Get publishers
@@ -183,6 +193,7 @@ type appsTemplate struct {
 	Types      []sql.AppType
 	Tags       []sql.Tag
 	Genres     []sql.Genre
+	Categories []sql.Category
 	Publishers []sql.Publisher
 	Developers []sql.Developer
 }
@@ -272,6 +283,20 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			var vals []interface{}
 			for _, v := range publishers {
 				or = append(or, "JSON_CONTAINS(publishers, ?) = 1")
+				vals = append(vals, "["+v+"]")
+			}
+
+			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
+		}
+
+		// Categories
+		categories := query.getSearchSlice("categories")
+		if len(categories) > 0 {
+
+			var or []string
+			var vals []interface{}
+			for _, v := range categories {
+				or = append(or, "JSON_CONTAINS(categories, ?) = 1")
 				vals = append(vals, "["+v+"]")
 			}
 
