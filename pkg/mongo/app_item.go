@@ -95,7 +95,14 @@ func (a *AppItem) SetExchange(exchange string) {
 }
 
 func (a *AppItem) Link() string {
-	return "https://steamcommunity.com/market/listings/" + strconv.Itoa(a.AppID) + "/" + url.QueryEscape(a.Name)
+	if !a.Marketable {
+		return ""
+	}
+	return "https://steamcommunity.com/market/listings/" + strconv.Itoa(a.AppID) + "/" + url.PathEscape(a.Name)
+}
+
+func (a AppItem) ShortDescription() string {
+	return helpers.TruncateString(a.Description, 150, "...")
 }
 
 func (a *AppItem) Image(size int) string {
