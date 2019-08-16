@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -263,7 +264,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		err = saveAppItems(newItems, currentAppItems)
+		err = saveAppItems(app.ID, newItems, currentAppItems)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
@@ -1364,7 +1365,74 @@ func saveOffers(app sql.App, offers []mongo.Offer) (err error) {
 	return nil
 }
 
-func saveAppItems(newItems []steam.ItemDefArchive, currentItemIDs []int) (err error) {
+func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []int) (err error) {
+
+	if len(newItems) == 0 {
+		return
+	}
+
+	// Make current items map
+	var currentItemIDsMap = map[int]bool{}
+	for _, v := range currentItemIDs {
+		currentItemIDsMap[v] = true
+	}
+
+	// Make new items map
+	var newItemsMap = map[int]bool{}
+	for _, v := range newItems {
+		newItemsMap[int(v.ItemdefID)] = true
+	}
+
+	// Find new items
+	var newDocuments []mongo.AppItem
+	for _, v := range newItems {
+		_, ok := currentItemIDsMap[int(v.ItemdefID)]
+		if !ok {
+			fmt.Print(ok)
+			appItem := mongo.AppItem{
+				AppID:            int(v.AppID),
+				Bundle:           v.Bundle,
+				Commodity:        v.Commodity,
+				DateCreated:      v.DateCreated,
+				Description:      v.Description,
+				DisplayType:      v.DisplayType,
+				DropInterval:     v.DropInterval,
+				DropMaxPerWindow: v.DropMaxPerWindow,
+				Hash:             v.Hash,
+				IconURL:          v.IconURL,
+				IconURLLarge:     v.IconURLLarge,
+				ItemDefID:        int(v.ItemdefID),
+				ItemQuality:      v.ItemQuality,
+				Marketable:       v.Marketable,
+				Modified:         v.Modified,
+				Name:             v.Name,
+				Price:            v.Price,
+				Promo:            v.Promo,
+				Quantity:         v.Quantity,
+				Timestamp:        v.Timestamp,
+				Tradable:         v.Tradable,
+				Type:             v.Type,
+				WorkshopID:       int64(v.WorkshopID),
+				// Exchange:         v.Exchange,
+				// Tags:             v.Tags,
+			}
+			appItem.SetExchange(v.Exchange)
+			appItem.SetTags(v.Tags)
+
+			newDocuments = append(newDocuments, appItem)
+		}
+	}
+	err = mongo.UpdateAppItems(newDocuments)
+
+	// Find removed items
+	var oldDocumentIDs []int
+	for _, v := range currentItemIDs {
+		_, ok := newItemsMap[v]
+		if !ok {
+			oldDocumentIDs = append(oldDocumentIDs, v)
+		}
+	}
+	err = mongo.DeleteAppItems(appID, oldDocumentIDs)
 
 	return nil
 }
