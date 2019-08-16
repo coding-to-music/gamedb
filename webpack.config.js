@@ -99,7 +99,6 @@ module.exports = {
                 path.resolve(__dirname, 'assets/js/third-party/*.js'),
                 path.resolve(__dirname, 'assets/js/helpers/*.js'),
                 path.resolve(__dirname, 'assets/js/global.js'),
-                path.resolve(__dirname, 'assets/js/tables.js'),
                 path.resolve(__dirname, 'assets/js/product.js'),
                 path.resolve(__dirname, 'assets/js/*.js'),
             ],

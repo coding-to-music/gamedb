@@ -21,6 +21,7 @@ $dataTables.each(function (i) {
         "fixedHeader": true,
         "info": false,
         "searching": true,
+        "pagingType": 'simple_numbers',
         "search": {
             "smart": true
         },
