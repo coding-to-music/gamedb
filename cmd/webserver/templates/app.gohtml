@@ -175,7 +175,11 @@
                             {{ if ne .App.Categories "" }}
                                 <tr>
                                     <th scope="row" nowrap="nowrap" width="1%">Categories</th>
-                                    <td>{{ .App.Categories }}</td>
+                                    <td>
+                                        {{ range $key, $value := .Categories }}
+                                            <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
+                                        {{ end }}
+                                    </td>
                                 </tr>
                             {{ end }}
                             {{ if gt (len .Developers) 0 }}

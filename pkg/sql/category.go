@@ -79,26 +79,26 @@ func GetCategoriesByID(ids []int, columns []string) (categories []Category, err 
 	return categories, db.Error
 }
 
-// func GetTagsForSelect() (tags []Tag, err error) {
-//
-// 	var item = helpers.MemcacheTagKeyNames
-//
-// 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
-//
-// 		var tags []Tag
-//
-// 		db, err := GetMySQLClient()
-// 		if err != nil {
-// 			return tags, err
-// 		}
-//
-// 		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&tags)
-// 		return tags, db.Error
-// 	})
-//
-// 	return tags, err
-// }
-//
+func GetCategoriesForSelect() (tags []Category, err error) {
+
+	var item = helpers.MemcacheCategoryKeyNames
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+
+		var cats []Category
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return cats, err
+		}
+
+		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&cats)
+		return cats, db.Error
+	})
+
+	return tags, err
+}
+
 // func DeleteTags(ids []int) (err error) {
 //
 // 	log.Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")

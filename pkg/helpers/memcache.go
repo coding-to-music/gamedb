@@ -35,6 +35,7 @@ var (
 
 	// Apps Page Dropdowns
 	MemcacheTagKeyNames       = memcache.Item{Key: "tag-key-names", Expiration: 86400 * 7}
+	MemcacheCategoryKeyNames  = memcache.Item{Key: "category-key-names", Expiration: 86400 * 7}
 	MemcacheGenreKeyNames     = memcache.Item{Key: "genre-key-names", Expiration: 86400 * 7}
 	MemcachePublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: 86400 * 7}
 	MemcacheDeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 86400 * 7}
