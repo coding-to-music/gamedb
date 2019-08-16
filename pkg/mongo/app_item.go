@@ -14,7 +14,7 @@ type AppItem struct {
 	AppID            int        `bson:"app_id"`
 	Bundle           string     `bson:"bundle"`
 	Commodity        bool       `bson:"commodity"`
-	DateCreated      time.Time  `bson:"date_created"`
+	DateCreated      string     `bson:"date_created"`
 	Description      string     `bson:"description"`
 	DisplayType      string     `bson:"display_type"`
 	DropInterval     int        `bson:"drop_interval"`
@@ -26,13 +26,13 @@ type AppItem struct {
 	ItemDefID        int        `bson:"item_def_id"`
 	ItemQuality      string     `bson:"item_quality"`
 	Marketable       bool       `bson:"marketable"`
-	Modified         time.Time  `bson:"modified"`
+	Modified         string     `bson:"modified"`
 	Name             string     `bson:"name"`
 	Price            string     `bson:"price"`
 	Promo            string     `bson:"promo"`
 	Quantity         int        `bson:"quantity"`
 	Tags             [][]string `bson:"tags"`
-	Timestamp        time.Time  `bson:"timestamp"`
+	Timestamp        string     `bson:"timestamp"`
 	Tradable         bool       `bson:"tradable"`
 	Type             string     `bson:"type"`
 	WorkshopID       int64      `bson:"workshop_id"`
