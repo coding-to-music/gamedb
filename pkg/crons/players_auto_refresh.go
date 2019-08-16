@@ -35,7 +35,7 @@ func (c AutoPlayerRefreshes) Work() {
 	}
 
 	var users []sql.User
-	gorm = gorm.Select([]string{"steam_id", "steam_id"}).Where("patreon_level >= ?", 3).Where("steam_id > ?", 0).Find(&users)
+	gorm = gorm.Select([]string{"steam_id", "steam_id"}).Where("patreon_level >= ?", 2).Where("steam_id > ?", 0).Find(&users)
 	if gorm.Error != nil {
 		log.Err(gorm.Error)
 		return
