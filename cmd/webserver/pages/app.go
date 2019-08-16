@@ -490,8 +490,8 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			item.Tradable,           // 22
 			item.Type,               // 23
 			item.WorkshopID,         // 24
-			item.Image(36),          // 25
-			item.Image(256),         // 26
+			item.Image(36, true),    // 25
+			item.Image(256, false),  // 26
 			item.GetType(),          // 27
 			item.Link(),             // 28
 			item.ShortDescription(), // 29

@@ -114,17 +114,19 @@ func (a AppItem) ShortDescription() string {
 	return helpers.TruncateString(a.Description, 150, "...")
 }
 
-func (a *AppItem) Image(size int) string {
+func (a *AppItem) Image(size int, trim bool) string {
 
 	if a.IconURL == "" {
 		return ""
 	}
 
 	params := url.Values{}
+	params.Set("url", a.IconURL)
 	params.Set("w", strconv.Itoa(size))
 	params.Set("h", strconv.Itoa(size))
-	params.Set("bg", "00FFFFFF")
-	params.Set("url", a.IconURL)
+	if trim {
+		params.Set("trim", "50")
+	}
 
 	return "https://images.weserv.nl?" + params.Encode()
 }
