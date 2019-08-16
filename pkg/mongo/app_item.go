@@ -4,9 +4,9 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -153,4 +153,58 @@ func GetAppItems(appID int, offset int64, limit int64, projection M) (items []Ap
 	}
 
 	return items, cur.Err()
+}
+
+func UpdateAppItems(items []AppItem) (err error) {
+
+	if len(items) < 1 {
+		return nil
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	var writes []mongo.WriteModel
+	for _, item := range items {
+
+		write := mongo.NewReplaceOneModel()
+		write.SetFilter(M{"_id": item.getKey()})
+		write.SetReplacement(item.BSON())
+		write.SetUpsert(true)
+
+		writes = append(writes, write)
+	}
+
+	collection := client.Database(MongoDatabase).Collection(CollectionAppItems.String())
+	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
+	return err
+}
+
+func DeleteAppItems(appID int, items []int) (err error) {
+
+	if len(items) < 1 {
+		return nil
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	keys := A{}
+	for _, itemID := range items {
+
+		item := AppItem{}
+		item.ItemDefID = itemID
+		item.AppID = appID
+
+		keys = append(keys, item.getKey())
+	}
+
+	collection := client.Database(MongoDatabase).Collection(CollectionAppItems.String())
+	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
+
+	return err
 }
