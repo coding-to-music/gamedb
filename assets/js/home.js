@@ -109,7 +109,14 @@ if ($('#home-page').length > 0) {
     websocketListener('prices', function (e) {
 
         const data = $.parseJSON(e.data);
-        addPriceRow(data.Data, true);
+
+        if (data.Data[13] === user.prodCC) { // CC
+            if (data.Data[12] < 0) { // Drops
+                if (data.Data[0] > 0) { // Apps
+                    addPriceRow(data.Data, true);
+                }
+            }
+        }
     });
 
     function addPriceRow(data, addToTop) {
