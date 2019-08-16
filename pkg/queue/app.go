@@ -926,10 +926,10 @@ func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
 		if err != nil {
 			return archive, err
 		}
-	}
 
-	app.Items = len(archive)
-	app.ItemsDigest = meta.Response.Digest
+		app.Items = len(archive)
+		app.ItemsDigest = meta.Response.Digest
+	}
 
 	return archive, nil
 }
