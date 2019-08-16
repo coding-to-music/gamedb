@@ -1380,13 +1380,13 @@ func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []i
 	// Make new items map
 	var newItemsMap = map[int]bool{}
 	for _, v := range newItems {
-		newItemsMap[int(v.ItemdefID)] = true
+		newItemsMap[int(v.ItemDefID)] = true
 	}
 
 	// Find new items
 	var newDocuments []mongo.AppItem
 	for _, v := range newItems {
-		_, ok := currentItemIDsMap[int(v.ItemdefID)]
+		_, ok := currentItemIDsMap[int(v.ItemDefID)]
 		if !ok {
 			fmt.Print(ok)
 			appItem := mongo.AppItem{
@@ -1401,14 +1401,14 @@ func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []i
 				Hash:             v.Hash,
 				IconURL:          v.IconURL,
 				IconURLLarge:     v.IconURLLarge,
-				ItemDefID:        int(v.ItemdefID),
+				ItemDefID:        int(v.ItemDefID),
 				ItemQuality:      v.ItemQuality,
 				Marketable:       v.Marketable,
 				Modified:         v.Modified,
 				Name:             v.Name,
 				Price:            v.Price,
 				Promo:            v.Promo,
-				Quantity:         v.Quantity,
+				Quantity:         int(v.Quantity),
 				Timestamp:        v.Timestamp,
 				Tradable:         v.Tradable,
 				Type:             v.Type,
