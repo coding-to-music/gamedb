@@ -133,7 +133,7 @@ func GetAppItems(appID int, offset int64, limit int64, projection M) (items []Ap
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppItems.String())
 
-	ops := options.Find().SetSort(D{{"workshop_id", 1}})
+	ops := options.Find().SetSort(D{{"item_def_id", 1}})
 	if limit > 0 {
 		ops.SetLimit(limit)
 	}
