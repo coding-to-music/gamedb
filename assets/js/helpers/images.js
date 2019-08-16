@@ -30,21 +30,6 @@ function observeLazyImages(target) {
 
 observeLazyImages('img[data-lazy]');
 
-function fixBrokenImages() {
-
-    $('img').one('error', function () {
-
-        const url = $(this).attr('data-src');
-        if (url) {
-            this.src = url;
-        }
-    });
-
-    $('img[src=""][data-src]').each(function (i, value) {
-        this.src = $(this).attr('data-src');
-    });
-}
-
 function loadImage($target) {
 
     const $alt = $target.attr('data-lazy-alt');
@@ -63,6 +48,23 @@ function loadImage($target) {
     $target.removeAttr("data-lazy-alt")
     $target.removeAttr("data-lazy-title")
     $target.removeAttr("data-lazy")
+}
+
+function fixBrokenImages() {
+
+    $('img').one('error', function () {
+
+        const url = $(this).attr('data-src');
+        if (url) {
+            this.src = url;
+        } else {
+            this.src = '/assets/img/no-app-image-square.jpg';
+        }
+    });
+
+    $('img[src=""][data-src]').each(function (i, value) {
+        this.src = $(this).attr('data-src');
+    });
 }
 
 $(document).ready(fixBrokenImages);
