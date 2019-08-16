@@ -404,52 +404,43 @@ func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	// id := chi.URLParam(r, "id")
-	// if id == "" {
-	// 	log.Err("invalid id", r)
-	// 	return
-	// }
-	//
-	// idx, err := strconv.Atoi(id)
-	// if err != nil {
-	// 	log.Err(err, r)
-	// 	return
-	// }
-	//
-	// query := DataTablesQuery{}
-	// err = query.fillFromURL(r.URL.Query())
-	// log.Err(err, r)
-	//
-	// query.limit(r)
-	//
-	// playerAppFilter := mongo.M{"app_id": idx, "app_time": mongo.M{"$gt": 0}}
-	//
-	// playerApps, err := mongo.GetPlayerAppsByApp(query.getOffset64(), playerAppFilter)
-	// if err != nil {
-	// 	log.Err(err, r)
-	// 	return
-	// }
-	//
-	// if len(playerApps) < 1 {
-	// 	return
-	// }
-	//
-	// var playerIDsMap = map[int64]int{}
-	// var playerIDsSlice []int64
-	// for _, v := range playerApps {
-	// 	playerIDsMap[v.PlayerID] = v.AppTime
-	// 	playerIDsSlice = append(playerIDsSlice, v.PlayerID)
-	// }
-	//
-	// //
-	// var wg sync.WaitGroup
-	//
-	// // Get players
-	// var playersAppRows []appTimeAjax
-	// wg.Add(1)
-	// go func() {
-	//
-	// 	defer wg.Done()
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id", r)
+		return
+	}
+
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := DataTablesQuery{}
+	err = query.fillFromURL(r.URL.Query())
+	log.Err(err, r)
+
+	query.limit(r)
+
+	playerAppFilter := mongo.M{"app_id": idx}
+
+	playerApps, err := mongo.GetPlayerAppsByApp(query.getOffset64(), playerAppFilter)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	if len(playerApps) < 1 {
+		return
+	}
+
+	var playerIDsMap = map[int64]int{}
+	var playerIDsSlice []int64
+	for _, v := range playerApps {
+		playerIDsMap[v.PlayerID] = v.AppTime
+		playerIDsSlice = append(playerIDsSlice, v.PlayerID)
+	}
+
 	//
 	// 	players, err := mongo.GetPlayersByID(playerIDsSlice, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
 	// 	if err != nil {

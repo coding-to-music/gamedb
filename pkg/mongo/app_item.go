@@ -98,12 +98,17 @@ func (a *AppItem) Link() string {
 	return "https://steamcommunity.com/market/listings/" + strconv.Itoa(a.AppID) + "/" + url.QueryEscape(a.Name)
 }
 
-func (a *AppItem) Image() string {
+func (a *AppItem) Image(size int) string {
+
+	if a.IconURL == "" {
+		return ""
+	}
 
 	params := url.Values{}
-	params.Set("width", "256")
-	params.Set("height", "256")
+	params.Set("width", strconv.Itoa(size))
+	params.Set("height", strconv.Itoa(size))
 	params.Set("bg", "00FFFFFF")
+	params.Set("url", a.IconURL)
 
 	return "https://images.weserv.nl?" + params.Encode()
 }
