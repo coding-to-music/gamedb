@@ -247,10 +247,10 @@
 
 <script>
     {{ if ne .Games "" }}
-    localStorage.setItem("games", '{{ .Games }}');
+    localStorage.setItem("gamedb-games", '{{ .Games }}');
     {{ end }}
     {{ if ne .Groups "" }}
-    localStorage.setItem("groups", '{{ .Groups }}');
+    localStorage.setItem("gamedb-groups", '{{ .Groups }}');
     {{ end }}
 </script>
 
