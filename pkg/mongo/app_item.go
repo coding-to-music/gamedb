@@ -112,8 +112,8 @@ func (a *AppItem) Image(size int) string {
 	}
 
 	params := url.Values{}
-	params.Set("width", strconv.Itoa(size))
-	params.Set("height", strconv.Itoa(size))
+	params.Set("w", strconv.Itoa(size))
+	params.Set("h", strconv.Itoa(size))
 	params.Set("bg", "00FFFFFF")
 	params.Set("url", a.IconURL)
 
