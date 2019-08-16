@@ -103,4 +103,19 @@
             @include news-content;
         }
     }
+
+    #items {
+
+        // Normal rows
+        table.table tr[role=row] td {
+            cursor: pointer;
+        }
+
+        .detail-row {
+            strong {
+                display: inline-block;
+                width: 200px;
+            }
+        }
+    }
 }

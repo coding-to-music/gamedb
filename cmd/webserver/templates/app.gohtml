@@ -67,6 +67,11 @@
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
                     </li>
                 {{end}}
+                {{if gt .App.Items 0}}
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items</a>
+                    </li>
+                {{end}}
                 {{if gt (len .NewsIDs) 0}}
                     <li class="nav-item">
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#news" role="tab">News</a>
@@ -474,6 +479,35 @@
                     {{ else }}
 
                         <p>This app has no news.</p>
+
+                    {{ end }}
+
+                </div>
+
+                {{/* Items */}}
+                <div class="tab-pane" id="items" role="tabpanel">
+
+                    {{ if gt .App.Items 0 }}
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable2 mb-0" data-path="/apps/{{ .App.ID }}/items.json" id="items-table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    {{ else }}
+
+                        <p>This app has no items.</p>
 
                     {{ end }}
 

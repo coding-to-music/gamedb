@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -72,6 +73,14 @@ func (a AppItem) BSON() (ret interface{}) {
 
 func (a AppItem) getKey() string {
 	return strconv.Itoa(a.AppID) + "-" + strconv.Itoa(a.ItemDefID)
+}
+
+func (a AppItem) GetType() string {
+
+	switch a.Type {
+	default:
+		return strings.Title(a.Type)
+	}
 }
 
 func (a *AppItem) SetTags(tags string) {

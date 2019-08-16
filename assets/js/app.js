@@ -55,6 +55,12 @@ if ($appPage.length > 0) {
                 loadNews();
             }
         }
+        if (to.attr('href') === '#items') {
+            if (!to.attr('loaded')) {
+                to.attr('loaded', 1);
+                loadItems();
+            }
+        }
         if (to.attr('href') === '#prices') {
             if (!to.attr('loaded')) {
                 to.attr('loaded', 1);
@@ -243,6 +249,121 @@ if ($appPage.length > 0) {
                 $(this).attr('href', 'http://' + href);
             }
         });
+    }
+
+    // News items
+    function loadItems() {
+
+        const $itemsTable = $('#items-table');
+
+        const table = $itemsTable.DataTable($.extend(true, {}, dtDefaultOptions, {
+            "order": [[2, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-id', data[0]);
+            },
+            "columnDefs": [
+                // Description
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return row[12];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                    },
+                    "orderable": false
+                },
+                // Icon / Name
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[25] + '" data-lazy-alt="' + row[16] + '"></div><div class="name">' + row[16] + '</div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    "orderable": false,
+                },
+                // Description
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[29];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                    },
+                    "orderable": false
+                },
+                // Link
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        if (row[28]) {
+                            return '<a href="' + row[28] + '" data-src="/assets/img/no-app-image-square.jpg" target="_blank" class="stop-prop"><i class="fas fa-link" data-target="_blank"></i></a>';
+                        }
+                        return '';
+                    },
+                    "orderable": false,
+                },
+            ]
+        }));
+
+        dataTables.push(table);
+
+        $itemsTable.on('click', 'tr[role=row]', function () {
+
+                const row = table.row($(this));
+
+                // noinspection JSUnresolvedFunction
+                if (row.child.isShown()) {
+
+                    row.child.hide();
+                    $(this).removeClass('shown');
+
+                } else {
+
+                    const rowx = row.data();
+
+                    const fields = [
+                        {Name: "App ID", Value: rowx[0]},
+                        {Name: "Bundle", Value: rowx[1]},
+                        {Name: "Commodity", Value: rowx[2]},
+                        {Name: "Date Created", Value: rowx[3]},
+                        {Name: "Description", Value: rowx[4]},
+                        {Name: "Display Type", Value: rowx[5]},
+                        {Name: "Drop Interval", Value: rowx[6]},
+                        {Name: "Drop Max Per Window", Value: rowx[7]},
+                        {Name: "Exchange", Value: rowx[8]},
+                        {Name: "Hash", Value: rowx[9]},
+                        {Name: "Icon URL", Value: rowx[10]},
+                        {Name: "Icon URL Large", Value: rowx[11]},
+                        {Name: "Item Def ID", Value: rowx[12]},
+                        {Name: "Item Quality", Value: rowx[13]},
+                        {Name: "Marketable", Value: rowx[14]},
+                        {Name: "Modified", Value: rowx[15]},
+                        {Name: "Name", Value: rowx[16]},
+                        {Name: "Price", Value: rowx[17]},
+                        {Name: "Promo", Value: rowx[18]},
+                        {Name: "Quantity", Value: rowx[19]},
+                        {Name: "Tags", Value: rowx[20]},
+                        {Name: "Timestamp", Value: rowx[21]},
+                        {Name: "Tradable", Value: rowx[22]},
+                        {Name: "Type", Value: rowx[23]},
+                        {Name: "Workshop ID", Value: rowx[24]},
+                    ];
+
+                    const html = json2html.transform(fields, {
+                        '<>': 'div', 'class': 'detail-row', 'html': [
+                            {'<>': 'strong', 'html': '${Name}: '},
+                            {'<>': 'span', 'html': '${Value}'},
+                        ]
+                    });
+
+                    row.child('<img src="' + rowx[26] + '" alt="" class="float-right" />' + html).show();
+                    $(this).addClass('shown');
+                }
+            }
+        );
     }
 
     const defaultAppChartOptions = {

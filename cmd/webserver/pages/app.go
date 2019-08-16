@@ -422,92 +422,83 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	playerAppFilter := mongo.M{"app_id": idx}
+	//
+	var wg sync.WaitGroup
 
-	playerApps, err := mongo.GetPlayerAppsByApp(query.getOffset64(), playerAppFilter)
-	if err != nil {
+	// Get items
+	var items []mongo.AppItem
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		items, err = mongo.GetAppItems(idx, query.getOffset64(), 100, nil)
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+	}()
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionAppItems, mongo.M{"app_id": idx}, 0)
 		log.Err(err, r)
-		return
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = total
+	response.RecordsFiltered = total
+	response.Draw = query.Draw
+	response.limit(r)
+
+	for _, item := range items {
+
+		response.AddRow([]interface{}{
+			item.AppID,              // 0
+			item.Bundle,             // 1
+			item.Commodity,          // 2
+			item.DateCreated,        // 3
+			item.Description,        // 4
+			item.DisplayType,        // 5
+			item.DropInterval,       // 6
+			item.DropMaxPerWindow,   // 7
+			item.Exchange,           // 8
+			item.Hash,               // 9
+			item.IconURL,            // 10
+			item.IconURLLarge,       // 11
+			item.ItemDefID,          // 12
+			item.ItemQuality,        // 13
+			item.Marketable,         // 14
+			item.Modified,           // 15
+			item.Name,               // 16
+			item.Price,              // 17
+			item.Promo,              // 18
+			item.Quantity,           // 19
+			item.Tags,               // 20
+			item.Timestamp,          // 21
+			item.Tradable,           // 22
+			item.Type,               // 23
+			item.WorkshopID,         // 24
+			item.Image(36),          // 25
+			item.Image(256),         // 26
+			item.GetType(),          // 27
+			item.Link(),             // 28
+			item.ShortDescription(), // 29
+		})
 	}
 
-	if len(playerApps) < 1 {
-		return
-	}
-
-	var playerIDsMap = map[int64]int{}
-	var playerIDsSlice []int64
-	for _, v := range playerApps {
-		playerIDsMap[v.PlayerID] = v.AppTime
-		playerIDsSlice = append(playerIDsSlice, v.PlayerID)
-	}
-
-	//
-	// 	players, err := mongo.GetPlayersByID(playerIDsSlice, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
-	// 	if err != nil {
-	// 		log.Err(err)
-	// 		return
-	// 	}
-	//
-	// 	for _, player := range players {
-	//
-	// 		if _, ok := playerIDsMap[player.ID]; !ok {
-	// 			continue
-	// 		}
-	//
-	// 		playersAppRows = append(playersAppRows, appTimeAjax{
-	// 			ID:      player.ID,
-	// 			Name:    player.PersonaName,
-	// 			Avatar:  player.Avatar,
-	// 			Time:    playerIDsMap[player.ID],
-	// 			Country: player.CountryCode,
-	// 		})
-	// 	}
-	//
-	// 	sort.Slice(playersAppRows, func(i, j int) bool {
-	// 		return playersAppRows[i].Time > playersAppRows[j].Time
-	// 	})
-	//
-	// 	for k := range playersAppRows {
-	// 		playersAppRows[k].Rank = query.getOffset() + k + 1
-	// 	}
-	// }()
-	//
-	// // Get total
-	// var total int64
-	// wg.Add(1)
-	// go func() {
-	//
-	// 	defer wg.Done()
-	//
-	// 	var err error
-	// 	total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, playerAppFilter, 0)
-	// 	log.Err(err, r)
-	// }()
-	//
-	// // Wait
-	// wg.Wait()
-	//
-	// response := DataTablesAjaxResponse{}
-	// response.RecordsTotal = total
-	// response.RecordsFiltered = total
-	// response.Draw = query.Draw
-	// response.limit(r)
-	//
-	// for _, v := range playersAppRows {
-	//
-	// 	response.AddRow([]interface{}{
-	// 		strconv.FormatInt(v.ID, 10),          // 0
-	// 		v.Name,                               // 1
-	// 		helpers.GetTimeLong(v.Time, 3),       // 2
-	// 		helpers.GetPlayerFlagPath(v.Country), // 3
-	// 		helpers.OrdinalComma(v.Rank),         // 4
-	// 		helpers.GetPlayerAvatar(v.Avatar),    // 5
-	// 		helpers.GetPlayerPath(v.ID, v.Name),  // 6
-	// 		helpers.CountryCodeToName(v.Country), // 7
-	// 	})
-	// }
-	//
-	// response.output(w, r)
+	response.output(w, r)
 }
 
 // Player counts chart
