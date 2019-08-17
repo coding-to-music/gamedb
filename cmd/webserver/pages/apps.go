@@ -8,8 +8,8 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -43,9 +43,8 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-		t.Count, err = sql.CountApps()
-		t.Description = "A live database of " + template.HTML(humanize.Comma(int64(t.Count))) + " Steam games."
+		count, err := sql.CountApps()
+		t.Description = "A live database of " + template.HTML(rounding.NearestThousandFormat(float64(count))) + " Steam games."
 		log.Err(err, r)
 
 	}()
@@ -189,7 +188,6 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 type appsTemplate struct {
 	GlobalTemplate
-	Count      int
 	Types      []sql.AppType
 	Tags       []sql.Tag
 	Genres     []sql.Genre
