@@ -33,7 +33,6 @@ type Package struct {
 	Extended         string    `gorm:"not null;column:extended"`                         // PICSExtended
 	Icon             string    `gorm:"not null;column:icon"`                             //
 	ID               int       `gorm:"not null;column:id;PRIMARY_KEY"`                   //
-	ImageHeader      string    `gorm:"not null;column:image_header"`                     //
 	ImageLogo        string    `gorm:"not null;column:image_logo"`                       //
 	ImagePage        string    `gorm:"not null;column:image_page"`                       //
 	LicenseType      int8      `gorm:"not null;column:license_type"`                     //
@@ -329,16 +328,7 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 }
 
 func (pack Package) GetMetaImage() string {
-
-	if pack.ImageHeader != "" {
-		return pack.ImageHeader
-	}
-
-	if pack.ImageLogo != "" {
-		return pack.ImageLogo
-	}
-
-	return ""
+	return pack.ImageLogo
 }
 
 func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {

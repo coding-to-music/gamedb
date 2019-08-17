@@ -49,7 +49,6 @@ type App struct {
 	GameName                      string    `gorm:"not null;column:game_name"`                        //
 	Genres                        string    `gorm:"not null;column:genres;type:json"`                 // []int
 	GroupID                       string    `gorm:"not null;column:group_id;type:varchar"`            //
-	HeaderImage                   string    `gorm:"not null;column:image_header"`                     //
 	Homepage                      string    `gorm:"not null;column:homepage"`                         //
 	Icon                          string    `gorm:"not null;column:icon"`                             //
 	ID                            int       `gorm:"not null;column:id;primary_key"`                   //
@@ -468,7 +467,6 @@ func (app App) GetPCGamingWikiLink() string {
 
 func (app App) GetHeaderImage() string {
 	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
-	// return "http://cdn.akamai.steamstatic.com/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
 }
 
 func (app App) GetInstallLink() template.URL {
@@ -759,7 +757,7 @@ func PopularApps() (apps []App, err error) {
 			return apps, err
 		}
 
-		db = db.Select([]string{"id", "name", "image_header", "player_peak_week", "background"})
+		db = db.Select([]string{"id", "name", "player_peak_week", "background"})
 		db = db.Where("type = ?", "game")
 		db = db.Order("player_peak_week desc")
 		db = db.Limit(30)
@@ -782,7 +780,7 @@ func PopularNewApps() (apps []App, err error) {
 			return apps, err
 		}
 
-		db = db.Select([]string{"id", "name", "image_header", "player_peak_week"})
+		db = db.Select([]string{"id", "name", "player_peak_week"})
 		db = db.Where("type = ?", "game")
 		db = db.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
 		db = db.Order("player_peak_week desc")

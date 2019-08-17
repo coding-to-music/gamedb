@@ -768,19 +768,6 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 				}
 			}()
 
-			// Save header image
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				code := helpers.GetResponseCode(response.Data.HeaderImage)
-				app.HeaderImage = ""
-				if code == 200 {
-					app.HeaderImage = response.Data.HeaderImage
-				}
-			}()
-
 			wg.Wait()
 
 			// Other

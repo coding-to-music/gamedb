@@ -443,18 +443,6 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 
 				defer wg.Done()
 
-				code := helpers.GetResponseCode(response.Data.HeaderImage)
-				pack.ImageHeader = ""
-				if code == 200 {
-					pack.ImageHeader = response.Data.HeaderImage
-				}
-			}()
-
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
 				code := helpers.GetResponseCode(response.Data.SmallLogo)
 				pack.ImageLogo = ""
 				if code == 200 {
