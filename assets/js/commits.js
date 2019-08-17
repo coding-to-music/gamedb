@@ -14,7 +14,7 @@ if ($('#commits-page').length > 0) {
             $(row).attr('data-link', data[3]);
             $(row).attr('data-target', '_blank');
             if (data[4]) {
-                $(row).addClass('table-success', data[0]);
+                $(row).addClass('table-success');
             }
         },
         "columnDefs": [
