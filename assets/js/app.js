@@ -257,6 +257,12 @@ if ($appPage.length > 0) {
         const $itemsTable = $('#items-table');
 
         const table = $itemsTable.DataTable($.extend(true, {}, dtDefaultOptions, {
+            "ajax": function (data, callback, settings) {
+
+                data.search.search = $('#items-search').val();
+
+                dtDefaultOptions.ajax(data, callback, settings, $(this));
+            },
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
@@ -364,6 +370,20 @@ if ($appPage.length > 0) {
                 }
             }
         );
+
+        // Item search
+        const $searchField = $('#items-search');
+        $searchField.on('keyup', function (e) {
+            if (e.which == 13) { // Enter
+                table.draw();
+                return false;
+            }
+            if (e.key === 'Escape') {
+                $(this).val('');
+                table.draw();
+                return false;
+            }
+        });
     }
 
     const defaultAppChartOptions = {

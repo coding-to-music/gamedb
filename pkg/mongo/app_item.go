@@ -131,12 +131,13 @@ func (a *AppItem) Image(size int, crop bool) string {
 	return "https://images.weserv.nl?" + params.Encode()
 }
 
-func GetAppItems(appID int, offset int64, limit int64, projection M) (items []AppItem, err error) {
+func GetAppItems(offset int64, limit int64, filter interface{}, projection M) (items []AppItem, err error) {
 
-	filter := M{
-		"app_id": appID,
+	if filter == nil {
+		filter = M{}
 	}
 
+	//
 	client, ctx, err := getMongo()
 	if err != nil {
 		return items, err

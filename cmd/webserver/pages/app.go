@@ -422,6 +422,20 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
+	// Make filter
+	var search = query.getSearchString("search")
+
+	filter := mongo.M{
+		"app_id": idx,
+	}
+
+	if len(search) > 1 {
+		filter["$or"] = mongo.A{
+			mongo.M{"name": mongo.M{"$regex": search, "$options": "i"}},
+			mongo.M{"description": mongo.M{"$regex": search, "$options": "i"}},
+		}
+	}
+
 	//
 	var wg sync.WaitGroup
 
@@ -433,7 +447,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		items, err = mongo.GetAppItems(idx, query.getOffset64(), 100, nil)
+		items, err = mongo.GetAppItems(query.getOffset64(), 100, filter, nil)
 		if err != nil {
 			log.Err(err)
 			return
@@ -453,12 +467,24 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	// Get filtered count
+	var filtered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionAppItems, filter, 0)
+		log.Err(err, r)
+	}()
+
 	// Wait
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = total
-	response.RecordsFiltered = total
+	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
 	response.limit(r)
 

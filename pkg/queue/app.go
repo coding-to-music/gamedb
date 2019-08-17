@@ -1325,7 +1325,11 @@ func updateAppTwitch(app *sql.App) error {
 
 func getCurrentAppItems(appID int) (items []int, err error) {
 
-	resp, err := mongo.GetAppItems(appID, 0, 0, mongo.M{"item_def_id": 1})
+	filter := mongo.M{
+		"app_id": appID,
+	}
+
+	resp, err := mongo.GetAppItems(0, 0, filter, mongo.M{"item_def_id": 1})
 	for _, v := range resp {
 		items = append(items, v.ItemDefID)
 	}
