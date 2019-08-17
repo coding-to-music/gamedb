@@ -2,13 +2,11 @@ package mongo
 
 import (
 	"errors"
-	"math/big"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -106,9 +104,7 @@ func (group Group) GetLink() string {
 
 func (group Group) GetName() string {
 	if group.Name == "" {
-		b := big.NewInt(0)
-		b.SetString(group.ID64, 10)
-		return "Group " + humanize.BigComma(b)
+		return "Group " + group.ID64
 	}
 	return group.Name
 }
