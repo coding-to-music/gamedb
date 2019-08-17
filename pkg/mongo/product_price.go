@@ -71,12 +71,12 @@ func (price ProductPrice) GetPercentChange() float64 {
 func (price ProductPrice) OutputForJSON() (output []interface{}) {
 
 	return []interface{}{
-		price.AppID,                        // 0
-		price.PackageID,                    // 1
-		price.Currency,                     // 2
-		helpers.InsertNewLines(price.Name), // 3
-		price.GetIcon(),                    // 4
-		price.GetPath(),                    // 5
+		price.AppID,     // 0
+		price.PackageID, // 1
+		price.Currency,  // 2
+		price.Name,      // 3
+		price.GetIcon(), // 4
+		price.GetPath(), // 5
 		helpers.FormatPrice(price.Currency, price.PriceBefore), // 6
 		helpers.FormatPrice(price.Currency, price.PriceAfter),  // 7
 		helpers.FormatPrice(price.Currency, price.Difference),  // 8
@@ -86,6 +86,7 @@ func (price ProductPrice) OutputForJSON() (output []interface{}) {
 		price.Difference,                                       // 12 Raw difference
 		price.ProdCC,                                           // 13
 		price.DifferencePercent,                                // 14
+		helpers.InsertNewLines(price.Name),                     // 15
 	}
 }
 

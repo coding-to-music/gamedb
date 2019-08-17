@@ -84,12 +84,12 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response.AddRow([]interface{}{
-			helpers.InsertNewLines(commit.Commit.GetMessage()),
-			commit.Commit.Author.Date.Unix(),
-			deployed,
-			commit.GetHTMLURL(),
-			commit.GetSHA() == config.Config.CommitHash.Get(),
-			commit.GetSHA()[0:7],
+			helpers.InsertNewLines(commit.Commit.GetMessage()), // 0
+			commit.Commit.Author.Date.Unix(),                   // 1
+			deployed,                                           // 2
+			commit.GetHTMLURL(),                                // 3
+			commit.GetSHA() == config.Config.CommitHash.Get(),  // 4
+			commit.GetSHA()[0:7],                               // 5
 		})
 	}
 
