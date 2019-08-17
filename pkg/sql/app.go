@@ -467,7 +467,8 @@ func (app App) GetPCGamingWikiLink() string {
 }
 
 func (app App) GetHeaderImage() string {
-	return "http://cdn.akamai.steamstatic.com/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
+	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
+	// return "http://cdn.akamai.steamstatic.com/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
 }
 
 func (app App) GetInstallLink() template.URL {

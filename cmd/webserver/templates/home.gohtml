@@ -104,7 +104,7 @@
                 <div class="card-body p-0">
                     {{ range $key, $value := .Games }}
                         <a href="{{ .GetPath }}">
-                            <img data-lazy="{{ .HeaderImage }}" data-lazy-alt="{{ .GetName }}">
+                            <img data-lazy="{{ .GetHeaderImage }}" data-lazy-alt="{{ .GetName }}">
                         </a>
                     {{ end }}
                 </div>
