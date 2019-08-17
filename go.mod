@@ -87,7 +87,7 @@ require (
 	go.mongodb.org/mongo-driver v1.1.0
 	go.uber.org/atomic v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
-	golang.org/x/net v0.0.0-20190727083149-ca1201d0de80 // indirect
+	golang.org/x/net v0.0.0-20190817095747-74dc4d7220e7 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sys v0.0.0-20190817095802-fde4db37ae7a // indirect
 	golang.org/x/text v0.3.2
