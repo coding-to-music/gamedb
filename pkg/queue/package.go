@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
+	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
@@ -128,6 +130,14 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	// Offers
+	err = updateOffers(&pack)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
+
 	// Save price changes
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
@@ -168,6 +178,78 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	payload.ack(msg)
+}
+
+func updateOffers(pack *sql.Package) (err error) {
+
+	c := colly.NewCollector()
+
+	c.OnHTML(".game_purchase_discount_countdown", func(e *colly.HTMLElement) {
+
+		s := "Offer ends in"
+		s2 := "Offer ends"
+
+		if strings.Contains(e.Text, s) {
+
+			// DAILY DEAL! Offer ends in <span id=348647_countdown_0></span>
+
+			// Get type
+			index := strings.Index(e.Text, s)
+			pack.OfferType = strings.Trim(e.Text[:index], " !")
+
+			// Get end time
+			t := helpers.RegexTimestamps.FindString(e.DOM.Parent().Text())
+			if t != "" {
+				tx, err := strconv.ParseInt(t, 10, 64)
+				log.Err(err)
+				if err == nil {
+					pack.OfferEnd = time.Unix(tx, 0)
+				}
+			}
+
+		} else if strings.Contains(e.Text, s2) {
+
+			// SPECIAL PROMOTION! Offer ends 29 August
+
+			// Get type
+			index := strings.Index(e.Text, s2)
+			pack.OfferType = strings.Trim(e.Text[:index], " !")
+
+			// Get end time
+			dateString := strings.TrimSpace(e.Text[index+len(s2):])
+
+			t, err := time.Parse("2 January", dateString)
+			log.Err(err)
+			if err == nil {
+
+				now := time.Now()
+
+				t = t.AddDate(now.Year(), 0, 0)
+				if t.Unix() < now.Unix() {
+					t = t.AddDate(1, 0, 0)
+				}
+				t.Add(time.Hour * 12)
+
+				pack.OfferEnd = t
+			}
+		} else {
+
+			pack.OfferStart = time.Time{}
+			pack.OfferEnd = time.Time{}
+			pack.OfferType = ""
+		}
+
+		if pack.OfferStart.IsZero() && !pack.OfferEnd.IsZero() {
+			pack.OfferStart = time.Now()
+		}
+	})
+
+	//
+	c.OnError(func(r *colly.Response, err error) {
+		helpers.LogSteamError(err)
+	})
+
+	return c.Visit("https://store.steampowered.com/sub/" + strconv.Itoa(pack.ID))
 }
 
 func updatePackageNameFromApp(pack *sql.Package) (err error) {

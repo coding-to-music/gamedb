@@ -45,6 +45,9 @@ type Package struct {
 	ReleaseDateUnix  int64     `gorm:"not null;column:release_date_unix"`                //
 	Status           int8      `gorm:"not null;column:status"`                           //
 	UpdatedAt        time.Time `gorm:"not null;column:updated_at;type:datetime"`         //
+	OfferStart       time.Time `gorm:"not null;column:offer_start;type:datetime"`        //
+	OfferEnd         time.Time `gorm:"not null;column:offer_end;type:datetime"`          //
+	OfferType        string    `gorm:"not null;column:offer_type"`                       //
 }
 
 func (pack *Package) BeforeCreate(scope *gorm.Scope) error {
