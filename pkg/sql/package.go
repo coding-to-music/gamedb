@@ -86,6 +86,12 @@ func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 	if pack.Prices == "" {
 		pack.Prices = "{}"
 	}
+	if pack.OfferStart.IsZero() {
+		pack.OfferStart = time.Date(0, 1, 1, 0, 0, 0, 0, time.UTC)
+	}
+	if pack.OfferEnd.IsZero() {
+		pack.OfferEnd = time.Date(0, 1, 1, 0, 0, 0, 0, time.UTC)
+	}
 
 	return nil
 }
