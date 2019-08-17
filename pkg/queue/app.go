@@ -1410,7 +1410,7 @@ func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []i
 				Promo:            v.Promo,
 				Quantity:         int(v.Quantity),
 				Timestamp:        v.Timestamp,
-				Tradable:         v.Tradable,
+				Tradable:         bool(v.Tradable),
 				Type:             v.Type,
 				WorkshopID:       int64(v.WorkshopID),
 				// Exchange:         v.Exchange,
