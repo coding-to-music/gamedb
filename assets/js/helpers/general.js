@@ -18,3 +18,10 @@ function isJson(str) {
     }
     return true;
 }
+
+// Local logging
+function logLocal() {
+    if (user.log) {
+        console.log(...arguments);
+    }
+}

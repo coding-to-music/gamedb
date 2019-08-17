@@ -71,13 +71,6 @@ $('.navbar .dropdown').hover(
     e.stopPropagation();
 });
 
-// Local logging
-function logLocal() {
-    if (user.log) {
-        console.log(...arguments);
-    }
-}
-
 // Tooptips
 $body.tooltip({
     selector: '[data-toggle="tooltip"]'
