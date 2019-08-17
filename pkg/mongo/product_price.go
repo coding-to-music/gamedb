@@ -87,6 +87,7 @@ func (price ProductPrice) OutputForJSON() (output []interface{}) {
 		price.ProdCC,                                           // 13
 		price.DifferencePercent,                                // 14
 		helpers.InsertNewLines(price.Name),                     // 15
+		math.Round(price.DifferencePercent),                    // 16
 	}
 }
 
