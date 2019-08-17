@@ -39,7 +39,7 @@ func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 		"media-src https://steamcdn-a.akamaihd.net",
 		"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
 		"frame-src https://platform.twitter.com https://*.facebook.com https://www.youtube.com https://www.google.com https://www.patreon.com https://router.infolinks.com https://vars.hotjar.com",
-		"connect-src 'self' ws: wss: https://*.infolinks.com https://in.hotjar.com https://vc.hotjar.io",
+		"connect-src 'self' ws: wss: https://*.infolinks.com https://in.hotjar.com https://vc.hotjar.io https://www.google-analytics.com",
 		"manifest-src 'self'",
 		"img-src 'self' data: *", // * to hotlink news article images, info link images etc
 	}
