@@ -1403,7 +1403,7 @@ func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []i
 				IconURLLarge:     v.IconURLLarge,
 				ItemDefID:        int(v.ItemDefID),
 				ItemQuality:      v.ItemQuality,
-				Marketable:       v.Marketable,
+				Marketable:       bool(v.Marketable),
 				Modified:         v.Modified,
 				Name:             v.Name,
 				Price:            v.Price,
