@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/session-go/session"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -690,7 +689,7 @@ func (q DataTablesQuery) getSearchSlice(k string) (search []string) {
 	return search
 }
 
-func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.ProductCC) (order string) {
+func (q DataTablesQuery) getOrderSQL(columns map[string]string) (order string) {
 
 	var ret []string
 
@@ -702,15 +701,13 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, code steam.Produ
 				if dir, ok := v["dir"].(string); ok {
 					if ok {
 
-						if col, ok := columns[col]; ok {
-							if ok {
+						if columns != nil {
+							if col, ok := columns[col]; ok {
+								if ok {
 
-								if col == "price" {
-									col = "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")"
-								}
-
-								if dir == "asc" || dir == "desc" {
-									ret = append(ret, col+" "+dir)
+									if dir == "asc" || dir == "desc" {
+										ret = append(ret, col+" "+dir)
+									}
 								}
 							}
 						}
@@ -774,9 +771,9 @@ func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) 
 	return col
 }
 
-func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, code steam.ProductCC, columns map[string]string) *gorm.DB {
+func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
 
-	db = db.Order(q.getOrderSQL(columns, code))
+	db = db.Order(q.getOrderSQL(columns))
 	db = db.Offset(q.Start)
 
 	return db

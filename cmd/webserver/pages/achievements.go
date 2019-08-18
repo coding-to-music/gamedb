@@ -35,20 +35,20 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
+	columns := map[string]string{
+		"1": "achievements_count",
+		"2": "achievements_average_completion",
+	}
+
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		log.Err(err, r)
 		return
 	}
 
-	columns := map[string]string{
-		"1": "achievements_count",
-		"2": "achievements_average_completion",
-	}
-
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "achievements", "achievements_count", "achievements_average_completion", "prices"})
-	gorm = gorm.Order(query.getOrderSQL(columns, helpers.GetProductCC(r)))
+	gorm = gorm.Order(query.getOrderSQL(columns))
 	gorm = gorm.Limit(100)
 	gorm = gorm.Offset(query.getOffset())
 	gorm = gorm.Where("achievements_count > 0")

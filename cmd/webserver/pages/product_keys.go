@@ -55,7 +55,6 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	//
-	var code = helpers.GetProductCC(r)
 	var wg sync.WaitGroup
 	var productType = query.getSearchString("type")
 
@@ -102,7 +101,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
-		gorm = query.setOrderOffsetGorm(gorm, code, map[string]string{})
+		gorm = query.setOrderOffsetGorm(gorm, nil)
 		gorm = gorm.Order("change_number_date desc")
 
 		// Get rows

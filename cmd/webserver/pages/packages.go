@@ -55,26 +55,26 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
+		sortCols := map[string]string{
+			"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
+			"2": "JSON_EXTRACT(prices, \"$." + string(code) + ".discount_percent\")",
+			"3": "apps_count",
+			"4": "change_number_date",
+		}
 
+		db, err := sql.GetMySQLClient()
+		if err != nil {
 			log.Err(err, r)
 			return
 		}
 
-		gorm = gorm.Model(&sql.Package{})
-		gorm = gorm.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "coming_soon", "icon"})
+		db = db.Model(&sql.Package{})
+		db = db.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "icon"})
+		db = query.setOrderOffsetGorm(db, sortCols)
+		db = db.Limit(100)
+		db = db.Find(&packages)
 
-		gorm = query.setOrderOffsetGorm(gorm, code, map[string]string{
-			"2": "apps_count",
-			"3": "price",
-			"4": "change_number_date",
-		})
-
-		gorm = gorm.Limit(100)
-		gorm = gorm.Find(&packages)
-
-		log.Err(gorm.Error)
+		log.Err(db.Error)
 
 	}(r)
 

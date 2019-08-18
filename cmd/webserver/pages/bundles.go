@@ -54,6 +54,14 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		sortCols := map[string]string{
+			"0": "name",
+			"1": "discount",
+			"2": "JSON_LENGTH(app_ids)",
+			"3": "JSON_LENGTH(package_ids)",
+			"4": "updated_at",
+		}
+
 		gorm, err := sql.GetMySQLClient()
 		if err != nil {
 
@@ -63,15 +71,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		gorm = gorm.Model(&sql.Bundle{})
 		gorm = gorm.Select([]string{"id", "name", "updated_at", "discount", "highest_discount", "app_ids", "package_ids"})
-
-		gorm = query.setOrderOffsetGorm(gorm, "", map[string]string{
-			"0": "name",
-			"1": "discount",
-			"2": "JSON_LENGTH(app_ids)",
-			"3": "JSON_LENGTH(package_ids)",
-			"4": "updated_at",
-		})
-
+		gorm = query.setOrderOffsetGorm(gorm, sortCols)
 		gorm = gorm.Limit(100)
 		gorm = gorm.Find(&bundles)
 
