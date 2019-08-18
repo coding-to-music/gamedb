@@ -1375,7 +1375,6 @@ func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []i
 	for _, v := range newItems {
 		_, ok := currentItemIDsMap[int(v.ItemDefID)]
 		if !ok {
-			fmt.Print(ok)
 			appItem := mongo.AppItem{
 				AppID:            int(v.AppID),
 				Bundle:           v.Bundle,
