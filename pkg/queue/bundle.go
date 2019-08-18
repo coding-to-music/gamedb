@@ -229,7 +229,14 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 	return nil
 }
 
+var priceLock sync.Mutex
+
 func savePriceToMongo(bundle sql.Bundle, oldBundle sql.Bundle) (err error) {
+
+	priceLock.Lock()
+	defer priceLock.Unlock()
+
+	time.Sleep(time.Second) // prices are keyed by the second
 
 	if bundle.Discount != oldBundle.Discount {
 
