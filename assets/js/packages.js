@@ -15,6 +15,7 @@ if ($('#packages-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
+                "orderable": false,
             },
             // Coming Soon
             {
@@ -22,7 +23,7 @@ if ($('#packages-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[3];
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Apps
             {
