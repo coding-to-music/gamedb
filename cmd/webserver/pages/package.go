@@ -75,6 +75,13 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		for _, v := range appsSlice {
 			appsMap[v.ID] = v
 		}
+
+		for _, v := range appsMap {
+			if v.Name == "" {
+				err = queue.ProduceApp(v.ID)
+				log.Err(err)
+			}
+		}
 	}()
 
 	var bundles []sql.Bundle
