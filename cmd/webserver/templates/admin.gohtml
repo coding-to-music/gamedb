@@ -193,9 +193,9 @@
                                     <td>{{ .User }}</td>
                                     <td>{{ .Host }}</td>
                                     <td>{{ .Command }}</td>
-                                    <td>{{ seconds .Seconds }}</td>
-                                    <td>{{ .State }}</td>
-                                    <td>{{ .Info }}</td>
+                                    <td nowrap="nowrap" data-sort="{{ .Seconds }}">{{ seconds .Seconds }}</td>
+                                    <td nowrap="nowrap">{{ .State }}</td>
+                                    <td nowrap="nowrap">{{ .Info }}</td>
                                 </tr>
                             {{ end }}
                             </tbody>
