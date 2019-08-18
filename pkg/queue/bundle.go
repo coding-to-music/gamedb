@@ -2,9 +2,6 @@ package queue
 
 import (
 	"encoding/json"
-	"net/http"
-	"net/http/cookiejar"
-	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -142,20 +139,11 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 		colly.AllowURLRevisit(), // This is for retrys
 	)
 
-	// Set cookies
-	cookieURL, _ := url.Parse("https://store.steampowered.com")
-
-	cookieJar, err := cookiejar.New(nil)
+	jar, err := helpers.GetAgeCheckCookieJar()
 	if err != nil {
 		return err
 	}
-
-	cookieJar.SetCookies(cookieURL, []*http.Cookie{
-		{Name: "birthtime", Value: "536457601", Path: "/", Domain: "store.steampowered.com"},
-		{Name: "lastagecheckage", Value: "1-January-1987", Path: "/", Domain: "store.steampowered.com"},
-	})
-
-	c.SetCookieJar(cookieJar)
+	c.SetCookieJar(jar)
 
 	// Title
 	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {

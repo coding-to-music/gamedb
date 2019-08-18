@@ -1,6 +1,9 @@
 package helpers
 
 import (
+	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -124,4 +127,22 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	} else {
 		log.Info(interfaces...)
 	}
+}
+
+func GetAgeCheckCookieJar() (jar *cookiejar.Jar, err error) {
+
+	cookieURL, _ := url.Parse("https://store.steampowered.com")
+
+	jar, err = cookiejar.New(nil)
+	if err != nil {
+		return jar, err
+	}
+
+	jar.SetCookies(cookieURL, []*http.Cookie{
+		{Name: "birthtime", Value: "536457601", Path: "/", Domain: "store.steampowered.com"},
+		{Name: "lastagecheckage", Value: "1-January-1987", Path: "/", Domain: "store.steampowered.com"},
+		{Name: "mature_content", Value: "1", Path: "/", Domain: "store.steampowered.com"},
+	})
+
+	return jar, err
 }
