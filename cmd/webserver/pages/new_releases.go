@@ -52,7 +52,6 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var code = helpers.GetProductCC(r)
 
 	var columns = map[string]string{
-		"0": "name",
 		"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
 		"2": "reviews_score",
 		"3": "player_peak_week",

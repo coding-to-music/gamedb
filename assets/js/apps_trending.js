@@ -38,7 +38,7 @@ if ($trendingAppsPage.length > 0) {
                 "render": function (data, type, row) {
                     return row[6].toLocaleString();
                 },
-                "orderSequence": ["desc", "asc"],
+                "orderSequence": ["desc"],
             },
             // Trend Value
             {

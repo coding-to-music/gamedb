@@ -17,30 +17,32 @@ if ($('#packages-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Coming Soon
-            {
-                "targets": 1,
-                "render": function (data, type, row) {
-                    return row[3];
-                },
-                "orderable": false,
-            },
-            // Apps
-            {
-                "targets": 2,
-                "render": function (data, type, row) {
-                    return row[4].toLocaleString();
-                }
-            },
             // Price
             {
-                "targets": 3,
+                "targets": 1,
                 "render": function (data, type, row) {
                     return row[5];
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
-                }
+                },
+                'orderSequence': ['desc', 'asc'],
+            },
+            // Discount
+            {
+                "targets": 2,
+                "render": function (data, type, row) {
+                    return row[9];
+                },
+                'orderSequence': ['desc', 'asc'],
+            },
+            // Apps
+            {
+                "targets": 3,
+                "render": function (data, type, row) {
+                    return row[4].toLocaleString();
+                },
+                'orderSequence': ['desc', 'asc'],
             },
             // Updated Time
             {
@@ -50,7 +52,8 @@ if ($('#packages-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
-                }
+                },
+                'orderSequence': ['desc'],
             }
         ]
     });

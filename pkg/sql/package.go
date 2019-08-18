@@ -331,15 +331,16 @@ func (pack Package) GetMetaImage() string {
 func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
 
 	return []interface{}{
-		pack.ID,
-		pack.GetPath(),
-		pack.GetName(),
-		pack.GetComingSoon(),
-		pack.AppsCount,
-		pack.GetPrice(code).GetFinal(),
-		pack.ChangeNumberDate.Unix(),
-		pack.ChangeNumberDate.Format(helpers.DateYearTime),
-		pack.GetIcon(),
+		pack.ID,                        // 0
+		pack.GetPath(),                 // 1
+		pack.GetName(),                 // 2
+		pack.GetComingSoon(),           // 3
+		pack.AppsCount,                 // 4
+		pack.GetPrice(code).GetFinal(), // 5
+		pack.ChangeNumberDate.Unix(),   // 6
+		pack.ChangeNumberDate.Format(helpers.DateYearTime), // 7
+		pack.GetIcon(),                           // 8
+		pack.GetPrice(code).GetDiscountPercent(), // 9
 	}
 }
 
