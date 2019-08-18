@@ -221,18 +221,21 @@ func updateOffers(pack *sql.Package) (err error) {
 
 			t, err := time.Parse("2 January", dateString)
 			if err != nil {
-				log.Err(err, pack.ID)
-			} else {
+				t, err = time.Parse("January 2", dateString)
+				if err != nil {
+					log.Err(err, pack.ID)
+				} else {
 
-				now := time.Now()
+					now := time.Now()
 
-				t = t.AddDate(now.Year(), 0, 0)
-				if t.Unix() < now.Unix() {
-					t = t.AddDate(1, 0, 0)
+					t = t.AddDate(now.Year(), 0, 0)
+					if t.Unix() < now.Unix() {
+						t = t.AddDate(1, 0, 0)
+					}
+					t.Add(time.Hour * 12)
+
+					pack.OfferEnd = t
 				}
-				t.Add(time.Hour * 12)
-
-				pack.OfferEnd = t
 			}
 
 		} else {
