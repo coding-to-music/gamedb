@@ -201,7 +201,7 @@ func updateOffers(pack *sql.Package) (err error) {
 			t := helpers.RegexTimestamps.FindString(e.DOM.Parent().Text())
 			if t != "" {
 				tx, err := strconv.ParseInt(t, 10, 64)
-				log.Err(err)
+				log.Err(err, pack.ID)
 				if err == nil {
 					pack.OfferEnd = time.Unix(tx, 0)
 				}
@@ -219,7 +219,7 @@ func updateOffers(pack *sql.Package) (err error) {
 			dateString := strings.TrimSpace(e.Text[index+len(s2):])
 
 			t, err := time.Parse("2 January", dateString)
-			log.Err(err)
+			log.Err(err, pack.ID)
 			if err == nil {
 
 				now := time.Now()
