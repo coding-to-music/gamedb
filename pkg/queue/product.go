@@ -164,7 +164,7 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.PICSDepots) {
 				logError(err)
 				depot.DLCApp = appID
 			case "depotfromapp":
-				id := helpers.RegexIntsOnly.ReplaceAllString(vv.Value.(string), "")
+				id := helpers.RegexNonInts.ReplaceAllString(vv.Value.(string), "")
 				app, err := strconv.Atoi(id)
 				logError(err)
 				depot.App = app
