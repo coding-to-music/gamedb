@@ -1195,8 +1195,8 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 				// Set discount percent
 				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
 				if discountText != "" {
-					offer.OfferPercent, err = strconv.Atoi(discountText)
-					log.Err(err)
+					offer.OfferPercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
+					log.Err(app.ID, err)
 				}
 
 				// Get sub ID
@@ -1217,7 +1217,7 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 				if ts != "" {
 					t, err := strconv.ParseInt(ts, 10, 64)
 					if err != nil {
-						log.Err(err, app.ID)
+						log.Err(app.ID, err)
 					} else {
 						offer.OfferEnd = time.Unix(t, 0)
 					}
@@ -1239,8 +1239,8 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 				// Set discount percent
 				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
 				if discountText != "" {
-					offer.OfferPercent, err = strconv.Atoi(discountText)
-					log.Err(err)
+					offer.OfferPercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
+					log.Err(app.ID, err)
 				}
 
 				// Get sub ID
@@ -1263,7 +1263,7 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 				if err != nil {
 					t, err = time.Parse("January 2", dateString)
 					if err != nil {
-						log.Err(err, app.ID)
+						log.Err(app.ID, err)
 					} else {
 
 						now := time.Now()
