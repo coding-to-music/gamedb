@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/gamedb/pkg/log"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Offer struct {
-	CreatedAt        time.Time               `bson:"created_at"`
-	UpdatedAt        time.Time               `bson:"updated_at"`
 	SubID            int                     `bson:"sub_id"`
 	SubOrder         int                     `bson:"sub_order"` // Order in the API response
 	AppID            int                     `bson:"app_id"`
@@ -27,22 +28,134 @@ type Offer struct {
 
 func (offer Offer) BSON() (ret interface{}) {
 
-	if offer.CreatedAt.IsZero() {
-		offer.CreatedAt = time.Now()
-	}
-	offer.UpdatedAt = time.Now()
-
 	return M{
-		"_id":        offer.getKey(),
-		"created_at": offer.CreatedAt,
-		"updated_at": offer.UpdatedAt,
-		"app_id":     offer.AppID,
-		"sub_id":     offer.SubID,
-		"ends":       offer.OfferEnd,
-		"type":       offer.OfferType,
+		"_id":                offer.getKey(),
+		"sub_id":             offer.SubID,
+		"sub_order":          offer.SubOrder,
+		"app_id":             offer.AppID,
+		"app_rating":         offer.AppRating,
+		"app_date":           offer.AppReleaseDate,
+		"app_prices":         offer.AppPrices,
+		"app_lowest_price":   offer.AppLowestPrice,
+		"app_players":        offer.AppPlayersWeek,
+		"offer_start":        offer.OfferStart,
+		"offer_end":          offer.OfferEnd,
+		"offer_end_estimate": offer.OfferEndEstimate,
+		"offer_type":         offer.OfferType,
+		"offer_percent":      offer.OfferPercent,
 	}
 }
 
-func (offer Offer) getKey() (ret interface{}) {
+func (offer Offer) getKey() (ret string) {
 	return strconv.Itoa(offer.AppID) + "-" + strconv.Itoa(offer.SubID)
+}
+
+func GetAppOffers(appID int) (offers []Offer, err error) {
+	return getOffers(0, 0, M{"app_id": appID}, M{"_id": 1})
+}
+
+func GetAllOffers() (offers []Offer, err error) {
+	return getOffers(0, 0, nil, M{"_id": 1})
+}
+
+func getOffers(offset int64, limit int64, filter interface{}, projection interface{}) (offers []Offer, err error) {
+
+	if filter == nil {
+		filter = M{}
+	}
+
+	//
+	client, ctx, err := getMongo()
+	if err != nil {
+		return offers, err
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppOffers.String())
+
+	ops := options.Find().SetSort(D{{"offer_end", 1}})
+	if limit > 0 {
+		ops.SetLimit(limit)
+	}
+	if offset > 0 {
+		ops.SetSkip(offset)
+	}
+	if projection != nil {
+		ops.SetProjection(projection)
+	}
+
+	cur, err := c.Find(ctx, filter, ops)
+	if err != nil {
+		return offers, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var offer Offer
+		err := cur.Decode(&offer)
+		if err != nil {
+			log.Err(err)
+		}
+		offers = append(offers, offer)
+	}
+
+	return offers, cur.Err()
+}
+
+func DeleteOffers(appID int, subs []int) (err error) {
+
+	if len(subs) < 1 {
+		return nil
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	keys := A{}
+	for _, subID := range subs {
+
+		offer := Offer{}
+		offer.AppID = appID
+		offer.SubID = subID
+
+		keys = append(keys, offer.getKey())
+	}
+
+	collection := client.Database(MongoDatabase).Collection(CollectionAppOffers.String())
+	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
+
+	return err
+}
+
+func UpdateOffers(offers []Offer) (err error) {
+
+	if len(offers) < 1 {
+		return nil
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	var writes []mongo.WriteModel
+	for _, offer := range offers {
+
+		write := mongo.NewReplaceOneModel()
+		write.SetFilter(M{"_id": offer.getKey()})
+		write.SetReplacement(offer.BSON())
+		write.SetUpsert(true)
+
+		writes = append(writes, write)
+	}
+
+	collection := client.Database(MongoDatabase).Collection(CollectionAppOffers.String())
+	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
+	return err
 }

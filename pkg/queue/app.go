@@ -3,7 +3,6 @@ package queue
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -167,7 +166,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		var err error
 
-		offers, err = updateAppDetails(&app)
+		err = updateAppDetails(&app)
 		if err != nil && err != steam.ErrAppNotFound {
 			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
@@ -181,7 +180,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		err = updateBundlesAndOffers(&app)
+		offers, err = updateBundlesAndOffers(&app)
 		if err != nil {
 			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
@@ -271,7 +270,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		err = saveOffers(appBeforeUpdate, offers)
+		err = saveOffers(app, offers)
 		if err != nil {
 			logError(err, message.ID)
 			payload.ackRetry(msg)
@@ -285,7 +284,6 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		defer wg.Done()
 
-		app.Type = strings.ToLower(app.Type)
 		app.ReleaseState = strings.ToLower(app.ReleaseState)
 
 		gorm = gorm.Save(&app)
@@ -557,7 +555,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 	return nil
 }
 
-func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
+func updateAppDetails(app *sql.App) (err error) {
 
 	prices := sql.ProductPrices{}
 
@@ -574,7 +572,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 			continue
 		}
 		if err != nil {
-			return offers, err
+			return err
 		}
 
 		// Check for missing fields
@@ -601,7 +599,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 
 			b, err := json.Marshal(images)
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			app.Screenshots = string(b)
@@ -618,7 +616,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 
 			b, err = json.Marshal(videos)
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			app.Movies = string(b)
@@ -626,7 +624,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 			// DLC
 			b, err = json.Marshal(response.Data.DLC)
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			app.DLC = string(b)
@@ -635,7 +633,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 			// Packages
 			b, err = json.Marshal(response.Data.Packages)
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			app.Packages = string(b)
@@ -643,7 +641,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 			// Publishers
 			gorm, err := sql.GetMySQLClient()
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			var publisherIDs []int
@@ -651,21 +649,21 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 				var publisher sql.Publisher
 				gorm = gorm.Unscoped().FirstOrCreate(&publisher, sql.Publisher{Name: strings.TrimSpace(v)})
 				if gorm.Error != nil {
-					return offers, gorm.Error
+					return gorm.Error
 				}
 				publisherIDs = append(publisherIDs, publisher.ID)
 			}
 
 			b, err = json.Marshal(publisherIDs)
 			if err != nil {
-				return offers, err
+				return err
 			}
 			app.Publishers = string(b)
 
 			// Developers
 			gorm, err = sql.GetMySQLClient()
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			var developerIDs []int
@@ -673,14 +671,14 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 				var developer sql.Developer
 				gorm = gorm.Unscoped().FirstOrCreate(&developer, sql.Developer{Name: strings.TrimSpace(v)})
 				if gorm.Error != nil {
-					return offers, gorm.Error
+					return gorm.Error
 				}
 				developerIDs = append(developerIDs, developer.ID)
 			}
 
 			b, err = json.Marshal(developerIDs)
 			if err != nil {
-				return offers, err
+				return err
 			}
 			app.Developers = string(b)
 
@@ -692,7 +690,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 
 			b, err = json.Marshal(categories)
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			app.Categories = string(b)
@@ -700,7 +698,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 			// Genres
 			gorm, err = sql.GetMySQLClient()
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			var genreIDs []int
@@ -708,14 +706,14 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 				var genre sql.Genre
 				gorm = gorm.Unscoped().Assign(sql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, sql.Genre{ID: int(v.ID)})
 				if gorm.Error != nil {
-					return offers, gorm.Error
+					return gorm.Error
 				}
 				genreIDs = append(genreIDs, genre.ID)
 			}
 
 			b, err = json.Marshal(genreIDs)
 			if err != nil {
-				return offers, err
+				return err
 			}
 			app.Genres = string(b)
 
@@ -734,7 +732,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 			// Platforms
 			b, err = json.Marshal(platforms)
 			if err != nil {
-				return offers, err
+				return err
 			}
 
 			app.Platforms = string(b)
@@ -747,7 +745,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 
 			b, err = json.Marshal(demos)
 			if err != nil {
-				return offers, err
+				return err
 			}
 			app.DemoIDs = string(b)
 
@@ -789,7 +787,7 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 				app.Name = strings.TrimSpace(response.Data.Name)
 			}
 
-			app.Type = response.Data.Type
+			app.Type = strings.ToLower(response.Data.Type)
 			app.IsFree = response.Data.IsFree
 			app.ShortDescription = response.Data.ShortDescription
 			app.MetacriticScore = response.Data.Metacritic.Score
@@ -799,35 +797,17 @@ func updateAppDetails(app *sql.App) (offers []mongo.Offer, err error) {
 			app.ReleaseDate = response.Data.ReleaseDate.Date
 			app.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			app.ComingSoon = response.Data.ReleaseDate.ComingSoon
-
-			// Save offers
-			for _, v := range response.Data.PackageGroups {
-				for kk, vv := range v.Subs {
-
-					prices, err := app.GetPrices()
-					log.Err(err)
-
-					offers = append(offers, mongo.Offer{
-						SubID:          vv.PackageID,
-						SubOrder:       kk + 1,
-						AppID:          app.ID,
-						AppRating:      app.ReviewsScore,
-						AppReleaseDate: time.Unix(app.ReleaseDateUnix, 0),
-						AppPrices:      prices.Map(),
-					})
-				}
-			}
 		}
 	}
 
 	b, err := json.Marshal(prices)
 	if err != nil {
-		return offers, err
+		return err
 	}
 
 	app.Prices = string(b)
 
-	return offers, nil
+	return nil
 }
 
 func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
@@ -1161,16 +1141,16 @@ func updateAppSteamSpy(app *sql.App) error {
 //noinspection RegExpRedundantEscape
 var bundlesRegex = regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
 
-func updateBundlesAndOffers(app *sql.App) error {
+func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 
 	// This app causes infinite redirects..
 	if app.ID == 12820 {
-		return nil
+		return offers, nil
 	}
 
 	// Skip these app types
 	if helpers.SliceHasString([]string{"media", "movie"}, app.Type) {
-		return nil
+		return offers, nil
 	}
 
 	var bundleIDs []string
@@ -1184,34 +1164,128 @@ func updateBundlesAndOffers(app *sql.App) error {
 			colly.URLFilters(bundlesRegex),
 		)
 
+		jar, err := helpers.GetAgeCheckCookieJar()
+		if err != nil {
+			return err
+		}
+		c.SetCookieJar(jar)
+
 		// Bundles
 		c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
 			bundleIDs = append(bundleIDs, e.Attr("value"))
 		})
 
-		// // Offers
-		// var offers []mongo.Offer
+		// Offers
+		var i = 0
+		c.OnHTML(".game_purchase_discount_countdown", func(e *colly.HTMLElement) {
+
+			s1 := "Offer ends in"
+			s2 := "Offer ends"
+
+			if strings.Contains(e.Text, s1) {
+
+				// DAILY DEAL! Offer ends in <span id=348647_countdown_0></span>
+
+				var offer = mongo.Offer{
+					AppID:    app.ID,
+					SubOrder: i,
+				}
+				i++
+
+				// Set discount percent
+				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
+				if discountText != "" {
+					offer.OfferPercent, err = strconv.Atoi(discountText)
+					log.Err(err)
+				}
+
+				// Get sub ID
+				subIDString, exists := e.DOM.Parent().Find("input[name=subid]").Attr("value")
+				if exists {
+					subID, err := strconv.Atoi(subIDString)
+					if err == nil {
+						offer.SubID = subID
+					}
+				}
+
+				// Get type
+				index := strings.Index(e.Text, s1)
+				offer.OfferType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
+
+				// Get end time
+				ts := helpers.RegexTimestamps.FindString(e.DOM.Parent().Text())
+				if ts != "" {
+					t, err := strconv.ParseInt(ts, 10, 64)
+					if err != nil {
+						log.Err(err, app.ID)
+					} else {
+						offer.OfferEnd = time.Unix(t, 0)
+					}
+				}
+
+				offers = append(offers, offer)
+
+			} else if strings.Contains(e.Text, s2) {
+
+				// SPECIAL PROMOTION! Offer ends 29 August
+
+				var offer = mongo.Offer{
+					AppID:            app.ID,
+					SubOrder:         i,
+					OfferEndEstimate: true,
+				}
+				i++
+
+				// Set discount percent
+				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
+				if discountText != "" {
+					offer.OfferPercent, err = strconv.Atoi(discountText)
+					log.Err(err)
+				}
+
+				// Get sub ID
+				subIDString, exists := e.DOM.Parent().Find("input[name=subid]").Attr("value")
+				if exists {
+					subID, err := strconv.Atoi(subIDString)
+					if err == nil {
+						offer.SubID = subID
+					}
+				}
+
+				// Get type
+				index := strings.Index(e.Text, s2)
+				offer.OfferType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
+
+				// Get end time
+				dateString := strings.TrimSpace(e.Text[index+len(s2):])
+
+				t, err := time.Parse("2 January", dateString)
+				if err != nil {
+					t, err = time.Parse("January 2", dateString)
+					if err != nil {
+						log.Err(err, app.ID)
+					} else {
+
+						now := time.Now()
+
+						t = t.AddDate(now.Year(), 0, 0)
+						if t.Unix() < now.Unix() {
+							t = t.AddDate(1, 0, 0)
+						}
+						t.Add(time.Hour * 12)
+
+						offer.OfferEnd = t
+					}
+				}
+
+				offers = append(offers, offer)
+			}
+		})
+
 		//
-		// c.OnHTML("div.game_area_purchase_game_wrapper", func(e *colly.HTMLElement) {
-		//
-		// 	offer := mongo.Offer{}
-		//
-		// 	e.ForEach("[name=subid]", func(_ int, el *colly.HTMLElement) {
-		//
-		// 		i, err := strconv.Atoi(el.Attr("value"))
-		// 		if err != nil {
-		// 			log.Err(err)
-		// 		} else {
-		// 			offer.SubID = i
-		// 		}
-		// 	})
-		//
-		// 	e.ForEach("game_purchase_discount_countdown", func(_ int, el *colly.HTMLElement) {
-		//
-		// 	})
-		//
-		// 	offers = append(offers, offer)
-		// })
+		c.OnError(func(r *colly.Response, err error) {
+			helpers.LogSteamError(err)
+		})
 
 		err = c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
 		if err != nil {
@@ -1227,9 +1301,9 @@ func updateBundlesAndOffers(app *sql.App) error {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err, app.ID) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err, app.ID) })
 	if err != nil {
-		return err
+		return offers, err
 	}
 
 	//
@@ -1238,18 +1312,18 @@ func updateBundlesAndOffers(app *sql.App) error {
 	for _, v := range IDInts {
 		err := ProduceBundle(v, app.ID)
 		if err != nil {
-			return err
+			return offers, err
 		}
 	}
 
 	b, err := json.Marshal(IDInts)
 	if err != nil {
-		return err
+		return offers, err
 	}
 
 	app.BundleIDs = string(b)
 
-	return nil
+	return offers, nil
 }
 
 func saveAppToInflux(app sql.App) (err error) {
@@ -1361,9 +1435,63 @@ func updateAppPlaytimeStats(app *sql.App) (err error) {
 	return nil
 }
 
-func saveOffers(app sql.App, offers []mongo.Offer) (err error) {
+func saveOffers(app sql.App, newOffers []mongo.Offer) (err error) {
 
-	return nil
+	// Make map of new offers
+	var newOffersMap = map[int]mongo.Offer{}
+	for _, v := range newOffers {
+		newOffersMap[v.SubID] = v
+	}
+
+	// Make map of old offers
+	oldOffers, err := mongo.GetAppOffers(app.ID)
+	if err != nil {
+		return err
+	}
+
+	var oldOffersMap = map[int]mongo.Offer{}
+	for _, v := range oldOffers {
+		oldOffersMap[v.SubID] = v
+	}
+
+	// Delete old offers that are no longer
+	var toDelete []int
+
+	for _, oldOffer := range oldOffers {
+		if val, ok := newOffersMap[oldOffer.SubID]; ok {
+			if !ok {
+				toDelete = append(toDelete, val.SubID)
+			}
+		}
+	}
+
+	err = mongo.DeleteOffers(app.ID, toDelete)
+	if err != nil {
+		return err
+	}
+
+	// Upsert new offers
+	for k, newOffer := range newOffers {
+
+		if val, ok := oldOffersMap[newOffer.SubID]; ok {
+			if ok {
+				newOffers[k].OfferStart = val.OfferStart
+			} else {
+				newOffers[k].OfferStart = time.Now()
+				newOffers[k].AppRating = app.ReviewsScore
+				newOffers[k].AppReleaseDate = time.Unix(app.ReleaseDateUnix, 0)
+				newOffers[k].AppPlayersWeek = app.PlayerPeakWeek
+				newOffers[k].OfferPercent = app.PlayerPeakWeek
+
+				prices, err := app.GetPrices()
+				if err == nil {
+					newOffers[k].AppPrices = prices.Map()
+				}
+			}
+		}
+	}
+
+	return mongo.UpdateOffers(newOffers)
 }
 
 func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []int) (err error) {
