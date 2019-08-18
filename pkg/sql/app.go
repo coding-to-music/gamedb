@@ -96,14 +96,14 @@ type App struct {
 }
 
 func (app *App) BeforeCreate(scope *gorm.Scope) error {
-	return app.UpdateJSON(scope)
+	return app.Before(scope)
 }
 
 func (app *App) BeforeSave(scope *gorm.Scope) error {
-	return app.UpdateJSON(scope)
+	return app.Before(scope)
 }
 
-func (app *App) UpdateJSON(scope *gorm.Scope) error {
+func (app *App) Before(scope *gorm.Scope) error {
 
 	if app.Achievements == "" {
 		app.Achievements = "[]"
