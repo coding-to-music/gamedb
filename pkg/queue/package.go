@@ -198,12 +198,13 @@ func updateOffers(pack *sql.Package) (err error) {
 			pack.OfferType = strings.Trim(e.Text[:index], " !")
 
 			// Get end time
-			t := helpers.RegexTimestamps.FindString(e.DOM.Parent().Text())
-			if t != "" {
-				tx, err := strconv.ParseInt(t, 10, 64)
-				log.Err(err, pack.ID)
-				if err == nil {
-					pack.OfferEnd = time.Unix(tx, 0)
+			ts := helpers.RegexTimestamps.FindString(e.DOM.Parent().Text())
+			if ts != "" {
+				t, err := strconv.ParseInt(ts, 10, 64)
+				if err != nil {
+					log.Err(err, pack.ID)
+				} else {
+					pack.OfferEnd = time.Unix(t, 0)
 				}
 			}
 
@@ -219,8 +220,9 @@ func updateOffers(pack *sql.Package) (err error) {
 			dateString := strings.TrimSpace(e.Text[index+len(s2):])
 
 			t, err := time.Parse("2 January", dateString)
-			log.Err(err, pack.ID)
-			if err == nil {
+			if err != nil {
+				log.Err(err, pack.ID)
+			} else {
 
 				now := time.Now()
 
@@ -232,6 +234,7 @@ func updateOffers(pack *sql.Package) (err error) {
 
 				pack.OfferEnd = t
 			}
+
 		} else {
 
 			pack.OfferStart = time.Time{}
