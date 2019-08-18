@@ -459,6 +459,21 @@ func ProduceApp(ID int) (err error) {
 		return sql.ErrInvalidAppID
 	}
 
+	mc := helpers.GetMemcache()
+
+	if config.IsProd() {
+
+		item := helpers.MemcacheAppInQueue(ID)
+
+		_, err := mc.Get(item.Key)
+		if err == nil {
+			return nil
+		}
+		
+		err = mc.Set(&item)
+		log.Err(err)
+	}
+
 	return produce(baseMessage{
 		Message: appMessage{
 			ID: ID,

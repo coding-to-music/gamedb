@@ -351,6 +351,20 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		}
 	}()
 
+	// Clear memcache
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		item := helpers.MemcacheAppInQueue(app.ID)
+
+		err = helpers.RemoveKeyFromMemCacheViaPubSub(item.Key)
+		log.Err(err)
+	}()
+
 	wg.Wait()
 
 	if payload.actionTaken {
