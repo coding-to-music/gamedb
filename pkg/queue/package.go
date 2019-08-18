@@ -242,7 +242,8 @@ func updateOffers(pack *sql.Package) (err error) {
 			pack.OfferType = ""
 		}
 
-		if pack.OfferStart.IsZero() && !pack.OfferEnd.IsZero() {
+		// Set start time
+		if pack.OfferStart.Year() == 0 && pack.OfferEnd.Year() != 0 {
 			pack.OfferStart = time.Now()
 		}
 	})
