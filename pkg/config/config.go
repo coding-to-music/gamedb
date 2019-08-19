@@ -96,6 +96,11 @@ type BaseConfig struct {
 	SessionAuthentication ConfigItem
 	SessionEncryption     ConfigItem
 
+	// Steam
+	SteamUsername ConfigItem
+	SteamPassword ConfigItem
+	SteamAPIKey   ConfigItem
+
 	// Twitch
 	TwitchClientID     ConfigItem
 	TwitchClientSecret ConfigItem
@@ -113,7 +118,6 @@ type BaseConfig struct {
 	GithubToken        ConfigItem
 	MemcacheDSN        ConfigItem
 	SendGridAPIKey     ConfigItem
-	SteamAPIKey        ConfigItem
 	WebserverPort      ConfigItem
 	CommitHash         ConfigItem
 	NewReleaseDays     ConfigItem
@@ -203,6 +207,11 @@ func init() {
 	Config.SessionAuthentication.Set("SESSION_AUTHENTICATION")
 	Config.SessionEncryption.Set("SESSION_ENCRYPTION")
 
+	// Steam
+	Config.SteamUsername.Set("PROXY_USERNAME")
+	Config.SteamPassword.Set("PROXY_PASSWORD")
+	Config.SteamAPIKey.Set("API_KEY")
+
 	// Twitch
 	Config.TwitchClientID.Set("TWITCH_CLIENT_ID")
 	Config.TwitchClientSecret.Set("TWITCH_CLIENT_SECRET")
@@ -218,7 +227,6 @@ func init() {
 	Config.Environment.Set("ENV")
 	Config.GithubToken.Set("GITHUB_TOKEN")
 	Config.SendGridAPIKey.Set("SENDGRID")
-	Config.SteamAPIKey.Set("API_KEY")
 	Config.WebserverPort.Set("PORT")
 	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")
 	Config.SlackSocialWebhook.Set("SLACK_SOCIAL_WEBHOOK")
