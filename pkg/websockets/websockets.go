@@ -1,6 +1,7 @@
 package websockets
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 
@@ -116,7 +117,7 @@ func (p *Page) Send(data interface{}) {
 
 				} else {
 
-					log.Err(err)
+					log.Err(err, fmt.Sprint(payload))
 				}
 			}
 		}
