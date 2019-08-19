@@ -35,6 +35,7 @@ type Package struct {
 	ID               int       `gorm:"not null;column:id;PRIMARY_KEY"`                   //
 	ImageLogo        string    `gorm:"not null;column:image_logo"`                       //
 	ImagePage        string    `gorm:"not null;column:image_page"`                       //
+	InStore          bool      `gorm:"not null;column:in_store"`                         // todo
 	LicenseType      int8      `gorm:"not null;column:license_type"`                     //
 	Name             string    `gorm:"not null;column:name"`                             //
 	Platforms        string    `gorm:"not null;column:platforms"`                        // []string
@@ -92,6 +93,9 @@ func (pack Package) GetPath() string {
 }
 
 func (pack Package) GetLink() string {
+	if !pack.InStore {
+		return ""
+	}
 	return "https://store.steampowered.com/sub/" + strconv.Itoa(pack.ID) + "/?curator_clanid=&utm_source=GameDB" // todo curator_clanid
 }
 
