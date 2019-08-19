@@ -134,7 +134,7 @@ if ($playerPage.length > 0) {
         dataTables.push(dt);
 
         const dt2 = $('#games #recent-games').DataTable($.extend(true, {}, dtDefaultOptions, {
-            "order": [[2, 'desc']],
+            "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
                 $(row).attr('data-link', data[5]);
