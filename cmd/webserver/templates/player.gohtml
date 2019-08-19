@@ -4,11 +4,15 @@
 
     <div class="jumbotron">
 
-        <img src="{{ .Player.GetAvatar }}" alt="{{ .Player.PersonaName }}">
+        <img class="rounded" src="{{ .Player.GetAvatar }}" alt="{{ .Player.PersonaName }}">
 
         {{ template "_social" .Player }}
 
         <h1 class="text-truncate"><i class="fas fa-user"></i> {{ .Player.PersonaName }}</h1>
+
+        <small>
+            <a target="_blank" href="{{ .Player.GetSteamCommunityLink }}"><i class="fab fa-steam-square"></i> Steam Profile: {{ .Player.VanintyURL }}</a>
+        </small>
 
     </div>
 
@@ -98,10 +102,6 @@
                                             <tr>
                                                 <th scope="row" nowrap="nowrap">Last Updated</th>
                                                 <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap">Profile</th>
-                                                <td><a target="_blank" href="{{ .Player.GetSteamCommunityLink }}"><i class="fab fa-steam-square"></i> {{ .Player.VanintyURL }}</a></td>
                                             </tr>
                                             {{ if ne .Player.CountryCode "" }}
                                                 <tr>
