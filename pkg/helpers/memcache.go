@@ -59,6 +59,16 @@ var (
 	MemcacheBadgeMaxEventFoil = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-foil-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
 	MemcacheBadgeMaxSpecial   = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-special-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
 
+	// App Bits
+	MemcacheAppTags       = func(appID int) memcache.Item { return memcache.Item{Key: "app-tags-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppCategories = func(appID int) memcache.Item { return memcache.Item{Key: "app-categories-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppGenres     = func(appID int) memcache.Item { return memcache.Item{Key: "app-genres-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppDemos      = func(appID int) memcache.Item { return memcache.Item{Key: "app-demos-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppDLC        = func(appID int) memcache.Item { return memcache.Item{Key: "app-dlcs-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppPublishers = func(appID int) memcache.Item { return memcache.Item{Key: "app-publishers-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppDevelopers = func(appID int) memcache.Item { return memcache.Item{Key: "app-developers-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppBundles    = func(appID int) memcache.Item { return memcache.Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }
+
 	// Other
 	MemcacheQueues         = memcache.Item{Key: "queues", Expiration: 10}
 	MemcachePopularApps    = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}

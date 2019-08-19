@@ -73,6 +73,7 @@ type App struct {
 	Prices                        string    `gorm:"not null;column:prices"`                           // ProductPrices
 	PublicOnly                    bool      `gorm:"not null;column:public_only"`                      //
 	Publishers                    string    `gorm:"not null;column:publishers;type:json"`             // []int
+	RelatedAppIDs                 string    `gorm:"not null;column:related_app_ids;type:json"`        // []int
 	ReleaseDate                   string    `gorm:"not null;column:release_date"`                     //
 	ReleaseDateUnix               int64     `gorm:"not null;column:release_date_unix"`                //
 	ReleaseState                  string    `gorm:"not null;column:release_state"`                    //
@@ -546,6 +547,27 @@ func (app App) GetDemoIDs() (demos []int, err error) {
 	return demos, err
 }
 
+func (app App) GetDemos() (demos []App, err error) {
+
+	var item = helpers.MemcacheAppDemos(app.ID)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
+
+		ids, err := app.GetDemoIDs()
+		if err != nil {
+			return demos, err
+		}
+
+		return GetAppsByID(ids, []string{"id", "name"})
+	})
+
+	if len(demos) == 0 {
+		demos = []App{} // Needed for marshalling into type
+	}
+
+	return demos, err
+}
+
 func (app App) GetPlatforms() (platforms []string, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Platforms), &platforms)
@@ -585,16 +607,40 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 	return ret, nil
 }
 
-func (app App) GetDLC() (dlcs []int, err error) {
-
-	dlcs = []int{} // Needed for marshalling into type
+func (app App) GetDLCIDs() (dlcs []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.DLC), &dlcs)
 	log.Err(err)
+
+	if len(dlcs) == 0 {
+		dlcs = []int{} // Needed for marshalling into type
+	}
+
 	return dlcs, err
 }
 
-func (app App) GetPackages() (packages []int, err error) {
+func (app App) GetDLCs() (apps []App, err error) {
+
+	var item = helpers.MemcacheAppDLC(app.ID)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		ids, err := app.GetDLCIDs()
+		if err != nil {
+			return apps, err
+		}
+
+		return GetAppsByID(ids, []string{"id", "name"})
+	})
+
+	if len(apps) == 0 {
+		apps = []App{} // Needed for marshalling into type
+	}
+
+	return apps, err
+}
+
+func (app App) GetPackageIDs() (packages []int, err error) {
 
 	packages = []int{} // Needed for marshalling into type
 
@@ -626,14 +672,23 @@ func (app App) GetGenreIDs() (genres []int, err error) {
 
 func (app App) GetGenres() (genres []Genre, err error) {
 
-	genres = []Genre{} // Needed for marshalling into type
+	var item = helpers.MemcacheAppGenres(app.ID)
 
-	ids, err := app.GetGenreIDs()
-	if err != nil {
-		return genres, err
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
+
+		ids, err := app.GetGenreIDs()
+		if err != nil {
+			return genres, err
+		}
+
+		return GetGenresByID(ids, []string{"id", "name"})
+	})
+
+	if len(genres) == 0 {
+		genres = []Genre{} // Needed for marshalling into type
 	}
 
-	return GetGenresByID(ids, []string{"id", "name"})
+	return genres, err
 }
 
 func (app App) GetCategoryIDs() (categories []int, err error) {
@@ -650,14 +705,23 @@ func (app App) GetCategoryIDs() (categories []int, err error) {
 
 func (app App) GetCategories() (categories []Category, err error) {
 
-	categories = []Category{} // Needed for marshalling into type
+	var item = helpers.MemcacheAppCategories(app.ID)
 
-	ids, err := app.GetCategoryIDs()
-	if err != nil {
-		return categories, err
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &categories, func() (interface{}, error) {
+
+		ids, err := app.GetCategoryIDs()
+		if err != nil {
+			return categories, err
+		}
+
+		return GetCategoriesByID(ids, []string{"id", "name"})
+	})
+
+	if len(categories) == 0 {
+		categories = []Category{} // Needed for marshalling into type
 	}
 
-	return GetCategoriesByID(ids, []string{"id", "name"})
+	return categories, err
 }
 
 func (app App) GetTagIDs() (tags []int, err error) {
@@ -678,14 +742,23 @@ func (app App) GetTagIDs() (tags []int, err error) {
 
 func (app App) GetTags() (tags []Tag, err error) {
 
-	tags = []Tag{} // Needed for marshalling into type
+	var item = helpers.MemcacheAppTags(app.ID)
 
-	ids, err := app.GetTagIDs()
-	if err != nil {
-		return tags, err
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+
+		ids, err := app.GetTagIDs()
+		if err != nil {
+			return tags, err
+		}
+
+		return GetTagsByID(ids, []string{"id", "name"})
+	})
+
+	if len(tags) == 0 {
+		tags = []Tag{} // Needed for marshalling into type
 	}
 
-	return GetTagsByID(ids, []string{"id", "name"})
+	return tags, err
 }
 
 func (app App) GetDeveloperIDs() (developers []int, err error) {
@@ -702,14 +775,23 @@ func (app App) GetDeveloperIDs() (developers []int, err error) {
 
 func (app App) GetDevelopers() (developers []Developer, err error) {
 
-	developers = []Developer{} // Needed for marshalling into type
+	var item = helpers.MemcacheAppDevelopers(app.ID)
 
-	ids, err := app.GetDeveloperIDs()
-	if err != nil {
-		return developers, err
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &developers, func() (interface{}, error) {
+
+		ids, err := app.GetDeveloperIDs()
+		if err != nil {
+			return developers, err
+		}
+
+		return GetDevelopersByID(ids, []string{"id", "name"})
+	})
+
+	if len(developers) == 0 {
+		developers = []Developer{} // Needed for marshalling into type
 	}
 
-	return GetDevelopersByID(ids, []string{"id", "name"})
+	return developers, err
 }
 
 func (app App) GetPublisherIDs() (publishers []int, err error) {
@@ -723,14 +805,49 @@ func (app App) GetPublisherIDs() (publishers []int, err error) {
 
 func (app App) GetPublishers() (publishers []Publisher, err error) {
 
-	publishers = []Publisher{} // Needed for marshalling into type
+	var item = helpers.MemcacheAppPublishers(app.ID)
 
-	ids, err := app.GetPublisherIDs()
-	if err != nil {
-		return publishers, err
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &publishers, func() (interface{}, error) {
+
+		ids, err := app.GetPublisherIDs()
+		if err != nil {
+			return publishers, err
+		}
+
+		return GetPublishersByID(ids, []string{"id", "name"})
+	})
+
+	if len(publishers) == 0 {
+		publishers = []Publisher{} // Needed for marshalling into type
 	}
 
-	return GetPublishersByID(ids, []string{"id", "name"})
+	return publishers, err
+}
+
+func (app App) GetBundles() (bundles []Bundle, err error) {
+
+	var item = helpers.MemcacheAppBundles(app.ID)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return bundles, err
+		}
+
+		var bundles []Bundle
+
+		db = db.Where("JSON_CONTAINS(app_ids, '[" + strconv.Itoa(app.ID) + "]')")
+		db = db.Find(&bundles)
+
+		return bundles, db.Error
+	})
+
+	if len(bundles) == 0 {
+		bundles = []Bundle{} // Needed for marshalling into type
+	}
+
+	return bundles, err
 }
 
 func (app App) GetName() (name string) {
@@ -993,31 +1110,6 @@ func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []
 
 	return apps, nil
 
-}
-
-func GetDLC(app App, columns []string) (apps []App, err error) {
-
-	dlc, err := app.GetDLC()
-	if err != nil {
-		return apps, err
-	}
-
-	if len(dlc) == 0 {
-		return apps, nil
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	db = db.Where("id in (?)", dlc).Find(&apps)
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-	}
-
-	return apps, db.Error
 }
 
 func CountApps() (count int, err error) {

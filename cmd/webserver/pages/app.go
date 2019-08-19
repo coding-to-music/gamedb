@@ -138,16 +138,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		gorm = gorm.Where("JSON_CONTAINS(app_ids, '[" + strconv.Itoa(app.ID) + "]')")
-		gorm = gorm.Find(&t.Bundles)
-
-		log.Err(gorm.Error, r)
+		var err error
+		t.Bundles, err = app.GetBundles()
+		log.Err(err, r)
 	}()
 
 	// Get packages
@@ -167,30 +160,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		demoIDs, err := app.GetDemoIDs()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		if len(demoIDs) > 0 {
-
-			gorm, err := sql.GetMySQLClient()
-			if err != nil {
-				log.Err(err, r)
-				return
-			}
-
-			var demos []sql.App
-			gorm = gorm.Where("id IN (?)", demoIDs)
-			gorm = gorm.Find(&demos)
-			if gorm.Error != nil {
-				log.Err(gorm.Error, r)
-				return
-			}
-
-			t.Demos = demos
-		}
+		var err error
+		t.Demos, err = app.GetDemos()
+		log.Err(err, r)
 	}()
 
 	// Get DLC
@@ -200,7 +172,29 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.DLCs, err = sql.GetDLC(app, []string{"id", "name"})
+		t.DLCs, err = app.GetDLCs()
+		log.Err(err, r)
+	}()
+
+	// Get Developers
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Developers, err = t.App.GetDevelopers()
+		log.Err(err, r)
+	}()
+
+	// Get Publishers
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Publishers, err = t.App.GetPublishers()
 		log.Err(err, r)
 	}()
 
@@ -229,12 +223,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	t.Reviews, err = t.App.GetReviews()
-	log.Err(err, r)
-
-	t.Developers, err = t.App.GetDevelopers()
-	log.Err(err, r)
-
-	t.Publishers, err = t.App.GetPublishers()
 	log.Err(err, r)
 
 	t.SteamSpy, err = t.App.GetSteamSpy()

@@ -180,7 +180,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		offers, err = updateBundlesAndOffers(&app)
+		offers, err = scrapeApp(&app)
 		if err != nil {
 			helpers.LogSteamError(err, message.ID)
 			payload.ackRetry(msg)
@@ -326,7 +326,17 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		if app.ReleaseDateUnix > time.Now().Unix() && newApp {
 
-			err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingAppsCount.Key)
+			err = helpers.RemoveKeyFromMemCacheViaPubSub(
+				helpers.MemcacheUpcomingAppsCount.Key,
+				helpers.MemcacheAppTags(app.ID).Key,
+				helpers.MemcacheAppCategories(app.ID).Key,
+				helpers.MemcacheAppGenres(app.ID).Key,
+				helpers.MemcacheAppDemos(app.ID).Key,
+				helpers.MemcacheAppDLC(app.ID).Key,
+				helpers.MemcacheAppDevelopers(app.ID).Key,
+				helpers.MemcacheAppPublishers(app.ID).Key,
+				helpers.MemcacheAppBundles(app.ID).Key,
+			)
 			logError(err, message.ID)
 		}
 	}()
@@ -1141,7 +1151,7 @@ func updateAppSteamSpy(app *sql.App) error {
 //noinspection RegExpRedundantEscape
 var bundlesRegex = regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
 
-func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
+func scrapeApp(app *sql.App) (offers []mongo.Offer, err error) {
 
 	// This app causes infinite redirects..
 	if app.ID == 12820 {
@@ -1154,6 +1164,7 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 	}
 
 	var bundleIDs []string
+	var relatedAppIDs []int
 
 	// Retry call
 	operation := func() (err error) {
@@ -1173,6 +1184,16 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 		// Bundles
 		c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
 			bundleIDs = append(bundleIDs, e.Attr("value"))
+		})
+
+		// Related apps
+		c.OnHTML("#recommended_block a[data-ds-appid]", func(e *colly.HTMLElement) {
+			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
+			if err != nil {
+				log.Err(app.ID, err)
+			} else {
+				relatedAppIDs = append(relatedAppIDs, i)
+			}
 		})
 
 		// Offers
@@ -1310,7 +1331,7 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 		return offers, err
 	}
 
-	//
+	// Save bundle IDs
 	var IDInts = helpers.StringSliceToIntSlice(bundleIDs)
 
 	for _, v := range IDInts {
@@ -1326,6 +1347,14 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 	}
 
 	app.BundleIDs = string(b)
+
+	// Save related apps
+	b, err = json.Marshal(relatedAppIDs)
+	if err != nil {
+		return offers, err
+	}
+
+	app.RelatedAppIDs = string(b)
 
 	return offers, nil
 }
