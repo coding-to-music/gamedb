@@ -215,20 +215,20 @@ func adminQueueEveryPackage() {
 	packageIDs := map[int]bool{}
 	for _, v := range apps {
 
-		packages, err := v.GetPackages()
+		packagesIDs, err := v.GetPackageIDs()
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		for _, vv := range packages {
-			packageIDs[vv] = true
+		for _, packageID := range packagesIDs {
+			packageIDs[packageID] = true
 		}
 	}
 
-	for k := range packageIDs {
+	for packageID := range packageIDs {
 
-		err = queue.ProducePackage(k)
+		err = queue.ProducePackage(packageID)
 		if err != nil {
 			log.Err(err)
 			return

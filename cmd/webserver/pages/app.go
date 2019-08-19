@@ -242,8 +242,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make banners
 	var banners = map[string][]string{
-		"primary": []string{},
-		"warning": []string{},
+		"primary": {},
+		"warning": {},
 	}
 
 	if app.ID == 753 {
