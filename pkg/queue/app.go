@@ -1196,7 +1196,9 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
 				if discountText != "" {
 					offer.OfferPercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
-					log.Err(app.ID, err)
+					if err != nil {
+						log.Err(app.ID, err)
+					}
 				}
 
 				// Get sub ID
@@ -1240,7 +1242,9 @@ func updateBundlesAndOffers(app *sql.App) (offers []mongo.Offer, err error) {
 				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
 				if discountText != "" {
 					offer.OfferPercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
-					log.Err(app.ID, err)
+					if err != nil {
+						log.Err(app.ID, err)
+					}
 				}
 
 				// Get sub ID
