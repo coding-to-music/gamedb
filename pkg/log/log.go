@@ -32,6 +32,7 @@ const (
 	LogNameRequests  LogName = "requests"
 	LogNameSQL       LogName = "sql"
 	LogNameSteam     LogName = "steam-calls"
+	LogNamePICS      LogName = "pics-checks"
 
 	// Severities
 	SeverityDebug    Severity = 1

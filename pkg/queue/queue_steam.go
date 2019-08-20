@@ -15,28 +15,28 @@ import (
 )
 
 const (
-	sentryFilename        = ".sentry.txt"
-	currentChangeFilename = ".change.txt"
+	steamSentryFilename        = ".sentry.txt"
+	steamCurrentChangeFilename = ".change.txt"
 )
 
 var (
 	steamClient *steam.Client
 
-	changeNumber uint32
-	changeLock   sync.Mutex
+	steamChangeNumber uint32
+	steamChangeLock   sync.Mutex
 )
 
-func main() {
+func init() {
 
 	var err error
 
 	logonDetails := steam.LogOnDetails{}
 	logonDetails.Username = config.Config.SteamUsername.Get()
 	logonDetails.Password = config.Config.SteamPassword.Get()
-	logonDetails.SentryFileHash, _ = ioutil.ReadFile(sentryFilename)
+	logonDetails.SentryFileHash, _ = ioutil.ReadFile(steamSentryFilename)
 
 	err = steam.InitializeSteamDirectory()
-	log.Err(err)
+	steamLogError(err)
 
 	steamClient = steam.NewClient()
 	steamClient.RegisterPacketHandler(packetHandler{})
@@ -80,28 +80,28 @@ func main() {
 
 func checkForChanges(client *steam.Client) {
 	for {
-		changeLock.Lock()
+		steamChangeLock.Lock()
 
 		// Get last change number from file
-		if changeNumber == 0 {
-			b, _ := ioutil.ReadFile(currentChangeFilename)
+		if steamChangeNumber == 0 {
+			b, _ := ioutil.ReadFile(steamCurrentChangeFilename)
 			if len(b) > 0 {
 				ui, err := strconv.ParseUint(string(b), 10, 32)
-				log.Err(err)
+				steamLogError(err)
 				if err == nil {
-					changeNumber = uint32(ui)
-					log.Err(err)
+					steamChangeNumber = uint32(ui)
+					steamLogError(err)
 				}
 			}
 		}
 
-		log.Info("Trying from: " + strconv.FormatUint(uint64(changeNumber), 10))
+		steamLogInfo("Trying from: " + strconv.FormatUint(uint64(steamChangeNumber), 10))
 
 		var b = true
 		client.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
 			SendAppInfoChanges:     &b,
 			SendPackageInfoChanges: &b,
-			SinceChangeNumber:      &changeNumber,
+			SinceChangeNumber:      &steamChangeNumber,
 		}))
 
 		time.Sleep(time.Second * 5)
@@ -119,7 +119,7 @@ func (ph packetHandler) HandlePacket(packet *protocol.Packet) {
 	case EMsg_ClientPICSProductInfoResponse:
 		ph.handleProductInfo(packet)
 	default:
-		// log.Info(packet.String())
+		// steamLogInfo(packet.String())
 	}
 }
 
@@ -136,35 +136,35 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 	if apps != nil {
 		for _, app := range apps {
 			err := ProduceApp(int(app.GetAppid()), app.GetBuffer())
-			log.Err(err)
+			steamLogError(err)
 		}
 	}
 
 	if packages != nil {
 		for _, pack := range packages {
 			err := ProducePackage(int(pack.GetPackageid()), pack.GetBuffer())
-			log.Err(err)
+			steamLogError(err)
 		}
 	}
 
 	if unknownApps != nil {
 		for _, app := range unknownApps {
 			err := ProduceApp(int(app), nil)
-			log.Err(err)
+			steamLogError(err)
 		}
 	}
 
 	if unknownPackages != nil {
 		for _, pack := range unknownPackages {
 			err := ProducePackage(int(pack), nil)
-			log.Err(err)
+			steamLogError(err)
 		}
 	}
 }
 
 func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 
-	defer changeLock.Unlock()
+	defer steamChangeLock.Unlock()
 
 	var false = false
 
@@ -176,7 +176,7 @@ func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 
 	appChanges := body.GetAppChanges()
 	if appChanges != nil && len(appChanges) > 0 {
-		log.Info(len(appChanges), "apps")
+		steamLogInfo(len(appChanges), "apps")
 		for _, appChange := range appChanges {
 			apps = append(apps, &protobuf.CMsgClientPICSProductInfoRequest_AppInfo{
 				Appid:      appChange.Appid,
@@ -187,7 +187,7 @@ func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 
 	packageChanges := body.GetPackageChanges()
 	if packageChanges != nil && len(packageChanges) > 0 {
-		log.Info(len(packageChanges), "packages")
+		steamLogInfo(len(packageChanges), "packages")
 		for _, packageChange := range packageChanges {
 			packages = append(packages, &protobuf.CMsgClientPICSProductInfoRequest_PackageInfo{
 				Packageid: packageChange.Packageid,
@@ -204,7 +204,15 @@ func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 	// todo, queue changes
 
 	// Update cached change number
-	changeNumber = body.GetCurrentChangeNumber()
-	err := ioutil.WriteFile(currentChangeFilename, []byte(strconv.FormatUint(uint64(body.GetCurrentChangeNumber()), 10)), 0644)
-	log.Err(err)
+	steamChangeNumber = body.GetCurrentChangeNumber()
+	err := ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(body.GetCurrentChangeNumber()), 10)), 0644)
+	steamLogError(err)
+}
+
+func steamLogInfo(interfaces ...interface{}) {
+	log.Info(append(interfaces, log.LogNamePICS)...)
+}
+
+func steamLogError(interfaces ...interface{}) {
+	log.Err(append(interfaces, log.LogNamePICS)...)
 }
