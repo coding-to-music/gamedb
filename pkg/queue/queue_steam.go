@@ -175,6 +175,9 @@ func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 
 	var false = false
 
+	var appMap = map[int]int{}
+	var packageMap = map[int]int{}
+
 	var apps []*protobuf.CMsgClientPICSProductInfoRequest_AppInfo
 	var packages []*protobuf.CMsgClientPICSProductInfoRequest_PackageInfo
 
@@ -185,6 +188,9 @@ func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 	if appChanges != nil && len(appChanges) > 0 {
 		steamLogInfo(len(appChanges), "apps")
 		for _, appChange := range appChanges {
+
+			appMap[int(appChange.GetChangeNumber())] = int(appChange.GetAppid())
+
 			apps = append(apps, &protobuf.CMsgClientPICSProductInfoRequest_AppInfo{
 				Appid:      appChange.Appid,
 				OnlyPublic: &false,
@@ -196,6 +202,9 @@ func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 	if packageChanges != nil && len(packageChanges) > 0 {
 		steamLogInfo(len(packageChanges), "packages")
 		for _, packageChange := range packageChanges {
+
+			packageMap[int(packageChange.GetChangeNumber())] = int(packageChange.GetPackageid())
+
 			packages = append(packages, &protobuf.CMsgClientPICSProductInfoRequest_PackageInfo{
 				Packageid: packageChange.Packageid,
 			})
@@ -208,7 +217,7 @@ func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 		MetaDataOnly: &false,
 	}))
 
-	// todo, queue changes
+	produceChange(appMap, packageMap)
 
 	// Update cached change number
 	steamChangeNumber = body.GetCurrentChangeNumber()

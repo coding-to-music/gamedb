@@ -16,8 +16,9 @@ import (
 )
 
 type changeMessage struct {
-	ID          int                      `json:"id"`
-	PICSChanges RabbitMessageChangesPICS `json:"PICSChanges"`
+	ID         int         `json:"id"`
+	AppIDs     map[int]int `json:"app_ids"`
+	PackageIDs map[int]int `json:"package_ids"`
 }
 
 type changeQueue struct {
@@ -123,23 +124,6 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	payload.ack(msg)
-}
-
-type RabbitMessageChangesPICS struct {
-	LastChangeNumber    int  `json:"LastChangeNumber"`
-	CurrentChangeNumber int  `json:"CurrentChangeNumber"`
-	RequiresFullUpdate  bool `json:"RequiresFullUpdate"`
-	PackageChanges      map[string]struct {
-		ID           int  `json:"ID"`
-		ChangeNumber int  `json:"ChangeNumber"`
-		NeedsToken   bool `json:"NeedsToken"`
-	} `json:"PackageChanges"`
-	AppChanges map[string]struct {
-		ID           int  `json:"ID"`
-		ChangeNumber int  `json:"ChangeNumber"`
-		NeedsToken   bool `json:"NeedsToken"`
-	} `json:"AppChanges"`
-	JobID steamKitJob `json:"JobID"`
 }
 
 func saveChangesToMongo(changes []*mongo.Change) (err error) {

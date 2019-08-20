@@ -32,7 +32,7 @@ import (
 type appMessage struct {
 	ID          int                  `json:"id"`
 	PICSAppInfo rabbitMessageProduct `json:"PICSAppInfo"`
-	PICS        []byte               `json:"pics"`
+	VDF         []byte               `json:"vdf"`
 }
 
 type appQueue struct {
@@ -60,12 +60,6 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	err = mapstructure.Decode(payload.Message, &message)
 	if err != nil {
 		logError(err)
-		payload.ack(msg)
-		return
-	}
-
-	if len(message.PICS) > 0 {
-		log.Debug("new pics", message.PICS)
 		payload.ack(msg)
 		return
 	}

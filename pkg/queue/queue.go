@@ -408,15 +408,6 @@ func getQueue(conn *amqp.Connection, queue queueName, qos int) (ch *amqp.Channel
 	return ch, qu, err
 }
 
-//
-type steamKitJob struct {
-	SequentialCount int    `json:"SequentialCount"`
-	StartTime       string `json:"StartTime"`
-	ProcessID       int    `json:"ProcessID"`
-	BoxID           int    `json:"BoxID"`
-	Value           int64  `json:"Value"`
-}
-
 func logInfo(interfaces ...interface{}) {
 	log.Info(append(interfaces, log.LogNameConsumers)...)
 }
@@ -475,7 +466,7 @@ func ProducePackagesWithPICS(ids []int) {
 	}))
 }
 
-func ProduceApp(ID int, pics []byte) (err error) {
+func ProduceApp(ID int, vdf []byte) (err error) {
 
 	time.Sleep(time.Millisecond)
 
@@ -498,19 +489,19 @@ func ProduceApp(ID int, pics []byte) (err error) {
 		log.Err(err)
 	}
 
-	if pics == nil {
-		pics = []byte{}
+	if vdf == nil {
+		vdf = []byte{}
 	}
 
 	return produce(baseMessage{
 		Message: appMessage{
-			ID:   ID,
-			PICS: pics,
+			ID:  ID,
+			VDF: vdf,
 		},
 	}, queueGoApps)
 }
 
-func ProducePackage(ID int, pics []byte) (err error) {
+func ProducePackage(ID int, vdf []byte) (err error) {
 
 	time.Sleep(time.Millisecond)
 
@@ -518,14 +509,14 @@ func ProducePackage(ID int, pics []byte) (err error) {
 		return sql.ErrInvalidPackageID
 	}
 
-	if pics == nil {
-		pics = []byte{}
+	if vdf == nil {
+		vdf = []byte{}
 	}
 
 	return produce(baseMessage{
 		Message: packageMessage{
-			ID:   ID,
-			PICS: pics,
+			ID:  ID,
+			VDF: vdf,
 		},
 	}, queueGoPackages)
 }

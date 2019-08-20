@@ -22,7 +22,7 @@ import (
 type packageMessage struct {
 	ID              int                  `json:"id"`
 	PICSPackageInfo rabbitMessageProduct `json:"PICSPackageInfo"`
-	PICS            []byte               `json:"pics"`
+	VDF             []byte               `json:"vdf"`
 }
 
 type packageQueue struct {
@@ -53,6 +53,13 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		payload.ack(msg)
 		return
 	}
+
+	// p := vdf.NewParser(bytes.NewReader(app.GetBuffer()))
+	// m, err := p.Parse()
+	// if err != nil {
+	// 	log.Err(err)
+	// }
+	// fmt.Println(m)
 
 	if payload.Attempt > 1 {
 		logInfo("Consuming package " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
