@@ -25,12 +25,6 @@ type queueName string
 
 //noinspection GoUnusedConst
 const (
-	// C#
-	queueCSApps     queueName = "GameDB_CS_Apps"
-	queueCSPackages queueName = "GameDB_CS_Packages"
-	queueCSProfiles queueName = "GameDB_CS_Profiles"
-
-	// Go
 	queueGoApps      queueName = "GameDB_Go_Apps"
 	queueGoAppPlayer queueName = "GameDB_Go_App_Players"
 	queueGoBundles   queueName = "GameDB_Go_Bundles"
@@ -41,7 +35,6 @@ const (
 	queueGoGroupsNew queueName = "GameDB_Go_Groups_New"
 	queueGoPackages  queueName = "GameDB_Go_Packages"
 	queueGoPlayers   queueName = "GameDB_Go_Profiles"
-	queueGoSteam     queueName = "GameDB_Go_Steam"
 
 	//
 	maxBytesToStore int = 1024 * 10
@@ -514,7 +507,7 @@ func ProduceApp(ID int, pics []byte) (err error) {
 			ID:   ID,
 			PICS: pics,
 		},
-	}, queueCSApps)
+	}, queueGoApps)
 }
 
 func ProducePackage(ID int, pics []byte) (err error) {
@@ -534,7 +527,7 @@ func ProducePackage(ID int, pics []byte) (err error) {
 			ID:   ID,
 			PICS: pics,
 		},
-	}, queueCSPackages)
+	}, queueGoPackages)
 }
 
 func ProduceBundle(ID int, appID int) (err error) {
@@ -561,7 +554,7 @@ func ProducePlayer(ID int64) (err error) {
 		Message: playerMessage{
 			ID: ID,
 		},
-	}, queueCSProfiles)
+	}, queueGoPlayers)
 }
 
 func ProduceAppPlayers(IDs []int) (err error) {
