@@ -459,9 +459,7 @@ func ProduceApp(ID int, pics []byte) (err error) {
 
 	if !config.IsLocal() {
 
-	mc := helpers.GetMemcache()
-
-	if config.IsProd() {
+		mc := helpers.GetMemcache()
 
 		item := helpers.MemcacheAppInQueue(ID)
 
@@ -482,7 +480,7 @@ func ProduceApp(ID int, pics []byte) (err error) {
 	}, queueCSApps)
 }
 
-func ProducePackage(ID int) (err error) {
+func ProducePackage(ID int, pics []byte) (err error) {
 
 	time.Sleep(time.Millisecond)
 
@@ -492,7 +490,8 @@ func ProducePackage(ID int) (err error) {
 
 	return produce(baseMessage{
 		Message: packageMessage{
-			ID: ID,
+			ID:   ID,
+			PICS: pics,
 		},
 	}, queueCSPackages)
 }

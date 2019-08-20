@@ -22,6 +22,7 @@ import (
 type packageMessage struct {
 	ID              int                  `json:"id"`
 	PICSPackageInfo rabbitMessageProduct `json:"PICSPackageInfo"`
+	PICS            []byte               `json:"pics"`
 }
 
 type packageQueue struct {
