@@ -12,8 +12,6 @@ import (
 
 func main() {
 
-	// debug.SetGCPercent(1)
-
 	log.Info("Listening to PubSub for memcache")
 	go helpers.ListenToPubSubMemcache()
 
