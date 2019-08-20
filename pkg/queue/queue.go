@@ -10,6 +10,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
+	"github.com/Philipp15b/go-steam/protocol"
+	"github.com/Philipp15b/go-steam/protocol/protobuf"
+	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -437,6 +440,48 @@ func logCritical(interfaces ...interface{}) {
 	log.Critical(append(interfaces, log.LogNameConsumers)...)
 }
 
+func ProduceAppsWithPICS(ids []int) {
+
+	// todo, chunk into 100s, and packages
+
+	var apps []*protobuf.CMsgClientPICSProductInfoRequest_AppInfo
+	for _, id := range ids {
+
+		uid := uint32(id)
+
+		apps = append(apps, &protobuf.CMsgClientPICSProductInfoRequest_AppInfo{
+			Appid: &uid,
+		})
+	}
+
+	false := false
+
+	steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSProductInfoRequest, &protobuf.CMsgClientPICSProductInfoRequest{
+		Apps:         apps,
+		MetaDataOnly: &false,
+	}))
+}
+
+func ProducePackagesWithPICS(ids []int) {
+
+	var packages []*protobuf.CMsgClientPICSProductInfoRequest_PackageInfo
+	for _, id := range ids {
+
+		uid := uint32(id)
+
+		packages = append(packages, &protobuf.CMsgClientPICSProductInfoRequest_PackageInfo{
+			Packageid: &uid,
+		})
+	}
+
+	false := false
+
+	steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSProductInfoRequest, &protobuf.CMsgClientPICSProductInfoRequest{
+		Packages:     packages,
+		MetaDataOnly: &false,
+	}))
+}
+
 func ProduceApp(ID int, pics []byte) (err error) {
 
 	time.Sleep(time.Millisecond)
@@ -460,6 +505,10 @@ func ProduceApp(ID int, pics []byte) (err error) {
 		log.Err(err)
 	}
 
+	if pics == nil {
+		pics = []byte{}
+	}
+
 	return produce(baseMessage{
 		Message: appMessage{
 			ID:   ID,
@@ -474,6 +523,10 @@ func ProducePackage(ID int, pics []byte) (err error) {
 
 	if !sql.IsValidPackageID(ID) {
 		return sql.ErrInvalidPackageID
+	}
+
+	if pics == nil {
+		pics = []byte{}
 	}
 
 	return produce(baseMessage{

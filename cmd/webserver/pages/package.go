@@ -76,10 +76,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			appsMap[v.ID] = v
 		}
 
+		// Add missing apps to queue
 		for _, v := range appsMap {
 			if v.Name == "" {
-				err = queue.ProduceApp(v.ID, nil)
-				log.Err(err)
+				queue.ProduceAppsWithPICS([]int{v.ID})
 			}
 		}
 	}()
@@ -143,7 +143,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProducePackage(pack.ID)
+		err = queue.ProducePackage(pack.ID, nil)
 		if err != nil {
 			log.Err(err, r)
 		} else {

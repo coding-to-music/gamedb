@@ -24,6 +24,7 @@ var (
 
 	steamChangeNumber uint32
 	steamChangeLock   sync.Mutex
+	steamLoggedOn     bool
 )
 
 func init() {
@@ -47,23 +48,21 @@ func init() {
 			switch e := event.(type) {
 			case *steam.ConnectedEvent:
 				steamLogInfo("Connected")
-				steamClient.Auth.LogOn(&logonDetails)
+				go steamClient.Auth.LogOn(&logonDetails)
 			case *steam.LoggedOnEvent:
 				steamLogInfo("Logged in")
-				go checkForChanges(steamClient)
+				steamLoggedOn = true
+				go checkForChanges()
 			case *steam.LoggedOffEvent:
-				steamClient.Disconnect()
+				steamLogInfo("Logged off")
+				steamLoggedOn = false
+				go steamClient.Disconnect()
 			case *steam.DisconnectedEvent:
 				steamLogInfo("Disconnected")
+				steamLoggedOn = false
 				go steamClient.Connect()
 			case *steam.LogOnFailedEvent:
 				steamLogInfo("Login failed")
-				if e.Result == EResult_AccountLogonDenied {
-					steamLogInfo("Steam guard isn't letting me in! Enter auth code:")
-					logonDetails.AuthCode = "xx"
-				} else {
-					steamLogError(e.Result.String())
-				}
 			case *steam.MachineAuthUpdateEvent:
 				steamLogInfo("Updating auth hash, it should no longer ask for auth")
 				err = ioutil.WriteFile(steamSentryFilename, e.Hash, 0666)
@@ -78,8 +77,12 @@ func init() {
 	}()
 }
 
-func checkForChanges(client *steam.Client) {
+func checkForChanges() {
 	for {
+		if !steamClient.Connected() || !steamLoggedOn {
+			continue
+		}
+
 		steamChangeLock.Lock()
 
 		// Get last change number from file
@@ -98,7 +101,7 @@ func checkForChanges(client *steam.Client) {
 		steamLogInfo("Trying from: " + strconv.FormatUint(uint64(steamChangeNumber), 10))
 
 		var b = true
-		client.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
+		steamClient.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
 			SendAppInfoChanges:     &b,
 			SendPackageInfoChanges: &b,
 			SinceChangeNumber:      &steamChangeNumber,
@@ -106,6 +109,10 @@ func checkForChanges(client *steam.Client) {
 
 		time.Sleep(time.Second * 5)
 	}
+}
+
+func getApp() {
+
 }
 
 type packetHandler struct {

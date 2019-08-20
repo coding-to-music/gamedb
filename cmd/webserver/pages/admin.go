@@ -181,11 +181,7 @@ func adminQueueEveryApp() {
 		count = count + len(apps.Apps)
 
 		for _, v := range apps.Apps {
-			err = queue.ProduceApp(v.AppID, nil)
-			if err != nil {
-				log.Err(err, strconv.Itoa(v.AppID))
-				continue
-			}
+			queue.ProduceAppsWithPICS([]int{v.AppID})
 			last = v.AppID
 		}
 
@@ -212,28 +208,27 @@ func adminQueueEveryPackage() {
 		return
 	}
 
-	packageIDs := map[int]bool{}
-	for _, v := range apps {
+	packageMap := map[int]bool{}
+	for _, app := range apps {
 
-		packagesIDs, err := v.GetPackageIDs()
+		packagesIDs, err := app.GetPackageIDs()
 		if err != nil {
-			log.Err(err)
-			return
+			log.Err(app.ID, err)
+			continue
 		}
 
 		for _, packageID := range packagesIDs {
-			packageIDs[packageID] = true
+			packageMap[packageID] = true
 		}
 	}
 
-	for packageID := range packageIDs {
-
-		err = queue.ProducePackage(packageID)
-		if err != nil {
-			log.Err(err)
-			return
-		}
+	// Make into slice again
+	var packageSlice []int
+	for k := range packageMap {
+		packageSlice = append(packageSlice, k)
 	}
+
+	queue.ProducePackagesWithPICS(packageSlice)
 
 	//
 	err = sql.SetConfig(sql.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
@@ -242,7 +237,7 @@ func adminQueueEveryPackage() {
 	page := websockets.GetPage(websockets.PageAdmin)
 	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllPackages) + " complete"})
 
-	log.Info(strconv.Itoa(len(packageIDs)) + " packages added to rabbit")
+	log.Info(strconv.Itoa(len(packageMap)) + " packages added to rabbit")
 }
 
 func adminQueueEveryPlayer() {
@@ -304,9 +299,7 @@ func adminQueues(r *http.Request) {
 
 			appID, err := strconv.Atoi(val)
 			if err == nil {
-
-				err = queue.ProduceApp(appID, nil)
-				log.Err(err, r)
+				queue.ProduceAppsWithPICS([]int{appID})
 			}
 		}
 	}
@@ -321,9 +314,7 @@ func adminQueues(r *http.Request) {
 
 			packageID, err := strconv.Atoi(val)
 			if err == nil {
-
-				err = queue.ProducePackage(packageID)
-				log.Err(err, r)
+				queue.ProducePackagesWithPICS([]int{packageID})
 			}
 		}
 	}
@@ -371,9 +362,8 @@ func adminQueues(r *http.Request) {
 
 				log.Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
 
-				for _, v := range apps.Apps {
-					err = queue.ProduceApp(v.AppID, nil)
-					log.Err(err, r)
+				for _, app := range apps.Apps {
+					queue.ProduceAppsWithPICS([]int{app.AppID})
 				}
 			}
 		}
