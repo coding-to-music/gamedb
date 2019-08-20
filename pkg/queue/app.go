@@ -32,6 +32,7 @@ import (
 type appMessage struct {
 	ID          int                  `json:"id"`
 	PICSAppInfo rabbitMessageProduct `json:"PICSAppInfo"`
+	PICS        []byte               `json:"pics"`
 }
 
 type appQueue struct {
@@ -62,6 +63,19 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		payload.ack(msg)
 		return
 	}
+
+	if len(message.PICS) > 0 {
+		log.Debug("new pics", message.PICS)
+		payload.ack(msg)
+		return
+	}
+
+	// p := vdf.NewParser(bytes.NewReader(app.GetBuffer()))
+	// m, err := p.Parse()
+	// if err != nil {
+	// 	log.Err(err)
+	// }
+	// fmt.Println(m)
 
 	if payload.Attempt > 1 {
 		logInfo("Consuming app " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))

@@ -33,11 +33,12 @@ const (
 	queueGoBundles   queueName = "GameDB_Go_Bundles"
 	queueGoChanges   queueName = "GameDB_Go_Changes"
 	queueGoDelays    queueName = "GameDB_Go_Delays"
+	queueGoFailed    queueName = "GameDB_Go_Failed"
 	queueGoGroups    queueName = "GameDB_Go_Groups"
 	queueGoGroupsNew queueName = "GameDB_Go_Groups_New"
 	queueGoPackages  queueName = "GameDB_Go_Packages"
 	queueGoPlayers   queueName = "GameDB_Go_Profiles"
-	queueGoFailed    queueName = "GameDB_Go_Failed"
+	queueGoSteam     queueName = "GameDB_Go_Steam"
 
 	//
 	maxBytesToStore int = 1024 * 10
@@ -448,7 +449,7 @@ func ProduceBundle(ID int, appID int) (err error) {
 	}, queueGoBundles)
 }
 
-func ProduceApp(ID int) (err error) {
+func ProduceApp(ID int, pics []byte) (err error) {
 
 	time.Sleep(time.Millisecond)
 
@@ -473,7 +474,8 @@ func ProduceApp(ID int) (err error) {
 
 	return produce(baseMessage{
 		Message: appMessage{
-			ID: ID,
+			ID:   ID,
+			PICS: pics,
 		},
 	}, queueCSApps)
 }

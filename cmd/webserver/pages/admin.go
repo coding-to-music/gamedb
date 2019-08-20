@@ -181,7 +181,7 @@ func adminQueueEveryApp() {
 		count = count + len(apps.Apps)
 
 		for _, v := range apps.Apps {
-			err = queue.ProduceApp(v.AppID)
+			err = queue.ProduceApp(v.AppID, nil)
 			if err != nil {
 				log.Err(err, strconv.Itoa(v.AppID))
 				continue
@@ -305,7 +305,7 @@ func adminQueues(r *http.Request) {
 			appID, err := strconv.Atoi(val)
 			if err == nil {
 
-				err = queue.ProduceApp(appID)
+				err = queue.ProduceApp(appID, nil)
 				log.Err(err, r)
 			}
 		}
@@ -372,7 +372,7 @@ func adminQueues(r *http.Request) {
 				log.Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
 
 				for _, v := range apps.Apps {
-					err = queue.ProduceApp(v.AppID)
+					err = queue.ProduceApp(v.AppID, nil)
 					log.Err(err, r)
 				}
 			}

@@ -21,6 +21,8 @@ const (
 )
 
 var (
+	steamClient *steam.Client
+
 	changeNumber uint32
 	changeLock   sync.Mutex
 )
@@ -37,22 +39,22 @@ func main() {
 	err = steam.InitializeSteamDirectory()
 	log.Err(err)
 
-	client := steam.NewClient()
-	client.RegisterPacketHandler(packetHandler{})
-	client.Connect()
+	steamClient = steam.NewClient()
+	steamClient.RegisterPacketHandler(packetHandler{})
+	steamClient.Connect()
 
-	for event := range client.Events() {
+	for event := range steamClient.Events() {
 		switch e := event.(type) {
 		case *steam.ConnectedEvent:
 			log.Info("Connected")
-			client.Auth.LogOn(&logonDetails)
+			steamClient.Auth.LogOn(&logonDetails)
 		case *steam.MachineAuthUpdateEvent:
 			log.Info("Updating auth hash, it should no longer ask for auth")
 			err = ioutil.WriteFile(sentryFilename, e.Hash, 0666)
 			log.Err(err)
 		case *steam.LoggedOnEvent:
 			log.Info("Logged in")
-			go checkForChanges(client)
+			go checkForChanges(steamClient)
 		case *steam.LogOnFailedEvent:
 			log.Info("Login failed")
 			if e.Result == EResult_AccountLogonDenied {
@@ -71,6 +73,8 @@ func main() {
 
 func checkForChanges(client *steam.Client) {
 	for {
+		changeLock.Lock()
+
 		// Get last change number from file
 		if changeNumber == 0 {
 			b, _ := ioutil.ReadFile(currentChangeFilename)
@@ -84,14 +88,12 @@ func checkForChanges(client *steam.Client) {
 			}
 		}
 
-		log.Info("Trying from", changeNumber)
+		log.Info("Trying from: " + strconv.FormatUint(uint64(changeNumber), 10))
 
-		changeLock.Lock()
-
-		var x = true
+		var b = true
 		client.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
-			SendAppInfoChanges:     &x,
-			SendPackageInfoChanges: &x,
+			SendAppInfoChanges:     &b,
+			SendPackageInfoChanges: &b,
 			SinceChangeNumber:      &changeNumber,
 		}))
 
@@ -106,45 +108,96 @@ func (ph packetHandler) HandlePacket(packet *protocol.Packet) {
 
 	switch packet.EMsg {
 	case EMsg_ClientPICSChangesSinceResponse:
-		ph.changesSinceResponse(packet)
+		ph.handleChanges(packet)
+	case EMsg_ClientPICSProductInfoResponse:
+		ph.handleProductInfo(packet)
+	default:
+		// log.Info(packet.String())
 	}
 }
 
-func (ph packetHandler) changesSinceResponse(packet *protocol.Packet) {
+func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
-	msg := protobuf.CMsgClientPICSChangesSinceResponse{}
-	packet.ReadProtoMsg(&msg)
+	body := protobuf.CMsgClientPICSProductInfoResponse{}
+	packet.ReadProtoMsg(&body)
 
-	appChanges := msg.GetAppChanges()
+	apps := body.GetApps()
+	packages := body.GetPackages()
+	unknownApps := body.GetUnknownAppids()
+	unknownPackages := body.GetUnknownPackageids()
+
+	if apps != nil {
+		for _, app := range apps {
+			err := queue.ProduceApp(int(app.GetAppid()), app.GetBuffer())
+			log.Err(err)
+		}
+	}
+
+	if packages != nil {
+		for _, pack := range packages {
+			err := queue.ProduceApp(int(pack.GetPackageid()), pack.GetBuffer())
+			log.Err(err)
+		}
+	}
+
+	if unknownApps != nil {
+		for _, app := range unknownApps {
+			err := queue.ProduceApp(int(app), nil)
+			log.Err(err)
+		}
+	}
+
+	if unknownPackages != nil {
+		for _, pack := range unknownPackages {
+			err := queue.ProducePackage(int(pack))
+			log.Err(err)
+		}
+	}
+}
+
+func (ph packetHandler) handleChanges(packet *protocol.Packet) {
+
+	defer changeLock.Unlock()
+
+	var false = false
+
+	var apps []*protobuf.CMsgClientPICSProductInfoRequest_AppInfo
+	var packages []*protobuf.CMsgClientPICSProductInfoRequest_PackageInfo
+
+	body := protobuf.CMsgClientPICSChangesSinceResponse{}
+	packet.ReadProtoMsg(&body)
+
+	appChanges := body.GetAppChanges()
 	if appChanges != nil && len(appChanges) > 0 {
 		log.Info(len(appChanges), "apps")
-		for _, v := range appChanges {
-			appID := v.GetAppid()
-			if appID > 0 {
-				err := queue.ProduceApp(int(appID))
-				log.Err(err)
-			}
+		for _, appChange := range appChanges {
+			apps = append(apps, &protobuf.CMsgClientPICSProductInfoRequest_AppInfo{
+				Appid:      appChange.Appid,
+				OnlyPublic: &false,
+			})
 		}
 	}
 
-	packageChanges := msg.GetPackageChanges()
+	packageChanges := body.GetPackageChanges()
 	if packageChanges != nil && len(packageChanges) > 0 {
 		log.Info(len(packageChanges), "packages")
-		for _, v := range packageChanges {
-			packageID := v.GetPackageid()
-			if packageID > 0 {
-				err := queue.ProducePackage(int(packageID))
-				log.Err(err)
-			}
+		for _, packageChange := range packageChanges {
+			packages = append(packages, &protobuf.CMsgClientPICSProductInfoRequest_PackageInfo{
+				Packageid: packageChange.Packageid,
+			})
 		}
 	}
 
-	// todo, changes
+	steamClient.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSProductInfoRequest, &protobuf.CMsgClientPICSProductInfoRequest{
+		Apps:         apps,
+		Packages:     packages,
+		MetaDataOnly: &false,
+	}))
+
+	// todo, queue changes
 
 	// Update cached change number
-	changeNumber = msg.GetCurrentChangeNumber()
-	err := ioutil.WriteFile(currentChangeFilename, []byte(strconv.FormatUint(uint64(msg.GetCurrentChangeNumber()), 10)), 0644)
+	changeNumber = body.GetCurrentChangeNumber()
+	err := ioutil.WriteFile(currentChangeFilename, []byte(strconv.FormatUint(uint64(body.GetCurrentChangeNumber()), 10)), 0644)
 	log.Err(err)
-
-	changeLock.Unlock()
 }

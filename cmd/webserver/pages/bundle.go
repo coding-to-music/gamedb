@@ -87,7 +87,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if !found {
-					err = queue.ProduceApp(v)
+					err = queue.ProduceApp(v, nil)
 					log.Err()
 				}
 			}

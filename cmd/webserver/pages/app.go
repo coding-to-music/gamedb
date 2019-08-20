@@ -91,7 +91,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProduceApp(app.ID)
+		err = queue.ProduceApp(app.ID, nil)
 		if err != nil {
 			log.Err(err, r)
 		} else {

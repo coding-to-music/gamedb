@@ -78,7 +78,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, v := range appsMap {
 			if v.Name == "" {
-				err = queue.ProduceApp(v.ID)
+				err = queue.ProduceApp(v.ID, nil)
 				log.Err(err)
 			}
 		}
