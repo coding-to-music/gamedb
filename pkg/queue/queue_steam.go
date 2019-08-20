@@ -42,38 +42,40 @@ func main() {
 	steamClient.RegisterPacketHandler(packetHandler{})
 	steamClient.Connect()
 
-	for event := range steamClient.Events() {
-		switch e := event.(type) {
-		case *steam.ConnectedEvent:
-			log.Info("Connected")
-			steamClient.Auth.LogOn(&logonDetails)
-		case *steam.LoggedOnEvent:
-			log.Info("Logged in")
-			go checkForChanges(steamClient)
-		case *steam.LoggedOffEvent:
-			steamClient.Disconnect()
-		case *steam.DisconnectedEvent:
-			log.Info("Disconnected")
-			go steamClient.Connect()
-		case *steam.LogOnFailedEvent:
-			log.Info("Login failed")
-			if e.Result == EResult_AccountLogonDenied {
-				log.Info("Steam guard isn't letting me in! Enter auth code:")
-				logonDetails.AuthCode = "xx"
-			} else {
-				log.Err(e.Result.String())
+	go func() {
+		for event := range steamClient.Events() {
+			switch e := event.(type) {
+			case *steam.ConnectedEvent:
+				steamLogInfo("Connected")
+				steamClient.Auth.LogOn(&logonDetails)
+			case *steam.LoggedOnEvent:
+				steamLogInfo("Logged in")
+				go checkForChanges(steamClient)
+			case *steam.LoggedOffEvent:
+				steamClient.Disconnect()
+			case *steam.DisconnectedEvent:
+				steamLogInfo("Disconnected")
+				go steamClient.Connect()
+			case *steam.LogOnFailedEvent:
+				steamLogInfo("Login failed")
+				if e.Result == EResult_AccountLogonDenied {
+					steamLogInfo("Steam guard isn't letting me in! Enter auth code:")
+					logonDetails.AuthCode = "xx"
+				} else {
+					steamLogError(e.Result.String())
+				}
+			case *steam.MachineAuthUpdateEvent:
+				steamLogInfo("Updating auth hash, it should no longer ask for auth")
+				err = ioutil.WriteFile(steamSentryFilename, e.Hash, 0666)
+				steamLogError(err)
+			case steam.FatalErrorEvent:
+				// Disconnects
+				steamLogError(e.Error())
+			case error:
+				steamLogError(e)
 			}
-		case *steam.MachineAuthUpdateEvent:
-			log.Info("Updating auth hash, it should no longer ask for auth")
-			err = ioutil.WriteFile(sentryFilename, e.Hash, 0666)
-			log.Err(err)
-		case steam.FatalErrorEvent:
-			// Disconnects
-			log.Err(e.Error())
-		case error:
-			log.Err(e)
 		}
-	}
+	}()
 }
 
 func checkForChanges(client *steam.Client) {
