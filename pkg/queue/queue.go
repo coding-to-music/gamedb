@@ -105,9 +105,6 @@ func (payload baseMessage) getNextAttempt() time.Time {
 	seconds = math.Max(seconds, min.Seconds())
 	seconds = math.Min(seconds, max.Seconds())
 
-	if payload.LastSeen.IsZero() {
-		payload.LastSeen = payload.FirstSeen // todo, remove later when all messages have `lastSeen`
-	}
 	return payload.LastSeen.Add(time.Second * time.Duration(int64(seconds)))
 }
 
