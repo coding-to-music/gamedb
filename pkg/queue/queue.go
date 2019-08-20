@@ -457,6 +457,8 @@ func ProduceApp(ID int, pics []byte) (err error) {
 		return sql.ErrInvalidAppID
 	}
 
+	if !config.IsLocal() {
+
 	mc := helpers.GetMemcache()
 
 	if config.IsProd() {
