@@ -437,18 +437,6 @@ func logCritical(interfaces ...interface{}) {
 	log.Critical(append(interfaces, log.LogNameConsumers)...)
 }
 
-func ProduceBundle(ID int, appID int) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	return produce(baseMessage{
-		Message: bundleMessage{
-			ID:    ID,
-			AppID: appID,
-		},
-	}, queueGoBundles)
-}
-
 func ProduceApp(ID int, pics []byte) (err error) {
 
 	time.Sleep(time.Millisecond)
@@ -494,6 +482,18 @@ func ProducePackage(ID int, pics []byte) (err error) {
 			PICS: pics,
 		},
 	}, queueCSPackages)
+}
+
+func ProduceBundle(ID int, appID int) (err error) {
+
+	time.Sleep(time.Millisecond)
+
+	return produce(baseMessage{
+		Message: bundleMessage{
+			ID:    ID,
+			AppID: appID,
+		},
+	}, queueGoBundles)
 }
 
 func ProducePlayer(ID int64) (err error) {
