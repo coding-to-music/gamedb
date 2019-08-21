@@ -18,15 +18,22 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type rabbitMessageProduct struct {
-	ID           int                           `json:"ID"`
-	ChangeNumber int                           `json:"ChangeNumber"`
-	MissingToken bool                          `json:"MissingToken"`
-	SHAHash      string                        `json:"SHAHash"`
-	KeyValues    rabbitMessageProductKeyValues `json:"KeyValues"`
-	OnlyPublic   bool                          `json:"OnlyPublic"`
-	UseHTTP      bool                          `json:"UseHttp"`
-	HTTPURI      interface{}                   `json:"HttpUri"`
+func parseVDF(key string, m interface{}) (out rabbitMessageProductKeyValues) {
+
+	out.Name = key
+
+	switch m := m.(type) {
+	case map[string]interface{}:
+		for k, v := range m {
+			out.Children = append(out.Children, parseVDF(k, v))
+		}
+	case string:
+		out.Value = m
+	default:
+		log.Info("weird type")
+	}
+
+	return out
 }
 
 type rabbitMessageProductKeyValues struct {

@@ -16,7 +16,6 @@ import (
 )
 
 type changeMessage struct {
-	ID         int         `json:"id"`
 	AppIDs     map[int]int `json:"app_ids"`
 	PackageIDs map[int]int `json:"package_ids"`
 }
@@ -50,33 +49,29 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	if payload.Attempt > 1 {
-		logInfo("Consuming change " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
-	}
-
 	// Group products by change ID
 	changes := map[int]*mongo.Change{}
 
-	for _, v := range message.PICSChanges.AppChanges {
-		if _, ok := changes[v.ChangeNumber]; ok {
-			changes[v.ChangeNumber].Apps = append(changes[v.ChangeNumber].Apps, v.ID)
+	for changeNumber, appID := range message.AppIDs {
+		if _, ok := changes[changeNumber]; ok {
+			changes[changeNumber].Apps = append(changes[changeNumber].Apps, appID)
 		} else {
-			changes[v.ChangeNumber] = &mongo.Change{
+			changes[changeNumber] = &mongo.Change{
 				CreatedAt: payload.FirstSeen,
-				ID:        v.ChangeNumber,
-				Apps:      []int{v.ID},
+				ID:        changeNumber,
+				Apps:      []int{appID},
 			}
 		}
 	}
 
-	for _, v := range message.PICSChanges.PackageChanges {
-		if _, ok := changes[v.ChangeNumber]; ok {
-			changes[v.ChangeNumber].Packages = append(changes[v.ChangeNumber].Packages, v.ID)
+	for changeNumber, packageID := range message.PackageIDs {
+		if _, ok := changes[changeNumber]; ok {
+			changes[changeNumber].Packages = append(changes[changeNumber].Packages, packageID)
 		} else {
-			changes[v.ChangeNumber] = &mongo.Change{
+			changes[changeNumber] = &mongo.Change{
 				CreatedAt: payload.FirstSeen,
-				ID:        v.ChangeNumber,
-				Packages:  []int{v.ID},
+				ID:        changeNumber,
+				Packages:  []int{packageID},
 			}
 		}
 	}

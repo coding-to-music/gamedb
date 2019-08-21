@@ -20,9 +20,9 @@ import (
 )
 
 type packageMessage struct {
-	ID              int                  `json:"id"`
-	PICSPackageInfo rabbitMessageProduct `json:"PICSPackageInfo"`
-	VDF             []byte               `json:"vdf"`
+	ID           int                    `json:"id"`
+	ChangeNumber int                    `json:"change_number"`
+	VDF          map[string]interface{} `json:"vdf"`
 }
 
 type packageQueue struct {
@@ -53,13 +53,6 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		payload.ack(msg)
 		return
 	}
-
-	// p := vdf.NewParser(bytes.NewReader(app.GetBuffer()))
-	// m, err := p.Parse()
-	// if err != nil {
-	// 	log.Err(err)
-	// }
-	// fmt.Println(m)
 
 	if payload.Attempt > 1 {
 		logInfo("Consuming package " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
@@ -95,7 +88,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Skip if updated in last day, unless its from PICS
 	if !config.IsLocal() {
 		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
-			if pack.ChangeNumber >= message.PICSPackageInfo.ChangeNumber {
+			if pack.ChangeNumber >= message.ChangeNumber && message.ChangeNumber > 0 {
 				logInfo("Skipping package, updated in last day")
 				payload.ack(msg)
 				return
@@ -205,17 +198,15 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 
 func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packageMessage) (err error) {
 
-	if message.PICSPackageInfo.ID == 0 {
-		return nil
-	}
+	var vdf = parseVDF("root", message.VDF)
 
-	if pack.ChangeNumber > message.PICSPackageInfo.ChangeNumber {
+	if pack.ChangeNumber > message.ChangeNumber {
 		return nil
 	}
 
 	pack.ID = message.ID
-	pack.Name = message.PICSPackageInfo.KeyValues.Name
-	pack.ChangeNumber = message.PICSPackageInfo.ChangeNumber
+	// pack.Name = message.PICSPackageInfo.KeyValues.Name // todo
+	pack.ChangeNumber = message.ChangeNumber
 	pack.ChangeNumberDate = payload.FirstSeen
 
 	// Reset values that might be removed
@@ -228,7 +219,7 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 	pack.AppItems = ""
 	pack.Extended = ""
 
-	for _, v := range message.PICSPackageInfo.KeyValues.Children {
+	for _, v := range vdf.Children {
 
 		switch v.Name {
 		case "billingtype":

@@ -2,7 +2,6 @@ package queue
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"path"
 	"sort"
@@ -21,8 +20,16 @@ import (
 )
 
 type playerMessage struct {
-	ID              int64                    `json:"id"`
-	PICSProfileInfo RabbitMessageProfilePICS `json:"PICSProfileInfo"`
+	ID            int64  `json:"id"`
+	Eresult       int32  `json:"eresult"`
+	SteamidFriend uint64 `json:"steamid_friend"`
+	TimeCreated   uint32 `json:"time_created"`
+	RealName      string `json:"real_name"`
+	CityName      string `json:"city_name"`
+	StateName     string `json:"state_name"`
+	CountryName   string `json:"country_name"`
+	Headline      string `json:"headline"`
+	Summary       string `json:"summary"`
 }
 
 type playerQueue struct {
@@ -58,28 +65,28 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming player " + strconv.FormatInt(message.ID, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
-	if !message.PICSProfileInfo.SteamID.IsValid {
-		logError(errors.New("not a valid player id: " + strconv.FormatInt(message.ID, 10)))
-		payload.ack(msg)
-		return
-	}
-
-	if !message.PICSProfileInfo.SteamID.IsIndividualAccount {
-		logError(errors.New("not individual account id: " + strconv.FormatInt(message.ID, 10)))
-		payload.ack(msg)
-		return
-	}
-
-	// Convert steamID3 to steamID64
-	id64, err := helpers.GetSteam().GetID(strconv.Itoa(message.PICSProfileInfo.SteamID.AccountID))
-	if err != nil {
-		logError(err, message.ID)
-		payload.ack(msg)
-		return
-	}
+	// if !message.PICSProfileInfo.SteamID.IsValid {
+	// 	logError(errors.New("not a valid player id: " + strconv.FormatInt(message.ID, 10)))
+	// 	payload.ack(msg)
+	// 	return
+	// }
+	//
+	// if !message.PICSProfileInfo.SteamID.IsIndividualAccount {
+	// 	logError(errors.New("not individual account id: " + strconv.FormatInt(message.ID, 10)))
+	// 	payload.ack(msg)
+	// 	return
+	// }
+	//
+	// // Convert steamID3 to steamID64
+	// id64, err := helpers.GetSteam().GetID(strconv.Itoa(message.PICSProfileInfo.SteamID.AccountID))
+	// if err != nil {
+	// 	logError(err, message.ID)
+	// 	payload.ack(msg)
+	// 	return
+	// }
 
 	// Update player
-	player, err := mongo.GetPlayer(id64)
+	player, err := mongo.GetPlayer(message.ID)
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
 		logError(err, message.ID)
@@ -87,10 +94,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	player.ID = id64
-	player.RealName = message.PICSProfileInfo.RealName
-	player.StateCode = message.PICSProfileInfo.StateName
-	player.CountryCode = message.PICSProfileInfo.CountryName
+	player.ID = message.ID
 
 	//
 	var wg sync.WaitGroup
@@ -267,37 +271,6 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	payload.ack(msg)
 }
 
-type RabbitMessageProfilePICS struct {
-	Result  int `json:"Result"`
-	SteamID struct {
-		IsBlankAnonAccount            bool `json:"IsBlankAnonAccount"`
-		IsGameServerAccount           bool `json:"IsGameServerAccount"`
-		IsPersistentGameServerAccount bool `json:"IsPersistentGameServerAccount"`
-		IsAnonGameServerAccount       bool `json:"IsAnonGameServerAccount"`
-		IsContentServerAccount        bool `json:"IsContentServerAccount"`
-		IsClanAccount                 bool `json:"IsClanAccount"`
-		IsChatAccount                 bool `json:"IsChatAccount"`
-		IsLobby                       bool `json:"IsLobby"`
-		IsIndividualAccount           bool `json:"IsIndividualAccount"`
-		IsAnonAccount                 bool `json:"IsAnonAccount"`
-		IsAnonUserAccount             bool `json:"IsAnonUserAccount"`
-		IsConsoleUserAccount          bool `json:"IsConsoleUserAccount"`
-		IsValid                       bool `json:"IsValid"`
-		AccountID                     int  `json:"AccountID"` // steamID3
-		AccountInstance               int  `json:"AccountInstance"`
-		AccountType                   int  `json:"AccountType"`
-		AccountUniverse               int  `json:"AccountUniverse"`
-	} `json:"SteamID"`
-	TimeCreated string      `json:"TimeCreated"`
-	RealName    string      `json:"RealName"`
-	CityName    string      `json:"CityName"`
-	StateName   string      `json:"StateName"`
-	CountryName string      `json:"CountryName"`
-	Headline    string      `json:"Headline"`
-	Summary     string      `json:"Summary"`
-	JobID       steamKitJob `json:"JobID"`
-}
-
 func updatePlayerSummary(player *mongo.Player) error {
 
 	summary, b, err := helpers.GetSteam().GetPlayer(player.ID)
@@ -316,7 +289,6 @@ func updatePlayerSummary(player *mongo.Player) error {
 
 	//
 	player.VanintyURL = path.Base(summary.ProfileURL)
-	player.RealName = summary.RealName
 	player.CountryCode = summary.LOCCountryCode
 	player.StateCode = summary.LOCStateCode
 	player.PersonaName = summary.PersonaName

@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"bytes"
 	"io/ioutil"
 	"strconv"
 	"sync"
@@ -11,6 +12,7 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	. "github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -111,20 +113,18 @@ func checkForChanges() {
 	}
 }
 
-func getApp() {
-
-}
-
 type packetHandler struct {
 }
 
 func (ph packetHandler) HandlePacket(packet *protocol.Packet) {
 
 	switch packet.EMsg {
-	case EMsg_ClientPICSChangesSinceResponse:
-		ph.handleChanges(packet)
 	case EMsg_ClientPICSProductInfoResponse:
 		ph.handleProductInfo(packet)
+	case EMsg_ClientPICSChangesSinceResponse:
+		ph.handleChangesSince(packet)
+	case EMsg_ClientFriendProfileInfoResponse:
+		ph.handleProfileInfo(packet)
 	default:
 		// steamLogInfo(packet.String())
 	}
@@ -142,34 +142,45 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 	if apps != nil {
 		for _, app := range apps {
-			err := ProduceApp(int(app.GetAppid()), app.GetBuffer())
+
+			m, err := helpers.ParseFDV(app.GetBuffer())
+			steamLogError(err)
+
+			err = produceApp(int(app.GetAppid()), int(app.GetChangeNumber()), m)
 			steamLogError(err)
 		}
 	}
 
 	if packages != nil {
 		for _, pack := range packages {
-			err := ProducePackage(int(pack.GetPackageid()), pack.GetBuffer())
+
+			buffer := pack.GetBuffer()
+			buffer = bytes.ReplaceAll(buffer, []byte{0x01}, []byte{0x09})
+
+			m, err := helpers.ParseFDV(buffer)
+			steamLogError(err)
+
+			err = producePackage(int(pack.GetPackageid()), int(pack.GetChangeNumber()), m)
 			steamLogError(err)
 		}
 	}
 
 	if unknownApps != nil {
 		for _, app := range unknownApps {
-			err := ProduceApp(int(app), nil)
+			err := produceApp(int(app), 0, nil)
 			steamLogError(err)
 		}
 	}
 
 	if unknownPackages != nil {
 		for _, pack := range unknownPackages {
-			err := ProducePackage(int(pack), nil)
+			err := producePackage(int(pack), 0, nil)
 			steamLogError(err)
 		}
 	}
 }
 
-func (ph packetHandler) handleChanges(packet *protocol.Packet) {
+func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	defer steamChangeLock.Unlock()
 
@@ -217,11 +228,24 @@ func (ph packetHandler) handleChanges(packet *protocol.Packet) {
 		MetaDataOnly: &false,
 	}))
 
-	produceChange(appMap, packageMap)
+	err := produceChange(appMap, packageMap)
+	if err != nil {
+		steamLogError(err)
+		return
+	}
 
 	// Update cached change number
 	steamChangeNumber = body.GetCurrentChangeNumber()
-	err := ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(body.GetCurrentChangeNumber()), 10)), 0644)
+	err = ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(body.GetCurrentChangeNumber()), 10)), 0644)
+	steamLogError(err)
+}
+
+func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
+
+	body := protobuf.CMsgClientFriendProfileInfoResponse{}
+	packet.ReadProtoMsg(&body)
+
+	err := producePlayer(int64(body.GetSteamidFriend()), &body)
 	steamLogError(err)
 }
 

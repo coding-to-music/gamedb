@@ -30,9 +30,9 @@ import (
 )
 
 type appMessage struct {
-	ID          int                  `json:"id"`
-	PICSAppInfo rabbitMessageProduct `json:"PICSAppInfo"`
-	VDF         []byte               `json:"vdf"`
+	ID           int                    `json:"id"`
+	ChangeNumber int                    `json:"change_number"`
+	VDF          map[string]interface{} `json:"vdf"`
 }
 
 type appQueue struct {
@@ -63,13 +63,6 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		payload.ack(msg)
 		return
 	}
-
-	// p := vdf.NewParser(bytes.NewReader(app.GetBuffer()))
-	// m, err := p.Parse()
-	// if err != nil {
-	// 	log.Err(err)
-	// }
-	// fmt.Println(m)
 
 	if payload.Attempt > 1 {
 		logInfo("Consuming app " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
@@ -105,7 +98,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Skip if updated in last day, unless its from PICS
 	if !config.IsLocal() {
 		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
-			if app.ChangeNumber >= message.PICSAppInfo.ChangeNumber {
+			if app.ChangeNumber >= message.ChangeNumber && message.ChangeNumber != 0 {
 				logInfo("Skipping app, updated in last day")
 				payload.ack(msg)
 				return
@@ -393,16 +386,14 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err error) {
 
-	if message.PICSAppInfo.ID == 0 {
-		return nil
-	}
+	var vdf = parseVDF("root", message.VDF)
 
-	if app.ChangeNumber > message.PICSAppInfo.ChangeNumber {
+	if app.ChangeNumber > message.ChangeNumber {
 		return nil
 	}
 
 	app.ID = message.ID
-	app.ChangeNumber = message.PICSAppInfo.ChangeNumber
+	app.ChangeNumber = message.ChangeNumber
 	app.ChangeNumberDate = payload.FirstSeen
 
 	// Reset values that might be removed
@@ -418,7 +409,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 	app.Localization = ""
 	app.SystemRequirements = ""
 
-	for _, v := range message.PICSAppInfo.KeyValues.Children {
+	for _, v := range vdf.Children {
 
 		switch v.Name {
 		case "appid":
