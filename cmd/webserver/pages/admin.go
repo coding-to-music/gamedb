@@ -181,7 +181,7 @@ func adminQueueEveryApp() {
 		count = count + len(apps.Apps)
 
 		for _, v := range apps.Apps {
-			queue.ProduceAppsWithPICS([]int{v.AppID})
+			queue.ProduceApps([]int{v.AppID})
 			last = v.AppID
 		}
 
@@ -228,7 +228,7 @@ func adminQueueEveryPackage() {
 		packageSlice = append(packageSlice, k)
 	}
 
-	queue.ProducePackagesWithPICS(packageSlice)
+	queue.ProducePackages(packageSlice)
 
 	//
 	err = sql.SetConfig(sql.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
@@ -251,12 +251,7 @@ func adminQueueEveryPlayer() {
 	}
 
 	for _, player := range players {
-
-		err = queue.ProducePlayer(player.ID)
-		if err != nil {
-			log.Err(err)
-			return
-		}
+		queue.ProducePlayer(player.ID)
 	}
 
 	//
@@ -282,9 +277,7 @@ func adminQueues(r *http.Request) {
 			playerID, err := strconv.ParseInt(val, 10, 64)
 			log.Err(err, r)
 			if err == nil {
-
-				err = queue.ProducePlayer(playerID)
-				log.Err(err, r)
+				queue.ProducePlayer(playerID)
 			}
 		}
 	}
@@ -299,7 +292,7 @@ func adminQueues(r *http.Request) {
 
 			appID, err := strconv.Atoi(val)
 			if err == nil {
-				queue.ProduceAppsWithPICS([]int{appID})
+				queue.ProduceApps([]int{appID})
 			}
 		}
 	}
@@ -314,7 +307,7 @@ func adminQueues(r *http.Request) {
 
 			packageID, err := strconv.Atoi(val)
 			if err == nil {
-				queue.ProducePackagesWithPICS([]int{packageID})
+				queue.ProducePackages([]int{packageID})
 			}
 		}
 	}
@@ -363,7 +356,7 @@ func adminQueues(r *http.Request) {
 				log.Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
 
 				for _, app := range apps.Apps {
-					queue.ProduceAppsWithPICS([]int{app.AppID})
+					queue.ProduceApps([]int{app.AppID})
 				}
 			}
 		}

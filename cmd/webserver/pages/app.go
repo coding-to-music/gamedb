@@ -91,12 +91,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProduceApp(app.ID, nil)
-		if err != nil {
-			log.Err(err, r)
-		} else {
-			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})
-		}
+		queue.ProduceApps([]int{app.ID})
+
+		t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})
 	}()
 
 	// Tags

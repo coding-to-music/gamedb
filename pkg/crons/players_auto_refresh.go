@@ -47,8 +47,7 @@ func (c AutoPlayerRefreshes) Work() {
 
 		playerIDs = append(playerIDs, user.SteamID)
 
-		err := queue.ProducePlayer(user.SteamID)
-		log.Err(err)
+		queue.ProducePlayer(user.SteamID)
 	}
 
 	var groupIDs []string

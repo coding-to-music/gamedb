@@ -79,7 +79,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		// Add missing apps to queue
 		for _, v := range appsMap {
 			if v.Name == "" {
-				queue.ProduceAppsWithPICS([]int{v.ID})
+				queue.ProduceApps([]int{v.ID})
 			}
 		}
 	}()

@@ -30,25 +30,25 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	t.DefaultAvatar = helpers.DefaultAppIcon
 
 	// Get player ints
-	var playerInts []int64
+	var playerIDs []int64
 	for _, v := range r.URL.Query()["p"] {
 		i, err := strconv.ParseInt(v, 10, 64)
 		if err == nil && helpers.IsValidPlayerID(i) {
-			playerInts = append(playerInts, i)
+			playerIDs = append(playerIDs, i)
 		}
 	}
 
-	playerInts = helpers.Unique64(playerInts)
+	playerIDs = helpers.Unique64(playerIDs)
 
 	// Check for max number of players
-	if len(playerInts) > maxPlayers {
+	if len(playerIDs) > maxPlayers {
 		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "You can only compare games from up to " + strconv.Itoa(maxPlayers) + " people."})
 		return
 	}
 
 	// Get players
 	var err error
-	t.Players, err = mongo.GetPlayersByID(playerInts, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1})
+	t.Players, err = mongo.GetPlayersByID(playerIDs, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1})
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
 		return
@@ -59,15 +59,14 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		foundPlayerIDs = append(foundPlayerIDs, player.ID)
 	}
 
-	for _, v := range playerInts {
+	for _, playerID := range playerIDs {
 
 		// If we couldnt find player
-		if !helpers.SliceHasInt64(foundPlayerIDs, v) {
+		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
-			err = queue.ProducePlayer(v)
-			if err == nil {
-				t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
-			}
+			queue.ProducePlayer(playerID)
+
+			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 		}
 	}
 

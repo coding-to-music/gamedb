@@ -87,7 +87,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if !found {
-					queue.ProduceAppsWithPICS([]int{v})
+					queue.ProduceApps([]int{v})
 				}
 			}
 		}
