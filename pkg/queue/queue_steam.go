@@ -29,7 +29,7 @@ var (
 	steamLoggedOn     bool
 )
 
-func init() {
+func InitSteam() {
 
 	var err error
 

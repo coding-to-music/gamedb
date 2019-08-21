@@ -12,9 +12,11 @@ import (
 
 func main() {
 
+	// Load pubsub
 	log.Info("Listening to PubSub for memcache")
 	go helpers.ListenToPubSubMemcache()
 
+	// Load PPROF
 	if config.IsLocal() {
 		log.Info("Starting consumers profiling")
 		go func() {
@@ -22,12 +24,16 @@ func main() {
 		}()
 	}
 
+	// Load consumers
 	log.Info("Starting consumers")
-
 	for queueName, q := range queue.QueueRegister {
 		q.Name = queueName
 		go q.ConsumeMessages()
 	}
 
+	// Load Steam PICS checker
+	go queue.InitSteam()
+
+	//
 	helpers.KeepAlive()
 }
