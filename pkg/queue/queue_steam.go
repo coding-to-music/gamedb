@@ -80,36 +80,38 @@ func init() {
 }
 
 func checkForChanges() {
-	for {
-		if !steamClient.Connected() || !steamLoggedOn {
-			continue
-		}
+	if !config.IsLocal() {
+		for {
+			if !steamClient.Connected() || !steamLoggedOn {
+				continue
+			}
 
-		steamChangeLock.Lock()
+			steamChangeLock.Lock()
 
-		// Get last change number from file
-		if steamChangeNumber == 0 {
-			b, _ := ioutil.ReadFile(steamCurrentChangeFilename)
-			if len(b) > 0 {
-				ui, err := strconv.ParseUint(string(b), 10, 32)
-				steamLogError(err)
-				if err == nil {
-					steamChangeNumber = uint32(ui)
+			// Get last change number from file
+			if steamChangeNumber == 0 {
+				b, _ := ioutil.ReadFile(steamCurrentChangeFilename)
+				if len(b) > 0 {
+					ui, err := strconv.ParseUint(string(b), 10, 32)
 					steamLogError(err)
+					if err == nil {
+						steamChangeNumber = uint32(ui)
+						steamLogError(err)
+					}
 				}
 			}
+
+			steamLogInfo("Trying from: " + strconv.FormatUint(uint64(steamChangeNumber), 10))
+
+			var b = true
+			steamClient.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
+				SendAppInfoChanges:     &b,
+				SendPackageInfoChanges: &b,
+				SinceChangeNumber:      &steamChangeNumber,
+			}))
+
+			time.Sleep(time.Second * 5)
 		}
-
-		steamLogInfo("Trying from: " + strconv.FormatUint(uint64(steamChangeNumber), 10))
-
-		var b = true
-		steamClient.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
-			SendAppInfoChanges:     &b,
-			SendPackageInfoChanges: &b,
-			SinceChangeNumber:      &steamChangeNumber,
-		}))
-
-		time.Sleep(time.Second * 5)
 	}
 }
 
