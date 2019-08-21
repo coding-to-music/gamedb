@@ -143,12 +143,9 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProducePackage(pack.ID, nil)
-		if err != nil {
-			log.Err(err, r)
-		} else {
-			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update"})
-		}
+		queue.ProducePackages([]int{pack.ID})
+
+		t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update"})
 	}()
 
 	// Functions that get called multiple times in the template
