@@ -70,8 +70,7 @@ func InitSteam() {
 				err = ioutil.WriteFile(steamSentryFilename, e.Hash, 0666)
 				steamLogError(err)
 			case steam.FatalErrorEvent:
-				// Disconnects
-				steamLogError(e.Error())
+				steamLogInfo("Disconnected")
 			case error:
 				steamLogError(e)
 			}
