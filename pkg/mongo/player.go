@@ -43,7 +43,6 @@ type Player struct {
 	PersonaName         string             `bson:"persona_name"`           //
 	PrimaryClanID       int                `bson:"primary_clan_id"`        //
 	PrimaryClanIDString string             `bson:"primary_clan_id_string"` //
-	RealName            string             `bson:"real_name"`              //
 	StateCode           string             `bson:"status_code"`            //
 	TimeCreated         time.Time          `bson:"time_created"`           //
 	UpdatedAt           time.Time          `bson:"updated_at"`             //
@@ -90,7 +89,6 @@ func (player Player) BSON() (ret interface{}) {
 		"updated_at":             time.Now(),
 		"vanity_url":             player.VanintyURL,
 		"wishlist_app_ids":       player.Wishlist,
-		// "real_name":        player.RealName, // Don't need
 
 		// Ranked
 		"badges_count":  player.BadgesCount,
