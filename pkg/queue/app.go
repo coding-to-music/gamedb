@@ -367,6 +367,11 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	if app.GroupID != "" {
+		err = ProduceGroup([]string{app.GroupID})
+		log.Err()
+	}
+
 	//
 	payload.ack(msg)
 }
