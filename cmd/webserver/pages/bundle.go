@@ -87,7 +87,8 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if !found {
-					queue.ProduceApps([]int{v})
+					err = queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: []int{v}})
+					log.Err(err)
 				}
 			}
 		}

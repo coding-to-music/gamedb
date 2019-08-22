@@ -6,38 +6,87 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Philipp15b/go-steam/protocol"
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
-	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
-func ProduceApps(ids []int) {
-
-	// todo, chunk into 100s
-
-	var apps []*protobuf.CMsgClientPICSProductInfoRequest_AppInfo
-	for _, id := range ids {
-
-		uid := uint32(id)
-
-		apps = append(apps, &protobuf.CMsgClientPICSProductInfoRequest_AppInfo{
-			Appid: &uid,
-		})
-	}
-
-	false := false
-
-	steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSProductInfoRequest, &protobuf.CMsgClientPICSProductInfoRequest{
-		Apps:         apps,
-		MetaDataOnly: &false,
-	}))
+type SteamPayload struct {
+	AppIDs     []int
+	PackageIDs []int
+	ProfileIDs []int64
 }
 
-func produceApp(id int, changeNumber int, vdf map[string]interface{}) (err error) {
+func ProduceToSteamClient(payload SteamPayload) (err error) {
+
+	time.Sleep(time.Millisecond)
+
+	var appIDs []int
+	var packageIDs []int
+	var profileIDs []int64
+
+	if !config.IsLocal() {
+
+		mc := helpers.GetMemcache()
+
+		for _, appID := range payload.AppIDs {
+
+			item := helpers.MemcacheAppInQueue(appID)
+
+			_, err := mc.Get(item.Key)
+			if err == nil {
+				continue
+			}
+
+			err = mc.Set(&item)
+			log.Err(err)
+
+			appIDs = append(appIDs, appID)
+		}
+
+		for _, packageID := range payload.PackageIDs {
+
+			item := helpers.MemcachePackageInQueue(packageID)
+
+			_, err := mc.Get(item.Key)
+			if err == nil {
+				continue
+			}
+
+			err = mc.Set(&item)
+			log.Err(err)
+
+			packageIDs = append(packageIDs, packageID)
+		}
+
+		for _, profileID := range payload.ProfileIDs {
+
+			item := helpers.MemcacheProfileInQueue(profileID)
+
+			_, err := mc.Get(item.Key)
+			if err == nil {
+				continue
+			}
+
+			err = mc.Set(&item)
+			log.Err(err)
+
+			profileIDs = append(profileIDs, profileID)
+		}
+	}
+
+	return produce(baseMessage{
+		Message: steamMessage{
+			AppIDs:     appIDs,
+			PackageIDs: packageIDs,
+			PlayerIDs:  profileIDs,
+		},
+	}, QueueSteam)
+}
+
+func ProduceApp(id int, changeNumber int, vdf map[string]interface{}) (err error) {
 
 	time.Sleep(time.Millisecond)
 
@@ -73,29 +122,7 @@ func produceApp(id int, changeNumber int, vdf map[string]interface{}) (err error
 	}, queueGoApps)
 }
 
-func ProducePackages(ids []int) {
-
-	// todo, chunk into 100s
-
-	var packages []*protobuf.CMsgClientPICSProductInfoRequest_PackageInfo
-	for _, id := range ids {
-
-		uid := uint32(id)
-
-		packages = append(packages, &protobuf.CMsgClientPICSProductInfoRequest_PackageInfo{
-			Packageid: &uid,
-		})
-	}
-
-	false := false
-
-	steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSProductInfoRequest, &protobuf.CMsgClientPICSProductInfoRequest{
-		Packages:     packages,
-		MetaDataOnly: &false,
-	}))
-}
-
-func producePackage(ID int, changeNumber int, vdf map[string]interface{}) (err error) {
+func ProducePackage(ID int, changeNumber int, vdf map[string]interface{}) (err error) {
 
 	time.Sleep(time.Millisecond)
 
@@ -116,16 +143,7 @@ func producePackage(ID int, changeNumber int, vdf map[string]interface{}) (err e
 	}, queueGoPackages)
 }
 
-func ProducePlayer(id int64) {
-
-	ui := uint64(id)
-
-	steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientFriendProfileInfo, &protobuf.CMsgClientFriendProfileInfo{
-		SteamidFriend: &ui,
-	}))
-}
-
-func producePlayer(ID int64, pb *protobuf.CMsgClientFriendProfileInfoResponse) (err error) {
+func ProducePlayer(ID int64, pb *protobuf.CMsgClientFriendProfileInfoResponse) (err error) {
 
 	time.Sleep(time.Millisecond)
 

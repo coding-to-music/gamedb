@@ -55,7 +55,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
-			queue.ProducePlayer(idx)
+			err = queue.ProducePlayer(idx, nil)
+			log.Err(err)
 
 			// Template
 			tm := playerMissingTemplate{}
@@ -205,9 +206,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
-		queue.ProducePlayer(player.ID)
-
-		t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+		err = queue.ProducePlayer(player.ID, nil)
+		if err != nil {
+			log.Err(err, r)
+		} else {
+			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+		}
 	}
 
 	// Template
@@ -389,7 +393,8 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Queue the rest
 	for friendID := range friendIDsMap {
-		queue.ProducePlayer(friendID)
+		err = queue.ProducePlayer(friendID, nil)
+		log.Err(err)
 	}
 
 	err = session.SetFlash(r, helpers.SessionGood, strconv.Itoa(len(friendIDsMap))+" friends queued")
@@ -758,7 +763,11 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", nil, false
 		}
 
-		queue.ProducePlayer(player.ID)
+		err = queue.ProducePlayer(player.ID, nil)
+		if err != nil {
+			log.Err(err, r)
+			return "Something has gone wrong", err, false
+		}
 
 		return message, err, true
 	}(r)

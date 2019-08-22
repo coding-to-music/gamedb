@@ -79,7 +79,8 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		// Add missing apps to queue
 		for _, v := range appsMap {
 			if v.Name == "" {
-				queue.ProduceApps([]int{v.ID})
+				err = queue.ProduceApp(v.ID, 0, nil)
+				log.Err(err)
 			}
 		}
 	}()
@@ -143,9 +144,12 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		queue.ProducePackages([]int{pack.ID})
-
-		t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update"})
+		err = queue.ProducePackage(pack.ID, 0, nil)
+		if err != nil {
+			log.Err(err, r)
+		} else {
+			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update"})
+		}
 	}()
 
 	// Functions that get called multiple times in the template

@@ -27,12 +27,11 @@ func main() {
 	// Load consumers
 	log.Info("Starting consumers")
 	for queueName, q := range queue.QueueRegister {
-		q.Name = queueName
-		go q.ConsumeMessages()
+		if !q.DoNotScale {
+			q.Name = queueName
+			go q.ConsumeMessages()
+		}
 	}
-
-	// Load Steam PICS checker
-	go queue.InitSteam()
 
 	//
 	helpers.KeepAlive()

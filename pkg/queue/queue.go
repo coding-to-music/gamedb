@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
+	"github.com/Philipp15b/go-steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -28,6 +29,7 @@ const (
 	queueGoGroupsNew queueName = "GameDB_Go_Groups_New"
 	queueGoPackages  queueName = "GameDB_Go_Packages"
 	queueGoPlayers   queueName = "GameDB_Go_Profiles"
+	QueueSteam       queueName = "GameDB_Go_Steam"
 
 	//
 	maxBytesToStore int = 1024 * 10
@@ -45,32 +47,46 @@ var (
 
 	QueueRegister = map[queueName]baseQueue{
 		queueGoApps: {
+			Name:  queueGoApps,
 			queue: &appQueue{},
 		},
 		queueGoBundles: {
+			Name:  queueGoBundles,
 			queue: &bundleQueue{},
 		},
 		queueGoChanges: {
+			Name:  queueGoChanges,
 			queue: &changeQueue{},
 		},
 		queueGoDelays: {
+			Name:  queueGoDelays,
 			queue: &delayQueue{},
 		},
 		queueGoGroups: {
+			Name:  queueGoGroups,
 			queue: &groupQueueScrape{},
 		},
 		queueGoGroupsNew: {
+			Name:    queueGoGroupsNew,
 			queue:   &groupQueueAPI{},
 			maxTime: time.Hour * 24 * 7,
 		},
 		queueGoPackages: {
+			Name:  queueGoPackages,
 			queue: &packageQueue{},
 		},
 		queueGoPlayers: {
+			Name:  queueGoPlayers,
 			queue: &playerQueue{},
 		},
 		queueGoAppPlayer: {
+			Name:  queueGoAppPlayer,
 			queue: &appPlayerQueue{},
+		},
+		QueueSteam: {
+			Name:       QueueSteam,
+			queue:      &steamQueue{},
+			DoNotScale: true,
 		},
 	}
 )
@@ -194,6 +210,8 @@ type queueInterface interface {
 type baseQueue struct {
 	queue       queueInterface
 	Name        queueName
+	DoNotScale  bool
+	SteamClient *steam.Client // Just used for Steam queue
 	qos         int
 	batchSize   int
 	maxAttempts int

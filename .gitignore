@@ -3,6 +3,7 @@
 /cmd/consumers/consumers
 /cmd/crons/crons
 /cmd/webserver/webserver
+/cmd/steam/steam
 
 # Source maps
 /assets/main.css.map
@@ -17,5 +18,5 @@
 /.tscache/
 
 # Other
-/cmd/consumers/.change.txt
-/cmd/consumers/.sentry.txt
+/cmd/steam/.change.txt
+/cmd/steam/.sentry.txt

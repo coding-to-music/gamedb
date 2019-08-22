@@ -64,9 +64,12 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		// If we couldnt find player
 		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
-			queue.ProducePlayer(playerID)
-
-			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+			err = queue.ProduceToSteamClient(queue.SteamPayload{ProfileIDs: []int64{playerID}})
+			if err != nil {
+				log.Err(err)
+			} else {
+				t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+			}
 		}
 	}
 

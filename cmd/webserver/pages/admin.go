@@ -181,7 +181,12 @@ func adminQueueEveryApp() {
 		count = count + len(apps.Apps)
 
 		for _, v := range apps.Apps {
-			queue.ProduceApps([]int{v.AppID})
+
+			err = queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: []int{v.AppID}})
+			if err != nil {
+				log.Err(err, strconv.Itoa(v.AppID))
+				continue
+			}
 			last = v.AppID
 		}
 
@@ -228,7 +233,8 @@ func adminQueueEveryPackage() {
 		packageSlice = append(packageSlice, k)
 	}
 
-	queue.ProducePackages(packageSlice)
+	err = queue.ProduceToSteamClient(queue.SteamPayload{PackageIDs: packageSlice})
+	log.Err(err)
 
 	//
 	err = sql.SetConfig(sql.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
@@ -250,9 +256,13 @@ func adminQueueEveryPlayer() {
 		return
 	}
 
+	var playerIDs []int64
 	for _, player := range players {
-		queue.ProducePlayer(player.ID)
+		playerIDs = append(playerIDs, player.ID)
 	}
+
+	err = queue.ProduceToSteamClient(queue.SteamPayload{ProfileIDs: playerIDs})
+	log.Err(err)
 
 	//
 	err = sql.SetConfig(sql.ConfAddedAllPlayers, strconv.FormatInt(time.Now().Unix(), 10))
@@ -270,6 +280,7 @@ func adminQueues(r *http.Request) {
 
 		vals := strings.Split(val, ",")
 
+		var playerIDs []int64
 		for _, val := range vals {
 
 			val = strings.TrimSpace(val)
@@ -277,39 +288,50 @@ func adminQueues(r *http.Request) {
 			playerID, err := strconv.ParseInt(val, 10, 64)
 			log.Err(err, r)
 			if err == nil {
-				queue.ProducePlayer(playerID)
+				playerIDs = append(playerIDs, playerID)
 			}
 		}
+
+		err := queue.ProduceToSteamClient(queue.SteamPayload{ProfileIDs: playerIDs})
+		log.Err(err)
 	}
 
 	if val := r.PostForm.Get("app-id"); val != "" {
 
 		vals := strings.Split(val, ",")
 
+		var appIDs []int
 		for _, val := range vals {
 
 			val = strings.TrimSpace(val)
 
 			appID, err := strconv.Atoi(val)
 			if err == nil {
-				queue.ProduceApps([]int{appID})
+				appIDs = append(appIDs, appID)
 			}
 		}
+
+		err := queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: appIDs})
+		log.Err(err)
 	}
 
 	if val := r.PostForm.Get("package-id"); val != "" {
 
 		vals := strings.Split(val, ",")
 
+		var packageIDs []int
 		for _, val := range vals {
 
 			val = strings.TrimSpace(val)
 
 			packageID, err := strconv.Atoi(val)
 			if err == nil {
-				queue.ProducePackages([]int{packageID})
+				packageIDs = append(packageIDs, packageID)
 			}
 		}
+
+		err := queue.ProduceToSteamClient(queue.SteamPayload{PackageIDs: packageIDs})
+		log.Err(err)
 	}
 
 	if val := r.PostForm.Get("bundle-id"); val != "" {
@@ -355,9 +377,13 @@ func adminQueues(r *http.Request) {
 
 				log.Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
 
+				var appIDs []int
 				for _, app := range apps.Apps {
-					queue.ProduceApps([]int{app.AppID})
+					appIDs = append(appIDs, app.AppID)
 				}
+
+				err = queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: appIDs})
+				log.Err(err)
 			}
 		}
 	}

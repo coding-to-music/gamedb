@@ -91,9 +91,12 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		queue.ProduceApps([]int{app.ID})
-
-		t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})
+		err = queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: []int{app.ID}})
+		if err != nil {
+			log.Err(err, r)
+		} else {
+			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})
+		}
 	}()
 
 	// Tags
