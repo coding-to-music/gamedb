@@ -50,9 +50,11 @@ var (
 	MemcacheStatRowID     = func(c string, id int) memcache.Item { return memcache.Item{Key: c + "-stat-id-" + strconv.Itoa(id), Expiration: 60 * 60 * 24} }
 	MemcacheStatRowName   = func(c string, name string) memcache.Item { return memcache.Item{Key: c + "-stat-name-" + name, Expiration: 60 * 60 * 24} }
 
-	// Queue checks
-	MemcacheAppInQueue   = func(appID int) memcache.Item { return memcache.Item{Key: "app-in-queue-" + strconv.Itoa(appID), Expiration: 60 * 60 * 24, Value: []byte("1")} }
-	MemcacheGroupInQueue = func(groupID string) memcache.Item { return memcache.Item{Key: "group-in-queue-" + groupID, Expiration: 60 * 60 * 24, Value: []byte("1")} }
+	// Queue checks - 1 Hour timeout
+	MemcacheAppInQueue     = func(appID int) memcache.Item { return memcache.Item{Key: "app-in-queue-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: []byte("1")} }
+	MemcachePackageInQueue = func(appID int) memcache.Item { return memcache.Item{Key: "package-in-queue-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: []byte("1")} }
+	MemcacheProfileInQueue = func(appID int64) memcache.Item { return memcache.Item{Key: "profile-in-queue-" + strconv.FormatInt(appID, 10), Expiration: 60 * 60, Value: []byte("1")} }
+	MemcacheGroupInQueue   = func(groupID string) memcache.Item { return memcache.Item{Key: "group-in-queue-" + groupID, Expiration: 60 * 60, Value: []byte("1")} }
 
 	// Badges
 	MemcacheBadgeMaxEvent     = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }

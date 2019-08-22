@@ -164,7 +164,10 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Clear caches
 	if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
 
-		err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingPackagesCount.Key)
+		err = helpers.RemoveKeyFromMemCacheViaPubSub(
+			helpers.MemcacheUpcomingPackagesCount.Key,
+			helpers.MemcachePackageInQueue(pack.ID).Key,
+		)
 		log.Err(err)
 	}
 

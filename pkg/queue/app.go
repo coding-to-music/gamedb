@@ -329,6 +329,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 			err = helpers.RemoveKeyFromMemCacheViaPubSub(
 				helpers.MemcacheUpcomingAppsCount.Key,
+				helpers.MemcacheAppInQueue(app.ID).Key,
 				helpers.MemcacheAppTags(app.ID).Key,
 				helpers.MemcacheAppCategories(app.ID).Key,
 				helpers.MemcacheAppGenres(app.ID).Key,
@@ -358,20 +359,6 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		if err != nil {
 			logError(err, message.ID)
 		}
-	}()
-
-	// Clear memcache
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-
-		item := helpers.MemcacheAppInQueue(app.ID)
-
-		err = helpers.RemoveKeyFromMemCacheViaPubSub(item.Key)
-		log.Err(err)
 	}()
 
 	wg.Wait()
