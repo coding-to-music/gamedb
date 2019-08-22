@@ -307,7 +307,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	group.AppID = 0
 
 	c := colly.NewCollector()
-	c.SetRequestTimeout(time.Second * 15)
+	c.SetRequestTimeout(time.Second * 60)
 
 	// ID64
 	c.OnHTML("[id^=commentthread_Clan_]", func(e *colly.HTMLElement) {
