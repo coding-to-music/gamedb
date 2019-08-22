@@ -232,11 +232,11 @@ func (q baseQueue) ConsumeMessages() {
 				consumeLock.Lock()
 				defer consumeLock.Unlock()
 
-				log.Info("Getting new consumer connection")
-
 				if consumerConnection == nil {
 
-					consumerConnection, err = makeAConnection()
+					log.Info("Getting new consumer connection")
+
+					consumerConnection, err = getConnection()
 					if err != nil {
 						return err
 					}
@@ -327,7 +327,9 @@ func produce(payload baseMessage, queue queueName) (err error) {
 
 		if producerConnection == nil {
 
-			producerConnection, err = makeAConnection()
+			log.Info("Getting new producer connection")
+
+			producerConnection, err = getConnection()
 			if err != nil {
 				logCritical("Connecting to Rabbit: " + err.Error())
 				return err
@@ -360,11 +362,9 @@ func produce(payload baseMessage, queue queueName) (err error) {
 	})
 }
 
-func makeAConnection() (conn *amqp.Connection, err error) {
+func getConnection() (conn *amqp.Connection, err error) {
 
 	operation := func() (err error) {
-
-		log.Info("Connecting to Rabbit")
 
 		amqpConfig := amqp.Config{}
 		if config.IsLocal() {

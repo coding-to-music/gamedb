@@ -251,9 +251,17 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 }
 
 func steamLogInfo(interfaces ...interface{}) {
-	log.Info(append(interfaces, log.LogNamePICS)...)
+
+	var is = []interface{}{log.LogNamePICS, "steamClient: "}
+	is = append(is, interfaces...)
+
+	log.Info(is...)
 }
 
 func steamLogError(interfaces ...interface{}) {
-	log.Err(append(interfaces, log.LogNamePICS)...)
+
+	var is = []interface{}{log.LogNamePICS, "steamClient: "}
+	is = append(is, interfaces...)
+
+	log.Err(is...)
 }
