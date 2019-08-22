@@ -77,12 +77,15 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Add missing apps to queue
+		var missingAppIDs []int
 		for _, v := range appsMap {
 			if v.Name == "" {
-				err = queue.ProduceApp(v.ID, 0, nil)
-				log.Err(err)
+				missingAppIDs = append(missingAppIDs, v.ID)
 			}
 		}
+
+		err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: missingAppIDs})
+		log.Err(err)
 	}()
 
 	var bundles []sql.Bundle
@@ -144,7 +147,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProducePackage(pack.ID, 0, nil)
+		err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: []int{pack.ID}})
 		if err != nil {
 			log.Err(err, r)
 		} else {

@@ -238,7 +238,7 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 
 		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
 
-			err = queue.ProduceToSteamClient(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
+			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
 			if err != nil {
 				log.Err(err, r)
 			} else {

@@ -182,7 +182,7 @@ func adminQueueEveryApp() {
 
 		for _, v := range apps.Apps {
 
-			err = queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: []int{v.AppID}})
+			err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{v.AppID}})
 			if err != nil {
 				log.Err(err, strconv.Itoa(v.AppID))
 				continue
@@ -233,7 +233,7 @@ func adminQueueEveryPackage() {
 		packageSlice = append(packageSlice, k)
 	}
 
-	err = queue.ProduceToSteamClient(queue.SteamPayload{PackageIDs: packageSlice})
+	err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageSlice})
 	log.Err(err)
 
 	//
@@ -261,7 +261,7 @@ func adminQueueEveryPlayer() {
 		playerIDs = append(playerIDs, player.ID)
 	}
 
-	err = queue.ProduceToSteamClient(queue.SteamPayload{ProfileIDs: playerIDs})
+	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: playerIDs})
 	log.Err(err)
 
 	//
@@ -292,7 +292,7 @@ func adminQueues(r *http.Request) {
 			}
 		}
 
-		err := queue.ProduceToSteamClient(queue.SteamPayload{ProfileIDs: playerIDs})
+		err := queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: playerIDs})
 		log.Err(err)
 	}
 
@@ -311,7 +311,7 @@ func adminQueues(r *http.Request) {
 			}
 		}
 
-		err := queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: appIDs})
+		err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: appIDs})
 		log.Err(err)
 	}
 
@@ -330,7 +330,7 @@ func adminQueues(r *http.Request) {
 			}
 		}
 
-		err := queue.ProduceToSteamClient(queue.SteamPayload{PackageIDs: packageIDs})
+		err := queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageIDs})
 		log.Err(err)
 	}
 
@@ -382,7 +382,7 @@ func adminQueues(r *http.Request) {
 					appIDs = append(appIDs, app.AppID)
 				}
 
-				err = queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: appIDs})
+				err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: appIDs})
 				log.Err(err)
 			}
 		}

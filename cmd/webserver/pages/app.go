@@ -91,7 +91,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProduceToSteamClient(queue.SteamPayload{AppIDs: []int{app.ID}})
+		err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{app.ID}})
 		if err != nil {
 			log.Err(err, r)
 		} else {

@@ -55,7 +55,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
-			err = queue.ProducePlayer(idx, nil)
+			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}})
 			log.Err(err)
 
 			// Template
@@ -206,7 +206,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
-		err = queue.ProducePlayer(player.ID, nil)
+		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
 		if err != nil {
 			log.Err(err, r)
 		} else {
@@ -392,10 +392,13 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue the rest
+	var missingPlayerIDs []int64
 	for friendID := range friendIDsMap {
-		err = queue.ProducePlayer(friendID, nil)
-		log.Err(err)
+		missingPlayerIDs = append(missingPlayerIDs, friendID)
 	}
+
+	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs})
+	log.Err(err)
 
 	err = session.SetFlash(r, helpers.SessionGood, strconv.Itoa(len(friendIDsMap))+" friends queued")
 	log.Err(err)
@@ -763,7 +766,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", nil, false
 		}
 
-		err = queue.ProducePlayer(player.ID, nil)
+		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
 		if err != nil {
 			log.Err(err, r)
 			return "Something has gone wrong", err, false

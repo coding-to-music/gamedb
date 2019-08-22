@@ -64,7 +64,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		// If we couldnt find player
 		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
-			err = queue.ProduceToSteamClient(queue.SteamPayload{ProfileIDs: []int64{playerID}})
+			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{playerID}})
 			if err != nil {
 				log.Err(err)
 			} else {

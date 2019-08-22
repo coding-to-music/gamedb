@@ -19,7 +19,7 @@ type SteamPayload struct {
 	ProfileIDs []int64
 }
 
-func ProduceToSteamClient(payload SteamPayload) (err error) {
+func ProduceToSteam(payload SteamPayload) (err error) {
 
 	time.Sleep(time.Millisecond)
 
@@ -171,6 +171,18 @@ func ProducePlayer(ID int64, pb *protobuf.CMsgClientFriendProfileInfoResponse) (
 	}, queueGoPlayers)
 }
 
+func ProduceChange(apps map[int]int, packages map[int]int) (err error) {
+
+	time.Sleep(time.Millisecond)
+
+	return produce(baseMessage{
+		Message: changeMessage{
+			AppIDs:     apps,
+			PackageIDs: packages,
+		},
+	}, queueGoChanges)
+}
+
 func ProduceBundle(ID int, appID int) (err error) {
 
 	time.Sleep(time.Millisecond)
@@ -267,16 +279,4 @@ func produceGroupNew(ID string) (err error) {
 	}
 
 	return nil
-}
-
-func produceChange(apps map[int]int, packages map[int]int) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	return produce(baseMessage{
-		Message: changeMessage{
-			AppIDs:     apps,
-			PackageIDs: packages,
-		},
-	}, queueGoChanges)
 }
