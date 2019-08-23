@@ -27,11 +27,11 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 	var packageIDs []int
 	var profileIDs []int64
 
-	if !config.IsLocal() {
+	mc := helpers.GetMemcache()
 
-		mc := helpers.GetMemcache()
+	for _, appID := range payload.AppIDs {
 
-		for _, appID := range payload.AppIDs {
+		if !config.IsLocal() {
 
 			item := helpers.MemcacheAppInQueue(appID)
 
@@ -42,11 +42,14 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 			err = mc.Set(&item)
 			log.Err(err)
-
-			appIDs = append(appIDs, appID)
 		}
 
-		for _, packageID := range payload.PackageIDs {
+		appIDs = append(appIDs, appID)
+	}
+
+	for _, packageID := range payload.PackageIDs {
+
+		if !config.IsLocal() {
 
 			item := helpers.MemcachePackageInQueue(packageID)
 
@@ -57,11 +60,14 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 			err = mc.Set(&item)
 			log.Err(err)
-
-			packageIDs = append(packageIDs, packageID)
 		}
 
-		for _, profileID := range payload.ProfileIDs {
+		packageIDs = append(packageIDs, packageID)
+	}
+
+	for _, profileID := range payload.ProfileIDs {
+
+		if !config.IsLocal() {
 
 			item := helpers.MemcacheProfileInQueue(profileID)
 
@@ -72,9 +78,9 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 			err = mc.Set(&item)
 			log.Err(err)
-
-			profileIDs = append(profileIDs, profileID)
 		}
+
+		profileIDs = append(profileIDs, profileID)
 	}
 
 	return produce(baseMessage{
