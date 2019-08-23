@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"io/ioutil"
 	"strconv"
 	"sync"
@@ -180,8 +179,6 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		for _, pack := range packages {
 
 			buffer := pack.GetBuffer()
-			buffer = bytes.ReplaceAll(buffer, []byte{0x01}, []byte{0x09})
-
 			m, err := helpers.ParseFDV(buffer)
 			steamLogError(err)
 
