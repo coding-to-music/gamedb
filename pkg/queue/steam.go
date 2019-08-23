@@ -46,7 +46,7 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	var message steamMessage
-	err = mapstructure.Decode(payload.Message, &message)
+	err = helpers.MarshalUnmarshal(payload.Message, &message)
 	if err != nil {
 		logError(err)
 		payload.ack(msg)
