@@ -48,7 +48,7 @@ $dataTables.each(function (i) {
 
             $('table.table-datatable').on('order.dt', function (e, settings, processing) {
 
-                $('#live-badge').trigger('click');
+                // $('#live-badge').trigger('click');
 
             });
         }
@@ -176,7 +176,7 @@ const dtDefaultOptions = {
 
         $dataTables2.on('order.dt', function (e, settings, processing) {
 
-            $('#live-badge').trigger('click');
+            // $('#live-badge').trigger('click');
 
         });
     }
