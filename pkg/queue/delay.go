@@ -9,7 +9,7 @@ import (
 )
 
 type delayQueue struct {
-	baseQueue
+	BaseQueue baseQueue
 }
 
 func (q delayQueue) processMessages(msgs []amqp.Delivery) {
@@ -28,16 +28,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Limits
-	if q.getMaxTime() > 0 && payload.FirstSeen.Add(q.getMaxTime()).Unix() < time.Now().Unix() {
+	if q.BaseQueue.getMaxTime() > 0 && payload.FirstSeen.Add(q.BaseQueue.getMaxTime()).Unix() < time.Now().Unix() {
 
-		logInfo("Message removed from delay queue (Over " + q.getMaxTime().String() + " / " + payload.FirstSeen.Add(q.getMaxTime()).String() + "): " + string(msg.Body))
+		logInfo("Message removed from delay queue (Over " + q.BaseQueue.getMaxTime().String() + " / " + payload.FirstSeen.Add(q.BaseQueue.getMaxTime()).String() + "): " + string(msg.Body))
 		payload.fail(msg)
 		return
 	}
 
-	if q.maxAttempts > 0 && payload.Attempt > q.maxAttempts {
+	if q.BaseQueue.maxAttempts > 0 && payload.Attempt > q.BaseQueue.maxAttempts {
 
-		logInfo("Message removed from delay queue (" + strconv.Itoa(payload.Attempt) + "/" + strconv.Itoa(q.maxAttempts) + " attempts): " + string(msg.Body))
+		logInfo("Message removed from delay queue (" + strconv.Itoa(payload.Attempt) + "/" + strconv.Itoa(q.BaseQueue.maxAttempts) + " attempts): " + string(msg.Body))
 		payload.fail(msg)
 		return
 	}

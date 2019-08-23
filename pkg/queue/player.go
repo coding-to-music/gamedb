@@ -33,7 +33,6 @@ type playerMessage struct {
 }
 
 type playerQueue struct {
-	baseQueue
 }
 
 func (q playerQueue) processMessages(msgs []amqp.Delivery) {

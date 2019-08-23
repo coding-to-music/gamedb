@@ -36,7 +36,6 @@ type appMessage struct {
 }
 
 type appQueue struct {
-	baseQueue
 }
 
 func (q appQueue) processMessages(msgs []amqp.Delivery) {

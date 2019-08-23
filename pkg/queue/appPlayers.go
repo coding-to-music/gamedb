@@ -22,7 +22,6 @@ type appPlayerMessage struct {
 }
 
 type appPlayerQueue struct {
-	baseQueue
 }
 
 func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {

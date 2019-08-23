@@ -208,10 +208,10 @@ type queueInterface interface {
 }
 
 type baseQueue struct {
-	queue       queueInterface
 	Name        queueName
 	DoNotScale  bool
 	SteamClient *steam.Client // Just used for Steam queue
+	queue       queueInterface
 	qos         int
 	batchSize   int
 	maxAttempts int
@@ -304,6 +304,16 @@ func (q baseQueue) ConsumeMessages() {
 					}
 
 					if len(msgSlice) >= q.batchSize {
+
+						switch v := q.queue.(type) {
+						case *steamQueue:
+							v.SteamClient = q.SteamClient
+							q.queue = v
+						case *delayQueue:
+							v.BaseQueue = q
+							q.queue = v
+						}
+
 						q.queue.processMessages(msgSlice)
 						msgSlice = []amqp.Delivery{}
 					}

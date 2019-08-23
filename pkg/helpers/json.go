@@ -64,3 +64,8 @@ func FormatJSON(unformatted string) (formatted string, err error) {
 
 	return string(b), err
 }
+
+func MarshalUnmarshal(in interface{}, out interface{}) (err error) {
+	b, err := json.Marshal(in)
+	return json.Unmarshal(b, out)
+}

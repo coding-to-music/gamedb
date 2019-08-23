@@ -24,7 +24,6 @@ type bundleMessage struct {
 }
 
 type bundleQueue struct {
-	baseQueue
 }
 
 func (q bundleQueue) processMessages(msgs []amqp.Delivery) {

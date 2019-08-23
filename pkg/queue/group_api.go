@@ -15,7 +15,6 @@ import (
 )
 
 type groupQueueAPI struct {
-	baseQueue
 }
 
 func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {

@@ -3,11 +3,11 @@ package queue
 import (
 	"errors"
 
+	"github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/protocol"
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
@@ -18,7 +18,7 @@ type steamMessage struct {
 }
 
 type steamQueue struct {
-	baseQueue
+	SteamClient *steam.Client
 }
 
 func (q steamQueue) processMessages(msgs []amqp.Delivery) {

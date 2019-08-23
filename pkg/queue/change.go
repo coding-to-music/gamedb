@@ -21,7 +21,6 @@ type changeMessage struct {
 }
 
 type changeQueue struct {
-	baseQueue
 }
 
 func (q changeQueue) processMessages(msgs []amqp.Delivery) {

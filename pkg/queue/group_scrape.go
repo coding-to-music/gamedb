@@ -35,7 +35,6 @@ type groupMessage struct {
 }
 
 type groupQueueScrape struct {
-	baseQueue
 }
 
 //noinspection GoNilness
