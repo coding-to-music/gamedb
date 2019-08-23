@@ -361,7 +361,11 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 			price.PriceBefore = oldPrice
 			price.PriceAfter = newPrice
 			price.Difference = newPrice - oldPrice
-			price.DifferencePercent = (float64(newPrice-oldPrice) / float64(oldPrice)) * 100
+			if oldPrice == 0 {
+				price.DifferencePercent = 0
+			} else {
+				price.DifferencePercent = (float64(newPrice-oldPrice) / float64(oldPrice)) * 100
+			}
 
 			documents = append(documents, price)
 		}
