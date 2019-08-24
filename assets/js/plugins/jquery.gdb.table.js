@@ -17,34 +17,6 @@
         },
     };
     var remoteDefaults = {
-        "ajax": function (data, callback, settings) {
-
-            $.ajax({
-                url: function () {
-                    const path = $(this).attr('data-path');
-                    if (!path && user.log) {
-                        console.log('Table data-path not set');
-                    }
-                    return path;
-                }(),
-                data: data,
-                success: callback,
-                error: function (jqXHR, textStatus, errorThrown) {
-
-                    const data = {
-                        "draw": "1",
-                        "recordsTotal": "0",
-                        "recordsFiltered": "0",
-                        "data": [],
-                        "limited": false
-                    };
-
-                    callback(data, textStatus, null);
-                },
-                dataType: 'json',
-                cache: $(this).attr('data-cache') !== "false"
-            });
-        },
         "processing": true,
         "serverSide": true,
         "orderMulti": false,
@@ -86,7 +58,35 @@
             "stateSave": false,
         }
 
-        if (!options.isAjax()) {
+        if (options.isAjax()) {
+            tableOptions.ajax = function (data, callback, settings) {
+                $.ajax({
+                    url: function () {
+                        const path = $(element).attr('data-path');
+                        if (!path && user.log) {
+                            console.log('Table data-path not set');
+                        }
+                        return path;
+                    }(),
+                    error: function (jqXHR, textStatus, errorThrown) {
+
+                        const data = {
+                            "draw": "1",
+                            "recordsTotal": "0",
+                            "recordsFiltered": "0",
+                            "data": [],
+                            "limited": false
+                        };
+
+                        callback(data, textStatus, null);
+                    },
+                    data: data,
+                    success: callback,
+                    dataType: 'json',
+                    cache: true,
+                });
+            }
+        } else {
             tableOptions.columnDefs = [
                 {
                     "orderable": false,
