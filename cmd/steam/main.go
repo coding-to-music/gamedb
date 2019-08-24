@@ -19,6 +19,7 @@ import (
 const (
 	steamSentryFilename        = ".sentry.txt"
 	steamCurrentChangeFilename = ".change.txt"
+	checkForChangesOnLocal     = false
 )
 
 var (
@@ -102,7 +103,7 @@ func main() {
 }
 
 func checkForChanges() {
-	if !config.IsLocal() {
+	if !config.IsLocal() || checkForChangesOnLocal {
 		for {
 			if !steamClient.Connected() || !steamLoggedOn {
 				continue
