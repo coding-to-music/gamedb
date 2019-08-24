@@ -62,7 +62,7 @@
         }
 
         options.isAjax = function () {
-            return self.tableOptions !== undefined
+            return this.tableOptions.columnDefs !== undefined
         }
 
         var tableOptions = {
