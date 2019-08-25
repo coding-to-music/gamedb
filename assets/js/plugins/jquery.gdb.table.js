@@ -108,15 +108,16 @@
     $.extend(Plugin.prototype, {
         init: function () {
 
-            const dt = $(this.element).DataTable(this.settings.tableOptions);
+            this.dt = $(this.element).DataTable(this.settings.tableOptions);
 
-            this.scrollOnPaginate(dt);
-            this.hideEmptyPagination(dt);
+            this.addDonateButton();
+            this.scrollOnPaginate();
+            this.hideEmptyPagination();
+            this.fixImages();
 
             if (this.settings.isAjax()) {
-
                 if (this.settings.fadeOnLoad) {
-                    this.fadeOnLoad(dt);
+                    this.fadeOnLoad();
                 }
             }
 
@@ -124,7 +125,7 @@
             if (window.gdbTables === undefined) {
                 window.gdbTables = [];
             }
-            window.gdbTables.push(dt);
+            window.gdbTables.push();
 
             // Fixes scrolling to pagination on every click
             $(".paginate_button > a").one("focus", function () {
@@ -133,40 +134,45 @@
 
             // Fixes hidden fixed header tables
             $('a[data-toggle="tab"]').one('shown.bs.tab', function (e) {
-                $.each(dataTables, function (index, value) {
+                $.each(window.gdbTables, function (index, value) {
                     value.fixedHeader.adjust();
                 });
             });
         },
-        fixImages: function (dt) {
+        fixImages: function () {
             highLightOwnedGames();
             observeLazyImages('tr img[data-lazy]');
             fixBrokenImages();
         },
-        addDonateButton: function (dt) {
+        addDonateButton: function () {
 
-            console.log(json);
-            dt.on('xhr.dt', function (e, settings, json, xhr) {
-                if (json.limited) {
+            const parent = this;
+
+            this.dt.on('xhr.dt', function (e, settings, json, xhr) {
+                parent.limited = json.limited;
+            });
+
+            this.dt.on('draw.dt', function (e, settings) {
+                if (parent.limited) {
                     const bold = $('li.paginate_button.page-item.next.disabled').length > 0 ? 'font-weight-bold' : '';
                     const donate = $('<li class="donate"><small><a href="/donate"><i class="fas fa-heart text-danger"></i> <span class="' + bold + '">See more!</span></a></small></li>');
-                    $(this).parent().find('.dt-pagination ul.pagination').append(donate);
+                    $(parent.element).parent().find('.dt-pagination ul.pagination').append(donate);
                 }
             });
         },
-        fadeOnLoad: function (dt) {
-            dt.on('page.dt search.dt', function (e, settings, processing) {
+        fadeOnLoad: function () {
+            this.dt.on('page.dt search.dt', function (e, settings) {
 
                 $(this).fadeTo(500, 0.3);
 
-            }).on('draw.dt', function (e, settings, processing) {
+            }).on('draw.dt', function (e, settings) {
 
                 $(this).fadeTo(100, 1);
             });
         },
-        hideEmptyPagination: function (dt) {
+        hideEmptyPagination: function () {
+            const dt = this.dt;
             dt.on('draw.dt', function (e, settings, processing) {
-
                 if (dt.page.info().pages <= 1) {
                     $(this).parent().find('.dt-pagination').hide();
                 } else {
@@ -174,8 +180,8 @@
                 }
             });
         },
-        scrollOnPaginate: function (dt) {
-            dt.on('page.dt', function (e, settings, processing) {
+        scrollOnPaginate: function () {
+            this.dt.on('page.dt', function (e, settings, processing) {
 
                 let padding = 15;
 
@@ -191,11 +197,7 @@
     });
 
     $.fn[pluginName] = function (options) {
-        return this.each(function () {
-            if (!$.data(this, "plugin_" + pluginName)) {
-                $.data(this, "plugin_" + pluginName, new Plugin(this, options));
-            }
-        });
+        return new Plugin(this, options).dt;
     };
 
 })(jQuery, window, document);
