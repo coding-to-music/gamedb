@@ -1,6 +1,6 @@
 if ($('#changes-page').length > 0) {
 
-    const options = $.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[5]);
@@ -73,12 +73,12 @@ if ($('#changes-page').length > 0) {
                     return packages.join('<br/>');
                 },
                 "orderable": false
-            }
+            },
         ]
-    });
+    };
 
-    const $table = $('table.table-datatable2');
-    const dt = $table.DataTable(options);
+    const $table = $('table.table');
+    const dt = $table.gdbTable({tableOptions: options});
 
     websocketListener('changes', function (e) {
 
