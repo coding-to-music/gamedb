@@ -169,10 +169,14 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		for _, app := range apps {
 
 			m, err := helpers.ParseFDV(app.GetBuffer())
-			steamLogError(err)
+			if err != nil {
+				steamLogError(err)
+			}
 
 			err = queue.ProduceApp(int(app.GetAppid()), int(app.GetChangeNumber()), m)
-			steamLogError(err)
+			if err != nil {
+				steamLogError(err)
+			}
 		}
 	}
 
