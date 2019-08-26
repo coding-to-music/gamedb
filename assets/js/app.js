@@ -218,7 +218,7 @@ if ($appPage.length > 0) {
                         $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false
-                }
+                },
             ]
         }));
 

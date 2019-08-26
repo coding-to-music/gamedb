@@ -14,6 +14,8 @@ type Offer struct {
 	SubID            int                     `bson:"sub_id"`
 	SubOrder         int                     `bson:"sub_order"` // Order in the API response
 	AppID            int                     `bson:"app_id"`
+	AppName          string                  `bson:"app_name"`
+	AppIcon          string                  `bson:"app_icon"`
 	AppRating        float64                 `bson:"app_rating"`
 	AppReleaseDate   time.Time               `bson:"app_date"`
 	AppPrices        map[steam.ProductCC]int `bson:"app_prices"`
@@ -33,6 +35,8 @@ func (offer Offer) BSON() (ret interface{}) {
 		"sub_id":             offer.SubID,
 		"sub_order":          offer.SubOrder,
 		"app_id":             offer.AppID,
+		"app_name":           offer.AppName,
+		"app_icon":           offer.AppIcon,
 		"app_rating":         offer.AppRating,
 		"app_date":           offer.AppReleaseDate,
 		"app_prices":         offer.AppPrices,
@@ -51,11 +55,11 @@ func (offer Offer) getKey() (ret string) {
 }
 
 func GetAppOffers(appID int) (offers []Offer, err error) {
-	return getOffers(0, 0, M{"app_id": appID}, M{"_id": 1})
+	return getOffers(0, 0, M{"app_id": appID}, nil)
 }
 
-func GetAllOffers() (offers []Offer, err error) {
-	return getOffers(0, 0, nil, M{"_id": 1})
+func GetAllOffers(offset int64, limit int64, filter D) (offers []Offer, err error) {
+	return getOffers(offset, limit, filter, nil)
 }
 
 func getOffers(offset int64, limit int64, filter interface{}, projection interface{}) (offers []Offer, err error) {

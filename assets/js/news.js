@@ -77,7 +77,7 @@ if ($('#news-page').length > 0) {
                         $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false
-                }
+                },
             ]
         }));
 

@@ -58,7 +58,6 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Tags, err = sql.GetTagsForSelect()
 		log.Err(err, r)
-
 	}()
 
 	// Get genres

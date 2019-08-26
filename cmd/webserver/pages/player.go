@@ -182,7 +182,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				log.Err(err, player.BackgroundAppID)
 			}
-
 		}(player)
 	}
 
