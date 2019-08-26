@@ -176,7 +176,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			var err error
 			backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
 			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
-			log.Err(err)
+			if err == sql.ErrRecordNotFound {
+				err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{player.BackgroundAppID}})
+				log.Err(err, player.BackgroundAppID)
+			} else {
+				log.Err(err, player.BackgroundAppID)
+			}
 
 		}(player)
 	}
