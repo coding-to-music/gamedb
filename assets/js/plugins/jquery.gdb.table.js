@@ -98,6 +98,18 @@
         }
 
         this.settings = $.extend(true, {}, {tableOptions: tableOptions}, {tableOptions: (options.isAjax() ? remoteDefaults : localDefaults)}, options);
+
+        const params = new URL(window.location).searchParams;
+        const page = params.get('page');
+        const sort = params.get('sort');
+        const order = params.get('order');
+        if (page) {
+            this.settings.tableOptions.displayStart = (page - 1) * this.settings.tableOptions.pageLength;
+        }
+        if (sort && order) {
+            this.settings.tableOptions.sort = [[sort, order]];
+        }
+
         this.element = element;
         this._defaults = defaults;
         this._name = pluginName;
@@ -114,6 +126,7 @@
             this.scrollOnPaginate();
             this.hideEmptyPagination();
             this.fixImages();
+            this.updatePageNumber();
 
             if (this.settings.isAjax()) {
                 if (this.settings.fadeOnLoad) {
@@ -137,6 +150,19 @@
                 $.each(window.gdbTables, function (index, value) {
                     value.fixedHeader.adjust();
                 });
+            });
+        },
+        updatePageNumber: function () {
+            const parent = this;
+            const url = new URL(window.location);
+            parent.dt.on('page.dt', function (e, settings) {
+                url.searchParams.set('page', parent.dt.page.info().page + 1);
+                window.history.pushState(null, null, url.search);
+            });
+            parent.dt.on('order.dt', function () {
+                url.searchParams.set('sort', parent.dt.order()[0][0]);
+                url.searchParams.set('order', parent.dt.order()[0][1]);
+                window.history.pushState(null, null, url.search);
             });
         },
         fixImages: function () {
