@@ -1,4 +1,4 @@
-package crons
+package tasks
 
 import (
 	"strconv"
@@ -12,21 +12,19 @@ import (
 type AutoPlayerRefreshes struct {
 }
 
-func (c AutoPlayerRefreshes) ID() CronEnum {
-	return CronAutoPlayerRefreshes
+func (c AutoPlayerRefreshes) ID() string {
+	return "update-donator-profiles"
 }
 
 func (c AutoPlayerRefreshes) Name() string {
 	return "Update donator profiles"
 }
 
-func (c AutoPlayerRefreshes) Config() sql.ConfigType {
-	return sql.ConfAutoProfile
+func (c AutoPlayerRefreshes) Cron() string {
+	return "0 0 */6 * * *"
 }
 
-func (c AutoPlayerRefreshes) Work() {
-
-	started(c)
+func (c AutoPlayerRefreshes) work() {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -64,6 +62,4 @@ func (c AutoPlayerRefreshes) Work() {
 	log.Err(err)
 
 	cronLogInfo("Auto updated " + strconv.Itoa(len(users)) + " players")
-
-	finished(c)
 }

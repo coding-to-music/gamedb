@@ -1,4 +1,4 @@
-package crons
+package tasks
 
 import (
 	"io/ioutil"
@@ -9,28 +9,25 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
 )
 
 type SteamClientPlayers struct {
 }
 
-func (c SteamClientPlayers) ID() CronEnum {
-	return CronSteamClientPlayers
+func (c SteamClientPlayers) ID() string {
+	return "update-steam-client-players"
 }
 
 func (c SteamClientPlayers) Name() string {
 	return "Update Steam client players"
 }
 
-func (c SteamClientPlayers) Config() sql.ConfigType {
-	return sql.ConfClientPlayers
+func (c SteamClientPlayers) Cron() string {
+	return "0 */10 * * * *"
 }
 
-func (c SteamClientPlayers) Work() {
-
-	started(c)
+func (c SteamClientPlayers) work() {
 
 	resp, err := http.Get("https://www.valvesoftware.com/en/about/stats")
 	if err != nil {
@@ -72,8 +69,6 @@ func (c SteamClientPlayers) Work() {
 	})
 
 	log.Warning(err)
-
-	finished(c)
 }
 
 type steamPlayersStruct struct {

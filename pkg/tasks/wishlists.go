@@ -1,4 +1,4 @@
-package crons
+package tasks
 
 import (
 	"strconv"
@@ -12,21 +12,19 @@ import (
 type Wishlists struct {
 }
 
-func (c Wishlists) ID() CronEnum {
-	return CronWishlists
+func (c Wishlists) ID() string {
+	return "update-wishlists"
 }
 
 func (c Wishlists) Name() string {
 	return "Update wishlist"
 }
 
-func (c Wishlists) Config() sql.ConfigType {
-	return sql.ConfWishlistUpdated
+func (c Wishlists) Cron() string {
+	return "0 0 0 * * *"
 }
 
-func (c Wishlists) Work() {
-
-	started(c)
+func (c Wishlists) work() {
 
 	// Get app counts
 	var appCounts = map[int]int{}
@@ -127,6 +125,4 @@ func (c Wishlists) Work() {
 
 	err = mongo.UpdateWishlistTags(wishlistTags)
 	log.Err(err)
-
-	finished(c)
 }

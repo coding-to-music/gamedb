@@ -1,4 +1,4 @@
-package crons
+package tasks
 
 import (
 	"math/rand"
@@ -6,27 +6,24 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 type SetBadgeCache struct {
 }
 
-func (c SetBadgeCache) ID() CronEnum {
-	return CronBadgesCache
+func (c SetBadgeCache) ID() string {
+	return "update-random-badge"
 }
 
 func (c SetBadgeCache) Name() string {
 	return "Set a random badge cache"
 }
 
-func (c SetBadgeCache) Config() sql.ConfigType {
-	return sql.ConfBadgeCache
+func (c SetBadgeCache) Cron() string {
+	return "0 */5 * * * *"
 }
 
-func (c SetBadgeCache) Work() {
-
-	started(c)
+func (c SetBadgeCache) work() {
 
 	var err error
 
@@ -58,6 +55,4 @@ func (c SetBadgeCache) Work() {
 		err = badge.SetEventPlayers()
 		log.Err(err)
 	}
-
-	finished(c)
 }

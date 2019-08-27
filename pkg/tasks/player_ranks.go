@@ -1,29 +1,26 @@
-package crons
+package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 type PlayerRanks struct {
 }
 
-func (c PlayerRanks) ID() CronEnum {
-	return CronPlayerRanks
+func (c PlayerRanks) ID() string {
+	return "update-player-ranks"
 }
 
 func (c PlayerRanks) Name() string {
 	return "Update player ranks"
 }
 
-func (c PlayerRanks) Config() sql.ConfigType {
-	return sql.ConfRanksUpdated
+func (c PlayerRanks) Cron() string {
+	return "0 2 0 * * *"
 }
 
-func (c PlayerRanks) Work() {
-
-	started(c)
+func (c PlayerRanks) work() {
 
 	cronLogInfo("Level")
 	err := mongo.RankPlayers("level", "level_rank")
@@ -44,7 +41,4 @@ func (c PlayerRanks) Work() {
 	cronLogInfo("Friends")
 	err = mongo.RankPlayers("friends_count", "friends_rank")
 	log.Warning(err)
-
-	//
-	finished(c)
 }

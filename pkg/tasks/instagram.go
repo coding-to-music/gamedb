@@ -1,4 +1,4 @@
-package crons
+package tasks
 
 import (
 	"errors"
@@ -15,21 +15,19 @@ import (
 type Instagram struct {
 }
 
-func (c Instagram) ID() CronEnum {
-	return CronInstagram
+func (c Instagram) ID() string {
+	return "post-to-instagram"
 }
 
 func (c Instagram) Name() string {
 	return "Post an Instagram picture"
 }
 
-func (c Instagram) Config() sql.ConfigType {
-	return sql.ConfInstagram
+func (c Instagram) Cron() string {
+	return "0 0 12 * * *"
 }
 
-func (c Instagram) Work() {
-
-	started(c)
+func (c Instagram) work() {
 
 	operation := func() (err error) {
 
@@ -79,6 +77,4 @@ func (c Instagram) Work() {
 
 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	log.Critical(err)
-
-	finished(c)
 }

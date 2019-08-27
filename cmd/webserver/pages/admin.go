@@ -7,14 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/crons"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 )
@@ -77,8 +76,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		sql.ConfAddedAllPackages,
 	}
 
-	for _, v := range crons.CronRegister {
-		configKeys = append(configKeys, v.Config())
+	for _, v := range tasks.TaskRegister {
+		configKeys = append(configKeys, sql.ConfigType(v.ID()))
 	}
 
 	configs, err := sql.GetConfigs(configKeys)
@@ -91,7 +90,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Configs = configs
 	t.Goroutines = runtime.NumGoroutine()
 	t.Websockets = websockets.Pages
-	t.Crons = crons.CronRegister
+	t.Crons = tasks.TaskRegister
 
 	//
 	gorm, err := sql.GetMySQLClient()
@@ -123,7 +122,7 @@ type adminTemplate struct {
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
 	Websockets map[websockets.WebsocketPage]*websockets.Page
-	Crons      map[crons.CronEnum]crons.CronInterface
+	Crons      map[string]tasks.TaskInterface
 }
 
 type adminQuery struct {
@@ -156,53 +155,13 @@ func adminRunCron(r *http.Request) {
 
 	c := r.URL.Query().Get("cron")
 
-	cron := crons.CronRegister[crons.CronEnum(c)]
-	cron.Work()
+	cron := tasks.TaskRegister[c]
 
+	tasks.RunTask(cron)
 }
 
 func adminQueueEveryApp() {
 
-	var last = 0
-	var keepGoing = true
-	var apps steam.AppList
-	var err error
-	var count int
-
-	for keepGoing {
-
-		apps, b, err := helpers.GetSteam().GetAppList(1000, last, 0, "")
-		err = helpers.AllowSteamCodes(err, b, nil)
-		if err != nil {
-			log.Err(err)
-			return
-		}
-
-		count = count + len(apps.Apps)
-
-		for _, v := range apps.Apps {
-
-			err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{v.AppID}})
-			if err != nil {
-				log.Err(err, strconv.Itoa(v.AppID))
-				continue
-			}
-			last = v.AppID
-		}
-
-		keepGoing = apps.HaveMoreResults
-	}
-
-	log.Info("Found " + strconv.Itoa(count) + " apps")
-
-	//
-	err = sql.SetConfig(sql.ConfAddedAllApps, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllApps) + " complete"})
-
-	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }
 
 func adminQueueEveryPackage() {

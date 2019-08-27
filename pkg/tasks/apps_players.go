@@ -1,9 +1,8 @@
-package crons
+package tasks
 
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -12,21 +11,19 @@ import (
 type AppPlayers struct {
 }
 
-func (c AppPlayers) ID() CronEnum {
-	return CronAppPlayers
+func (c AppPlayers) ID() string {
+	return "app-players"
 }
 
 func (c AppPlayers) Name() string {
 	return "Check apps for players"
 }
 
-func (c AppPlayers) Config() sql.ConfigType {
-	return sql.ConfAddedAllAppPlayers
+func (c AppPlayers) Cron() string {
+	return "0 0 */5 * * *"
 }
 
-func (c AppPlayers) Work() {
-
-	started(c)
+func (c AppPlayers) work() {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
@@ -65,36 +62,4 @@ func (c AppPlayers) Work() {
 		err = queue.ProduceAppPlayers(chunk)
 		log.Err(err)
 	}
-
-	finished(c)
-}
-
-type ClearUpcomingCache struct {
-}
-
-func (c ClearUpcomingCache) ID() CronEnum {
-	return CronClearUpcomingCache
-}
-
-func (c ClearUpcomingCache) Name() string {
-	return "Clear upcoming apps cache"
-}
-
-func (c ClearUpcomingCache) Config() sql.ConfigType {
-	return sql.ConfClearUpcomingCache
-}
-
-func (c ClearUpcomingCache) Work() {
-
-	started(c)
-
-	var err error
-
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingAppsCount.Key)
-	cronLogErr(err)
-
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingPackagesCount.Key)
-	cronLogErr(err)
-
-	finished(c)
 }
