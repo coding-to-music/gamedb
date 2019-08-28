@@ -184,9 +184,7 @@ if ($appPage.length > 0) {
     // News data table
     function loadNews() {
 
-        const $newstable = $('#news-table');
-
-        const table = $newstable.DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
@@ -220,13 +218,15 @@ if ($appPage.length > 0) {
                     "orderable": false
                 },
             ]
-        }));
+        };
 
-        dataTables.push(table);
+        const $newstable = $('#news-table');
+
+        const dt = $newstable.gdbTable({tableOptions: options});
 
         $newstable.on('click', 'tr[role=row]', function () {
 
-            const row = table.row($(this));
+            const row = dt.row($(this));
 
             // noinspection JSUnresolvedFunction
             if (row.child.isShown()) {
@@ -254,9 +254,7 @@ if ($appPage.length > 0) {
     // News items
     function loadItems() {
 
-        const $itemsTable = $('#items-table');
-
-        const table = $itemsTable.DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "ajax": function (data, callback, settings) {
 
                 data.search.search = $('#items-search').val();
@@ -312,9 +310,11 @@ if ($appPage.length > 0) {
                     "orderable": false,
                 },
             ]
-        }));
+        };
 
-        dataTables.push(table);
+        const $itemsTable = $('#items-table');
+
+        const table = $itemsTable.gdbTable({tableOptions: options});
 
         $itemsTable.on('click', 'tr[role=row]', function () {
 
@@ -585,7 +585,7 @@ if ($appPage.length > 0) {
 
     function loadAppPlayerTimes() {
 
-        const table = $('#top-players-table').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "order": [[3, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
@@ -640,8 +640,8 @@ if ($appPage.length > 0) {
                     "orderable": false,
                 },
             ]
-        }));
+        };
 
-        dataTables.push(table);
+        $('#top-players-table').gdbTable({tableOptions: options});
     }
 }

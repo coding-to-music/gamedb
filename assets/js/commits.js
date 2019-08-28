@@ -1,14 +1,6 @@
 if ($('#commits-page').length > 0) {
 
-    const $table = $('table#commits');
-
-    let page = null;
-
-    $table.on('draw.dt', function () {
-        page = null;
-    });
-
-    $table.DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[3]);
@@ -71,5 +63,13 @@ if ($('#commits-page').length > 0) {
                 "orderable": false
             }
         ]
-    }));
+    };
+
+    let page = null;
+    const $table = $('table.table');
+    const dt = $table.gdbTable({tableOptions: options});
+
+    dt.on('draw.dt', function (e, settings) {
+        page = null;
+    });
 }

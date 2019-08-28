@@ -109,8 +109,6 @@ if ($('#settings-page').length > 0) {
                 }
             ]
         }));
-
-        dataTables.push(table);
     }
 
     function loadDonations() {
@@ -142,7 +140,5 @@ if ($('#settings-page').length > 0) {
                 },
             ]
         }));
-
-        dataTables.push(table);
     }
 }

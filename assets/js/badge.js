@@ -2,7 +2,7 @@ const $badgePage = $('#badge-page');
 
 if ($badgePage.length > 0) {
 
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[5]);
@@ -43,5 +43,7 @@ if ($badgePage.length > 0) {
                 }
             },
         ]
-    }));
+    };
+
+    $('table.table').gdbTable({tableOptions: options});
 }

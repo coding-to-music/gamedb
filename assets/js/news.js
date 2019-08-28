@@ -81,8 +81,6 @@ if ($('#news-page').length > 0) {
             ]
         }));
 
-        dataTables.push(table);
-
         $table.on('click', 'tr[role=row] td.article-title', function () {
 
             const $tr = $(this).closest('tr');

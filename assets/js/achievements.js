@@ -2,7 +2,7 @@ const $achievementsPage = $('#achievements-page');
 
 if ($achievementsPage.length > 0) {
 
-    $('table.table').DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -60,5 +60,7 @@ if ($achievementsPage.length > 0) {
                 "orderable": false,
             },
         ]
-    }));
+    };
+
+    $('table.table').gdbTable({tableOptions: options});
 }

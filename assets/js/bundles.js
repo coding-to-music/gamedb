@@ -1,6 +1,6 @@
 if ($('#bundles-page').length > 0) {
 
-    const options = $.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
@@ -58,10 +58,11 @@ if ($('#bundles-page').length > 0) {
                 }
             }
         ]
-    });
+    };
 
-    const $table = $('table.table-datatable2');
-    const dt = $table.DataTable(options);
+
+    const $table = $('table.table');
+    const dt = $table.gdbTable({tableOptions: options});
 
     websocketListener('bundles', function (e) {
 

@@ -3,7 +3,7 @@ const $trendingAppsTable = $('table.table-datatable2');
 
 if ($trendingAppsPage.length > 0) {
 
-    $trendingAppsTable.DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -60,7 +60,9 @@ if ($trendingAppsPage.length > 0) {
                 "orderable": false,
             },
         ]
-    }));
+    };
+
+    $trendingAppsTable.gdbTable({tableOptions: options});
 }
 
 if ($trendingAppsPage.length > 0 || $('#new-releases-page').length > 0) {

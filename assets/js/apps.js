@@ -107,7 +107,8 @@ if ($('#apps-page').length > 0) {
     }
 
     // Setup datatable
-    $table.DataTable($.extend(true, {}, dtDefaultOptions, {
+
+    const options = {
         "ajax": function (data, callback, settings) {
 
             data.search.tags = $('#tags').val();
@@ -176,5 +177,7 @@ if ($('#apps-page').length > 0) {
                 "orderSequence": ["desc"],
             },
         ]
-    }));
+    };
+
+    $table.gdbTable({tableOptions: options});
 }

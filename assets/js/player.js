@@ -131,8 +131,6 @@ if ($playerPage.length > 0) {
             ]
         }));
 
-        dataTables.push(dt);
-
         const dt2 = $('#games #recent-games').DataTable($.extend(true, {}, dtDefaultOptions, {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
@@ -243,8 +241,6 @@ if ($playerPage.length > 0) {
                 },
             ]
         }));
-
-        dataTables.push(dt);
     }
 
     function loadPlayerBadges() {
@@ -295,8 +291,6 @@ if ($playerPage.length > 0) {
                 },
             ]
         }));
-
-        dataTables.push(dt);
     }
 
     function loadPlayerCharts() {
