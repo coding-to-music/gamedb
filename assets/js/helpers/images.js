@@ -1,17 +1,16 @@
-function observeLazyImages(target) {
+function observeLazyImages($target) {
 
     // https://www.sitepoint.com/five-techniques-lazy-load-images-website-performance/
 
-    if (!target) {
+    if (!$target) {
         return;
     }
 
-    const config = {
-        rootMargin: '0px 0px 50px 0px',
-        threshold: 0
-    };
+    if (typeof $target === 'string') {
+        $target = $($target);
+    }
 
-    let observer = new IntersectionObserver(function (entries, self) {
+    const callback = function (entries, self) {
 
         // iterate over each entry
         entries.forEach(entry => {
@@ -20,11 +19,17 @@ function observeLazyImages(target) {
                 self.unobserve(entry.target);
             }
         });
-    }, config);
+    };
 
-    const imgs = document.querySelectorAll(target);
-    imgs.forEach(img => {
-        observer.observe(img);
+    const config = {
+        rootMargin: '0px 0px 50px 0px',
+        threshold: 0
+    };
+
+    let observer = new IntersectionObserver(callback, config);
+
+    $target.each(function (index) {
+        observer.observe(this);
     });
 }
 
@@ -42,12 +47,12 @@ function loadImage($target) {
         $target.attr('title', $title)
     }
 
-    $target.attr('src', $target.attr('data-lazy'))
+    $target.attr('src', $target.attr('data-lazy'));
 
     //
-    $target.removeAttr("data-lazy-alt")
-    $target.removeAttr("data-lazy-title")
-    $target.removeAttr("data-lazy")
+    $target.removeAttr("data-lazy-alt");
+    $target.removeAttr("data-lazy-title");
+    $target.removeAttr("data-lazy");
 }
 
 function fixBrokenImages() {
