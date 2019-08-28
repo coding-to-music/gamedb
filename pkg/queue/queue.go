@@ -321,6 +321,7 @@ func (q baseQueue) ConsumeMessages() {
 					select {
 					case err = <-consumerConnectionChannel:
 						logWarning("Consumer connection closed", err)
+						consumerConnection = nil
 						return
 					case msg := <-msgs:
 						msgSlice = append(msgSlice, msg)
