@@ -1,6 +1,4 @@
-// the semi-colon before function invocation is a safety net against concatenated
-// scripts and/or other plugins which may not be closed properly.
-;(function ($, window, document, undefined) {
+;(function ($, window, document, user, undefined) {
 
     "use strict";
 
@@ -25,16 +23,16 @@
     // The actual plugin constructor
     function Plugin(element, options) {
 
-        if (options === undefined) {
+        if (options == null) {
             options = {}
         }
 
-        if (options.tableOptions === undefined) {
+        if (options.tableOptions == null) {
             options.tableOptions = {};
         }
 
         options.isAjax = function () {
-            return this.tableOptions.columnDefs !== undefined
+            return this.tableOptions.columnDefs != null
         }
 
         var tableOptions = {
@@ -99,6 +97,7 @@
 
         this.settings = $.extend(true, {}, {tableOptions: tableOptions}, {tableOptions: (options.isAjax() ? remoteDefaults : localDefaults)}, options);
 
+        // Override table settings with url values
         const params = new URL(window.location).searchParams;
         const page = params.get('page');
         const sort = params.get('sort');
@@ -110,38 +109,93 @@
             this.settings.tableOptions.sort = [[sort, order]];
         }
 
+        //
         this.element = element;
+        this.user = user;
         this._defaults = defaults;
         this._name = pluginName;
-
         this.init();
     }
 
     $.extend(Plugin.prototype, {
         init: function () {
 
-            this.dt = $(this.element).DataTable(this.settings.tableOptions);
+            const dt = $(this.element).DataTable(this.settings.tableOptions);
+            const parent = this;
+            this.dt = dt;
 
-            this.addDonateButton();
-            this.scrollOnPaginate();
-            this.hideEmptyPagination();
-            this.fixImages();
-            this.updatePageNumber();
+            // On AJAX
+            dt.on('xhr.dt', function (e, settings, json, xhr) {
+                // Add donate button
+                parent.limited = json.limited;
+            });
 
-            if (this.settings.isAjax()) {
-                if (this.settings.fadeOnLoad) {
-                    this.fadeOnLoad();
+            // On Draw
+            dt.on('draw.dt', function (e, settings) {
+
+                // Add donate button
+                if (parent.limited) {
+                    const bold = $('li.paginate_button.page-item.next.disabled').length > 0 ? 'font-weight-bold' : '';
+                    const donate = $('<li class="donate"><small><a href="/donate"><i class="fas fa-heart text-danger"></i> <span class="' + bold + '">See more!</span></a></small></li>');
+                    $(parent.element).parent().find('.dt-pagination ul.pagination').append(donate);
                 }
-            }
 
-            // Keep track of tables
-            if (window.gdbTables === undefined) {
-                window.gdbTables = [];
+                // Hide empty pagination
+                const $pagination = $(parent.element).parent().find('.dt-pagination');
+                (dt.page.info().pages <= 1)
+                    ? $pagination.hide()
+                    : $pagination.show()
+
+                // Bold rows
+                parent.highlightRows();
+
+                // Lazy load images
+                observeLazyImages($(parent.element).find('img[data-lazy]'));
+
+                // Fix broken images
+                fixBrokenImages();
+            });
+
+            // On page change
+            dt.on('page.dt', function (e, settings, processing) {
+
+                // Scroll on pagination click
+                let padding = 15;
+                if ($('.fixedHeader-floating').length > 0) {
+                    padding = padding + 48;
+                }
+                $('html, body').animate({
+                    scrollTop: $(this).prev().offset().top - padding
+                }, 200);
+
+                // Update URL table changes
+                const url = new URL(window.location);
+                url.searchParams.set('page', dt.page.info().page + 1);
+                window.history.pushState(null, null, url.search);
+            });
+
+            // On order
+            dt.on('order.dt', function () {
+                const url = new URL(window.location);
+                url.searchParams.set('sort', dt.order()[0][0]);
+                url.searchParams.set('order', dt.order()[0][1]);
+                window.history.pushState(null, null, url.search);
+            });
+
+            // Server side table events only
+            if (this.settings.isAjax() && this.settings.fadeOnLoad) {
+
+                dt.on('page.dt search.dt', function (e, settings) {
+                    $(parent.element).fadeTo(500, 0.3);
+                });
+
+                dt.on('draw.dt', function (e, settings) {
+                    $(parent.element).fadeTo(100, 1);
+                });
             }
-            window.gdbTables.push();
 
             // Fixes scrolling to pagination on every click
-            $(".paginate_button > a").one("focus", function () {
+            $(this.element).parent().find(".paginate_button > a").one("focus", function () {
                 $(this).blur();
             });
 
@@ -151,79 +205,54 @@
                     value.fixedHeader.adjust();
                 });
             });
+
+            // Keep track of tables
+            if (window.gdbTables == null) {
+                window.gdbTables = [];
+            }
+            window.gdbTables.push();
         },
-        updatePageNumber: function () {
-            const parent = this;
-            const url = new URL(window.location);
-            parent.dt.on('page.dt', function (e, settings) {
-                url.searchParams.set('page', parent.dt.page.info().page + 1);
-                window.history.pushState(null, null, url.search);
-            });
-            parent.dt.on('order.dt', function () {
-                url.searchParams.set('sort', parent.dt.order()[0][0]);
-                url.searchParams.set('order', parent.dt.order()[0][1]);
-                window.history.pushState(null, null, url.search);
-            });
-        },
-        fixImages: function () {
-            highLightOwnedGames();
-            observeLazyImages('tr img[data-lazy]');
-            fixBrokenImages();
-        },
-        addDonateButton: function () {
+        highlightRows: function () {
 
-            const parent = this;
-
-            this.dt.on('xhr.dt', function (e, settings, json, xhr) {
-                parent.limited = json.limited;
-            });
-
-            this.dt.on('draw.dt', function (e, settings) {
-                if (parent.limited) {
-                    const bold = $('li.paginate_button.page-item.next.disabled').length > 0 ? 'font-weight-bold' : '';
-                    const donate = $('<li class="donate"><small><a href="/donate"><i class="fas fa-heart text-danger"></i> <span class="' + bold + '">See more!</span></a></small></li>');
-                    $(parent.element).parent().find('.dt-pagination ul.pagination').append(donate);
-                }
-            });
-        },
-        fadeOnLoad: function () {
-            this.dt.on('page.dt search.dt', function (e, settings) {
-
-                $(this).fadeTo(500, 0.3);
-
-            }).on('draw.dt', function (e, settings) {
-
-                $(this).fadeTo(100, 1);
-            });
-        },
-        hideEmptyPagination: function () {
-            const dt = this.dt;
-            dt.on('draw.dt', function (e, settings, processing) {
-                if (dt.page.info().pages <= 1) {
-                    $(this).parent().find('.dt-pagination').hide();
-                } else {
-                    $(this).parent().find('.dt-pagination').show();
-                }
-            });
-        },
-        scrollOnPaginate: function () {
-            this.dt.on('page.dt', function (e, settings, processing) {
-
-                let padding = 15;
-
-                if ($('.fixedHeader-floating').length > 0) {
-                    padding = padding + 48;
+            // console.log(this.user);
+            if (this.user.isLoggedIn) {
+                let games = localStorage.getItem('games');
+                if (games != null) {
+                    games = JSON.parse(games);
+                    if (games != null) {
+                        $('[data-app-id]').each(function () {
+                            const id = $(this).attr('data-app-id');
+                            if (games.indexOf(parseInt(id)) !== -1) {
+                                $(this).addClass('font-weight-bold')
+                            }
+                        });
+                    }
                 }
 
-                $('html, body').animate({
-                    scrollTop: $(this).prev().offset().top - padding
-                }, 200);
-            });
-        },
+                let groups = localStorage.getItem('groups');
+                if (groups != null) {
+                    groups = JSON.parse(groups);
+                    if (groups != null) {
+                        $('[data-group-id]').each(function () {
+                            const id = $(this).attr('data-group-id');
+                            if (groups.indexOf(id) !== -1) {
+                                $(this).addClass('font-weight-bold')
+                            }
+                            const id64 = $(this).attr('data-group-id64');
+                            if (groups.indexOf(id64) !== -1) {
+                                $(this).addClass('font-weight-bold')
+                            }
+                        });
+                    }
+                }
+            }
+        }
     });
 
     $.fn[pluginName] = function (options) {
         return new Plugin(this, options).dt;
     };
 
-})(jQuery, window, document);
+    // $('table.table.table-datatable').gdbTable();
+
+})(jQuery, window, document, user);

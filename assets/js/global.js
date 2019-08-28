@@ -136,8 +136,6 @@ $top.click(function (e) {
     $('html, body').animate({scrollTop: 0}, 500);
 });
 
-highLightOwnedGames();
-
 // Toasts
 if (isIterable(user.toasts)) {
     for (const v of user.toasts) {

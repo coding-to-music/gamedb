@@ -82,7 +82,7 @@ if ($('#home-page').length > 0) {
                         }
                     );
 
-                    observeLazyImages('#players img[data-lazy]');
+                    observeLazyImages($container.find('img[data-lazy]'));
                 }
             },
         });
@@ -167,6 +167,6 @@ if ($('#home-page').length > 0) {
 
         $container.find('tr').slice(15).remove();
 
-        observeLazyImages('#prices img[data-lazy]');
+        observeLazyImages($container.find('img[data-lazy]'));
     }
 }
