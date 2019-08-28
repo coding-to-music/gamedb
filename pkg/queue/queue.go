@@ -91,6 +91,29 @@ var (
 	}
 )
 
+func init() {
+
+	// Reconnect to Rabbit on producer disconnect
+	// Consumer connection is handled elsewhere
+	go func() {
+		for {
+			var err error
+			select {
+			case err = <-producerConnectionChannel:
+				logWarning("Consumer connection closed", err)
+				logInfo("Getting new producer connection")
+
+				producerConnection, err = getConnection()
+				if err != nil {
+					logCritical("Connecting to Rabbit: " + err.Error())
+					continue
+				}
+				producerConnection.NotifyClose(producerConnectionChannel)
+			}
+		}
+	}()
+}
+
 type baseMessage struct {
 	Message       interface{} `json:"message"`
 	FirstSeen     time.Time   `json:"first_seen"`
