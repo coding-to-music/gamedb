@@ -66,11 +66,6 @@ if ($playerPage.length > 0) {
                 loadPlayerFriends();
             }
         }
-
-        // On any tab
-        $.each(dataTables, function (index, value) {
-            value.fixedHeader.adjust();
-        });
     });
 
     // Websockets

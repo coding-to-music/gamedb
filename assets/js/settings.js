@@ -49,11 +49,6 @@ if ($('#settings-page').length > 0) {
                 loadDonations();
             }
         }
-
-        // On any tab
-        $.each(dataTables, function (index, value) {
-            value.fixedHeader.adjust();
-        });
     });
 
     function loadEvents() {

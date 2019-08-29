@@ -15,11 +15,6 @@ if ($packagePage.length > 0) {
                 loadPriceChart();
             }
         }
-
-        // On any tab
-        $.each(dataTables, function (index, value) {
-            value.fixedHeader.adjust();
-        });
     });
 
     // Websockets

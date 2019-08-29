@@ -16,11 +16,6 @@ if ($('#news-page').length > 0) {
                 loadNewsAjax();
             }
         }
-
-        // On any tab
-        $.each(dataTables, function (index, value) {
-            value.fixedHeader.adjust();
-        });
     });
 
     // Show more article

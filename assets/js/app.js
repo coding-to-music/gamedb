@@ -86,12 +86,6 @@ if ($appPage.length > 0) {
         if (from.attr('href') === '#media') {
             resetVideos();
         }
-
-        // On any tab
-        $.each(dataTables, function (index, value) {
-            // noinspection JSUnresolvedFunction
-            value.fixedHeader.adjust();
-        });
     });
 
     function resetVideos() {
