@@ -42,7 +42,7 @@ table.table:not(.fixedHeader-floating) {
 }
 
 // TH padding
-table.table-datatable, table.table-datatable2 {
+table.table.dataTable {
     th.sorting_desc_disabled, th.sorting_asc_disabled {
         padding-right: 35px;
     }
