@@ -25,3 +25,15 @@ function logLocal() {
         console.log(...arguments);
     }
 }
+
+function setUrlParam(key, value) {
+
+    const url = new URL(window.location);
+    url.searchParams.set(key, value);
+    url.searchParams.sort();
+    window.history.pushState(null, null, url.pathname + url.search + url.hash);
+}
+
+function clearUrlParams() {
+    window.history.pushState(null, null, window.location.pathname + window.location.hash);
+}

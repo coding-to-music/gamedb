@@ -115,6 +115,8 @@
         if (sort && order) {
             this.settings.tableOptions.sort = [[sort, order]];
         }
+
+        // Set search field values from url values
         for (const $field of this.settings.searchFields) {
             const name = $field.attr('name');
             if (params.has(name)) {
@@ -181,18 +183,13 @@
                     scrollTop: $(this).prev().offset().top - padding
                 }, 200);
 
-                // Update URL table changes
-                const url = new URL(window.location);
-                url.searchParams.set('page', dt.page.info().page + 1);
-                window.history.pushState(null, null, url.search);
+                setUrlParam('page', dt.page.info().page + 1);
             });
 
             // On order
             dt.on('order.dt', function () {
-                const url = new URL(window.location);
-                url.searchParams.set('sort', dt.order()[0][0]);
-                url.searchParams.set('order', dt.order()[0][1]);
-                window.history.pushState(null, null, url.search);
+                setUrlParam('sort', dt.order()[0][0]);
+                setUrlParam('order', dt.order()[0][1]);
             });
 
             // Server side table events only
@@ -212,11 +209,16 @@
                 $(this).blur();
             });
 
-            // Fixes hidden fixed header tables
-            $('a[data-toggle="tab"]').one('shown.bs.tab', function (e) {
+            // On tab change
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+
+                // Fixes hidden fixed header tables
                 $.each(window.gdbTables, function (index, value) {
                     value.fixedHeader.adjust();
                 });
+
+                //
+                clearUrlParams();
             });
 
             // Attach events to search fields
@@ -226,11 +228,9 @@
 
                         dt.draw();
 
-                        const url = new URL(window.location);
                         const name = $field.attr('name');
                         if (name != null) {
-                            url.searchParams.set(name, $field.val());
-                            window.history.pushState(null, null, url.search);
+                            setUrlParam(name, $field.val());
                         }
 
                         return false;
