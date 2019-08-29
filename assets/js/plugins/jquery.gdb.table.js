@@ -3,39 +3,12 @@
     "use strict";
 
     // Create the defaults once
-    var pluginName = "gdbTable";
-    var defaults = {
+    const pluginName = "gdbTable";
+    const defaults = {
         fadeOnLoad: true,
         cache: true,
-        tableOptions: {},
-    };
-    var localDefaults = {
-        "search": {
-            "smart": true
-        },
-    };
-    var remoteDefaults = {
-        "processing": true,
-        "serverSide": true,
-        "orderMulti": false,
-    };
-
-    // The actual plugin constructor
-    function Plugin(element, options) {
-
-        if (options == null) {
-            options = {}
-        }
-
-        if (options.tableOptions == null) {
-            options.tableOptions = {};
-        }
-
-        options.isAjax = function () {
-            return this.tableOptions.columnDefs != null
-        }
-
-        var tableOptions = {
+        searchFields: [],
+        tableOptions: {
             "autoWidth": false,
             "dom": '<"dt-pagination"p>t<"dt-pagination"p>r',
             "fixedHeader": true,
@@ -54,10 +27,39 @@
             "pagingType": 'simple_numbers',
             "searching": true,
             "stateSave": false,
+        },
+    };
+
+    // The actual plugin constructor
+    function Plugin(element, options) {
+
+        if (options == null) {
+            options = {}
+        }
+
+        if (options.tableOptions == null) {
+            options.tableOptions = {};
+        }
+
+        options.isAjax = function () {
+            return this.tableOptions.columnDefs != null
         }
 
         if (options.isAjax()) {
-            tableOptions.ajax = function (data, callback, settings) {
+
+            defaults.tableOptions.processing = true;
+            defaults.tableOptions.serverSide = true;
+            defaults.tableOptions.orderMulti = false;
+
+            defaults.tableOptions.ajax = function (data, callback, settings) {
+
+                delete data.columns;
+
+                // Add search fields to query
+                for (const $field of options.searchFields) {
+                    data.search[$field.attr('name')] = $field.val();
+                }
+
                 $.ajax({
                     url: function () {
                         const path = $(element).attr('data-path');
@@ -68,7 +70,7 @@
                     }(),
                     error: function (jqXHR, textStatus, errorThrown) {
 
-                        const data = {
+                        data = {
                             "draw": "1",
                             "recordsTotal": "0",
                             "recordsFiltered": "0",
@@ -81,11 +83,16 @@
                     data: data,
                     success: callback,
                     dataType: 'json',
-                    cache: true,
+                    cache: options.cache,
                 });
             }
         } else {
-            tableOptions.columnDefs = [
+
+            defaults.tableOptions.search = {
+                "smart": true
+            };
+
+            defaults.tableOptions.columnDefs = [
                 {
                     "orderable": false,
                     "targets": $(element).find('thead tr th[data-disabled]').map(function () {
@@ -95,7 +102,7 @@
             ]
         }
 
-        this.settings = $.extend(true, {}, {tableOptions: tableOptions}, {tableOptions: (options.isAjax() ? remoteDefaults : localDefaults)}, options);
+        this.settings = $.extend(true, {}, defaults, options);
 
         // Override table settings with url values
         const params = new URL(window.location).searchParams;
@@ -107,6 +114,12 @@
         }
         if (sort && order) {
             this.settings.tableOptions.sort = [[sort, order]];
+        }
+        for (const $field of this.settings.searchFields) {
+            const name = $field.attr('name');
+            if (params.has(name)) {
+                $field.val(params.get(name));
+            }
         }
 
         //
@@ -206,6 +219,32 @@
                 });
             });
 
+            // Attach events to search fields
+            if (this.settings.isAjax()) {
+                for (const $field of this.settings.searchFields) {
+                    $field.on('change search', function (e) {
+
+                        dt.draw();
+
+                        const url = new URL(window.location);
+                        const name = $field.attr('name');
+                        if (name != null) {
+                            url.searchParams.set(name, $field.val());
+                            window.history.pushState(null, null, url.search);
+                        }
+
+                        return false;
+                    });
+                }
+            } else {
+                for (const $field of this.settings.searchFields) {
+                    $field.on('change search', function (e) {
+                        dt.search($(this).val());
+                        dt.draw();
+                    });
+                }
+            }
+
             // Keep track of tables
             if (window.gdbTables == null) {
                 window.gdbTables = [];
@@ -214,7 +253,6 @@
         },
         highlightRows: function () {
 
-            // console.log(this.user);
             if (this.user.isLoggedIn) {
                 let games = localStorage.getItem('games');
                 if (games != null) {
@@ -253,6 +291,6 @@
         return new Plugin(this, options).dt;
     };
 
-    // $('table.table.table-datatable').gdbTable();
+    $('table.table.table-datatable').gdbTable();
 
 })(jQuery, window, document, user);
