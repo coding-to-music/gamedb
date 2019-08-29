@@ -1,6 +1,6 @@
 if ($('#player-bans-page').length > 0) {
 
-    const $playersTable = $('table.table-datatable2');
+    const $playersTable = $('table.table');
 
     $('form').on('submit', function (e) {
 
@@ -27,7 +27,7 @@ if ($('#player-bans-page').length > 0) {
 
     toggleStateDropDown();
 
-    $playersTable.DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "ajax": function (data, callback, settings) {
 
             data.search = {};
@@ -109,5 +109,7 @@ if ($('#player-bans-page').length > 0) {
                 "orderSequence": ["desc"],
             },
         ]
-    }));
+    };
+
+    $playersTable.gdbTable({tableOptions: options});
 }

@@ -1,6 +1,6 @@
 if ($('#groups-page').length > 0) {
 
-    const $groupsTable = $('table.table-datatable2');
+    const $groupsTable = $('table.table');
 
     $('form').on('submit', function (e) {
 
@@ -14,7 +14,7 @@ if ($('#groups-page').length > 0) {
         return false;
     });
 
-    $groupsTable.DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "ajax": function (data, callback, settings) {
 
             data.search = {};
@@ -73,5 +73,7 @@ if ($('#groups-page').length > 0) {
                 "orderable": false,
             },
         ]
-    }));
+    };
+
+    $groupsTable.gdbTable({tableOptions: options});
 }

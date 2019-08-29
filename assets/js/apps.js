@@ -1,7 +1,7 @@
 if ($('#apps-page').length > 0) {
 
     const $chosens = $('select.form-control-chosen');
-    const $table = $('table.table-datatable2');
+    const $table = $('table.table');
     const $form = $('form');
 
     // Set form fields from URL

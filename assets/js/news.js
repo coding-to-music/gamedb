@@ -1,6 +1,6 @@
 if ($('#news-page').length > 0) {
 
-    const $table = $('table.table-datatable2');
+    const $table = $('table.table');
 
     // On tab change
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -30,7 +30,7 @@ if ($('#news-page').length > 0) {
 
     function loadNewsAjax() {
 
-        const table = $table.DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[6]);
@@ -79,7 +79,9 @@ if ($('#news-page').length > 0) {
                     "orderable": false
                 },
             ]
-        }));
+        };
+
+        const table = $table.gdbTable({tableOptions: options});
 
         $table.on('click', 'tr[role=row] td.article-title', function () {
 

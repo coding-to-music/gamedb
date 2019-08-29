@@ -1,9 +1,6 @@
 if ($('#product-keys-page').length > 0) {
 
-    const $table = $('table.table-datatable2');
-
-    // Setup datatable
-    $table.DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "ajax": function (data, callback, settings) {
 
             data.search.key = $('#key').val();
@@ -37,5 +34,7 @@ if ($('#product-keys-page').length > 0) {
                 "orderable": false
             },
         ]
-    }));
+    };
+
+    $('table.table').gdbTable({tableOptions: options});
 }

@@ -1,5 +1,5 @@
 const $trendingAppsPage = $('#trending-apps-page');
-const $trendingAppsTable = $('table.table-datatable2');
+const $trendingAppsTable = $('table.table');
 
 if ($trendingAppsPage.length > 0) {
 

@@ -1,6 +1,6 @@
 if ($('#new-releases-page').length > 0) {
 
-    $('table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -74,5 +74,7 @@ if ($('#new-releases-page').length > 0) {
                 "orderSequence": ["desc", "asc"],
             },
         ]
-    }));
+    };
+
+    $('table.table').gdbTable({tableOptions: options});
 }

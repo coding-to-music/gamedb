@@ -58,7 +58,7 @@ if ($('#settings-page').length > 0) {
 
     function loadEvents() {
 
-        const table = $('#events table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "order": [[0, 'desc']],
             "columnDefs": [
                 // Time
@@ -108,12 +108,14 @@ if ($('#settings-page').length > 0) {
                     "orderable": false
                 }
             ]
-        }));
+        };
+
+        $('#events table.table').gdbTable({tableOptions: options});
     }
 
     function loadDonations() {
 
-        const table = $('#donations table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "order": [[0, 'desc']],
             "columnDefs": [
                 // Time
@@ -139,6 +141,8 @@ if ($('#settings-page').length > 0) {
                     "orderable": false
                 },
             ]
-        }));
+        };
+
+        $('#donations table.table').gdbTable({tableOptions: options});
     }
 }

@@ -84,7 +84,7 @@ if ($playerPage.length > 0) {
 
     function loadPlayerGames() {
 
-        const dt = $('#games #all-games').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
@@ -129,9 +129,12 @@ if ($playerPage.length > 0) {
                     'orderSequence': ['desc', 'asc'],
                 }
             ]
-        }));
+        };
 
-        const dt2 = $('#games #recent-games').DataTable($.extend(true, {}, dtDefaultOptions, {
+        $('#games #all-games').gdbTable({tableOptions: options});
+
+        //
+        const recentOptions = {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
@@ -166,14 +169,14 @@ if ($playerPage.length > 0) {
                     }
                 },
             ]
-        }));
+        };
 
-        dataTables.push(dt2);
+        $('#games #recent-games').gdbTable({tableOptions: recentOptions});
     }
 
     function loadPlayerFriends() {
 
-        const dt = $('#friends table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[1]);
@@ -240,12 +243,14 @@ if ($playerPage.length > 0) {
                     'orderSequence': ['asc', 'desc'],
                 },
             ]
-        }));
+        };
+
+        $('#friends table.table').gdbTable({tableOptions: options});
     }
 
     function loadPlayerBadges() {
 
-        const dt = $('#badges table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+        const options = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
@@ -290,7 +295,9 @@ if ($playerPage.length > 0) {
                     }
                 },
             ]
-        }));
+        };
+
+        $('#badges table.table').gdbTable({tableOptions: options});
     }
 
     function loadPlayerCharts() {

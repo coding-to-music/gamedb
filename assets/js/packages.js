@@ -1,6 +1,6 @@
 if ($('#packages-page').length > 0) {
 
-    const options = $.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[1]);
@@ -56,10 +56,10 @@ if ($('#packages-page').length > 0) {
                 'orderSequence': ['desc'],
             }
         ]
-    });
+    };
 
-    const $table = $('table.table-datatable2');
-    const dt = $table.DataTable(options);
+    const $table = $('table.table');
+    const dt = $table.gdbTable({tableOptions: options});
 
     websocketListener('packages', function (e) {
 

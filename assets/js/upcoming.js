@@ -1,8 +1,13 @@
 if ($('#upcoming-page').length > 0) {
 
-    const $table = $('table.table-datatable2');
+    // Search
+    $('form').on('submit', function (e) {
+        e.preventDefault();
+        dt.search($('#search').val()).draw();
+    });
 
-    const dt = $table.DataTable($.extend(true, {}, dtDefaultOptions, {
+    // Table
+    const options = {
         "order": [],
         "pageLength": 100,
         "ajax": function (data, callback, settings) {
@@ -65,11 +70,7 @@ if ($('#upcoming-page').length > 0) {
                 "orderable": false,
             },
         ]
-    }));
+    };
 
-    $('form').on('submit', function (e) {
-
-        e.preventDefault();
-        dt.search($('#search').val()).draw();
-    });
+    $('table.table').gdbTable({tableOptions: options});
 }

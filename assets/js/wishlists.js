@@ -1,8 +1,6 @@
-const $wishlistsPage = $('#wishlists-page');
+if ($('#wishlists-page').length > 0) {
 
-if ($wishlistsPage.length > 0) {
-
-    $('#apps table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    const appsOptions = {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -27,9 +25,12 @@ if ($wishlistsPage.length > 0) {
                 },
             },
         ]
-    }));
+    };
 
-    $('#tags table.table-datatable2').DataTable($.extend(true, {}, dtDefaultOptions, {
+    $('#apps table.table').gdbTable({tableOptions: appsOptions});
+
+    //
+    const tagsOptions = {
         "pageLength": 1000,
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -51,5 +52,7 @@ if ($wishlistsPage.length > 0) {
                 },
             },
         ]
-    }));
+    };
+
+    $('#tags table.table').gdbTable({tableOptions: tagsOptions});
 }

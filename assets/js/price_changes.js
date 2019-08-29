@@ -1,7 +1,7 @@
 if ($('#price-changes-page').length > 0) {
 
     const $chosens = $('select.form-control-chosen');
-    const $table = $('table.table-datatable2');
+    const $table = $('table.table');
     const $form = $('form');
 
     // Set form fields from URL
@@ -108,7 +108,7 @@ if ($('#price-changes-page').length > 0) {
     }
 
     // Init table
-    const options = $.extend(true, {}, dtDefaultOptions, {
+    const options = {
         "order": [[4, 'desc']],
         "ajax": function (data, callback, settings) {
 
@@ -207,10 +207,10 @@ if ($('#price-changes-page').length > 0) {
                 "orderable": false
             }
         ]
-    });
+    };
 
     // Update table live
-    const dt = $table.DataTable(options);
+    const dt = $table.gdbTable({tableOptions: options});
 
     websocketListener('prices', function (e) {
 

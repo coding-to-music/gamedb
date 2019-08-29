@@ -1,18 +1,7 @@
 if ($('#players-page').length > 0) {
 
-    const $playersTable = $('table.table-datatable2');
-
-    $('form').on('submit', function (e) {
-
-        $playersTable.DataTable().draw();
-        return false;
-    });
-
-    $('#country, #state').on('change', function (e) {
-
-        $playersTable.DataTable().draw();
+    $('#country').on('change', function (e) {
         toggleStateDropDown();
-        return false;
     });
 
     function toggleStateDropDown() {
@@ -27,16 +16,7 @@ if ($('#players-page').length > 0) {
 
     toggleStateDropDown();
 
-    $playersTable.DataTable($.extend(true, {}, dtDefaultOptions, {
-        "ajax": function (data, callback, settings) {
-
-            data.search = {};
-            data.search.search = $('#search').val();
-            data.search.country = $('#country').val();
-            data.search.state = $('#state').val();
-
-            dtDefaultOptions.ajax(data, callback, settings, $(this));
-        },
+    const options = {
         "language": {
             "zeroRecords": "No players found <a href='/players/add'>Add a Player</a>",
         },
@@ -147,5 +127,13 @@ if ($('#players-page').length > 0) {
                 "orderSequence": ["desc"],
             }
         ]
-    }));
+    };
+
+    const searchFields = [
+        $('#search'),
+        $('#country'),
+        $('#state'),
+    ];
+
+    $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
 }
