@@ -9,13 +9,6 @@ if ($('#upcoming-page').length > 0) {
     // Table
     const options = {
         "order": [],
-        "pageLength": 100,
-        "ajax": function (data, callback, settings) {
-
-            data.search.search = $('#search').val();
-
-            dtDefaultOptions.ajax(data, callback, settings, $(this));
-        },
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
@@ -72,5 +65,9 @@ if ($('#upcoming-page').length > 0) {
         ]
     };
 
-    $('table.table').gdbTable({tableOptions: options});
+    const searchFields = [
+        $('#search'),
+    ];
+
+    $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
 }

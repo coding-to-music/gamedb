@@ -1,14 +1,6 @@
 if ($('#product-keys-page').length > 0) {
 
     const options = {
-        "ajax": function (data, callback, settings) {
-
-            data.search.key = $('#key').val();
-            data.search.value = $('#value').val();
-            data.search.type = $("input[name=type]:checked").val();
-
-            dtDefaultOptions.ajax(data, callback, settings, $(this));
-        },
         "order": [[0, 'asc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -36,5 +28,11 @@ if ($('#product-keys-page').length > 0) {
         ]
     };
 
-    $('table.table').gdbTable({tableOptions: options});
+    const searchFields = [
+        $('#key'),
+        $('#value'),
+        $('input[name=type]:checked'),
+    ];
+
+    $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
 }

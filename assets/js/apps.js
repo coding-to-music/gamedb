@@ -109,21 +109,6 @@ if ($('#apps-page').length > 0) {
     // Setup datatable
 
     const options = {
-        "ajax": function (data, callback, settings) {
-
-            data.search.tags = $('#tags').val();
-            data.search.genres = $('#genres').val();
-            data.search.categories = $('#categories').val();
-            data.search.developers = $('#developers').val();
-            data.search.publishers = $('#publishers').val();
-            data.search.platforms = $('#platforms').val();
-            data.search.types = $('#types').val();
-            data.search.search = $('#search').val();
-            data.search.prices = priceSlider.get();
-            data.search.scores = scoreSlider.get();
-
-            dtDefaultOptions.ajax(data, callback, settings, $(this));
-        },
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -179,5 +164,20 @@ if ($('#apps-page').length > 0) {
         ]
     };
 
-    $table.gdbTable({tableOptions: options});
+    const searchFields = [
+        $('#tags'),
+        $('#genres'),
+        $('#categories'),
+        $('#developers'),
+        $('#publishers'),
+        $('#platforms'),
+        $('#types'),
+        $('#search'),
+        $('#price-low'),
+        $('#price-high'),
+        $('#score-low'),
+        $('#score-high'),
+    ];
+
+    $table.gdbTable({tableOptions: options, searchFields: searchFields});
 }

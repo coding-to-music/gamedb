@@ -28,15 +28,6 @@ if ($('#player-bans-page').length > 0) {
     toggleStateDropDown();
 
     const options = {
-        "ajax": function (data, callback, settings) {
-
-            data.search = {};
-            data.search.search = $('#search').val();
-            data.search.country = $('#country').val();
-            data.search.state = $('#state').val();
-
-            dtDefaultOptions.ajax(data, callback, settings, $(this));
-        },
         "language": {
             "zeroRecords": "No players found <a href='/players/add'>Add a Player</a>",
         },
@@ -111,5 +102,11 @@ if ($('#player-bans-page').length > 0) {
         ]
     };
 
-    $playersTable.gdbTable({tableOptions: options});
+    const searchFields = [
+        $('#search'),
+        $('#country'),
+        $('#state'),
+    ];
+
+    $playersTable.gdbTable({tableOptions: options, searchFields: searchFields});
 }

@@ -110,14 +110,6 @@ if ($('#price-changes-page').length > 0) {
     // Init table
     const options = {
         "order": [[4, 'desc']],
-        "ajax": function (data, callback, settings) {
-
-            data.search.type = $('#type').val();
-            data.search.percents = changeSlider.get();
-            data.search.prices = priceSlider.get();
-
-            dtDefaultOptions.ajax(data, callback, settings, $(this));
-        },
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[5]);
@@ -210,7 +202,15 @@ if ($('#price-changes-page').length > 0) {
     };
 
     // Update table live
-    const dt = $table.gdbTable({tableOptions: options});
+    const searchFields = [
+        $('#type'),
+        $('#change-low'),
+        $('#change-high'),
+        $('#price-low'),
+        $('#price-high'),
+    ];
+
+    const dt = $table.gdbTable({tableOptions: options, searchFields: searchFields});
 
     websocketListener('prices', function (e) {
 

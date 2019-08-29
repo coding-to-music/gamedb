@@ -15,15 +15,6 @@ if ($('#groups-page').length > 0) {
     });
 
     const options = {
-        "ajax": function (data, callback, settings) {
-
-            data.search = {};
-            data.search.search = $('#search').val();
-            data.search.type = $('#type').val();
-            data.search.errors = $('#errors').val();
-
-            dtDefaultOptions.ajax(data, callback, settings, $(this));
-        },
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-group-id64', data[0]);
@@ -75,5 +66,11 @@ if ($('#groups-page').length > 0) {
         ]
     };
 
-    $groupsTable.gdbTable({tableOptions: options});
+    const searchFields = [
+        $('#search'),
+        $('#type'),
+        $('#errors'),
+    ];
+
+    $groupsTable.gdbTable({tableOptions: options, searchFields: searchFields});
 }

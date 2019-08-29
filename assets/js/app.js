@@ -255,12 +255,6 @@ if ($appPage.length > 0) {
     function loadItems() {
 
         const options = {
-            "ajax": function (data, callback, settings) {
-
-                data.search.search = $('#items-search').val();
-
-                dtDefaultOptions.ajax(data, callback, settings, $(this));
-            },
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
@@ -314,7 +308,11 @@ if ($appPage.length > 0) {
 
         const $itemsTable = $('#items-table');
 
-        const table = $itemsTable.gdbTable({tableOptions: options});
+        const searchFields = [
+            $('#items-search'),
+        ];
+
+        const table = $itemsTable.gdbTable({tableOptions: options, searchFields: searchFields});
 
         $itemsTable.on('click', 'tr[role=row]', function () {
 
