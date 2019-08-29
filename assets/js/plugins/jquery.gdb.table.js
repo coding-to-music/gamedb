@@ -51,12 +51,14 @@
             defaults.tableOptions.serverSide = true;
             defaults.tableOptions.orderMulti = false;
 
+            const parentSettings = $.extend(true, {}, defaults, options);
+
             defaults.tableOptions.ajax = function (data, callback, settings) {
 
                 delete data.columns;
 
-                // Add search fields to query
-                for (const $field of options.searchFields) {
+                // Add search fields to ajax query
+                for (const $field of parentSettings.searchFields) {
                     data.search[$field.attr('name')] = $field.val();
                 }
 
