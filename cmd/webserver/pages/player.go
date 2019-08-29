@@ -179,7 +179,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			if err == sql.ErrRecordNotFound {
 				err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{player.BackgroundAppID}})
 				log.Err(err, player.BackgroundAppID)
-			} else {
+			} else if err != nil {
 				log.Err(err, player.BackgroundAppID)
 			}
 		}(player)
