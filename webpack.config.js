@@ -34,6 +34,11 @@ module.exports = {
                     }
                 }
             }),
+            new UglifyJSPlugin({
+                sourceMap: true,
+                parallel: true,
+                cache: true,
+            }),
         ],
     },
     module: {
@@ -107,11 +112,11 @@ module.exports = {
                 async: true
             }
         }),
-        new UglifyJSPlugin(
-            {
-                sourceMap: true
-            }
-        ),
+        // new UglifyJSPlugin(
+        //     {
+        //         sourceMap: true
+        //     }
+        // ),
         new HtmlWebpackPlugin(
             {
                 filename: path.resolve(__dirname, 'cmd/webserver/templates/_webpack_header.gohtml'),
