@@ -293,6 +293,10 @@
         return new Plugin(this, options).dt;
     };
 
-    $('table.table.table-datatable').gdbTable();
+    // Init local tables
+    $('table.table.table-datatable').each(function (index) {
+        $(this).gdbTable();
+    });
+
 
 })(jQuery, window, document, user);
