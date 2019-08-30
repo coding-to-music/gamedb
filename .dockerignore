@@ -1,21 +1,25 @@
-node_modules/
-vendor/
-tmp/
-logs/
-.tscache/
-cmd/webserver/cache/
+# Binaries
+/cmd/chatbot/chatbot
+/cmd/consumers/consumers
+/cmd/crons/crons
+/cmd/webserver/webserver
+/cmd/steam/steam
 
 # Source maps
-assets/main.css.map
-assets/main.js.map
+/assets/main.css.map
+/assets/main.js.map
 
-# Binaries
-cmd/chatbot/chatbot
-cmd/consumers/consumers
-cmd/crons/crons
-cmd/webserver/webserver
+# Vendors
+/node_modules/
 
-# Meta
+# Caches
+/cmd/webserver/cache/
+/tmp/
+/.tscache/
+
+# Other
+/cmd/steam/.change.txt
+/cmd/steam/.sentry.txt
 LICENSE.md
 package.json
 package-lock.json
