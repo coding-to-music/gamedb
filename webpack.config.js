@@ -21,8 +21,8 @@ module.exports = {
         path.resolve(__dirname, 'assets/sass/index.scss'),
     ],
     output: {
-        path: path.resolve(__dirname, 'assets'),
-        publicPath: '/assets/',
+        path: path.resolve(__dirname, 'assets/dist'),
+        publicPath: '/assets/dist/',
     },
     devtool: "source-map",
     optimization: {
