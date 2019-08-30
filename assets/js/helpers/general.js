@@ -34,6 +34,13 @@ function setUrlParam(key, value) {
     window.history.pushState(null, null, url.pathname + url.search + url.hash);
 }
 
+function deleteUrlParam(key) {
+
+    const url = new URL(window.location);
+    url.searchParams.delete(key)
+    window.history.pushState(null, null, url.pathname + url.search + url.hash);
+}
+
 function clearUrlParams() {
     window.history.pushState(null, null, window.location.pathname + window.location.hash);
 }

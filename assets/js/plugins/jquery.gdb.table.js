@@ -64,11 +64,7 @@
 
                 $.ajax({
                     url: function () {
-                        const path = $(element).attr('data-path');
-                        if (!path && user.log) {
-                            console.log('Table data-path not set');
-                        }
-                        return path;
+                        return $(element).attr('data-path');
                     }(),
                     error: function (jqXHR, textStatus, errorThrown) {
 
@@ -104,29 +100,21 @@
             ]
         }
 
-        this.settings = $.extend(true, {}, defaults, options);
+        //
+        this.settingsWithoutUrl = $.extend(true, {}, defaults, options);
 
-        // Override table settings with url values
+        // Add url params to options
+        const urlOptions = {};
         const params = new URL(window.location).searchParams;
-        const page = params.get('page');
-        const sort = params.get('sort');
-        const order = params.get('order');
-        if (page) {
-            this.settings.tableOptions.displayStart = (page - 1) * this.settings.tableOptions.pageLength;
+        if (params.get('page')) {
+            urlOptions.displayStart = (params.get('page') - 1) * this.settingsWithoutUrl.tableOptions.pageLength;
         }
-        if (sort && order) {
-            this.settings.tableOptions.sort = [[sort, order]];
-        }
-
-        // Set search field values from url values
-        for (const $field of this.settings.searchFields) {
-            const name = $field.attr('name');
-            if (params.has(name)) {
-                $field.val(params.get(name));
-            }
+        if (params.get('sort') && params.get('order')) {
+            urlOptions.order = [[parseInt(params.get('sort')), params.get('order')]];
         }
 
         //
+        this.settings = $.extend(true, {}, defaults, options, {tableOptions: urlOptions});
         this.element = element;
         this.user = user;
         this._defaults = defaults;
@@ -139,7 +127,15 @@
 
             const dt = $(this.element).DataTable(this.settings.tableOptions);
             const parent = this;
-            this.dt = dt;
+
+            // Set search field values from url values
+            const params = new URL(window.location).searchParams;
+            for (const $field of this.settings.searchFields) {
+                const name = $field.attr('name');
+                if (params.has(name)) {
+                    $field.val(params.get(name));
+                }
+            }
 
             // On AJAX
             dt.on('xhr.dt', function (e, settings, json, xhr) {
@@ -163,6 +159,23 @@
                     ? $pagination.hide()
                     : $pagination.show()
 
+                // Update URL
+                if (dt.order().length > 0) {
+                    if (dt.order()[0][1] === parent.settingsWithoutUrl.tableOptions.order[0][1] && dt.order()[0][0] === parent.settingsWithoutUrl.tableOptions.order[0][0]) {
+                        deleteUrlParam('order');
+                        deleteUrlParam('sort');
+                    } else {
+                        setUrlParam('order', dt.order()[0][1]);
+                        setUrlParam('sort', dt.order()[0][0]);
+                    }
+                }
+
+                if (dt.page.info().page === 0) {
+                    deleteUrlParam('page');
+                } else {
+                    setUrlParam('page', dt.page.info().page + 1);
+                }
+
                 // Bold rows
                 parent.highlightRows();
 
@@ -184,14 +197,6 @@
                 $('html, body').animate({
                     scrollTop: $(this).prev().offset().top - padding
                 }, 200);
-
-                setUrlParam('page', dt.page.info().page + 1);
-            });
-
-            // On order
-            dt.on('order.dt', function () {
-                setUrlParam('sort', dt.order()[0][0]);
-                setUrlParam('order', dt.order()[0][1]);
             });
 
             // Server side table events only
@@ -231,8 +236,11 @@
                         dt.draw();
 
                         const name = $field.attr('name');
-                        if (name != null) {
-                            setUrlParam(name, $field.val());
+                        const value = $field.val();
+                        if (name && value) {
+                            setUrlParam(name, value);
+                        } else {
+                            deleteUrlParam(name);
                         }
 
                         return false;
@@ -286,7 +294,7 @@
                     }
                 }
             }
-        }
+        },
     });
 
     $.fn[pluginName] = function (options) {
