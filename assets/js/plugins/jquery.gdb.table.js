@@ -128,12 +128,18 @@
             const dt = $(this.element).DataTable(this.settings.tableOptions);
             const parent = this;
 
-            // Set search field values from url values
+            // Hydrate search field inputs from url params
             const params = new URL(window.location).searchParams;
             for (const $field of this.settings.searchFields) {
                 const name = $field.attr('name');
                 if (params.has(name)) {
-                    $field.val(params.get(name));
+
+                    $field.val(params.get(name).split(','));
+
+                    // Update Chosen drop downs
+                    if ($field.hasClass('form-control-chosen')) {
+                        $field.trigger("chosen:updated");
+                    }
                 }
             }
 
