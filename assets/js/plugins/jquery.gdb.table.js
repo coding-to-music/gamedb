@@ -134,7 +134,7 @@
                 const name = $field.attr('name');
                 if (params.has(name)) {
 
-                    $field.val(params.get(name).split(','));
+                    $field.val(params.getAll(name));
 
                     // Update Chosen drop downs
                     if ($field.hasClass('form-control-chosen')) {

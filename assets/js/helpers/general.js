@@ -29,18 +29,27 @@ function logLocal() {
 function setUrlParam(key, value) {
 
     const url = new URL(window.location);
-    url.searchParams.set(key, value);
+
+    if (Array.isArray(value)) {
+        url.searchParams.delete(key);
+        for (const v of value) {
+            url.searchParams.append(key, v);
+        }
+    } else {
+        url.searchParams.set(key, value);
+    }
+
     url.searchParams.sort();
-    window.history.pushState(null, null, url.pathname + url.search + url.hash);
+    window.history.replaceState(null, null, url.pathname + url.search + url.hash);
 }
 
 function deleteUrlParam(key) {
 
     const url = new URL(window.location);
-    url.searchParams.delete(key)
-    window.history.pushState(null, null, url.pathname + url.search + url.hash);
+    url.searchParams.delete(key);
+    window.history.replaceState(null, null, url.pathname + url.search + url.hash);
 }
 
 function clearUrlParams() {
-    window.history.pushState(null, null, window.location.pathname + window.location.hash);
+    window.history.replaceState(null, null, window.location.pathname + window.location.hash);
 }
