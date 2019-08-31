@@ -43,7 +43,7 @@
 
         options.isAjax = function () {
             return this.tableOptions.columnDefs != null
-        }
+        };
 
         if (options.isAjax()) {
 
@@ -163,7 +163,7 @@
                 const $pagination = $(parent.element).parent().find('.dt-pagination');
                 (dt.page.info().pages <= 1)
                     ? $pagination.hide()
-                    : $pagination.show()
+                    : $pagination.show();
 
                 // Update URL
                 if (dt.order().length > 0) {
@@ -276,7 +276,7 @@
                     if (games != null) {
                         $('[data-app-id]').each(function () {
                             const id = $(this).attr('data-app-id');
-                            if (games.indexOf(parseInt(id)) !== -1) {
+                            if (games.includes(parseInt(id))) {
                                 $(this).addClass('font-weight-bold')
                             }
                         });
@@ -289,11 +289,11 @@
                     if (groups != null) {
                         $('[data-group-id]').each(function () {
                             const id = $(this).attr('data-group-id');
-                            if (groups.indexOf(id) !== -1) {
+                            if (groups.includes(id)) {
                                 $(this).addClass('font-weight-bold')
                             }
                             const id64 = $(this).attr('data-group-id64');
-                            if (groups.indexOf(id64) !== -1) {
+                            if (groups.includes(id64)) {
                                 $(this).addClass('font-weight-bold')
                             }
                         });
