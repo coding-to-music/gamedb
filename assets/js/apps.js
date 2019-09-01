@@ -1,27 +1,18 @@
 if ($('#apps-page').length > 0) {
 
-    const $chosens = $('select.form-control-chosen');
-    const $table = $('table.table');
-    const $form = $('form');
-
-    // Set form fields from URL
-    if (window.location.search) {
-        $form.deserialize(window.location.search.substr(1));
-    }
-
     // Setup drop downs
-    $chosens.chosen({
+    $('select.form-control-chosen').chosen({
         disable_search_threshold: 10,
         allow_single_deselect: true,
         rtl: false,
         max_selected_options: 10
     });
 
-    // Setup Sliders
+    // Price slider
     const priceLow = $('#price-low').val();
     const priceHigh = $('#price-high').val();
-    const priceElement = $('#price-slider')[0];
-    const priceSlider = noUiSlider.create(priceElement, {
+    const priceElement = $('#price-slider');
+    const priceSlider = noUiSlider.create(priceElement[0], {
         start: [
             parseInt(priceLow ? priceLow : 0),
             parseInt(priceHigh ? priceHigh : 100)
@@ -34,6 +25,7 @@ if ($('#apps-page').length > 0) {
         }
     });
 
+    // Score slider
     const scoreLow = $('#score-low').val();
     const scoreHigh = $('#score-high').val();
     const scoreElement = $('#score-slider')[0];
@@ -50,55 +42,34 @@ if ($('#apps-page').length > 0) {
         }
     });
 
-    // Form changes
-    $chosens.on('change', redrawTable);
-    $form.on('submit', redrawTable);
-    priceSlider.on('set', onPriceChange);
+    // Slider events
     priceSlider.on('update', updateLabels);
-    scoreSlider.on('set', onScoreChange);
-    scoreSlider.on('update', updateLabels);
-
-    function onPriceChange(e) {
+    priceSlider.on('set', function (e) {
         const prices = priceSlider.get();
         $('#price-low').val(prices[0]);
         $('#price-high').val(prices[1]);
-        redrawTable();
-    }
+        updateLabels(e);
+    });
 
-    function onScoreChange(e) {
+    scoreSlider.on('update', updateLabels);
+    scoreSlider.on('set', function (e) {
         const scores = scoreSlider.get();
         $('#score-low').val(scores[0]);
         $('#score-high').val(scores[1]);
-        redrawTable();
-    }
-
-    function redrawTable(e) {
-
-        // Filter out empty form fields
-        let formData = $form.serializeArray();
-        formData = $.grep(formData, function (v) {
-            return v.value !== "";
-        });
-
-        $table.DataTable().draw();
-        history.pushState({}, document.title, "/apps?" + $.param(formData));
         updateLabels(e);
-        return false;
-    }
+    });
 
-    $(document).ready(updateLabels);
-
+    //
     function updateLabels(e) {
 
         const prices = priceSlider.get();
-        const scores = scoreSlider.get();
-
         if (prices[0] === prices[1]) {
             $('label#price-label').html('Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ')');
         } else {
             $('label#price-label').html('Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ' - ' + user.userCurrencySymbol + Math.round(prices[1]) + ')');
         }
 
+        const scores = scoreSlider.get();
         if (scores[0] === scores[1]) {
             $('label#score-label').html('Score (' + Math.round(scores[0]) + '%)');
         } else {
@@ -106,8 +77,9 @@ if ($('#apps-page').length > 0) {
         }
     }
 
-    // Setup datatable
+    $(document).ready(updateLabels);
 
+    // Setup datatable
     const options = {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -179,5 +151,5 @@ if ($('#apps-page').length > 0) {
         $('#score-high'),
     ];
 
-    $table.gdbTable({tableOptions: options, searchFields: searchFields});
+    $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
 }
