@@ -65,13 +65,15 @@ module.exports = {
                     {
                         loader: "sass-loader",
                         options: {
-                            name: 'css/[name].blocks.css',
+                            // name: 'css/[name].blocks.css',
                             sourceMap: true,
-                            minimize: true,
+                            // minimize: true,
                             implementation: require("node-sass"),
-                            includePaths: [
-                                path.resolve(__dirname, 'assets/sass/*'),
-                            ],
+                            sassOptions: {
+                                includePaths: [
+                                    path.resolve(__dirname, 'assets/sass/*'),
+                                ],
+                            }
                         },
                     }
                 ],
