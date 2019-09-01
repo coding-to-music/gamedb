@@ -680,7 +680,7 @@ func (q DataTablesQuery) getSearchSlice(k string) (search []string) {
 
 	if val, ok := q.Search[k]; ok {
 		if val != "" {
-			for _, v := range val.([]interface{}) {
+			for _, v := range val.([]interface{}) { // todo, check val can be cast to this, and other places
 				search = append(search, v.(string))
 			}
 		}
