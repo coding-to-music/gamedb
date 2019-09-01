@@ -56,10 +56,16 @@
             defaults.tableOptions.ajax = function (data, callback, settings) {
 
                 delete data.columns;
+                data.search = {};
 
-                // Add search fields to ajax query
+                // Add search fields to ajax query from URL
+                const params = new URL(window.location).searchParams;
                 for (const $field of parentSettings.searchFields) {
-                    data.search[$field.attr('name')] = $field.val();
+                    const name = $field.attr('name');
+                    const value = $field.prop('multiple') ? params.getAll(name) : params.get(name);
+                    if (name && value && value.length > 0) {
+                        data.search[name] = value;
+                    }
                 }
 
                 $.ajax({
