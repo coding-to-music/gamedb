@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
 
@@ -19,7 +20,7 @@ func TagsRouter() http.Handler {
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := sql.GetConfig(sql.ConfTagsUpdated)
+	config, err := tasks.GetTaskConfig(tasks.Tags{})
 	log.Err(err, r)
 
 	// Get tags

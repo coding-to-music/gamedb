@@ -45,50 +45,30 @@
 
                     <h5>Cron Jobs</h5>
                     <div class="row" id="actions">
-                        {{ range $key, $value := .Crons }}
-
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <a href="/admin/run-cron?cron={{ $key }}" role="button" class="btn btn-success btn-block mb-4">
-                                    {{ .Name }}<br/>
-                                    <small data-livestamp="{{ (index $.Configs (.Config.String)).Value }}"></small>
-                                </a>
-                            </div>
-
+                        {{ range $key, $value := .Tasks }}
+                            {{ if ne .Cron "" }}
+                                <div class="col-12 col-sm-6 col-lg-3">
+                                    <a href="/admin/run-cron?cron={{ $key }}" role="button" class="btn btn-success btn-block mb-4">
+                                        {{ .Name }}<br/>
+                                        <small data-livestamp="{{ (index $.Configs (print "task-" .ID)).Value }}"></small>
+                                    </a>
+                                </div>
+                            {{ end }}
                         {{ end }}
                     </div>
 
                     <h5>Actions</h5>
-                    <div class="row">
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/wipe-memcache" role="button" class="btn btn-danger btn-block mb-4">
-                                Wipe Memcache<br/>
-                                <small data-livestamp="{{ (index .Configs .GetMCConfigKey).Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-all-apps" role="button" class="btn btn-danger btn-block mb-4">
-                                Refresh All Apps<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-all-apps").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-all-packages" role="button" class="btn btn-danger btn-block mb-4">
-                                Refresh All Packages<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-all-packages").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/refresh-all-players" role="button" class="btn btn-danger btn-block mb-4">
-                                Refresh All Players<br/>
-                                <small data-livestamp="{{ (index .Configs "refresh-all-players").Value }}"></small>
-                            </a>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <a href="/admin/run-dev-code" role="button" class="btn btn-danger btn-block mb-4">
-                                Run Dev Code<br/>
-                                <small data-livestamp="{{ (index .Configs "run-dev-code").Value }}"></small>
-                            </a>
-                        </div>
+                    <div class="row" id="actions">
+                        {{ range $key, $value := .Tasks }}
+                            {{ if eq .Cron "" }}
+                                <div class="col-12 col-sm-6 col-lg-3">
+                                    <a href="/admin/run-cron?cron={{ $key }}" role="button" class="btn btn-danger btn-block mb-4">
+                                        {{ .Name }}<br/>
+                                        <small data-livestamp="{{ (index $.Configs (print "task-" .ID)).Value }}"></small>
+                                    </a>
+                                </div>
+                            {{ end }}
+                        {{ end }}
                     </div>
 
                     <h5>Info</h5>

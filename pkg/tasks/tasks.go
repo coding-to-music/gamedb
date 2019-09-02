@@ -17,13 +17,18 @@ func init() {
 
 var tasks = []TaskInterface{
 	AppPlayers{},
+	AppQueueAll{},
 	AutoPlayerRefreshes{},
 	ClearUpcomingCache{},
+	DevCodeRun{},
 	Developers{},
 	Genres{},
 	Instagram{},
+	MemcacheClear{},
 	SetBadgeCache{},
+	PackagesQueueAll{},
 	PlayerRanks{},
+	PlayersQueueAll{},
 	Publishers{},
 	SteamClientPlayers{},
 	Tags{},
@@ -60,7 +65,7 @@ func RunTask(task TaskInterface) {
 	task.work()
 
 	// Save config row
-	err := sql.SetConfig(sql.ConfigType(task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
+	err := sql.SetConfig(sql.ConfigType("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
 	cronLogErr(err)
 
 	// Send websocket
@@ -69,4 +74,10 @@ func RunTask(task TaskInterface) {
 
 	//
 	cronLogInfo("Cron complete: " + task.Name())
+}
+
+//
+func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
+
+	return sql.GetConfig(sql.ConfigType("task-" + task.ID()))
 }

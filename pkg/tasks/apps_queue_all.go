@@ -2,14 +2,10 @@ package tasks
 
 import (
 	"strconv"
-	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
 type AppQueueAll struct {
@@ -31,8 +27,6 @@ func (c AppQueueAll) work() {
 
 	var last = 0
 	var keepGoing = true
-	var apps steam.AppList
-	var err error
 	var count int
 
 	for keepGoing {
@@ -60,13 +54,4 @@ func (c AppQueueAll) work() {
 	}
 
 	log.Info("Found " + strconv.Itoa(count) + " apps")
-
-	//
-	err = sql.SetConfig(sql.ConfAddedAllApps, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllApps) + " complete"})
-
-	log.Info(strconv.Itoa(len(apps.Apps)) + " apps added to rabbit")
 }

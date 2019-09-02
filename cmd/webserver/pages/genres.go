@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
 
@@ -19,7 +20,7 @@ func GenresRouter() http.Handler {
 func genresHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := sql.GetConfig(sql.ConfGenresUpdated)
+	config, err := tasks.GetTaskConfig(tasks.Genres{})
 	log.Err(err, r)
 
 	// Get genres

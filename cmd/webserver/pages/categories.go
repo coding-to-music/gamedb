@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
 
@@ -19,7 +20,7 @@ func CategoriesRouter() http.Handler {
 func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := sql.GetConfig(sql.ConfCategoriesUpdated)
+	config, err := tasks.GetTaskConfig(tasks.StatsCategories{})
 	err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 	log.Err(err, r)
 

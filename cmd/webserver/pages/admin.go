@@ -5,12 +5,10 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
@@ -38,20 +36,10 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	switch option {
 	case "run-cron":
 		go adminRunCron(r)
-	case "refresh-all-apps":
-		go adminQueueEveryApp()
-	case "refresh-all-packages":
-		go adminQueueEveryPackage()
-	case "refresh-all-players":
-		go adminQueueEveryPlayer()
-	case "wipe-memcache":
-		go adminClearMemcache()
 	case "delete-bin-logs":
 		go adminDeleteBinLogs(r)
 	case "disable-consumers":
 		go adminDisableConsumers()
-	case "run-dev-code":
-		go adminDev()
 	case "queues":
 		err := r.ParseForm()
 		if err != nil {
@@ -67,20 +55,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get configs for times
-	configKeys := []sql.ConfigType{
-		sql.ConfAddedAllApps,
-		sql.ConfWipeMemcache + "-" + sql.ConfigType(config.Config.Environment.Get()),
-		sql.ConfRunDevCode,
-		sql.ConfGarbageCollection,
-		sql.ConfAddedAllAppPlayers,
-		sql.ConfAddedAllPackages,
-	}
-
-	for _, v := range tasks.TaskRegister {
-		configKeys = append(configKeys, sql.ConfigType(v.ID()))
-	}
-
-	configs, err := sql.GetConfigs(configKeys)
+	configs, err := sql.GetAllConfigs()
 	log.Err(err, r)
 
 	// Template
@@ -90,7 +65,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Configs = configs
 	t.Goroutines = runtime.NumGoroutine()
 	t.Websockets = websockets.Pages
-	t.Crons = tasks.TaskRegister
+	t.Tasks = tasks.TaskRegister
 
 	//
 	gorm, err := sql.GetMySQLClient()
@@ -122,7 +97,7 @@ type adminTemplate struct {
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
 	Websockets map[websockets.WebsocketPage]*websockets.Page
-	Crons      map[string]tasks.TaskInterface
+	Tasks      map[string]tasks.TaskInterface
 }
 
 type adminQuery struct {
@@ -158,79 +133,6 @@ func adminRunCron(r *http.Request) {
 	cron := tasks.TaskRegister[c]
 
 	tasks.RunTask(cron)
-}
-
-func adminQueueEveryApp() {
-
-}
-
-func adminQueueEveryPackage() {
-
-	apps, err := sql.GetAppsWithColumnDepth("packages", 2, []string{"packages"})
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	packageMap := map[int]bool{}
-	for _, app := range apps {
-
-		packagesIDs, err := app.GetPackageIDs()
-		if err != nil {
-			log.Err(app.ID, err)
-			continue
-		}
-
-		for _, packageID := range packagesIDs {
-			packageMap[packageID] = true
-		}
-	}
-
-	// Make into slice again
-	var packageSlice []int
-	for k := range packageMap {
-		packageSlice = append(packageSlice, k)
-	}
-
-	err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageSlice})
-	log.Err(err)
-
-	//
-	err = sql.SetConfig(sql.ConfAddedAllPackages, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllPackages) + " complete"})
-
-	log.Info(strconv.Itoa(len(packageMap)) + " packages added to rabbit")
-}
-
-func adminQueueEveryPlayer() {
-
-	log.Info("Queueing every player")
-
-	players, err := mongo.GetPlayers(0, 0, mongo.D{{"_id", 1}}, nil, mongo.M{"_id": 1}, nil)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	var playerIDs []int64
-	for _, player := range players {
-		playerIDs = append(playerIDs, player.ID)
-	}
-
-	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: playerIDs})
-	log.Err(err)
-
-	//
-	err = sql.SetConfig(sql.ConfAddedAllPlayers, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfAddedAllPlayers) + " complete"})
-
-	log.Info(strconv.Itoa(len(players)) + " players added to rabbit")
 }
 
 func adminQueues(r *http.Request) {
@@ -348,20 +250,6 @@ func adminQueues(r *http.Request) {
 	}
 }
 
-func adminClearMemcache() {
-
-	err := helpers.GetMemcache().DeleteAll()
-	log.Err(err)
-
-	err = sql.SetConfig(sql.ConfWipeMemcache+"-"+sql.ConfigType(config.Config.Environment.Get()), strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfWipeMemcache) + "-" + config.Config.Environment.Get() + " complete"})
-
-	log.Info("Memcache wiped")
-}
-
 func adminDeleteBinLogs(r *http.Request) {
 
 	name := r.URL.Query().Get("name")
@@ -375,120 +263,4 @@ func adminDeleteBinLogs(r *http.Request) {
 
 		gorm.Exec("PURGE BINARY LOGS TO '" + name + "'")
 	}
-}
-
-func adminDev() {
-
-	var err error
-
-	log.Info("Started dev code")
-
-	// gorm, err := sql.GetMySQLClient()
-	// if err != nil {
-	// 	log.Err(err)
-	// 	return
-	// }
-	//
-	// gorm = gorm.Select([]string{"*"}) // Need everything so when we save we dont lose data
-	// gorm = gorm.Order("id asc")
-	//
-	// // Get rows
-	// var bundles []sql.Bundle
-	// gorm = gorm.Find(&bundles)
-	// if gorm.Error != nil {
-	// 	log.Err(gorm.Error)
-	// 	return
-	// }
-	//
-	// for _, bundle := range bundles {
-	//
-	// 	builder := influxql.NewBuilder()
-	// 	builder.AddSelect("discount", "")
-	// 	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
-	// 	builder.AddWhere("bundle_id", "=", bundle.ID)
-	//
-	// 	resp, err := helpers.InfluxQuery(builder.String())
-	// 	if err != nil {
-	// 		log.Err(err)
-	// 		continue
-	// 	}
-	//
-	// 	if len(resp.Results) == 0 || len(resp.Results[0].Series) == 0 || len(resp.Results[0].Series[0].Values) == 0 {
-	// 		log.Info(bundle.ID, "skipped")
-	// 		continue
-	// 	}
-	//
-	// 	type price struct {
-	// 		Time    time.Time `json:"time"`
-	// 		Percent int       `json:"percent"`
-	// 	}
-	//
-	// 	var prices []price
-	// 	var priceDocuments []mongo.Document
-	//
-	// 	// Convert influx response to slice
-	// 	for _, influxRow := range resp.Results[0].Series[0].Values {
-	//
-	// 		t, err := time.Parse(time.RFC3339, influxRow[0].(string))
-	// 		if err != nil {
-	// 			log.Err(err)
-	// 			continue
-	// 		}
-	//
-	// 		i, err := strconv.Atoi(influxRow[1].(json.Number).String())
-	// 		if err != nil {
-	// 			log.Err(err)
-	// 			continue
-	// 		}
-	//
-	// 		prices = append(prices, price{Time: t, Percent: i})
-	// 	}
-	//
-	// 	if len(prices) == 0 {
-	// 		log.Info(bundle.ID, "no prices")
-	// 		continue
-	// 	}
-	//
-	// 	// Sort prices, oldest first
-	// 	sort.Slice(prices, func(i, j int) bool {
-	// 		return prices[i].Time.Unix() < prices[j].Time.Unix()
-	// 	})
-	//
-	// 	// Save to mongo
-	// 	var last = 1 // A value that will never match the first price
-	// 	for _, v := range prices {
-	//
-	// 		bundle.SetDiscount(v.Percent)
-	//
-	// 		if v.Percent != last {
-	//
-	// 			document := mongo.BundlePrice{
-	// 				CreatedAt: v.Time,
-	// 				BundleID:  bundle.ID,
-	// 				Discount:  v.Percent,
-	// 			}
-	//
-	// 			priceDocuments = append(priceDocuments, document)
-	//
-	// 			last = v.Percent
-	// 		}
-	// 	}
-	//
-	// 	_, err = mongo.InsertDocuments(mongo.CollectionBundlePrices, priceDocuments)
-	//
-	// 	err = bundle.Save()
-	// 	if err != nil {
-	// 		log.Err(err)
-	// 		continue
-	// 	}
-	// }
-
-	//
-	err = sql.SetConfig(sql.ConfRunDevCode, strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: string(sql.ConfRunDevCode) + " complete"})
-
-	log.Info("Dev code run")
 }

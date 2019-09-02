@@ -12,31 +12,6 @@ func (c ConfigType) String() string {
 	return string(c)
 }
 
-const (
-	// Crons
-	ConfTagsUpdated        ConfigType = "refresh-tags"
-	ConfCategoriesUpdated  ConfigType = "refresh-categories"
-	ConfGenresUpdated      ConfigType = "refresh-genres"
-	ConfClientPlayers      ConfigType = "check-people-on-steam"
-	ConfPublishersUpdated  ConfigType = "refresh-publishers"
-	ConfDevelopersUpdated  ConfigType = "refresh-developers"
-	ConfRanksUpdated       ConfigType = "refresh-ranks"
-	ConfAddedAllAppPlayers ConfigType = "refresh-all-app-players"
-	ConfWishlistUpdated    ConfigType = "wishlist-updated"
-	ConfClearUpcomingCache ConfigType = "clear-upcoming-cache"
-	ConfInstagram          ConfigType = "posted-to-instagram"
-	ConfBadgeCache         ConfigType = "set-badge-cache"
-	ConfAutoProfile        ConfigType = "auto-profiles-updated"
-
-	//
-	ConfAddedAllApps      ConfigType = "refresh-all-apps"
-	ConfAddedAllPackages  ConfigType = "refresh-all-packages"
-	ConfAddedAllPlayers   ConfigType = "refresh-all-players"
-	ConfWipeMemcache      ConfigType = "wipe-memcache"
-	ConfRunDevCode        ConfigType = "run-dev-code"
-	ConfGarbageCollection ConfigType = "run-garbage-collection"
-)
-
 type Config struct {
 	ID        string     `gorm:"not null;column:id;primary_key"`
 	UpdatedAt *time.Time `gorm:"not null;column:updated_at"`
@@ -91,13 +66,9 @@ func GetConfig(id ConfigType) (config Config, err error) {
 	return config, err
 }
 
-func GetConfigs(ids []ConfigType) (configsMap map[string]Config, err error) {
+func GetAllConfigs() (configsMap map[string]Config, err error) {
 
 	configsMap = map[string]Config{}
-
-	if len(ids) == 0 {
-		return configsMap, nil
-	}
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -105,7 +76,7 @@ func GetConfigs(ids []ConfigType) (configsMap map[string]Config, err error) {
 	}
 
 	var configs []Config
-	db.Where("id IN (?)", ids).Find(&configs)
+	db.Find(&configs)
 	if db.Error != nil {
 		return configsMap, db.Error
 	}
