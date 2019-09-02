@@ -57,6 +57,7 @@ require (
 	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
+	github.com/miolini/datacounter v0.0.0-20190724021726-aa48df3a02c1
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/mxpv/patreon-go v0.0.0-20180807002359-67dbab1ad14c
 	github.com/nicklaw5/helix v0.5.2

@@ -69,6 +69,16 @@
                 }
 
                 $.ajax({
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.addEventListener('progress', function (e) {
+                            console.log(e);
+                            if (e.lengthComputable) {
+                                console.log((100 * e.loaded / e.total));
+                            }
+                        });
+                        return xhr;
+                    },
                     url: function () {
                         return $(element).attr('data-path');
                     }(),
