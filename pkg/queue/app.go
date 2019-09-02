@@ -379,7 +379,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 	var vdf = parseVDF("root", message.VDF)
 
-	if app.ChangeNumber > message.ChangeNumber {
+	if !config.IsLocal() && app.ChangeNumber > message.ChangeNumber {
 		return nil
 	}
 
@@ -400,7 +400,11 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 	app.Localization = ""
 	app.SystemRequirements = ""
 
-	for _, v := range vdf.Children {
+	if len(vdf.Children) == 0 {
+		return nil
+	}
+
+	for _, v := range vdf.Children[0].Children {
 
 		switch v.Name {
 		case "appid":
