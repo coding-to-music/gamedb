@@ -50,12 +50,10 @@ func main() {
 
 	// Routes
 	r := chi.NewRouter()
-	// r.Use(middlewareTime)
 	r.Use(MiddlewareCors())
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.DefaultCompress)
 	r.Use(MiddlewareRealIP)
-	// r.Use(middlewareLog)
 
 	// Pages
 	r.Get("/", pages.HomeHandler)
