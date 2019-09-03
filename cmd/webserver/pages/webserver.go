@@ -16,7 +16,6 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/derekstavis/go-qs"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/cmd/webserver/pages/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -25,7 +24,6 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/jinzhu/gorm"
 	"github.com/justinas/nosurf"
-	"github.com/miolini/datacounter"
 	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
@@ -53,17 +51,6 @@ func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 	w.Header().Set("Referrer-Policy", "no-referrer-when-downgrade")
 	w.Header().Set("Feature-Policy", "geolocation 'none'; midi 'none'; sync-xhr 'none'; microphone 'none'; camera 'none'; magnetometer 'none'; gyroscope 'none'; speaker 'none'; fullscreen 'none'; payment 'none';")
 	w.Header().Set("Server", "")
-
-	// todo, this doesnt work
-	buf := bytes.Buffer{}
-	counter := datacounter.NewWriterCounter(&buf)
-	w.Header().Set("Content-Length", strconv.FormatUint(counter.Count(), 10))
-
-	val, ok := w.(*middleware.ResponseWriterWithLength)
-	if ok {
-		log.Info("x")
-		w.Header().Set("Content-Length", strconv.Itoa(val.Length()))
-	}
 }
 
 func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err error) {
@@ -75,6 +62,9 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err erro
 		log.Err(err)
 		return
 	}
+
+	// For loading bars
+	w.Header().Set("Content-Lengthx", strconv.Itoa(len(b)))
 
 	_, err = w.Write(b)
 	return err

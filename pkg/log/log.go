@@ -177,6 +177,8 @@ func log(interfaces ...interface{}) {
 			entry.texts = append(entry.texts, strconv.Itoa(val))
 		case uint32:
 			entry.texts = append(entry.texts, strconv.FormatUint(uint64(val), 10))
+		case uint64:
+			entry.texts = append(entry.texts, strconv.FormatUint(val, 10))
 		case int64:
 			entry.texts = append(entry.texts, strconv.FormatInt(val, 10))
 		case float32:
