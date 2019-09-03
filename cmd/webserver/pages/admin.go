@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -19,8 +20,8 @@ import (
 func AdminRouter() http.Handler {
 	r := chi.NewRouter()
 
-	r.Use(middlewareAuthCheck())
-	r.Use(middlewareAdminCheck())
+	r.Use(middleware.MiddlewareAuthCheck())
+	r.Use(middleware.MiddlewareAdminCheck(Error404Handler))
 
 	r.Get("/", adminHandler)
 	r.Post("/", adminHandler)

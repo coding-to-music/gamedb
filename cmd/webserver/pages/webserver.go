@@ -21,9 +21,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/go-chi/cors"
 	"github.com/jinzhu/gorm"
-	"github.com/justinas/nosurf"
 	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
@@ -457,7 +455,7 @@ func (t GlobalTemplate) IsLoggedIn() bool {
 }
 
 func (t GlobalTemplate) IsAdmin() bool {
-	return isAdmin(t.request)
+	return helpers.IsAdmin(t.request)
 }
 
 func (t GlobalTemplate) ShowAds() bool {
@@ -511,93 +509,6 @@ func (t *GlobalTemplate) addAssetPasswordStrength() {
 type Asset struct {
 	URL       string
 	Integrity string
-}
-
-// Middleware
-func middlewareAuthCheck() func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-			loggedIn, err := isLoggedIn(r)
-			log.Err(err)
-
-			if loggedIn && err == nil {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			err = session.SetFlash(r, helpers.SessionBad, "Please login")
-			log.Err(err, r)
-
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		})
-	}
-}
-
-func middlewareAdminCheck() func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-			if isAdmin(r) {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			Error404Handler(w, r)
-		})
-	}
-}
-
-func middlewareCSRF(h http.Handler) http.Handler {
-
-	ns := nosurf.New(h)
-	ns.ExemptFunc(func(r *http.Request) bool {
-		return !strings.Contains(r.URL.Path, "update.json")
-	})
-
-	return ns
-}
-
-//noinspection GoUnusedExportedFunction
-func MiddlewareLog(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if config.IsLocal() {
-			log.Info(log.LogNameRequests, r.Method+" "+r.URL.String())
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
-//noinspection GoUnusedExportedFunction
-func MiddlewareTime(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		r.Header.Set("start-time", strconv.FormatInt(time.Now().UnixNano(), 10))
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-// todo, check this is alright
-func MiddlewareCors() func(next http.Handler) http.Handler {
-	return cors.New(cors.Options{
-		AllowedOrigins: []string{config.Config.GameDBDomain.Get()}, // Use this to allow specific origin hosts
-		AllowedMethods: []string{"GET", "POST"},
-	}).Handler
-}
-
-func MiddlewareRealIP(h http.Handler) http.Handler {
-	fn := func(w http.ResponseWriter, r *http.Request) {
-
-		rip := r.Header.Get(http.CanonicalHeaderKey("X-Real-IP"))
-		if rip != "" {
-			r.RemoteAddr = rip
-		}
-		h.ServeHTTP(w, r)
-	}
-
-	return http.HandlerFunc(fn)
 }
 
 // DataTablesAjaxResponse
@@ -819,15 +730,6 @@ type Toast struct {
 	Timeout int    `json:"timeout"`
 }
 
-//
-func isAdmin(r *http.Request) bool {
-
-	id, err := session.Get(r, helpers.SessionUserID)
-	log.Err(err)
-
-	return id == "1"
-}
-
 func getUserFromSession(r *http.Request) (user sql.User, err error) {
 
 	userID, err := helpers.GetUserIDFromSesion(r)
@@ -836,9 +738,4 @@ func getUserFromSession(r *http.Request) (user sql.User, err error) {
 	}
 
 	return sql.GetUserByID(userID)
-}
-
-func isLoggedIn(r *http.Request) (val bool, err error) {
-	read, err := session.Get(r, helpers.SessionUserEmail)
-	return read != "", err
 }

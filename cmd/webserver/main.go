@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	. "github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -50,10 +51,10 @@ func main() {
 	// Routes
 	r := chi.NewRouter()
 	// r.Use(middlewareTime)
-	r.Use(pages.MiddlewareCors())
+	r.Use(MiddlewareCors())
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.DefaultCompress)
-	r.Use(pages.MiddlewareRealIP)
+	r.Use(MiddlewareRealIP)
 	// r.Use(middlewareLog)
 
 	// Pages

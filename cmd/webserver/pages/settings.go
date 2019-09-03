@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/webserver/connections"
+	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -22,7 +23,7 @@ import (
 func SettingsRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Use(middlewareAuthCheck())
+	r.Use(middleware.MiddlewareAuthCheck())
 
 	r.Get("/", settingsHandler)
 	r.Post("/update", settingsPostHandler)

@@ -177,3 +177,17 @@ func GetUserLevel(r *http.Request) int {
 
 	return i
 }
+
+func IsAdmin(r *http.Request) bool {
+
+	id, err := session.Get(r, SessionUserID)
+	log.Err(err)
+
+	return id == "1"
+}
+
+func IsLoggedIn(r *http.Request) (val bool, err error) {
+
+	read, err := session.Get(r, SessionUserEmail)
+	return read != "", err
+}

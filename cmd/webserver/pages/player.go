@@ -9,6 +9,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/session-go/session"
+	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -20,7 +21,7 @@ import (
 
 func PlayerRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Use(middlewareCSRF) // Just used for update button
+	r.Use(middleware.MiddlewareCSRF) // Just used for update button
 	r.Get("/", playerHandler)
 	r.Get("/add-friends", playerAddFriendsHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
@@ -359,7 +360,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !isAdmin(r) {
+	if !helpers.IsAdmin(r) {
 
 		user, err := getUserFromSession(r)
 		if err != nil {
@@ -761,7 +762,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		updateType := mongo.PlayerUpdateManual
-		if isAdmin(r) {
+		if helpers.IsAdmin(r) {
 			message = "Admin update!"
 			updateType = mongo.PlayerUpdateAdmin
 		}
