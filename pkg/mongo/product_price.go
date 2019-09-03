@@ -70,6 +70,10 @@ func (price ProductPrice) GetPercentChange() float64 {
 
 func (price ProductPrice) OutputForJSON() (output []interface{}) {
 
+	if math.IsInf(price.DifferencePercent, 0) {
+		price.DifferencePercent = 0
+	}
+
 	return []interface{}{
 		price.AppID,     // 0
 		price.PackageID, // 1
