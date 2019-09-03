@@ -21,7 +21,10 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := tasks.GetTaskConfig(tasks.Developers{})
-	log.Err(err, r)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		log.Err(err, r)
+	}
 
 	// Get developers
 	developers, err := sql.GetAllDevelopers([]string{})

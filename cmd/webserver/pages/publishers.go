@@ -20,7 +20,10 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := tasks.GetTaskConfig(tasks.Publishers{})
-	log.Err(err, r)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		log.Err(err, r)
+	}
 
 	// Get publishers
 	publishers, err := sql.GetAllPublishers()

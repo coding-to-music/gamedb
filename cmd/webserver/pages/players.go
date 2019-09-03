@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 	"github.com/pariz/gountries"
@@ -79,8 +80,10 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		config, err := tasks.GetTaskConfig(tasks.PlayerRanks{})
-		log.Err(err, r)
-		if err == nil {
+		if err != nil {
+			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			log.Err(err, r)
+		} else {
 			date = config.Value
 		}
 	}()

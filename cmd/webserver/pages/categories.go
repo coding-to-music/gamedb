@@ -21,8 +21,10 @@ func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
 	config, err := tasks.GetTaskConfig(tasks.StatsCategories{})
-	err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
-	log.Err(err, r)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		log.Err(err, r)
+	}
 
 	// Get categories
 	categories, err := sql.GetAllCategories()
