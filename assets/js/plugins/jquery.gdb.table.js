@@ -72,9 +72,15 @@
                     xhr: function () {
                         var xhr = new window.XMLHttpRequest();
                         xhr.addEventListener('progress', function (e) {
-                            console.log(e);
+                            logLocal(e);
                             if (e.lengthComputable) {
-                                console.log((100 * e.loaded / e.total));
+                                logLocal((100 * e.loaded / e.total));
+                            }
+                        });
+                        xhr.upload.addEventListener('progress', function (e) {
+                            logLocal(e);
+                            if (e.lengthComputable) {
+                                logLocal((100 * e.loaded / e.total));
                             }
                         });
                         return xhr;

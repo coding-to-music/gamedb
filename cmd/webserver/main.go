@@ -49,10 +49,10 @@ func main() {
 	helpers.InitSession()
 
 	// Routes
+	// Don't add compression headers here, it stops js from being able to read the response content-length
 	r := chi.NewRouter()
 	r.Use(MiddlewareCors())
 	r.Use(middleware.RedirectSlashes)
-	r.Use(middleware.DefaultCompress)
 	r.Use(MiddlewareRealIP)
 
 	// Pages

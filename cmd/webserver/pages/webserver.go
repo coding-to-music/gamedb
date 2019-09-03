@@ -61,6 +61,9 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err erro
 		return
 	}
 
+	// For loading bars
+	w.Header().Set("Content-Length", strconv.Itoa(len(b)))
+
 	_, err = w.Write(b)
 	return err
 }
