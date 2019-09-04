@@ -1,30 +1,21 @@
 if ($('#price-changes-page').length > 0) {
 
-    const $chosens = $('select.form-control-chosen');
-    const $table = $('table.table');
-    const $form = $('form');
-
-    // Set form fields from URL
-    if (window.location.search) {
-        $form.deserialize(window.location.search.substr(1));
-    }
-
     // Setup drop downs
-    $chosens.chosen({
+    $('select.form-control-chosen').chosen({
         disable_search_threshold: 10,
         allow_single_deselect: true,
         rtl: false,
         max_selected_options: 10
     });
 
-    // Setup Sliders
+    // Change slider
     const changeLow = $('#change-low').val();
     const changeHigh = $('#change-high').val();
-    const changeElement = $('#change-slider')[0];
-    const changeSlider = noUiSlider.create(changeElement, {
+    const changeElement = $('#change-slider');
+    const changeSlider = noUiSlider.create(changeElement[0], {
         start: [
             parseInt(changeLow ? changeLow : -100),
-            parseInt(changeHigh ? changeHigh : 100)
+            parseInt(changeHigh ? changeHigh : 0)
         ],
         connect: true,
         step: 1,
@@ -34,10 +25,11 @@ if ($('#price-changes-page').length > 0) {
         }
     });
 
+    // Price slider
     const priceLow = $('#price-low').val();
     const priceHigh = $('#price-high').val();
-    const priceElement = $('#price-slider')[0];
-    const priceSlider = noUiSlider.create(priceElement, {
+    const priceElement = $('#price-slider');
+    const priceSlider = noUiSlider.create(priceElement[0], {
         start: [
             parseInt(priceLow ? priceLow : -100),
             parseInt(priceHigh ? priceHigh : 100)
@@ -50,62 +42,27 @@ if ($('#price-changes-page').length > 0) {
         }
     });
 
-    $chosens.on('change', redrawTable);
-    $form.on('submit', redrawTable);
-    changeSlider.on('set', onPercentChange);
-    changeSlider.on('update', updateLabels);
-    priceSlider.on('set', onPriceChange);
-    priceSlider.on('update', updateLabels);
-
-    function onPercentChange(e) {
-
-        const percents = changeSlider.get();
-        $('#change-low').val(percents[0]);
-        $('#change-high').val(percents[1]);
-        redrawTable();
-    }
-
-    function onPriceChange(e) {
-
-        const prices = priceSlider.get();
-        $('#price-low').val(prices[0]);
-        $('#price-high').val(prices[1]);
-        redrawTable();
-    }
-
-    function redrawTable(e) {
-
-        // Filter out empty form fields
-        let formData = $form.serializeArray();
-        formData = $.grep(formData, function (v) {
-            return v.value !== "";
-        });
-
-        $table.DataTable().draw();
-        history.pushState({}, document.title, '/price-changes?' + $.param(formData));
-        updateLabels(e);
-        return false;
-    }
-
-    $(document).ready(updateLabels);
-
+    //
     function updateLabels(e) {
 
         const percents = changeSlider.get();
-        const prices = priceSlider.get();
-
         if (percents[0] === percents[1]) {
             $('label#change-label').html('Price Change Percent (' + Math.round(percents[0]) + '%)');
         } else {
             $('label#change-label').html('Price Change Percent (' + Math.round(percents[0]) + '% - ' + Math.round(percents[1]) + '%)');
         }
 
+        const prices = priceSlider.get();
         if (prices[0] === prices[1]) {
             $('label#price-label').html('Final Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ')');
         } else {
             $('label#price-label').html('Final Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ' - ' + user.userCurrencySymbol + Math.round(prices[1]) + ')');
         }
     }
+
+    $(document).ready(updateLabels);
+
+    $typeField = $('#type');
 
     // Init table
     const options = {
@@ -132,7 +89,7 @@ if ($('#price-changes-page').length > 0) {
                 "render": function (data, type, row) {
 
                     let tagName = row[3];
-                    if ($('#type').val() == 'all') {
+                    if ($typeField.val() === 'all') {
                         if (row[0] > 0) {
                             tagName = tagName + ' <span class="badge badge-success float-right">App</span>';
                         } else if (row[1] > 0) {
@@ -140,7 +97,7 @@ if ($('#price-changes-page').length > 0) {
                         }
                     }
 
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-lazy-alt="' + row[15] + '"></div><div class="name">' + tagName + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[15] + '"></div><div class="name">' + tagName + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')
@@ -203,13 +160,12 @@ if ($('#price-changes-page').length > 0) {
 
     // Update table live
     const searchFields = [
-        $('#type'),
-        $('#change-low'),
-        $('#change-high'),
-        $('#price-low'),
-        $('#price-high'),
+        $typeField,
+        changeElement,
+        priceElement,
     ];
 
+    const $table = $('table.table');
     const dt = $table.gdbTable({tableOptions: options, searchFields: searchFields});
 
     websocketListener('prices', function (e) {
@@ -218,7 +174,7 @@ if ($('#price-changes-page').length > 0) {
         if (info.page === 0) { // Page 1
 
             const data = $.parseJSON(e.data);
-            const type = $('#type').val();
+            const type = $typeField.val();
 
             // Check cc matches
             if (data.Data[13] === user.prodCC) {

@@ -62,8 +62,28 @@
                 // Add search fields to ajax query from URL
                 const params = new URL(window.location).searchParams;
                 for (const $field of parentSettings.searchFields) {
-                    const name = $field.attr('name');
-                    const value = $field.prop('multiple') ? params.getAll(name) : params.get(name);
+
+                    let name, value = '';
+
+                    if ($field.prop('multiple')) {
+
+                        // Multi select
+                        name = $field.attr('name');
+                        value = params.getAll(name);
+
+                    } else if ($field.hasClass('noUi-target')) {
+
+                        // Slider
+                        name = $field.attr('data-name');
+                        value = params.getAll(name);
+
+                    } else { // Inputs
+
+                        name = $field.attr('name');
+                        value = params.get(name);
+
+                    }
+
                     if (name && value && value.length > 0) {
                         data.search[name] = value;
                     }
@@ -138,15 +158,30 @@
             // Hydrate search field inputs from url params
             const params = new URL(window.location).searchParams;
             for (const $field of this.settings.searchFields) {
-                const name = $field.attr('name');
-                if (params.has(name)) {
 
-                    $field.val(params.getAll(name));
+                if ($field.hasClass('noUi-target')) { // Slider
 
-                    // Update Chosen drop downs
-                    if ($field.hasClass('form-control-chosen')) {
-                        $field.trigger("chosen:updated");
+                    const slider = $field[0].noUiSlider;
+                    const name = $field.attr('data-name');
+
+                    if (params.has(name)) {
+                        slider.set(params.getAll(name));
                     }
+
+                } else { // Input
+
+                    const name = $field.attr('name');
+
+                    if (params.has(name)) {
+
+                        $field.val(params.getAll(name));
+
+                        // Update Chosen drop downs
+                        if ($field.hasClass('form-control-chosen')) {
+                            $field.trigger("chosen:updated");
+                        }
+                    }
+
                 }
             }
 
@@ -241,23 +276,58 @@
                 clearUrlParams();
             });
 
-            // Attach events to search fields
+            // Update URL when search fields are changed
             if (this.settings.isAjax()) {
                 for (const $field of this.settings.searchFields) {
-                    $field.on('change search', function (e) {
 
-                        dt.draw();
+                    if ($field.hasClass('noUi-target')) { // Slider
+
+                        const slider = $field[0].noUiSlider;
+                        const name = $field.attr('data-name');
+
+                        slider.on('set', function (e) {
+
+                            const value = slider.get();
+
+                            if (name && value) {
+                                setUrlParam(name, value);
+                            } else {
+                                deleteUrlParam(name);
+                            }
+
+                            if (typeof updateLabels == 'function') {
+                                updateLabels();
+                            }
+
+                            dt.draw();
+                        });
+
+
+                        slider.on('update', function (e) {
+                            if (typeof updateLabels == 'function') {
+                                updateLabels();
+                            }
+                        });
+
+                    } else { // Inputs
 
                         const name = $field.attr('name');
-                        const value = $field.val();
-                        if (name && value) {
-                            setUrlParam(name, value);
-                        } else {
-                            deleteUrlParam(name);
-                        }
 
-                        return false;
-                    });
+                        $field.on('change search', function (e) {
+
+                            const value = $field.val();
+
+                            if (name && value) {
+                                setUrlParam(name, value);
+                            } else {
+                                deleteUrlParam(name);
+                            }
+
+                            dt.draw();
+
+                            return false;
+                        });
+                    }
                 }
             } else {
                 for (const $field of this.settings.searchFields) {

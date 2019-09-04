@@ -28,8 +28,8 @@ if ($('#apps-page').length > 0) {
     // Score slider
     const scoreLow = $('#score-low').val();
     const scoreHigh = $('#score-high').val();
-    const scoreElement = $('#score-slider')[0];
-    const scoreSlider = noUiSlider.create(scoreElement, {
+    const scoreElement = $('#score-slider');
+    const scoreSlider = noUiSlider.create(scoreElement[0], {
         start: [
             parseInt(scoreLow ? scoreLow : 0),
             parseInt(scoreHigh ? scoreHigh : 100)
@@ -40,23 +40,6 @@ if ($('#apps-page').length > 0) {
             'min': 0,
             'max': 100
         }
-    });
-
-    // Slider events
-    priceSlider.on('update', updateLabels);
-    priceSlider.on('set', function (e) {
-        const prices = priceSlider.get();
-        $('#price-low').val(prices[0]);
-        $('#price-high').val(prices[1]);
-        updateLabels(e);
-    });
-
-    scoreSlider.on('update', updateLabels);
-    scoreSlider.on('set', function (e) {
-        const scores = scoreSlider.get();
-        $('#score-low').val(scores[0]);
-        $('#score-high').val(scores[1]);
-        updateLabels(e);
     });
 
     //
@@ -91,7 +74,7 @@ if ($('#apps-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
@@ -145,10 +128,8 @@ if ($('#apps-page').length > 0) {
         $('#platforms'),
         $('#types'),
         $('#search'),
-        $('#price-low'),
-        $('#price-high'),
-        $('#score-low'),
-        $('#score-high'),
+        priceElement,
+        scoreElement,
     ];
 
     $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});

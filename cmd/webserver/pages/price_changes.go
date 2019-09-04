@@ -60,7 +60,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter = append(filter, bson.E{Key: "package_id", Value: bson.M{"$gt": 0}})
 	}
 
-	percents := query.getSearchSlice("percents")
+	percents := query.getSearchSlice("change")
 	if len(percents) == 2 {
 		if percents[0] != "-100.00" {
 			min, err := strconv.ParseFloat(percents[0], 64)
@@ -78,7 +78,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	prices := query.getSearchSlice("prices")
+	prices := query.getSearchSlice("price")
 	if len(prices) == 2 {
 		if prices[0] != "0.00" {
 			min, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))

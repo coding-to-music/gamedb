@@ -314,7 +314,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Price range
-		prices := query.getSearchSlice("prices")
+		prices := query.getSearchSlice("price")
 		if len(prices) == 2 {
 
 			low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
