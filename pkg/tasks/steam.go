@@ -49,7 +49,7 @@ func (c SteamClientPlayers) work() {
 	sp := steamPlayersStruct{}
 	err = helpers.Unmarshal(b, &sp)
 	if err != nil {
-		log.Err("www.valvesoftware.com/en/about/stats down: " + string(b))
+		log.Warning("www.valvesoftware.com/en/about/stats down: " + string(b))
 		return
 	}
 
