@@ -13,6 +13,7 @@
             "dom": '<"dt-pagination"p>t<"dt-pagination"p>r',
             "fixedHeader": true,
             "info": false,
+            "processing": false,
             "language": {
                 "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>',
                 "paginate": {
@@ -69,25 +70,6 @@
                 }
 
                 $.ajax({
-                    xhr: function () {
-                        var xhr = new window.XMLHttpRequest();
-                        xhr.addEventListener('progress', function (e) {
-                            logLocal(e);
-                            if (e.lengthComputable) {
-                                logLocal((100 * e.loaded / e.total));
-                            }
-                        });
-                        xhr.upload.addEventListener('progress', function (e) {
-                            logLocal(e);
-                            if (e.lengthComputable) {
-                                logLocal((100 * e.loaded / e.total));
-                            }
-                        });
-                        return xhr;
-                    },
-                    url: function () {
-                        return $(element).attr('data-path');
-                    }(),
                     error: function (jqXHR, textStatus, errorThrown) {
 
                         data = {
@@ -100,6 +82,9 @@
 
                         callback(data, textStatus, null);
                     },
+                    url: function () {
+                        return $(element).attr('data-path');
+                    }(),
                     data: data,
                     success: callback,
                     dataType: 'json',

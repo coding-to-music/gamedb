@@ -188,3 +188,30 @@ function addDataTablesRow(options, data, limit, $table) {
 
     observeLazyImages($row.find('img[data-lazy]'));
 }
+
+// Loading bar
+(function () {
+
+    // const originalXhr = new window.XMLHttpRequest();
+    const originalXhr = $.ajaxSettings.xhr;
+    $.ajaxSetup({
+        xhr: function () {
+            const xhr = originalXhr();
+            if (xhr) {
+                xhr.addEventListener('progress', function (e) {
+                    if (e.lengthComputable) {
+                        const p = e.loaded / e.total * 100;
+                        if (p >= 100) {
+                            $('#loading-bar').fadeOut();
+                            $('#loading-bar div').width('100%');
+                        } else if (p > 1) {
+                            $('#loading-bar').fadeIn();
+                            $('#loading-bar div').width(p + '%');
+                        }
+                    }
+                });
+            }
+            return xhr;
+        }
+    });
+})();
