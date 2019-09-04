@@ -43,7 +43,7 @@
         }
 
         options.isAjax = function () {
-            return this.tableOptions.columnDefs != null
+            return $(element).attr('data-path') != null;
         };
 
         if (options.isAjax()) {
