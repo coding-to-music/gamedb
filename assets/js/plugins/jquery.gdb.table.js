@@ -208,14 +208,15 @@
                     : $pagination.show();
 
                 // Update URL
-                if (dt.order().length > 0) {
-                    if (dt.order()[0][1] === parent.settingsWithoutUrl.tableOptions.order[0][1] && dt.order()[0][0] === parent.settingsWithoutUrl.tableOptions.order[0][0]) {
-                        deleteUrlParam('order');
-                        deleteUrlParam('sort');
-                    } else {
-                        setUrlParam('order', dt.order()[0][1]);
-                        setUrlParam('sort', dt.order()[0][0]);
-                    }
+                const order = dt.order();
+                const settingsOrder = parent.settingsWithoutUrl.tableOptions.order;
+
+                if (settingsOrder != null && order[0][1] === settingsOrder[0][1] && order[0][0] === settingsOrder[0][0]) {
+                    deleteUrlParam('order');
+                    deleteUrlParam('sort');
+                } else {
+                    setUrlParam('order', order[0][1]);
+                    setUrlParam('sort', order[0][0]);
                 }
 
                 if (dt.page.info().page === 0) {
