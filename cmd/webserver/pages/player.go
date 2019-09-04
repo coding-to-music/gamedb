@@ -20,17 +20,22 @@ import (
 )
 
 func PlayerRouter() http.Handler {
+
 	r := chi.NewRouter()
-	r.Use(middleware.MiddlewareCSRF) // Just used for update button
-	r.Get("/", playerHandler)
+
+	r.Route("/", func(r chi.Router) {
+		r.Use(middleware.MiddlewareCSRF)
+		r.Get("/", playerHandler)
+		r.Get("/{slug}", playerHandler)
+		r.Get("/update.json", playersUpdateAjaxHandler)
+	})
+
 	r.Get("/add-friends", playerAddFriendsHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
 	r.Get("/recent.json", playerRecentAjaxHandler)
 	r.Get("/friends.json", playerFriendsAjaxHandler)
 	r.Get("/badges.json", playerBadgesAjaxHandler)
-	r.Get("/update.json", playersUpdateAjaxHandler)
 	r.Get("/history.json", playersHistoryAjaxHandler)
-	r.Get("/{slug}", playerHandler)
 	return r
 }
 
@@ -736,7 +741,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	message, err, success := func(r *http.Request) (string, error, bool) {
 
-		if !nosurf.VerifyToken(nosurf.Token(r), r.URL.Query().Get("csrf")) {
+		if !nosurf.VerifyToken(nosurf.Token(r), r.URL.Query().Get("csrf")) || r.URL.Query().Get("csrf") == "" {
 			return "Invalid CSRF token, please refresh", nil, false
 		}
 

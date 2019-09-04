@@ -3,7 +3,6 @@ package middleware
 import (
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Jleagle/session-go/session"
@@ -15,13 +14,7 @@ import (
 )
 
 func MiddlewareCSRF(h http.Handler) http.Handler {
-
-	ns := nosurf.New(h)
-	ns.ExemptFunc(func(r *http.Request) bool {
-		return !strings.Contains(r.URL.Path, "update.json") // Only update.json
-	})
-
-	return ns
+	return nosurf.New(h)
 }
 
 // todo, check this is alright
