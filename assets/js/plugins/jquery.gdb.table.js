@@ -144,8 +144,6 @@
         this.settings = $.extend(true, {}, defaults, options, {tableOptions: urlOptions});
         this.element = element;
         this.user = user;
-        this._defaults = defaults;
-        this._name = pluginName;
         this.init();
     }
 
