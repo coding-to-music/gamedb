@@ -60,7 +60,7 @@ header {
     background-size: cover;
     position: absolute;
     @include media-breakpoint-up(sm) {
-        position: fixed;
+        //position: fixed;
     }
 
     &:before {
