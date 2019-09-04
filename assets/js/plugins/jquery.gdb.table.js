@@ -28,6 +28,9 @@
             "pagingType": 'simple_numbers',
             "searching": true,
             "stateSave": false,
+            "drawCallback": function (settings) {
+                // todo, add broken bits here?
+            },
         },
     };
 
