@@ -18,7 +18,7 @@ if ($appPage.length > 0) {
     // Show dev raw row
     $('#dev table.table tbody').on('click', 'td i, td svg', function () {
 
-        const table = $(this).closest('table').DataTable()
+        const table = $(this).closest('table').DataTable();
         const $tr = $(this).closest('tr');
         const row = table.row($tr);
 
@@ -268,7 +268,7 @@ if ($appPage.length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[25] + '" data-lazy-alt="' + row[16] + '"></div><div class="name">' + row[16] + '</div></div>'
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[25] + '" alt="" data-lazy-alt="' + row[16] + '"></div><div class="name">' + row[16] + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -366,7 +366,7 @@ if ($appPage.length > 0) {
         // Item search
         const $searchField = $('#items-search');
         $searchField.on('keyup', function (e) {
-            if (e.which == 13) { // Enter
+            if (e.which === 13) { // Enter
                 table.draw();
                 return false;
             }
@@ -600,7 +600,7 @@ if ($appPage.length > 0) {
                     "targets": 1,
                     "render": function (data, type, row) {
                         if (row[3]) {
-                            return '<img data-lazy="' + row[3] + '" data-lazy-alt="' + row[7] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[7] + '" class="rounded">';
+                            return '<img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[7] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[7] + '" class="rounded">';
                         }
                         return '';
                     },
@@ -613,7 +613,7 @@ if ($appPage.length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
