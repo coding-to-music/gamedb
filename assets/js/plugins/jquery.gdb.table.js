@@ -153,6 +153,8 @@
             const dt = $(this.element).DataTable(this.settings.tableOptions);
             const parent = this;
 
+            this.dt = dt; // To return from plugin call
+
             // Hydrate search field inputs from url params
             const params = new URL(window.location).searchParams;
             for (const $field of this.settings.searchFields) {
