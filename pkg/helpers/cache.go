@@ -38,13 +38,13 @@ func GetCache(name string, ttl time.Duration, retrieve func() interface{}, val i
 
 	} else {
 
+		log.Info("Saving " + name + " to cache")
+
 		// Write to cache
 		defer func() {
 			err = writer.Close()
 			log.Err(err)
 		}()
-
-		log.Info("Loading " + name + " from cache")
 
 		var buf bytes.Buffer
 		encoder := gob.NewEncoder(&buf)
