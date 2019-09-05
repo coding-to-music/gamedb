@@ -347,6 +347,9 @@
             if (!this.settings.isAjax()) {
                 $(parent.element).trigger('draw.dt');
             }
+
+            // Keep track of tables, so we can recalculate fixed headers on tab changes etc
+            window.gdbTables = window.gdbTables || [];
             window.gdbTables.push();
         },
         highlightRows: function () {
