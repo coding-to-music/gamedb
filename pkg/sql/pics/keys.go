@@ -61,6 +61,7 @@ var CommonKeys = map[string]PicsKey{
 	"openvr_controller_bindings":    {FormatType: picsTypeJSON},
 	"original_release_date":         {FormatType: picsTypeTimestamp},
 	"oslist":                        {FormatType: picsTypeTextListString, Link: "/apps?platforms=$val$"},
+	"openvrsupport":                 {FormatType: picsTypeBool},
 	"playareavr":                    {FormatType: picsTypeJSON},
 	"primary_genre":                 {FormatType: picsTypeLink, Link: "/apps?genres=$val$"},
 	"releasestate":                  {FormatType: picsTypeTitle},
