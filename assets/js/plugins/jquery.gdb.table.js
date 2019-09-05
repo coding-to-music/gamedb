@@ -208,21 +208,24 @@
                     : $pagination.show();
 
                 // Update URL
-                const order = dt.order();
-                const settingsOrder = parent.settingsWithoutUrl.tableOptions.order;
+                if ($(parent.element).is(":visible")) {
 
-                if (settingsOrder != null && order[0][1] === settingsOrder[0][1] && order[0][0] === settingsOrder[0][0]) {
-                    deleteUrlParam('order');
-                    deleteUrlParam('sort');
-                } else {
-                    setUrlParam('order', order[0][1]);
-                    setUrlParam('sort', order[0][0]);
-                }
+                    const order = dt.order();
+                    const settingsOrder = parent.settingsWithoutUrl.tableOptions.order;
 
-                if (dt.page.info().page === 0) {
-                    deleteUrlParam('page');
-                } else {
-                    setUrlParam('page', dt.page.info().page + 1);
+                    if (settingsOrder != null && order[0][1] === settingsOrder[0][1] && order[0][0] === settingsOrder[0][0]) {
+                        deleteUrlParam('order');
+                        deleteUrlParam('sort');
+                    } else {
+                        setUrlParam('order', order[0][1]);
+                        setUrlParam('sort', order[0][0]);
+                    }
+
+                    if (dt.page.info().page === 0) {
+                        deleteUrlParam('page');
+                    } else {
+                        setUrlParam('page', dt.page.info().page + 1);
+                    }
                 }
 
                 // Bold rows
