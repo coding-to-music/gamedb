@@ -28,9 +28,6 @@
             "pagingType": 'simple_numbers',
             "searching": true,
             "stateSave": false,
-            "drawCallback": function (settings) {
-                // todo, add broken bits here?
-            },
         },
     };
 
@@ -340,9 +337,10 @@
                 }
             }
 
-            // Keep track of tables
-            if (window.gdbTables == null) {
-                window.gdbTables = [];
+            // Local tables finish initializing before event handlers are attached,
+            // so we trigger them again here.
+            if (!this.settings.isAjax()) {
+                $(parent.element).trigger('draw.dt');
             }
             window.gdbTables.push();
         },
