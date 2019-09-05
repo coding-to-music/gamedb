@@ -1,7 +1,5 @@
 if ($('#news-page').length > 0) {
 
-    const $table = $('table.table');
-
     // On tab change
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 
@@ -76,6 +74,7 @@ if ($('#news-page').length > 0) {
             ]
         };
 
+        const $table = $('#news-table');
         const table = $table.gdbTable({tableOptions: options});
 
         $table.on('click', 'tr[role=row] td.article-title', function () {

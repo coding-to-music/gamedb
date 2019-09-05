@@ -1,19 +1,5 @@
 if ($('#groups-page').length > 0) {
 
-    const $groupsTable = $('table.table');
-
-    $('form').on('submit', function (e) {
-
-        $groupsTable.DataTable().draw();
-        return false;
-    });
-
-    $('#type, #errors').on('change', function (e) {
-
-        $groupsTable.DataTable().draw();
-        return false;
-    });
-
     const options = {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -32,7 +18,7 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[3] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
@@ -66,11 +52,12 @@ if ($('#groups-page').length > 0) {
         ]
     };
 
-    const searchFields = [
-        $('#search'),
-        $('#type'),
-        $('#errors'),
-    ];
-
-    $groupsTable.gdbTable({tableOptions: options, searchFields: searchFields});
+    $('table.table').gdbTable({
+        tableOptions: options,
+        searchFields: [
+            $('#search'),
+            $('#type'),
+            $('#errors'),
+        ],
+    });
 }

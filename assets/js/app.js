@@ -214,13 +214,13 @@ if ($appPage.length > 0) {
             ]
         };
 
-        const $newstable = $('#news-table');
+        const $newsTable = $('#news-table');
 
-        const dt = $newstable.gdbTable({tableOptions: options});
+        const table = $newsTable.gdbTable({tableOptions: options});
 
-        $newstable.on('click', 'tr[role=row]', function () {
+        $newsTable.on('click', 'tr[role=row]', function () {
 
-            const row = dt.row($(this));
+            const row = table.row($(this));
 
             // noinspection JSUnresolvedFunction
             if (row.child.isShown()) {
@@ -362,20 +362,6 @@ if ($appPage.length > 0) {
                 }
             }
         );
-
-        // Item search
-        const $searchField = $('#items-search');
-        $searchField.on('keyup', function (e) {
-            if (e.which === 13) { // Enter
-                table.draw();
-                return false;
-            }
-            if (e.key === 'Escape') {
-                $(this).val('');
-                table.draw();
-                return false;
-            }
-        });
     }
 
     const defaultAppChartOptions = {
