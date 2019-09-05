@@ -87,6 +87,10 @@ func LogSteamError(err error, interfaces ...interface{}) {
 
 	isError := func() bool {
 
+		if val, ok := err.(steam.Error); ok && val.Code == 429 {
+			return false
+		}
+
 		if strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
 			return false
 		}
