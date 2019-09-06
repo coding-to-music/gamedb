@@ -16,6 +16,7 @@ import (
 
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/getsentry/sentry-go"
 	"github.com/logrusorgru/aurora"
 	"github.com/rollbar/rollbar-go"
 )
@@ -86,7 +87,7 @@ func (s Severity) string() string {
 type entry struct {
 	request   *http.Request
 	texts     []string
-	error     string
+	error     error
 	logName   LogName
 	severity  Severity
 	timestamp time.Time
@@ -114,8 +115,8 @@ func (e entry) toText(severity Severity) string {
 	ret = append(ret, e.texts...)
 
 	// Error
-	if e.error != "" {
-		ret = append(ret, e.error)
+	if e.error != nil {
+		ret = append(ret, e.error.Error())
 	}
 
 	// Join
@@ -190,7 +191,7 @@ func log(interfaces ...interface{}) {
 		case *http.Request:
 			entry.request = val
 		case error:
-			entry.error = val.Error()
+			entry.error = val
 		case LogName:
 			entry.logName = val
 		case Severity:
@@ -205,7 +206,7 @@ func log(interfaces ...interface{}) {
 		}
 	}
 
-	if len(entry.texts) > 0 || entry.error != "" {
+	if len(entry.texts) > 0 || entry.error != nil {
 
 		// Local
 		switch entry.severity {
