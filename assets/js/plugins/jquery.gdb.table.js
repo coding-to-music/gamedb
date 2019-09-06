@@ -47,7 +47,7 @@
 
         if (options.isAjax()) {
 
-            defaults.tableOptions.processing = true;
+            defaults.tableOptions.processing = false;
             defaults.tableOptions.serverSide = true;
             defaults.tableOptions.orderMulti = false;
 
