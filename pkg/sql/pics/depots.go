@@ -11,7 +11,7 @@ type AppDepotItem struct {
 	Configs                    map[string]string `json:"config"`
 	Manifests                  map[string]string `json:"manifests"`
 	EncryptedManifests         string            `json:"encryptedmanifests"`
-	MaxSize                    int64             `json:"maxsize"`
+	MaxSize                    uint64            `json:"maxsize"`
 	App                        int               `json:"depotfromapp"`
 	DLCApp                     int               `json:"dlcappid"`
 	SystemDefined              bool              `json:"systemdefined"`

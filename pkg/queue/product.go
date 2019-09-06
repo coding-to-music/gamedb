@@ -163,7 +163,7 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.Depots) {
 				logError(err)
 				depot.EncryptedManifests = string(b)
 			case "maxsize":
-				maxSize, err := strconv.ParseInt(vv.Value.(string), 10, 64)
+				maxSize, err := strconv.ParseUint(vv.Value.(string), 10, 64)
 				logError(err)
 				depot.MaxSize = maxSize
 			case "dlcappid":
