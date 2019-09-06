@@ -5,7 +5,6 @@
     // Create the defaults once
     const pluginName = "gdbTable";
     const defaults = {
-        fadeOnLoad: true,
         cache: true,
         searchFields: [],
         tableOptions: {
@@ -90,6 +89,13 @@
                 }
 
                 $.ajax({
+                    data: data,
+                    dataType: 'json',
+                    cache: options.cache,
+                    url: function () {
+                        return $(element).attr('data-path');
+                    }(),
+                    success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
 
                         data = {
@@ -102,13 +108,6 @@
 
                         callback(data, textStatus, null);
                     },
-                    url: function () {
-                        return $(element).attr('data-path');
-                    }(),
-                    data: data,
-                    success: callback,
-                    dataType: 'json',
-                    cache: options.cache,
                 });
             }
         } else {
@@ -150,49 +149,19 @@
     $.extend(Plugin.prototype, {
         init: function () {
 
-            const dt = $(this.element).DataTable(this.settings.tableOptions);
             const parent = this;
 
-            this.dt = dt; // To return from plugin call
+            // Fade on load
+            $(this.element).on('preXhr.dt', function (e, settings, data) {
+                $(parent.element).fadeTo(500, 0.3);
+            });
 
-            // Hydrate search field inputs from url params
-            const params = new URL(window.location).searchParams;
-            for (const $field of this.settings.searchFields) {
-
-                if ($field.hasClass('noUi-target')) { // Slider
-
-                    const slider = $field[0].noUiSlider;
-                    const name = $field.attr('data-name');
-
-                    if (params.has(name)) {
-                        slider.set(params.getAll(name));
-                    }
-
-                } else { // Input
-
-                    const name = $field.attr('name');
-
-                    if (params.has(name)) {
-
-                        $field.val(params.getAll(name));
-
-                        // Update Chosen drop downs
-                        if ($field.hasClass('form-control-chosen')) {
-                            $field.trigger("chosen:updated");
-                        }
-                    }
-
-                }
-            }
-
-            // On AJAX
-            dt.on('xhr.dt', function (e, settings, json, xhr) {
-                // Add donate button
-                parent.limited = json.limited;
+            $(this.element).on('xhr.dt', function (e, settings, json, xhr) {
+                $(parent.element).fadeTo(100, 1);
             });
 
             // On Draw
-            dt.on('draw.dt', function (e, settings) {
+            $(this.element).on('draw.dt', function (e, settings) {
 
                 // Add donate button
                 if (parent.limited) {
@@ -238,6 +207,46 @@
                 fixBrokenImages();
             });
 
+            //
+            const dt = $(this.element).DataTable(this.settings.tableOptions);
+            this.dt = dt; // To return from plugin call
+
+            // Hydrate search field inputs from url params
+            const params = new URL(window.location).searchParams;
+            for (const $field of this.settings.searchFields) {
+
+                if ($field.hasClass('noUi-target')) { // Slider
+
+                    const slider = $field[0].noUiSlider;
+                    const name = $field.attr('data-name');
+
+                    if (params.has(name)) {
+                        slider.set(params.getAll(name));
+                    }
+
+                } else { // Input
+
+                    const name = $field.attr('name');
+
+                    if (params.has(name)) {
+
+                        $field.val(params.getAll(name));
+
+                        // Update Chosen drop downs
+                        if ($field.hasClass('form-control-chosen')) {
+                            $field.trigger("chosen:updated");
+                        }
+                    }
+
+                }
+            }
+
+            // On AJAX
+            dt.on('xhr.dt', function (e, settings, json, xhr) {
+                // Add donate button
+                parent.limited = json.limited;
+            });
+
             // On page change
             dt.on('page.dt', function (e, settings, processing) {
 
@@ -250,18 +259,6 @@
                     scrollTop: $(this).prev().offset().top - padding
                 }, 200);
             });
-
-            // Server side table events only
-            if (this.settings.isAjax() && this.settings.fadeOnLoad) {
-
-                dt.on('page.dt search.dt', function (e, settings) {
-                    $(parent.element).fadeTo(500, 0.3);
-                });
-
-                dt.on('draw.dt', function (e, settings) {
-                    $(parent.element).fadeTo(100, 1);
-                });
-            }
 
             // Fixes scrolling to pagination on every click
             $(this.element).parent().find(".paginate_button > a").one("focus", function () {
@@ -340,12 +337,6 @@
                         dt.draw();
                     });
                 }
-            }
-
-            // Local tables finish initializing before event handlers are attached,
-            // so we trigger them again here.
-            if (!this.settings.isAjax()) {
-                $(parent.element).trigger('draw.dt');
             }
 
             // Keep track of tables, so we can recalculate fixed headers on tab changes etc
