@@ -466,16 +466,6 @@
                             </table>
                         </div>
 
-                        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="news-modal">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-body">
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     {{ else }}
 
                         <p>This app has no news.</p>
@@ -891,9 +881,9 @@
                                                         <td>
                                                             <div class="json">{{ .EncryptedManifests }}</div>
                                                         </td>
-                                                        <td>{{ .MaxSize }}</td>
-                                                        <td>{{ .App }}</td>
-                                                        <td>{{ .DLCApp }}</td>
+                                                        <td>{{ bytes .MaxSize }}</td>
+                                                        <td>{{ if ne .App 0 }}<a rel="nofollow" href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>
+                                                        <td>{{ if ne .DLCApp 0 }}<a rel="nofollow" href="/apps/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
                                                         <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                         <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                         <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
