@@ -92,6 +92,9 @@ type BaseConfig struct {
 	RollbarSecret ConfigItem
 	RollbarUser   ConfigItem
 
+	// Sentry
+	SentryDSN ConfigItem
+
 	// Sessions
 	SessionAuthentication ConfigItem
 	SessionEncryption     ConfigItem
@@ -202,6 +205,9 @@ func init() {
 	// Rollbar
 	Config.RollbarSecret.Set("ROLLBAR_PRIVATE")
 	Config.RollbarUser.Set("ROLLBAR_USER")
+
+	// Sentry
+	Config.SentryDSN.Set("SENTRY_DSN")
 
 	// Session
 	Config.SessionAuthentication.Set("SESSION_AUTHENTICATION")
