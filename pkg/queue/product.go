@@ -121,7 +121,7 @@ func (i rabbitMessageProductKeyValues) GetAppConfig() (config pics.PICSKeyValues
 	return config, launch
 }
 
-func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.PICSDepots) {
+func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.Depots) {
 
 	depots.Extra = map[string]string{}
 
@@ -146,7 +146,7 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.PICSDepots) {
 			continue
 		}
 
-		depot := pics.PICSAppDepotItem{}
+		depot := pics.AppDepotItem{}
 		depot.ID = id
 
 		for _, vv := range v.Children {
@@ -210,11 +210,11 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.PICSDepots) {
 	return depots
 }
 
-func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []pics.PICSAppDepotBranches) {
+func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []pics.AppDepotBranches) {
 
 	for _, v := range i.Children {
 
-		branch := pics.PICSAppDepotBranches{}
+		branch := pics.AppDepotBranches{}
 		branch.Name = v.Name
 
 		for _, vv := range v.Children {

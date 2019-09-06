@@ -39,7 +39,7 @@ type App struct {
 	Common            string    `gorm:"not null;column:common"`                           // PICSAppCommon
 	Config            string    `gorm:"not null;column:config"`                           // PICSAppConfig
 	CreatedAt         time.Time `gorm:"not null;column:created_at;type:datetime"`         //
-	Depots            string    `gorm:"not null;column:depots"`                           // PICSDepots
+	Depots            string    `gorm:"not null;column:depots"`                           // Depots
 	Developers        string    `gorm:"not null;column:developers;type:json"`             // []int
 	DemoIDs           string    `gorm:"not null;column:demo_ids;type:json"`               // []int
 	DLC               string    `gorm:"not null;column:dlc;type:json"`                    // []int
@@ -345,7 +345,7 @@ func (app App) GetUFS() (ufs pics.PICSKeyValues) {
 	return ufs
 }
 
-func (app App) GetDepots() (depots pics.PICSDepots, err error) {
+func (app App) GetDepots() (depots pics.Depots, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Depots), &depots)
 	log.Err(err)

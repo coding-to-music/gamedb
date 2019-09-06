@@ -1,11 +1,11 @@
 package pics
 
-type PICSDepots struct {
-	Depots   []PICSAppDepotItem
-	Branches []PICSAppDepotBranches
+type Depots struct {
+	Depots   []AppDepotItem
+	Branches []AppDepotBranches
 	Extra    map[string]string
 }
-type PICSAppDepotItem struct {
+type AppDepotItem struct {
 	ID                         int               `json:"id"`
 	Name                       string            `json:"name"`
 	Configs                    map[string]string `json:"config"`
@@ -21,7 +21,7 @@ type PICSAppDepotItem struct {
 	LVCache                    bool              `json:"lvcache"`
 	AllowAddRemoveWhileRunning bool              `json:"allowaddremovewhilerunning"`
 }
-type PICSAppDepotBranches struct {
+type AppDepotBranches struct {
 	Name             string `json:"name"`
 	Description      string `json:"description"`
 	BuildID          int    `json:"buildid"`
