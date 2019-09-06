@@ -10,7 +10,7 @@ div.card {
     background: rgba(33, 37, 41, .9) !important;
 }
 
-.table {
+table.table {
     color: #e9ecef !important;
 
     tr:hover {
@@ -25,5 +25,11 @@ div.card {
 
     td {
         border-top: 1px solid #343a40;
+    }
+}
+
+#price-changes-page {
+    table.table tbody {
+        color: #212529;
     }
 }
