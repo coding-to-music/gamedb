@@ -3,6 +3,7 @@ package sql
 import (
 	"errors"
 	"html/template"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -468,6 +469,15 @@ func (app App) GetPCGamingWikiLink() string {
 
 func (app App) GetHeaderImage() string {
 	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
+}
+
+func (app App) GetHeaderImage2() string {
+
+	params := url.Values{}
+	params.Set("url", app.GetHeaderImage())
+	params.Set("q", "10")
+
+	return "https://images.weserv.nl?" + params.Encode()
 }
 
 func (app App) GetInstallLink() template.URL {
