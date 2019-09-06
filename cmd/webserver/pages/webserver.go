@@ -18,6 +18,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -190,6 +191,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
 		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
 		"escape":       func(text string) string { return html.EscapeString(text) },
+		"round":        func(i int) string { return rounding.NearestThousandFormat(float64(i)) },
 	}
 }
 
