@@ -92,6 +92,8 @@ func main() {
 			case steam.FatalErrorEvent:
 
 				steamLogInfo("Steam: Disconnected because of error")
+				steamLoggedOn = false
+				go steamClient.Connect()
 
 			case error:
 				steamLogError(e)
