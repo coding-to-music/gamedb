@@ -6,6 +6,7 @@ body {
     background-color: #1b2738;
 }
 
+// Only if background is there
 body.bg {
     div.jumbotron {
 
@@ -29,6 +30,17 @@ body.bg {
     }
 }
 
+body.dark {
+    @import "dark";
+}
+
+// Only in dark mode
+@media (prefers-color-scheme: dark) {
+    body {
+        @import "dark";
+    }
+}
+
 header {
     background-color: rgba(27, 39, 56, 0.9);
     position: relative;
@@ -47,6 +59,7 @@ header {
         position: static;
     }
 }
+
 
 #bg {
     top: 0;

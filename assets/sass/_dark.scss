@@ -1,0 +1,29 @@
+div.container {
+    color: rgb(233, 236, 239) !important;
+}
+
+div.jumbotron {
+    background: rgba(33, 37, 41, .9) !important;
+}
+
+div.card {
+    background: rgba(33, 37, 41, .9) !important;
+}
+
+.table {
+    color: #e9ecef !important;
+
+    tr:hover {
+        color: #e9ecef !important;
+    }
+
+    .thead-light th {
+        color: #fff;
+        background-color: #343a40;
+        border-color: #454d55;
+    }
+
+    td {
+        border-top: 1px solid #343a40;
+    }
+}
