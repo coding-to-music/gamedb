@@ -136,17 +136,27 @@ var (
 )
 
 func init() {
+
 	var err error
+
+	// Google
 	googleClient, err = logging.NewClient(context.Background(), config.Config.GoogleProject.Get())
 	if err != nil {
 		fmt.Println(err)
 	}
 
+	// Rollbar
 	rollbar.SetToken(config.Config.RollbarSecret.Get())
 	rollbar.SetEnvironment(config.Config.Environment.Get())
 	rollbar.SetCodeVersion(config.Config.CommitHash.Get())
 	rollbar.SetServerHost("gamedb.online")
 	rollbar.SetServerRoot("github.com/gamedb/gamedb")
+
+	// Sentry
+	err = sentry.Init(sentry.ClientOptions{Dsn: config.Config.SentryDSN.Get(),})
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func log(interfaces ...interface{}) {
@@ -237,9 +247,14 @@ func log(interfaces ...interface{}) {
 				},
 			})
 
-			// Rollbar
 			if entry.severity == SeverityWarning || entry.severity == SeverityError || entry.severity == SeverityCritical {
+
+				// Rollbar
 				rollbar.Log(rollbar.ERR, entry.toText(SeverityInfo))
+
+				// Sentry
+				sentry.CaptureException(entry.error)
+				sentry.Flush(time.Second * 5)
 			}
 		}
 	}
