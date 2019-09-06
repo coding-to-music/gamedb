@@ -21,15 +21,15 @@ import (
 
 type playerMessage struct {
 	ID            int64  `json:"id"`
-	Eresult       int32  `json:"eresult"`
-	SteamidFriend uint64 `json:"steamid_friend"`
-	TimeCreated   uint32 `json:"time_created"`
-	RealName      string `json:"real_name"`
-	CityName      string `json:"city_name"`
-	StateName     string `json:"state_name"`
-	CountryName   string `json:"country_name"`
-	Headline      string `json:"headline"`
-	Summary       string `json:"summary"`
+	Eresult       int32  `json:"eresult,omitempty"`
+	SteamidFriend uint64 `json:"steamid_friend,omitempty"`
+	TimeCreated   uint32 `json:"time_created,omitempty"`
+	RealName      string `json:"real_name,omitempty"`
+	CityName      string `json:"city_name,omitempty"`
+	StateName     string `json:"state_name,omitempty"`
+	CountryName   string `json:"country_name,omitempty"`
+	Headline      string `json:"headline,omitempty"`
+	Summary       string `json:"summary,omitempty"`
 }
 
 type playerQueue struct {

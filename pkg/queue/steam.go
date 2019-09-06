@@ -12,9 +12,9 @@ import (
 )
 
 type steamMessage struct {
-	AppIDs     []int   `json:"app_ids"`
-	PackageIDs []int   `json:"package_ids"`
-	PlayerIDs  []int64 `json:"player_ids"`
+	AppIDs     []int   `json:"app_ids,omitempty"`
+	PackageIDs []int   `json:"package_ids,omitempty"`
+	PlayerIDs  []int64 `json:"player_ids,omitempty"`
 }
 
 type steamQueue struct {

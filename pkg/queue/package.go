@@ -21,8 +21,8 @@ import (
 
 type packageMessage struct {
 	ID           int                    `json:"id"`
-	ChangeNumber int                    `json:"change_number"`
-	VDF          map[string]interface{} `json:"vdf"`
+	ChangeNumber int                    `json:"change_number,omitempty"`
+	VDF          map[string]interface{} `json:"vdf,omitempty"`
 }
 
 type packageQueue struct {
