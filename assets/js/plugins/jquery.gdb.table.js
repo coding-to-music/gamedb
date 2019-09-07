@@ -151,14 +151,26 @@
 
             const parent = this;
 
-            // Fade on load
+            // Before AJAX
             $(this.element).on('preXhr.dt', function (e, settings, data) {
+
+                // Fade
                 $(parent.element).fadeTo(500, 0.3);
             });
 
+            // After AJAX
             $(this.element).on('xhr.dt', function (e, settings, json, xhr) {
+
+                // Fade
                 $(parent.element).fadeTo(100, 1);
+
+                // Add donate button
+                parent.limited = json.limited;
             });
+
+            // Init table
+            const dt = $(this.element).DataTable(this.settings.tableOptions);
+            this.dt = dt; // To return from plugin call
 
             // On Draw
             $(this.element).on('draw.dt', function (e, settings) {
@@ -207,10 +219,6 @@
                 fixBrokenImages();
             });
 
-            //
-            const dt = $(this.element).DataTable(this.settings.tableOptions);
-            this.dt = dt; // To return from plugin call
-
             // Hydrate search field inputs from url params
             const params = new URL(window.location).searchParams;
             for (const $field of this.settings.searchFields) {
@@ -241,12 +249,6 @@
                 }
             }
 
-            // On AJAX
-            dt.on('xhr.dt', function (e, settings, json, xhr) {
-                // Add donate button
-                parent.limited = json.limited;
-            });
-
             // On page change
             dt.on('page.dt', function (e, settings, processing) {
 
@@ -258,11 +260,6 @@
                 $('html, body').animate({
                     scrollTop: $(this).prev().offset().top - padding
                 }, 200);
-            });
-
-            // Fixes scrolling to pagination on every click
-            $(this.element).parent().find(".paginate_button > a").one("focus", function () {
-                $(this).blur();
             });
 
             // On tab change
@@ -337,6 +334,17 @@
                         dt.draw();
                     });
                 }
+            }
+
+            // Fixes scrolling to pagination on every click
+            $(this.element).parent().find(".paginate_button > a").one("focus", function () {
+                $(this).blur();
+            });
+
+            // Local tables finish initializing before event handlers are attached,
+            // so we trigger them again here.
+            if (!this.settings.isAjax()) {
+                $(parent.element).trigger('draw.dt');
             }
 
             // Keep track of tables, so we can recalculate fixed headers on tab changes etc
