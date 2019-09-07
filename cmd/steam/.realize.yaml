@@ -1,5 +1,5 @@
 schema:
-  - name: Updater
+  - name: Steam
     path: .
     commands:
       install:
