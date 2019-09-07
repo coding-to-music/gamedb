@@ -54,14 +54,12 @@ require (
 	github.com/jzelinskie/geddit v0.0.0-20190613154237-4b3cacc98c40
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20190804165540-94edacc10f9b
-	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
-	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/mxpv/patreon-go v0.0.0-20180807002359-67dbab1ad14c
 	github.com/nicklaw5/helix v0.5.2
-	github.com/nlopes/slack v0.5.0
+	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/oschwald/maxminddb-golang v1.4.0
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
