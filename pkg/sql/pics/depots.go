@@ -32,3 +32,15 @@ type AppDepotBranches struct {
 	UnlockForSubs    string `json:"unlockforsubs"`
 }
 
+type DepotConfig struct {
+	OSList      string `json:"oslist"`
+	OSArch      string `json:"osarch"`
+	OptionalDLC string `json:"optionaldlc"`
+	Language    string `json:"language"`
+	LowViolence string `json:"lowviolence"`
+}
+
+type DepotManifest struct {
+	Local  string `json:"local"`
+	Public string `json:"public"`
+}
