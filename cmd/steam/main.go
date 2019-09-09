@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	vdf "github.com/Jleagle/valve-data-format-go"
 	"github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/protocol"
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
@@ -19,7 +20,7 @@ import (
 const (
 	steamSentryFilename        = ".sentry.txt"
 	steamCurrentChangeFilename = ".change.txt"
-	checkForChangesOnLocal     = false
+	checkForChangesOnLocal     = true
 )
 
 var (
@@ -152,6 +153,8 @@ func (ph packetHandler) HandlePacket(packet *protocol.Packet) {
 		ph.handleChangesSince(packet)
 	case EMsg_ClientFriendProfileInfoResponse:
 		ph.handleProfileInfo(packet)
+	case EMsg_ClientMarketingMessageUpdate2:
+		steamLogDebug(packet.String())
 	default:
 		// steamLogInfo(packet.String())
 	}
@@ -185,9 +188,14 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 	if packages != nil {
 		for _, pack := range packages {
 
-			buffer := pack.GetBuffer()
-			m, err := helpers.ParseFDV(buffer)
-			steamLogError(err)
+			m := map[string]interface{}{}
+
+			kv, err := vdf.ReadBinaryBytes(pack.GetBuffer())
+			if err != nil {
+				steamLogError(err)
+			} else {
+				m = kv.Map()
+			}
 
 			err = queue.ProducePackage(int(pack.GetPackageid()), int(pack.GetChangeNumber()), m)
 			steamLogError(err)
@@ -280,6 +288,10 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 
 func steamLogInfo(interfaces ...interface{}) {
 	log.Info(append(interfaces, log.LogNamePICS)...)
+}
+
+func steamLogDebug(interfaces ...interface{}) {
+	log.Debug(append(interfaces, log.LogNamePICS)...)
 }
 
 func steamLogError(interfaces ...interface{}) {
