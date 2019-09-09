@@ -44,7 +44,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		count, err := sql.CountApps()
-		t.Description = "A live database of " + template.HTML(rounding.NearestThousandFormat(float64(count))) + " Steam games."
+		t.Description = "A live database of all " + template.HTML(rounding.NearestThousandFormat(float64(count))) + " Steam games."
 		log.Err(err, r)
 
 	}()
