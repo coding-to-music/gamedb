@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"bytes"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -10,7 +9,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/andygrunwald/vdf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 )
@@ -151,9 +149,4 @@ func GetAgeCheckCookieJar() (jar *cookiejar.Jar, err error) {
 	})
 
 	return jar, err
-}
-
-func ParseFDV(b []byte) (map[string]interface{}, error) {
-	p := vdf.NewParser(bytes.NewReader(b))
-	return p.Parse()
 }

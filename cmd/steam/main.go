@@ -173,9 +173,13 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 	if apps != nil {
 		for _, app := range apps {
 
-			m, err := helpers.ParseFDV(app.GetBuffer())
+			m := map[string]interface{}{}
+
+			kv, err := vdf.ReadBytes(app.GetBuffer())
 			if err != nil {
 				steamLogError(err)
+			} else {
+				m = kv.Map()
 			}
 
 			err = queue.ProduceApp(int(app.GetAppid()), int(app.GetChangeNumber()), m)
@@ -190,7 +194,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			m := map[string]interface{}{}
 
-			kv, err := vdf.ReadBinaryBytes(pack.GetBuffer())
+			kv, err := vdf.ReadBytes(pack.GetBuffer())
 			if err != nil {
 				steamLogError(err)
 			} else {
