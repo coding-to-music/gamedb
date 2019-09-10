@@ -11,7 +11,7 @@ WORKDIR /root/
 COPY --from=build-env /root/cmd/steam/steam ./
 COPY ./cmd/steam/health-check.sh ./health-check.sh
 RUN ["chmod", "+x", "health-check.sh"]
-RUN touch ./google-auth.json && touch ./.change.txt && touch ./.sentry.txt
+RUN touch ./google-auth.json && touch ./change.txt && touch ./sentry.txt
 RUN apk update && apk add ca-certificates curl bash
 CMD ["./steam"]
 HEALTHCHECK --interval=1m --timeout=5s --start-period=30s --retries=2 CMD ./health-check.sh

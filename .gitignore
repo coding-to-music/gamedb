@@ -18,5 +18,5 @@
 /.tscache/
 
 # Other
-/cmd/steam/.change.txt
-/cmd/steam/.sentry.txt
+/cmd/steam/change.txt
+/cmd/steam/sentry.txt
