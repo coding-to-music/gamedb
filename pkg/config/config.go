@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
 	"strconv"
 	"strings"
 )
@@ -267,11 +268,7 @@ type ConfigItem struct {
 }
 
 func (ci *ConfigItem) Set(environment string) {
-	env, b := os.LookupEnv(prefix + environment)
-	if !b {
-		fmt.Println("MISSING ENV: " + environment)
-	}
-	ci.value = env
+	ci.value = os.Getenv(prefix + environment)
 }
 
 func (ci *ConfigItem) SetDefault(defaultValue string) {
@@ -282,7 +279,13 @@ func (ci ConfigItem) Get() string {
 	if ci.value != "" {
 		return ci.value
 	}
-	return ci.defaultValue
+	if ci.defaultValue != "" {
+		return ci.defaultValue
+	}
+
+	fmt.Println("MISSING ENV: " + string(debug.Stack()))
+
+	return ""
 }
 
 func (ci ConfigItem) GetBool() bool {
