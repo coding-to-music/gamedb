@@ -30,6 +30,12 @@ body.bg {
     }
 }
 
+body.local {
+    img:not([alt]) {
+        border: solid 2px red;
+    }
+}
+
 body.dark {
     @import "dark";
 }

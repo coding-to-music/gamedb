@@ -58,7 +58,7 @@
     <meta name="fb:app_id" content="2539079269452708">
 
 </head>
-<body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }}{{ if ne .Background "" }} class="bg"{{end}}>
+<body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }} class="{{ if ne .Background "" }} bg{{end}}{{ if eq .Env "local" }} local{{ end }}">
 
 {{ if ne .Background "" }}
     <a {{ if ne .BackgroundLink "" }}href="{{ .BackgroundLink }}"{{end}} id="bg" style="background-image: url('{{ .Background }}');" title="{{ .BackgroundTitle }}"></a>
