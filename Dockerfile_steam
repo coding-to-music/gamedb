@@ -9,7 +9,7 @@ RUN cd ./cmd/steam && go mod tidy && CGO_ENABLED=0 GOOS=linux go build -a
 FROM alpine:3.10 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/steam/steam ./
-COPY ./cmd/crons/health-check.sh ./health-check.sh
+COPY ./cmd/steam/health-check.sh ./health-check.sh
 RUN ["chmod", "+x", "health-check.sh"]
 RUN touch ./google-auth.json
 RUN apk update && apk add ca-certificates curl bash
