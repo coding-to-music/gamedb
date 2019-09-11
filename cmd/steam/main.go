@@ -24,7 +24,7 @@ const (
 )
 
 var (
-	version     string
+	version string
 
 	steamClient *steam.Client
 
@@ -35,7 +35,8 @@ var (
 
 func main() {
 
-	config.Config.CommitHash.SetDefault(version)
+	config.SetVersion(version)
+	log.SetVersion(version)
 
 	var err error
 

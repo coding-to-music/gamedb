@@ -15,11 +15,12 @@ var version string
 
 func main() {
 
+	config.SetVersion(version)
+	log.SetVersion(version)
+
 	log.Info("Starting crons")
 
 	rand.Seed(time.Now().Unix())
-
-	config.Config.CommitHash.SetDefault(version)
 
 	var err error
 

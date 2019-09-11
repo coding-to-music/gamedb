@@ -18,9 +18,10 @@ var version string
 
 func main() {
 
-	log.Info("Starting chatbot")
+	config.SetVersion(version)
+	log.SetVersion(version)
 
-	config.Config.CommitHash.SetDefault(version)
+	log.Info("Starting chatbot")
 
 	if !config.IsProd() && !config.IsLocal() {
 		log.Err("Prod & local only")

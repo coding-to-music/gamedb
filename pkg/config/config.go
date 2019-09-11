@@ -342,3 +342,11 @@ func GetSteamKeyTag() string {
 
 	return strings.ToUpper(key)
 }
+
+func SetVersion(v string) {
+	if IsLocal() {
+		Config.CommitHash.SetDefault("local")
+	} else {
+		Config.CommitHash.SetDefault(v)
+	}
+}

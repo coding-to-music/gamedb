@@ -14,7 +14,8 @@ var version string
 
 func main() {
 
-	config.Config.CommitHash.SetDefault(version)
+	config.SetVersion(version)
+	log.SetVersion(version)
 
 	// Load pubsub
 	log.Info("Listening to PubSub for memcache")

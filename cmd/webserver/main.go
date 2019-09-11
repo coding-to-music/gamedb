@@ -24,6 +24,9 @@ var version string
 
 func main() {
 
+	config.SetVersion(version)
+	log.SetVersion(version)
+
 	rand.Seed(time.Now().Unix())
 
 	//
@@ -35,9 +38,6 @@ func main() {
 	log.Info("Starting PubSub")
 	go websockets.ListenToPubSub()
 	go helpers.ListenToPubSubMemcache()
-
-	//
-	config.Config.CommitHash.SetDefault(version)
 
 	// Setup Recaptcha
 	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())
