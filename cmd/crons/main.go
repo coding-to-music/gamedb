@@ -22,7 +22,7 @@ func main() {
 
 	for _, v := range tasks.TaskRegister {
 		if v.Cron() != "" {
-			log.Info(v.Name())
+			log.Info("Adding " + v.Name() + " to cron")
 			err = c.AddFunc(v.Cron(), func() { tasks.RunTask(v) })
 			log.Critical(err)
 		}
