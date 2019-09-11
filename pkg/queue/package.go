@@ -98,12 +98,12 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	var packageBeforeUpdate = pack
 
 	// Update from PICS
-	// err = updatePackageFromPICS(&pack, payload, message)
-	// if err != nil {
-	// 	logError(err, message.ID)
-	// 	payload.ackRetry(msg)
-	// 	return
-	// }
+	err = updatePackageFromPICS(&pack, payload, message)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
 
 	// Update from API
 	err = updatePackageFromStore(&pack)
@@ -202,7 +202,7 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 
 	var vdf = parseVDF("root", message.VDF)
 
-	if pack.ChangeNumber > message.ChangeNumber {
+	if !config.IsLocal() && message.ChangeNumber > 0 && pack.ChangeNumber > message.ChangeNumber {
 		return nil
 	}
 
@@ -220,6 +220,10 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 	pack.DepotIDs = ""
 	pack.AppItems = ""
 	pack.Extended = ""
+
+	if len(vdf.Children) == 0 {
+		return nil
+	}
 
 	for _, v := range vdf.Children {
 

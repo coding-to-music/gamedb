@@ -109,12 +109,12 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	var appBeforeUpdate = app
 
 	//
-	// err = updateAppPICS(&app, payload, message)
-	// if err != nil {
-	// 	logError(err, message.ID)
-	// 	payload.ackRetry(msg)
-	// 	return
-	// }
+	err = updateAppPICS(&app, payload, message)
+	if err != nil {
+		logError(err, message.ID)
+		payload.ackRetry(msg)
+		return
+	}
 
 	//
 	var wg sync.WaitGroup
@@ -379,7 +379,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 	var vdf = parseVDF("root", message.VDF)
 
-	if !config.IsLocal() && app.ChangeNumber > message.ChangeNumber {
+	if !config.IsLocal() && message.ChangeNumber > 0 && app.ChangeNumber > message.ChangeNumber {
 		return nil
 	}
 
@@ -404,7 +404,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 		return nil
 	}
 
-	for _, v := range vdf.Children[0].Children {
+	for _, v := range vdf.Children {
 
 		switch v.Name {
 		case "appid":
