@@ -1348,7 +1348,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Offer, err error) {
 		return offers, err
 	}
 
-	// app.RelatedAppIDs = string(b) // todo, uncomment, add col
+	app.RelatedAppIDs = string(b)
 
 	return offers, nil
 }
