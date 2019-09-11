@@ -86,6 +86,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	isError := func() bool {
 
 		if val, ok := err.(steam.Error); ok && val.Code == 429 {
+			time.Sleep(time.Second * 10)
 			return false
 		}
 
