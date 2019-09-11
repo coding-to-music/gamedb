@@ -283,7 +283,7 @@ func (ci ConfigItem) Get() string {
 		return ci.defaultValue
 	}
 
-	fmt.Println("MISSING ENV: " + string(debug.Stack()))
+	fmt.Println("Missing env var - " + string(debug.Stack()))
 
 	return ""
 }
