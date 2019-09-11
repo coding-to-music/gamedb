@@ -179,7 +179,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			if err != nil {
 				steamLogError(err)
 			} else {
-				m = kv.Map()
+				m = kv.ChildrenAsMap()
 			}
 
 			err = queue.ProduceApp(int(app.GetAppid()), int(app.GetChangeNumber()), m)
@@ -198,7 +198,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			if err != nil {
 				steamLogError(err)
 			} else {
-				m = kv.Map()
+				m = kv.ChildrenAsMap()
 			}
 
 			err = queue.ProducePackage(int(pack.GetPackageid()), int(pack.GetChangeNumber()), m)
