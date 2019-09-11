@@ -400,6 +400,10 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 	app.Localization = ""
 	app.SystemRequirements = ""
 
+	if vdf.Name == "appinfo" && len(vdf.Children) > 0 {
+		vdf = vdf.Children[0]
+	}
+
 	if len(vdf.Children) == 0 {
 		return nil
 	}
