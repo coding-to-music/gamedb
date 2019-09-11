@@ -14,9 +14,13 @@ import (
 
 const debugAuthorID = "145456943912189952"
 
+var version string
+
 func main() {
 
 	log.Info("Starting chatbot")
+
+	config.Config.CommitHash.SetDefault(version)
 
 	if !config.IsProd() && !config.IsLocal() {
 		log.Err("Prod & local only")

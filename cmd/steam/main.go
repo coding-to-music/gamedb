@@ -24,6 +24,8 @@ const (
 )
 
 var (
+	version     string
+
 	steamClient *steam.Client
 
 	steamChangeNumber uint32
@@ -32,6 +34,8 @@ var (
 )
 
 func main() {
+
+	config.Config.CommitHash.SetDefault(version)
 
 	var err error
 

@@ -10,7 +10,11 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
+var version string
+
 func main() {
+
+	config.Config.CommitHash.SetDefault(version)
 
 	// Load pubsub
 	log.Info("Listening to PubSub for memcache")
