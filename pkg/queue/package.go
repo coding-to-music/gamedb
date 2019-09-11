@@ -221,7 +221,7 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 	pack.AppItems = ""
 	pack.Extended = ""
 
-	if vdf.Name == strconv.Itoa(message.ID) && len(vdf.Children) > 0 {
+	if len(vdf.Children) == 1 && vdf.Children[0].Name == strconv.Itoa(message.ID) {
 		vdf = vdf.Children[0]
 	}
 
