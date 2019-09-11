@@ -27,6 +27,7 @@ func parseVDF(key string, m interface{}) (out rabbitMessageProductKeyValues) {
 		for k, v := range m {
 			out.Children = append(out.Children, parseVDF(k, v))
 		}
+		out.Value = ""
 	case string:
 		out.Value = m
 	default:
