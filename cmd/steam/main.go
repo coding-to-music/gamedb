@@ -20,7 +20,7 @@ import (
 const (
 	steamSentryFilename        = "sentry.txt"
 	steamCurrentChangeFilename = "change.txt"
-	checkForChangesOnLocal     = true
+	checkForChangesOnLocal     = false
 )
 
 var (
