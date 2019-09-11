@@ -98,12 +98,12 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	var packageBeforeUpdate = pack
 
 	// Update from PICS
-	err = updatePackageFromPICS(&pack, payload, message)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+	// err = updatePackageFromPICS(&pack, payload, message)
+	// if err != nil {
+	// 	logError(err, message.ID)
+	// 	payload.ackRetry(msg)
+	// 	return
+	// }
 
 	// Update from API
 	err = updatePackageFromStore(&pack)

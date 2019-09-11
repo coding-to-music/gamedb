@@ -109,12 +109,12 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	var appBeforeUpdate = app
 
 	//
-	err = updateAppPICS(&app, payload, message)
-	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
-		return
-	}
+	// err = updateAppPICS(&app, payload, message)
+	// if err != nil {
+	// 	logError(err, message.ID)
+	// 	payload.ackRetry(msg)
+	// 	return
+	// }
 
 	//
 	var wg sync.WaitGroup
