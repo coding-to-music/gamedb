@@ -24,10 +24,6 @@ var version string
 
 func main() {
 
-	// todo, run this after next deploy
-	// err2 := mongo.UpdateMany(mongo.CollectionProductPrices, mongo.M{"difference_percent": 0}, mongo.M{"difference_percent":mongo.M{"$gt":100000}})
-	// log.Info(err2)
-
 	rand.Seed(time.Now().Unix())
 
 	//
