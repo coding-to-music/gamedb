@@ -8,7 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/tasks"
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 )
 
 var version string
@@ -24,12 +24,12 @@ func main() {
 
 	var err error
 
-	c := cron.New()
+	c := cron.New(cron.WithSeconds())
 
 	for _, v := range tasks.TaskRegister {
 		if v.Cron() != "" {
 			log.Info("Adding " + v.Name() + " to cron")
-			err = c.AddFunc(v.Cron(), func() { tasks.RunTask(v) })
+			_, err = c.AddFunc(v.Cron(), func() { tasks.RunTask(v) })
 			log.Critical(err)
 		}
 	}
