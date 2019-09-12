@@ -22,7 +22,7 @@ func (c Publishers) Name() string {
 }
 
 func (c Publishers) Cron() string {
-	return "0 0 3 * * *"
+	return "0 3"
 }
 
 func (c Publishers) work() {

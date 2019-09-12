@@ -22,7 +22,7 @@ func (c Genres) Name() string {
 }
 
 func (c Genres) Cron() string {
-	return "0 0 1 * * *"
+	return "0 1"
 }
 
 func (c Genres) work() {

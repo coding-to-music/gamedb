@@ -22,7 +22,7 @@ func (c Tags) Name() string {
 }
 
 func (c Tags) Cron() string {
-	return "0 0 2 * * *"
+	return "0 2"
 }
 
 func (c Tags) work() {

@@ -24,7 +24,7 @@ func (c Instagram) Name() string {
 }
 
 func (c Instagram) Cron() string {
-	return "0 0 12 * * *"
+	return "0 12"
 }
 
 func (c Instagram) work() {

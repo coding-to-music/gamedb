@@ -40,7 +40,7 @@ var TaskRegister = map[string]TaskInterface{}
 type TaskInterface interface {
 	ID() string
 	Name() string
-	Cron() string
+	Cron() string // Currently, "minute hour"
 	work()
 }
 

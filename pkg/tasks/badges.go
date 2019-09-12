@@ -20,7 +20,7 @@ func (c SetBadgeCache) Name() string {
 }
 
 func (c SetBadgeCache) Cron() string {
-	return "0 */5 * * * *"
+	return "*/10 *"
 }
 
 func (c SetBadgeCache) work() {

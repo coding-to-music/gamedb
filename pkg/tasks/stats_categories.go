@@ -12,7 +12,7 @@ func (c StatsCategories) Name() string {
 }
 
 func (c StatsCategories) Cron() string {
-	return "0 0 4 * * *"
+	return "0 4"
 }
 
 func (c StatsCategories) work() {

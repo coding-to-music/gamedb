@@ -21,7 +21,7 @@ func (c AutoPlayerRefreshes) Name() string {
 }
 
 func (c AutoPlayerRefreshes) Cron() string {
-	return "0 0 */6 * * *"
+	return "0 */6"
 }
 
 func (c AutoPlayerRefreshes) work() {

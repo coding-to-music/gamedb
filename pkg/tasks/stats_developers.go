@@ -22,7 +22,7 @@ func (c Developers) Name() string {
 }
 
 func (c Developers) Cron() string {
-	return "0 0 4 * * *"
+	return "0 4"
 }
 
 func (c Developers) work() {

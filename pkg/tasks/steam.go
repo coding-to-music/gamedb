@@ -24,7 +24,7 @@ func (c SteamClientPlayers) Name() string {
 }
 
 func (c SteamClientPlayers) Cron() string {
-	return "0 */10 * * * *"
+	return "*/10 *"
 }
 
 func (c SteamClientPlayers) work() {

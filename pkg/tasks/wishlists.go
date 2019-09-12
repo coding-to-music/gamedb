@@ -21,7 +21,7 @@ func (c Wishlists) Name() string {
 }
 
 func (c Wishlists) Cron() string {
-	return "0 0 0 * * *"
+	return "0 0"
 }
 
 func (c Wishlists) work() {
