@@ -772,7 +772,7 @@ func updateAppDetails(app *sql.App) (err error) {
 				if assets, ok := common["library_assets"]; ok {
 
 					assetMap := map[string]interface{}{}
-					err := json.Unmarshal([]byte(assets), &assetMap)
+					err := helpers.Unmarshal([]byte(assets), &assetMap)
 					if err != nil {
 						log.Err(err)
 						return
