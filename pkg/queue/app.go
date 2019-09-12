@@ -774,7 +774,7 @@ func updateAppDetails(app *sql.App) (err error) {
 					assetMap := map[string]interface{}{}
 					err := helpers.Unmarshal([]byte(assets), &assetMap)
 					if err != nil {
-						log.Err(err)
+						log.Err(err, assets)
 						return
 					}
 
