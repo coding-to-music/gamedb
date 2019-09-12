@@ -14,7 +14,7 @@ require (
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
 	github.com/Jleagle/steam-go v0.0.0-20190817102735-bf83235c4f5f
 	github.com/Jleagle/unmarshal-go v0.0.0-20190815120521-15f0bd3950ff
-	github.com/Jleagle/valve-data-format-go v0.0.0-20190910075239-edde257354db
+	github.com/Jleagle/valve-data-format-go v0.0.0-20190911184346-7c9b34c0769c
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.4
