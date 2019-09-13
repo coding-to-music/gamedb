@@ -42,6 +42,8 @@ github.com/Jleagle/unmarshal-go v0.0.0-20190815120521-15f0bd3950ff h1:onx8Unigu+
 github.com/Jleagle/unmarshal-go v0.0.0-20190815120521-15f0bd3950ff/go.mod h1:uj173bb7OmVLObjyg6vHW/6F5QbA8G51veCJI1tCmpI=
 github.com/Jleagle/valve-data-format-go v0.0.0-20190911184346-7c9b34c0769c h1:jroS8iw20/SdMQoZ4B1TqgpsnpvGDrueiXrzAGNWAEg=
 github.com/Jleagle/valve-data-format-go v0.0.0-20190911184346-7c9b34c0769c/go.mod h1:9j7pWT19NnlK5wZnx1Ys+xXgjDgdyMAKebl8hGqYKCU=
+github.com/Jleagle/valve-data-format-go v0.0.0-20190913192034-edd5fbc9d9fb h1:WICVD44LzI1ZL0PNpR7BvhyaFephuDGmYZmSoihtxas=
+github.com/Jleagle/valve-data-format-go v0.0.0-20190913192034-edd5fbc9d9fb/go.mod h1:9j7pWT19NnlK5wZnx1Ys+xXgjDgdyMAKebl8hGqYKCU=
 github.com/Joker/hpp v0.0.0-20180418125244-6893e659854a/go.mod h1:MzD2WMdSxvbHw5fM/OXOFily/lipJWRc9C1px0Mt0ZE=
 github.com/Joker/jade v1.0.0/go.mod h1:efZIdO0py/LtcJRSa/j2WEklMSAw84WV0zZVMxNToB8=
 github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0 h1:TO7d4rocnNFng6ZQrPe7U6WqHtK5eHEMrgrnnM/72IQ=
