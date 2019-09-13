@@ -3,7 +3,7 @@ FROM golang:1.12-alpine AS build-env
 WORKDIR /root/
 COPY ./ ./
 RUN apk update && apk add git
-RUN cd ./cmd/steam && go mod tidy && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-parse --verify HEAD`"
+RUN cd ./cmd/steam && go mod tidy && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-list --count --first-parent HEAD`"
 
 # Runtime image
 FROM alpine:3.10 AS runtime-env
