@@ -424,7 +424,11 @@ func (t GlobalTemplate) GetCanonical() (text string) {
 }
 
 func (t GlobalTemplate) GetVersionHash() string {
-	return config.Config.CommitHash.Get()
+
+	if len(config.Config.CommitHash.Get()) >= 7 {
+		return config.Config.CommitHash.Get()[0:7]
+	}
+	return ""
 }
 
 func (t GlobalTemplate) IsAppsPage() bool {
