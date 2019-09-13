@@ -1,7 +1,6 @@
 package pics
 
 import (
-	"encoding/json"
 	"html/template"
 	"sort"
 	"strconv"
@@ -250,7 +249,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			idMap := map[string]string{}
 
-			err := json.Unmarshal([]byte(val), &idMap)
+			err := helpers.Unmarshal([]byte(val), &idMap)
 			log.Err(err)
 
 			var idSlice []string
@@ -277,7 +276,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			idMap := map[string]string{}
 
-			err := json.Unmarshal([]byte(val), &idMap)
+			err := helpers.Unmarshal([]byte(val), &idMap)
 			log.Err(err)
 
 			var idSlice []string
@@ -344,7 +343,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				if val != "" {
 
 					eulas := EULAs{}
-					err := json.Unmarshal([]byte(val), &eulas)
+					err := helpers.Unmarshal([]byte(val), &eulas)
 					log.Err(err)
 
 					var items []string
@@ -360,7 +359,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				if val != "" {
 
 					langs := SupportedLanguages{}
-					err := json.Unmarshal([]byte(val), &langs)
+					err := helpers.Unmarshal([]byte(val), &langs)
 					log.Err(err)
 
 					var items []string
@@ -401,7 +400,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				if val != "" {
 
 					categories := map[string]string{}
-					err := json.Unmarshal([]byte(val), &categories)
+					err := helpers.Unmarshal([]byte(val), &categories)
 					log.Err(err)
 
 					var items []int
@@ -425,7 +424,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				if val != "" {
 
 					languages := map[string]string{}
-					err := json.Unmarshal([]byte(val), &languages)
+					err := helpers.Unmarshal([]byte(val), &languages)
 					log.Err(err)
 
 					var items []string
@@ -447,7 +446,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				if val != "" {
 
 					associations := Associations{}
-					err := json.Unmarshal([]byte(val), &associations)
+					err := helpers.Unmarshal([]byte(val), &associations)
 					log.Err(err)
 
 					var items []string
@@ -467,7 +466,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				if val != "" {
 
 					files := saveFiles{}
-					err := json.Unmarshal([]byte(val), &files)
+					err := helpers.Unmarshal([]byte(val), &files)
 					log.Err(err)
 
 					var items []string
