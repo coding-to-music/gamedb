@@ -366,20 +366,15 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 	popularApps, err := sql.PopularApps()
 	log.Err(err)
 
-	if len(popularApps) > 0 {
-
-		var i int
-		for t.Background == "" {
-
-			// Don't get stuck in the loop
-			i++
-			if i > 10 {
-				break
-			}
-
-			backgroundApp := popularApps[rand.Intn(len(popularApps))]
-			t.setBackground(backgroundApp, title, link)
+	var popularAppsWithBackground []sql.App
+	for _, app := range popularApps {
+		if app.Background != "" {
+			popularAppsWithBackground = append(popularAppsWithBackground, app)
 		}
+	}
+
+	if len(popularAppsWithBackground) > 0 {
+		t.setBackground(popularAppsWithBackground[rand.Intn(len(popularAppsWithBackground))], title, link)
 	}
 }
 
