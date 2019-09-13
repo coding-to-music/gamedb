@@ -16,7 +16,7 @@ func (c AppQueueAll) ID() string {
 }
 
 func (c AppQueueAll) Name() string {
-	return "Check apps for players"
+	return "Queue all apps"
 }
 
 func (c AppQueueAll) Cron() string {
