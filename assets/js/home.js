@@ -45,7 +45,7 @@ if ($('#home-page').length > 0) {
                                         {
                                             '<>': 'div', 'class': 'icon-name', 'html': [
                                                 {
-                                                    '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}'}],
+                                                    '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}],
                                                 },
                                                 {
                                                     '<>': 'div', 'class': 'name', 'html': '${name}'
@@ -136,7 +136,7 @@ if ($('#home-page').length > 0) {
                             {
                                 '<>': 'div', 'class': 'icon-name', 'html': [
                                     {
-                                        '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}'}]
+                                        '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}]
                                     },
                                     {
                                         '<>': 'div', 'class': 'name', 'html': '${name}'
