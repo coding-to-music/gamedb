@@ -22,20 +22,23 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	var err error
-
 	c := cron.New(
 		cron.WithLogger(cronLogger{}),
 		cron.WithParser(cron.NewParser(cron.Minute|cron.Hour)),
 	)
 
-	for _, v := range tasks.TaskRegister {
-		if v.Cron() != "" {
-			log.Info("Adding " + v.ID())
-			_, err = c.AddFunc(v.Cron(), func() { tasks.RunTask(v) })
-			log.Critical(err)
-		}
-	}
+	c.AddFunc(tasks.AppPlayers{}.Cron(), func() { tasks.RunTask(tasks.AppPlayers{}) })
+	c.AddFunc(tasks.AutoPlayerRefreshes{}.Cron(), func() { tasks.RunTask(tasks.AutoPlayerRefreshes{}) })
+	c.AddFunc(tasks.ClearUpcomingCache{}.Cron(), func() { tasks.RunTask(tasks.ClearUpcomingCache{}) })
+	c.AddFunc(tasks.Developers{}.Cron(), func() { tasks.RunTask(tasks.Developers{}) })
+	c.AddFunc(tasks.Genres{}.Cron(), func() { tasks.RunTask(tasks.Genres{}) })
+	c.AddFunc(tasks.Instagram{}.Cron(), func() { tasks.RunTask(tasks.Instagram{}) })
+	c.AddFunc(tasks.SetBadgeCache{}.Cron(), func() { tasks.RunTask(tasks.SetBadgeCache{}) })
+	c.AddFunc(tasks.PlayerRanks{}.Cron(), func() { tasks.RunTask(tasks.PlayerRanks{}) })
+	c.AddFunc(tasks.Publishers{}.Cron(), func() { tasks.RunTask(tasks.Publishers{}) })
+	c.AddFunc(tasks.SteamClientPlayers{}.Cron(), func() { tasks.RunTask(tasks.SteamClientPlayers{}) })
+	c.AddFunc(tasks.Tags{}.Cron(), func() { tasks.RunTask(tasks.Tags{}) })
+	c.AddFunc(tasks.Wishlists{}.Cron(), func() { tasks.RunTask(tasks.Wishlists{}) })
 
 	c.Start()
 
