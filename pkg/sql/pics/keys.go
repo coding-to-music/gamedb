@@ -102,11 +102,16 @@ var ExtendedKeys = map[string]PicsKey{
 
 var ConfigKeys = map[string]PicsKey{
 	"checkforupdatesbeforelaunch":  {FormatType: picsTypeBool},
+	"enabletextfiltering":          {FormatType: picsTypeBool},
+	"installscriptoverride":        {FormatType: picsTypeBool},
 	"launchwithoutworkshopupdates": {FormatType: picsTypeBool},
+	"matchmaking_uptodate":         {FormatType: picsTypeBool},
+	"signaturescheckedonlaunch":    {FormatType: picsTypeJSON},
 	"signedfiles":                  {FormatType: picsTypeJSON},
 	"steamcontrollerconfigdetails": {FormatType: picsTypeJSON},
 	"steamcontrollertemplateindex": {FormatType: picsTypeBool},
 	"systemprofile":                {FormatType: picsTypeBool},
+	"usesfrenemies":                {FormatType: picsTypeBool},
 	"usemms":                       {FormatType: picsTypeBool},
 	"verifyupdates":                {FormatType: picsTypeBool},
 	"vrcompositorsupport":          {FormatType: picsTypeBool},
@@ -149,7 +154,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 		case picsTypeBool:
 
 			b, _ := strconv.ParseBool(val)
-			if b {
+			if b || val == "yes" {
 				return template.HTML("<i class=\"fas fa-check text-success\"></i>")
 			}
 			return template.HTML("<i class=\"fas fa-times text-danger\"></i>")
