@@ -44,6 +44,8 @@ func main() {
 	loginDetails.Username = config.Config.SteamUsername.Get()
 	loginDetails.Password = config.Config.SteamPassword.Get()
 	loginDetails.SentryFileHash, _ = ioutil.ReadFile(steamSentryFilename)
+	loginDetails.ShouldRememberPassword = true
+	loginDetails.AuthCode = ""
 
 	err = steam.InitializeSteamDirectory()
 	steamLogError(err)
