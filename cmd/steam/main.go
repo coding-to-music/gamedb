@@ -40,10 +40,10 @@ func main() {
 
 	var err error
 
-	logonDetails := steam.LogOnDetails{}
-	logonDetails.Username = config.Config.SteamUsername.Get()
-	logonDetails.Password = config.Config.SteamPassword.Get()
-	logonDetails.SentryFileHash, _ = ioutil.ReadFile(steamSentryFilename)
+	loginDetails := steam.LogOnDetails{}
+	loginDetails.Username = config.Config.SteamUsername.Get()
+	loginDetails.Password = config.Config.SteamPassword.Get()
+	loginDetails.SentryFileHash, _ = ioutil.ReadFile(steamSentryFilename)
 
 	err = steam.InitializeSteamDirectory()
 	steamLogError(err)
@@ -58,7 +58,7 @@ func main() {
 			case *steam.ConnectedEvent:
 
 				steamLogInfo("Steam: Connected")
-				go steamClient.Auth.LogOn(&logonDetails)
+				go steamClient.Auth.LogOn(&loginDetails)
 
 			case *steam.LoggedOnEvent:
 
@@ -92,6 +92,7 @@ func main() {
 			case *steam.MachineAuthUpdateEvent:
 
 				steamLogInfo("Steam: Updating auth hash, it should no longer ask for auth")
+				loginDetails.SentryFileHash = e.Hash
 				err = ioutil.WriteFile(steamSentryFilename, e.Hash, 0666)
 				steamLogError(err)
 
