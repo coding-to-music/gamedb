@@ -20,7 +20,7 @@ func (c AppPlayers) Name() string {
 }
 
 func (c AppPlayers) Cron() string {
-	return "0 */5"
+	return "@every 5h30m"
 }
 
 func (c AppPlayers) work() {
