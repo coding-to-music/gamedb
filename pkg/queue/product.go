@@ -392,18 +392,6 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 					}
 				}
 
-				// Facebook
-				// fb := facebook.New(config.Config.FacebookAppID.Get(), config.Config.FacebookAppSecret.Get())
-				// sess := fb.Session(fb.AppAccessToken())
-				//
-				// res, err2 := sess.Post("/113148936171513/feed", facebook.Params{
-				// 	"message":   "test",
-				// 	"link":      "www.projecteuler.net",
-				// 	"published": true,
-				// })
-				// log.Info(err2)
-				// log.Info(res.Err())
-
 				// Reddit
 				err = helpers.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
 				if err != nil {
