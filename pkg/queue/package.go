@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/valve-data-format-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -86,7 +87,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 
 	// Skip if updated in last day, unless its from PICS
 	if !config.IsLocal() {
-		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * 24 * -1).Unix() {
+		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour*24*-1).Unix() {
 			if pack.ChangeNumber >= message.ChangeNumber && message.ChangeNumber > 0 {
 				logInfo("Skipping package, updated in last day")
 				payload.ack(msg)
@@ -200,11 +201,11 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 
 func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packageMessage) (err error) {
 
-	var vdf = parseVDF("root", message.VDF)
-
 	if !config.IsLocal() && message.ChangeNumber > 0 && pack.ChangeNumber > message.ChangeNumber {
 		return nil
 	}
+
+	var kv = vdf.FromMap(message.VDF)
 
 	pack.ID = message.ID
 	// pack.Name = message.PICSPackageInfo.KeyValues.Name // todo
@@ -221,40 +222,40 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 	pack.AppItems = ""
 	pack.Extended = ""
 
-	if len(vdf.Children) == 1 && vdf.Children[0].Name == strconv.Itoa(message.ID) {
-		vdf = vdf.Children[0]
+	if len(kv.Children) == 1 && kv.Children[0].Key == strconv.Itoa(message.ID) {
+		kv = kv.Children[0]
 	}
 
-	if len(vdf.Children) == 0 {
+	if len(kv.Children) == 0 {
 		return nil
 	}
 
-	for _, v := range vdf.Children {
+	for _, child := range kv.Children {
 
-		switch v.Name {
+		switch child.Key {
 		case "billingtype":
 
 			var i64 int64
-			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+			i64, err = strconv.ParseInt(child.Value, 10, 8)
 			pack.BillingType = int8(i64)
 
 		case "licensetype":
 
 			var i64 int64
-			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+			i64, err = strconv.ParseInt(child.Value, 10, 8)
 			pack.LicenseType = int8(i64)
 
 		case "status":
 
 			var i64 int64
-			i64, err = strconv.ParseInt(v.Value.(string), 10, 8)
+			i64, err = strconv.ParseInt(child.Value, 10, 8)
 			pack.Status = int8(i64)
 
 		case "packageid":
 			// Empty
 		case "appids":
 
-			apps := helpers.StringSliceToIntSlice(v.GetChildrenAsSlice())
+			apps := helpers.StringSliceToIntSlice(child.GetChildrenAsSlice())
 
 			var b []byte
 			b, err = json.Marshal(apps)
@@ -266,7 +267,7 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 
 		case "depotids":
 
-			depots := helpers.StringSliceToIntSlice(v.GetChildrenAsSlice())
+			depots := helpers.StringSliceToIntSlice(child.GetChildrenAsSlice())
 
 			var b []byte
 			b, err = json.Marshal(depots)
@@ -278,9 +279,9 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 		case "appitems":
 
 			var appItems = map[string]string{}
-			for _, vv := range v.Children {
+			for _, vv := range child.Children {
 				if len(vv.Children) == 1 {
-					appItems[vv.Name] = vv.Children[0].Value.(string)
+					appItems[vv.Key] = vv.Children[0].Value
 				}
 			}
 
@@ -294,14 +295,14 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 		case "extended":
 
 			var b []byte
-			b, err = json.Marshal(v.GetExtended())
+			b, err = json.Marshal(child.GetChildrenAsMap())
 
 			if err == nil {
 				pack.Extended = string(b)
 			}
 
 		default:
-			err = errors.New(v.Name + " field in package PICS ignored (Change " + strconv.Itoa(pack.ChangeNumber) + ")")
+			err = errors.New(child.Key + " field in package PICS ignored (Package: " + strconv.Itoa(pack.ID) + ")")
 		}
 
 		if err != nil {

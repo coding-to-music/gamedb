@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/valve-data-format-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -18,130 +19,44 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func parseVDF(key string, m interface{}) (out rabbitMessageProductKeyValues) {
-
-	out.Name = key
-
-	switch m := m.(type) {
-	case map[string]interface{}:
-		for k, v := range m {
-			out.Children = append(out.Children, parseVDF(k, v))
-		}
-		out.Value = ""
-	case string:
-		out.Value = m
-	default:
-		log.Info("weird type")
-	}
-
-	return out
-}
-
-type rabbitMessageProductKeyValues struct {
-	Name     string                          `json:"Name"`
-	Value    interface{}                     `json:"Value"`
-	Children []rabbitMessageProductKeyValues `json:"Children"`
-}
-
-func (i rabbitMessageProductKeyValues) String() string {
-
-	if i.Value == nil {
-		b, err := json.Marshal(i.ToNestedMaps())
-		if err != nil {
-			logError(err)
-			return ""
-		}
-		return string(b)
-	}
-
-	return i.Value.(string)
-}
-
-func (i rabbitMessageProductKeyValues) GetChildrenAsSlice() (ret []string) {
-	for _, v := range i.Children {
-		ret = append(ret, v.Value.(string))
-	}
-	return ret
-}
-
-func (i rabbitMessageProductKeyValues) GetChildrenAsMap() (ret map[string]string) {
-	ret = map[string]string{}
-	for _, v := range i.Children {
-		ret[v.Name] = v.Value.(string)
-	}
-	return ret
-}
-
-// Turns it into nested maps
-func (i rabbitMessageProductKeyValues) ToNestedMaps() (ret map[string]interface{}) {
-
-	m := map[string]interface{}{}
-
-	for _, v := range i.Children {
-
-		if v.Value == nil {
-			m[v.Name] = v.ToNestedMaps()
-		} else {
-			m[v.Name] = v.Value
-		}
-	}
-
-	return m
-}
-
-func (i rabbitMessageProductKeyValues) GetExtended() (extended pics.PICSKeyValues) {
-
-	extended = pics.PICSKeyValues{}
-	for _, v := range i.Children {
-		if v.Value == nil {
-			b, err := json.Marshal(v.ToNestedMaps())
-			logError(err)
-			extended[v.Name] = string(b)
-		} else {
-			extended[v.Name] = v.Value.(string)
-		}
-	}
-	return extended
-}
-
-func (i rabbitMessageProductKeyValues) GetAppConfig() (config pics.PICSKeyValues, launch []pics.PICSAppConfigLaunchItem) {
+func getAppConfig(kv vdf.KeyValue) (config pics.PICSKeyValues, launch []pics.PICSAppConfigLaunchItem) {
 
 	config = pics.PICSKeyValues{}
-	for _, v := range i.Children {
-		if v.Name == "launch" {
-			launch = v.GetAppLaunch()
-		} else if v.Value == nil {
-			b, err := json.Marshal(v.ToNestedMaps())
+	for _, v := range kv.Children {
+		if v.Key == "launch" {
+			launch = getAppLaunch(v)
+		} else if len(v.Children) > 0 {
+			b, err := json.Marshal(v.ToMap())
 			logError(err)
-			config[v.Name] = string(b)
+			config[v.Key] = string(b)
 		} else {
-			config[v.Name] = v.Value.(string)
+			config[v.Key] = v.Value
 		}
 	}
 
 	return config, launch
 }
 
-func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.Depots) {
+func getAppDepots(kv vdf.KeyValue) (depots pics.Depots) {
 
 	depots.Extra = map[string]string{}
 
 	// Loop depots
-	for _, v := range i.Children {
+	for _, v := range kv.Children {
 
-		if v.Name == "branches" {
-			depots.Branches = v.GetAppDepotBranches()
+		if v.Key == "branches" {
+			depots.Branches = getAppDepotBranches(v)
 			continue
 		}
 
-		id, err := strconv.Atoi(v.Name)
+		id, err := strconv.Atoi(v.Key)
 		if err != nil {
 			if v.Children == nil {
-				depots.Extra[v.Name] = v.Value.(string)
+				depots.Extra[v.Key] = v.Value
 			} else {
-				b, err := json.Marshal(v.ToNestedMaps())
+				b, err := json.Marshal(v.ToMap())
 				logError(err)
-				depots.Extra[v.Name] = string(b)
+				depots.Extra[v.Key] = string(b)
 			}
 
 			continue
@@ -152,56 +67,56 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.Depots) {
 
 		for _, vv := range v.Children {
 
-			switch vv.Name {
+			switch vv.Key {
 			case "name":
-				depot.Name = vv.Value.(string)
+				depot.Name = vv.Value
 			case "config":
 				depot.Configs = vv.GetChildrenAsMap()
 			case "manifests":
 				depot.Manifests = vv.GetChildrenAsMap()
 			case "encryptedmanifests":
-				b, err := json.Marshal(vv.ToNestedMaps())
+				b, err := json.Marshal(vv.ToMap())
 				logError(err)
 				depot.EncryptedManifests = string(b)
 			case "maxsize":
-				maxSize, err := strconv.ParseUint(vv.Value.(string), 10, 64)
+				maxSize, err := strconv.ParseUint(vv.Value, 10, 64)
 				logError(err)
 				depot.MaxSize = maxSize
 			case "dlcappid":
-				appID, err := strconv.Atoi(vv.Value.(string))
+				appID, err := strconv.Atoi(vv.Value)
 				logError(err)
 				depot.DLCApp = appID
 			case "depotfromapp":
-				id := helpers.RegexNonInts.ReplaceAllString(vv.Value.(string), "")
+				id := helpers.RegexNonInts.ReplaceAllString(vv.Value, "")
 				app, err := strconv.Atoi(id)
 				logError(err)
 				depot.App = app
 			case "systemdefined":
-				if vv.Value.(string) == "1" {
+				if vv.Value == "1" {
 					depot.SystemDefined = true
 				}
 			case "optional":
-				if vv.Value.(string) == "1" {
+				if vv.Value == "1" {
 					depot.Optional = true
 				}
 			case "sharedinstall":
-				if vv.Value.(string) == "1" {
+				if vv.Value == "1" {
 					depot.SharedInstall = true
 				}
 			case "shareddepottype":
-				if vv.Value.(string) == "1" {
+				if vv.Value == "1" {
 					depot.SharedDepotType = true
 				}
 			case "lvcache":
-				if vv.Value.(string) == "1" {
+				if vv.Value == "1" {
 					depot.LVCache = true
 				}
 			case "allowaddremovewhilerunning":
-				if vv.Value.(string) == "1" {
+				if vv.Value == "1" {
 					depot.AllowAddRemoveWhileRunning = true
 				}
 			default:
-				logWarning("GetAppDepots missing case: " + vv.Name)
+				logWarning("GetAppDepots missing case: " + vv.Key)
 			}
 		}
 
@@ -211,40 +126,40 @@ func (i rabbitMessageProductKeyValues) GetAppDepots() (depots pics.Depots) {
 	return depots
 }
 
-func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []pics.AppDepotBranches) {
+func getAppDepotBranches(kv vdf.KeyValue) (branches []pics.AppDepotBranches) {
 
-	for _, v := range i.Children {
+	for _, v := range kv.Children {
 
 		branch := pics.AppDepotBranches{}
-		branch.Name = v.Name
+		branch.Name = v.Key
 
 		for _, vv := range v.Children {
 
-			switch vv.Name {
+			switch vv.Key {
 			case "buildid":
-				buildID, err := strconv.Atoi(vv.Value.(string))
+				buildID, err := strconv.Atoi(vv.Value)
 				logError(err)
 				branch.BuildID = buildID
 			case "timeupdated":
-				t, err := strconv.ParseInt(vv.Value.(string), 10, 64)
+				t, err := strconv.ParseInt(vv.Value, 10, 64)
 				logError(err)
 				branch.TimeUpdated = t
 			case "defaultforsubs":
-				branch.DefaultForSubs = vv.Value.(string)
+				branch.DefaultForSubs = vv.Value
 			case "unlockforsubs":
-				branch.UnlockForSubs = vv.Value.(string)
+				branch.UnlockForSubs = vv.Value
 			case "description":
-				branch.Description = vv.Value.(string)
+				branch.Description = vv.Value
 			case "pwdrequired":
-				if vv.Value.(string) == "1" {
+				if vv.Value == "1" {
 					branch.PasswordRequired = true
 				}
 			case "lcsrequired":
-				if vv.Value.(string) == "1" {
+				if vv.Value == "1" {
 					branch.LCSRequired = true
 				}
 			default:
-				logWarning("GetAppDepotBranches missing case: " + vv.Name)
+				logWarning("GetAppDepotBranches missing case: " + vv.Key)
 			}
 		}
 
@@ -254,14 +169,14 @@ func (i rabbitMessageProductKeyValues) GetAppDepotBranches() (branches []pics.Ap
 	return branches
 }
 
-func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []pics.PICSAppConfigLaunchItem) {
+func getAppLaunch(kv vdf.KeyValue) (items []pics.PICSAppConfigLaunchItem) {
 
-	for _, v := range i.Children {
+	for _, v := range kv.Children {
 
 		item := pics.PICSAppConfigLaunchItem{}
-		item.Order = v.Name
+		item.Order = v.Key
 
-		v.setAppLaunchItem(&item)
+		setAppLaunchItem(v, &item)
 
 		items = append(items, item)
 	}
@@ -269,43 +184,43 @@ func (i rabbitMessageProductKeyValues) GetAppLaunch() (items []pics.PICSAppConfi
 	return items
 }
 
-func (i rabbitMessageProductKeyValues) setAppLaunchItem(launchItem *pics.PICSAppConfigLaunchItem) {
+func setAppLaunchItem(kv vdf.KeyValue, launchItem *pics.PICSAppConfigLaunchItem) {
 
-	for _, v := range i.Children {
+	for _, child := range kv.Children {
 
-		switch v.Name {
+		switch child.Key {
 		case "executable":
-			launchItem.Executable = v.Value.(string)
+			launchItem.Executable = child.Value
 		case "arguments":
-			launchItem.Arguments = v.Value.(string)
+			launchItem.Arguments = child.Value
 		case "description":
-			launchItem.Description = v.Value.(string)
+			launchItem.Description = child.Value
 		case "type":
-			launchItem.Typex = v.Value.(string)
+			launchItem.Typex = child.Value
 		case "oslist":
-			launchItem.OSList = v.Value.(string)
+			launchItem.OSList = child.Value
 		case "osarch":
-			launchItem.OSArch = v.Value.(string)
+			launchItem.OSArch = child.Value
 		case "betakey":
-			launchItem.BetaKey = v.Value.(string)
+			launchItem.BetaKey = child.Value
 		case "vacmodulefilename":
-			launchItem.VACModuleFilename = v.Value.(string)
+			launchItem.VACModuleFilename = child.Value
 		case "workingdir":
-			launchItem.WorkingDir = v.Value.(string)
+			launchItem.WorkingDir = child.Value
 		case "vrmode":
-			launchItem.VRMode = v.Value.(string)
+			launchItem.VRMode = child.Value
 		case "ownsdlc":
-			DLCSlice := strings.Split(v.Value.(string), ",")
-			for _, v := range DLCSlice {
+			dlcSlice := strings.Split(child.Value, ",")
+			for _, v := range dlcSlice {
 				var trimmed = strings.TrimSpace(v)
 				if trimmed != "" {
 					launchItem.OwnsDLCs = append(launchItem.OwnsDLCs, trimmed)
 				}
 			}
 		case "config":
-			v.setAppLaunchItem(launchItem)
+			setAppLaunchItem(child, launchItem)
 		default:
-			logWarning("setAppLaunchItem missing case: " + v.Name)
+			logWarning("setAppLaunchItem missing case: " + child.Key)
 		}
 	}
 }

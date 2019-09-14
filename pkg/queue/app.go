@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/valve-data-format-go"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -377,11 +378,11 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err error) {
 
-	var vdf = parseVDF("root", message.VDF)
-
 	if !config.IsLocal() && message.ChangeNumber > 0 && app.ChangeNumber > message.ChangeNumber {
 		return nil
 	}
+
+	var kv = vdf.FromMap(message.VDF)
 
 	app.ID = message.ID
 	app.ChangeNumber = message.ChangeNumber
@@ -400,46 +401,43 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 	app.Localization = ""
 	app.SystemRequirements = ""
 
-	if len(vdf.Children) == 1 && vdf.Children[0].Name == "appinfo" {
-		vdf = vdf.Children[0]
+	if len(kv.Children) == 1 && kv.Children[0].Key == "appinfo" {
+		kv = kv.Children[0]
 	}
 
-	if len(vdf.Children) == 0 {
+	if len(kv.Children) == 0 {
 		return nil
 	}
 
-	for _, v := range vdf.Children {
+	for _, child := range kv.Children {
 
-		switch v.Name {
+		switch child.Key {
 		case "appid":
-
-			// No need for this
-			// var i64 int64
-			// i64, err = strconv.ParseInt(v.Value.(string), 10, 32)
-			// if err != nil {
-			// 	return err
-			// }
-			// app.ID = int(i64)
-
+			//
 		case "common":
 
 			var common = pics.PICSKeyValues{}
 			var tags []int
 
-			for _, vv := range v.Children {
+			for _, vv := range child.Children {
 
-				if vv.Name == "store_tags" {
+				if vv.Key == "store_tags" {
 					stringTags := vv.GetChildrenAsSlice()
 					tags = helpers.StringSliceToIntSlice(stringTags)
 				}
-				if vv.Name == "name" {
-					name := strings.TrimSpace(vv.Value.(string))
+				if vv.Key == "name" {
+					name := strings.TrimSpace(vv.Value)
 					if name != "" {
 						app.Name = name
 					}
 				}
 
-				common[vv.Name] = vv.String()
+				s, err := vv.String()
+				if err != nil {
+					return err
+				}
+
+				common[vv.Key] = s
 			}
 
 			b, err := json.Marshal(common)
@@ -456,7 +454,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "extended":
 
-			b, err := json.Marshal(v.GetExtended())
+			b, err := json.Marshal(child.GetChildrenAsMap())
 			if err != nil {
 				return err
 			}
@@ -465,7 +463,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "config":
 
-			c, launch := v.GetAppConfig()
+			c, launch := getAppConfig(child)
 
 			b, err := json.Marshal(c)
 			if err != nil {
@@ -481,7 +479,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "depots":
 
-			b, err := json.Marshal(v.GetAppDepots())
+			b, err := json.Marshal(getAppDepots(child))
 			if err != nil {
 				return err
 			}
@@ -490,15 +488,21 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "public_only":
 
-			if v.Value.(string) == "1" {
+			if child.Value == "1" {
 				app.PublicOnly = true
 			}
 
 		case "ufs":
 
 			var ufs = pics.PICSKeyValues{}
-			for _, vv := range v.Children {
-				ufs[vv.Name] = vv.String()
+			for _, vv := range child.Children {
+
+				s, err := vv.String()
+				if err != nil {
+					return err
+				}
+
+				ufs[vv.Key] = s
 			}
 
 			b, err := json.Marshal(ufs)
@@ -510,7 +514,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "install":
 
-			b, err := json.Marshal(v.ToNestedMaps())
+			b, err := json.Marshal(child.ToMap())
 			if err != nil {
 				return err
 			}
@@ -520,17 +524,17 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 		case "localization":
 
 			localization := pics.Localisation{}
-			for _, vv := range v.Children {
-				if vv.Name == "richpresence" {
+			for _, vv := range child.Children {
+				if vv.Key == "richpresence" {
 					for _, vvv := range vv.Children {
-						localization.AddLanguage(vvv.Name, &pics.LocalisationLanguage{})
+						localization.AddLanguage(vvv.Key, &pics.LocalisationLanguage{})
 						for _, vvvv := range vvv.Children {
-							if vvvv.Name == "tokens" {
+							if vvvv.Key == "tokens" {
 								for _, vvvvv := range vvvv.Children {
-									localization.RichPresence[vvv.Name].AddToken(vvvvv.Name, vvvvv.Value.(string))
+									localization.RichPresence[vvv.Key].AddToken(vvvvv.Key, vvvvv.Value)
 								}
 							} else {
-								log.Info("Missing localization language key", message.ID, vvvv.Name) // Sometimes the "tokens" map is missing.
+								log.Info("Missing localization language key", message.ID, vvvv.Key) // Sometimes the "tokens" map is missing.
 							}
 						}
 					}
@@ -548,7 +552,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 
 		case "sysreqs":
 
-			b, err := json.MarshalIndent(v.ToNestedMaps(), "", "  ")
+			b, err := json.Marshal(child.ToMap())
 			if err != nil {
 				return err
 			}
@@ -556,7 +560,7 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 			app.SystemRequirements = string(b)
 
 		default:
-			logWarning(v.Name + " field in app PICS ignored (Change " + strconv.Itoa(app.ChangeNumber) + ")")
+			logWarning(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")
 		}
 	}
 
