@@ -6,6 +6,8 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
+
+	"github.com/rollbar/rollbar-go"
 )
 
 const EnvProd = "production"
@@ -344,9 +346,12 @@ func GetSteamKeyTag() string {
 }
 
 func SetVersion(v string) {
-	if IsLocal() {
-		Config.CommitHash.SetDefault("local")
-	} else {
-		Config.CommitHash.SetDefault(v)
+
+	if IsLocal() && v == "" {
+		v = "local"
 	}
+
+	Config.CommitHash.SetDefault(v)
+
+	rollbar.SetCodeVersion(v)
 }

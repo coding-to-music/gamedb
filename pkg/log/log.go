@@ -43,8 +43,6 @@ const (
 	SeverityCritical Severity = 5
 )
 
-var version string
-
 type LogName string
 type Service string
 type Option int
@@ -150,7 +148,6 @@ func init() {
 	// Rollbar
 	rollbar.SetToken(config.Config.RollbarSecret.Get())
 	rollbar.SetEnvironment(config.Config.Environment.Get())
-	rollbar.SetCodeVersion(version)
 	rollbar.SetServerHost("gamedb.online")
 	rollbar.SetServerRoot("github.com/gamedb/gamedb")
 
@@ -246,7 +243,7 @@ func log(interfaces ...interface{}) {
 				Labels: map[string]string{
 					"env":  config.Config.Environment.Get(),
 					"key":  config.GetSteamKeyTag(),
-					"hash": version,
+					"hash": config.Config.CommitHash.Get(),
 				},
 			})
 
