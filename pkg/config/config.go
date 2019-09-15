@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
-	"runtime/debug"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -258,7 +258,7 @@ func init() {
 		Config.MemcacheDSN.SetDefault("memcache:11211")
 
 	default:
-		fmt.Println("Unknown environment")
+		fmt.Println("config: unknown environment: " + Config.Environment.Get())
 		os.Exit(1)
 	}
 }
@@ -278,14 +278,30 @@ func (ci *ConfigItem) SetDefault(defaultValue string) {
 }
 
 func (ci ConfigItem) Get() string {
+
 	if ci.value != "" {
 		return ci.value
 	}
+
 	if ci.defaultValue != "" {
 		return ci.defaultValue
 	}
 
-	fmt.Println("Missing env var - " + string(debug.Stack()))
+	// Get line number of calling function
+	skip := 1
+	for {
+		_, file, no, ok := runtime.Caller(skip)
+		if ok {
+			if !strings.Contains(file, "config/config.go") {
+				fmt.Printf("missing env var @ %s#%d\n", file, no)
+				break
+			}
+		} else if !ok || skip > 10 {
+			fmt.Println("missing env var...")
+			break
+		}
+		skip++
+	}
 
 	return ""
 }
