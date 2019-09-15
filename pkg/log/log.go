@@ -263,14 +263,6 @@ func log(interfaces ...interface{}) {
 	}
 }
 
-func SetVersion(v string) {
-	if config.IsLocal() {
-		version = "local"
-	} else {
-		version = v
-	}
-}
-
 func Critical(interfaces ...interface{}) {
 	log(append(interfaces, SeverityCritical)...)
 }

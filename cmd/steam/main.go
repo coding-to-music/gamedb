@@ -36,7 +36,6 @@ var (
 func main() {
 
 	config.SetVersion(version)
-	log.SetVersion(version)
 
 	var err error
 
