@@ -43,7 +43,7 @@ body.dark {
 // Only in dark mode
 @media (prefers-color-scheme: dark) {
     body {
-        @import "dark";
+        //@import "dark";
     }
 }
 
