@@ -11,7 +11,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
-	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
@@ -103,19 +102,11 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 
 	// Send websocket
 	err = sendChangesWebsocket(changeSlice, appMap, packageMap)
-	if err != nil {
-		logError(err)
-		payload.ackRetry(msg)
-		return
-	}
+	logError(err)
 
 	// Send to Discord
 	err = sendChangeToDiscord(changeSlice, appMap, packageMap)
-	if err != nil {
-		logError(err)
-		payload.ackRetry(msg)
-		return
-	}
+	logError(err)
 
 	payload.ack(msg)
 }
@@ -182,11 +173,8 @@ func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packag
 	wsPaload.Data = ws
 	wsPaload.Pages = []websockets.WebsocketPage{websockets.PageChanges}
 
-		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPaload)
-		log.Err(err)
-	}
-
-	return nil
+	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPaload)
+	return err
 }
 
 // todo, add packages to return
