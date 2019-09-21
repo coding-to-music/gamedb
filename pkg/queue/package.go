@@ -59,7 +59,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	if !sql.IsValidPackageID(message.ID) {
-		logError(errors.New("invalid package ID: " + strconv.Itoa(message.ID)))
+		logInfo(errors.New("invalid package ID: " + strconv.Itoa(message.ID)))
 		payload.ack(msg)
 		return
 	}
