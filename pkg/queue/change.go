@@ -113,6 +113,10 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 
 func saveChangesToMongo(changes []*mongo.Change) (err error) {
 
+	if len(changes) == 0 {
+		return nil
+	}
+
 	var changesDocuments []mongo.Document
 	for _, v := range changes {
 
