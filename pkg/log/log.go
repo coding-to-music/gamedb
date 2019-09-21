@@ -135,7 +135,7 @@ var (
 	logger       = l.New(os.Stderr, "", l.Ltime)
 )
 
-func init() {
+func Initialise() {
 
 	var err error
 

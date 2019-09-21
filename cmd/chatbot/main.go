@@ -19,6 +19,7 @@ var version string
 func main() {
 
 	config.SetVersion(version)
+	log.Initialise()
 
 	log.Info("Starting chatbot")
 

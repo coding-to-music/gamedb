@@ -25,6 +25,7 @@ var version string
 func main() {
 
 	config.SetVersion(version)
+	log.Initialise()
 
 	rand.Seed(time.Now().Unix())
 
