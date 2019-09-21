@@ -152,7 +152,12 @@ func Initialise() {
 	rollbar.SetServerRoot("github.com/gamedb/gamedb")
 
 	// Sentry
-	err = sentry.Init(sentry.ClientOptions{Dsn: config.Config.SentryDSN.Get(),})
+	err = sentry.Init(sentry.ClientOptions{
+		Dsn:              config.Config.SentryDSN.Get(),
+		AttachStacktrace: true,
+		Environment:      config.Config.Environment.Get(),
+		Release:          config.Config.CommitHash.Get(),
+	})
 	if err != nil {
 		fmt.Println(err)
 	}
