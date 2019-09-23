@@ -29,15 +29,26 @@
     <meta name="msapplication-config" content="/browserconfig.xml">
     <meta name="theme-color" content="#343a40">
     <meta name="google-site-verification" content="brhvE2bHEwuvvoiOxeYHMQRSQECE4vAk8rMJ3iYZtSg"/>
+
     {{/* Common */}}
     <title>{{ .Title }}</title>
     <meta name="description" content="{{ .Description }}">
 
     <link rel="canonical" href="{{ .GetCanonical }}"/>
     <link rel="sitemap" href="https://gamedb.online/sitemap/index.xml" type="application/xml"/>
+
+    <meta name="robots" content="index,follow"><!-- All Search Engines -->
+    <meta name="googlebot" content="index,follow"><!-- Google Specific -->
+
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="me" href="mailto:jimeagle@gmail.com">
+
     {{/* Schema.org */}}
     <meta itemprop="name" content="{{ .Title }}">
     <meta itemprop="description" content="{{ .Description }}">
+    <meta itemprop="image" content="{{ .GetMetaImage }}">
+
     {{/* Twitter */}}
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@gamedbonline"/>
@@ -45,6 +56,9 @@
     <meta name="twitter:description" content="{{ .Description }}">
     <meta name="twitter:image" content="{{ .GetMetaImage }}"/>
     <meta name="twitter:image:alt" content="{{ .Title }}"/>
+    <meta name="twitter:creator" content="@Jleagle">
+    <meta name="twitter:url" content="{{ .GetCanonical }}">
+
     {{/* Open Graph */}}
     <meta name="og:title" content="{{ .Title }}">
     <meta name="og:description" content="{{ .Description }}">
@@ -52,9 +66,19 @@
     <meta name="og:url" content="{{ .GetCanonical }}">
     <meta name="og:locale" content="en_US">
     <meta name="og:type" content="website">
+
     {{/* Facebook */}}
-    <meta name="fb:admins" content="537840742">
-    <meta name="fb:app_id" content="2539079269452708">
+    <meta property="fb:admins" content="537840742">
+    <meta property="fb:app_id" content="2539079269452708">
+    <meta property="og:url" content="{{ .GetCanonical }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Game DB">
+    <meta property="og:image" content="{{ .GetMetaImage }}">
+    <meta property="og:image:alt" content="{{ .Title }}">
+    <meta property="og:description" content="{{ .Description }}">
+    <meta property="og:site_name" content="Game DB">
+    <meta property="og:locale" content="en_US">
+    <meta property="article:author" content="jimeagle">
 
 </head>
 <body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }} class="{{ if ne .Background "" }} bg{{end}}{{ if eq .Env "local" }} local{{ end }}">
