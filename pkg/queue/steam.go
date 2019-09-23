@@ -38,7 +38,7 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
+	err = helpers.UnmarshalNumber(msg.Body, &payload)
 	if err != nil {
 		logError(err)
 		payload.ack(msg)

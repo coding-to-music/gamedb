@@ -761,7 +761,6 @@ type wishlistItemPlusID struct {
 func savePlayerMongo(player mongo.Player) error {
 
 	_, err := mongo.ReplaceDocument(mongo.CollectionPlayers, mongo.M{"_id": player.ID}, player)
-
 	return err
 }
 
