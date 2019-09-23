@@ -1,8 +1,6 @@
 if ($('#admin-page').length > 0) {
 
-    const $actions = $('#actions a');
-
-    $actions.on('click', function () {
+    $('#actions a').on('click', function () {
         return confirm('Are you sure?');
     });
 

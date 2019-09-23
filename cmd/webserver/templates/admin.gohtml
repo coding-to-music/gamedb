@@ -40,45 +40,34 @@
                 <div class="tab-pane show active" id="actions" role="tabpanel">
 
                     {{ if eq .Env "local" }}
-                        <div class="alert alert-primary" role="alert">Showing local Memcache / Queues</div>
+                        {{/*<div class="alert alert-primary" role="alert">Showing local Memcache / Queues</div>*/}}
                     {{ end }}
 
-                    <h5>Cron Jobs</h5>
-                    <div class="row" id="actions">
-                        {{ range $key, $value := .Tasks }}
-                            {{ if ne .Cron "" }}
-                                <div class="col-12 col-sm-6 col-lg-3">
-                                    <a href="/admin/run-cron?cron={{ $key }}" role="button" class="btn btn-success btn-block mb-4">
-                                        {{ .Name }}<br/>
-                                        <small data-livestamp="{{ (index $.Configs (print "task-" .ID)).Value }}"></small>
-                                    </a>
-                                </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "asc"]]' id="actions">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Action</th>
+                                <th scope="col">Previous</th>
+                                <th scope="col">Next</th>
+                                <th scope="col">Run</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range $key, $value := .Tasks }}
+                                <tr>
+                                    <td>{{ .Name }}</td>
+                                    <td><span data-livestamp="{{ (index $.Configs (print "task-" .ID)).Value }}"></span></td>
+                                    {{ if gt .Next.Unix 0 }}
+                                        <td data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
+                                    {{ else }}
+                                        <td data-sort="10000000000"></td>
+                                    {{ end }}
+                                    <td><a href="/admin/run-cron?cron={{ $key }}" role="button" class="btnx btn-success btn-sm">Run</a></td>
+                                </tr>
                             {{ end }}
-                        {{ end }}
-                    </div>
-
-                    <h5>Actions</h5>
-                    <div class="row" id="actions">
-                        {{ range $key, $value := .Tasks }}
-                            {{ if eq .Cron "" }}
-                                <div class="col-12 col-sm-6 col-lg-3">
-                                    <a href="/admin/run-cron?cron={{ $key }}" role="button" class="btn btn-danger btn-block mb-4">
-                                        {{ .Name }}<br/>
-                                        <small data-livestamp="{{ (index $.Configs (print "task-" .ID)).Value }}"></small>
-                                    </a>
-                                </div>
-                            {{ end }}
-                        {{ end }}
-                    </div>
-
-                    <h5>Info</h5>
-                    <div class="row">
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="btn btn-info btn-block mb-4 disabled">
-                                Goroutines<br/>
-                                <small>{{ .Goroutines }}</small>
-                            </div>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
 
                 </div>

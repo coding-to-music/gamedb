@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -69,7 +68,6 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Admin", "")
 	t.hideAds = true
 	t.Configs = configs
-	t.Goroutines = runtime.NumGoroutine()
 	t.Websockets = websockets.Pages
 	t.Tasks = tasks.TaskRegister
 
@@ -99,11 +97,10 @@ type adminTemplate struct {
 	GlobalTemplate
 	Errors     []string
 	Configs    map[string]sql.Config
-	Goroutines int
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
 	Websockets map[websockets.WebsocketPage]*websockets.Page
-	Tasks      map[string]tasks.TaskInterface
+	Tasks      map[string]tasks.BaseTask
 }
 
 type adminQuery struct {
