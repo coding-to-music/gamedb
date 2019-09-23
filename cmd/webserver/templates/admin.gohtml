@@ -44,7 +44,7 @@
                     {{ end }}
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "asc"]]' id="actions">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "asc", 0, "desc"]]' id="actions">
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col">Action</th>
@@ -55,11 +55,11 @@
                             </thead>
                             <tbody>
                             {{ range $key, $value := .Tasks }}
-                                <tr>
+                                <tr data-id="{{ .ID }}">
                                     <td>{{ .Name }}</td>
-                                    <td><span data-livestamp="{{ (index $.Configs (print "task-" .ID)).Value }}"></span></td>
+                                    <td class="prev"><span data-livestamp="{{ (index $.Configs (print "task-" .ID)).Value }}"></span></td>
                                     {{ if gt .Next.Unix 0 }}
-                                        <td data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
+                                        <td class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
                                     {{ else }}
                                         <td data-sort="10000000000"></td>
                                     {{ end }}

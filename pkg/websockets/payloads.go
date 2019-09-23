@@ -30,7 +30,9 @@ type PubSubChangesPayload struct {
 }
 
 type AdminPayload struct {
-	Message string `json:"message"`
+	TaskID string `json:"task_id"`
+	Action string `json:"action"`
+	Time   int64  `json:"time"`
 }
 
 type ChatPayload struct {

@@ -44,7 +44,7 @@ var TaskRegister = map[string]BaseTask{}
 type TaskInterface interface {
 	ID() string
 	Name() string
-	Cron() string // Currently, "minute hour"
+	Cron() string
 	work()
 }
 
@@ -61,6 +61,40 @@ func (task BaseTask) Next() (t time.Time) {
 	return sched.Next(time.Now())
 }
 
+//
+func RunTask(task BaseTask) {
+
+	cronLogInfo("Cron started: " + task.Name())
+
+	// Send websocket
+	page := websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{TaskID: task.ID(), Action: "started"})
+
+	// Do work
+	task.work()
+
+	// Save config row
+	err := sql.SetConfig(sql.ConfigType("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
+	cronLogErr(err)
+
+	// Send websocket
+	page = websockets.GetPage(websockets.PageAdmin)
+	page.Send(websockets.AdminPayload{
+		TaskID: task.ID(),
+		Action: "finished",
+		Time:   task.Next().Unix(),
+	})
+
+	//
+	cronLogInfo("Cron complete: " + task.Name())
+}
+
+//
+func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
+
+	return sql.GetConfig(sql.ConfigType("task-" + task.ID()))
+}
+
 // Logging
 func cronLogErr(interfaces ...interface{}) {
 	log.Err(append(interfaces, log.LogNameCron, log.LogNameGameDB)...)
@@ -72,29 +106,4 @@ func cronLogInfo(interfaces ...interface{}) {
 
 func statsLogger(tableName string, count int, total int, rowName string) {
 	cronLogInfo("Updating " + tableName + " - " + strconv.Itoa(count) + " / " + strconv.Itoa(total) + ": " + rowName)
-}
-
-//
-func RunTask(task TaskInterface) {
-
-	cronLogInfo("Cron started: " + task.Name())
-
-	task.work()
-
-	// Save config row
-	err := sql.SetConfig(sql.ConfigType("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
-	cronLogErr(err)
-
-	// Send websocket
-	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{Message: task.Name() + " complete"})
-
-	//
-	cronLogInfo("Cron complete: " + task.Name())
-}
-
-//
-func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
-
-	return sql.GetConfig(sql.ConfigType("task-" + task.ID()))
 }

@@ -1,7 +1,19 @@
 if ($('#admin-page').length > 0) {
 
     $('#actions a').on('click', function () {
-        return confirm('Are you sure?');
+        if (confirm('Are you sure?')) {
+            $.ajax({
+                type: 'get',
+                url: $(this).attr('href'),
+                // success: function (data, textStatus, jqXHR) {
+                //     toast(true, 'Triggered');
+                // },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    toast(true, errorThrown);
+                },
+            });
+        }
+        return false;
     });
 
     const queuesForm = $('form#queues');
@@ -21,6 +33,22 @@ if ($('#admin-page').length > 0) {
     websocketListener('admin', function (e) {
 
         const data = $.parseJSON(e.data);
-        toast(true, data.Data.message, '', 0);
+
+        const taskID = data.Data.task_id;
+        const action = data.Data.action;
+
+        if (taskID && action) {
+
+            const $row = $('tr[data-id="' + taskID + '"]');
+            if (action === 'started') {
+                $row.addClass('table-warning');
+                // toast(true, taskID + ' started', '', 0);
+            } else if (action === 'finished') {
+                $row.removeClass('table-warning');
+                // toast(true, taskID + ' finished', '', 0);
+                $row.find('.prev').livestamp();
+                $row.find('.next').livestamp(new Date(data.Data.time * 1000));
+            }
+        }
     });
 }
