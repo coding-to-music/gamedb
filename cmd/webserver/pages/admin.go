@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -51,6 +52,10 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect away after action
 	if option != "" {
+
+		err := session.SetFlash(r, helpers.SessionGood, option+" run")
+		log.Err(err)
+
 		http.Redirect(w, r, "/admin?"+option, http.StatusFound)
 		return
 	}
