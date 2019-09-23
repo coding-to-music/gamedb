@@ -7,41 +7,58 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
+	"github.com/robfig/cron/v3"
 )
 
 func init() {
 	for _, v := range tasks {
-		TaskRegister[v.ID()] = v
+		TaskRegister[v.ID()] = BaseTask{v}
 	}
 }
 
-var tasks = []TaskInterface{
-	AppPlayers{},
-	AppQueueAll{},
-	AutoPlayerRefreshes{},
-	ClearUpcomingCache{},
-	DevCodeRun{},
-	Developers{},
-	Genres{},
-	Instagram{},
-	MemcacheClear{},
-	SetBadgeCache{},
-	PackagesQueueAll{},
-	PlayerRanks{},
-	PlayersQueueAll{},
-	Publishers{},
-	SteamClientPlayers{},
-	Tags{},
-	Wishlists{},
-}
+var (
+	Parser = cron.NewParser(cron.Minute | cron.Hour)
+	tasks  = []TaskInterface{
+		AppPlayers{},
+		AppQueueAll{},
+		AutoPlayerRefreshes{},
+		ClearUpcomingCache{},
+		DevCodeRun{},
+		Developers{},
+		Genres{},
+		Instagram{},
+		MemcacheClear{},
+		SetBadgeCache{},
+		PackagesQueueAll{},
+		PlayerRanks{},
+		PlayersQueueAll{},
+		Publishers{},
+		SteamClientPlayers{},
+		Tags{},
+		Wishlists{},
+	}
+)
 
-var TaskRegister = map[string]TaskInterface{}
+var TaskRegister = map[string]BaseTask{}
 
 type TaskInterface interface {
 	ID() string
 	Name() string
 	Cron() string // Currently, "minute hour"
 	work()
+}
+
+type BaseTask struct {
+	TaskInterface
+}
+
+func (task BaseTask) Next() (t time.Time) {
+
+	sched, err := Parser.Parse(task.Cron())
+	if err != nil {
+		return t
+	}
+	return sched.Next(time.Now())
 }
 
 // Logging

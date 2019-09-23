@@ -24,7 +24,10 @@ func main() {
 
 	c := cron.New(
 		cron.WithLogger(cronLogger{}),
-		cron.WithParser(cron.NewParser(cron.Minute|cron.Hour)),
+		cron.WithParser(tasks.Parser),
+		cron.WithChain(
+			cron.SkipIfStillRunning(cronLogger{}),
+		),
 	)
 
 	c.AddFunc(tasks.AppPlayers{}.Cron(), func() { tasks.RunTask(tasks.AppPlayers{}) })
@@ -49,7 +52,7 @@ type cronLogger struct {
 }
 
 func (cl cronLogger) Info(msg string, keysAndValues ...interface{}) {
-	// log.Info(msg)
+	log.Info(msg)
 }
 
 func (cl cronLogger) Error(err error, msg string, keysAndValues ...interface{}) {
