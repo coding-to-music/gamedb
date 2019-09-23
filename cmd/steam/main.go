@@ -90,6 +90,7 @@ func main() {
 			case *steam.LogOnFailedEvent:
 
 				steamLogInfo("Steam: Login failed")
+				// Disconnects
 
 			case *steam.MachineAuthUpdateEvent:
 
@@ -103,6 +104,7 @@ func main() {
 				steamLogInfo("Steam: Disconnected because of error")
 				steamLoggedOn = false
 				go steamClient.Connect()
+				// Disconnects
 
 			case error:
 				steamLogError(e)
