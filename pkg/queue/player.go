@@ -20,16 +20,16 @@ import (
 )
 
 type playerMessage struct {
-	ID            int64  `json:"id"`
-	Eresult       int32  `json:"eresult,omitempty"`
-	SteamidFriend uint64 `json:"steamid_friend,omitempty"`
-	TimeCreated   uint32 `json:"time_created,omitempty"`
-	RealName      string `json:"real_name,omitempty"`
-	CityName      string `json:"city_name,omitempty"`
-	StateName     string `json:"state_name,omitempty"`
-	CountryName   string `json:"country_name,omitempty"`
-	Headline      string `json:"headline,omitempty"`
-	Summary       string `json:"summary,omitempty"`
+	ID            json.Number `json:"id"`
+	Eresult       int32       `json:"eresult,omitempty"`
+	SteamidFriend json.Number `json:"steamid_friend,omitempty"`
+	TimeCreated   uint32      `json:"time_created,omitempty"`
+	RealName      string      `json:"real_name,omitempty"`
+	CityName      string      `json:"city_name,omitempty"`
+	StateName     string      `json:"state_name,omitempty"`
+	CountryName   string      `json:"country_name,omitempty"`
+	Headline      string      `json:"headline,omitempty"`
+	Summary       string      `json:"summary,omitempty"`
 }
 
 type playerQueue struct {
@@ -60,8 +60,15 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	id, err := message.ID.Int64()
+	if err != nil {
+		logError(err, message.ID.String())
+		payload.ack(msg)
+		return
+	}
+
 	if payload.Attempt > 1 {
-		logInfo("Consuming player " + strconv.FormatInt(message.ID, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
+		logInfo("Consuming player " + strconv.FormatInt(id, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
 	// if !message.PICSProfileInfo.SteamID.IsValid {
@@ -85,7 +92,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	// }
 
 	// Update player
-	player, err := mongo.GetPlayer(message.ID)
+	player, err := mongo.GetPlayer(id)
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
 		logError(err, message.ID)
@@ -93,7 +100,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	player.ID = message.ID
+	player.ID = id
 
 	//
 	var wg sync.WaitGroup

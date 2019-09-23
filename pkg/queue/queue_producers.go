@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -25,7 +26,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 	var appIDs []int
 	var packageIDs []int
-	var profileIDs []int64
+	var profileIDs []json.Number
 
 	mc := helpers.GetMemcache()
 
@@ -80,7 +81,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 			log.Err(err)
 		}
 
-		profileIDs = append(profileIDs, profileID)
+		profileIDs = append(profileIDs, json.Number(strconv.FormatInt(profileID, 10)))
 	}
 
 	return produce(baseMessage{
@@ -163,9 +164,9 @@ func ProducePlayer(ID int64, pb *protobuf.CMsgClientFriendProfileInfoResponse) (
 
 	return produce(baseMessage{
 		Message: playerMessage{
-			ID:            ID,
+			ID:            json.Number(strconv.FormatInt(ID, 10)),
 			Eresult:       pb.GetEresult(),
-			SteamidFriend: pb.GetSteamidFriend(),
+			SteamidFriend: json.Number(strconv.FormatUint(pb.GetSteamidFriend(), 10)),
 			TimeCreated:   pb.GetTimeCreated(),
 			RealName:      pb.GetRealName(),
 			CityName:      pb.GetCityName(),

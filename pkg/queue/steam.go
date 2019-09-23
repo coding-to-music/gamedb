@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/Philipp15b/go-steam"
@@ -8,13 +9,14 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
 
 type steamMessage struct {
-	AppIDs     []int   `json:"app_ids,omitempty"`
-	PackageIDs []int   `json:"package_ids,omitempty"`
-	PlayerIDs  []int64 `json:"player_ids,omitempty"`
+	AppIDs     []int         `json:"app_ids,omitempty"`
+	PackageIDs []int         `json:"package_ids,omitempty"`
+	PlayerIDs  []json.Number `json:"player_ids,omitempty"`
 }
 
 type steamQueue struct {
@@ -98,7 +100,13 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Profiles
-	for _, id := range message.PlayerIDs {
+	for _, number := range message.PlayerIDs {
+
+		id, err := number.Int64()
+		if err != nil {
+			log.Err(err)
+			continue
+		}
 
 		ui := uint64(id)
 
