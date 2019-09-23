@@ -352,6 +352,32 @@ func (pack Package) GetDaysToRelease() string {
 	return helpers.GetDaysToRelease(pack.ReleaseDateUnix)
 }
 
+func (pack Package) GetBundles() (bundles []Bundle, err error) {
+
+	var item = helpers.MemcachePackageBundles(pack.ID)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return bundles, err
+		}
+
+		var bundles []Bundle
+
+		db = db.Where("JSON_CONTAINS(package_ids, '[" + strconv.Itoa(pack.ID) + "]')")
+		db = db.Find(&bundles)
+
+		return bundles, db.Error
+	})
+
+	if len(bundles) == 0 {
+		bundles = []Bundle{} // Needed for marshalling into slice type
+	}
+
+	return bundles, err
+}
+
 func IsValidPackageID(id int) bool {
 	return id != 0
 }

@@ -71,6 +71,9 @@ var (
 	MemcacheAppDevelopers = func(appID int) memcache.Item { return memcache.Item{Key: "app-developers-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppBundles    = func(appID int) memcache.Item { return memcache.Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }
 
+	// Package Bits
+	MemcachePackageBundles = func(packageID int) memcache.Item { return memcache.Item{Key: "package-bundles-" + strconv.Itoa(packageID), Expiration: 0} }
+
 	// Other
 	MemcacheQueues         = memcache.Item{Key: "queues", Expiration: 10}
 	MemcachePopularApps    = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}

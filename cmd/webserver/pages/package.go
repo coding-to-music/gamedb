@@ -94,17 +94,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := sql.GetMySQLClient()
+		var err error
+		bundles, err = pack.GetBundles()
 		if err != nil {
 			log.Err(err, r)
-			return
-		}
-
-		gorm = gorm.Where("JSON_CONTAINS(package_ids, '[" + strconv.Itoa(pack.ID) + "]')")
-		gorm = gorm.Find(&bundles)
-		if gorm.Error != nil {
-			log.Err(gorm.Error, r)
-			return
 		}
 	}()
 
@@ -143,7 +136,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
+		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour*-24).Unix() {
 			return
 		}
 
