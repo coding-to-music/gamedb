@@ -117,7 +117,7 @@ func main() {
 	r.Get("/trending", pages.RedirectHandler("/apps/trending"))
 
 	// File server
-	fileServer(r, "/assets", http.Dir(config.Config.AssetsPath.Get()))
+	fileServer(r, "/assets", http.Dir("./assets"))
 
 	// 404
 	r.NotFound(pages.Error404Handler)

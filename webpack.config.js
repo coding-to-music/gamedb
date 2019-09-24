@@ -18,10 +18,10 @@ module.exports = {
     },
     mode: 'production',
     entry: [
-        path.resolve(__dirname, 'assets/sass/index.scss'),
+        path.resolve(__dirname, 'cmd/webserver/assets/sass/index.scss'),
     ],
     output: {
-        path: path.resolve(__dirname, 'assets/dist'),
+        path: path.resolve(__dirname, 'cmd/webserver/assets/dist'),
         publicPath: '/assets/dist/',
     },
     devtool: "source-map",
@@ -71,7 +71,7 @@ module.exports = {
                             implementation: require("node-sass"),
                             sassOptions: {
                                 includePaths: [
-                                    path.resolve(__dirname, 'assets/sass/*'),
+                                    path.resolve(__dirname, 'cmd/webserver/assets/sass/*'),
                                 ],
                             }
                         },
@@ -103,12 +103,12 @@ module.exports = {
             outputPath: './',
             fileName: 'main.js',
             filesToConcat: [
-                path.resolve(__dirname, 'assets/js/third-party/*.js'),
-                path.resolve(__dirname, 'assets/js/helpers/*.js'),
-                path.resolve(__dirname, 'assets/js/plugins/*.js'),
-                path.resolve(__dirname, 'assets/js/global.js'),
-                path.resolve(__dirname, 'assets/js/product.js'),
-                path.resolve(__dirname, 'assets/js/*.js'),
+                path.resolve(__dirname, 'cmd/webserver/assets/js/third-party/*.js'),
+                path.resolve(__dirname, 'cmd/webserver/assets/js/helpers/*.js'),
+                path.resolve(__dirname, 'cmd/webserver/assets/js/plugins/*.js'),
+                path.resolve(__dirname, 'cmd/webserver/assets/js/global.js'),
+                path.resolve(__dirname, 'cmd/webserver/assets/js/product.js'),
+                path.resolve(__dirname, 'cmd/webserver/assets/js/*.js'),
             ],
             attributes: {
                 async: true

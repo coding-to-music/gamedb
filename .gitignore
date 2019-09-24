@@ -6,8 +6,8 @@
 /cmd/steam/steam
 
 # Source maps
-/assets/dist/main.css.map
-/assets/dist/main.js.map
+/cmd/webserver/assets/dist/main.css.map
+/cmd/webserver/assets/dist/main.js.map
 
 # Vendors
 /node_modules/

@@ -90,19 +90,18 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	setHeaders(w, r, "text/html")
 
 	//
-	folder := config.Config.TemplatesPath.Get()
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
-		folder+"/_webpack_header.gohtml",
-		folder+"/_webpack_footer.gohtml",
-		folder+"/_players_header.gohtml",
-		folder+"/_header.gohtml",
-		folder+"/_footer.gohtml",
-		folder+"/_apps_header.gohtml",
-		folder+"/_login_header.gohtml",
-		folder+"/_flashes.gohtml",
-		folder+"/_stats_header.gohtml",
-		folder+"/_social.gohtml",
-		folder+"/"+page+".gohtml",
+		"./templates/_webpack_header.gohtml",
+		"./templates/_webpack_footer.gohtml",
+		"./templates/_players_header.gohtml",
+		"./templates/_header.gohtml",
+		"./templates/_footer.gohtml",
+		"./templates/_apps_header.gohtml",
+		"./templates/_login_header.gohtml",
+		"./templates/_flashes.gohtml",
+		"./templates/_stats_header.gohtml",
+		"./templates/_social.gohtml",
+		"./templates/"+page+".gohtml",
 	)
 	if err != nil {
 		log.Critical(err)
