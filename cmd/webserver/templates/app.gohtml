@@ -792,7 +792,8 @@
                                             </thead>
                                             {{ range .Extended }}
                                                 <tr data-raw="{{ escape .Value }}">
-                                                    <td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
+{{/*                                                    <td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>*/}}
+                                                    <td nowrap="nowrap">{{ .Key }}</td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                     <td><i class="fas fa-eye"></i></td>
                                                 </tr>
