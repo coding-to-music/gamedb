@@ -62,7 +62,7 @@ func (task BaseTask) Next() (t time.Time) {
 }
 
 //
-func RunTask(task BaseTask) {
+func RunTask(task TaskInterface) {
 
 	cronLogInfo("Cron started: " + task.Name())
 
@@ -82,7 +82,7 @@ func RunTask(task BaseTask) {
 	page.Send(websockets.AdminPayload{
 		TaskID: task.ID(),
 		Action: "finished",
-		Time:   task.Next().Unix(),
+		Time:   BaseTask{task}.Next().Unix(),
 	})
 
 	//
