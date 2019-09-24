@@ -66,11 +66,6 @@ type BaseConfig struct {
 	MySQLPassword ConfigItem
 	MySQLDatabase ConfigItem
 
-	// Paths
-	Path          ConfigItem
-	AssetsPath    ConfigItem
-	TemplatesPath ConfigItem
-
 	// Patreon
 	PatreonSecret       ConfigItem
 	PatreonClientID     ConfigItem
@@ -179,11 +174,6 @@ func init() {
 	Config.MySQLUsername.Set("MYSQL_USERNAME")
 	Config.MySQLPassword.Set("MYSQL_PASSWORD")
 	Config.MySQLDatabase.Set("MYSQL_DATABASE")
-
-	// Paths
-	Config.Path.Set("PATH")
-	Config.AssetsPath.Set("ASSETS_PATH")
-	Config.TemplatesPath.Set("TEMPLATES_PATH")
 
 	// Patreon
 	Config.PatreonSecret.Set("PATREON_WEBOOK_SECRET")
