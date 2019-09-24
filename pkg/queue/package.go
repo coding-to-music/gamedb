@@ -167,6 +167,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		err = helpers.RemoveKeyFromMemCacheViaPubSub(
 			helpers.MemcacheUpcomingPackagesCount.Key,
 			helpers.MemcachePackageInQueue(pack.ID).Key,
+			helpers.MemcachePackageBundles(pack.ID).Key,
 		)
 		log.Err(err)
 	}
