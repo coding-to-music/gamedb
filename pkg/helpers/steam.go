@@ -94,6 +94,10 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			return false
 		}
 
+		if strings.Contains(err.Error(), "html response") {
+			return false
+		}
+
 		if strings.Contains(err.Error(), "unexpected end of JSON input") {
 			return false
 		}
