@@ -54,7 +54,18 @@ if ($('#packages-page').length > 0) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderSequence': ['desc'],
-            }
+            },
+            // Link
+            {
+                "targets": 5,
+                "render": function (data, type, row) {
+                    if (row[10]) {
+                        return '<a href="' + row[10] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
+                    }
+                    return '';
+                },
+                "orderable": false,
+            },
         ]
     };
 

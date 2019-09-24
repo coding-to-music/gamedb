@@ -20,7 +20,7 @@ if ($('#bundles-page').length > 0) {
                         tagName = tagName + ' <span class="badge badge-success">Lowest</span>';
                     }
 
-                    return '<div class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + tagName + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img src="/cmd/webserver/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + tagName + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
@@ -56,7 +56,18 @@ if ($('#bundles-page').length > 0) {
                 "render": function (data, type, row) {
                     return '<span data-livestamp="' + row[3] + '"></span>';
                 }
-            }
+            },
+            // Link
+            {
+                "targets": 5,
+                "render": function (data, type, row) {
+                    if (row[8]) {
+                        return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
+                    }
+                    return '';
+                },
+                "orderable": false,
+            },
         ]
     };
 

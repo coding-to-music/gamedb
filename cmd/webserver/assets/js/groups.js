@@ -45,7 +45,10 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
+                    if (row[8]) {
+                        return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
+                    }
+                    return '';
                 },
                 "orderable": false,
             },
