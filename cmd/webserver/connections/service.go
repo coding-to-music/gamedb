@@ -239,7 +239,7 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
 
 			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
-			if err != nil {
+			if err != nil && err != queue.ErrInQueue {
 				log.Err(err, r)
 			} else {
 				err = session.SetFlash(r, helpers.SessionGood, "Player has been queued for an update")

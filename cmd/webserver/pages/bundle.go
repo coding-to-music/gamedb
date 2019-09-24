@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -88,6 +89,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 				if !found {
 					err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{v}})
+					err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 					log.Err(err)
 				}
 			}

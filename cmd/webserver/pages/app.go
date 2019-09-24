@@ -87,12 +87,12 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour * -24).Unix() {
+		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour*-24).Unix() {
 			return
 		}
 
 		err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{app.ID}})
-		if err != nil {
+		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})

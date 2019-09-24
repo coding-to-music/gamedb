@@ -408,6 +408,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs})
+	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 	log.Err(err)
 
 	err = session.SetFlash(r, helpers.SessionGood, strconv.Itoa(len(friendIDsMap))+" friends queued")

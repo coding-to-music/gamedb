@@ -85,6 +85,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: missingAppIDs})
+		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 		log.Err(err)
 	}()
 
@@ -141,7 +142,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: []int{pack.ID}})
-		if err != nil {
+		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {
 			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update"})

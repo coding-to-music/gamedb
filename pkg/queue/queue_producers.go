@@ -14,6 +14,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
+var ErrInQueue = errors.New("already in queue")
+
 type SteamPayload struct {
 	AppIDs     []int
 	PackageIDs []int
@@ -38,6 +40,9 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 			_, err := mc.Get(item.Key)
 			if err == nil {
+				if len(payload.AppIDs) == 1 {
+					return ErrInQueue
+				}
 				continue
 			}
 
@@ -56,6 +61,9 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 			_, err := mc.Get(item.Key)
 			if err == nil {
+				if len(payload.PackageIDs) == 1 {
+					return ErrInQueue
+				}
 				continue
 			}
 
@@ -74,6 +82,9 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 			_, err := mc.Get(item.Key)
 			if err == nil {
+				if len(payload.ProfileIDs) == 1 {
+					return ErrInQueue
+				}
 				continue
 			}
 
@@ -99,21 +110,6 @@ func ProduceApp(id int, changeNumber int, vdf map[string]interface{}) (err error
 
 	if !helpers.IsValidAppID(id) {
 		return sql.ErrInvalidAppID
-	}
-
-	if !config.IsLocal() {
-
-		mc := helpers.GetMemcache()
-
-		item := helpers.MemcacheAppInQueue(id)
-
-		_, err := mc.Get(item.Key)
-		if err == nil {
-			return nil
-		}
-
-		err = mc.Set(&item)
-		log.Err(err)
 	}
 
 	if vdf == nil {
