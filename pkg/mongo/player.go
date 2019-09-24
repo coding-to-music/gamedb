@@ -138,7 +138,7 @@ func (player Player) GetUpdatedNice() string {
 	return player.UpdatedAt.Format(helpers.DateTime)
 }
 
-func (player Player) GetSteamCommunityLink() string {
+func (player Player) CommunityLink() string {
 	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(player.ID, 10)
 }
 

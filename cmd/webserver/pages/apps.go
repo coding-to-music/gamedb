@@ -412,10 +412,11 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetName(), // 1
 			app.GetIcon(), // 2
 			app.GetPath(), // 3
-			"",            // 4
+			app.GetType(), // 4
 			helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
 			app.GetPrice(code).GetFinal(),             // 6
 			app.PlayerPeakWeek,                        // 7
+			app.GetStoreLink(),                        // 8
 		})
 	}
 

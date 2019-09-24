@@ -109,7 +109,8 @@ func (bundle Bundle) OutputForJSON() (output []interface{}) {
 		bundle.Discount,        // 4
 		bundle.AppsCount(),     // 5
 		bundle.PackagesCount(), // 6
-		bundle.HighestDiscount == bundle.Discount && bundle.Discount != 0, // Highest ever discount
+		bundle.HighestDiscount == bundle.Discount && bundle.Discount != 0, // 7 Highest ever discount
+		bundle.GetStoreLink(), // 8
 	}
 }
 

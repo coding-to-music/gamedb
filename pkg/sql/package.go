@@ -91,7 +91,7 @@ func (pack Package) GetPath() string {
 	return helpers.GetPackagePath(pack.ID, pack.GetName())
 }
 
-func (pack Package) GetLink() string {
+func (pack Package) StoreLink() string {
 	if !pack.InStore {
 		return ""
 	}
@@ -344,6 +344,7 @@ func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
 		pack.ChangeNumberDate.Format(helpers.DateYearTime), // 7
 		pack.GetIcon(),                           // 8
 		pack.GetPrice(code).GetDiscountPercent(), // 9
+		pack.StoreLink(),                         // 10
 	}
 }
 

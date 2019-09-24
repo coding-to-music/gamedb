@@ -279,6 +279,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.Player.GetFlag(),                 // 11
 			v.Player.GetCountry(),              // 12
 			v.Player.GetPath(),                 // 13
+			v.Player.CommunityLink(),           // 14
 		})
 	}
 
