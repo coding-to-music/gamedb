@@ -28,6 +28,8 @@ if ($('#chat-page').length > 0) {
 
         const $container = $('ul[data-channel-id=' + data.channel + ']');
 
+        const fadeClass = (addToTop ? ' fade-green' : '');
+
         $container.json2html(
             data,
             {
@@ -36,9 +38,7 @@ if ($('#chat-page').length > 0) {
                     {
                         '<>': 'div', 'class': 'media-body', 'html': [
                             {
-                                '<>': 'h5', 'class': function () {
-                                    return 'mt-0 mb-1 rounded' + (addToTop ? ' fade-green' : '');
-                                }, 'html': '${content}'
+                                '<>': 'h5', 'class': 'mt-0 mb-1 rounded' + fadeClass, 'html': '${content}'
                             },
                             {'<>': 'p', 'class': 'text-muted', 'html': 'By ${author_user} at <span data-livestamp="${timestamp}"></span>'}
                         ]
