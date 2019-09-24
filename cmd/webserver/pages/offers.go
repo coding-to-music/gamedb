@@ -23,6 +23,8 @@ func OffersRouter() http.Handler {
 func offersHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := offersTemplate{}
+	t.addAssetChosen()
+	t.addAssetSlider()
 	t.fill(w, r, "Offers", "")
 
 	var wg sync.WaitGroup
