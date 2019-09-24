@@ -688,26 +688,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
                                 </li>
-                                {{if gt (len .App.GetExtended) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-extended" role="tab">Extended</a>
-                                    </li>
-                                {{ end }}
-                                {{ if gt (len .App.GetCommon) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-common" role="tab">Common</a>
-                                    </li>
-                                {{ end }}
-                                {{ if gt (len .App.GetConfig) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-config" role="tab">Config</a>
-                                    </li>
-                                {{ end }}
-                                {{ if gt (len .App.GetUFS) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-ufs" role="tab">UFS</a>
-                                    </li>
-                                {{ end }}
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-options" role="tab">Options</a>
+                                </li>
                                 {{ if gt (len .App.GetInstall) 0}}
                                     <li class="nav-item">
                                         <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
@@ -778,11 +761,11 @@
 
                                 </div>
 
-                                {{/* Extended */}}
-                                <div class="tab-pane" id="dev-extended" role="tabpanel">
+                                {{/* Extended / Common / UFS / Config */}}
+                                <div class="tab-pane" id="dev-options" role="tabpanel">
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                             <thead class="thead-light">
                                             <tr>
                                                 <th scope="col">Key</th>
@@ -798,23 +781,6 @@
                                                     <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                             {{ end }}
-                                        </table>
-                                    </div>
-
-                                </div>
-
-                                {{/* Common */}}
-                                <div class="tab-pane" id="dev-common" role="tabpanel">
-
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col" width="1%">Key</th>
-                                                <th scope="col">Value</th>
-                                                <th scope="col" width="1%">Raw</th>
-                                            </tr>
-                                            </thead>
                                             {{ range .Common }}
                                                 <tr data-raw="{{ escape .Value }}">
                                                     <td nowrap="nowrap">
@@ -823,6 +789,20 @@
                                                             <small>({{ .Description }})</small>
                                                         {{ end }}
                                                     </td>
+                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                    <td><i class="fas fa-eye"></i></td>
+                                                </tr>
+                                            {{ end }}
+                                            {{ range .UFS }}
+                                                <tr data-raw="{{ escape .Value }}">
+                                                    <td nowrap="nowrap">{{ .Key }}</td>
+                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                    <td><i class="fas fa-eye"></i></td>
+                                                </tr>
+                                            {{ end }}
+                                            {{ range $key, $value := .Config }}
+                                                <tr data-raw="{{ escape .Value }}">
+                                                    <td nowrap="nowrap">{{ .Key }}</td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                     <td><i class="fas fa-eye"></i></td>
                                                 </tr>
@@ -847,55 +827,52 @@
                                 {{/* Depots */}}
                                 <div class="tab-pane" id="dev-depots" role="tabpanel">
 
-                                    {{ if gt (len .App.GetDepots.Depots) 0 }}
-                                        <h5>Depots</h5>
-                                        <div class="table-responsive mb-4">
-                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                                <thead class="thead-light">
+                                    <div class="table-responsive mb-4">
+                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Configs</th>
+                                                <th scope="col">Manifests</th>
+                                                <th scope="col">Encrypted Manifests</th>
+                                                <th scope="col">Max Size</th>
+                                                <th scope="col">App</th>
+                                                <th scope="col">DLC App</th>
+                                                <th scope="col">System Defined</th>
+                                                <th scope="col">Optional</th>
+                                                <th scope="col">Shared Install</th>
+                                                <th scope="col">Shared Depot Type</th>
+                                                <th scope="col">LV Cache</th>
+                                                <th scope="col">Allow Add Remove While Running</th>
+                                            </tr>
+                                            </thead>
+                                            {{ range $key, $value := .App.GetDepots.Depots }}
                                                 <tr>
-                                                    <th scope="col">ID</th>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Configs</th>
-                                                    <th scope="col">Manifests</th>
-                                                    <th scope="col">Encrypted Manifests</th>
-                                                    <th scope="col">Max Size</th>
-                                                    <th scope="col">App</th>
-                                                    <th scope="col">DLC App</th>
-                                                    <th scope="col">System Defined</th>
-                                                    <th scope="col">Optional</th>
-                                                    <th scope="col">Shared Install</th>
-                                                    <th scope="col">Shared Depot Type</th>
-                                                    <th scope="col">LV Cache</th>
-                                                    <th scope="col">Allow Add Remove While Running</th>
+                                                    <td>{{ .ID }}</td>
+                                                    <td nowrap="nowrap">{{ .Name }}</td>
+                                                    <td>
+                                                        <div class="json">{{ json .Configs }}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="json">{{ json .Manifests }}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="json">{{ .EncryptedManifests }}</div>
+                                                    </td>
+                                                    <td>{{ bytes .MaxSize }}</td>
+                                                    <td>{{ if ne .App 0 }}<a rel="nofollow" href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>
+                                                    <td>{{ if ne .DLCApp 0 }}<a rel="nofollow" href="/apps/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
+                                                    <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                    <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                    <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                    <td>{{ if .SharedDepotType }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                    <td>{{ if .LVCache }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                    <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                 </tr>
-                                                </thead>
-                                                {{ range $key, $value := .App.GetDepots.Depots }}
-                                                    <tr>
-                                                        <td>{{ .ID }}</td>
-                                                        <td nowrap="nowrap">{{ .Name }}</td>
-                                                        <td>
-                                                            <div class="json">{{ json .Configs }}</div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="json">{{ json .Manifests }}</div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="json">{{ .EncryptedManifests }}</div>
-                                                        </td>
-                                                        <td>{{ bytes .MaxSize }}</td>
-                                                        <td>{{ if ne .App 0 }}<a rel="nofollow" href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>
-                                                        <td>{{ if ne .DLCApp 0 }}<a rel="nofollow" href="/apps/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
-                                                        <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .SharedDepotType }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .LVCache }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                            </table>
-                                        </div>
-                                    {{ end }}
+                                            {{ end }}
+                                        </table>
+                                    </div>
 
                                     {{ if gt (len .App.GetDepots.Branches) 0 }}
                                         <h5>Branches</h5>
@@ -948,55 +925,6 @@
                                             </table>
                                         </div>
                                     {{ end }}
-
-                                </div>
-
-                                {{/* Config */}}
-                                <div class="tab-pane" id="dev-config" role="tabpanel">
-
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col" width="1%">Key</th>
-                                                <th scope="col">Value</th>
-                                                <th scope="col" width="1%">Raw</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range $key, $value := .Config }}
-                                                <tr data-raw="{{ escape .Value }}">
-                                                    <td nowrap="nowrap">{{ .Key }}</td>
-                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
-                                                    <td><i class="fas fa-eye"></i></td>
-                                                </tr>
-                                            {{ end }}
-                                        </table>
-                                    </div>
-
-                                </div>
-
-                                {{/* UFS */}}
-                                <div class="tab-pane" id="dev-ufs" role="tabpanel">
-
-                                    <h5>User File System</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Key</th>
-                                                <th scope="col">Value</th>
-                                                <th scope="col" width="1%">Raw</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range .UFS }}
-                                                <tr data-raw="{{ escape .Value }}">
-                                                    <td nowrap="nowrap">{{ .Key }}</td>
-                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
-                                                    <td><i class="fas fa-eye"></i></td>
-                                                </tr>
-                                            {{ end }}
-                                        </table>
-                                    </div>
 
                                 </div>
 
