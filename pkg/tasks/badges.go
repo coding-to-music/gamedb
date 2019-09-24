@@ -47,7 +47,7 @@ func (c SetBadgeCache) work() {
 
 		time.Sleep(time.Second * 10)
 
-		err = badge.SetEventMaxFoil()
+		err = badge.SetEventFoilMax()
 		log.Err(err)
 
 		time.Sleep(time.Second * 10)

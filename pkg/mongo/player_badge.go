@@ -1,9 +1,11 @@
 package mongo
 
 import (
+	"errors"
 	"strconv"
 	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
@@ -212,7 +214,7 @@ func (pb PlayerBadge) GetEventMaxFoil() (max PlayerBadge, err error) {
 	return max, err
 }
 
-func (pb PlayerBadge) SetEventMaxFoil() (err error) {
+func (pb PlayerBadge) SetEventFoilMax() (err error) {
 
 	item := helpers.MemcacheBadgeMaxEventFoil(pb.AppID)
 
@@ -226,13 +228,30 @@ func (pb PlayerBadge) SetEventMaxFoil() (err error) {
 
 func (pb PlayerBadge) getEventMax(foil bool) (max PlayerBadge, err error) {
 
-	err = GetFirstDocument(
-		CollectionPlayerBadges,
-		M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}, "badge_foil": foil},
-		M{"badge_level": -1, "badge_completion_time": 1},
-		M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
-		&max,
-	)
+	operation := func() (err error) {
+
+		err = GetFirstDocument(
+			CollectionPlayerBadges,
+			M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}, "badge_foil": foil},
+			M{"badge_level": -1, "badge_completion_time": 1},
+			M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+			&max,
+		)
+
+		if max.BadgeLevel < 2 {
+			return errors.New("mongo returned wrong result")
+		}
+
+		return err
+	}
+
+	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second
+
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, t) })
+	if err != nil {
+		log.Critical(err)
+	}
 
 	return max, err
 }
