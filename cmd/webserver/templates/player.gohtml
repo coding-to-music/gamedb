@@ -387,11 +387,16 @@
                             </tr>
                             </thead>
                             {{ range $key, $value := .Groups }}
-                                <tr data-link="{{ .GetPath }}" data-group-id64="{{ .ID64 }}" data-group-id="{{ .ID }}" class="{{ if eq .ID64 $.Player.PrimaryClanIDString }}table-success{{ end }}">
+                                <tr data-link="{{ .GetPath }}" data-group-id64="{{ .ID64 }}" data-group-id="{{ .ID }}">
                                     <td class="img">
                                         <div class="icon-name">
                                             <div class="icon"><img src="{{ .Icon }}" alt="{{ .Name }}"></div>
-                                            <div class="name">{{ .Name }}</div>
+                                            <div class="name">
+                                                {{ .Name }}
+                                                {{ if eq .ID64 $.Player.PrimaryClanIDString }}
+                                                    <span class="badge badge-success float-right">Primary</span>
+                                                {{ end }}
+                                            </div>
                                         </div>
                                     </td>
                                     <td>{{ comma .Members }}</td>
