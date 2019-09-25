@@ -47,7 +47,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &payload)
 	if err != nil {
-		logError(err)
+		logCritical(err)
 		payload.ack(msg)
 		return
 	}
@@ -55,14 +55,14 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	var message playerMessage
 	err = helpers.MarshalUnmarshal(payload.Message, &message)
 	if err != nil {
-		logError(err)
+		logCritical(err)
 		payload.ack(msg)
 		return
 	}
 
 	id, err := message.ID.Int64()
 	if err != nil {
-		logError(err, message.ID.String())
+		logCritical(err, message.ID.String())
 		payload.ack(msg)
 		return
 	}
