@@ -42,13 +42,13 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 	return err
 }
 
-func UnmarshalNumber(b []byte, v interface{}) (err error) {
-
-	d := json.NewDecoder(bytes.NewReader(b))
-	d.UseNumber()
-
-	return d.Decode(&v)
-}
+// func UnmarshalNumber(b []byte, v interface{}) (err error) {
+//
+// 	d := json.NewDecoder(bytes.NewReader(b))
+// 	d.UseNumber()
+//
+// 	return d.Decode(&v)
+// }
 
 func UnmarshalStrict(data []byte, v interface{}) error {
 
