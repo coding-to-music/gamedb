@@ -217,7 +217,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
 		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
-		if err != nil {
+		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
@@ -778,7 +778,9 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
-		if err != nil {
+		if err == queue.ErrInQueue {
+			return "Player already queued", err, false
+		} else if err != nil {
 			log.Err(err, r)
 			return "Something has gone wrong", err, false
 		}
