@@ -115,6 +115,11 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 			return steam.ProductCC(val)
 		}
 
+		// If local
+		if strings.Contains(r.RemoteAddr, "[::1]:") {
+			return steam.ProductCCUK
+		}
+
 		// Get from Maxmind
 		db, err := maxminddb.Open("./assets/files/GeoLite2-Country.mmdb")
 		if err != nil {
