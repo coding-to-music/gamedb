@@ -53,7 +53,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	var message playerMessage
-	err = mapstructure.Decode(payload.Message, &message)
+	err = helpers.MarshalUnmarshal(payload.Message, &message)
 	if err != nil {
 		logError(err)
 		payload.ack(msg)
