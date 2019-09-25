@@ -178,16 +178,8 @@ func log(interfaces ...interface{}) {
 		switch val := v.(type) {
 		case nil:
 			continue
-		case []byte:
-			entry.texts = append(entry.texts, string(val))
-		case net.IP:
-			entry.texts = append(entry.texts, string(val))
-		case []string:
-			entry.texts = append(entry.texts, strings.Join(val, ","))
 		case bool:
 			entry.texts = append(entry.texts, strconv.FormatBool(val))
-		case time.Duration:
-			entry.texts = append(entry.texts, val.String())
 		case int:
 			entry.texts = append(entry.texts, strconv.Itoa(val))
 		case uint32:
@@ -202,6 +194,14 @@ func log(interfaces ...interface{}) {
 			entry.texts = append(entry.texts, strconv.FormatFloat(val, 'f', -1, 64))
 		case string:
 			entry.texts = append(entry.texts, val)
+		case []byte:
+			entry.texts = append(entry.texts, string(val))
+		case []string:
+			entry.texts = append(entry.texts, strings.Join(val, ","))
+		case time.Duration:
+			entry.texts = append(entry.texts, val.String())
+		case net.IP:
+			entry.texts = append(entry.texts, val.String())
 		case *http.Request:
 			entry.request = val
 		case error:
