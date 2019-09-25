@@ -116,7 +116,7 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 		}
 
 		// Get from Maxmind
-		db, err := maxminddb.Open("./files/GeoLite2-Country.mmdb")
+		db, err := maxminddb.Open("./assets/files/GeoLite2-Country.mmdb")
 		if err != nil {
 			log.Err(err)
 			return steam.ProductCCUS
