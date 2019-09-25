@@ -194,12 +194,14 @@
                     const order = dt.order();
                     const settingsOrder = parent.settingsWithoutUrl.tableOptions.order;
 
-                    if (settingsOrder != null && order[0][1] === settingsOrder[0][1] && order[0][0] === settingsOrder[0][0]) {
-                        deleteUrlParam('order');
-                        deleteUrlParam('sort');
-                    } else {
-                        setUrlParam('order', order[0][1]);
-                        setUrlParam('sort', order[0][0]);
+                    if (settingsOrder != null && order.length > 0) {
+                        if (order[0][1] === settingsOrder[0][1] && order[0][0] === settingsOrder[0][0]) {
+                            deleteUrlParam('order');
+                            deleteUrlParam('sort');
+                        } else {
+                            setUrlParam('order', order[0][1]);
+                            setUrlParam('sort', order[0][0]);
+                        }
                     }
 
                     if (dt.page.info().page === 0) {
