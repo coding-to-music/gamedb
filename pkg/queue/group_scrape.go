@@ -63,11 +63,6 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// Backwards compatability, can remove when group queue goes down
-	if message.ID != "" {
-		message.IDs = append(message.IDs, message.ID)
-	}
-
 	//
 	for _, groupID := range message.IDs {
 
