@@ -38,6 +38,7 @@ type Player struct {
 	GamesByType         map[string]float64 `bson:"games_by_type"`          //
 	Groups              []string           `bson:"groups"`                 // []int - Can be greater than 64bit
 	LastLogOff          time.Time          `bson:"time_logged_off"`        //
+	LastBan             time.Time          `bson:"last_ban"`               //
 	NumberOfGameBans    int                `bson:"bans_game"`              //
 	NumberOfVACBans     int                `bson:"bans_cav"`               //
 	PersonaName         string             `bson:"persona_name"`           //
@@ -79,6 +80,7 @@ func (player Player) BSON() (ret interface{}) {
 		"games_by_type":          player.GamesByType,
 		"groups":                 player.Groups,
 		"time_logged_off":        player.LastLogOff,
+		"last_ban":               player.LastBan,
 		"bans_game":              player.NumberOfGameBans,
 		"bans_cav":               player.NumberOfVACBans,
 		"persona_name":           player.PersonaName,
@@ -272,16 +274,16 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 	case PlayerUpdateAdmin:
 		return true
 	case PlayerUpdateAuto:
-		if player.UpdatedAt.Add(time.Hour * 24 * 7).Unix() < time.Now().Unix() { // 1 week
+		if player.UpdatedAt.Add(time.Hour*24*7).Unix() < time.Now().Unix() { // 1 week
 			return true
 		}
 	case PlayerUpdateManual:
 		if player.Donated == 0 {
-			if player.UpdatedAt.Add(time.Hour * 24).Unix() < time.Now().Unix() { // 1 day
+			if player.UpdatedAt.Add(time.Hour*24).Unix() < time.Now().Unix() { // 1 day
 				return true
 			}
 		} else {
-			if player.UpdatedAt.Add(time.Hour * 1).Unix() < time.Now().Unix() { // 1 hour
+			if player.UpdatedAt.Add(time.Hour*1).Unix() < time.Now().Unix() { // 1 hour
 				return true
 			}
 		}
