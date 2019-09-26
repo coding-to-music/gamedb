@@ -140,11 +140,65 @@ func adminRunCron(r *http.Request) {
 
 func adminQueues(r *http.Request) {
 
+	var appIDs []int
+	if val := r.PostForm.Get("app-id"); val != "" {
+
+		vals := strings.Split(val, ",")
+
+		for _, val := range vals {
+
+			val = strings.TrimSpace(val)
+
+			appID, err := strconv.Atoi(val)
+			if err == nil {
+				appIDs = append(appIDs, appID)
+			}
+		}
+	}
+
+	if val := r.PostForm.Get("apps-ts"); val != "" {
+
+		log.Info("Queueing apps")
+
+		ts, err := strconv.ParseInt(val, 10, 64)
+		log.Err(err, r)
+		if err == nil {
+
+			apps, b, err := helpers.GetSteam().GetAppList(100000, 0, ts, "")
+			err = helpers.AllowSteamCodes(err, b, nil)
+			log.Err(err, r)
+			if err == nil {
+
+				log.Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
+
+				for _, app := range apps.Apps {
+					appIDs = append(appIDs, app.AppID)
+				}
+			}
+		}
+	}
+
+	var packageIDs []int
+	if val := r.PostForm.Get("package-id"); val != "" {
+
+		vals := strings.Split(val, ",")
+
+		for _, val := range vals {
+
+			val = strings.TrimSpace(val)
+
+			packageID, err := strconv.Atoi(val)
+			if err == nil {
+				packageIDs = append(packageIDs, packageID)
+			}
+		}
+	}
+
+	var playerIDs []int64
 	if val := r.PostForm.Get("player-id"); val != "" {
 
 		vals := strings.Split(val, ",")
 
-		var playerIDs []int64
 		for _, val := range vals {
 
 			val = strings.TrimSpace(val)
@@ -155,47 +209,6 @@ func adminQueues(r *http.Request) {
 				playerIDs = append(playerIDs, playerID)
 			}
 		}
-
-		err := queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: playerIDs})
-		log.Err(err)
-	}
-
-	if val := r.PostForm.Get("app-id"); val != "" {
-
-		vals := strings.Split(val, ",")
-
-		var appIDs []int
-		for _, val := range vals {
-
-			val = strings.TrimSpace(val)
-
-			appID, err := strconv.Atoi(val)
-			if err == nil {
-				appIDs = append(appIDs, appID)
-			}
-		}
-
-		err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: appIDs})
-		log.Err(err)
-	}
-
-	if val := r.PostForm.Get("package-id"); val != "" {
-
-		vals := strings.Split(val, ",")
-
-		var packageIDs []int
-		for _, val := range vals {
-
-			val = strings.TrimSpace(val)
-
-			packageID, err := strconv.Atoi(val)
-			if err == nil {
-				packageIDs = append(packageIDs, packageID)
-			}
-		}
-
-		err := queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageIDs})
-		log.Err(err)
 	}
 
 	if val := r.PostForm.Get("bundle-id"); val != "" {
@@ -221,36 +234,17 @@ func adminQueues(r *http.Request) {
 
 		for _, val := range vals {
 
-			err := queue.ProduceGroup([]string{val})
+			err := queue.ProduceGroup([]string{val}, true)
 			log.Err(err, r)
 		}
 	}
 
-	if val := r.PostForm.Get("apps-ts"); val != "" {
-
-		log.Info("Queueing apps")
-
-		ts, err := strconv.ParseInt(val, 10, 64)
-		log.Err(err, r)
-		if err == nil {
-
-			apps, b, err := helpers.GetSteam().GetAppList(100000, 0, ts, "")
-			err = helpers.AllowSteamCodes(err, b, nil)
-			log.Err(err, r)
-			if err == nil {
-
-				log.Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
-
-				var appIDs []int
-				for _, app := range apps.Apps {
-					appIDs = append(appIDs, app.AppID)
-				}
-
-				err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: appIDs})
-				log.Err(err)
-			}
-		}
-	}
+	err := queue.ProduceToSteam(queue.SteamPayload{
+		AppIDs:     appIDs,
+		PackageIDs: packageIDs,
+		ProfileIDs: playerIDs,
+	}, true)
+	log.Err(err)
 }
 
 func adminDeleteBinLogs(r *http.Request) {

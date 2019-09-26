@@ -51,7 +51,7 @@ func (c PackagesQueueAll) work() {
 		packageSlice = append(packageSlice, k)
 	}
 
-	err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageSlice})
+	err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageSlice}, true)
 	log.Err(err)
 
 	//

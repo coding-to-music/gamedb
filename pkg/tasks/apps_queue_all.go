@@ -42,7 +42,7 @@ func (c AppQueueAll) work() {
 
 		for _, v := range apps.Apps {
 
-			err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{v.AppID}})
+			err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{v.AppID}}, true)
 			if err != nil {
 				log.Err(err, strconv.Itoa(v.AppID))
 				continue

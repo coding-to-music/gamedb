@@ -84,7 +84,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: missingAppIDs})
+		err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: missingAppIDs}, false)
 		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 		log.Err(err)
 	}()
@@ -141,7 +141,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: []int{pack.ID}})
+		err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: []int{pack.ID}}, false)
 		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {

@@ -36,7 +36,7 @@ func (c PlayersQueueAll) work() {
 		playerIDs = append(playerIDs, player.ID)
 	}
 
-	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: playerIDs})
+	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: playerIDs}, true)
 	log.Err(err)
 
 	//

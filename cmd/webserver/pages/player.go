@@ -61,7 +61,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
-			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}})
+			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}}, false)
 			log.Err(err)
 
 			// Template
@@ -183,7 +183,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
 			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
 			if err == sql.ErrRecordNotFound {
-				err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{player.BackgroundAppID}})
+				err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{player.BackgroundAppID}}, false)
 				log.Err(err, player.BackgroundAppID)
 			} else if err != nil {
 				log.Err(err, player.BackgroundAppID)
@@ -216,7 +216,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
-		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
+		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}}, false)
 		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {
@@ -407,7 +407,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		missingPlayerIDs = append(missingPlayerIDs, friendID)
 	}
 
-	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs})
+	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs}, false)
 	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 	log.Err(err)
 
@@ -777,7 +777,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", nil, false
 		}
 
-		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}})
+		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}}, false)
 		if err == queue.ErrInQueue {
 			return "Player already queued", err, false
 		} else if err != nil {

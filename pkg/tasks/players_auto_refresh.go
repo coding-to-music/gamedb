@@ -45,7 +45,7 @@ func (c AutoPlayerRefreshes) work() {
 
 		playerIDs = append(playerIDs, user.SteamID)
 
-		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{user.SteamID}})
+		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{user.SteamID}}, true)
 		log.Err(err)
 	}
 
@@ -58,7 +58,7 @@ func (c AutoPlayerRefreshes) work() {
 		}
 	}
 
-	err = queue.ProduceGroup(groupIDs)
+	err = queue.ProduceGroup(groupIDs, false)
 	log.Err(err)
 
 	cronLogInfo("Auto updated " + strconv.Itoa(len(users)) + " players")
