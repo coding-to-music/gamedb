@@ -6,6 +6,10 @@ import (
 
 func IsValidGroupID(id string) bool {
 
+	if id == "" {
+		return false
+	}
+
 	if len(id) > 8 && len(id) != 18 {
 		return false
 	}
