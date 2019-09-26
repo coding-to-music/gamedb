@@ -113,6 +113,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	err = t.ExecuteTemplate(buf, page, pageData)
 	if err != nil {
 		log.Critical(err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
 		return err
 	}
 
