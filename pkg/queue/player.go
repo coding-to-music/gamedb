@@ -71,26 +71,6 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		logInfo("Consuming player " + strconv.FormatInt(id, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
 	}
 
-	// if !message.PICSProfileInfo.SteamID.IsValid {
-	// 	logError(errors.New("not a valid player id: " + strconv.FormatInt(message.ID, 10)))
-	// 	payload.ack(msg)
-	// 	return
-	// }
-	//
-	// if !message.PICSProfileInfo.SteamID.IsIndividualAccount {
-	// 	logError(errors.New("not individual account id: " + strconv.FormatInt(message.ID, 10)))
-	// 	payload.ack(msg)
-	// 	return
-	// }
-	//
-	// // Convert steamID3 to steamID64
-	// id64, err := helpers.GetSteam().GetID(strconv.Itoa(message.PICSProfileInfo.SteamID.AccountID))
-	// if err != nil {
-	// 	logError(err, message.ID)
-	// 	payload.ack(msg)
-	// 	return
-	// }
-
 	// Update player
 	player, err := mongo.GetPlayer(id)
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
