@@ -15,6 +15,11 @@ import (
 )
 
 type changeMessage struct {
+	baseMessage
+	Message changeMessageInner `json:"message"`
+}
+
+type changeMessageInner struct {
 	AppIDs     map[int]int `json:"app_ids"`
 	PackageIDs map[int]int `json:"package_ids"`
 }
@@ -27,47 +32,38 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{
-		Message:       changeMessage{},
-		OriginalQueue: queueGoChanges,
-	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
-	}
+	message := changeMessage{}
+	message.OriginalQueue = queueChanges
 
-	var message changeMessage
-	err = helpers.MarshalUnmarshal(payload.Message, &message)
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
-		payload.ack(msg)
+		logError(err, msg.Body)
+		message.fail(msg)
 		return
 	}
 
 	// Group products by change ID
 	changes := map[int]*mongo.Change{}
 
-	for changeNumber, appID := range message.AppIDs {
+	for changeNumber, appID := range message.Message.AppIDs {
 		if _, ok := changes[changeNumber]; ok {
 			changes[changeNumber].Apps = append(changes[changeNumber].Apps, appID)
 		} else {
 			changes[changeNumber] = &mongo.Change{
-				CreatedAt: payload.FirstSeen,
+				CreatedAt: message.FirstSeen,
 				ID:        changeNumber,
 				Apps:      []int{appID},
 			}
 		}
 	}
 
-	for changeNumber, packageID := range message.PackageIDs {
+	for changeNumber, packageID := range message.Message.PackageIDs {
 		if _, ok := changes[changeNumber]; ok {
 			changes[changeNumber].Packages = append(changes[changeNumber].Packages, packageID)
 		} else {
 			changes[changeNumber] = &mongo.Change{
-				CreatedAt: payload.FirstSeen,
+				CreatedAt: message.FirstSeen,
 				ID:        changeNumber,
 				Packages:  []int{packageID},
 			}
@@ -88,7 +84,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	err = saveChangesToMongo(changeSlice)
 	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
 		logError(err)
-		payload.ackRetry(msg)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -96,7 +92,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	appMap, packageMap, err := getChangesAppsAndPackages(changeSlice)
 	if err != nil {
 		logError(err)
-		payload.ackRetry(msg)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -108,7 +104,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	err = sendChangeToDiscord(changeSlice, appMap, packageMap)
 	logError(err)
 
-	payload.ack(msg)
+	message.ack(msg)
 }
 
 func saveChangesToMongo(changes []*mongo.Change) (err error) {

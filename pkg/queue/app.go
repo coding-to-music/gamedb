@@ -25,12 +25,16 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/mitchellh/mapstructure"
 	"github.com/nicklaw5/helix"
 	"github.com/streadway/amqp"
 )
 
 type appMessage struct {
+	baseMessage
+	Message appMessageInner `json:"message"`
+}
+
+type appMessageInner struct {
 	ID           int                    `json:"id"`
 	ChangeNumber int                    `json:"change_number,omitempty"`
 	VDF          map[string]interface{} `json:"vdf,omitempty"`
@@ -44,49 +48,40 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{
-		Message:       appMessage{},
-		OriginalQueue: queueGoApps,
-	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
+	message := appMessage{}
+	message.OriginalQueue = queueApps
+
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
-		payload.ack(msg)
+		logCritical(err, msg.Body)
+		message.fail(msg)
 		return
 	}
 
-	var message appMessage
-	err = mapstructure.Decode(payload.Message, &message)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
+	if message.Attempt > 1 {
+		logInfo("Consuming app " + strconv.Itoa(message.Message.ID) + ", attempt " + strconv.Itoa(message.Attempt) + " - " + string(msg.Body))
 	}
 
-	if payload.Attempt > 1 {
-		logInfo("Consuming app " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
-	}
-
-	if !helpers.IsValidAppID(message.ID) {
-		logError(errors.New("invalid app ID: " + strconv.Itoa(message.ID)))
-		payload.ack(msg)
+	if !helpers.IsValidAppID(message.Message.ID) {
+		logError(errors.New("invalid app ID: "+strconv.Itoa(message.Message.ID)), msg.Body)
+		message.fail(msg)
 		return
 	}
 
 	// Load current app
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		logError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
 	app := sql.App{}
-	gorm = gorm.FirstOrInit(&app, sql.App{ID: message.ID})
+	gorm = gorm.FirstOrInit(&app, sql.App{ID: message.Message.ID})
 	if gorm.Error != nil {
-		logError(gorm.Error, message.ID)
-		payload.ackRetry(msg)
+		logError(gorm.Error, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -98,9 +93,9 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Skip if updated in last day, unless its from PICS
 	if !config.IsLocal() {
 		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour*24*-1).Unix() {
-			if app.ChangeNumber >= message.ChangeNumber && message.ChangeNumber != 0 {
+			if app.ChangeNumber >= message.Message.ChangeNumber && message.Message.ChangeNumber != 0 {
 				logInfo("Skipping app, updated in last day")
-				payload.ack(msg)
+				message.ack(msg)
 				return
 			}
 		}
@@ -110,10 +105,10 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	var appBeforeUpdate = app
 
 	//
-	err = updateAppPICS(&app, payload, message)
+	err = updateAppPICS(&app, message)
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		logError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -131,29 +126,29 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		schema, err := updateAppSchema(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = updateAppAchievements(&app, schema)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = updateAppNews(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		newItems, err = updateAppItems(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -169,22 +164,22 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppDetails(&app)
 		if err != nil && err != steam.ErrAppNotFound {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = updateAppReviews(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		offers, err = scrapeApp(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -199,7 +194,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppSteamSpy(&app)
 		if err != nil {
-			logInfo(err, message.ID)
+			logInfo(err, message.Message.ID)
 		}
 	}()
 
@@ -213,8 +208,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppTwitch(&app)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -230,22 +225,22 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppPlaytimeStats(&app)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		currentAppItems, err = getCurrentAppItems(app.ID)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
@@ -259,22 +254,22 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePriceChanges(appBeforeUpdate, app)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = saveAppItems(app.ID, newItems, currentAppItems)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = saveOffers(app, offers)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -289,8 +284,8 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		gorm = gorm.Save(&app)
 		if gorm.Error != nil {
-			logError(gorm.Error, message.ID)
-			payload.ackRetry(msg)
+			logError(gorm.Error, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -305,15 +300,15 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = saveAppToInflux(app)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
@@ -339,7 +334,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 				helpers.MemcacheAppPublishers(app.ID).Key,
 				helpers.MemcacheAppBundles(app.ID).Key,
 			)
-			logError(err, message.ID)
+			logError(err, message.Message.ID)
 		}
 	}()
 
@@ -352,41 +347,41 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		var err error
 
 		wsPayload := websockets.PubSubIDPayload{}
-		wsPayload.ID = message.ID
+		wsPayload.ID = message.Message.ID
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
 
 		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, message.Message.ID)
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
 	if app.GroupID != "" {
-		err = ProduceGroup([]string{app.GroupID})
+		err = ProduceGroup([]string{app.GroupID}, message.Force)
 		log.Err()
 	}
 
 	//
-	payload.ack(msg)
+	message.ack(msg)
 }
 
-func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err error) {
+func updateAppPICS(app *sql.App, message appMessage) (err error) {
 
-	if !config.IsLocal() && message.ChangeNumber > 0 && app.ChangeNumber > message.ChangeNumber {
+	if !config.IsLocal() && message.Message.ChangeNumber > 0 && app.ChangeNumber > message.Message.ChangeNumber {
 		return nil
 	}
 
-	var kv = vdf.FromMap(message.VDF)
+	var kv = vdf.FromMap(message.Message.VDF)
 
-	app.ID = message.ID
-	app.ChangeNumber = message.ChangeNumber
-	app.ChangeNumberDate = payload.FirstSeen
+	app.ID = message.Message.ID
+	app.ChangeNumber = message.Message.ChangeNumber
+	app.ChangeNumberDate = message.FirstSeen
 
 	// Reset values that might be removed
 	app.Common = ""
@@ -534,12 +529,12 @@ func updateAppPICS(app *sql.App, payload baseMessage, message appMessage) (err e
 									localization.RichPresence[vvv.Key].AddToken(vvvvv.Key, vvvvv.Value)
 								}
 							} else {
-								log.Info("Missing localization language key", message.ID, vvvv.Key) // Sometimes the "tokens" map is missing.
+								log.Info("Missing localization language key", message.Message.ID, vvvv.Key) // Sometimes the "tokens" map is missing.
 							}
 						}
 					}
 				} else {
-					log.Warning("Missing localization key", message.ID)
+					log.Warning("Missing localization key", message.Message.ID)
 				}
 			}
 

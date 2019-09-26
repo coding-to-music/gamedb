@@ -16,11 +16,15 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
 type packageMessage struct {
+	baseMessage
+	Message packageMessageInner `json:"message"`
+}
+
+type packageMessageInner struct {
 	ID           int                    `json:"id"`
 	ChangeNumber int                    `json:"change_number,omitempty"`
 	VDF          map[string]interface{} `json:"vdf,omitempty"`
@@ -34,49 +38,40 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{
-		Message:       packageMessage{},
-		OriginalQueue: queueGoPackages,
-	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
+	message := packageMessage{}
+	message.OriginalQueue = queuePackages
+
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
-		payload.ack(msg)
+		logError(err, msg.Body)
+		message.fail(msg)
 		return
 	}
 
-	var message packageMessage
-	err = mapstructure.Decode(payload.Message, &message)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
+	if message.Attempt > 1 {
+		logInfo("Consuming package " + strconv.Itoa(message.Message.ID) + ", attempt " + strconv.Itoa(message.Attempt))
 	}
 
-	if payload.Attempt > 1 {
-		logInfo("Consuming package " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
-	}
-
-	if !sql.IsValidPackageID(message.ID) {
-		logInfo(errors.New("invalid package ID: " + strconv.Itoa(message.ID)))
-		payload.ack(msg)
+	if !sql.IsValidPackageID(message.Message.ID) {
+		logInfo(errors.New("invalid package ID: "+strconv.Itoa(message.Message.ID)), msg.Body)
+		message.fail(msg)
 		return
 	}
 
 	// Load current package
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		logError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
 	pack := sql.Package{}
-	gorm = gorm.FirstOrInit(&pack, sql.Package{ID: message.ID})
+	gorm = gorm.FirstOrInit(&pack, sql.Package{ID: message.Message.ID})
 	if gorm.Error != nil {
-		logError(gorm.Error, message.ID)
-		payload.ackRetry(msg)
+		logError(gorm.Error, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -88,9 +83,9 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Skip if updated in last day, unless its from PICS
 	if !config.IsLocal() {
 		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour*24*-1).Unix() {
-			if pack.ChangeNumber >= message.ChangeNumber && message.ChangeNumber > 0 {
+			if pack.ChangeNumber >= message.Message.ChangeNumber && message.Message.ChangeNumber > 0 {
 				logInfo("Skipping package, updated in last day")
-				payload.ack(msg)
+				message.ack(msg)
 				return
 			}
 		}
@@ -99,10 +94,10 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	var packageBeforeUpdate = pack
 
 	// Update from PICS
-	err = updatePackageFromPICS(&pack, payload, message)
+	err = updatePackageFromPICS(&pack, message)
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		logError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -112,44 +107,44 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	if err != nil {
 
 		if err == steam.ErrHTMLResponse {
-			logInfo(err, message.ID)
+			logInfo(err, message.Message.ID)
 		} else {
-			helpers.LogSteamError(err, message.ID)
+			helpers.LogSteamError(err, message.Message.ID)
 		}
 
-		payload.ackRetry(msg)
+		message.ackRetry(msg)
 		return
 	}
 
 	// Set package name to app name
 	err = updatePackageNameFromApp(&pack)
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		logError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
 	// Save price changes
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		logError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
 	// Save new data
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
-		logError(gorm.Error, message.ID)
-		payload.ackRetry(msg)
+		logError(gorm.Error, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
 	// Save to InfluxDB
 	err = savePackageToInflux(pack)
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		logError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -172,7 +167,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		log.Err(err)
 	}
 
-	payload.ack(msg)
+	message.ack(msg)
 }
 
 func updatePackageNameFromApp(pack *sql.Package) (err error) {
@@ -200,18 +195,18 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 	return nil
 }
 
-func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packageMessage) (err error) {
+func updatePackageFromPICS(pack *sql.Package, message packageMessage) (err error) {
 
-	if !config.IsLocal() && message.ChangeNumber > 0 && pack.ChangeNumber > message.ChangeNumber {
+	if !config.IsLocal() && message.Message.ChangeNumber > 0 && pack.ChangeNumber > message.Message.ChangeNumber {
 		return nil
 	}
 
-	var kv = vdf.FromMap(message.VDF)
+	var kv = vdf.FromMap(message.Message.VDF)
 
-	pack.ID = message.ID
+	pack.ID = message.Message.ID
 	// pack.Name = message.PICSPackageInfo.KeyValues.Name // todo
-	pack.ChangeNumber = message.ChangeNumber
-	pack.ChangeNumberDate = payload.FirstSeen
+	pack.ChangeNumber = message.Message.ChangeNumber
+	pack.ChangeNumberDate = message.FirstSeen
 
 	// Reset values that might be removed
 	pack.BillingType = 0
@@ -223,7 +218,7 @@ func updatePackageFromPICS(pack *sql.Package, payload baseMessage, message packa
 	pack.AppItems = ""
 	pack.Extended = ""
 
-	if len(kv.Children) == 1 && kv.Children[0].Key == strconv.Itoa(message.ID) {
+	if len(kv.Children) == 1 && kv.Children[0].Key == strconv.Itoa(message.Message.ID) {
 		kv = kv.Children[0]
 	}
 

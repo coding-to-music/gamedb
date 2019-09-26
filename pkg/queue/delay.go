@@ -8,6 +8,11 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type delayMessage struct {
+	baseMessage
+	Message interface{} `json:"message"`
+}
+
 type delayQueue struct {
 	BaseQueue baseQueue
 }
@@ -19,51 +24,51 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{}
+	var message = delayMessage{}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		logError(err)
 		return
 	}
 
 	// Limits
-	if q.BaseQueue.getMaxTime() > 0 && payload.FirstSeen.Add(q.BaseQueue.getMaxTime()).Unix() < time.Now().Unix() {
+	if q.BaseQueue.getMaxTime() > 0 && message.FirstSeen.Add(q.BaseQueue.getMaxTime()).Unix() < time.Now().Unix() {
 
-		logInfo("Message removed from delay queue (Over " + q.BaseQueue.getMaxTime().String() + " / " + payload.FirstSeen.Add(q.BaseQueue.getMaxTime()).String() + "): " + string(msg.Body))
-		payload.fail(msg)
+		logInfo("Message removed from delay queue (Over " + q.BaseQueue.getMaxTime().String() + " / " + message.FirstSeen.Add(q.BaseQueue.getMaxTime()).String() + "): " + string(msg.Body))
+		message.fail(msg)
 		return
 	}
 
-	if q.BaseQueue.maxAttempts > 0 && payload.Attempt > q.BaseQueue.maxAttempts {
+	if q.BaseQueue.maxAttempts > 0 && message.Attempt > q.BaseQueue.maxAttempts {
 
-		logInfo("Message removed from delay queue (" + strconv.Itoa(payload.Attempt) + "/" + strconv.Itoa(q.BaseQueue.maxAttempts) + " attempts): " + string(msg.Body))
-		payload.fail(msg)
+		logInfo("Message removed from delay queue (" + strconv.Itoa(message.Attempt) + "/" + strconv.Itoa(q.BaseQueue.maxAttempts) + " attempts): " + string(msg.Body))
+		message.fail(msg)
 		return
 	}
 
-	if payload.OriginalQueue == queueGoDelays {
+	if message.OriginalQueue == queueDelays {
 
 		logInfo("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
-		payload.fail(msg)
+		message.fail(msg)
 		return
 	}
 
 	//
 	var queue queueName
 
-	if payload.getNextAttempt().Unix() <= time.Now().Unix() {
+	if message.getNextAttempt().Unix() <= time.Now().Unix() {
 
-		logInfo("Sending back to " + string(payload.OriginalQueue))
-		queue = payload.OriginalQueue
+		logInfo("Sending back to " + string(message.OriginalQueue))
+		queue = message.OriginalQueue
 
 	} else {
 
-		// logInfo("Sending " + msg.MessageId + " back in " + payload.getNextAttempt().Sub(time.Now()).String())
-		queue = queueGoDelays
+		// logInfo("Sending " + msg.MessageId + " back in " + message.getNextAttempt().Sub(time.Now()).String())
+		queue = queueDelays
 	}
 
-	err = produce(payload, queue)
+	err = produce(&message, queue)
 	if err != nil {
 		logError(err)
 		return

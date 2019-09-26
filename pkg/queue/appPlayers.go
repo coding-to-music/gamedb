@@ -12,12 +12,16 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/mitchellh/mapstructure"
 	"github.com/nicklaw5/helix"
 	"github.com/streadway/amqp"
 )
 
 type appPlayerMessage struct {
+	baseMessage
+	Message appPlayerMessageInner `json:"message"`
+}
+
+type appPlayerMessageInner struct {
 	IDs []int `json:"ids"`
 }
 
@@ -29,32 +33,23 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{
-		Message:       appPlayerMessage{},
-		OriginalQueue: queueGoAppPlayer,
-	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
-	}
+	message := appPlayerMessage{}
+	message.OriginalQueue = queueAppPlayer
 
-	var message appPlayerMessage
-	err = mapstructure.Decode(payload.Message, &message)
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
-		payload.ack(msg)
+		logError(err, msg.Body)
+		message.fail(msg)
 		return
 	}
 
 	// Get apps
 	appMap := map[int]sql.App{}
-	apps, err := sql.GetAppsByID(message.IDs, []string{"id", "twitch_id"})
+	apps, err := sql.GetAppsByID(message.Message.IDs, []string{"id", "twitch_id"})
 	if err != nil {
 		logError(err)
-		payload.ackRetry(msg)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -62,10 +57,10 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 		appMap[v.ID] = v
 	}
 
-	for _, appID := range message.IDs {
+	for _, appID := range message.Message.IDs {
 
-		if payload.Attempt > 1 {
-			logInfo("Consuming app player " + strconv.Itoa(appID) + ", attempt " + strconv.Itoa(payload.Attempt))
+		if message.Attempt > 1 {
+			logInfo("Consuming app player " + strconv.Itoa(appID) + ", attempt " + strconv.Itoa(message.Attempt))
 		}
 
 		app, ok := appMap[appID]
@@ -84,7 +79,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				viewers, err = getAppTwitchStreamers(app.TwitchID)
 				if err != nil {
 					logError(err, appID)
-					payload.ackRetry(msg)
+					message.ackRetry(msg)
 					return
 				}
 			}()
@@ -99,7 +94,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appPlayersWeek, err = getAppTopPlayersWeek(appID)
 				if err != nil {
 					log.Err(err, appID)
-					payload.ackRetry(msg)
+					message.ackRetry(msg)
 					return
 				}
 			}()
@@ -114,7 +109,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appPlayersWeekAverage, err = getAppAveragePlayersWeek(appID)
 				if err != nil {
 					log.Err(err, appID)
-					payload.ackRetry(msg)
+					message.ackRetry(msg)
 					return
 				}
 			}()
@@ -129,7 +124,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appPlayersAlltime, err = getAppTopPlayersAlltime(appID)
 				if err != nil {
 					log.Err(err, appID)
-					payload.ackRetry(msg)
+					message.ackRetry(msg)
 					return
 				}
 			}()
@@ -144,7 +139,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appTrend, err = getAppTrendValue(appID)
 				if err != nil {
 					log.Err(err, appID)
-					payload.ackRetry(msg)
+					message.ackRetry(msg)
 					return
 				}
 			}()
@@ -159,14 +154,14 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appPlayersNow, err = getAppOnlinePlayers(appID)
 				if err != nil {
 					helpers.LogSteamError(err, appID)
-					payload.ackRetry(msg)
+					message.ackRetry(msg)
 					return
 				}
 			}()
 
 			wg.Wait()
 
-			if payload.actionTaken {
+			if message.actionTaken {
 				return
 			}
 
@@ -179,7 +174,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				err = saveAppPlayerToInflux(appID, viewers, appPlayersNow)
 				if err != nil {
 					log.Err(err, appID)
-					payload.ackRetry(msg)
+					message.ackRetry(msg)
 					return
 				}
 			}()
@@ -193,21 +188,21 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				err = updateAppPlayerInfoRow(appID, appTrend, appPlayersWeek, appPlayersAlltime, appPlayersWeekAverage)
 				if err != nil {
 					logError(err, appID)
-					payload.ackRetry(msg)
+					message.ackRetry(msg)
 					return
 				}
 			}()
 
 			wg.Wait()
 
-			if payload.actionTaken {
+			if message.actionTaken {
 				return
 			}
 		}
 	}
 
 	//
-	payload.ack(msg)
+	message.ack(msg)
 }
 
 func getAppTwitchStreamers(twitchID int) (viewers int, err error) {

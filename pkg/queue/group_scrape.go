@@ -19,7 +19,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/mitchellh/mapstructure"
 	"github.com/powerslacker/ratelimit"
 	"github.com/streadway/amqp"
 )
@@ -30,7 +29,11 @@ var (
 )
 
 type groupMessage struct {
-	ID  string   `json:"id"`
+	baseMessage
+	Message groupMessageInner `json:"message"`
+}
+
+type groupMessageInner struct {
 	IDs []string `json:"ids"`
 }
 
@@ -43,38 +46,29 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{
-		Message:       groupMessage{},
-		OriginalQueue: queueGoGroups,
-	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
-	}
+	message := groupMessage{}
+	message.OriginalQueue = queueGroups
 
-	var message groupMessage
-	err = mapstructure.Decode(payload.Message, &message)
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
-		payload.ack(msg)
+		logError(err, msg.Body)
+		message.fail(msg)
 		return
 	}
 
 	//
-	for _, groupID := range message.IDs {
+	for _, groupID := range message.Message.IDs {
 
 		group, err := mongo.GetGroup(groupID)
 		if err != nil && err != mongo.ErrNoDocuments {
 			logError(err, groupID)
-			payload.ackRetry(msg)
+			message.ackRetry(msg)
 			return
 		}
 
 		// Skip if updated recently
-		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
+		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour*-1).Unix() {
 			continue
 		}
 
@@ -83,11 +77,11 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			group.Type, err = getGroupType(groupID)
 			if err != nil {
 				helpers.LogSteamError(err, groupID)
-				payload.ackRetry(msg)
+				message.ackRetry(msg)
 				return
 			}
 			if group.Type == "" { // IDs like 11488905 don't redirect to get a type.
-				payload.ack(msg)
+				message.ack(msg)
 				return
 			}
 		}
@@ -103,7 +97,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		// Skip if we cant find numbers
 		if !found {
 			log.Info("Group counts not found", groupID)
-			payload.ackRetry(msg)
+			message.ackRetry(msg)
 			return
 		}
 
@@ -113,7 +107,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			if err != nil {
 				helpers.LogSteamError(err, groupID)
 			}
-			payload.ack(msg)
+			message.ack(msg)
 			return
 		}
 
@@ -126,7 +120,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		err = getGroupTrending(&group)
 		if err != nil {
 			logError(err, groupID)
-			payload.ackRetry(msg)
+			message.ackRetry(msg)
 			return
 		}
 
@@ -142,7 +136,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			err = saveGroupToMongo(group)
 			if err != nil {
 				logError(err, groupID)
-				payload.ackRetry(msg)
+				message.ackRetry(msg)
 				return
 			}
 		}()
@@ -156,28 +150,28 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			err = saveGroupToInflux(group)
 			if err != nil {
 				logError(err, groupID)
-				payload.ackRetry(msg)
+				message.ackRetry(msg)
 				return
 			}
 		}()
 
 		wg.Wait()
 
-		if payload.actionTaken {
+		if message.actionTaken {
 			return
 		}
 	}
 
 	// Clear memcache
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(message.IDs...)
+	err = helpers.RemoveKeyFromMemCacheViaPubSub(message.Message.IDs...)
 	log.Err(err)
 
 	// Send websocket
-	err = sendGroupWebsocket(message.IDs)
+	err = sendGroupWebsocket(message.Message.IDs)
 	logError(err)
 
 	//
-	payload.ack(msg)
+	message.ack(msg)
 }
 
 func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err error) {

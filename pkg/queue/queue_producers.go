@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -22,19 +21,19 @@ type SteamPayload struct {
 	ProfileIDs []int64
 }
 
-func ProduceToSteam(payload SteamPayload) (err error) {
+func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 
 	time.Sleep(time.Millisecond)
 
 	var appIDs []int
 	var packageIDs []int
-	var profileIDs []json.Number
+	var profileIDs []int64
 
 	mc := helpers.GetMemcache()
 
 	for _, appID := range payload.AppIDs {
 
-		if !config.IsLocal() {
+		if !config.IsLocal() && !force {
 
 			item := helpers.MemcacheAppInQueue(appID)
 
@@ -55,7 +54,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 	for _, packageID := range payload.PackageIDs {
 
-		if !config.IsLocal() {
+		if !config.IsLocal() && !force {
 
 			item := helpers.MemcachePackageInQueue(packageID)
 
@@ -76,7 +75,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 	for _, profileID := range payload.ProfileIDs {
 
-		if !config.IsLocal() {
+		if !config.IsLocal() && !force {
 
 			item := helpers.MemcacheProfileInQueue(profileID)
 
@@ -92,11 +91,11 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 			log.Err(err)
 		}
 
-		profileIDs = append(profileIDs, json.Number(strconv.FormatInt(profileID, 10)))
+		profileIDs = append(profileIDs, profileID)
 	}
 
-	return produce(baseMessage{
-		Message: steamMessage{
+	return produce(&steamMessage{
+		Message: steamMessageInner{
 			AppIDs:     appIDs,
 			PackageIDs: packageIDs,
 			PlayerIDs:  profileIDs,
@@ -116,13 +115,13 @@ func ProduceApp(id int, changeNumber int, vdf map[string]interface{}) (err error
 		vdf = map[string]interface{}{}
 	}
 
-	return produce(baseMessage{
-		Message: appMessage{
+	return produce(&appMessage{
+		Message: appMessageInner{
 			ID:           id,
 			ChangeNumber: changeNumber,
 			VDF:          vdf,
 		},
-	}, queueGoApps)
+	}, queueApps)
 }
 
 func ProducePackage(ID int, changeNumber int, vdf map[string]interface{}) (err error) {
@@ -137,13 +136,13 @@ func ProducePackage(ID int, changeNumber int, vdf map[string]interface{}) (err e
 		vdf = map[string]interface{}{}
 	}
 
-	return produce(baseMessage{
-		Message: packageMessage{
+	return produce(&packageMessage{
+		Message: packageMessageInner{
 			ID:           ID,
 			ChangeNumber: changeNumber,
 			VDF:          vdf,
 		},
-	}, queueGoPackages)
+	}, queuePackages)
 }
 
 func ProducePlayer(ID int64, pb *protobuf.CMsgClientFriendProfileInfoResponse) (err error) {
@@ -158,11 +157,11 @@ func ProducePlayer(ID int64, pb *protobuf.CMsgClientFriendProfileInfoResponse) (
 		return errors.New("invalid player id: " + strconv.FormatInt(ID, 10))
 	}
 
-	return produce(baseMessage{
-		Message: playerMessage{
-			ID:            json.Number(strconv.FormatInt(ID, 10)),
+	return produce(&playerMessage{
+		Message: playerMessageInner{
+			ID:            ID,
 			Eresult:       pb.GetEresult(),
-			SteamidFriend: json.Number(strconv.FormatUint(pb.GetSteamidFriend(), 10)),
+			SteamidFriend: int64(pb.GetSteamidFriend()),
 			TimeCreated:   pb.GetTimeCreated(),
 			RealName:      pb.GetRealName(),
 			CityName:      pb.GetCityName(),
@@ -171,31 +170,31 @@ func ProducePlayer(ID int64, pb *protobuf.CMsgClientFriendProfileInfoResponse) (
 			Headline:      pb.GetHeadline(),
 			Summary:       pb.GetSummary(),
 		},
-	}, queueGoPlayers)
+	}, queuePlayers)
 }
 
 func ProduceChange(apps map[int]int, packages map[int]int) (err error) {
 
 	time.Sleep(time.Millisecond)
 
-	return produce(baseMessage{
-		Message: changeMessage{
+	return produce(&changeMessage{
+		Message: changeMessageInner{
 			AppIDs:     apps,
 			PackageIDs: packages,
 		},
-	}, queueGoChanges)
+	}, queueChanges)
 }
 
 func ProduceBundle(ID int, appID int) (err error) {
 
 	time.Sleep(time.Millisecond)
 
-	return produce(baseMessage{
-		Message: bundleMessage{
+	return produce(&bundleMessage{
+		Message: bundleMessageInner{
 			ID:    ID,
 			AppID: appID,
 		},
-	}, queueGoBundles)
+	}, queueBundles)
 }
 
 func ProduceAppPlayers(IDs []int) (err error) {
@@ -206,30 +205,30 @@ func ProduceAppPlayers(IDs []int) (err error) {
 		return nil
 	}
 
-	return produce(baseMessage{
-		Message: appPlayerMessage{
+	return produce(&appPlayerMessage{
+		Message: appPlayerMessageInner{
 			IDs: IDs,
 		},
-	}, queueGoAppPlayer)
+	}, queueAppPlayer)
 }
 
-func ProduceGroup(IDs []string) (err error) {
+func ProduceGroup(ids []string, force bool) (err error) {
 
 	time.Sleep(time.Millisecond)
 
 	mc := helpers.GetMemcache()
 
-	var prodIDs []string
+	var filteredIDs []string
 
-	for _, v := range IDs {
+	for _, id := range ids {
 
-		v = strings.TrimSpace(v)
+		id = strings.TrimSpace(id)
 
-		if helpers.IsValidGroupID(v) {
+		if helpers.IsValidGroupID(id) {
 
-			if config.IsProd() {
+			if !config.IsLocal() && !force {
 
-				item := helpers.MemcacheGroupInQueue(v)
+				item := helpers.MemcacheGroupInQueue(id)
 
 				_, err := mc.Get(item.Key)
 				if err == nil {
@@ -240,45 +239,45 @@ func ProduceGroup(IDs []string) (err error) {
 				log.Err(err)
 			}
 
-			prodIDs = append(prodIDs, v)
+			filteredIDs = append(filteredIDs, id)
 		}
 	}
 
-	if len(prodIDs) == 0 {
+	if len(filteredIDs) == 0 {
 		return nil
 	}
 
-	chunks := helpers.ChunkStrings(prodIDs, 10)
+	chunks := helpers.ChunkStrings(filteredIDs, 10)
 
 	for _, chunk := range chunks {
-		err = produce(baseMessage{
-			Message: groupMessage{
+		err = produce(&groupMessage{
+			Message: groupMessageInner{
 				IDs: chunk,
 			},
-		}, queueGoGroups)
+		}, queueGroups)
 		log.Err(err)
 	}
 
 	return nil
 }
 
-func produceGroupNew(ID string) (err error) {
+func produceGroupNew(id string) (err error) {
 
 	time.Sleep(time.Millisecond)
 
-	ID = strings.TrimSpace(ID)
+	id = strings.TrimSpace(id)
 
-	if !helpers.IsValidGroupID(ID) {
+	if !helpers.IsValidGroupID(id) {
 		return nil
 	}
 
-	err = produce(baseMessage{
-		Message: groupMessage{
-			ID: ID,
+	err = produce(&groupMessage{
+		Message: groupMessageInner{
+			IDs: []string{id},
 		},
-	}, queueGoGroupsNew)
+	}, queueGroupsNew)
 	if err != nil {
-		log.Err(err, ID)
+		log.Err(err, id)
 	}
 
 	return nil

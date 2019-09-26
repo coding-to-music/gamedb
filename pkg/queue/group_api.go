@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
@@ -22,40 +21,49 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{
-		Message:       groupMessage{},
-		OriginalQueue: queueGoGroupsNew,
-	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
-	}
+	message := groupMessage{}
+	message.OriginalQueue = queueGroupsNew
 
-	var message groupMessage
-	err = mapstructure.Decode(payload.Message, &message)
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
-		payload.ack(msg)
+		logError(err, msg.Body)
+		message.fail(msg)
 		return
 	}
 
 	//
-	if !helpers.IsValidGroupID(message.ID) {
-		log.Err(errors.New("invalid group id: " + message.ID))
-		payload.ack(msg)
+	if len(message.Message.IDs) == 0 {
+		log.Err(errors.New("no ids"), msg.Body)
+		message.fail(msg)
+		return
+	}
+
+	if len(message.Message.IDs) > 1 {
+		for _, v := range message.Message.IDs {
+			err = produceGroupNew(v)
+			log.Err(err, msg.Body)
+		}
+		message.ack(msg)
+		return
+	}
+
+	var id = message.Message.IDs[0]
+
+	//
+	if !helpers.IsValidGroupID(id) {
+		log.Err(errors.New("invalid group id: "+id), msg.Body)
+		message.fail(msg)
 		return
 	}
 
 	// See if it's been added
-	group, err := mongo.GetGroup(message.ID)
+	group, err := mongo.GetGroup(id)
 	if err == nil {
 		log.Info("Putting group back into first queue")
-		err = ProduceGroup([]string{message.ID})
-		log.Err()
-		payload.ack(msg)
+		err = ProduceGroup([]string{id}, message.Force)
+		log.Err(err, msg.Body)
+		message.ack(msg)
 		return
 	} else if err != mongo.ErrNoDocuments {
 		log.Err(err)
@@ -72,7 +80,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		var err error
 
-		err = updateGroupFromXML(message.ID, &group)
+		err = updateGroupFromXML(id, &group)
 		if err != nil {
 
 			var ok bool
@@ -80,21 +88,21 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 			// expected element type <memberList> but have <html>
 			_, ok = err.(xml.UnmarshalError)
 			if ok {
-				helpers.LogSteamError(err, message.ID)
-				payload.ack(msg)
+				helpers.LogSteamError(err, id)
+				message.ack(msg)
 				return
 			}
 
 			// XML syntax error on line 7
 			_, ok = err.(*xml.SyntaxError)
 			if ok {
-				helpers.LogSteamError(err, message.ID)
-				payload.ack(msg)
+				helpers.LogSteamError(err, id)
+				message.ack(msg)
 				return
 			}
 
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, id)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -110,15 +118,15 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		app, err = getAppFromGroup(group)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, id)
+			message.ackRetry(msg)
 			return
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
@@ -130,8 +138,8 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		err = saveGroupToMongo(group)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, id)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -144,8 +152,8 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		err = saveAppsGroupID(app, group.ID64)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, id)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -158,15 +166,15 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		err = saveGroupToInflux(group)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, id)
+			message.ackRetry(msg)
 			return
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
@@ -176,15 +184,15 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		helpers.MemcacheGroup(strconv.Itoa(group.ID)).Key,
 	)
 	if err != nil {
-		logError(err, message.ID)
+		logError(err, id)
 	}
 
 	//
-	err = sendGroupWebsocket([]string{message.ID})
+	err = sendGroupWebsocket([]string{id})
 	if err != nil {
-		logError(err, message.ID)
+		logError(err, id)
 	}
 
 	//
-	payload.ack(msg)
+	message.ack(msg)
 }

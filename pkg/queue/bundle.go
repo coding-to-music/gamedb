@@ -14,11 +14,15 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
-	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
 type bundleMessage struct {
+	baseMessage
+	Message bundleMessageInner `json:"message"`
+}
+
+type bundleMessageInner struct {
 	ID    int `json:"id"`
 	AppID int `json:"app_id"`
 }
@@ -31,43 +35,34 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{
-		Message:       bundleMessage{},
-		OriginalQueue: queueGoBundles,
-	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
+	message := bundleMessage{}
+	message.OriginalQueue = queueBundles
+
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
-		payload.ack(msg)
+		logError(err, msg.Body)
+		message.fail(msg)
 		return
 	}
 
-	var message bundleMessage
-	err = mapstructure.Decode(payload.Message, &message)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
-	}
-
-	if payload.Attempt > 1 {
-		logInfo("Consuming bundle " + strconv.Itoa(message.ID) + ", attempt " + strconv.Itoa(payload.Attempt))
+	if message.Attempt > 1 {
+		logInfo("Consuming bundle " + strconv.Itoa(message.Message.ID) + ", attempt " + strconv.Itoa(message.Attempt))
 	}
 
 	// Load current bundle
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		logError(err, message.ID)
-		payload.ackRetry(msg)
+		logError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
 	bundle := sql.Bundle{}
-	gorm = gorm.FirstOrInit(&bundle, sql.Bundle{ID: message.ID})
+	gorm = gorm.FirstOrInit(&bundle, sql.Bundle{ID: message.Message.ID})
 	if gorm.Error != nil {
-		logError(gorm.Error, message.ID)
-		payload.ackRetry(msg)
+		logError(gorm.Error, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -75,8 +70,8 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
-		helpers.LogSteamError(err, message.ID)
-		payload.ackRetry(msg)
+		helpers.LogSteamError(err, message.Message.ID)
+		message.ackRetry(msg)
 		return
 	}
 
@@ -90,8 +85,8 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 		gorm = gorm.Save(&bundle)
 		if gorm.Error != nil {
-			logError(gorm.Error, message.ID)
-			payload.ackRetry(msg)
+			logError(gorm.Error, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -106,29 +101,29 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePriceToMongo(bundle, oldBundle)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
 	// Send websocket
 	wsPaload := websockets.PubSubIDPayload{}
-	wsPaload.ID = message.ID
+	wsPaload.ID = message.Message.ID
 	wsPaload.Pages = []websockets.WebsocketPage{websockets.PageBundle, websockets.PageBundles}
 
 	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPaload)
 	if err != nil {
-		logError(err, message.ID)
+		logError(err, message.Message.ID)
 	}
 
-	payload.ack(msg)
+	message.ack(msg)
 }
 
 func updateBundle(bundle *sql.Bundle) (err error) {

@@ -19,17 +19,17 @@ type queueName string
 
 //noinspection GoUnusedConst
 const (
-	queueGoApps      queueName = "GameDB_Go_Apps"
-	queueGoAppPlayer queueName = "GameDB_Go_App_Players"
-	queueGoBundles   queueName = "GameDB_Go_Bundles"
-	queueGoChanges   queueName = "GameDB_Go_Changes"
-	queueGoDelays    queueName = "GameDB_Go_Delays"
-	queueGoFailed    queueName = "GameDB_Go_Failed"
-	queueGoGroups    queueName = "GameDB_Go_Groups"
-	queueGoGroupsNew queueName = "GameDB_Go_Groups_New"
-	queueGoPackages  queueName = "GameDB_Go_Packages"
-	queueGoPlayers   queueName = "GameDB_Go_Profiles"
-	QueueSteam       queueName = "GameDB_Go_Steam"
+	queueApps      queueName = "GameDB_Go_Apps"
+	queueAppPlayer queueName = "GameDB_Go_App_Players"
+	queueBundles   queueName = "GameDB_Go_Bundles"
+	queueChanges   queueName = "GameDB_Go_Changes"
+	queueDelays    queueName = "GameDB_Go_Delays"
+	queueFailed    queueName = "GameDB_Go_Failed"
+	queueGroups    queueName = "GameDB_Go_Groups"
+	queueGroupsNew queueName = "GameDB_Go_Groups_New"
+	queuePackages  queueName = "GameDB_Go_Packages"
+	queuePlayers   queueName = "GameDB_Go_Profiles"
+	QueueSteam     queueName = "GameDB_Go_Steam"
 
 	//
 	maxBytesToStore int = 1024 * 10
@@ -46,41 +46,41 @@ var (
 	producerConnectionChannel = make(chan *amqp.Error)
 
 	QueueRegister = map[queueName]baseQueue{
-		queueGoApps: {
-			Name:  queueGoApps,
+		queueApps: {
+			Name:  queueApps,
 			queue: &appQueue{},
 		},
-		queueGoBundles: {
-			Name:  queueGoBundles,
+		queueBundles: {
+			Name:  queueBundles,
 			queue: &bundleQueue{},
 		},
-		queueGoChanges: {
-			Name:  queueGoChanges,
+		queueChanges: {
+			Name:  queueChanges,
 			queue: &changeQueue{},
 		},
-		queueGoDelays: {
-			Name:  queueGoDelays,
+		queueDelays: {
+			Name:  queueDelays,
 			queue: &delayQueue{},
 		},
-		queueGoGroups: {
-			Name:  queueGoGroups,
+		queueGroups: {
+			Name:  queueGroups,
 			queue: &groupQueueScrape{},
 		},
-		queueGoGroupsNew: {
-			Name:    queueGoGroupsNew,
+		queueGroupsNew: {
+			Name:    queueGroupsNew,
 			queue:   &groupQueueAPI{},
 			maxTime: time.Hour * 24 * 7,
 		},
-		queueGoPackages: {
-			Name:  queueGoPackages,
+		queuePackages: {
+			Name:  queuePackages,
 			queue: &packageQueue{},
 		},
-		queueGoPlayers: {
-			Name:  queueGoPlayers,
+		queuePlayers: {
+			Name:  queuePlayers,
 			queue: &playerQueue{},
 		},
-		queueGoAppPlayer: {
-			Name:  queueGoAppPlayer,
+		queueAppPlayer: {
+			Name:  queueAppPlayer,
 			queue: &appPlayerQueue{},
 		},
 		QueueSteam: {
@@ -114,14 +114,34 @@ func init() {
 	}()
 }
 
+type messageInterface interface {
+	produce(queue queueName)
+}
+
 type baseMessage struct {
-	Message       interface{} `json:"message"`
-	FirstSeen     time.Time   `json:"first_seen"`
-	LastSeen      time.Time   `json:"last_seen"`
-	Attempt       int         `json:"attempt"`
-	OriginalQueue queueName   `json:"original_queue"`
-	actionTaken   bool        `json:"-"`
+	FirstSeen     time.Time `json:"first_seen"`
+	LastSeen      time.Time `json:"last_seen"`
+	Attempt       int       `json:"attempt"`
+	OriginalQueue queueName `json:"original_queue"`
+	Force         bool      `json:"force"`
+	actionTaken   bool      `json:"-"`
 	sync.Mutex    `json:"-"`
+}
+
+func (payload *baseMessage) produce(queue queueName) {
+
+	if payload.OriginalQueue == "" {
+		payload.OriginalQueue = queue
+	}
+
+	if payload.FirstSeen.IsZero() {
+		payload.FirstSeen = time.Now()
+	}
+
+	if queue != queueDelays && queue != queueFailed {
+		payload.LastSeen = time.Now()
+		payload.Attempt++
+	}
 }
 
 func (payload baseMessage) getNextAttempt() time.Time {
@@ -177,7 +197,7 @@ func (payload *baseMessage) fail(msg amqp.Delivery) {
 	}
 	payload.actionTaken = true
 
-	err := produce(*payload, queueGoFailed)
+	err := produce(payload, queueFailed)
 	if err != nil {
 		logError(err)
 		return
@@ -213,7 +233,7 @@ func (payload *baseMessage) ackRetry(msg amqp.Delivery) {
 
 	logInfo("Adding to delay queue for " + leftStr + ", " + totalStr + " total, attempt " + strconv.Itoa(payload.Attempt))
 
-	err = produce(*payload, queueGoDelays)
+	err = produce(payload, queueDelays)
 	if err != nil {
 		logError(err)
 		return
@@ -351,25 +371,7 @@ func (q baseQueue) ConsumeMessages() {
 	}
 }
 
-func produce(payload baseMessage, queue queueName) (err error) {
-
-	if payload.OriginalQueue == "" {
-		payload.OriginalQueue = queue
-	}
-
-	if payload.FirstSeen.IsZero() {
-		payload.FirstSeen = time.Now()
-	}
-
-	if queue != queueGoDelays && queue != queueGoFailed {
-		payload.LastSeen = time.Now()
-		payload.Attempt++
-	}
-
-	b, err := json.Marshal(payload)
-	if err != nil {
-		return err
-	}
+func produce(message messageInterface, queue queueName) (err error) {
 
 	// Connect
 	err = func() error {
@@ -392,6 +394,14 @@ func produce(payload baseMessage, queue queueName) (err error) {
 		return nil
 	}()
 
+	if err != nil {
+		return err
+	}
+
+	//
+	message.produce(queue) // Sets queue, firstSeen, lastSeen, attempt
+
+	b, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}

@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"encoding/json"
 	"errors"
 
 	"github.com/Philipp15b/go-steam"
@@ -9,14 +8,18 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
 
 type steamMessage struct {
-	AppIDs     []int         `json:"app_ids,omitempty"`
-	PackageIDs []int         `json:"package_ids,omitempty"`
-	PlayerIDs  []json.Number `json:"player_ids,omitempty"`
+	baseMessage
+	Message steamMessageInner `json:"message"`
+}
+
+type steamMessageInner struct {
+	AppIDs     []int   `json:"app_ids,omitempty"`
+	PackageIDs []int   `json:"package_ids,omitempty"`
+	PlayerIDs  []int64 `json:"player_ids,omitempty"`
 }
 
 type steamQueue struct {
@@ -29,38 +32,28 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 
 	var err error
 
-	var payload = baseMessage{
-		Message:       steamMessage{},
-		OriginalQueue: QueueSteam,
-	}
+	message := steamMessage{}
+	message.OriginalQueue = QueueSteam
 
 	if q.SteamClient == nil || !q.SteamClient.Connected() {
 		logError(errors.New("steamClient not connected"))
-		payload.ackRetry(msg)
+		message.ackRetry(msg)
 		return
 	}
 
-	err = helpers.UnmarshalNumber(msg.Body, &payload)
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
-		payload.ack(msg)
-		return
-	}
-
-	var message steamMessage
-	err = helpers.MarshalUnmarshal(payload.Message, &message)
-	if err != nil {
-		logError(err)
-		payload.ack(msg)
+		logError(err, msg.Body)
+		message.ack(msg)
 		return
 	}
 
 	// todo, chunk into 100s
 	// Apps
-	if len(message.AppIDs) > 0 {
+	if len(message.Message.AppIDs) > 0 {
 
 		var apps []*protobuf.CMsgClientPICSProductInfoRequest_AppInfo
-		for _, id := range message.AppIDs {
+		for _, id := range message.Message.AppIDs {
 
 			uid := uint32(id)
 
@@ -79,10 +72,10 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 
 	// todo, chunk into 100s
 	// Packages
-	if len(message.PackageIDs) > 0 {
+	if len(message.Message.PackageIDs) > 0 {
 
 		var packages []*protobuf.CMsgClientPICSProductInfoRequest_PackageInfo
-		for _, id := range message.PackageIDs {
+		for _, id := range message.Message.PackageIDs {
 
 			uid := uint32(id)
 
@@ -100,15 +93,9 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Profiles
-	for _, number := range message.PlayerIDs {
+	for _, number := range message.Message.PlayerIDs {
 
-		id, err := number.Int64()
-		if err != nil {
-			log.Err(err)
-			continue
-		}
-
-		ui := uint64(id)
+		ui := uint64(number)
 
 		q.SteamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientFriendProfileInfo, &protobuf.CMsgClientFriendProfileInfo{
 			SteamidFriend: &ui,
@@ -116,5 +103,5 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	//
-	payload.ack(msg)
+	message.ack(msg)
 }

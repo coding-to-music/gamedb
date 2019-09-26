@@ -20,16 +20,21 @@ import (
 )
 
 type playerMessage struct {
-	ID            json.Number `json:"id"`
-	Eresult       int32       `json:"eresult,omitempty"`
-	SteamidFriend json.Number `json:"steamid_friend,omitempty"`
-	TimeCreated   uint32      `json:"time_created,omitempty"`
-	RealName      string      `json:"real_name,omitempty"`
-	CityName      string      `json:"city_name,omitempty"`
-	StateName     string      `json:"state_name,omitempty"`
-	CountryName   string      `json:"country_name,omitempty"`
-	Headline      string      `json:"headline,omitempty"`
-	Summary       string      `json:"summary,omitempty"`
+	baseMessage
+	Message playerMessageInner `json:"message"`
+}
+
+type playerMessageInner struct {
+	ID            int64  `json:"id"`
+	Eresult       int32  `json:"eresult,omitempty"`
+	SteamidFriend int64  `json:"steamid_friend,omitempty"`
+	TimeCreated   uint32 `json:"time_created,omitempty"`
+	RealName      string `json:"real_name,omitempty"`
+	CityName      string `json:"city_name,omitempty"`
+	StateName     string `json:"state_name,omitempty"`
+	CountryName   string `json:"country_name,omitempty"`
+	Headline      string `json:"headline,omitempty"`
+	Summary       string `json:"summary,omitempty"`
 }
 
 type playerQueue struct {
@@ -40,47 +45,31 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var payload = baseMessage{
-		Message:       playerMessage{},
-		OriginalQueue: queueGoPlayers,
-	}
 
-	err = helpers.Unmarshal(msg.Body, &payload)
+	message := playerMessage{}
+	message.OriginalQueue = queuePlayers
+
+	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logCritical(err)
-		payload.ack(msg)
+		logCritical(err, msg.Body)
+		message.fail(msg)
 		return
 	}
 
-	var message playerMessage
-	err = helpers.MarshalUnmarshal(payload.Message, &message)
-	if err != nil {
-		logCritical(err)
-		payload.ack(msg)
-		return
-	}
-
-	id, err := message.ID.Int64()
-	if err != nil {
-		logCritical(err, message.ID.String())
-		payload.ack(msg)
-		return
-	}
-
-	if payload.Attempt > 1 {
-		logInfo("Consuming player " + strconv.FormatInt(id, 10) + ", attempt " + strconv.Itoa(payload.Attempt))
+	if message.Attempt > 1 {
+		logInfo("Consuming player " + strconv.FormatInt(message.Message.ID, 10) + ", attempt " + strconv.Itoa(message.Attempt))
 	}
 
 	// Update player
-	player, err := mongo.GetPlayer(id)
+	player, err := mongo.GetPlayer(message.Message.ID)
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
-		logError(err, message.ID)
-		payload.ack(msg)
+		logError(err, msg.Body)
+		message.ackRetry(msg)
 		return
 	}
 
-	player.ID = id
+	player.ID = message.Message.ID
 
 	//
 	var wg sync.WaitGroup
@@ -95,60 +84,60 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		if err != nil {
 
 			if err == steam.ErrNoUserFound {
-				payload.ack(msg)
+				message.ack(msg)
 			} else {
-				helpers.LogSteamError(err, message.ID)
-				payload.ackRetry(msg)
+				helpers.LogSteamError(err, message.Message.ID)
+				message.ackRetry(msg)
 			}
 			return
 		}
 
 		err = updatePlayerGames(&player)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerRecentGames(&player)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerBadges(&player)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerFriends(&player)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerLevel(&player)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
 		err = updatePlayerBans(&player)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 
-		err = updatePlayerGroups(&player)
+		err = updatePlayerGroups(&player, message.Force)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -161,15 +150,15 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updatePlayerWishlist(&player)
 		if err != nil {
-			helpers.LogSteamError(err, message.ID)
-			payload.ackRetry(msg)
+			helpers.LogSteamError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
@@ -181,8 +170,8 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePlayerMongo(player)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -194,8 +183,8 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePlayerToInflux(player)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
@@ -207,15 +196,15 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = mongo.CreatePlayerEvent(&http.Request{}, player.ID, mongo.EventRefresh)
 		if err != nil {
-			logError(err, message.ID)
-			payload.ackRetry(msg)
+			logError(err, message.Message.ID)
+			message.ackRetry(msg)
 			return
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
@@ -230,7 +219,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 			helpers.MemcacheProfileInQueue(player.ID).Key,
 		)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, message.Message.ID)
 		}
 	}()
 
@@ -246,18 +235,18 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 		if err != nil {
-			logError(err, message.ID)
+			logError(err, message.Message.ID)
 		}
 	}()
 
 	wg.Wait()
 
-	if payload.actionTaken {
+	if message.actionTaken {
 		return
 	}
 
 	//
-	payload.ack(msg)
+	message.ack(msg)
 }
 
 func updatePlayerSummary(player *mongo.Player) error {
@@ -680,7 +669,6 @@ func updatePlayerBans(player *mongo.Player) error {
 	bans.NumberOfGameBans = response.NumberOfGameBans
 	bans.EconomyBan = response.EconomyBan
 
-	// Encode to JSON bytes
 	b, err = json.Marshal(bans)
 	if err != nil {
 		return err
@@ -691,7 +679,7 @@ func updatePlayerBans(player *mongo.Player) error {
 	return nil
 }
 
-func updatePlayerGroups(player *mongo.Player) error {
+func updatePlayerGroups(player *mongo.Player, force bool) error {
 
 	resp, b, err := helpers.GetSteam().GetUserGroupList(player.ID)
 	err = helpers.AllowSteamCodes(err, b, []int{403})
@@ -702,7 +690,7 @@ func updatePlayerGroups(player *mongo.Player) error {
 	player.Groups = resp.GetIDs()
 
 	// Queue groups for update
-	err = ProduceGroup(resp.GetIDs())
+	err = ProduceGroup(resp.GetIDs(), force)
 	logError(err)
 
 	return nil
