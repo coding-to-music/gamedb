@@ -38,7 +38,7 @@ type Player struct {
 	GamesByType         map[string]float64 `bson:"games_by_type"`          //
 	Groups              []string           `bson:"groups"`                 // []int - Can be greater than 64bit
 	LastLogOff          time.Time          `bson:"time_logged_off"`        //
-	LastBan             time.Time          `bson:"last_ban"`               //
+	LastBan             time.Time          `bson:"bans_last"`              //
 	NumberOfGameBans    int                `bson:"bans_game"`              //
 	NumberOfVACBans     int                `bson:"bans_cav"`               //
 	PersonaName         string             `bson:"persona_name"`           //
@@ -80,7 +80,7 @@ func (player Player) BSON() (ret interface{}) {
 		"games_by_type":          player.GamesByType,
 		"groups":                 player.Groups,
 		"time_logged_off":        player.LastLogOff,
-		"last_ban":               player.LastBan,
+		"bans_last":              player.LastBan,
 		"bans_game":              player.NumberOfGameBans,
 		"bans_cav":               player.NumberOfVACBans,
 		"persona_name":           player.PersonaName,
