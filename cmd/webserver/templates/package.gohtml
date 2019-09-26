@@ -10,8 +10,8 @@
 
         <p class="lead">{{.Package.PurchaseText}}</p>
 
-        {{ if ne .Package.GetLink "" }}
-            <small><a href="{{ .Package.GetLink }}" target="_blank"><i class="fas fa-shopping-cart"></i> Store Page</a></small>
+        {{ if ne .Package.StoreLink "" }}
+            <small><a href="{{ .Package.StoreLink }}" target="_blank"><i class="fas fa-shopping-cart"></i> Store Page</a></small>
         {{ end }}
 
     </div>
