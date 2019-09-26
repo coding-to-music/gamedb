@@ -413,6 +413,7 @@ func playerBansAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"country_code": 1,
 			"bans_game":    1,
 			"bans_cav":     1,
+			"bans_last":    1,
 		}, nil)
 		log.Err(err)
 	}()
@@ -455,15 +456,17 @@ func playerBansAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for k, player := range players {
 
 		response.AddRow([]interface{}{
-			query.getOffset() + k + 1,        // 0
-			strconv.FormatInt(player.ID, 10), // 1
-			player.PersonaName,               // 2
-			player.GetAvatar(),               // 3
-			player.GetFlag(),                 // 4
-			player.GetCountry(),              // 5
-			player.GetPath(),                 // 6
-			player.NumberOfGameBans,          // 7
-			player.NumberOfVACBans,           // 8
+			query.getOffset() + k + 1,               // 0
+			strconv.FormatInt(player.ID, 10),        // 1
+			player.PersonaName,                      // 2
+			player.GetAvatar(),                      // 3
+			player.GetFlag(),                        // 4
+			player.GetCountry(),                     // 5
+			player.GetPath(),                        // 6
+			player.NumberOfGameBans,                 // 7
+			player.NumberOfVACBans,                  // 8
+			player.LastBan.Unix(),                   // 9
+			player.LastBan.Format(helpers.DateYear), // 10
 		})
 	}
 

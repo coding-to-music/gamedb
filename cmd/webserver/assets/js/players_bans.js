@@ -92,7 +92,7 @@ if ($('#player-bans-page').length > 0) {
             {
                 "targets": 5,
                 "render": function (data, type, row) {
-                    return '';
+                    return '<span data-toggle="tooltip" data-placement="left" title="' + row[10] + '" data-livestamp="' + row[9] + '"></span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
