@@ -72,7 +72,7 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err erro
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
 
 	// Set the last page
-	if r.Method == "GET" && page != "error" {
+	if r.Method == "GET" && page != "error" && page != "login" {
 
 		err = session.Set(r, helpers.SessionLastPage, r.URL.Path)
 		if err != nil {
