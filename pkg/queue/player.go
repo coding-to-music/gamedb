@@ -216,7 +216,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.RemoveKeyFromMemCacheViaPubSub(
 			helpers.MemcachePlayer(player.ID).Key,
-			helpers.MemcacheProfileInQueue(player.ID).Key,
+			helpers.MemcachePlayerInQueue(player.ID).Key,
 		)
 		if err != nil {
 			logError(err, message.Message.ID)

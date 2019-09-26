@@ -77,7 +77,7 @@ func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 
 		if !config.IsLocal() && !force {
 
-			item := helpers.MemcacheProfileInQueue(profileID)
+			item := helpers.MemcachePlayerInQueue(profileID)
 
 			_, err := mc.Get(item.Key)
 			if err == nil {
