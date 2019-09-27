@@ -655,7 +655,7 @@ func updatePlayerBans(player *mongo.Player) error {
 	player.NumberOfVACBans = response.NumberOfVACBans
 
 	if response.NumberOfVACBans > 0 {
-		player.LastBan = time.Now().Add(time.Hour * 24 * time.Duration(response.DaysSinceLastBan))
+		player.LastBan = time.Now().Add(time.Hour * 24 * time.Duration(response.DaysSinceLastBan) * -1)
 	} else {
 		player.LastBan = time.Unix(0, 0)
 	}
