@@ -28,14 +28,14 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		logError(err, msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
 	//
 	if len(message.Message.IDs) == 0 {
 		log.Err(errors.New("no ids"), msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	//
 	if !helpers.IsValidGroupID(id) {
 		log.Err(errors.New("invalid group id: "+id), msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -102,7 +102,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 			}
 
 			helpers.LogSteamError(err, id)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -119,7 +119,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		app, err = getAppFromGroup(group)
 		if err != nil {
 			logError(err, id)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -139,7 +139,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		err = saveGroupToMongo(group)
 		if err != nil {
 			logError(err, id)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -153,7 +153,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		err = saveAppsGroupID(app, group.ID64)
 		if err != nil {
 			logError(err, id)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -167,7 +167,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		err = saveGroupToInflux(group)
 		if err != nil {
 			logError(err, id)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()

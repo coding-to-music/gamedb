@@ -52,7 +52,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		logCritical(err, msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -65,7 +65,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
 		logError(err, msg.Body)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -87,7 +87,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 				message.ack(msg)
 			} else {
 				helpers.LogSteamError(err, message.Message.ID)
-				message.ackRetry(msg)
+				ackRetry(msg, &message)
 			}
 			return
 		}
@@ -95,49 +95,49 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		err = updatePlayerGames(&player)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
 		err = updatePlayerRecentGames(&player)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
 		err = updatePlayerBadges(&player)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
 		err = updatePlayerFriends(&player)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
 		err = updatePlayerLevel(&player)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
 		err = updatePlayerBans(&player)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
 		err = updatePlayerGroups(&player, message.Force)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -151,7 +151,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		err = updatePlayerWishlist(&player)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -171,7 +171,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		err = savePlayerMongo(player)
 		if err != nil {
 			logError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -184,7 +184,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		err = savePlayerToInflux(player)
 		if err != nil {
 			logError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -197,7 +197,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		err = mongo.CreatePlayerEvent(&http.Request{}, player.ID, mongo.EventRefresh)
 		if err != nil {
 			logError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()

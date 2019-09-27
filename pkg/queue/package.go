@@ -45,7 +45,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		logError(err, msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -55,7 +55,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 
 	if !sql.IsValidPackageID(message.Message.ID) {
 		logInfo(errors.New("invalid package ID: "+strconv.Itoa(message.Message.ID)), msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -63,7 +63,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		logError(err, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -71,7 +71,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	gorm = gorm.FirstOrInit(&pack, sql.Package{ID: message.Message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -99,7 +99,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	err = updatePackageFromPICS(&pack, message)
 	if err != nil {
 		logError(err, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -114,7 +114,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 			helpers.LogSteamError(err, message.Message.ID)
 		}
 
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -122,7 +122,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	err = updatePackageNameFromApp(&pack)
 	if err != nil {
 		logError(err, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -130,7 +130,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
 		logError(err, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -138,7 +138,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
 		logError(gorm.Error, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -146,7 +146,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	err = savePackageToInflux(pack)
 	if err != nil {
 		logError(err, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 

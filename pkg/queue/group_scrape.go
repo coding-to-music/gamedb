@@ -53,7 +53,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		logError(err, msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -63,7 +63,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		group, err := mongo.GetGroup(groupID)
 		if err != nil && err != mongo.ErrNoDocuments {
 			logError(err, groupID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
@@ -77,7 +77,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			group.Type, err = getGroupType(groupID)
 			if err != nil {
 				helpers.LogSteamError(err, groupID)
-				message.ackRetry(msg)
+				ackRetry(msg, &message)
 				return
 			}
 			if group.Type == "" { // IDs like 11488905 don't redirect to get a type.
@@ -97,7 +97,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		// Skip if we cant find numbers
 		if !found {
 			log.Info("Group counts not found", groupID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
@@ -120,7 +120,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		err = getGroupTrending(&group)
 		if err != nil {
 			logError(err, groupID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 
@@ -136,7 +136,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			err = saveGroupToMongo(group)
 			if err != nil {
 				logError(err, groupID)
-				message.ackRetry(msg)
+				ackRetry(msg, &message)
 				return
 			}
 		}()
@@ -150,7 +150,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			err = saveGroupToInflux(group)
 			if err != nil {
 				logError(err, groupID)
-				message.ackRetry(msg)
+				ackRetry(msg, &message)
 				return
 			}
 		}()

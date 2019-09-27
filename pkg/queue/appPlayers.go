@@ -40,7 +40,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		logError(err, msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -49,7 +49,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	apps, err := sql.GetAppsByID(message.Message.IDs, []string{"id", "twitch_id"})
 	if err != nil {
 		logError(err)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				viewers, err = getAppTwitchStreamers(app.TwitchID)
 				if err != nil {
 					logError(err, appID)
-					message.ackRetry(msg)
+					ackRetry(msg, &message)
 					return
 				}
 			}()
@@ -94,7 +94,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appPlayersWeek, err = getAppTopPlayersWeek(appID)
 				if err != nil {
 					log.Err(err, appID)
-					message.ackRetry(msg)
+					ackRetry(msg, &message)
 					return
 				}
 			}()
@@ -109,7 +109,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appPlayersWeekAverage, err = getAppAveragePlayersWeek(appID)
 				if err != nil {
 					log.Err(err, appID)
-					message.ackRetry(msg)
+					ackRetry(msg, &message)
 					return
 				}
 			}()
@@ -124,7 +124,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appPlayersAlltime, err = getAppTopPlayersAlltime(appID)
 				if err != nil {
 					log.Err(err, appID)
-					message.ackRetry(msg)
+					ackRetry(msg, &message)
 					return
 				}
 			}()
@@ -139,7 +139,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appTrend, err = getAppTrendValue(appID)
 				if err != nil {
 					log.Err(err, appID)
-					message.ackRetry(msg)
+					ackRetry(msg, &message)
 					return
 				}
 			}()
@@ -154,7 +154,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				appPlayersNow, err = getAppOnlinePlayers(appID)
 				if err != nil {
 					helpers.LogSteamError(err, appID)
-					message.ackRetry(msg)
+					ackRetry(msg, &message)
 					return
 				}
 			}()
@@ -174,7 +174,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				err = saveAppPlayerToInflux(appID, viewers, appPlayersNow)
 				if err != nil {
 					log.Err(err, appID)
-					message.ackRetry(msg)
+					ackRetry(msg, &message)
 					return
 				}
 			}()
@@ -188,7 +188,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				err = updateAppPlayerInfoRow(appID, appTrend, appPlayersWeek, appPlayersAlltime, appPlayersWeekAverage)
 				if err != nil {
 					logError(err, appID)
-					message.ackRetry(msg)
+					ackRetry(msg, &message)
 					return
 				}
 			}()

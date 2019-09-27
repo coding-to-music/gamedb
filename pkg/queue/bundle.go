@@ -42,7 +42,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		logError(err, msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -54,7 +54,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		logError(err, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -62,7 +62,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	gorm = gorm.FirstOrInit(&bundle, sql.Bundle{ID: message.Message.ID})
 	if gorm.Error != nil {
 		logError(gorm.Error, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -71,7 +71,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
 		helpers.LogSteamError(err, message.Message.ID)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		gorm = gorm.Save(&bundle)
 		if gorm.Error != nil {
 			logError(gorm.Error, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()
@@ -102,7 +102,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		err = savePriceToMongo(bundle, oldBundle)
 		if err != nil {
 			logError(err, message.Message.ID)
-			message.ackRetry(msg)
+			ackRetry(msg, &message)
 			return
 		}
 	}()

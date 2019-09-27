@@ -5,13 +5,9 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
-
-type delayMessage struct {
-	baseMessage
-	Message interface{} `json:"message"`
-}
 
 type delayQueue struct {
 	BaseQueue baseQueue
@@ -24,7 +20,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	msg := msgs[0]
 
 	var err error
-	var message = delayMessage{}
+	var message baseMessage
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
@@ -36,21 +32,21 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	if q.BaseQueue.getMaxTime() > 0 && message.FirstSeen.Add(q.BaseQueue.getMaxTime()).Unix() < time.Now().Unix() {
 
 		logInfo("Message removed from delay queue (Over " + q.BaseQueue.getMaxTime().String() + " / " + message.FirstSeen.Add(q.BaseQueue.getMaxTime()).String() + "): " + string(msg.Body))
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
 	if q.BaseQueue.maxAttempts > 0 && message.Attempt > q.BaseQueue.maxAttempts {
 
 		logInfo("Message removed from delay queue (" + strconv.Itoa(message.Attempt) + "/" + strconv.Itoa(q.BaseQueue.maxAttempts) + " attempts): " + string(msg.Body))
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
 	if message.OriginalQueue == queueDelays {
 
 		logInfo("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -68,9 +64,153 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 		queue = queueDelays
 	}
 
-	err = produce(&message, queue)
-	if err != nil {
-		logError(err)
+	switch message.OriginalQueue {
+	case queueApps:
+
+		message2 := appMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	case queueAppPlayer:
+
+		message2 := appPlayerMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	case queueBundles:
+
+		message2 := bundleMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	case queueChanges:
+
+		message2 := changeMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	case queueGroups:
+
+		message2 := groupMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	case queueGroupsNew:
+
+		message2 := groupMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	case queuePackages:
+
+		message2 := packageMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	case queuePlayers:
+
+		message2 := playerMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	case QueueSteam:
+
+		message2 := steamMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			logError(err)
+			return
+		}
+
+	default:
+		log.Critical("Wrong message type")
 		return
 	}
 

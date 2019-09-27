@@ -37,7 +37,7 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 
 	if q.SteamClient == nil || !q.SteamClient.Connected() {
 		logError(errors.New("steamClient not connected"))
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 

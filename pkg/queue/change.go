@@ -39,7 +39,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		logError(err, msg.Body)
-		message.fail(msg)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -84,7 +84,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	err = saveChangesToMongo(changeSlice)
 	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
 		logError(err)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
@@ -92,7 +92,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	appMap, packageMap, err := getChangesAppsAndPackages(changeSlice)
 	if err != nil {
 		logError(err)
-		message.ackRetry(msg)
+		ackRetry(msg, &message)
 		return
 	}
 
