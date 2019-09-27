@@ -131,7 +131,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		err = m.Minify("text/html", w, buf)
 		if err != nil {
 			log.Critical(err)
-			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
 			return err
 		}
 
