@@ -31,7 +31,7 @@ if ($('#player-bans-page').length > 0) {
         "language": {
             "zeroRecords": "No players found <a href='/players/add'>Add a Player</a>",
         },
-        "order": [[3, 'desc']],
+        "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[6]);
         },
