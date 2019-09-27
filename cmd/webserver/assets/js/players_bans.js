@@ -92,7 +92,10 @@ if ($('#player-bans-page').length > 0) {
             {
                 "targets": 5,
                 "render": function (data, type, row) {
-                    return '<span data-toggle="tooltip" data-placement="left" title="' + row[10] + '" data-livestamp="' + row[9] + '"></span>';
+                    if (row[9] > 0) {
+                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[10] + '" data-livestamp="' + row[9] + '"></span>';
+                    }
+                    return '';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
