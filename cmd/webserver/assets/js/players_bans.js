@@ -1,6 +1,7 @@
 if ($('#player-bans-page').length > 0) {
 
     const $playersTable = $('table.table');
+    const $country = $('#country');
 
     $('form').on('submit', function (e) {
 
@@ -18,7 +19,7 @@ if ($('#player-bans-page').length > 0) {
     function toggleStateDropDown() {
 
         $container = $('#state-container');
-        if ($('#country').val() === 'US') {
+        if ($country.val() === 'US') {
             $container.removeClass('d-none');
         } else {
             $container.addClass('d-none');
@@ -52,7 +53,7 @@ if ($('#player-bans-page').length > 0) {
                 "targets": 1,
                 "render": function (data, type, row) {
                     if (row[4]) {
-                        return '<img data-lazy="' + row[4] + '" data-lazy-alt="' + row[5] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[5] + '">';
+                        return '<img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[5] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[5] + '">';
                     }
                     return '';
                 },
@@ -65,7 +66,7 @@ if ($('#player-bans-page').length > 0) {
             {
                 "targets": 2,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')
@@ -107,8 +108,8 @@ if ($('#player-bans-page').length > 0) {
 
     const searchFields = [
         $('#search'),
-        $('#country'),
         $('#state'),
+        $country,
     ];
 
     $playersTable.gdbTable({tableOptions: options, searchFields: searchFields});
