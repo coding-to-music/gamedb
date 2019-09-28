@@ -161,7 +161,6 @@ func adminQueues(r *http.Request) {
 		log.Info("Queueing apps")
 
 		ts, err := strconv.ParseInt(val, 10, 64)
-		log.Err(err, r)
 		if err == nil {
 
 			apps, b, err := helpers.GetSteam().GetAppList(100000, 0, ts, "")
@@ -204,7 +203,6 @@ func adminQueues(r *http.Request) {
 			val = strings.TrimSpace(val)
 
 			playerID, err := strconv.ParseInt(val, 10, 64)
-			log.Err(err, r)
 			if err == nil {
 				playerIDs = append(playerIDs, playerID)
 			}
