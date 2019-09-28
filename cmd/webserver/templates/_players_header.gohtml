@@ -1,32 +1,23 @@
 {{define "_players_header"}}
 
+    <!--suppress HtmlUnknownAnchorTarget -->
     <div class="card-header">
 
-        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+        <ul class="nav nav-tabs card-header-tabs" role="tablist" id="player-nav">
 
-            <li class="nav-item">
-                {{if endsWith .Path "/players" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-users"></i> Players</span>
-                {{else}}
-                    <a class="nav-link" href="/players" role="tab"><i class="fas fa-users"></i> Players</a>
-                {{end}}
-            </li>
+            {{if startsWith .Path "/players/add" }}
 
-            <li class="nav-item">
-                {{if endsWith .Path "/players/bans" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-ban"></i> Bans</span>
-                {{else}}
-                    <a class="nav-link" href="/players/bans" role="tab"><i class="fas fa-ban"></i> Bans</a>
-                {{end}}
-            </li>
+                <li class="nav-item"><a class="nav-link" href="/players#stats" role="tab"><i class="fas fa-users"></i> Stats</a></li>
+                <li class="nav-item"><a class="nav-link" href="/players#bans" role="tab"><i class="fas fa-users"></i> Bans</a></li>
+                <li class="nav-item ml-auto"><span class="nav-link active" role="tab"><i class="fas fa-plus-circle"></i> Add Player</span></li>
 
-            <li class="nav-item">
-                {{if startsWith .Path "/players/add" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-plus-circle"></i> Add Player</span>
-                {{else}}
-                    <a class="nav-link" href="/players/add" role="tab"><i class="fas fa-plus-circle"></i> Add Player</a>
-                {{end}}
-            </li>
+            {{ else }}
+
+                <li class="nav-item"><a class="nav-link active" href="#stats" role="tab"><i class="fas fa-users"></i> Stats</a></li>
+                <li class="nav-item"><a class="nav-link" href="#bans" role="tab"><i class="fas fa-users"></i> Bans</a></li>
+                <li class="nav-item ml-auto"><a class="nav-link" href="/players/add" role="tab"><i class="fas fa-plus-circle"></i> Add Player</a></li>
+
+            {{ end }}
 
         </ul>
     </div>

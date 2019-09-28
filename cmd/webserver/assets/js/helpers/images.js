@@ -6,7 +6,7 @@ function observeLazyImages($target) {
         return;
     }
 
-    if (typeof $target === 'string') {
+    if (typeof $target === 'string' || typeof $target === 'object') {
         $target = $($target);
     }
 
