@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 )
 
@@ -352,11 +351,11 @@ func updatePlayerGames(player *mongo.Player) error {
 		}
 
 		//
-		err = mapstructure.Decode(appPrices[gameRow.ID], &playerApps[gameRow.ID].AppPrices)
+		playerApps[gameRow.ID].AppPrices = appPrices[gameRow.ID]
 		logError(err)
 
 		//
-		err = mapstructure.Decode(appPriceHour[gameRow.ID], &playerApps[gameRow.ID].AppPriceHour)
+		playerApps[gameRow.ID].AppPriceHour = appPriceHour[gameRow.ID]
 		logError(err)
 	}
 

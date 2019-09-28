@@ -23,7 +23,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/jinzhu/gorm"
-	"github.com/mitchellh/mapstructure"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
 )
@@ -544,10 +543,10 @@ func (t *DataTablesAjaxResponse) limit(r *http.Request) {
 
 // DataTablesQuery
 type DataTablesQuery struct {
-	Draw   string
-	Order  map[string]map[string]interface{}
-	Start  string
-	Search map[string]interface{}
+	Draw   string                            `json:"draw"`
+	Order  map[string]map[string]interface{} `json:"order"`
+	Start  string                            `json:"start"`
+	Search map[string]interface{}            `json:"search"`
 	// Time   string `mapstructure:"_"`
 	// Columns []string
 }
@@ -561,7 +560,7 @@ func (q *DataTablesQuery) fillFromURL(url url.Values) (err error) {
 	}
 
 	// Convert map into struct
-	return mapstructure.Decode(queryMap, q)
+	return helpers.MarshalUnmarshal(queryMap, q)
 }
 
 func (q *DataTablesQuery) limit(r *http.Request) {

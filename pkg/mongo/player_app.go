@@ -18,7 +18,7 @@ type PlayerApp struct {
 	AppIcon      string             `bson:"app_icon"`
 	AppTime      int                `bson:"app_time"`
 	AppPrices    map[string]int     `bson:"app_prices"`
-	AppPriceHour map[string]float32 `bson:"app_prices_hour"`
+	AppPriceHour map[string]float64 `bson:"app_prices_hour"`
 }
 
 func (pa PlayerApp) BSON() (ret interface{}) {
