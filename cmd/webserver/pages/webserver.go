@@ -159,7 +159,9 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 	w.WriteHeader(data.Code)
 
 	err := returnTemplate(w, r, "error", data)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 }
 
 type errorTemplate struct {
@@ -252,37 +254,56 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.ProductCCs = helpers.GetProdCCs(true)
 
 	val, err := session.Get(r, helpers.SessionUserID)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
+
 	if val != "" {
 		t.UserID, err = strconv.Atoi(val)
 		log.Err(err, r)
 	}
 
 	val, err = session.Get(r, helpers.SessionPlayerID)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
+
 	if val != "" {
 		t.PlayerID, err = strconv.ParseInt(val, 10, 64)
 		log.Err(err, r)
 	}
 
 	val, err = session.Get(r, helpers.SessionUserLevel)
-	log.Err(err, r)
-	if val != "" {
-		t.userLevel, err = strconv.Atoi(val)
+	if err != nil {
 		log.Err(err, r)
 	}
 
+	if val != "" {
+		t.userLevel, err = strconv.Atoi(val)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}
+
 	t.PlayerName, err = session.Get(r, helpers.SessionPlayerName)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	t.userEmail, err = session.Get(r, helpers.SessionUserEmail)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	t.UserName, err = session.Get(r, helpers.SessionPlayerName)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	t.UserProductCC = helpers.GetProdCC(helpers.GetProductCC(r))
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	//
 	t.setRandomBackground(true, false)
@@ -318,14 +339,18 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	case strings.HasPrefix(t.Path, "/experience"):
 
 		level, err := session.Get(r, helpers.SessionPlayerLevel)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		if level == "" {
 			t.PlayerLevel = 10
 			t.PlayerLevelTo = 20
 		} else {
 			t.PlayerLevel, err = strconv.Atoi(level)
-			log.Err(err, r)
+			if err != nil {
+				log.Err(err, r)
+			}
 			t.PlayerLevelTo = t.PlayerLevel + 10
 		}
 	}
@@ -383,10 +408,14 @@ func (t *GlobalTemplate) setFlashes() {
 	var err error
 
 	t.FlashesGood, err = session.GetFlashes(r, helpers.SessionGood)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	t.FlashesBad, err = session.GetFlashes(r, helpers.SessionBad)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 }
 
 func (t GlobalTemplate) GetUserJSON() string {
@@ -527,7 +556,9 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := returnJSON(w, r, t)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 }
 
 func (t *DataTablesAjaxResponse) limit(r *http.Request) {
