@@ -42,7 +42,9 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	if len(message.Message.IDs) > 1 {
 		for _, v := range message.Message.IDs {
 			err = produceGroupNew(v)
-			log.Err(err, msg.Body)
+			if err != nil {
+				log.Err(err, msg.Body)
+			}
 		}
 		message.ack(msg)
 		return
@@ -62,8 +64,12 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	if err == nil {
 		log.Info("Putting group back into first queue")
 		err = ProduceGroup([]string{id}, message.Force)
-		log.Err(err, msg.Body)
-		message.ack(msg)
+		if err != nil {
+			log.Err(err, msg.Body)
+			ackRetry(msg, &message)
+		} else {
+			message.ack(msg)
+		}
 		return
 	} else if err != mongo.ErrNoDocuments {
 		log.Err(err)
