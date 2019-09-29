@@ -19,12 +19,6 @@ var (
 	ErrInvalidPlayerName = errors.New("invalid name")
 )
 
-// Text Index
-// {
-//   "persona_name": "text",
-//   "vanity_url": "text",
-// }
-
 type Player struct {
 	ID                  int64              `bson:"_id"`                    //
 	Avatar              string             `bson:"avatar"`                 //
@@ -36,13 +30,12 @@ type Player struct {
 	Donated             int                `bson:"donated"`                //
 	GameStats           string             `bson:"game_stats"`             // PlayerAppStatsTemplate
 	GamesByType         map[string]float64 `bson:"games_by_type"`          //
-	Groups              []string           `bson:"groups"`                 // []int - Can be greater than 64bit
+	Groups              []string           `bson:"groups"`                 // []string - Can be greater than 64bit
 	LastLogOff          time.Time          `bson:"time_logged_off"`        //
 	LastBan             time.Time          `bson:"bans_last"`              //
 	NumberOfGameBans    int                `bson:"bans_game"`              //
 	NumberOfVACBans     int                `bson:"bans_cav"`               //
 	PersonaName         string             `bson:"persona_name"`           //
-	PrimaryClanID       int                `bson:"primary_clan_id"`        //
 	PrimaryClanIDString string             `bson:"primary_clan_id_string"` //
 	StateCode           string             `bson:"status_code"`            //
 	TimeCreated         time.Time          `bson:"time_created"`           //
@@ -84,7 +77,6 @@ func (player Player) BSON() (ret interface{}) {
 		"bans_game":              player.NumberOfGameBans,
 		"bans_cav":               player.NumberOfVACBans,
 		"persona_name":           player.PersonaName,
-		"primary_clan_id":        player.PrimaryClanID,
 		"primary_clan_id_string": player.PrimaryClanIDString,
 		"status_code":            player.StateCode,
 		"time_created":           player.TimeCreated,

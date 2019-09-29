@@ -29,27 +29,6 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	// filter := mongo.M{
-	// 	"primary_clan_id":        mongo.M{"$gt": 0},
-	// 	"primary_clan_id_string": mongo.M{"$exists": false},
-	// }
-	//
-	// players, err2 := mongo.GetPlayers(0, 0, nil, filter, mongo.M{"primary_clan_id": 1, "primary_clan_id_string": 1}, nil)
-	// log.Err(err2)
-	// log.Info(len(players))
-	//
-	// for k, v := range players {
-	//
-	// 	update := mongo.M{
-	// 		"primary_clan_id_string": strconv.Itoa(v.PrimaryClanID),
-	// 	}
-	//
-	// 	err2 := mongo.UpdateMany(mongo.CollectionPlayers, update, mongo.M{"_id": v.ID})
-	// 	log.Err(err2)
-	//
-	// 	log.Info(k)
-	// }
-
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
