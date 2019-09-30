@@ -19,6 +19,9 @@
             <a href="{{ .App.GetStoreLink }}" target="_blank">
                 <i class="fas fa-shopping-cart"></i> Store Page
             </a>
+            <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank">
+                <i class="fas fa-exchange-alt"></i> Market
+            </a>
             {{if ne .App.Homepage ""}}
                 <a href="{{ .App.Homepage }}" target="_blank">
                     <i class="fas fa-home"></i> Homepage
@@ -775,7 +778,7 @@
                                             </thead>
                                             {{ range .Extended }}
                                                 <tr data-raw="{{ escape .Value }}">
-{{/*                                                    <td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>*/}}
+                                                    {{/*<td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>*/}}
                                                     <td nowrap="nowrap">{{ .Key }}</td>
                                                     <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                     <td><i class="fas fa-eye"></i></td>
