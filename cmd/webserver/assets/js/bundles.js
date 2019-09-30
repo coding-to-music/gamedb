@@ -24,28 +24,32 @@ if ($('#bundles-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
-                }
+                },
+                "orderable": false,
             },
             // Discount
             {
                 "targets": 1,
                 "render": function (data, type, row) {
                     return row[4] + '%'
-                }
+                },
+                "orderSequence": ["asc"],
             },
             // Apps
             {
                 "targets": 2,
                 "render": function (data, type, row) {
                     return row[5].toLocaleString();
-                }
+                },
+                "orderSequence": ["desc"],
             },
             // Packages
             {
                 "targets": 3,
                 "render": function (data, type, row) {
                     return row[6].toLocaleString();
-                }
+                },
+                "orderSequence": ["desc"],
             },
             // Updated At
             {
