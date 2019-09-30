@@ -18,7 +18,13 @@
         {{ if ne .Group.Headline "" }}
             <p class="lead">{{ .Group.Headline }}</p>
         {{ end }}
-        <small><a href="{{ .Group.GetLink }}" target="_blank">View group on Steam <i class="fas fa-link"></i></a></small>
+        <small>
+            <a href="{{ .Group.GetLink }}" target="_blank"><i class="fas fa-link"></i> Steam Group Page</a>
+
+            {{ if eq .Group.Type "game" }}
+                <a href="/apps/{{ .Group.AppID }}"><i class="fas fa-gamepad"></i> App Page</a>
+            {{ end }}
+        </small>
 
     </div>
 
@@ -32,10 +38,6 @@
             {{ end }}
 
             <div id="group-chart"></div>
-
-            {{ if eq .Group.Type "game" }}
-                <p><a href="/apps/{{ .Group.AppID }}" class="btn btn-success">Go to App page</a></p>
-            {{ end }}
 
             <div>{{ .Summary }}</div>
 
