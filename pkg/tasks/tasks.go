@@ -49,6 +49,7 @@ type TaskInterface interface {
 
 	// Base
 	Next() (t time.Time)
+	Prev() (t time.Time)
 	GetTaskConfig() (config sql.Config, err error)
 	Run()
 }
@@ -66,7 +67,7 @@ func (task BaseTask) Next() (t time.Time) {
 	return sched.Next(time.Now())
 }
 
-func (task BaseTask) Duration() (d time.Duration) {
+func (task BaseTask) Prev() (d time.Time) {
 
 	sched, err := Parser.Parse(task.Cron())
 	if err != nil {
@@ -74,9 +75,9 @@ func (task BaseTask) Duration() (d time.Duration) {
 	}
 	next := sched.Next(time.Now())
 	nextNext := sched.Next(next)
+	diff := nextNext.Sub(next)
 
-	return nextNext.Sub(next)
-
+	return next.Add(diff)
 }
 
 func (task BaseTask) Run() {

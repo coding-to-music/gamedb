@@ -55,10 +55,13 @@
                             </thead>
                             <tbody>
                             {{ range $key, $value := .Tasks }}
-                                <tr data-id="{{ .ID }}">
+
+                                {{ $realLast:= (index $.Configs (print "task-" .ID)).Value }}
+
+                                <tr data-id="{{ .ID }}" class="{{ if gt $realLast .Prev.Unix }}table-danger{{ end }}">
                                     <td>{{ .Name }}</td>
-                                    <td class="prev" data-sort="{{ (index $.Configs (print "task-" .ID)).Value }}">
-                                        <span data-livestamp="{{ (index $.Configs (print "task-" .ID)).Value }}"></span>
+                                    <td class="prev" data-sort="{{ $realLast }}">
+                                        <span data-livestamp="{{ $realLast }}"></span>
                                     </td>
                                     {{ if gt .Next.Unix 0 }}
                                         <td class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
