@@ -9,6 +9,7 @@ import (
 )
 
 type AppPlayers struct {
+	BaseTask
 }
 
 func (c AppPlayers) ID() string {

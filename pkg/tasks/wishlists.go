@@ -10,6 +10,7 @@ import (
 )
 
 type Wishlists struct {
+	BaseTask
 }
 
 func (c Wishlists) ID() string {

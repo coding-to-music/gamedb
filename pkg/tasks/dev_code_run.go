@@ -1,6 +1,7 @@
 package tasks
 
 type DevCodeRun struct {
+	BaseTask
 }
 
 func (c DevCodeRun) ID() string {

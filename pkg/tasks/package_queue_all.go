@@ -9,6 +9,7 @@ import (
 )
 
 type PackagesQueueAll struct {
+	BaseTask
 }
 
 func (c PackagesQueueAll) ID() string {

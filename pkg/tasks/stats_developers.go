@@ -11,6 +11,7 @@ import (
 )
 
 type Developers struct {
+	BaseTask
 }
 
 func (c Developers) ID() string {

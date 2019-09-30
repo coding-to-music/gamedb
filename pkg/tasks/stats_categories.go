@@ -1,6 +1,7 @@
 package tasks
 
 type StatsCategories struct {
+	BaseTask
 }
 
 func (c StatsCategories) ID() string {

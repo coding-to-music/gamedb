@@ -13,6 +13,7 @@ import (
 )
 
 type SteamClientPlayers struct {
+	BaseTask
 }
 
 func (c SteamClientPlayers) ID() string {

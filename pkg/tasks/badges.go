@@ -9,6 +9,7 @@ import (
 )
 
 type SetBadgeCache struct {
+	BaseTask
 }
 
 func (c SetBadgeCache) ID() string {

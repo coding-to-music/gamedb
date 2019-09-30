@@ -20,7 +20,7 @@ func DevelopersRouter() http.Handler {
 func developersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := tasks.GetTaskConfig(tasks.Developers{})
+	config, err := tasks.Developers{}.GetTaskConfig()
 	if err != nil {
 		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 		log.Err(err, r)

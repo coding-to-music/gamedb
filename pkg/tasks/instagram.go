@@ -13,6 +13,7 @@ import (
 )
 
 type Instagram struct {
+	BaseTask
 }
 
 func (c Instagram) ID() string {

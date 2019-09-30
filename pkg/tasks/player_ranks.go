@@ -6,6 +6,7 @@ import (
 )
 
 type PlayerRanks struct {
+	BaseTask
 }
 
 func (c PlayerRanks) ID() string {

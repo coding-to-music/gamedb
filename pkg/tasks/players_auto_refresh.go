@@ -10,6 +10,7 @@ import (
 )
 
 type AutoPlayerRefreshes struct {
+	BaseTask
 }
 
 func (c AutoPlayerRefreshes) ID() string {

@@ -5,6 +5,7 @@ import (
 )
 
 type ClearUpcomingCache struct {
+	BaseTask
 }
 
 func (c ClearUpcomingCache) ID() string {

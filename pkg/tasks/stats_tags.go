@@ -11,6 +11,7 @@ import (
 )
 
 type Tags struct {
+	BaseTask
 }
 
 func (c Tags) ID() string {

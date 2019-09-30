@@ -11,6 +11,7 @@ import (
 )
 
 type Genres struct {
+	BaseTask
 }
 
 func (c Genres) ID() string {

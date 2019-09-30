@@ -11,6 +11,7 @@ import (
 )
 
 type Publishers struct {
+	BaseTask
 }
 
 func (c Publishers) ID() string {

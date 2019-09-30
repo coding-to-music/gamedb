@@ -9,6 +9,7 @@ import (
 )
 
 type PlayersQueueAll struct {
+	BaseTask
 }
 
 func (c PlayersQueueAll) ID() string {

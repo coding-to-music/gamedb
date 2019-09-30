@@ -46,6 +46,11 @@ type TaskInterface interface {
 	Name() string
 	Cron() string
 	work()
+
+	// Base
+	Next() (t time.Time)
+	GetTaskConfig() (config sql.Config, err error)
+	Run()
 }
 
 type BaseTask struct {
@@ -61,8 +66,20 @@ func (task BaseTask) Next() (t time.Time) {
 	return sched.Next(time.Now())
 }
 
-//
-func RunTask(task TaskInterface) {
+func (task BaseTask) Duration() (d time.Duration) {
+
+	sched, err := Parser.Parse(task.Cron())
+	if err != nil {
+		return d
+	}
+	next := sched.Next(time.Now())
+	nextNext := sched.Next(next)
+
+	return nextNext.Sub(next)
+
+}
+
+func (task BaseTask) Run() {
 
 	cronLogInfo("Cron started: " + task.Name())
 
@@ -90,7 +107,7 @@ func RunTask(task TaskInterface) {
 }
 
 //
-func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
+func (task BaseTask) GetTaskConfig() (config sql.Config, err error) {
 
 	return sql.GetConfig(sql.ConfigType("task-" + task.ID()))
 }
