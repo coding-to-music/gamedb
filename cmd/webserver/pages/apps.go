@@ -405,7 +405,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw
 
-	for _, app := range apps {
+	for k, app := range apps {
 
 		response.AddRow([]interface{}{
 			app.ID,        // 0
@@ -417,6 +417,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetPrice(code).GetFinal(),             // 6
 			app.PlayerPeakWeek,                        // 7
 			app.GetStoreLink(),                        // 8
+			query.getOffset() + k + 1,                 // 9
 		})
 	}
 

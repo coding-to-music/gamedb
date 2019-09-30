@@ -57,15 +57,23 @@ if ($('#apps-page').length > 0) {
 
         // Setup datatable
         const options = {
-            "order": [[1, 'desc']],
+            "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
                 $(row).attr('data-link', data[3]);
             },
             "columnDefs": [
-                // Icon / Name
+                // Rank
                 {
                     "targets": 0,
+                    "render": function (data, type, row) {
+                        return row[9].toLocaleString();
+                    },
+                    "orderable": false,
+                },
+                // Icon / Name
+                {
+                    "targets": 1,
                     "render": function (data, type, row) {
                         return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                     },
@@ -87,7 +95,7 @@ if ($('#apps-page').length > 0) {
                 // },
                 // Players
                 {
-                    "targets": 1,
+                    "targets": 2,
                     "render": function (data, type, row) {
                         return row[7].toLocaleString();
                     },
@@ -95,7 +103,7 @@ if ($('#apps-page').length > 0) {
                 },
                 // Score
                 {
-                    "targets": 2,
+                    "targets": 3,
                     "render": function (data, type, row) {
                         return row[5] + '%';
                     },
@@ -103,7 +111,7 @@ if ($('#apps-page').length > 0) {
                 },
                 // Price
                 {
-                    "targets": 3,
+                    "targets": 4,
                     "render": function (data, type, row) {
                         return row[6];
                     },
@@ -112,7 +120,7 @@ if ($('#apps-page').length > 0) {
 
                 // Link
                 {
-                    "targets": 4,
+                    "targets": 5,
                     "render": function (data, type, row) {
                         if (row[8]) {
                             return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
