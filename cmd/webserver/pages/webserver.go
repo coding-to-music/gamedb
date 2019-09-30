@@ -640,27 +640,26 @@ func (q DataTablesQuery) getSearchSlice(k string) (search []string) {
 	return search
 }
 
-func (q DataTablesQuery) getOrderSQL(columns map[string]string) (order string) {
+func (q DataTablesQuery) getOrderSQL(columns map[string]string, defaultCol string) (order string) {
 
 	var ret []string
 
 	for _, v := range q.Order {
 
-		if col, ok := v["column"].(string); ok {
+		col, ok := v["column"].(string)
+		if !ok || col == "" {
+			col = defaultCol
+		}
+
+		if dir, ok := v["dir"].(string); ok {
 			if ok {
 
-				if dir, ok := v["dir"].(string); ok {
+				if columns != nil {
+					col, ok := columns[col]
 					if ok {
 
-						if columns != nil {
-							if col, ok := columns[col]; ok {
-								if ok {
-
-									if dir == "asc" || dir == "desc" {
-										ret = append(ret, col+" "+dir)
-									}
-								}
-							}
+						if dir == "asc" || dir == "desc" {
+							ret = append(ret, col+" "+dir)
 						}
 					}
 				}
@@ -722,9 +721,9 @@ func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) 
 	return col
 }
 
-func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
+func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, columns map[string]string, defaultCol string) *gorm.DB {
 
-	db = db.Order(q.getOrderSQL(columns))
+	db = db.Order(q.getOrderSQL(columns, defaultCol))
 	db = db.Offset(q.Start)
 
 	return db

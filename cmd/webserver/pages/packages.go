@@ -55,13 +55,6 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		sortCols := map[string]string{
-			"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
-			"2": "JSON_EXTRACT(prices, \"$." + string(code) + ".discount_percent\")",
-			"3": "apps_count",
-			"4": "change_number_date",
-		}
-
 		db, err := sql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
@@ -70,7 +63,15 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		db = db.Model(&sql.Package{})
 		db = db.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "icon"})
-		db = query.setOrderOffsetGorm(db, sortCols)
+
+		sortCols := map[string]string{
+			"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
+			"2": "JSON_EXTRACT(prices, \"$." + string(code) + ".discount_percent\")",
+			"3": "apps_count",
+			"4": "change_number_date",
+		}
+		db = query.setOrderOffsetGorm(db, sortCols, "4")
+
 		db = db.Limit(100)
 		db = db.Find(&packages)
 

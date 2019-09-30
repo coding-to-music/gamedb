@@ -51,14 +51,6 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var apps []sql.App
 	var code = helpers.GetProductCC(r)
 
-	var columns = map[string]string{
-		"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
-		"2": "reviews_score",
-		"3": "player_peak_week",
-		"4": "release_date_unix",
-		"5": "player_trend",
-	}
-
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
 		log.Err(err, r)
@@ -69,18 +61,26 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})
 	gorm = gorm.Where("release_date_unix < ?", time.Now().Unix())
 	gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
-	gorm = gorm.Order(query.getOrderSQL(columns))
 
 	// Count before limitting
 	gorm.Count(&count)
 	log.Err(gorm.Error, r)
 
+	// Get apps
+	var columns = map[string]string{
+		"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
+		"2": "reviews_score",
+		"3": "player_peak_week",
+		"4": "release_date_unix",
+		"5": "player_trend",
+	}
+	gorm = query.setOrderOffsetGorm(gorm, columns, "3")
 	gorm = gorm.Limit(100)
-	gorm = gorm.Offset(query.getOffset())
 
 	gorm = gorm.Find(&apps)
 	log.Err(gorm.Error, r)
 
+	//
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = count

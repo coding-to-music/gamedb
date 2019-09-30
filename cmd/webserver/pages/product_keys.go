@@ -101,7 +101,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
-		gorm = query.setOrderOffsetGorm(gorm, nil)
+		gorm = query.setOrderOffsetGorm(gorm, nil, "")
 		gorm = gorm.Order("change_number_date desc")
 
 		// Get rows
