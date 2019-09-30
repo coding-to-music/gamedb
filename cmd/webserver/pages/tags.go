@@ -20,7 +20,7 @@ func TagsRouter() http.Handler {
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := tasks.Tags{}.GetTaskConfig()
+	config, err := tasks.TaskRegister[tasks.Tags{}.ID()].GetTaskConfig()
 	if err != nil {
 		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 		log.Err(err, r)

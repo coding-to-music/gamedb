@@ -20,7 +20,7 @@ func GenresRouter() http.Handler {
 func genresHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := tasks.Genres{}.GetTaskConfig()
+	config, err := tasks.TaskRegister[tasks.Genres{}.ID()].GetTaskConfig()
 	if err != nil {
 		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 		log.Err(err, r)
