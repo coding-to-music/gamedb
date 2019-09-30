@@ -3,7 +3,9 @@ package queue
 import (
 	"encoding/json"
 	"errors"
+	"regexp"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -15,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
+	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/streadway/amqp"
 )
@@ -118,6 +121,14 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	// Scrape
+	err = scrapePackage(&pack)
+	if err != nil {
+		logError(err, message.Message.ID)
+		ackRetry(msg, &message)
+		return
+	}
+
 	// Set package name to app name
 	err = updatePackageNameFromApp(&pack)
 	if err != nil {
@@ -184,7 +195,7 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 		app, err := sql.GetApp(appIDs[0], nil)
 		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
 
-			pack.Name = app.GetName()
+			pack.SetName(app.GetName(), false)
 			pack.Icon = app.GetIcon()
 
 		} else if err == sql.ErrRecordNotFound {
@@ -210,7 +221,6 @@ func updatePackageFromPICS(pack *sql.Package, message packageMessage) (err error
 	var kv = vdf.FromMap(message.Message.VDF)
 
 	pack.ID = message.Message.ID
-	// pack.Name = message.PICSPackageInfo.KeyValues.Name // todo
 	pack.ChangeNumber = message.Message.ChangeNumber
 	pack.ChangeNumberDate = message.FirstSeen
 
@@ -315,6 +325,34 @@ func updatePackageFromPICS(pack *sql.Package, message packageMessage) (err error
 	return nil
 }
 
+var packageRegex = regexp.MustCompile(`store\.steampowered\.com/sub/[0-9]+$`)
+
+func scrapePackage(pack *sql.Package) (err error) {
+
+	c := colly.NewCollector(
+		colly.URLFilters(packageRegex),
+	)
+
+	// ID64
+	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {
+		pack.SetName(e.Text, true)
+		pack.InStore = true
+	})
+
+	//
+	c.OnError(func(r *colly.Response, err error) {
+		helpers.LogSteamError(err)
+	})
+
+	err = c.Visit("https://store.steampowered.com/sub/" + strconv.Itoa(pack.ID))
+	if err != nil && strings.Contains(err.Error(), "because its not in AllowedDomains") {
+		log.Info(err)
+		return nil
+	}
+
+	return err
+}
+
 func updatePackageFromStore(pack *sql.Package) (err error) {
 
 	prices := sql.ProductPrices{}
@@ -398,7 +436,7 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 			pack.ReleaseDate = response.Data.ReleaseDate.Date
 			pack.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			pack.ComingSoon = response.Data.ReleaseDate.ComingSoon
-			pack.Name = response.Data.Name
+			pack.SetName(response.Data.Name, false)
 		}
 	}
 

@@ -379,6 +379,12 @@ func (pack Package) GetBundles() (bundles []Bundle, err error) {
 	return bundles, err
 }
 
+func (pack *Package) SetName(name string, force bool) {
+	if (pack.Name == "" || force) && name != "" {
+		pack.Name = name
+	}
+}
+
 func IsValidPackageID(id int) bool {
 	return id != 0
 }
