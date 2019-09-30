@@ -257,8 +257,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.Banners = banners
 
 	//
-	err = returnTemplate(w, r, "app", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "app", t)
 }
 
 type appTemplate struct {
@@ -546,8 +545,7 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
-	err = returnJSON(w, r, hc)
-	log.Err(err, r)
+	returnJSON(w, r, hc)
 }
 
 // Player ranks table
@@ -709,6 +707,5 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
-	err = returnJSON(w, r, hc)
-	log.Err(err, r)
+	returnJSON(w, r, hc)
 }

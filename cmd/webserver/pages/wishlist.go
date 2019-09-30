@@ -22,8 +22,7 @@ func wishlistsHandler(w http.ResponseWriter, r *http.Request) {
 	t := wishlistsTemplate{}
 	t.fill(w, r, "Wishlists", "Steam's most wishlisted games")
 
-	err := returnTemplate(w, r, "wishlists", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "wishlists", t)
 }
 
 type wishlistsTemplate struct {

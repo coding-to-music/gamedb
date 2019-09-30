@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
 
@@ -28,21 +27,17 @@ func landingPagesHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Info", "")
 	t.hideAds = true
 
-	var err error
-
 	switch strings.Replace(r.URL.Path, "/lp", "", 1) {
 	case LandingAPI:
-		err = returnTemplate(w, r, "landing_api", t)
+		returnTemplate(w, r, "landing_api", t)
 	case LandingDeals:
-		err = returnTemplate(w, r, "landing_deals", t)
+		returnTemplate(w, r, "landing_deals", t)
 	case LandingTopGames:
-		err = returnTemplate(w, r, "landing_games", t)
+		returnTemplate(w, r, "landing_games", t)
 	case LandingXP:
-		err = returnTemplate(w, r, "landing_xp", t)
+		returnTemplate(w, r, "landing_xp", t)
 	default:
 		returnErrorTemplate(w, r, errorTemplate{Code: 404})
 		return
 	}
-
-	log.Err(err, r)
 }

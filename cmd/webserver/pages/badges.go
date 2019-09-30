@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 )
@@ -21,8 +20,7 @@ func badgesHandler(w http.ResponseWriter, r *http.Request) {
 	t := badgesTemplate{}
 	t.fill(w, r, "Badges", "")
 
-	err := returnTemplate(w, r, "badges", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "badges", t)
 }
 
 type badgesTemplate struct {

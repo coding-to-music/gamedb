@@ -23,8 +23,7 @@ func queuesHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Queues", "When new items get added to the site, they go through a queue to not overload the servers.")
 	t.addAssetHighCharts()
 
-	err := returnTemplate(w, r, "queues", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "queues", t)
 }
 
 type queuesTemplate struct {
@@ -79,6 +78,5 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = returnJSON(w, r, highcharts)
-	log.Err(err, r)
+	returnJSON(w, r, highcharts)
 }

@@ -54,8 +54,7 @@ func offersHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	err := returnTemplate(w, r, "offers", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "offers", t)
 }
 
 type offersTemplate struct {

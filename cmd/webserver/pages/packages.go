@@ -29,8 +29,7 @@ func packagesHandler(w http.ResponseWriter, r *http.Request) {
 	t := packagesTemplate{}
 	t.fill(w, r, "Packages", "The last "+template.HTML(rounding.NearestThousandFormat(float64(total)))+" packages to be updated.")
 
-	err = returnTemplate(w, r, "packages", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "packages", t)
 }
 
 type packagesTemplate struct {

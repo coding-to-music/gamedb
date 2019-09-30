@@ -128,8 +128,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Template
-	err = returnTemplate(w, r, "settings", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "settings", t)
 }
 
 type settingsTemplate struct {

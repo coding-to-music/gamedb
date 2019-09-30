@@ -32,8 +32,7 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Count = rounding.NearestThousandFormat(float64(count))
 
-	err = returnTemplate(w, r, "groups", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "groups", t)
 }
 
 type groupsTemplate struct {

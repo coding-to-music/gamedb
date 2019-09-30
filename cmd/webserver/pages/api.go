@@ -230,8 +230,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	t.Key, _ = session.Get(r, helpers.SessionUserAPIKey)
 	t.Base = config.Config.GameDBDomain.Get()
 
-	err := returnTemplate(w, r, "api", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "api", t)
 }
 
 type apiTemplate struct {
@@ -291,8 +290,7 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 		call, err := api.NewAPICall(r)
 		if err != nil {
 
-			err = returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
-			log.Err(err, r)
+			returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
 
 			err = call.SaveToInflux(false, err)
 			log.Err(err, r)
@@ -303,8 +301,7 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 		resp, err := callback(call)
 		if err != nil {
 
-			err = returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
-			log.Err(err, r)
+			returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
 
 			err = call.SaveToInflux(false, err)
 			log.Err(err, r)
@@ -312,8 +309,7 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 			return
 		}
 
-		err = returnJSON(w, r, ApiEndpointResponse{Data: resp})
-		log.Err(err, r)
+		returnJSON(w, r, ApiEndpointResponse{Data: resp})
 
 		err = call.SaveToInflux(true, nil)
 		log.Err(err, r)

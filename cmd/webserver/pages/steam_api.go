@@ -65,8 +65,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 	t.Interfaces = interfaces
 	t.Description = template.HTML(strconv.Itoa(t.Count())) + " of the known Steam web API endpoints."
 
-	err = returnTemplate(w, r, "steam_api", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "steam_api", t)
 }
 
 type steamAPITemplate struct {

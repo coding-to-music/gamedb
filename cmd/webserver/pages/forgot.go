@@ -39,8 +39,7 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 	t.LoginEmail, err = session.Get(r, "login-email")
 	log.Err(err, r)
 
-	err = returnTemplate(w, r, "forgot", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "forgot", t)
 }
 
 type forgotTemplate struct {

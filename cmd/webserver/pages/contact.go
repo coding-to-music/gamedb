@@ -49,8 +49,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	t.SessionMessage, err = session.Get(r, contactSessionMessage)
 	log.Err(err)
 
-	err = returnTemplate(w, r, "contact", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "contact", t)
 }
 
 type contactTemplate struct {

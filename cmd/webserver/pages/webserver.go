@@ -51,7 +51,7 @@ func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 	w.Header().Set("Server", "")
 }
 
-func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err error) {
+func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	setHeaders(w, r, "application/json")
 
@@ -65,13 +65,14 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) (err erro
 	w.Header().Set("Content-Length", strconv.Itoa(len(b)))
 
 	_, err = w.Write(b)
-	if err != nil && strings.Contains(err.Error(), "write: broken pipe") {
-		return nil
+	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+		log.Critical(err)
 	}
-	return err
 }
 
-func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) (err error) {
+func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) {
+
+	var err error
 
 	// Set the last page
 	if r.Method == "GET" && page != "error" && page != "login" {
@@ -106,17 +107,17 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		"./templates/"+page+".gohtml",
 	)
 	if err != nil {
-		log.Critical(err)
-		return err
+		log.Critical(err, r)
+		return
 	}
 
 	// Write a respone
 	buf := &bytes.Buffer{}
 	err = t.ExecuteTemplate(buf, page, pageData)
 	if err != nil {
-		log.Critical(err)
+		log.Critical(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
-		return err
+		return
 	}
 
 	if config.IsProd() {
@@ -131,21 +132,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		})
 
 		err = m.Minify("text/html", w, buf)
-		if err != nil {
-			if strings.Contains(err.Error(), "write: broken pipe") {
-				return nil
-			}
-			log.Critical(err)
-			return err
+		if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+			log.Critical(err, r)
 		}
 
-		return err
-
 	} else {
-
 		_, err = buf.WriteTo(w)
-		log.Err(err)
-		return err
+		log.Critical(err, r)
 	}
 }
 
@@ -165,10 +158,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 
 	w.WriteHeader(data.Code)
 
-	err := returnTemplate(w, r, "error", data)
-	if err != nil {
-		log.Err(err, r)
-	}
+	returnTemplate(w, r, "error", data)
 }
 
 type errorTemplate struct {
@@ -562,10 +552,7 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 		t.Data = make([][]interface{}, 0)
 	}
 
-	err := returnJSON(w, r, t)
-	if err != nil {
-		log.Err(err, r)
-	}
+	returnJSON(w, r, t)
 }
 
 func (t *DataTablesAjaxResponse) limit(r *http.Request) {

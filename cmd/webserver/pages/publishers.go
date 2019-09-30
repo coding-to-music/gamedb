@@ -47,8 +47,7 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 	t.Prices = prices
 
-	err = returnTemplate(w, r, "publishers", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "publishers", t)
 }
 
 type statsPublishersTemplate struct {

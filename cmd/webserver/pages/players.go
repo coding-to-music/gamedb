@@ -106,8 +106,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Countries = countries
 	t.Continents = continents
 
-	err := returnTemplate(w, r, "players", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "players", t)
 }
 
 type playersTemplate struct {

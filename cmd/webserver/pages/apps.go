@@ -181,8 +181,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// t.Columns = allColumns
 
-	err := returnTemplate(w, r, "apps", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "apps", t)
 }
 
 type appsTemplate struct {

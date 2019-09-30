@@ -3,7 +3,6 @@ package pages
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -26,8 +25,7 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 		sql.UserLevelLimit3,
 	}
 
-	err := returnTemplate(w, r, "donate", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "donate", t)
 }
 
 type donateTemplate struct {

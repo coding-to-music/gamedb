@@ -72,9 +72,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			tm.Player = player
 			tm.DefaultAvatar = helpers.DefaultPlayerAvatar
 
-			err = returnTemplate(w, r, "player_missing", tm)
-			log.Err(err, r)
-
+			returnTemplate(w, r, "player_missing", tm)
 		} else {
 			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player.", Error: err})
 		}
@@ -242,8 +240,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Player = player
 	t.Wishlist = wishlist
 
-	err = returnTemplate(w, r, "player", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "player", t)
 }
 
 type playerTemplate struct {
@@ -794,8 +791,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		Log:     err,
 	}
 
-	err = returnJSON(w, r, response)
-	log.Err(err, r)
+	returnJSON(w, r, response)
 }
 
 type PlayersUpdateResponse struct {
@@ -842,6 +838,5 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
-	err = returnJSON(w, r, hc)
-	log.Err(err, r)
+	returnJSON(w, r, hc)
 }

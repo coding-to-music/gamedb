@@ -61,8 +61,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = returnTemplate(w, r, "experience", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "experience", t)
 }
 
 func getExperienceRows() (chunked [][]level) {

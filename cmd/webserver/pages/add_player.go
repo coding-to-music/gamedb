@@ -83,8 +83,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 
 	//
-	err := returnTemplate(w, r, "players_add", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "players_add", t)
 }
 
 type addPlayerTemplate struct {

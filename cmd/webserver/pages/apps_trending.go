@@ -22,15 +22,12 @@ func trendingRouter() http.Handler {
 
 func trendingHandler(w http.ResponseWriter, r *http.Request) {
 
-	var err error
-
 	// Template
 	t := trendingTemplate{}
 	t.fill(w, r, "Trending", "")
 	t.addAssetHighCharts()
 
-	err = returnTemplate(w, r, "trending_apps", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "trending_apps", t)
 }
 
 type trendingTemplate struct {
@@ -137,6 +134,5 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = returnJSON(w, r, ret)
-	log.Err(err, r)
+	returnJSON(w, r, ret)
 }

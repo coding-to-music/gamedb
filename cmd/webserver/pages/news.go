@@ -42,8 +42,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Count = rounding.NearestThousandFormat(float64(count))
 
-	err = returnTemplate(w, r, "news", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "news", t)
 }
 
 type newsTemplate struct {

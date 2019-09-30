@@ -44,8 +44,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	t.Badge = val
 	t.Foil = r.URL.Query().Get("foil")
 
-	err = returnTemplate(w, r, "badge", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "badge", t)
 }
 
 type badgeTemplate struct {

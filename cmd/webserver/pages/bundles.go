@@ -29,8 +29,7 @@ func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 	t := bundlesTemplate{}
 	t.fill(w, r, "Bundles", "The last "+template.HTML(humanize.Comma(int64(total)))+" bundles to be updated.")
 
-	err = returnTemplate(w, r, "bundles", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "bundles", t)
 }
 
 type bundlesTemplate struct {

@@ -27,8 +27,7 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetChosen()
 	t.addAssetSlider()
 
-	err := returnTemplate(w, r, "price_changes", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "price_changes", t)
 }
 
 type priceChangesTemplate struct {

@@ -60,8 +60,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.LoginEmail, err = session.Get(r, loginSessionEmail)
 	log.Err(err, r)
 
-	err = returnTemplate(w, r, "login", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "login", t)
 }
 
 type loginTemplate struct {

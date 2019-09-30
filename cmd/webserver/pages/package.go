@@ -165,8 +165,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	//
-	err = returnTemplate(w, r, "package", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "package", t)
 }
 
 type packageTemplate struct {

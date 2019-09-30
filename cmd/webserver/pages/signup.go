@@ -50,8 +50,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t.SignupEmail, err = session.Get(r, signupSessionEmail)
 	log.Err(err, r)
 
-	err = returnTemplate(w, r, "signup", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "signup", t)
 }
 
 type signupTemplate struct {

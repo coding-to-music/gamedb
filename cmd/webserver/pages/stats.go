@@ -122,8 +122,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	err := returnTemplate(w, r, "stats", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "stats", t)
 }
 
 type statsTemplate struct {
@@ -167,8 +166,7 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
-	err = returnJSON(w, r, hc)
-	log.Err(err, r)
+	returnJSON(w, r, hc)
 }
 
 func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
@@ -197,8 +195,7 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 		ret = append(ret, []int64{v.Date * 1000, int64(v.Count)})
 	}
 
-	err = returnJSON(w, r, ret)
-	log.Err(err, r)
+	returnJSON(w, r, ret)
 }
 
 type statsAppReleaseDate struct {
@@ -233,8 +230,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 		ret[v.Score] = v.Count
 	}
 
-	err = returnJSON(w, r, ret)
-	log.Err(err, r)
+	returnJSON(w, r, ret)
 }
 
 type statsAppScore struct {

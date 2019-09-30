@@ -31,8 +31,7 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps, err = countNewReleaseApps()
 	log.Err(err, r)
 
-	err = returnTemplate(w, r, "new_releases", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "new_releases", t)
 }
 
 type newReleasesTemplate struct {

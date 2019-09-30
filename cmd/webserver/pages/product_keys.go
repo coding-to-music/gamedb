@@ -35,8 +35,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := returnTemplate(w, r, "product_keys", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "product_keys", t)
 }
 
 type productKeysTemplate struct {

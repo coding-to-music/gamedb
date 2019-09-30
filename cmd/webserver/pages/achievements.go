@@ -23,8 +23,7 @@ func achievementsHandler(w http.ResponseWriter, r *http.Request) {
 	t := GlobalTemplate{}
 	t.fill(w, r, "Achievements", "")
 
-	err := returnTemplate(w, r, "achievements", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "achievements", t)
 }
 
 func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {

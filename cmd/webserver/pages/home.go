@@ -88,8 +88,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	err := returnTemplate(w, r, "home", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "home", t)
 }
 
 type homeTemplate struct {
@@ -133,8 +132,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	err = returnJSON(w, r, prices)
-	log.Err(err)
+	returnJSON(w, r, prices)
 }
 
 type homePrice struct {
@@ -218,8 +216,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		resp = append(resp, homePlayer)
 	}
 
-	err = returnJSON(w, r, resp)
-	log.Err(err)
+	returnJSON(w, r, resp)
 }
 
 type homePlayer struct {

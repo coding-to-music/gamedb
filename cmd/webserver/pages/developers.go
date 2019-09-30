@@ -47,8 +47,7 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 	t.Prices = prices
 
-	err = returnTemplate(w, r, "developers", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "developers", t)
 }
 
 type statsDevelopersTemplate struct {

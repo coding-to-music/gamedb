@@ -102,8 +102,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	t.Summary = helpers.RenderHTMLAndBBCode(summary)
 	t.Group.Error = strings.Replace(t.Group.Error, "Click here for information on how to report groups on Steam.", "", 1)
 
-	err = returnTemplate(w, r, "group", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "group", t)
 }
 
 type groupTemplate struct {
@@ -154,6 +153,5 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
-	err = returnJSON(w, r, hc)
-	log.Err(err, r)
+	returnJSON(w, r, hc)
 }

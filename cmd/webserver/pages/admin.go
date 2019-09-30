@@ -89,8 +89,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Raw("SELECT * FROM information_schema.processlist where command != 'sleep'").Scan(&t.Queries)
 	log.Err(gorm.Error, r)
 
-	err = returnTemplate(w, r, "admin", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "admin", t)
 }
 
 type adminTemplate struct {

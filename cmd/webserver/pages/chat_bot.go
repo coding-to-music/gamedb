@@ -66,8 +66,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 		return t.Commands[i].Example() < t.Commands[j].Example()
 	})
 
-	err := returnTemplate(w, r, "chat_bot", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "chat_bot", t)
 }
 
 type chatBotTemplate struct {

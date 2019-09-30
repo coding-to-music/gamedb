@@ -133,8 +133,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	t.Packages = packages
 
 	//
-	err = returnTemplate(w, r, "bundle", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "bundle", t)
 }
 
 type bundleTemplate struct {
@@ -185,6 +184,5 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	// Return
-	err = returnJSON(w, r, prices)
-	log.Err(err, r)
+	returnJSON(w, r, prices)
 }

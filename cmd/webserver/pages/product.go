@@ -75,8 +75,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	})
 
 	// Return
-	err = returnJSON(w, r, response)
-	log.Err(err, r)
+	returnJSON(w, r, response)
 }
 
 type productPricesAjaxResponse struct {

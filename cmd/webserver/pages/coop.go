@@ -136,8 +136,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	err = returnTemplate(w, r, "coop", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "coop", t)
 }
 
 type coopTemplate struct {

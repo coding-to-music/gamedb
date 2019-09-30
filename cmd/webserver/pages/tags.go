@@ -48,8 +48,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = config.Value
 	t.Prices = prices
 
-	err = returnTemplate(w, r, "tags", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "tags", t)
 }
 
 type statsTagsTemplate struct {

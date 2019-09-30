@@ -159,8 +159,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := returnTemplate(w, r, "chat", t)
-	log.Err(err, r)
+	returnTemplate(w, r, "chat", t)
 }
 
 type chatTemplate struct {
@@ -221,6 +220,5 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = returnJSON(w, r, messages)
-	log.Err(err, r)
+	returnJSON(w, r, messages)
 }
