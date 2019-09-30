@@ -59,12 +59,14 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	var id = message.Message.ID
+
 	if message.Attempt > 1 {
-		logInfo("Consuming app " + strconv.Itoa(message.Message.ID) + ", attempt " + strconv.Itoa(message.Attempt) + " - " + string(msg.Body))
+		logInfo("Consuming app " + strconv.Itoa(id) + ", attempt " + strconv.Itoa(message.Attempt) + " - " + string(msg.Body))
 	}
 
-	if !helpers.IsValidAppID(message.Message.ID) {
-		logError(errors.New("invalid app ID: "+strconv.Itoa(message.Message.ID)), msg.Body)
+	if !helpers.IsValidAppID(id) {
+		logError(errors.New("invalid app ID: "+strconv.Itoa(id)), msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -72,15 +74,15 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Load current app
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		logError(err, message.Message.ID)
+		logError(err, id)
 		ackRetry(msg, &message)
 		return
 	}
 
 	app := sql.App{}
-	gorm = gorm.FirstOrInit(&app, sql.App{ID: message.Message.ID})
+	gorm = gorm.FirstOrInit(&app, sql.App{ID: id})
 	if gorm.Error != nil {
-		logError(gorm.Error, message.Message.ID)
+		logError(gorm.Error, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -109,7 +111,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	//
 	err = updateAppPICS(&app, message)
 	if err != nil {
-		logError(err, message.Message.ID)
+		logError(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -128,28 +130,28 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		schema, err := updateAppSchema(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.Message.ID)
+			helpers.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = updateAppAchievements(&app, schema)
 		if err != nil {
-			helpers.LogSteamError(err, message.Message.ID)
+			helpers.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = updateAppNews(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.Message.ID)
+			helpers.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		newItems, err = updateAppItems(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.Message.ID)
+			helpers.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -166,21 +168,21 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppDetails(&app)
 		if err != nil && err != steam.ErrAppNotFound {
-			helpers.LogSteamError(err, message.Message.ID)
+			helpers.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = updateAppReviews(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.Message.ID)
+			helpers.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		offers, err = scrapeApp(&app)
 		if err != nil {
-			helpers.LogSteamError(err, message.Message.ID)
+			helpers.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -196,7 +198,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppSteamSpy(&app)
 		if err != nil {
-			logInfo(err, message.Message.ID)
+			logInfo(err, id)
 		}
 	}()
 
@@ -210,7 +212,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppTwitch(&app)
 		if err != nil {
-			logError(err, message.Message.ID)
+			logError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -227,14 +229,14 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppPlaytimeStats(&app)
 		if err != nil {
-			logError(err, message.Message.ID)
+			logError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		currentAppItems, err = getCurrentAppItems(app.ID)
 		if err != nil {
-			logError(err, message.Message.ID)
+			logError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -256,21 +258,21 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePriceChanges(appBeforeUpdate, app)
 		if err != nil {
-			logError(err, message.Message.ID)
+			logError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = saveAppItems(app.ID, newItems, currentAppItems)
 		if err != nil {
-			logError(err, message.Message.ID)
+			logError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = saveOffers(app, offers)
 		if err != nil {
-			logError(err, message.Message.ID)
+			logError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -286,7 +288,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		gorm = gorm.Save(&app)
 		if gorm.Error != nil {
-			logError(gorm.Error, message.Message.ID)
+			logError(gorm.Error, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -302,7 +304,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = saveAppToInflux(app)
 		if err != nil {
-			logError(err, message.Message.ID)
+			logError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -336,7 +338,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 				helpers.MemcacheAppPublishers(app.ID).Key,
 				helpers.MemcacheAppBundles(app.ID).Key,
 			)
-			logError(err, message.Message.ID)
+			logError(err, id)
 		}
 	}()
 
@@ -349,12 +351,12 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		var err error
 
 		wsPayload := websockets.PubSubIDPayload{}
-		wsPayload.ID = message.Message.ID
+		wsPayload.ID = id
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
 
 		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 		if err != nil {
-			logError(err, message.Message.ID)
+			logError(err, id)
 		}
 	}()
 
