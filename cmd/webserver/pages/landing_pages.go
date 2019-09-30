@@ -17,7 +17,10 @@ const (
 func LandingPagesRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Get("/{id}", landingPagesHandler)
+	r.Get(LandingAPI, landingPagesHandler)
+	r.Get(LandingDeals, landingPagesHandler)
+	r.Get(LandingTopGames, landingPagesHandler)
+	r.Get(LandingXP, landingPagesHandler)
 	return r
 }
 
