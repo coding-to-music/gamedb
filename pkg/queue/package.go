@@ -199,7 +199,11 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 
 func updatePackageFromPICS(pack *sql.Package, message packageMessage) (err error) {
 
-	if !config.IsLocal() && message.Message.ChangeNumber > 0 && pack.ChangeNumber > message.Message.ChangeNumber {
+	if message.Message.ChangeNumber == 0 {
+		return nil
+	}
+
+	if pack.ChangeNumber >= message.Message.ChangeNumber {
 		return nil
 	}
 

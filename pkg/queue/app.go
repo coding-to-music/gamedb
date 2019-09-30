@@ -94,7 +94,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	if !message.Force {
 		if !config.IsLocal() {
 			if app.UpdatedAt.Unix() > time.Now().Add(time.Hour*24*-1).Unix() {
-				if app.ChangeNumber >= message.Message.ChangeNumber && message.Message.ChangeNumber != 0 {
+				if app.ChangeNumber >= message.Message.ChangeNumber && message.Message.ChangeNumber > 0 {
 					logInfo("Skipping app, updated in last day")
 					message.ack(msg)
 					return
@@ -375,7 +375,11 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 func updateAppPICS(app *sql.App, message appMessage) (err error) {
 
-	if !config.IsLocal() && message.Message.ChangeNumber > 0 && app.ChangeNumber > message.Message.ChangeNumber {
+	if message.Message.ChangeNumber == 0 {
+		return nil
+	}
+
+	if app.ChangeNumber >= message.Message.ChangeNumber {
 		return nil
 	}
 
