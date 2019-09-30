@@ -386,8 +386,11 @@ func updateAppPICS(app *sql.App, message appMessage) (err error) {
 	var kv = vdf.FromMap(message.Message.VDF)
 
 	app.ID = message.Message.ID
-	app.ChangeNumber = message.Message.ChangeNumber
-	app.ChangeNumberDate = message.FirstSeen
+
+	if message.Message.ChangeNumber > 0 {
+		app.ChangeNumber = message.Message.ChangeNumber
+		app.ChangeNumberDate = message.FirstSeen
+	}
 
 	// Reset values that might be removed
 	app.Common = ""
