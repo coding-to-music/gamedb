@@ -53,7 +53,7 @@ if ($('#apps-page').length > 0) {
             }
         }
 
-        $(document).ready(updateLabels);
+        $(document).on('ready', updateLabels);
 
         // Setup datatable
         const options = {
