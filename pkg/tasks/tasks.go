@@ -12,7 +12,7 @@ import (
 
 func init() {
 	for _, v := range tasks {
-		TaskRegister[v.ID()] = BaseTask{v}
+		TaskRegister[v.ID()] = v
 	}
 }
 
