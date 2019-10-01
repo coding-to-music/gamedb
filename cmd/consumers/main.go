@@ -15,7 +15,7 @@ var version string
 func main() {
 
 	config.SetVersion(version)
-	log.Initialise()
+	log.Initialise([]log.LogName{log.LogNameConsumers})
 
 	// Load pubsub
 	log.Info("Listening to PubSub for memcache")

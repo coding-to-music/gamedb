@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -31,7 +32,7 @@ func (c Tags) work() {
 	// Get current tags, to delete old ones
 	tags, err := sql.GetAllTags()
 	if err != nil {
-		cronLogErr(err)
+		log.Err(err)
 		return
 	}
 
@@ -44,23 +45,23 @@ func (c Tags) work() {
 	tagsResp, b, err := helpers.GetSteam().GetTags()
 	err = helpers.AllowSteamCodes(err, b, nil)
 	if err != nil {
-		cronLogErr(err)
+		log.Err(err)
 		return
 	}
 
 	steamTagMap := tagsResp.GetMap()
 
 	appsWithTags, err := sql.GetAppsWithColumnDepth("tags", 2, []string{"tags", "prices", "reviews_score"})
-	cronLogErr(err)
+	log.Err(err)
 
-	cronLogInfo("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
+	log.Info("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
 
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
 
 		appTags, err := app.GetTagIDs()
 		if err != nil {
-			cronLogErr(err)
+			log.Err(err)
 			continue
 		}
 
@@ -113,7 +114,7 @@ func (c Tags) work() {
 		}
 
 		err := sql.DeleteTags(tagsToDeleteSlice)
-		cronLogErr(err)
+		log.Err(err)
 
 	}()
 
@@ -121,7 +122,7 @@ func (c Tags) work() {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		cronLogErr(err)
+		log.Err(err)
 		return
 	}
 
@@ -147,7 +148,7 @@ func (c Tags) work() {
 			var tag sql.Tag
 
 			gorm = gorm.Unscoped().FirstOrInit(&tag, sql.Tag{ID: tagID})
-			cronLogErr(gorm.Error)
+			log.Err(gorm.Error)
 
 			tag.Name = v.name
 			tag.Apps = v.count
@@ -156,7 +157,7 @@ func (c Tags) work() {
 			tag.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&tag)
-			cronLogErr(gorm.Error)
+			log.Err(gorm.Error)
 
 		}(k, v)
 
@@ -166,5 +167,5 @@ func (c Tags) work() {
 
 	//
 	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheTagKeyNames.Key)
-	cronLogErr(err)
+	log.Err(err)
 }

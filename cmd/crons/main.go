@@ -16,7 +16,7 @@ var version string
 func main() {
 
 	config.SetVersion(version)
-	log.Initialise()
+	log.Initialise([]log.LogName{log.LogNameCrons})
 
 	log.Info("Starting crons")
 

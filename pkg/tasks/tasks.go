@@ -100,7 +100,7 @@ func (task BaseTask) Bad() (b bool) {
 
 func (task BaseTask) Run() {
 
-	cronLogInfo("Cron started: " + task.Name())
+	log.Info("Cron started: " + task.Name())
 
 	// Send websocket
 	page := websockets.GetPage(websockets.PageAdmin)
@@ -111,7 +111,7 @@ func (task BaseTask) Run() {
 
 	// Save config row
 	err := sql.SetConfig(sql.ConfigType("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
-	cronLogErr(err)
+	log.Err(err)
 
 	// Send websocket
 	page = websockets.GetPage(websockets.PageAdmin)
@@ -122,7 +122,7 @@ func (task BaseTask) Run() {
 	})
 
 	//
-	cronLogInfo("Cron complete: " + task.Name())
+	log.Info("Cron complete: " + task.Name())
 }
 
 //
@@ -131,15 +131,7 @@ func (task BaseTask) GetTaskConfig() (config sql.Config, err error) {
 	return sql.GetConfig(sql.ConfigType("task-" + task.ID()))
 }
 
-// Logging
-func cronLogErr(interfaces ...interface{}) {
-	log.Err(append(interfaces, log.LogNameCron, log.LogNameGameDB)...)
-}
-
-func cronLogInfo(interfaces ...interface{}) {
-	log.Info(append(interfaces, log.LogNameCron, log.LogNameGameDB)...)
-}
-
+//
 func statsLogger(tableName string, count int, total int, rowName string) {
-	cronLogInfo("Updating " + tableName + " - " + strconv.Itoa(count) + " / " + strconv.Itoa(total) + ": " + rowName)
+	log.Info("Updating " + tableName + " - " + strconv.Itoa(count) + " / " + strconv.Itoa(total) + ": " + rowName)
 }

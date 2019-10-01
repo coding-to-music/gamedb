@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -31,7 +32,7 @@ func (c Genres) work() {
 	// Get current genres, to delete old ones
 	currentGenres, err := sql.GetAllGenres(true)
 	if err != nil {
-		cronLogErr(err)
+		log.Err(err)
 		return
 	}
 
@@ -47,16 +48,16 @@ func (c Genres) work() {
 
 	// Get apps from mysql
 	appsWithGenres, err := sql.GetAppsWithColumnDepth("genres", 2, []string{"genres", "prices", "reviews_score"})
-	cronLogErr(err)
+	log.Err(err)
 
-	cronLogInfo("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
+	log.Info("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
 
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
 
 		appGenreIDs, err := app.GetGenreIDs()
 		if err != nil {
-			cronLogErr(err)
+			log.Err(err)
 			continue
 		}
 
@@ -117,7 +118,7 @@ func (c Genres) work() {
 		}
 
 		err := sql.DeleteGenres(genresToDeleteSlice)
-		cronLogErr(err)
+		log.Err(err)
 
 	}()
 
@@ -125,7 +126,7 @@ func (c Genres) work() {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		cronLogErr(err)
+		log.Err(err)
 		return
 	}
 
@@ -151,7 +152,7 @@ func (c Genres) work() {
 			var genre sql.Genre
 
 			gorm = gorm.Unscoped().FirstOrInit(&genre, sql.Genre{ID: genreID})
-			cronLogErr(gorm.Error)
+			log.Err(gorm.Error)
 
 			genre.Name = v.name
 			genre.Apps = v.count
@@ -160,7 +161,7 @@ func (c Genres) work() {
 			genre.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&genre)
-			cronLogErr(gorm.Error)
+			log.Err(gorm.Error)
 
 		}(k, v)
 
@@ -170,5 +171,5 @@ func (c Genres) work() {
 
 	//
 	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGenreKeyNames.Key)
-	cronLogErr(err)
+	log.Err(err)
 }

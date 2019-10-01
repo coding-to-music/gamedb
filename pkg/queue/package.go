@@ -47,7 +47,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err, msg.Body)
+		log.Err(err, msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -55,11 +55,11 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	var id = message.Message.ID
 
 	if message.Attempt > 1 {
-		logInfo("Consuming package " + strconv.Itoa(id) + ", attempt " + strconv.Itoa(message.Attempt))
+		log.Info("Consuming package " + strconv.Itoa(id) + ", attempt " + strconv.Itoa(message.Attempt))
 	}
 
 	if !sql.IsValidPackageID(id) {
-		logInfo(errors.New("invalid package ID: "+strconv.Itoa(id)), msg.Body)
+		log.Info(errors.New("invalid package ID: "+strconv.Itoa(id)), msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -67,7 +67,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Load current package
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -75,7 +75,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	pack := sql.Package{}
 	gorm = gorm.FirstOrInit(&pack, sql.Package{ID: id})
 	if gorm.Error != nil {
-		logError(gorm.Error, id)
+		log.Err(gorm.Error, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -90,7 +90,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		if !config.IsLocal() {
 			if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour*24*-1).Unix() {
 				if pack.ChangeNumber >= message.Message.ChangeNumber && message.Message.ChangeNumber > 0 {
-					logInfo("Skipping package, updated in last day")
+					log.Info("Skipping package, updated in last day")
 					message.ack(msg)
 					return
 				}
@@ -103,7 +103,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Update from PICS
 	err = updatePackageFromPICS(&pack, message)
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -114,7 +114,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	if err != nil {
 
 		if err == steam.ErrHTMLResponse {
-			logInfo(err, id)
+			log.Info(err, id)
 		} else {
 			helpers.LogSteamError(err, id)
 		}
@@ -126,7 +126,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Scrape
 	err = scrapePackage(&pack)
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -134,7 +134,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Set package name to app name
 	err = updatePackageNameFromApp(&pack)
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -142,7 +142,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Save price changes
 	err = savePriceChanges(packageBeforeUpdate, pack)
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -150,7 +150,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Save new data
 	gorm = gorm.Save(&pack)
 	if gorm.Error != nil {
-		logError(gorm.Error, id)
+		log.Err(gorm.Error, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -158,7 +158,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Save to InfluxDB
 	err = savePackageToInflux(pack)
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 		ackRetry(msg, &message)
 		return
 	}

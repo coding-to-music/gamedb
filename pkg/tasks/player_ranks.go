@@ -23,23 +23,23 @@ func (c PlayerRanks) Cron() string {
 
 func (c PlayerRanks) work() {
 
-	cronLogInfo("Level")
+	log.Info("Level")
 	err := mongo.RankPlayers("level", "level_rank")
 	log.Warning(err)
 
-	cronLogInfo("Games")
+	log.Info("Games")
 	err = mongo.RankPlayers("games_count", "games_rank")
 	log.Warning(err)
 
-	cronLogInfo("Badges")
+	log.Info("Badges")
 	err = mongo.RankPlayers("badges_count", "badges_rank")
 	log.Warning(err)
 
-	cronLogInfo("Time")
+	log.Info("Time")
 	err = mongo.RankPlayers("play_time", "play_time_rank")
 	log.Warning(err)
 
-	cronLogInfo("Friends")
+	log.Info("Friends")
 	err = mongo.RankPlayers("friends_count", "friends_rank")
 	log.Warning(err)
 }

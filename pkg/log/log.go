@@ -21,25 +21,24 @@ import (
 	"github.com/rollbar/rollbar-go"
 )
 
-//noinspection GoUnusedConst
 const (
-	// Log names
-	LogNameConsumers LogName = "consumers"
-	LogNameCron      LogName = "crons"
+	LogNameChatbot   LogName = "binary-chatbot"
+	LogNameConsumers LogName = "binary-consumers"
+	LogNameCrons     LogName = "binary-crons"
+	LogNameSteam     LogName = "binary-steam"
+	LogNameWebserver LogName = "binary-webserver"
+
 	LogNameDatastore LogName = "datastore"
 	LogNameMongo     LogName = "mongo"
 	LogNameDebug     LogName = "debug"
-	LogNameGameDB    LogName = "gamedb" // Default
 	LogNameRequests  LogName = "requests"
 	LogNameSQL       LogName = "sql"
-	LogNameSteam     LogName = "steam-calls"
-	LogNamePICS      LogName = "pics-checks"
 
 	// Severities
 	SeverityDebug    Severity = 1
 	SeverityInfo     Severity = 2
 	SeverityWarning  Severity = 3
-	SeverityError    Severity = 4 // Default
+	SeverityError    Severity = 4
 	SeverityCritical Severity = 5
 )
 
@@ -88,7 +87,7 @@ type entry struct {
 	request   *http.Request
 	texts     []string
 	error     error
-	logName   LogName
+	logNames  []LogName
 	severity  Severity
 	timestamp time.Time
 }
@@ -133,9 +132,12 @@ func (e entry) toText(severity Severity) string {
 var (
 	googleClient *logging.Client
 	logger       = l.New(os.Stderr, "", l.Ltime)
+	defaultLogs  []LogName
 )
 
-func Initialise() {
+func Initialise(logs []LogName) {
+
+	defaultLogs = logs
 
 	var err error
 
@@ -166,7 +168,7 @@ func Initialise() {
 func log(interfaces ...interface{}) {
 
 	var entry = entry{
-		logName:   LogNameGameDB,
+		logNames:  defaultLogs,
 		severity:  SeverityError,
 		timestamp: time.Now(),
 	}
@@ -207,7 +209,7 @@ func log(interfaces ...interface{}) {
 		case error:
 			entry.error = val
 		case LogName:
-			entry.logName = val
+			entry.logNames = append(entry.logNames, val)
 		case Severity:
 			entry.severity = val
 		case time.Time:
@@ -241,18 +243,21 @@ func log(interfaces ...interface{}) {
 		if !config.IsLocal() {
 
 			// Google
-			googleClient.Logger(config.Config.Environment.Get() + "-" + string(entry.logName)).Log(logging.Entry{
-				Severity:  entry.severity.toGoole(),
-				Timestamp: entry.timestamp,
-				Payload:   entry.toText(entry.severity),
-				Labels: map[string]string{
-					"env":  config.Config.Environment.Get(),
-					"key":  config.GetSteamKeyTag(),
-					"hash": config.Config.CommitHash.Get(),
-				},
-			})
+			for _, logName := range entry.logNames {
 
-			if entry.severity == SeverityWarning || entry.severity == SeverityError || entry.severity == SeverityCritical {
+				googleClient.Logger(config.Config.Environment.Get() + "-" + string(logName)).Log(logging.Entry{
+					Severity:  entry.severity.toGoole(),
+					Timestamp: entry.timestamp,
+					Payload:   entry.toText(entry.severity),
+					Labels: map[string]string{
+						"env":  config.Config.Environment.Get(),
+						"hash": config.Config.CommitHash.Get(),
+						"key":  config.GetSteamKeyTag(),
+					},
+				})
+			}
+
+			if entry.severity >= SeverityWarning {
 
 				// Rollbar
 				rollbar.Log(rollbar.ERR, entry.toText(SeverityInfo))

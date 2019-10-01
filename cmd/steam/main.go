@@ -36,7 +36,7 @@ var (
 func main() {
 
 	config.SetVersion(version)
-	log.Initialise()
+	log.Initialise([]log.LogName{log.LogNameSteam})
 
 	var err error
 
@@ -48,7 +48,7 @@ func main() {
 	loginDetails.AuthCode = ""
 
 	err = steam.InitializeSteamDirectory()
-	steamLogError(err)
+	log.Err(err)
 
 	steamClient = steam.NewClient()
 	steamClient.RegisterPacketHandler(packetHandler{})
@@ -60,13 +60,13 @@ func main() {
 			switch e := event.(type) {
 			case *steam.ConnectedEvent:
 
-				steamLogInfo("Steam: Connected")
+				log.Info("Steam: Connected")
 				go steamClient.Auth.LogOn(&loginDetails)
 
 			case *steam.LoggedOnEvent:
 
 				// Load change checker
-				steamLogInfo("Steam: Logged in")
+				log.Info("Steam: Logged in")
 				steamLoggedOn = true
 				go checkForChanges()
 
@@ -78,13 +78,13 @@ func main() {
 
 			case *steam.LoggedOffEvent:
 
-				steamLogInfo("Steam: Logged out")
+				log.Info("Steam: Logged out")
 				steamLoggedOn = false
 				go steamClient.Disconnect()
 
 			case *steam.DisconnectedEvent:
 
-				steamLogInfo("Steam: Disconnected")
+				log.Info("Steam: Disconnected")
 				steamLoggedOn = false
 
 				time.Sleep(time.Second * 5)
@@ -94,24 +94,24 @@ func main() {
 			case *steam.LogOnFailedEvent:
 
 				// Disconnects
-				steamLogInfo("Steam: Login failed")
+				log.Info("Steam: Login failed")
 
 			case *steam.MachineAuthUpdateEvent:
 
-				steamLogInfo("Steam: Updating auth hash, it should no longer ask for auth")
+				log.Info("Steam: Updating auth hash, it should no longer ask for auth")
 				loginDetails.SentryFileHash = e.Hash
 				err = ioutil.WriteFile(steamSentryFilename, e.Hash, 0666)
-				steamLogError(err)
+				log.Err(err)
 
 			case steam.FatalErrorEvent:
 
 				// Disconnects
-				steamLogInfo("Steam: Disconnected because of error")
+				log.Info("Steam: Disconnected because of error")
 				steamLoggedOn = false
 				go steamClient.Connect()
 
 			case error:
-				steamLogError(e)
+				log.Err(e)
 			}
 		}
 	}()
@@ -133,15 +133,15 @@ func checkForChanges() {
 				b, _ := ioutil.ReadFile(steamCurrentChangeFilename)
 				if len(b) > 0 {
 					ui, err := strconv.ParseUint(string(b), 10, 32)
-					steamLogError(err)
+					log.Err(err)
 					if err == nil {
 						steamChangeNumber = uint32(ui)
-						steamLogError(err)
+						log.Err(err)
 					}
 				}
 			}
 
-			steamLogInfo("Trying from: " + strconv.FormatUint(uint64(steamChangeNumber), 10))
+			log.Info("Trying from: " + strconv.FormatUint(uint64(steamChangeNumber), 10))
 
 			var t = true
 			steamClient.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
@@ -168,9 +168,9 @@ func (ph packetHandler) HandlePacket(packet *protocol.Packet) {
 	case EMsg_ClientFriendProfileInfoResponse:
 		ph.handleProfileInfo(packet)
 	case EMsg_ClientMarketingMessageUpdate2:
-		steamLogDebug(packet.String())
+		log.Debug(packet.String())
 	default:
-		// steamLogInfo(packet.String())
+		// log.Info(packet.String())
 	}
 }
 
@@ -191,14 +191,14 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			kv, err := vdf.ReadBytes(app.GetBuffer())
 			if err != nil {
-				steamLogError(err)
+				log.Err(err)
 			} else {
 				m = kv.ToMap()
 			}
 
 			err = queue.ProduceApp(int(app.GetAppid()), int(app.GetChangeNumber()), m)
 			if err != nil {
-				steamLogError(err)
+				log.Err(err)
 			}
 		}
 	}
@@ -210,27 +210,27 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			kv, err := vdf.ReadBytes(pack.GetBuffer())
 			if err != nil {
-				steamLogError(err)
+				log.Err(err)
 			} else {
 				m = kv.ToMap()
 			}
 
 			err = queue.ProducePackage(int(pack.GetPackageid()), int(pack.GetChangeNumber()), m)
-			steamLogError(err)
+			log.Err(err)
 		}
 	}
 
 	if unknownApps != nil {
 		for _, app := range unknownApps {
 			err := queue.ProduceApp(int(app), 0, nil)
-			steamLogError(err)
+			log.Err(err)
 		}
 	}
 
 	if unknownPackages != nil {
 		for _, pack := range unknownPackages {
 			err := queue.ProducePackage(int(pack), 0, nil)
-			steamLogError(err)
+			log.Err(err)
 		}
 	}
 }
@@ -252,7 +252,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	appChanges := body.GetAppChanges()
 	if appChanges != nil && len(appChanges) > 0 {
-		steamLogInfo(len(appChanges), "apps")
+		log.Info(len(appChanges), "apps")
 		for _, appChange := range appChanges {
 
 			appMap[int(appChange.GetChangeNumber())] = int(appChange.GetAppid())
@@ -266,7 +266,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	packageChanges := body.GetPackageChanges()
 	if packageChanges != nil && len(packageChanges) > 0 {
-		steamLogInfo(len(packageChanges), "packages")
+		log.Info(len(packageChanges), "packages")
 		for _, packageChange := range packageChanges {
 
 			packageMap[int(packageChange.GetChangeNumber())] = int(packageChange.GetPackageid())
@@ -285,14 +285,14 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	err := queue.ProduceChange(appMap, packageMap)
 	if err != nil {
-		steamLogError(err)
+		log.Err(err)
 		return
 	}
 
 	// Update cached change number
 	steamChangeNumber = body.GetCurrentChangeNumber()
 	err = ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(body.GetCurrentChangeNumber()), 10)), 0644)
-	steamLogError(err)
+	log.Err(err)
 }
 
 func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
@@ -301,17 +301,5 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 	packet.ReadProtoMsg(&body)
 
 	err := queue.ProducePlayer(int64(body.GetSteamidFriend()), &body)
-	steamLogError(err)
-}
-
-func steamLogInfo(interfaces ...interface{}) {
-	log.Info(append(interfaces, log.LogNamePICS)...)
-}
-
-func steamLogDebug(interfaces ...interface{}) {
-	log.Debug(append(interfaces, log.LogNamePICS)...)
-}
-
-func steamLogError(interfaces ...interface{}) {
-	log.Err(append(interfaces, log.LogNamePICS)...)
+	log.Err(err)
 }

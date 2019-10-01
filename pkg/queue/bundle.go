@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -41,19 +42,19 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err, msg.Body)
+		log.Err(err, msg.Body)
 		ackFail(msg, &message)
 		return
 	}
 
 	if message.Attempt > 1 {
-		logInfo("Consuming bundle " + strconv.Itoa(message.Message.ID) + ", attempt " + strconv.Itoa(message.Attempt))
+		log.Info("Consuming bundle " + strconv.Itoa(message.Message.ID) + ", attempt " + strconv.Itoa(message.Attempt))
 	}
 
 	// Load current bundle
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		logError(err, message.Message.ID)
+		log.Err(err, message.Message.ID)
 		ackRetry(msg, &message)
 		return
 	}
@@ -61,7 +62,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	bundle := sql.Bundle{}
 	gorm = gorm.FirstOrInit(&bundle, sql.Bundle{ID: message.Message.ID})
 	if gorm.Error != nil {
-		logError(gorm.Error, message.Message.ID)
+		log.Err(gorm.Error, message.Message.ID)
 		ackRetry(msg, &message)
 		return
 	}
@@ -85,7 +86,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 		gorm = gorm.Save(&bundle)
 		if gorm.Error != nil {
-			logError(gorm.Error, message.Message.ID)
+			log.Err(gorm.Error, message.Message.ID)
 			ackRetry(msg, &message)
 			return
 		}
@@ -101,7 +102,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePriceToMongo(bundle, oldBundle)
 		if err != nil {
-			logError(err, message.Message.ID)
+			log.Err(err, message.Message.ID)
 			ackRetry(msg, &message)
 			return
 		}
@@ -120,7 +121,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPaload)
 	if err != nil {
-		logError(err, message.Message.ID)
+		log.Err(err, message.Message.ID)
 	}
 
 	message.ack(msg)
@@ -182,7 +183,7 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
 		return err
 	}

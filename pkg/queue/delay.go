@@ -24,28 +24,28 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err)
+		log.Err(err)
 		return
 	}
 
 	// Limits
 	if q.BaseQueue.getMaxTime() > 0 && message.FirstSeen.Add(q.BaseQueue.getMaxTime()).Unix() < time.Now().Unix() {
 
-		logInfo("Message removed from delay queue (Over " + q.BaseQueue.getMaxTime().String() + " / " + message.FirstSeen.Add(q.BaseQueue.getMaxTime()).String() + "): " + string(msg.Body))
+		log.Info("Message removed from delay queue (Over " + q.BaseQueue.getMaxTime().String() + " / " + message.FirstSeen.Add(q.BaseQueue.getMaxTime()).String() + "): " + string(msg.Body))
 		ackFail(msg, &message)
 		return
 	}
 
 	if q.BaseQueue.maxAttempts > 0 && message.Attempt > q.BaseQueue.maxAttempts {
 
-		logInfo("Message removed from delay queue (" + strconv.Itoa(message.Attempt) + "/" + strconv.Itoa(q.BaseQueue.maxAttempts) + " attempts): " + string(msg.Body))
+		log.Info("Message removed from delay queue (" + strconv.Itoa(message.Attempt) + "/" + strconv.Itoa(q.BaseQueue.maxAttempts) + " attempts): " + string(msg.Body))
 		ackFail(msg, &message)
 		return
 	}
 
 	if message.OriginalQueue == queueDelays {
 
-		logInfo("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
+		log.Info("Message removed from delay queue (Stuck in delay queue): " + string(msg.Body))
 		ackFail(msg, &message)
 		return
 	}
@@ -55,12 +55,12 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	if message.getNextAttempt().Unix() <= time.Now().Unix() {
 
-		logInfo("Sending back to " + string(message.OriginalQueue))
+		log.Info("Sending back to " + string(message.OriginalQueue))
 		queue = message.OriginalQueue
 
 	} else {
 
-		// logInfo("Sending " + msg.MessageId + " back in " + message.getNextAttempt().Sub(time.Now()).String())
+		// log.Info("Sending " + msg.MessageId + " back in " + message.getNextAttempt().Sub(time.Now()).String())
 		queue = queueDelays
 	}
 
@@ -71,13 +71,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -87,13 +87,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -103,13 +103,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -119,13 +119,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -135,13 +135,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -151,13 +151,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -167,13 +167,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -183,13 +183,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -199,13 +199,13 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
 		err = produce(&message2, queue)
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			return
 		}
 
@@ -216,7 +216,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = msg.Ack(false)
 	if err != nil {
-		logError(err)
+		log.Err(err)
 		return
 	}
 }

@@ -11,6 +11,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -50,20 +51,20 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logCritical(err, msg.Body)
+		log.Critical(err, msg.Body)
 		ackFail(msg, &message)
 		return
 	}
 
 	if message.Attempt > 1 {
-		logInfo("Consuming player " + strconv.FormatInt(message.Message.ID, 10) + ", attempt " + strconv.Itoa(message.Attempt))
+		log.Info("Consuming player " + strconv.FormatInt(message.Message.ID, 10) + ", attempt " + strconv.Itoa(message.Attempt))
 	}
 
 	// Update player
 	player, err := mongo.GetPlayer(message.Message.ID)
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
-		logError(err, msg.Body)
+		log.Err(err, msg.Body)
 		ackRetry(msg, &message)
 		return
 	}
@@ -169,7 +170,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePlayerMongo(player)
 		if err != nil {
-			logError(err, message.Message.ID)
+			log.Err(err, message.Message.ID)
 			ackRetry(msg, &message)
 			return
 		}
@@ -182,7 +183,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePlayerToInflux(player)
 		if err != nil {
-			logError(err, message.Message.ID)
+			log.Err(err, message.Message.ID)
 			ackRetry(msg, &message)
 			return
 		}
@@ -195,7 +196,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = mongo.CreatePlayerEvent(&http.Request{}, player.ID, mongo.EventRefresh)
 		if err != nil {
-			logError(err, message.Message.ID)
+			log.Err(err, message.Message.ID)
 			ackRetry(msg, &message)
 			return
 		}
@@ -218,7 +219,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 			helpers.MemcachePlayerInQueue(player.ID).Key,
 		)
 		if err != nil {
-			logError(err, message.Message.ID)
+			log.Err(err, message.Message.ID)
 		}
 	}()
 
@@ -234,7 +235,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 		if err != nil {
-			logError(err, message.Message.ID)
+			log.Err(err, message.Message.ID)
 		}
 	}()
 
@@ -331,7 +332,7 @@ func updatePlayerGames(player *mongo.Player) error {
 		//
 		prices, err := gameRow.GetPrices()
 		if err != nil {
-			logError(err)
+			log.Err(err)
 			continue
 		}
 
@@ -351,11 +352,11 @@ func updatePlayerGames(player *mongo.Player) error {
 
 		//
 		playerApps[gameRow.ID].AppPrices = appPrices[gameRow.ID]
-		logError(err)
+		log.Err(err)
 
 		//
 		playerApps[gameRow.ID].AppPriceHour = appPriceHour[gameRow.ID]
-		logError(err)
+		log.Err(err)
 	}
 
 	// Save playerApps to Datastore
@@ -521,7 +522,7 @@ func updatePlayerBadges(player *mongo.Player) error {
 	// Make map of app rows
 	var appRowsMap = map[int]sql.App{}
 	appRows, err := sql.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
-	logError(err)
+	log.Err(err)
 
 	for _, v := range appRows {
 		appRowsMap[v.ID] = v
@@ -689,7 +690,7 @@ func updatePlayerGroups(player *mongo.Player, force bool) error {
 
 	// Queue groups for update
 	err = ProduceGroup(resp.GetIDs(), force)
-	logError(err)
+	log.Err(err)
 
 	return nil
 }
@@ -708,7 +709,7 @@ func updatePlayerWishlist(player *mongo.Player) error {
 	var appsSlice []wishlistItemPlusID
 	for k, v := range resp.Items {
 		i, err := strconv.Atoi(k)
-		logError(err)
+		log.Err(err)
 		if err == nil {
 			appsSlice = append(appsSlice, wishlistItemPlusID{
 				item:  v,

@@ -54,7 +54,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logCritical(err, msg.Body)
+		log.Critical(err, msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -62,11 +62,11 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	var id = message.Message.ID
 
 	if message.Attempt > 1 {
-		logInfo("Consuming app " + strconv.Itoa(id) + ", attempt " + strconv.Itoa(message.Attempt) + " - " + string(msg.Body))
+		log.Info("Consuming app " + strconv.Itoa(id) + ", attempt " + strconv.Itoa(message.Attempt) + " - " + string(msg.Body))
 	}
 
 	if !helpers.IsValidAppID(id) {
-		logError(errors.New("invalid app ID: "+strconv.Itoa(id)), msg.Body)
+		log.Err(errors.New("invalid app ID: "+strconv.Itoa(id)), msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -74,7 +74,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Load current app
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -82,7 +82,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	app := sql.App{}
 	gorm = gorm.FirstOrInit(&app, sql.App{ID: id})
 	if gorm.Error != nil {
-		logError(gorm.Error, id)
+		log.Err(gorm.Error, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -97,7 +97,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		if !config.IsLocal() {
 			if app.UpdatedAt.Unix() > time.Now().Add(time.Hour*24*-1).Unix() {
 				if app.ChangeNumber >= message.Message.ChangeNumber && message.Message.ChangeNumber > 0 {
-					logInfo("Skipping app, updated in last day")
+					log.Info("Skipping app, updated in last day")
 					message.ack(msg)
 					return
 				}
@@ -111,7 +111,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	//
 	err = updateAppPICS(&app, message)
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -198,7 +198,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppSteamSpy(&app)
 		if err != nil {
-			logInfo(err, id)
+			log.Info(err, id)
 		}
 	}()
 
@@ -212,7 +212,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppTwitch(&app)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -229,14 +229,14 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppPlaytimeStats(&app)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		currentAppItems, err = getCurrentAppItems(app.ID)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -258,21 +258,21 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = savePriceChanges(appBeforeUpdate, app)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = saveAppItems(app.ID, newItems, currentAppItems)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = saveOffers(app, offers)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -288,7 +288,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		gorm = gorm.Save(&app)
 		if gorm.Error != nil {
-			logError(gorm.Error, id)
+			log.Err(gorm.Error, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -304,7 +304,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = saveAppToInflux(app)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -338,7 +338,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 				helpers.MemcacheAppPublishers(app.ID).Key,
 				helpers.MemcacheAppBundles(app.ID).Key,
 			)
-			logError(err, id)
+			log.Err(err, id)
 		}
 	}()
 
@@ -356,7 +356,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 		}
 	}()
 
@@ -566,7 +566,7 @@ func updateAppPICS(app *sql.App, message appMessage) (err error) {
 			app.SystemRequirements = string(b)
 
 		default:
-			logWarning(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")
+			log.Warning(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")
 		}
 	}
 
@@ -1107,7 +1107,7 @@ func updateAppSteamSpy(app *sql.App) error {
 	policy.InitialInterval = time.Second * 1
 	policy.MaxElapsedTime = time.Second * 10
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
 		return err
 	}
@@ -1122,7 +1122,7 @@ func updateAppSteamSpy(app *sql.App) error {
 	}
 
 	err = response.Body.Close()
-	logError(err)
+	log.Err(err)
 
 	if strings.Contains(string(bytes), "Connection failed") {
 		return errors.New("steamspy is down: " + ssURL)
@@ -1334,7 +1334,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Offer, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err, app.ID) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, app.ID) })
 	if err != nil {
 		return offers, err
 	}
@@ -1420,7 +1420,7 @@ func updateAppTwitch(app *sql.App) error {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { logInfo(err) })
+		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
 			return err
 		}

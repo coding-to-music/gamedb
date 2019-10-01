@@ -62,5 +62,5 @@ func (c AutoPlayerRefreshes) work() {
 	err = queue.ProduceGroup(groupIDs, false)
 	log.Err(err)
 
-	cronLogInfo("Auto updated " + strconv.Itoa(len(users)) + " players")
+	log.Info("Auto updated " + strconv.Itoa(len(users)) + " players")
 }

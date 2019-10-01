@@ -52,7 +52,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err, msg.Body)
+		log.Err(err, msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -62,7 +62,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 		group, err := mongo.GetGroup(groupID)
 		if err != nil && err != mongo.ErrNoDocuments {
-			logError(err, groupID)
+			log.Err(err, groupID)
 			ackRetry(msg, &message)
 			return
 		}
@@ -119,7 +119,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		// Get trending value
 		err = getGroupTrending(&group)
 		if err != nil {
-			logError(err, groupID)
+			log.Err(err, groupID)
 			ackRetry(msg, &message)
 			return
 		}
@@ -135,7 +135,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 			err = saveGroupToMongo(group)
 			if err != nil {
-				logError(err, groupID)
+				log.Err(err, groupID)
 				ackRetry(msg, &message)
 				return
 			}
@@ -149,7 +149,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 			err = saveGroupToInflux(group)
 			if err != nil {
-				logError(err, groupID)
+				log.Err(err, groupID)
 				ackRetry(msg, &message)
 				return
 			}
@@ -168,7 +168,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 	// Send websocket
 	err = sendGroupWebsocket(message.Message.IDs)
-	logError(err)
+	log.Err(err)
 
 	//
 	message.ack(msg)

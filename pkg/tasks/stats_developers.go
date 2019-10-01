@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -31,7 +32,7 @@ func (c Developers) work() {
 	// Get current developers, to delete old ones
 	allDevelopers, err := sql.GetAllDevelopers([]string{"id", "name"})
 	if err != nil {
-		cronLogErr(err)
+		log.Err(err)
 		return
 	}
 
@@ -47,16 +48,16 @@ func (c Developers) work() {
 
 	// Get apps from mysql
 	appsWithDevelopers, err := sql.GetAppsWithColumnDepth("developers", 2, []string{"developers", "prices", "reviews_score"})
-	cronLogErr(err)
+	log.Err(err)
 
-	cronLogInfo("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
+	log.Info("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
 	newDevelopers := make(map[int]*statsRow)
 	for _, app := range appsWithDevelopers {
 
 		appDevelopers, err := app.GetDeveloperIDs()
 		if err != nil {
-			cronLogErr(err)
+			log.Err(err)
 			continue
 		}
 
@@ -116,7 +117,7 @@ func (c Developers) work() {
 		}
 
 		err := sql.DeleteDevelopers(devsToDeleteSlice)
-		cronLogErr(err)
+		log.Err(err)
 
 	}()
 
@@ -124,7 +125,7 @@ func (c Developers) work() {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		cronLogErr(err)
+		log.Err(err)
 		return
 	}
 
@@ -150,7 +151,7 @@ func (c Developers) work() {
 			var developer sql.Developer
 
 			gorm = gorm.Unscoped().FirstOrInit(&developer, sql.Developer{ID: developerInt})
-			cronLogErr(gorm.Error)
+			log.Err(gorm.Error)
 
 			developer.Name = v.name
 			developer.Apps = v.count
@@ -159,7 +160,7 @@ func (c Developers) work() {
 			developer.DeletedAt = nil
 
 			gorm = gorm.Unscoped().Save(&developer)
-			cronLogErr(gorm.Error)
+			log.Err(gorm.Error)
 
 		}(k, v)
 
@@ -169,5 +170,5 @@ func (c Developers) work() {
 
 	//
 	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheDeveloperKeyNames.Key)
-	cronLogErr(err)
+	log.Err(err)
 }

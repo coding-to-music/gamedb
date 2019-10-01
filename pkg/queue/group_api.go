@@ -27,7 +27,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err, msg.Body)
+		log.Err(err, msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -124,7 +124,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		app, err = getAppFromGroup(group)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -144,7 +144,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		err = saveGroupToMongo(group)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -158,7 +158,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		err = saveAppsGroupID(app, group.ID64)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -172,7 +172,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
 		err = saveGroupToInflux(group)
 		if err != nil {
-			logError(err, id)
+			log.Err(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -190,13 +190,13 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		helpers.MemcacheGroup(strconv.Itoa(group.ID)).Key,
 	)
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 	}
 
 	//
 	err = sendGroupWebsocket([]string{id})
 	if err != nil {
-		logError(err, id)
+		log.Err(err, id)
 	}
 
 	//

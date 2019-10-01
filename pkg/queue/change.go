@@ -38,7 +38,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err, msg.Body)
+		log.Err(err, msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -83,7 +83,7 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	// Save to Mongo
 	err = saveChangesToMongo(changeSlice)
 	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
-		logError(err)
+		log.Err(err)
 		ackRetry(msg, &message)
 		return
 	}
@@ -91,18 +91,18 @@ func (q changeQueue) processMessages(msgs []amqp.Delivery) {
 	// Get apps and packages for all changes in message
 	appMap, packageMap, err := getChangesAppsAndPackages(changeSlice)
 	if err != nil {
-		logError(err)
+		log.Err(err)
 		ackRetry(msg, &message)
 		return
 	}
 
 	// Send websocket
 	err = sendChangesWebsocket(changeSlice, appMap, packageMap)
-	logError(err)
+	log.Err(err)
 
 	// Send to Discord
 	err = sendChangeToDiscord(changeSlice, appMap, packageMap)
-	logError(err)
+	log.Err(err)
 
 	message.ack(msg)
 }

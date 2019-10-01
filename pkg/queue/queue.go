@@ -100,12 +100,12 @@ func init() {
 			var err error
 			select {
 			case err = <-producerConnectionChannel:
-				logWarning("Consumer connection closed", err)
-				logInfo("Getting new producer connection")
+				log.Warning("Consumer connection closed", err)
+				log.Info("Getting new producer connection")
 
 				producerConnection, err = getConnection()
 				if err != nil {
-					logCritical("Connecting to Rabbit: " + err.Error())
+					log.Critical("Connecting to Rabbit: " + err.Error())
 					continue
 				}
 				producerConnection.NotifyClose(producerConnectionChannel)
@@ -171,7 +171,7 @@ func (payload *baseMessage) ack(msg amqp.Delivery) {
 	payload.actionTaken = true
 
 	err := msg.Ack(false)
-	logError(err)
+	log.Err(err)
 }
 
 func (payload *baseMessage) ackMulti(msg amqp.Delivery) {
@@ -185,7 +185,7 @@ func (payload *baseMessage) ackMulti(msg amqp.Delivery) {
 	payload.actionTaken = true
 
 	err := msg.Ack(true)
-	logError(err)
+	log.Err(err)
 }
 
 // Send to failed queue
@@ -206,13 +206,13 @@ func ackFail(msg amqp.Delivery, message messageInterface) {
 
 	err := produce(message, queueFailed)
 	if err != nil {
-		logError(err)
+		log.Err(err)
 		return
 	}
 
 	err = msg.Ack(false)
 	if err != nil {
-		logError(err)
+		log.Err(err)
 		return
 	}
 }
@@ -229,15 +229,15 @@ func (payload *baseMessage) ackRetry() {
 
 	totalStr, err := durationfmt.Format(payload.getNextAttempt().Sub(payload.FirstSeen), "%mm %ss")
 	if err != nil {
-		logError(err)
+		log.Err(err)
 	}
 
 	leftStr, err := durationfmt.Format(payload.getNextAttempt().Sub(time.Now()), "%mm %ss")
 	if err != nil {
-		logError(err)
+		log.Err(err)
 	}
 
-	logInfo("Adding to delay queue for " + leftStr + ", " + totalStr + " total, attempt " + strconv.Itoa(payload.Attempt))
+	log.Info("Adding to delay queue for " + leftStr + ", " + totalStr + " total, attempt " + strconv.Itoa(payload.Attempt))
 }
 
 func ackRetry(msg amqp.Delivery, message messageInterface) {
@@ -246,13 +246,13 @@ func ackRetry(msg amqp.Delivery, message messageInterface) {
 
 	err := produce(message, queueDelays)
 	if err != nil {
-		logError(err)
+		log.Err(err)
 		return
 	}
 
 	err = msg.Ack(false)
 	if err != nil {
-		logError(err)
+		log.Err(err)
 		return
 	}
 }
@@ -319,27 +319,27 @@ func (q baseQueue) ConsumeMessages() {
 			}()
 
 			if err != nil {
-				logCritical("Connecting to Rabbit: " + err.Error())
+				log.Critical("Connecting to Rabbit: " + err.Error())
 				return
 			}
 
 			//
 			ch, qu, err := getQueue(consumerConnection, q.Name, q.getQOS())
 			if err != nil {
-				logError(err)
+				log.Err(err)
 				return
 			}
 
 			defer func(ch *amqp.Channel) {
 				err = ch.Close()
-				logError(err)
+				log.Err(err)
 			}(ch)
 
 			tag := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
 
 			msgs, err := ch.Consume(qu.Name, tag, false, false, false, false, nil)
 			if err != nil {
-				logError(err)
+				log.Err(err)
 				return
 			}
 
@@ -351,7 +351,7 @@ func (q baseQueue) ConsumeMessages() {
 				for {
 					select {
 					case err = <-consumerConnectionChannel:
-						logWarning("Consumer connection closed", err)
+						log.Warning("Consumer connection closed", err)
 						consumerConnection = nil
 						return
 					case msg := <-msgs:
@@ -376,7 +376,7 @@ func (q baseQueue) ConsumeMessages() {
 
 			}(msgs, q)
 
-			logWarning("Rabbit consumer connection has disconnected")
+			log.Warning("Rabbit consumer connection has disconnected")
 
 		}()
 	}
@@ -396,7 +396,7 @@ func produce(message messageInterface, queue queueName) (err error) {
 
 			producerConnection, err = getConnection()
 			if err != nil {
-				logCritical("Connecting to Rabbit: " + err.Error())
+				log.Critical("Connecting to Rabbit: " + err.Error())
 				return err
 			}
 			producerConnection.NotifyClose(producerConnectionChannel)
@@ -452,7 +452,7 @@ func getConnection() (conn *amqp.Connection, err error) {
 	policy.MaxElapsedTime = 0
 	policy.InitialInterval = 5 * time.Second
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 
 	return conn, err
 }
@@ -472,20 +472,4 @@ func getQueue(conn *amqp.Connection, queue queueName, qos int) (ch *amqp.Channel
 	qu, err = ch.QueueDeclare(string(queue), true, false, false, false, nil)
 
 	return ch, qu, err
-}
-
-func logInfo(interfaces ...interface{}) {
-	log.Info(append(interfaces, log.LogNameConsumers)...)
-}
-
-func logError(interfaces ...interface{}) {
-	log.Err(append(interfaces, log.LogNameConsumers)...)
-}
-
-func logWarning(interfaces ...interface{}) {
-	log.Warning(append(interfaces, log.LogNameConsumers)...)
-}
-
-func logCritical(interfaces ...interface{}) {
-	log.Critical(append(interfaces, log.LogNameConsumers)...)
 }

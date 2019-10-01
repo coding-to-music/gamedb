@@ -8,6 +8,7 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
 
@@ -36,14 +37,14 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 	message.OriginalQueue = QueueSteam
 
 	if q.SteamClient == nil || !q.SteamClient.Connected() {
-		logError(errors.New("steamClient not connected"))
+		log.Err(errors.New("steamClient not connected"))
 		ackRetry(msg, &message)
 		return
 	}
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err, msg.Body)
+		log.Err(err, msg.Body)
 		message.ack(msg)
 		return
 	}

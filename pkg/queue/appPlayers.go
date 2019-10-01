@@ -39,7 +39,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
-		logError(err, msg.Body)
+		log.Err(err, msg.Body)
 		ackFail(msg, &message)
 		return
 	}
@@ -48,7 +48,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	appMap := map[int]sql.App{}
 	apps, err := sql.GetAppsByID(message.Message.IDs, []string{"id", "twitch_id"})
 	if err != nil {
-		logError(err)
+		log.Err(err)
 		ackRetry(msg, &message)
 		return
 	}
@@ -60,7 +60,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 	for _, appID := range message.Message.IDs {
 
 		if message.Attempt > 1 {
-			logInfo("Consuming app player " + strconv.Itoa(appID) + ", attempt " + strconv.Itoa(message.Attempt))
+			log.Info("Consuming app player " + strconv.Itoa(appID) + ", attempt " + strconv.Itoa(message.Attempt))
 		}
 
 		app, ok := appMap[appID]
@@ -78,7 +78,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				var err error
 				viewers, err = getAppTwitchStreamers(app.TwitchID)
 				if err != nil {
-					logError(err, appID)
+					log.Err(err, appID)
 					ackRetry(msg, &message)
 					return
 				}
@@ -187,7 +187,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 
 				err = updateAppPlayerInfoRow(appID, appTrend, appPlayersWeek, appPlayersAlltime, appPlayersWeekAverage)
 				if err != nil {
-					logError(err, appID)
+					log.Err(err, appID)
 					ackRetry(msg, &message)
 					return
 				}
@@ -225,7 +225,7 @@ func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { logInfo(err) })
+		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err) })
 		if err != nil {
 			return 0, err
 		}
