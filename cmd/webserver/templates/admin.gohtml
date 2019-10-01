@@ -44,10 +44,11 @@
                     {{ end }}
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "asc", 0, "desc"]]' id="actions">
+                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[3, "asc", 0, "desc"]]' id="actions">
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col">Action</th>
+                                <th scope="col">Real</th>
                                 <th scope="col">Previous</th>
                                 <th scope="col">Next</th>
                                 <th scope="col">Run</th>
@@ -58,10 +59,13 @@
 
                                 {{ $realLast:= (index $.Configs (print "task-" .ID)).Value }}
 
-                                <tr data-id="{{ .ID }}" class="{{ if gt $realLast .Prev.Unix }}table-danger{{ end }}">
+                                <tr data-id="{{ .ID }}" class="{{ if .Bad }}table-danger{{ end }}">
                                     <td>{{ .Name }}</td>
                                     <td class="prev" data-sort="{{ $realLast }}">
                                         <span data-livestamp="{{ $realLast }}"></span>
+                                    </td>
+                                    <td data-sort="{{ .Prev }}">
+                                        <span data-livestamp="{{ .Prev.Unix }}"></span>
                                     </td>
                                     {{ if gt .Next.Unix 0 }}
                                         <td class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>

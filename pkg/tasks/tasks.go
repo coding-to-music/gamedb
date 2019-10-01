@@ -51,6 +51,7 @@ type TaskInterface interface {
 	Next() (t time.Time)
 	Prev() (t time.Time)
 	GetTaskConfig() (config sql.Config, err error)
+	Bad() bool
 	Run()
 }
 
@@ -78,6 +79,23 @@ func (task BaseTask) Prev() (d time.Time) {
 	diff := nextNext.Sub(next)
 
 	return next.Add(-diff)
+}
+
+func (task BaseTask) Bad() (b bool) {
+
+	if task.Cron() == "" {
+		return false
+	}
+
+	config, err := task.GetTaskConfig()
+	if err == nil {
+		i, err := strconv.ParseInt(config.Value, 10, 64)
+		if err == nil {
+			return task.Prev().Unix() > i
+		}
+	}
+
+	return true
 }
 
 func (task BaseTask) Run() {
