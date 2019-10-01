@@ -77,7 +77,7 @@ func (task BaseTask) Prev() (d time.Time) {
 	nextNext := sched.Next(next)
 	diff := nextNext.Sub(next)
 
-	return next.Add(diff)
+	return next.Add(-diff)
 }
 
 func (task BaseTask) Run() {
