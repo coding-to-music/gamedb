@@ -6,9 +6,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
-type ConfigType string
+type ConfigID string
 
-func (c ConfigType) String() string {
+func (c ConfigID) String() string {
 	return string(c)
 }
 
@@ -18,7 +18,7 @@ type Config struct {
 	Value     string     `gorm:"not null;column:value"`
 }
 
-func SetConfig(id ConfigType, value string) (err error) {
+func SetConfig(id ConfigID, value string) (err error) {
 
 	// Update app
 	db, err := GetMySQLClient()
@@ -27,7 +27,7 @@ func SetConfig(id ConfigType, value string) (err error) {
 	}
 
 	config := &Config{}
-	config.ID = string(id)
+	config.ID = id.String()
 
 	db = db.Assign(Config{Value: value}).FirstOrInit(config)
 	if db.Error != nil {
@@ -40,14 +40,14 @@ func SetConfig(id ConfigType, value string) (err error) {
 	}
 
 	// Save to memcache
-	item := helpers.MemcacheConfigItem(string(id))
+	item := helpers.MemcacheConfigItem(id.String())
 
 	return helpers.GetMemcache().SetInterface(item.Key, config, item.Expiration)
 }
 
-func GetConfig(id ConfigType) (config Config, err error) {
+func GetConfig(id ConfigID) (config Config, err error) {
 
-	var item = helpers.MemcacheConfigItem(string(id))
+	var item = helpers.MemcacheConfigItem(id.String())
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &config, func() (interface{}, error) {
 

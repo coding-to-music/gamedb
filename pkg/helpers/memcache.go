@@ -45,7 +45,7 @@ var (
 	MemcacheGroup         = func(id string) memcache.Item { return memcache.Item{Key: "group-" + id, Expiration: 60 * 30} } // 30 mins, cant be infinite as we need the 'updatedAt' field to be fairly upto date
 	MemcachePackage       = func(id int) memcache.Item { return memcache.Item{Key: "package-" + strconv.Itoa(id), Expiration: 0} }
 	MemcachePlayer        = func(id int64) memcache.Item { return memcache.Item{Key: "player-" + strconv.FormatInt(id, 10), Expiration: 0} }
-	MemcacheConfigItem    = func(key string) memcache.Item { return memcache.Item{Key: "config-item-" + key, Expiration: 0} }
+	MemcacheConfigItem    = func(id string) memcache.Item { return memcache.Item{Key: "config-item-" + id, Expiration: 0} }
 	MemcacheAppPlayersRow = func(appID int) memcache.Item { return memcache.Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	MemcacheStatRowID     = func(c string, id int) memcache.Item { return memcache.Item{Key: c + "-stat-id-" + strconv.Itoa(id), Expiration: 60 * 60 * 24} }
 	MemcacheStatRowName   = func(c string, name string) memcache.Item { return memcache.Item{Key: c + "-stat-name-" + name, Expiration: 60 * 60 * 24} }

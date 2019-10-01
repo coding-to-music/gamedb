@@ -110,7 +110,7 @@ func (task BaseTask) Run() {
 	task.work()
 
 	// Save config row
-	err := sql.SetConfig(sql.ConfigType("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
+	err := sql.SetConfig(sql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	// Send websocket
@@ -128,7 +128,7 @@ func (task BaseTask) Run() {
 //
 func (task BaseTask) GetTaskConfig() (config sql.Config, err error) {
 
-	return sql.GetConfig(sql.ConfigType("task-" + task.ID()))
+	return sql.GetConfig(sql.ConfigID("task-" + task.ID()))
 }
 
 //
