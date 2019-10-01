@@ -61,7 +61,6 @@ func main() {
 			case *steam.ConnectedEvent:
 
 				steamLogInfo("Steam: Connected")
-				time.Sleep(time.Second)
 				go steamClient.Auth.LogOn(&loginDetails)
 
 			case *steam.LoggedOnEvent:
@@ -87,6 +86,9 @@ func main() {
 
 				steamLogInfo("Steam: Disconnected")
 				steamLoggedOn = false
+
+				time.Sleep(time.Second * 5)
+
 				go steamClient.Connect()
 
 			case *steam.LogOnFailedEvent:
