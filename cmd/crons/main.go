@@ -25,9 +25,6 @@ func main() {
 	c := cron.New(
 		cron.WithLogger(cronLogger{}),
 		cron.WithParser(tasks.Parser),
-		cron.WithChain(
-			cron.SkipIfStillRunning(cronLogger{}),
-		),
 	)
 
 	c.AddFunc(tasks.AppPlayers{}.Cron(), func() { tasks.TaskRegister[tasks.AppPlayers{}.ID()].Run() })
