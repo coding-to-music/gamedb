@@ -39,7 +39,7 @@ var (
 	}
 )
 
-var TaskRegister = map[string]BaseTask{}
+var TaskRegister = map[string]TaskInterface{}
 
 type TaskInterface interface {
 	ID() string

@@ -99,7 +99,7 @@ type adminTemplate struct {
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
 	Websockets map[websockets.WebsocketPage]*websockets.Page
-	Tasks      map[string]tasks.BaseTask
+	Tasks      map[string]tasks.TaskInterface
 }
 
 type adminQuery struct {
