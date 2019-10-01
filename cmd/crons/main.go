@@ -27,24 +27,19 @@ func main() {
 		cron.WithParser(tasks.Parser),
 	)
 
-	c.AddFunc(tasks.AppPlayers{}.Cron(), func() { tasks.TaskRegister[tasks.AppPlayers{}.ID()].Run() })
-	c.AddFunc(tasks.AutoPlayerRefreshes{}.Cron(), func() { tasks.TaskRegister[tasks.AutoPlayerRefreshes{}.ID()].Run() })
-	c.AddFunc(tasks.ClearUpcomingCache{}.Cron(), func() { tasks.TaskRegister[tasks.ClearUpcomingCache{}.ID()].Run() })
-	c.AddFunc(tasks.Developers{}.Cron(), func() { tasks.TaskRegister[tasks.Developers{}.ID()].Run() })
-	c.AddFunc(tasks.Genres{}.Cron(), func() { tasks.TaskRegister[tasks.Genres{}.ID()].Run() })
-	c.AddFunc(tasks.Instagram{}.Cron(), func() { tasks.TaskRegister[tasks.Instagram{}.ID()].Run() })
-	c.AddFunc(tasks.SetBadgeCache{}.Cron(), func() { tasks.TaskRegister[tasks.SetBadgeCache{}.ID()].Run() })
-	c.AddFunc(tasks.PlayerRanks{}.Cron(), func() { tasks.TaskRegister[tasks.PlayerRanks{}.ID()].Run() })
-	c.AddFunc(tasks.Publishers{}.Cron(), func() { tasks.TaskRegister[tasks.Publishers{}.ID()].Run() })
-	c.AddFunc(tasks.SteamClientPlayers{}.Cron(), func() { tasks.TaskRegister[tasks.SteamClientPlayers{}.ID()].Run() })
-	c.AddFunc(tasks.Tags{}.Cron(), func() { tasks.TaskRegister[tasks.Tags{}.ID()].Run() })
-	c.AddFunc(tasks.Wishlists{}.Cron(), func() { tasks.TaskRegister[tasks.Wishlists{}.ID()].Run() })
+	for _, v := range tasks.TaskRegister {
+		if v.Cron() != "" {
+			_, err := c.AddFunc(v.Cron(), func() { v.Run() })
+			log.Err(err)
+		}
+	}
 
 	c.Start()
 
 	helpers.KeepAlive()
 }
 
+//
 type cronLogger struct {
 }
 
