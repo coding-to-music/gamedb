@@ -42,12 +42,13 @@ if ($('#admin-page').length > 0) {
             const $row = $('tr[data-id="' + taskID + '"]');
             if (action === 'started') {
                 $row.addClass('table-warning');
+                $row.removeClass('table-danger');
                 // toast(true, taskID + ' started', '', 0);
             } else if (action === 'finished') {
-                $row.removeClass('table-warning');
-                // toast(true, taskID + ' finished', '', 0);
+                $row.removeClass('table-warning', 'table-danger');
                 $row.find('.prev').livestamp();
                 $row.find('.next').livestamp(new Date(data.Data.time * 1000));
+                // toast(true, taskID + ' finished', '', 0);
             }
         }
     });
