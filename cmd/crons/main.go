@@ -29,7 +29,7 @@ func main() {
 
 	for _, v := range tasks.TaskRegister {
 		if v.Cron() != "" {
-			_, err := c.AddFunc(v.Cron(), func() { v.Run() })
+			_, err := c.AddFunc(v.Cron(), func() { tasks.Run(v) })
 			log.Err(err)
 		}
 	}

@@ -98,7 +98,7 @@ func (task BaseTask) Bad() (b bool) {
 	return true
 }
 
-func (task BaseTask) Run() {
+func Run(task TaskInterface) {
 
 	log.Info("Cron started: " + task.Name())
 
