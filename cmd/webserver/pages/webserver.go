@@ -389,7 +389,7 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 
 	var popularAppsWithBackground []sql.App
 	for _, app := range popularApps {
-		if app.Background != "" {
+		if app.Background != "" && app.ID != 431960 {
 			popularAppsWithBackground = append(popularAppsWithBackground, app)
 		}
 	}
