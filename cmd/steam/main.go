@@ -56,10 +56,12 @@ func main() {
 
 	go func() {
 		for event := range steamClient.Events() {
+
 			switch e := event.(type) {
 			case *steam.ConnectedEvent:
 
 				steamLogInfo("Steam: Connected")
+				time.Sleep(time.Second)
 				go steamClient.Auth.LogOn(&loginDetails)
 
 			case *steam.LoggedOnEvent:
@@ -89,8 +91,8 @@ func main() {
 
 			case *steam.LogOnFailedEvent:
 
-				steamLogInfo("Steam: Login failed")
 				// Disconnects
+				steamLogInfo("Steam: Login failed")
 
 			case *steam.MachineAuthUpdateEvent:
 
@@ -101,10 +103,10 @@ func main() {
 
 			case steam.FatalErrorEvent:
 
+				// Disconnects
 				steamLogInfo("Steam: Disconnected because of error")
 				steamLoggedOn = false
 				go steamClient.Connect()
-				// Disconnects
 
 			case error:
 				steamLogError(e)
