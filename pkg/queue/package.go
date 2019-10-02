@@ -336,6 +336,7 @@ func scrapePackage(pack *sql.Package) (err error) {
 	c := colly.NewCollector(
 		colly.URLFilters(packageRegex),
 	)
+	c.SetRequestTimeout(time.Second * 30)
 
 	// ID64
 	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {
