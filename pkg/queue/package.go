@@ -331,6 +331,8 @@ var packageRegex = regexp.MustCompile(`store\.steampowered\.com/sub/[0-9]+$`)
 
 func scrapePackage(pack *sql.Package) (err error) {
 
+	pack.InStore = false
+
 	c := colly.NewCollector(
 		colly.URLFilters(packageRegex),
 	)
