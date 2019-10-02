@@ -27,12 +27,20 @@ func main() {
 		cron.WithParser(tasks.Parser),
 	)
 
-	for _, v := range tasks.TaskRegister {
-		if v.Cron() != "" {
-			_, err := c.AddFunc(v.Cron(), func() { tasks.Run(v) })
-			log.Err(err)
-		}
-	}
+	c.AddFunc("*/10 *", func() { tasks.Run(tasks.TaskRegister[tasks.SetBadgeCache{}.ID()]) })
+	c.AddFunc("*/10 *", func() { tasks.Run(tasks.TaskRegister[tasks.SteamClientPlayers{}.ID()]) })
+
+	c.AddFunc("0 0", func() { tasks.Run(tasks.TaskRegister[tasks.Wishlists{}.ID()]) })
+	c.AddFunc("1 0", func() { tasks.Run(tasks.TaskRegister[tasks.ClearUpcomingCache{}.ID()]) })
+	c.AddFunc("2 0", func() { tasks.Run(tasks.TaskRegister[tasks.PlayerRanks{}.ID()]) })
+	c.AddFunc("0 1", func() { tasks.Run(tasks.TaskRegister[tasks.Genres{}.ID()]) })
+	c.AddFunc("0 2", func() { tasks.Run(tasks.TaskRegister[tasks.Tags{}.ID()]) })
+	c.AddFunc("0 3", func() { tasks.Run(tasks.TaskRegister[tasks.Publishers{}.ID()]) })
+	c.AddFunc("0 4", func() { tasks.Run(tasks.TaskRegister[tasks.Developers{}.ID()]) })
+	c.AddFunc("0 12", func() { tasks.Run(tasks.TaskRegister[tasks.Instagram{}.ID()]) })
+
+	c.AddFunc("0 */5", func() { tasks.Run(tasks.TaskRegister[tasks.AppPlayers{}.ID()]) })
+	c.AddFunc("0 */6", func() { tasks.Run(tasks.TaskRegister[tasks.AutoPlayerRefreshes{}.ID()]) })
 
 	c.Start()
 
