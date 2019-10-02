@@ -245,7 +245,7 @@ func log(interfaces ...interface{}) {
 			// Google
 			for _, logName := range entry.logNames {
 
-				googleClient.Logger(config.Config.Environment.Get() + "-" + string(logName)).Log(logging.Entry{
+				googleClient.Logger(string(logName)).Log(logging.Entry{
 					Severity:  entry.severity.toGoole(),
 					Timestamp: entry.timestamp,
 					Payload:   entry.toText(entry.severity),
