@@ -20,7 +20,7 @@ func CategoriesRouter() http.Handler {
 func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := tasks.TaskRegister[tasks.StatsCategories{}.ID()].GetTaskConfig()
+	config, err := tasks.GetTaskConfig(tasks.StatsCategories{})
 	if err != nil {
 		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 		log.Err(err, r)

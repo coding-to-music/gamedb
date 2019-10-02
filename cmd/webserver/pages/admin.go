@@ -132,7 +132,7 @@ func adminRunCron(r *http.Request) {
 
 	c := r.URL.Query().Get("cron")
 
-	tasks.TaskRegister[c].Run()
+	tasks.Run(tasks.TaskRegister[c])
 }
 
 func adminQueues(r *http.Request) {

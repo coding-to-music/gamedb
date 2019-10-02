@@ -50,9 +50,7 @@ type TaskInterface interface {
 	// Base
 	Next() (t time.Time)
 	Prev() (t time.Time)
-	GetTaskConfig() (config sql.Config, err error)
 	Bad() bool
-	Run()
 }
 
 type BaseTask struct {
@@ -87,7 +85,7 @@ func (task BaseTask) Bad() (b bool) {
 		return false
 	}
 
-	config, err := task.GetTaskConfig()
+	config, err := GetTaskConfig(task)
 	if err == nil {
 		i, err := strconv.ParseInt(config.Value, 10, 64)
 		if err == nil {
@@ -98,6 +96,7 @@ func (task BaseTask) Bad() (b bool) {
 	return true
 }
 
+//
 func Run(task TaskInterface) {
 
 	log.Info("Cron started: " + task.Name())
@@ -125,9 +124,7 @@ func Run(task TaskInterface) {
 	log.Info("Cron complete: " + task.Name())
 }
 
-//
-func (task BaseTask) GetTaskConfig() (config sql.Config, err error) {
-
+func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
 	return sql.GetConfig(sql.ConfigID("task-" + task.ID()))
 }
 

@@ -76,7 +76,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		config, err := tasks.TaskRegister[tasks.PlayerRanks{}.ID()].GetTaskConfig()
+		config, err := tasks.GetTaskConfig(tasks.PlayerRanks{})
 		if err != nil {
 			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 			log.Err(err, r)
