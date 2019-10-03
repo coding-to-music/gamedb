@@ -28,11 +28,10 @@ const (
 	LogNameSteam     LogName = "binary-steam"
 	LogNameWebserver LogName = "binary-webserver"
 
-	LogNameDatastore LogName = "datastore"
-	LogNameMongo     LogName = "mongo"
-	LogNameDebug     LogName = "debug"
-	LogNameRequests  LogName = "requests"
-	LogNameSQL       LogName = "sql"
+	LogNameMongo    LogName = "mongo"
+	LogNameInflux   LogName = "influx"
+	LogNameRequests LogName = "requests"
+	LogNameSQL      LogName = "sql"
 
 	// Severities
 	SeverityDebug    Severity = 1
