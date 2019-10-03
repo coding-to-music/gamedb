@@ -813,6 +813,9 @@ func updateAppDetails(app *sql.App) (err error) {
 			app.GameID = int(response.Data.Fullgame.AppID)
 			app.GameName = response.Data.Fullgame.Name
 			app.ReleaseDate = response.Data.ReleaseDate.Date
+			if len(app.ReleaseDate) > 250 {
+				app.ReleaseDate = app.ReleaseDate[0:250] // 255 sql limit
+			}
 			app.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			app.ComingSoon = response.Data.ReleaseDate.ComingSoon
 		}
