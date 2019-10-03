@@ -24,7 +24,7 @@ func (c Genres) Name() string {
 }
 
 func (c Genres) Cron() string {
-	return "0 1"
+	return CronTimeGenres
 }
 
 func (c Genres) work() {

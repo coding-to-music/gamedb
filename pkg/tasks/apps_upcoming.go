@@ -18,7 +18,7 @@ func (c ClearUpcomingCache) Name() string {
 }
 
 func (c ClearUpcomingCache) Cron() string {
-	return "1 0"
+	return CronTimeClearUpcomingCache
 }
 
 func (c ClearUpcomingCache) work() {

@@ -10,15 +10,26 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func init() {
-	for _, v := range tasks {
-		TaskRegister[v.ID()] = v
-	}
-}
+const ( //                         min hour
+	CronTimeSetBadgeCache       = "*/6 *"
+	CronTimeSteamClientPlayers  = "*/10 *"
+	CronTimeWishlists           = "0 0"
+	CronTimeClearUpcomingCache  = "0 0"
+	CronTimePlayerRanks         = "2 0"
+	CronTimeGenres              = "0 1"
+	CronTimeTags                = "0 2"
+	CronTimePublishers          = "0 3"
+	CronTimeDevelopers          = "0 4"
+	CronTimeCategories          = "0 5"
+	CronTimeInstagram           = "0 12"
+	CronTimeAppPlayers          = "0 */5"
+	CronTimeAutoPlayerRefreshes = "0 */6"
+)
 
 var (
-	Parser = cron.NewParser(cron.Minute | cron.Hour)
-	tasks  = []TaskInterface{
+	Parser       = cron.NewParser(cron.Minute | cron.Hour)
+	TaskRegister = map[string]TaskInterface{}
+	Tasks        = []TaskInterface{
 		AppPlayers{},
 		AppQueueAll{},
 		AutoPlayerRefreshes{},
@@ -39,7 +50,11 @@ var (
 	}
 )
 
-var TaskRegister = map[string]TaskInterface{}
+func init() {
+	for _, v := range Tasks {
+		TaskRegister[v.ID()] = v
+	}
+}
 
 type TaskInterface interface {
 	ID() string

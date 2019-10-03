@@ -21,7 +21,7 @@ func (c SetBadgeCache) Name() string {
 }
 
 func (c SetBadgeCache) Cron() string {
-	return "*/10 *"
+	return CronTimeSetBadgeCache
 }
 
 func (c SetBadgeCache) work() {

@@ -18,7 +18,7 @@ func (c PlayerRanks) Name() string {
 }
 
 func (c PlayerRanks) Cron() string {
-	return "2 0"
+	return CronTimePlayerRanks
 }
 
 func (c PlayerRanks) work() {

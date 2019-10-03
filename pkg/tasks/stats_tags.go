@@ -24,7 +24,7 @@ func (c Tags) Name() string {
 }
 
 func (c Tags) Cron() string {
-	return "0 2"
+	return CronTimeTags
 }
 
 func (c Tags) work() {

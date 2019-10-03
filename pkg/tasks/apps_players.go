@@ -21,7 +21,7 @@ func (c AppPlayers) Name() string {
 }
 
 func (c AppPlayers) Cron() string {
-	return "0 */5"
+	return CronTimeAppPlayers
 }
 
 func (c AppPlayers) work() {

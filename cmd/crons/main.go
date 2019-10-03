@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/robfig/cron/v3"
@@ -27,24 +26,19 @@ func main() {
 		cron.WithParser(tasks.Parser),
 	)
 
-	c.AddFunc("*/10 *", func() { tasks.Run(tasks.TaskRegister[tasks.SetBadgeCache{}.ID()]) })
-	c.AddFunc("*/10 *", func() { tasks.Run(tasks.TaskRegister[tasks.SteamClientPlayers{}.ID()]) })
+	// c.Start()
 
-	c.AddFunc("0 0", func() { tasks.Run(tasks.TaskRegister[tasks.Wishlists{}.ID()]) })
-	c.AddFunc("1 0", func() { tasks.Run(tasks.TaskRegister[tasks.ClearUpcomingCache{}.ID()]) })
-	c.AddFunc("2 0", func() { tasks.Run(tasks.TaskRegister[tasks.PlayerRanks{}.ID()]) })
-	c.AddFunc("0 1", func() { tasks.Run(tasks.TaskRegister[tasks.Genres{}.ID()]) })
-	c.AddFunc("0 2", func() { tasks.Run(tasks.TaskRegister[tasks.Tags{}.ID()]) })
-	c.AddFunc("0 3", func() { tasks.Run(tasks.TaskRegister[tasks.Publishers{}.ID()]) })
-	c.AddFunc("0 4", func() { tasks.Run(tasks.TaskRegister[tasks.Developers{}.ID()]) })
-	c.AddFunc("0 12", func() { tasks.Run(tasks.TaskRegister[tasks.Instagram{}.ID()]) })
+	for _, task := range tasks.Tasks {
+		go func(task tasks.TaskInterface) {
+			task = tasks.TaskRegister[task.ID()]
+			if task.Cron() != "" {
+				_, err := c.AddFunc(task.Cron(), func() { tasks.Run(task) })
+				log.Err(err)
+			}
+		}(task)
+	}
 
-	c.AddFunc("0 */5", func() { tasks.Run(tasks.TaskRegister[tasks.AppPlayers{}.ID()]) })
-	c.AddFunc("0 */6", func() { tasks.Run(tasks.TaskRegister[tasks.AutoPlayerRefreshes{}.ID()]) })
-
-	c.Start()
-
-	helpers.KeepAlive()
+	c.Run() // Blocks
 }
 
 //

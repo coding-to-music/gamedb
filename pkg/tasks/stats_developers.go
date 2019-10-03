@@ -24,7 +24,7 @@ func (c Developers) Name() string {
 }
 
 func (c Developers) Cron() string {
-	return "0 4"
+	return CronTimeDevelopers
 }
 
 func (c Developers) work() {

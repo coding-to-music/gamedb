@@ -24,7 +24,7 @@ func (c Publishers) Name() string {
 }
 
 func (c Publishers) Cron() string {
-	return "0 3"
+	return CronTimePublishers
 }
 
 func (c Publishers) work() {
