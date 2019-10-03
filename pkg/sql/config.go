@@ -39,10 +39,10 @@ func SetConfig(id ConfigID, value string) (err error) {
 		return db.Error
 	}
 
-	// Save to memcache
-	item := helpers.MemcacheConfigItem(id.String())
-
-	return helpers.GetMemcache().SetInterface(item.Key, config, item.Expiration)
+	// Clear cache
+	return helpers.RemoveKeyFromMemCacheViaPubSub(
+		helpers.MemcacheConfigItem(id.String()).Key,
+	)
 }
 
 func GetConfig(id ConfigID) (config Config, err error) {
