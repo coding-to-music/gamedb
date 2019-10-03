@@ -46,18 +46,12 @@ type TaskInterface interface {
 	Name() string
 	Cron() string
 	work()
-
-	// Base
-	Next() (t time.Time)
-	Prev() (t time.Time)
-	Bad() bool
 }
 
 type BaseTask struct {
-	TaskInterface
 }
 
-func (task BaseTask) Next() (t time.Time) {
+func Next(task TaskInterface) (t time.Time) {
 
 	sched, err := Parser.Parse(task.Cron())
 	if err != nil {
@@ -66,7 +60,7 @@ func (task BaseTask) Next() (t time.Time) {
 	return sched.Next(time.Now())
 }
 
-func (task BaseTask) Prev() (d time.Time) {
+func Prev(task TaskInterface) (d time.Time) {
 
 	sched, err := Parser.Parse(task.Cron())
 	if err != nil {
@@ -79,7 +73,7 @@ func (task BaseTask) Prev() (d time.Time) {
 	return next.Add(-diff)
 }
 
-func (task BaseTask) Bad() (b bool) {
+func Bad(task TaskInterface) (b bool) {
 
 	if task.Cron() == "" {
 		return false
@@ -89,7 +83,7 @@ func (task BaseTask) Bad() (b bool) {
 	if err == nil {
 		i, err := strconv.ParseInt(config.Value, 10, 64)
 		if err == nil {
-			return task.Prev().Unix() > i
+			return Prev(task).Unix() > i
 		}
 	}
 
@@ -117,7 +111,7 @@ func Run(task TaskInterface) {
 	page.Send(websockets.AdminPayload{
 		TaskID: task.ID(),
 		Action: "finished",
-		Time:   BaseTask{task}.Next().Unix(),
+		Time:   Next(task).Unix(),
 	})
 
 	//

@@ -57,10 +57,10 @@
                             <tbody>
                             {{ range $key, $value := .Tasks }}
 
-                                {{ $realLast:= (index $.Configs (print "task-" .ID)).Value }}
+                                {{ $realLast:= (index $.Configs (print "task-" .Task.ID)).Value }}
 
-                                <tr data-id="{{ .ID }}" class="{{ if .Bad }}table-danger{{ end }}">
-                                    <td>{{ .Name }}</td>
+                                <tr data-id="{{ .Task.ID }}" class="{{ if .Bad }}table-danger{{ end }}">
+                                    <td>{{ .Task.Name }}</td>
                                     <td class="prev" data-sort="{{ $realLast }}">
                                         <span data-livestamp="{{ $realLast }}"></span>
                                     </td>
@@ -72,7 +72,7 @@
                                     {{ else }}
                                         <td data-sort="10000000000"></td>
                                     {{ end }}
-                                    <td><a href="/admin/run-cron?cron={{ $key }}" role="button" class="btnx btn-success btn-sm">Run</a></td>
+                                    <td><a href="/admin/run-cron?cron={{ .Task.ID }}" role="button" class="btnx btn-success btn-sm">Run</a></td>
                                 </tr>
                             {{ end }}
                             </tbody>

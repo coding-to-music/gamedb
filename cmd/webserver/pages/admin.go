@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
@@ -69,7 +70,15 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.hideAds = true
 	t.Configs = configs
 	t.Websockets = websockets.Pages
-	t.Tasks = tasks.TaskRegister
+
+	for _, v := range tasks.TaskRegister {
+		t.Tasks = append(t.Tasks, adminTaskTemplate{
+			Task: v,
+			Bad:  tasks.Bad(v),
+			Next: tasks.Next(v),
+			Prev: tasks.Prev(v),
+		})
+	}
 
 	//
 	gorm, err := sql.GetMySQLClient()
@@ -99,7 +108,14 @@ type adminTemplate struct {
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
 	Websockets map[websockets.WebsocketPage]*websockets.Page
-	Tasks      map[string]tasks.TaskInterface
+	Tasks      []adminTaskTemplate
+}
+
+type adminTaskTemplate struct {
+	Task tasks.TaskInterface
+	Bad  bool
+	Next time.Time
+	Prev time.Time
 }
 
 type adminQuery struct {
