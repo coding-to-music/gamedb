@@ -26,9 +26,7 @@ func main() {
 		cron.WithParser(tasks.Parser),
 	)
 
-	// c.Start()
-
-	for _, task := range tasks.Tasks {
+	for _, task := range tasks.TaskRegister {
 		go func(task tasks.TaskInterface) {
 			task = tasks.TaskRegister[task.ID()]
 			if task.Cron() != "" {
