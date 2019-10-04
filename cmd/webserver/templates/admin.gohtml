@@ -64,12 +64,11 @@
                                     <td class="prev" data-sort="{{ $realLast }}">
                                         <span data-livestamp="{{ $realLast }}"></span>
                                     </td>
-                                    <td data-sort="{{ .Prev }}">
-                                        <span data-livestamp="{{ .Prev.Unix }}"></span>
-                                    </td>
                                     {{ if gt .Next.Unix 0 }}
+                                        <td data-sort="{{ .Prev }}"><span data-livestamp="{{ .Prev.Unix }}"></span></td>
                                         <td class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
                                     {{ else }}
+                                        <td data-sort="10000000000"></td>
                                         <td data-sort="10000000000"></td>
                                     {{ end }}
                                     <td><a href="/admin/run-cron?cron={{ .Task.ID }}" role="button" class="btnx btn-success btn-sm">Run</a></td>
