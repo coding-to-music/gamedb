@@ -214,6 +214,10 @@ func ProduceAppPlayers(IDs []int) (err error) {
 
 func ProduceGroup(ids []string, force bool) (err error) {
 
+	if len(ids) == 0 {
+		return nil
+	}
+
 	time.Sleep(time.Millisecond)
 
 	mc := helpers.GetMemcache()
