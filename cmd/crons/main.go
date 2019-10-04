@@ -28,7 +28,6 @@ func main() {
 
 	for _, task := range tasks.TaskRegister {
 		go func(task tasks.TaskInterface) {
-			task = tasks.TaskRegister[task.ID()]
 			if task.Cron() != "" {
 				_, err := c.AddFunc(task.Cron(), func() { tasks.Run(task) })
 				log.Err(err)
