@@ -29,7 +29,7 @@ const ( //                         min hour
 var (
 	Parser       = cron.NewParser(cron.Minute | cron.Hour)
 	TaskRegister = map[string]TaskInterface{}
-	Tasks        = []TaskInterface{
+	tasks        = []TaskInterface{
 		AppPlayers{},
 		AppQueueAll{},
 		AutoPlayerRefreshes{},
@@ -51,7 +51,7 @@ var (
 )
 
 func init() {
-	for _, v := range Tasks {
+	for _, v := range tasks {
 		TaskRegister[v.ID()] = v
 	}
 }
