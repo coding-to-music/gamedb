@@ -362,14 +362,17 @@ func GetProdCCs(activeOnly bool) (ccs []ProductCountryCode) {
 
 func CountryCodeToName(code string) string {
 
-	if code == "" {
+	switch code {
+	case "":
 		return code
-	} else if code == "BQ" {
+	case "BQ":
 		return "Bonaire, Sint Eustatius and Saba"
-	} else if code == "SH" {
+	case "SH":
 		return "Saint Helena"
-	} else if code == "XK" {
+	case "XK":
 		return "Kosovo"
+	case "FX":
+		return "France, Metropolitan"
 	}
 
 	country, err := gountriesInstance.FindCountryByAlpha(code)
