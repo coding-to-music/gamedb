@@ -42,9 +42,13 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade the connection
 	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		if !strings.Contains(err.Error(), "websocket: not a websocket handshake") {
-			log.Err(err, r)
+		if strings.Contains(err.Error(), "websocket: not a websocket handshake") {
+			return
 		}
+		if strings.Contains(err.Error(), "'websocket' token not found in 'Upgrade'") {
+			return
+		}
+		log.Err(err, r)
 		return
 	}
 
