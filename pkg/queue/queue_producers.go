@@ -23,6 +23,10 @@ type SteamPayload struct {
 
 func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 
+	if len(payload.AppIDs) == 0 && len(payload.PackageIDs) == 0 && len(payload.ProfileIDs) == 0 {
+		return nil
+	}
+
 	time.Sleep(time.Millisecond)
 
 	var appIDs []int
