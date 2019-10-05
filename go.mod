@@ -13,18 +13,20 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20191003123406-17f7b32d699c
+	github.com/Jleagle/steam-go v0.0.0-20191004232507-6d9f4e7abdb3
 	github.com/Jleagle/unmarshal-go v0.0.0-20190815120521-15f0bd3950ff
-	github.com/Jleagle/valve-data-format-go v0.0.0-20191004113530-a0add993534f
+	github.com/Jleagle/valve-data-format-go v0.0.0-20191004170703-844f09429764
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.4
+	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/antchfx/htmlquery v1.0.0 // indirect
 	github.com/antchfx/xmlquery v1.0.0 // indirect
 	github.com/antchfx/xpath v1.0.0 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
+	github.com/buger/jsonparser v0.0.0-20191004114745-ee4c978eae7e // indirect
 	github.com/bwmarrin/discordgo v0.19.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
@@ -42,6 +44,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
+	github.com/golang/groupcache v0.0.0-20191002201903-404acd9df4cc // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-github/v27 v27.0.6
@@ -52,6 +55,7 @@ require (
 	github.com/influxdata/influxdb1-client v0.0.0-20190809212627-fc22c7df067e
 	github.com/jinzhu/gorm v1.9.11
 	github.com/jinzhu/now v1.0.1
+	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/justinas/nosurf v0.0.0-20190416172904-05988550ea18
 	github.com/jzelinskie/geddit v0.0.0-20190913104144-95ef6806b073
 	github.com/kennygrant/sanitize v1.2.4 // indirect
@@ -69,7 +73,7 @@ require (
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/robfig/cron/v3 v3.0.0
-	github.com/rollbar/rollbar-go v1.1.0
+	github.com/rollbar/rollbar-go v1.2.0
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/satori/go.uuid v1.2.0
@@ -87,19 +91,22 @@ require (
 	go.mongodb.org/mongo-driver v1.1.1
 	go.opencensus.io v0.22.1 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20190927123631-a832865fa7ad
-	golang.org/x/exp v0.0.0-20190927203820-447a159532ef // indirect
-	golang.org/x/net v0.0.0-20190926025831-c00fd9afed17 // indirect
+	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
+	golang.org/x/exp v0.0.0-20191002040644-a1355ae1e2c3 // indirect
+	golang.org/x/lint v0.0.0-20190930215403-16217165b5de // indirect
+	golang.org/x/net v0.0.0-20191003171128-d98b1b443823 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20190927073244-c990c680b611 // indirect
+	golang.org/x/sys v0.0.0-20191003212358-c178f38b412c // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20190921001708-c4c64cad1fd0 // indirect
+	golang.org/x/tools v0.0.0-20191005014404-c9f9432ec4b2 // indirect
 	google.golang.org/api v0.10.0 // indirect
 	google.golang.org/appengine v1.6.4 // indirect
-	google.golang.org/genproto v0.0.0-20190927181202-20e1ac93f88c // indirect
+	google.golang.org/genproto v0.0.0-20191002211648-c459b9ce5143 // indirect
 	google.golang.org/grpc v1.24.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
+	gopkg.in/yaml.v2 v2.2.4 // indirect
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
 )
