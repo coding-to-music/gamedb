@@ -1160,7 +1160,7 @@ func updateAppSteamSpy(app *sql.App) error {
 }
 
 //noinspection RegExpRedundantEscape
-var bundlesRegex = regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
+var appStorePage = regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
 
 func scrapeApp(app *sql.App) (offers []mongo.Offer, err error) {
 
@@ -1183,7 +1183,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Offer, err error) {
 		bundleIDs = []string{}
 
 		c := colly.NewCollector(
-			colly.URLFilters(bundlesRegex),
+			colly.URLFilters(appStorePage),
 		)
 
 		jar, err := helpers.GetAgeCheckCookieJar()
