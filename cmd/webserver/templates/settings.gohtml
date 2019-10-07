@@ -252,6 +252,9 @@
     {{ if ne .Groups "" }}
     localStorage.setItem("gamedb-groups", '{{ .Groups }}');
     {{ end }}
+
+    localStorage.removeItem("games");
+    localStorage.removeItem("groups");
 </script>
 
 {{ template "_footer" . }} {{end}}
