@@ -4,6 +4,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
+var ErrInvalidAppID = errors.New("invalid app id")
+
 type App struct {
 	ID                            int     `bson:"_id"`
 	AchievementsCount             int     `bson:"achievements_count"`
@@ -32,7 +34,7 @@ func (a App) Save() (err error) {
 func GetApp(id int) (app App, err error) {
 
 	if !helpers.IsValidAppID(id) {
-		return app, ErrInvalidGroupID
+		return app, ErrInvalidAppID
 	}
 
 	err = FindDocumentByKey(CollectionApps, "_id", id, nil, &app)
