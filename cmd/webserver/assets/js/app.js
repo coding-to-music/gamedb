@@ -98,7 +98,7 @@ if ($appPage.length > 0) {
     // Websockets
     websocketListener('app', function (e) {
 
-        const data = $.parseJSON(e.data);
+        const data = JSON.parse(e.data);
         if (data.Data.toString() === $appPage.attr('data-id')) {
             toast(true, 'Click to refresh', 'This app has been updated', -1, 'refresh');
         }

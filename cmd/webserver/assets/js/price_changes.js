@@ -173,7 +173,7 @@ if ($('#price-changes-page').length > 0) {
         const info = dt.page.info();
         if (info.page === 0) { // Page 1
 
-            const data = $.parseJSON(e.data);
+            const data = JSON.parse(e.data);
             const type = $typeField.val();
 
             // Check cc matches

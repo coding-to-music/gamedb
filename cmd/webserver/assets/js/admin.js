@@ -32,7 +32,7 @@ if ($('#admin-page').length > 0) {
 
     websocketListener('admin', function (e) {
 
-        const data = $.parseJSON(e.data);
+        const data = JSON.parse(e.data);
 
         const taskID = data.Data.task_id;
         const action = data.Data.action;

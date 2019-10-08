@@ -20,7 +20,7 @@ if ($('#chat-page').length > 0) {
 
     websocketListener('chat', function (e) {
 
-        const data = $.parseJSON(e.data);
+        const data = JSON.parse(e.data);
         chatRow(data.Data);
     });
 

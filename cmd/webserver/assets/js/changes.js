@@ -85,7 +85,7 @@ if ($('#changes-page').length > 0) {
         const info = dt.page.info();
         if (info.page === 0) { // Page 1
 
-            const data = $.parseJSON(e.data);
+            const data = JSON.parse(e.data);
 
             // Loop changes in websocket data and add each one
             if (isIterable(data.Data)) {

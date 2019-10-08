@@ -4,7 +4,7 @@ if ($playerMissingPage.length > 0) {
 
     websocketListener('profile', function (e) {
 
-        const data = $.parseJSON(e.data);
+        const data = JSON.parse(e.data);
         if (data.Data.toString() === $playerMissingPage.attr('data-id')) {
 
             toast(true, '', 'Player found!');

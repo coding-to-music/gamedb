@@ -71,7 +71,7 @@ if ($playerPage.length > 0) {
     // Websockets
     websocketListener('profile', function (e) {
 
-        const data = $.parseJSON(e.data);
+        const data = JSON.parse(e.data);
         if (data.Data.toString() === $playerPage.attr('data-id')) {
             toast(true, 'Click to refresh', 'This player has been updated', -1, 'refresh');
         }

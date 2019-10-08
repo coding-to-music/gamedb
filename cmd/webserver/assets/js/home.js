@@ -104,7 +104,7 @@ if ($('#home-page').length > 0) {
 
     websocketListener('prices', function (e) {
 
-        const data = $.parseJSON(e.data);
+        const data = JSON.parse(e.data);
 
         if (data.Data[13] === user.prodCC) { // CC
             if (data.Data[12] < 0) { // Drops
