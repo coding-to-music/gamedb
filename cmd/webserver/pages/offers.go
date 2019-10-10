@@ -129,17 +129,25 @@ func offersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 
 	var code = helpers.GetProductCC(r)
+
 	for _, offer := range offers {
+
+		var val interface{}
+
+		val, ok := offer.AppPrices[code]
+		if !ok {
+			val = ""
+		}
 
 		response.AddRow([]interface{}{
 			offer.AppID,   // 0
 			offer.AppName, // 1
 			offer.AppIcon, // 2
 			helpers.GetAppPath(offer.AppID, offer.AppName), // 3
-			offer.AppPrices[code],                          // 4
-			offer.OfferPercent,                             // 5
-			offer.AppRating,                                // 6
-			offer.OfferEnd.String(),                        // 7
+			val,                     // 4
+			offer.OfferPercent,      // 5
+			offer.AppRating,         // 6
+			offer.OfferEnd.String(), // 7
 		})
 	}
 

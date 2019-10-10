@@ -98,6 +98,9 @@ if ($('#offers-page').length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
+                        if (!row[4]) {
+                            return '-';
+                        }
                         return row[4];
                     },
                     "orderSequence": ["desc"],
