@@ -210,7 +210,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 		}
 
 	default:
-		log.Critical("Wrong message type")
+		log.Critical("Wrong message type", msg.Body)
 		return
 	}
 
