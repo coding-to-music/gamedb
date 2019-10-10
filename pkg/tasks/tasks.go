@@ -13,7 +13,6 @@ import (
 const ( //                         min hour
 	CronTimeSetBadgeCache       = "*/10 *"
 	CronTimeSteamClientPlayers  = "*/10 *"
-	CronTimeWishlists           = "0 0"
 	CronTimeClearUpcomingCache  = "0 0"
 	CronTimePlayerRanks         = "2 0"
 	CronTimeGenres              = "0 1"
@@ -46,7 +45,6 @@ var (
 		Publishers{},
 		SteamClientPlayers{},
 		Tags{},
-		Wishlists{},
 	}
 )
 

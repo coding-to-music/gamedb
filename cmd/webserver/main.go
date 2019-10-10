@@ -99,7 +99,6 @@ func main() {
 	r.Mount("/tags", pages.TagsRouter())
 	r.Mount("/upcoming", pages.UpcomingRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
-	r.Mount("/wishlists", pages.WishlistsRouter())
 
 	// Profiling
 	if config.IsLocal() {
