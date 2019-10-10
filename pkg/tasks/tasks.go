@@ -22,7 +22,7 @@ const ( //                         min hour
 	CronTimeDevelopers          = "0 4"
 	CronTimeCategories          = "0 5"
 	CronTimeInstagram           = "0 12"
-	CronTimeAppPlayers          = "0 */5"
+	CronTimeAppPlayers          = "0 */6"
 	CronTimeAutoPlayerRefreshes = "0 */6"
 )
 
