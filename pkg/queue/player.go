@@ -714,14 +714,10 @@ func updatePlayerWishlist(player *mongo.Player) error {
 	// Make into a slice so we can sort
 	var appsSlice []wishlistItemPlusID
 	for k, v := range resp.Items {
-		i, err := strconv.Atoi(k)
-		log.Err(err)
-		if err == nil {
-			appsSlice = append(appsSlice, wishlistItemPlusID{
-				item:  v,
-				appID: i,
-			})
-		}
+		appsSlice = append(appsSlice, wishlistItemPlusID{
+			item:  v,
+			appID: int(k),
+		})
 	}
 
 	// Fix order
