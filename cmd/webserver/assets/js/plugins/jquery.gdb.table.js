@@ -169,6 +169,7 @@
             });
 
             // Init table
+            // console.log(parent.element, this.settings.tableOptions);
             const dt = $(this.element).DataTable(this.settings.tableOptions);
             this.dt = dt; // To return from plugin call
 
