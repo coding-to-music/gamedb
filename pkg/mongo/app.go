@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"errors"
+
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
