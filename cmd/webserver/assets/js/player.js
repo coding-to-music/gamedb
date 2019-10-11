@@ -263,7 +263,7 @@ if ($playerPage.length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    'orderSequence': ['asc', 'desc'],
+                    'orderSequence': ['asc'],
                 },
                 // Members
                 {
@@ -315,7 +315,7 @@ if ($playerPage.length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('font-weight-bold')
                     },
-                    'orderSequence': ['asc', 'desc'],
+                    'orderSequence': ['asc'],
                 },
                 // App
                 {
@@ -326,7 +326,7 @@ if ($playerPage.length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    'orderSequence': ['desc', 'asc'],
+                    'orderSequence': ['asc'],
                 },
                 // Release State
                 {
