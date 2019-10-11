@@ -94,6 +94,7 @@ func main() {
 	r.Mount("/settings", pages.SettingsRouter())
 	r.Mount("/signup", pages.SignupRouter())
 	r.Mount("/sitemap", pages.SiteMapRouter())
+	r.Mount("/sitemap-google", pages.SiteMapRouter())
 	r.Mount("/stats", pages.StatsRouter())
 	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
