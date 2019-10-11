@@ -43,8 +43,7 @@ type Player struct {
 	WishlistAppsCount   int            `bson:"wishlist_apps_count"`    //
 	RecentAppsCount     int            `bson:"recent_apps_count"`      //
 	GroupsCount         int            `bson:"groups_count"`           //
-	// Wishlist            []int              `bson:"wishlist_app_ids"`       //
-	// Groups              []string           `bson:"groups"`                 // []string - Can be greater than 64bit
+	CommentsCount       int            `bson:"comments_count"`         //
 
 	// Ranked
 	BadgesCount  int `bson:"badges_count"`

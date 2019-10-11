@@ -160,6 +160,13 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 			ackRetry(msg, &message)
 			return
 		}
+
+		err = updatePlayerComments(&player)
+		if err != nil {
+			helpers.LogSteamError(err, message.Message.ID)
+			ackRetry(msg, &message)
+			return
+		}
 	}()
 
 	wg.Wait()
@@ -846,6 +853,19 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func updatePlayerComments(player *mongo.Player) error {
+
+	// New
+	resp, _, err := helpers.GetSteam().GetComments(player.ID, 1000000, 0)
+	if err != nil {
+		return err
+	}
+
+	player.CommentsCount = resp.TotalCount
 
 	return nil
 }
