@@ -116,25 +116,17 @@ func DeletePlayerWishlistApps(playerID int64, apps []int) (err error) {
 	return err
 }
 
-// Used when app gets updated
 func GetPlayerWishlistAppsByApp(appID int) (apps []PlayerWishlistApp, err error) {
 
-	return getPlayerWishlistApps(0, 0, M{"app_id": appID}, nil)
+	return getPlayerWishlistApps(0, 0, M{"app_id": appID}, nil, M{"order": 1})
 }
 
-// Used to show player groups on frontend
-func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, order D) (apps []PlayerWishlistApp, err error) {
+func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, limit int64, order D) (apps []PlayerWishlistApp, err error) {
 
-	return getPlayerWishlistApps(offset, 100, M{"player_id": playerID}, order)
+	return getPlayerWishlistApps(offset, limit, M{"player_id": playerID}, order, nil)
 }
 
-// Used when player is updated
-func GetAllPlayerWishlistApps(playerID int64) (apps []PlayerWishlistApp, err error) {
-
-	return getPlayerWishlistApps(0, 0, M{"player_id": playerID}, nil)
-}
-
-func getPlayerWishlistApps(offset int64, limit int64, filter M, sort D) (apps []PlayerWishlistApp, err error) {
+func getPlayerWishlistApps(offset int64, limit int64, filter M, sort D, projection M) (apps []PlayerWishlistApp, err error) {
 
 	if filter == nil {
 		filter = M{}
@@ -157,6 +149,9 @@ func getPlayerWishlistApps(offset int64, limit int64, filter M, sort D) (apps []
 	}
 	if offset > 0 {
 		ops.SetSkip(offset)
+	}
+	if projection != nil {
+		ops.SetProjection(projection)
 	}
 
 	cur, err := c.Find(ctx, filter, ops)

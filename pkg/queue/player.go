@@ -785,7 +785,7 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 	}
 
 	// Old
-	oldAppsSlice, err := mongo.GetAllPlayerWishlistApps(player.ID)
+	oldAppsSlice, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 0, nil)
 	if err != nil {
 		return err
 	}

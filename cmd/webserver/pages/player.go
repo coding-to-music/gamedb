@@ -722,7 +722,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(idx, query.getOffset64(), query.getOrderMongo(columns, nil))
+		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(idx, query.getOffset64(), 0, query.getOrderMongo(columns, nil))
 		if err != nil {
 			log.Err(err, r)
 			return
