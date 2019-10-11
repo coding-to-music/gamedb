@@ -95,6 +95,8 @@ type App struct {
 	AchievementsAverageCompletion float64   `gorm:"not null;column:achievements_average_completion"`  //
 	PlaytimeTotal                 int64     `gorm:"not null;column:playtime_total"`                   // Minutes
 	PlaytimeAverage               float64   `gorm:"not null;column:playtime_average"`                 // Minutes
+	WishlistCount                 int       `gorm:"not null;column:wishlist_count"`                   //
+	WishlistAvgPosition           float64   `gorm:"not null;column:wishlist_avg_position"`            //
 }
 
 func (app *App) BeforeCreate(scope *gorm.Scope) error {
@@ -230,28 +232,11 @@ func (app App) GetDaysToRelease() string {
 }
 
 func (app App) GetReleaseState() (ret string) {
-
-	switch app.ReleaseState {
-	case "preloadonly":
-		return "Preload Only"
-	case "prerelease":
-		return "Pre Release"
-	case "released":
-		return "Released"
-	case "":
-		return "Unreleased"
-	default:
-		return strings.Title(app.ReleaseState)
-	}
+	return helpers.GetAppReleaseState(app.ReleaseState)
 }
 
 func (app App) GetReleaseDateNice() string {
-
-	if app.ReleaseDateUnix == 0 {
-		return app.ReleaseDate
-	}
-
-	return time.Unix(app.ReleaseDateUnix, 0).Format(helpers.DateYear)
+	return helpers.GetAppReleaseDateNice(app.ReleaseDateUnix, app.ReleaseDate)
 }
 
 func (app App) GetUpdatedNice() string {
@@ -860,7 +845,7 @@ func (app App) GetBundles() (bundles []Bundle, err error) {
 	return bundles, err
 }
 
-func (app App) GetName() (name string) {
+func (app App) GetName() string {
 	return helpers.GetAppName(app.ID, app.Name)
 }
 
@@ -940,6 +925,26 @@ func TrendingApps() (apps []App, err error) {
 	})
 
 	return apps, err
+}
+
+func WishlistedApps() (appsMap map[int]bool, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return appsMap, err
+	}
+
+	var apps []App
+	db = db.Select([]string{"id"})
+	db = db.Where("wishlist_count > ?", 0)
+	db = db.Find(&apps)
+
+	appsMap = map[int]bool{}
+	for _, app := range apps {
+		appsMap[app.ID] = true
+	}
+
+	return appsMap, err
 }
 
 type SteamSpyAppResponse struct {

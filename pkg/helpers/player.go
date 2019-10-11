@@ -15,7 +15,7 @@ func GetPlayerAvatar(avatar string) string {
 	if strings.HasPrefix(avatar, "http") || strings.HasPrefix(avatar, "/") {
 		return avatar
 	} else if avatar != "" {
-		return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/" + avatar
+		return AvatarBase + avatar
 	} else {
 		return DefaultPlayerAvatar
 	}

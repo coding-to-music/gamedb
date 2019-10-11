@@ -88,7 +88,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 		// Update group
 		var found bool
-		if group.Type == mongo.GroupTypeGame {
+		if group.Type == helpers.GroupTypeGame {
 			found, err = updateGameGroup(groupID, &group)
 		} else {
 			found, err = updateRegularGroup(groupID, &group)
@@ -340,7 +340,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	// Icon
 	c.OnHTML("div.grouppage_logo img", func(e *colly.HTMLElement) {
-		group.Icon = strings.TrimPrefix(e.Attr("src"), mongo.AvatarBase)
+		group.Icon = strings.TrimPrefix(e.Attr("src"), helpers.AvatarBase)
 	})
 
 	// Members
@@ -428,7 +428,7 @@ func saveGroupToMongo(group mongo.Group) (err error) {
 
 func getAppFromGroup(group mongo.Group) (app sql.App, err error) {
 
-	if group.Type == mongo.GroupTypeGame && group.AppID > 0 {
+	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
 
 		app, err = sql.GetApp(group.AppID, []string{"id"})
 		if err != nil {
@@ -547,15 +547,15 @@ func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 	// Get working icon
 	if helpers.GetResponseCode(resp.Details.AvatarFull) == 200 {
 
-		group.Icon = strings.Replace(resp.Details.AvatarFull, mongo.AvatarBase, "", 1)
+		group.Icon = strings.Replace(resp.Details.AvatarFull, helpers.AvatarBase, "", 1)
 
 	} else if helpers.GetResponseCode(resp.Details.AvatarMedium) == 200 {
 
-		group.Icon = strings.Replace(resp.Details.AvatarMedium, mongo.AvatarBase, "", 1)
+		group.Icon = strings.Replace(resp.Details.AvatarMedium, helpers.AvatarBase, "", 1)
 
 	} else if helpers.GetResponseCode(resp.Details.AvatarIcon) == 200 {
 
-		group.Icon = strings.Replace(resp.Details.AvatarIcon, mongo.AvatarBase, "", 1)
+		group.Icon = strings.Replace(resp.Details.AvatarIcon, helpers.AvatarBase, "", 1)
 
 	} else {
 

@@ -38,32 +38,27 @@ if ($playerPage.length > 0) {
         const from = $(e.relatedTarget);
 
         // On entering tab
-        if (to.attr('href') === '#charts') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-
-                loadPlayerCharts();
-            }
-        }
-        if (to.attr('href') === '#games') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-
-                loadPlayerGames();
-            }
-        }
-        if (to.attr('href') === '#badges') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-
-                loadPlayerBadges();
-            }
-        }
-        if (to.attr('href') === '#friends') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-
-                loadPlayerFriends();
+        if (!to.attr('loaded')) {
+            to.attr('loaded', 1);
+            switch (to.attr('href')) {
+                case '#charts':
+                    loadPlayerCharts();
+                    break;
+                case '#games':
+                    loadPlayerGames();
+                    break;
+                case '#badges':
+                    loadPlayerBadges();
+                    break;
+                case '#friends':
+                    loadPlayerFriends();
+                    break;
+                case '#groups':
+                    loadPlayerGroups();
+                    break;
+                case '#wishlist':
+                    loadPlayerWishlist();
+                    break;
             }
         }
     });
@@ -241,6 +236,132 @@ if ($playerPage.length > 0) {
         };
 
         $('#friends table.table').gdbTable({tableOptions: options});
+    }
+
+    function loadPlayerGroups() {
+
+        const options = {
+            "order": [[0, 'asc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[3]);
+                $(row).attr('data-group-id64', data[0]);
+                $(row).attr('data-group-id', data[1]);
+            },
+            "columnDefs": [
+                // Group
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+
+                        let badge = '';
+                        if (row[7]) {
+                            badge = '<span class="badge badge-success float-right">Primary</span>';
+                        }
+
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + badge + '</div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    'orderSequence': ['asc', 'desc'],
+                },
+                // Members
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[5].toLocaleString();
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+                // Official
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[6];
+                    },
+                    "orderable": false,
+                },
+                // Link
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        if (row[8]) {
+                            return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
+                        }
+                        return '';
+                    },
+                    "orderable": false,
+                },
+            ]
+        };
+
+        $('#groups-table').gdbTable({tableOptions: options});
+    }
+
+    function loadPlayerWishlist() {
+
+        const options = {
+            "order": [[0, 'asc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[2]);
+            },
+            "columnDefs": [
+                // Rank
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return ordinal(row[4]);
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('font-weight-bold')
+                    },
+                    'orderSequence': ['asc', 'desc'],
+                },
+                // App
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+                // Release State
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[5];
+                    },
+                    "orderable": false,
+                },
+                // Release Date
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[6];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+                // Price
+                {
+                    "targets": 4,
+                    "render": function (data, type, row) {
+                        return row[7];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+            ]
+        };
+
+        $('#wishlist-table').gdbTable({tableOptions: options});
     }
 
     function loadPlayerBadges() {

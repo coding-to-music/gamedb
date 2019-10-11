@@ -3,7 +3,9 @@ package helpers
 import (
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
 )
 
@@ -49,4 +51,30 @@ func GetAppIcon(id int, icon string) string {
 		return icon
 	}
 	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(id) + "/" + icon + ".jpg"
+}
+
+func GetAppReleaseState(state string) (ret string) {
+
+	switch state {
+	case "preloadonly":
+		return "Preload Only"
+	case "prerelease":
+		return "Pre Release"
+	case "released":
+		return "Released"
+	case "":
+		return "Unreleased"
+	default:
+		log.Warning("Missing state: " + state)
+		return strings.Title(state)
+	}
+}
+
+func GetAppReleaseDateNice(releaseDateUnix int64, releaseDate string) string {
+
+	if releaseDateUnix == 0 {
+		return releaseDate
+	}
+
+	return time.Unix(releaseDateUnix, 0).Format(DateYear)
 }

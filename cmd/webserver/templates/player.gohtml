@@ -31,9 +31,9 @@
                 <li class="nav-item">
                     <a class="nav-link nav-link-small" data-toggle="tab" href="#games" role="tab">Games ({{ comma .Player.GamesCount }})</a>
                 </li>
-                {{if gt (len .Player.Wishlist) 0}}
+                {{if gt .Player.WishlistAppsCount 0}}
                     <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#wishlist" role="tab">Wishlist ({{ comma (len .Player.Wishlist) }})</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#wishlist" role="tab">Wishlist ({{ comma .Player.WishlistAppsCount }})</a>
                     </li>
                 {{ end }}
                 {{if gt .Player.FriendsCount 0}}
@@ -44,9 +44,9 @@
                 <li class="nav-item">
                     <a class="nav-link nav-link-small" data-toggle="tab" href="#badges" role="tab">Badges ({{ comma .Player.BadgesCount }})</a>
                 </li>
-                {{if gt (len .Groups) 0}}
+                {{if gt .Player.GroupsCount 0}}
                     <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#groups" role="tab">Groups ({{ comma (len .Groups) }})</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#groups" role="tab">Groups ({{ comma .Player.GroupsCount }})</a>
                     </li>
                 {{ end }}
                 <li class="ml-0 ml-lg-auto"></li>
@@ -377,34 +377,23 @@
 
                     {{/* Groups */}}
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                        <table class="table table-hover table-striped mb-0" data-path="/players/{{ .Player.ID }}/groups.json" data-order='[[0, "asc"]]' id="groups-table">
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col">Group</th>
                                 <th scope="col">Members</th>
-                                <th scope="col">Official</th>
-                                <th scope="col" data-disabled>Link</th>
+                                <th scope="col">Type</th>
+                                <th scope="col" width="1%">Link</th>
                             </tr>
                             </thead>
-                            {{ range $key, $value := .Groups }}
-                                <tr data-link="{{ .GetPath }}" data-group-id64="{{ .ID64 }}" data-group-id="{{ .ID }}">
-                                    <td class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{ .Icon }}" alt="{{ .Name }}"></div>
-                                            <div class="name">
-                                                {{ .Name }}
-                                                {{ if eq .ID64 $.Player.PrimaryClanIDString }}
-                                                    <span class="badge badge-success float-right">Primary</span>
-                                                {{ end }}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{{ comma .Members }}</td>
-                                    <td data-sort="{{ if .IsOfficial }}1{{ else }}0{{ end }}">{{ if .IsOfficial }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                    <td><a href="{{ .GetPath }}" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a></td>
-                                </tr>
-                            {{ end }}
+                            <tbody>
+                            </tbody>
                         </table>
+                    </div>
+
+                    <div class="jumbotron bottom mb-0">
+                        <h1><i class="fas fa-info"></i></h1>
+                        <div>Groups that we don't know about might take longer to show up.</div>
                     </div>
 
                 </div>
@@ -479,7 +468,7 @@
                                     {{ range $key, $value := .Player.GamesByType }}
                                         <tr>
                                             <td>{{ $key }}</td>
-                                            <td>{{ commaf $value }}</td>
+                                            <td>{{ comma $value }}</td>
                                         </tr>
                                     {{ end }}
                                     </tbody>
@@ -534,36 +523,27 @@
                 <div class="tab-pane" id="wishlist" role="tabpanel">
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                        <table class="table table-hover table-striped mb-0" data-path="/players/{{ .Player.ID }}/wishlist.json" data-order='[[0, "asc"]]' id="wishlist-table">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col"></th>
-                                <th scope="col">Recent Games</th>
+                                <th scope="col" width="1%">#</th>
+                                <th scope="col">Game</th>
                                 <th scope="col">State</th>
                                 <th scope="col">Release Date</th>
                                 <th scope="col">Price</th>
                             </tr>
                             </thead>
-                            {{ range $key, $value := .Wishlist }}
-                                <tr data-link="/apps/{{ .App.ID }}">
-                                    <td data-sort="{{ $key }}" width="1%">{{ ordinalComma (inc $key) }}</td>
-                                    <td class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{ .App.GetIcon }}" alt="{{ .App.GetName }}"></div>
-                                            <div class="name">{{ .App.GetName }}</div>
-                                        </div>
-                                    </td>
-                                    <td nowrap="nowrap">{{ .App.GetReleaseState }}</td>
-                                    <td nowrap="nowrap" data-sort="{{ .App.ReleaseDateUnix }}">{{ .App.GetReleaseDateNice }}</td>
-                                    <td nowrap="nowrap">{{ .Price.GetFinal }}</td>
-                                </tr>
-                            {{ end }}
+                            <tbody>
+                            </tbody>
                         </table>
                     </div>
 
                     <div class="jumbotron bottom mb-0">
                         <h1><i class="fas fa-info"></i></h1>
-                        <div>Visit the <a href="/wishlists">Wishlists</a> page to see what apps are the most wished for.</div>
+                        <div>
+                            Visit the <a href="/apps#wishlists">apps</a> page to see what apps are the most wished for.
+                            <br/>Apps with zero rank are new and unranked.
+                        </div>
                     </div>
 
                 </div>
@@ -571,5 +551,6 @@
         </div>
 
     </div>
+</div>
 
-    {{ template "_footer" . }} {{end}}
+{{ template "_footer" . }} {{end}}

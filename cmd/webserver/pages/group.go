@@ -53,7 +53,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	t := groupTemplate{}
 
 	// Get background app
-	if group.Type == mongo.GroupTypeGame && group.AppID > 0 {
+	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
 
 		var err error
 		app, err := sql.GetApp(group.AppID, []string{"id", "name", "background"})

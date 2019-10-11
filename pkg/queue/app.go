@@ -240,6 +240,13 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			ackRetry(msg, &message)
 			return
 		}
+
+		err = getWishlistCount(&app)
+		if err != nil {
+			log.Err(err, id)
+			ackRetry(msg, &message)
+			return
+		}
 	}()
 
 	wg.Wait()
@@ -1474,6 +1481,31 @@ func updateAppPlaytimeStats(app *sql.App) (err error) {
 
 		app.PlaytimeTotal = minutes
 		app.PlaytimeAverage = float64(minutes) / float64(len(players))
+	}
+
+	return nil
+}
+
+func getWishlistCount(app *sql.App) (err error) {
+
+	apps, err := mongo.GetPlayerWishlistAppsByApp(app.ID)
+	if err != nil {
+		return err
+	}
+
+	var count = len(apps)
+
+	app.WishlistCount = count
+
+	var total int
+	for _, v := range apps {
+		total += v.Order
+	}
+
+	if count == 0 {
+		app.WishlistAvgPosition = 0
+	} else {
+		app.WishlistAvgPosition = float64(total) / float64(count)
 	}
 
 	return nil

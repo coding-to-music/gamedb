@@ -154,7 +154,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		defer wg.Done()
 
-		err = updatePlayerWishlist(&player)
+		err = updatePlayerWishlistApps(&player)
 		if err != nil {
 			helpers.LogSteamError(err, message.Message.ID)
 			ackRetry(msg, &message)
@@ -264,8 +264,7 @@ func updatePlayerSummary(player *mongo.Player) error {
 	}
 
 	// Avatar
-	var avatarBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/"
-	if summary.AvatarFull != "" && helpers.GetResponseCode(avatarBase+summary.AvatarFull) == 200 {
+	if summary.AvatarFull != "" && helpers.GetResponseCode(helpers.AvatarBase+summary.AvatarFull) == 200 {
 		player.Avatar = summary.AvatarFull
 	} else {
 		player.Avatar = ""
@@ -324,7 +323,7 @@ func updatePlayerGames(player *mongo.Player) error {
 		return err
 	}
 
-	player.GamesByType = map[string]float64{}
+	player.GamesByType = map[string]int{}
 
 	for _, gameRow := range gameRows {
 
@@ -418,6 +417,8 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 	if err != nil {
 		return err
 	}
+
+	player.RecentAppsCount = len(newAppsSlice)
 
 	newAppsMap := map[int]steam.RecentlyPlayedGame{}
 	for _, app := range newAppsSlice {
@@ -627,7 +628,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 	}
 
 	//
-	player.FriendsCount = len(newFriendsSlice)
+	player.FriendsCount = len(newFriendsMap)
 
 	return nil
 }
@@ -686,13 +687,68 @@ func updatePlayerBans(player *mongo.Player) error {
 
 func updatePlayerGroups(player *mongo.Player, force bool) error {
 
+	// New groups
 	resp, b, err := helpers.GetSteam().GetUserGroupList(player.ID)
 	err = helpers.AllowSteamCodes(err, b, []int{403})
 	if err != nil {
 		return err
 	}
 
-	player.Groups = resp.GetIDs()
+	player.GroupsCount = len(resp.GetIDs())
+
+	newGroupsSlice, err := mongo.GetGroupsByID(resp.GetIDs(), nil)
+
+	var newGroupsMap = map[string]mongo.Group{}
+	for _, v := range newGroupsSlice {
+		newGroupsMap[v.ID64] = v
+	}
+
+	// Old groups
+	oldGroupsSlice, err := mongo.GetPlayerGroups(player.ID, 0, 0, nil)
+	if err != nil {
+		return err
+	}
+
+	oldGroupsMap := map[string]mongo.PlayerGroup{}
+	for _, v := range oldGroupsSlice {
+		oldGroupsMap[v.GroupID64] = v
+	}
+
+	// Delete
+	var toDelete []string
+	for _, v := range oldGroupsSlice {
+		if _, ok := newGroupsMap[v.GroupID64]; !ok {
+			toDelete = append(toDelete, v.GroupID64)
+		}
+	}
+
+	err = mongo.DeletePlayerGroups(player.ID, toDelete)
+	if err != nil {
+		return err
+	}
+
+	// Add
+	var toAdd []mongo.PlayerGroup
+	for _, v := range newGroupsSlice {
+		if _, ok := oldGroupsMap[v.ID64]; !ok {
+			toAdd = append(toAdd, mongo.PlayerGroup{
+				PlayerID:     player.ID,
+				GroupID64:    v.ID64,
+				GroupID:      v.ID,
+				GroupName:    v.Name,
+				GroupIcon:    v.Icon,
+				GroupMembers: v.Members,
+				GroupType:    v.Type,
+				GroupPrimary: player.PrimaryClanIDString == v.ID64 || player.PrimaryClanIDString == strconv.Itoa(v.ID),
+				GroupURL:     v.URL,
+			})
+		}
+	}
+
+	err = mongo.InsertPlayerGroups(toAdd)
+	if err != nil {
+		return err
+	}
 
 	// Queue groups for update
 	err = ProduceGroup(resp.GetIDs(), force)
@@ -701,8 +757,9 @@ func updatePlayerGroups(player *mongo.Player, force bool) error {
 	return nil
 }
 
-func updatePlayerWishlist(player *mongo.Player) error {
+func updatePlayerWishlistApps(player *mongo.Player) error {
 
+	// New
 	resp, b, err := helpers.GetSteam().GetWishlist(player.ID)
 	err = helpers.AllowSteamCodes(err, b, []int{500})
 	if err == steam.ErrWishlistNotFound {
@@ -711,34 +768,86 @@ func updatePlayerWishlist(player *mongo.Player) error {
 		return err
 	}
 
-	// Make into a slice so we can sort
-	var appsSlice []wishlistItemPlusID
-	for k, v := range resp.Items {
-		appsSlice = append(appsSlice, wishlistItemPlusID{
-			item:  v,
-			appID: int(k),
-		})
+	var newAppSlice = resp.Items
+
+	player.WishlistAppsCount = len(resp.Items)
+
+	var newAppMap = map[int]steam.WishlistItem{}
+	for k, v := range newAppSlice {
+		newAppMap[int(k)] = v
 	}
 
-	// Fix order
-	sort.Slice(appsSlice, func(i, j int) bool {
-		return appsSlice[i].item.Priority > appsSlice[j].item.Priority
-	})
+	// Old
+	oldAppsSlice, err := mongo.GetAllPlayerWishlistApps(player.ID)
+	if err != nil {
+		return err
+	}
 
-	// Turn into app IDs
+	oldAppsMap := map[int]mongo.PlayerWishlistApp{}
+	for _, v := range oldAppsSlice {
+		oldAppsMap[v.AppID] = v
+	}
+
+	// Delete
+	var toDelete []int
+	for _, v := range oldAppsSlice {
+		if _, ok := newAppMap[v.AppID]; !ok {
+			toDelete = append(toDelete, v.AppID)
+		}
+	}
+
+	err = mongo.DeletePlayerWishlistApps(player.ID, toDelete)
+	if err != nil {
+		return err
+	}
+
+	// Add
 	var appIDs []int
-	for _, appID := range appsSlice {
-		appIDs = append(appIDs, appID.appID)
+	var toAdd []mongo.PlayerWishlistApp
+	for appID, v := range newAppMap {
+		if _, ok := oldAppsMap[appID]; !ok {
+			appIDs = append(appIDs, appID)
+			toAdd = append(toAdd, mongo.PlayerWishlistApp{
+				PlayerID: player.ID,
+				AppID:    appID,
+				Order:    v.Priority,
+			})
+		}
 	}
 
-	player.Wishlist = appIDs
+	// Fill in data from SQL
+	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "release_state", "release_date", "release_date_unix", "prices"})
+	if err != nil {
+		return err
+	}
+
+	var appsMap = map[int]sql.App{}
+	for _, app := range apps {
+		appsMap[app.ID] = app
+	}
+
+	for k, v := range toAdd {
+
+		prices, err := appsMap[v.AppID].GetPrices()
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		toAdd[k].AppPrices = prices.Map()
+		toAdd[k].AppName = appsMap[v.AppID].Name
+		toAdd[k].AppIcon = appsMap[v.AppID].Icon
+		toAdd[k].AppReleaseState = appsMap[v.AppID].ReleaseState
+		toAdd[k].AppReleaseDate = time.Unix(appsMap[v.AppID].ReleaseDateUnix, 0)
+		toAdd[k].AppReleaseDateNice = appsMap[v.AppID].ReleaseDate
+	}
+
+	err = mongo.InsertPlayerWishlistApps(toAdd)
+	if err != nil {
+		return err
+	}
 
 	return nil
-}
-
-type wishlistItemPlusID struct {
-	item  steam.WishlistItem
-	appID int
 }
 
 func savePlayerMongo(player mongo.Player) error {

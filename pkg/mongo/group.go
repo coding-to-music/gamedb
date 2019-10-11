@@ -3,22 +3,12 @@ package mongo
 import (
 	"errors"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gosimple/slug"
 	"go.mongodb.org/mongo-driver/mongo/options"
-)
-
-const AvatarBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/"
-
-const (
-	GroupTypeGame  = "game"
-	GroupTypeGroup = "group"
 )
 
 var ErrInvalidGroupID = errors.New("invalid group id")
@@ -87,30 +77,27 @@ func (group *Group) SetID(id string) {
 }
 
 func (group Group) GetPath() string {
-	return "/groups/" + group.ID64 + "/" + slug.Make(group.Name)
+	return helpers.GetGroupPath(group.ID64, group.Name)
 }
 
 func (group Group) GetType() string {
-	return strings.Title(group.Type)
+	return helpers.GetGroupType(group.Type)
 }
 
 func (group Group) IsOfficial() bool {
-	return group.Type == GroupTypeGame
+	return helpers.IsGroupOfficial(group.Type)
 }
 
-func (group Group) GetLink() string {
-	return "https://steamcommunity.com/" + group.Type + "s/" + group.URL + "?utm_source=" + config.Config.GameDBShortName.Get()
+func (group Group) GetURL() string {
+	return helpers.GetGroupLink(group.Type, group.URL)
 }
 
 func (group Group) GetName() string {
-	if group.Name == "" {
-		return "Group " + group.ID64
-	}
-	return group.Name
+	return helpers.GetGroupName(group.Name, group.ID64)
 }
 
 func (group Group) GetIcon() string {
-	return AvatarBase + group.Icon
+	return helpers.AvatarBase + group.Icon
 }
 
 // Don't cache, as we need updatedAt to be live for notifications etc

@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -31,11 +30,13 @@ func PlayerRouter() http.Handler {
 	})
 
 	r.Get("/add-friends", playerAddFriendsHandler)
-	r.Get("/games.json", playerGamesAjaxHandler)
-	r.Get("/recent.json", playerRecentAjaxHandler)
-	r.Get("/friends.json", playerFriendsAjaxHandler)
 	r.Get("/badges.json", playerBadgesAjaxHandler)
+	r.Get("/friends.json", playerFriendsAjaxHandler)
+	r.Get("/games.json", playerGamesAjaxHandler)
+	r.Get("/groups.json", playerGroupsAjaxHandler)
 	r.Get("/history.json", playersHistoryAjaxHandler)
+	r.Get("/recent.json", playerRecentAjaxHandler)
+	r.Get("/wishlist.json", playerWishlistAppsAjaxHandler)
 	return r
 }
 
@@ -125,50 +126,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	}(player)
 
-	// Get groups
-	var groups []mongo.Group
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		var err error
-		groups, err = mongo.GetGroupsByID(player.Groups, mongo.M{"_id": 1, "id": 1, "name": 1, "members": 1, "icon": 1, "type": 1, "url": 1})
-		log.Err(err, r)
-
-		sort.Slice(groups, func(i, j int) bool {
-			return groups[i].GetName() > groups[j].GetName()
-		})
-
-		for k, v := range groups {
-			groups[k].Icon = v.GetIcon()
-		}
-
-	}(player)
-
-	// Get wishlist
-	var wishlist []playerWishlistItem
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		var wishlistApps []sql.App
-		var err error
-		wishlistApps, err = sql.GetAppsByID(player.Wishlist, []string{"id", "name", "icon", "release_state", "release_date_unix", "prices"})
-		log.Err(err)
-		if err == nil {
-			for _, v := range wishlistApps {
-
-				wishlist = append(wishlist, playerWishlistItem{
-					App:   v,
-					Price: v.GetPrice(code),
-				})
-			}
-		}
-
-	}(player)
-
 	// Get background app
 	var backgroundApp sql.App
 	if player.BackgroundAppID > 0 {
@@ -227,7 +184,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
 
-	t.Apps = []mongo.PlayerApp{}
 	t.Badges = player.GetSpecialBadges()
 	t.BadgeStats = badgeStats
 	t.Banners = banners
@@ -236,16 +192,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.CSRF = nosurf.Token(r)
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 	t.GameStats = gameStats
-	t.Groups = groups
 	t.Player = player
-	t.Wishlist = wishlist
 
 	returnTemplate(w, r, "player", t)
 }
 
 type playerTemplate struct {
 	GlobalTemplate
-	Apps          []mongo.PlayerApp
 	Badges        []mongo.PlayerBadge
 	BadgeStats    mongo.ProfileBadgeStats
 	Banners       map[string][]string
@@ -253,21 +206,13 @@ type playerTemplate struct {
 	CSRF          string
 	DefaultAvatar string
 	GameStats     mongo.PlayerAppStatsTemplate
-	Groups        []mongo.Group
 	Player        mongo.Player
-	Wishlist      []playerWishlistItem
-	// Ranks       playerRanksTemplate
 }
 
 type playerMissingTemplate struct {
 	GlobalTemplate
 	Player        mongo.Player
 	DefaultAvatar string
-}
-
-type playerWishlistItem struct {
-	App   sql.App
-	Price sql.ProductPrice
 }
 
 // // playerRanksTemplate
@@ -547,11 +492,13 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountRecent(playerIDInt)
+		player, err := mongo.GetPlayer(playerIDInt)
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
+
+		total = int64(player.RecentAppsCount)
 	}()
 
 	// Wait
@@ -729,6 +676,187 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			badge.BadgeLevel,    // 6
 			badge.BadgeScarcity, // 7
 			badge.BadgeXP,       // 8
+		})
+	}
+
+	response.output(w, r)
+}
+
+func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id: "+id, r)
+		return
+	}
+
+	idx, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := DataTablesQuery{}
+	err = query.fillFromURL(r.URL.Query())
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	//
+	var wg sync.WaitGroup
+
+	// Get apps
+	var wishlistApps []mongo.PlayerWishlistApp
+
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		columns := map[string]string{
+			"0": "order",
+			"1": "app_name",
+			"3": "app_release_date",
+			// "4": "app_prices", // todo
+		}
+
+		var err error
+		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(idx, query.getOffset64(), query.getOrderMongo(columns, nil))
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}(r)
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		var err error
+		player, err := mongo.GetPlayer(idx)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		total = int64(player.WishlistAppsCount)
+	}(r)
+
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = total
+	response.RecordsFiltered = total
+	response.Draw = query.Draw
+
+	code := helpers.GetProductCC(r)
+
+	for _, app := range wishlistApps {
+
+		var priceFormatted string
+
+		if price, ok := app.AppPrices[code]; ok {
+			priceFormatted = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, price)
+		} else {
+			priceFormatted = "-"
+		}
+
+		response.AddRow([]interface{}{
+			app.AppID,                // 0
+			app.GetName(),            // 1
+			app.GetPath(),            // 2
+			app.GetIcon(),            // 3
+			app.Order,                // 4
+			app.GetReleaseState(),    // 5
+			app.GetReleaseDateNice(), // 6
+			priceFormatted,           // 7
+		})
+	}
+
+	response.output(w, r)
+}
+
+func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id: "+id, r)
+		return
+	}
+
+	idx, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := DataTablesQuery{}
+	err = query.fillFromURL(r.URL.Query())
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	//
+	var wg sync.WaitGroup
+
+	// Get groups
+	var groups []mongo.PlayerGroup
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		columns := map[string]string{
+			"0": "group_name",
+			"1": "group_members",
+		}
+
+		var err error
+		groups, err = mongo.GetPlayerGroups(idx, query.getOffset64(), 100, query.getOrderMongo(columns, nil))
+		if err != nil {
+			log.Err(err, r)
+		}
+	}(r)
+
+	// Get total
+	var total int64
+
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		var err error
+		player, err := mongo.GetPlayer(idx)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		total = int64(player.GroupsCount)
+	}(r)
+
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = total
+	response.RecordsFiltered = total
+	response.Draw = query.Draw
+
+	for _, group := range groups {
+		response.AddRow([]interface{}{
+			group.GroupID64,    // 0
+			group.PlayerID,     // 1
+			group.GetName(),    // 2
+			group.GetPath(),    // 3
+			group.GetIcon(),    // 4
+			group.GroupMembers, // 5
+			group.GetType(),    // 6
+			group.GroupPrimary, // 7
+			group.GetURL(),     // 8
 		})
 	}
 

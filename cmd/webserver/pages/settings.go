@@ -118,7 +118,14 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		b, err := json.Marshal(t.Player.Groups)
+		var groupIDs []string
+
+		groups, err := mongo.GetPlayerGroups(t.Player.ID, 0, 0, nil)
+		for _, v := range groups {
+			groupIDs = append(groupIDs, v.GroupID64)
+		}
+
+		b, err := json.Marshal(groupIDs)
 		log.Err(err)
 
 		t.Groups = string(b)

@@ -37,11 +37,6 @@ func (g PlayerRecentApp) getKey() (ret interface{}) {
 	return strconv.FormatInt(g.PlayerID, 10) + "-" + strconv.Itoa(g.AppID)
 }
 
-func CountRecent(playerID int64) (count int64, err error) {
-
-	return CountDocuments(CollectionPlayerAppsRecent, M{"player_id": playerID}, 0)
-}
-
 func DeleteRecentApps(playerID int64, apps []int) (err error) {
 
 	if len(apps) < 1 {
