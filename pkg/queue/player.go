@@ -859,7 +859,6 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 
 func updatePlayerComments(player *mongo.Player) error {
 
-	// New
 	resp, _, err := helpers.GetSteam().GetComments(player.ID, 1000000, 0)
 	if err != nil {
 		return err
