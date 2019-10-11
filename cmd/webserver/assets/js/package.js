@@ -9,10 +9,12 @@ if ($packagePage.length > 0) {
         const from = $(e.relatedTarget);
 
         // On entering tab
-        if (to.attr('href') === '#prices') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-                loadPriceChart();
+        if (!to.attr('loaded')) {
+            to.attr('loaded', 1);
+            switch (to.attr('href')) {
+                case '#prices':
+                    loadPriceChart();
+                    break;
             }
         }
     });

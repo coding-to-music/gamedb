@@ -43,47 +43,34 @@ if ($appPage.length > 0) {
         const from = $(e.relatedTarget);
 
         // On entering tab
-        if (to.attr('href') === '#media') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-                loadMedia();
-            }
-        }
-        if (to.attr('href') === '#news') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-                loadNews();
-            }
-        }
-        if (to.attr('href') === '#items') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-                loadItems();
-            }
-        }
-        if (to.attr('href') === '#prices') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-                loadPriceChart();
-            }
-        }
-        if (to.attr('href') === '#players') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-                loadAppPlayersChart();
-                loadAppPlayerTimes();
-                loadGroupChart();
-            }
-        }
-        if (to.attr('href') === '#reviews') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-                loadAppReviewsChart();
+        if (!to.attr('loaded')) {
+            to.attr('loaded', 1);
+            switch (to.attr('href')) {
+                case '#media':
+                    loadMedia();
+                    break;
+                case '#news':
+                    loadNews();
+                    break;
+                case '#items':
+                    loadItems();
+                    break;
+                case '#prices':
+                    loadPriceChart();
+                    break;
+                case '#players':
+                    loadAppPlayersChart();
+                    loadAppPlayerTimes();
+                    loadGroupChart();
+                    break;
+                case '#reviews':
+                    loadAppReviewsChart();
+                    break;
             }
         }
 
         // On leaving tab
-        if (from.attr('href') === '#media') {
+        if (from.attr('href') === '') {
             resetVideos();
         }
     });

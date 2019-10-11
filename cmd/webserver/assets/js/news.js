@@ -7,11 +7,12 @@ if ($('#news-page').length > 0) {
         const from = $(e.relatedTarget);
 
         // On entering tab
-        if (to.attr('href') === '#apps') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-
-                loadNewsAjax();
+        if (!to.attr('loaded')) {
+            to.attr('loaded', 1);
+            switch (to.attr('href')) {
+                case '#apps':
+                    loadNewsAjax();
+                    break;
             }
         }
     });

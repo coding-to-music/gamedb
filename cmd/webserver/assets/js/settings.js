@@ -35,18 +35,15 @@ if ($('#settings-page').length > 0) {
         const from = $(e.relatedTarget);
 
         // On entering tab
-        if (to.attr('href') === '#events') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-
-                loadEvents();
-            }
-        }
-        if (to.attr('href') === '#donations') {
-            if (!to.attr('loaded')) {
-                to.attr('loaded', 1);
-
-                loadDonations();
+        if (!to.attr('loaded')) {
+            to.attr('loaded', 1);
+            switch (to.attr('href')) {
+                case '#events':
+                    loadEvents();
+                    break;
+                case '#donations':
+                    loadDonations();
+                    break;
             }
         }
     });
