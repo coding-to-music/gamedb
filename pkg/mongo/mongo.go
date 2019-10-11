@@ -49,7 +49,7 @@ const (
 	CollectionAppOffers          collection = "app_offers"
 	CollectionApps               collection = "apps"
 	CollectionBundlePrices       collection = "bundle_prices"
-	CollectionChangeItems        collection = "change_items"
+	CollectionChangeItems        collection = "change_products"
 	CollectionChanges            collection = "changes"
 	CollectionEvents             collection = "events"
 	CollectionGroups             collection = "groups"
