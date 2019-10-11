@@ -1,99 +1,101 @@
-{{define "news"}} {{ template "_header" . }}
+{{define "news"}}
+    {{ template "_header" . }}
 
-<div class="container" id="news-page">
+    <div class="container" id="news-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-newspaper"></i> News</h1>
-        <p class="lead">{{ .Description }}. {{ .Count }} articles.</p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-
-        <div class="card-header">
-
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#popular" role="tab">Popular Apps</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#apps" role="tab">All Apps</a>
-                </li>
-                <li class="nav-item d-none">
-                    <a class="nav-link" data-toggle="tab" href="#steam" role="tab">Steam News</a>
-                </li>
-            </ul>
-
+        <div class="jumbotron">
+            <h1><i class="fas fa-newspaper"></i> News</h1>
+            <p class="lead">{{ .Description }}. {{ .Count }} articles.</p>
         </div>
-        <div class="card-body">
 
-            <div class="tab-content">
+        {{ template "_flashes" . }}
 
-                {{/* Steam */}}
-                <div class="tab-pane show active" id="popular" role="tabpanel">
+        <div class="card">
 
-                    <div class="alert alert-primary" role="alert">The last 7 days of articles from the 30 most played games.</div>
+            <div class="card-header">
 
-                    {{ range $key, $value := .Articles }}
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#popular" role="tab">Popular Apps</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#apps" role="tab">All Apps</a>
+                    </li>
+                    <li class="nav-item d-none">
+                        <a class="nav-link" data-toggle="tab" href="#steam" role="tab">Steam News</a>
+                    </li>
+                </ul>
 
-                        <div class="card mb-3" id="{{ .ID }}">
-                            <div class="card-header">
+            </div>
+            <div class="card-body">
 
-                                <img data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .Title }}" class="rounded float-left" data-src="/assets/img/no-app-image-square.jpg">
+                <div class="tab-content">
 
-                                <div class="text-truncate">
-                                    <strong title="{{ .Title }}">{{ .Title }}</strong>
+                    {{/* Steam */}}
+                    <div class="tab-pane show active" id="popular" role="tabpanel">
+
+                        <div class="alert alert-primary" role="alert">The last 7 days of articles from the 30 most played games.</div>
+
+                        {{ range $key, $value := .Articles }}
+
+                            <div class="card mb-3" id="{{ .ID }}">
+                                <div class="card-header">
+
+                                    <img data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .Title }}" class="rounded float-left" data-src="/assets/img/no-app-image-square.jpg">
+
+                                    <div class="text-truncate">
+                                        <strong title="{{ .Title }}">{{ .Title }}</strong>
+                                    </div>
+                                    <div>
+                                        <a href="{{ .GetAppPath }}">{{ .AppName }}</a>
+                                        <span class="float-right">{{ .GetDate }}</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <a href="{{ .GetAppPath }}">{{ .AppName }}</a>
-                                    <span class="float-right">{{ .GetDate }}</span>
+                                <div class="card-body minned">
+                                    <div>{{ html .Contents }}</div>
                                 </div>
                             </div>
-                            <div class="card-body minned">
-                                <div>{{ html .Contents }}</div>
-                            </div>
+
+                        {{ end }}
+
+                    </div>
+
+                    {{/* All news */}}
+                    <div class="tab-pane" id="apps" role="tabpanel">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0" id="news-table" data-ordering="false" data-path="/news/news.json">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Game</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
                         </div>
 
-                    {{ end }}
+                    </div>
 
-                </div>
+                    {{/* Steam */}}
+                    <div class="tab-pane" id="steam" role="tabpanel">
 
-                {{/* All news */}}
-                <div class="tab-pane" id="apps" role="tabpanel">
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0" id="news-table" data-ordering="false" data-path="/news/news.json">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Game</th>
-                                <th scope="col">Title</th>
-                                <th scope="col">Date</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
                     </div>
 
                 </div>
 
-                {{/* Steam */}}
-                <div class="tab-pane" id="steam" role="tabpanel">
-
-                </div>
-
             </div>
-
         </div>
+
+        <div class="jumbotron bottom">
+            <h1><i class="fas fa-info"></i></h1>
+            <div>News articles are added when the app is updated, either on Steam or on Game DB.</div>
+        </div>
+
     </div>
 
-    <div class="jumbotron bottom">
-        <h1><i class="fas fa-info"></i></h1>
-        <div>News articles are added when the app is updated, either on Steam or on Game DB.</div>
-    </div>
-
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

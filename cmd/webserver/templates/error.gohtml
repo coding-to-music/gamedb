@@ -1,22 +1,24 @@
-{{define "error"}} {{ template "_header" . }}
+{{define "error"}}
+    {{ template "_header" . }}
 
-{{ if startsWith .Path "/players/" }}
-    <div id="player-page" data-id="{{ .DataID }}"></div>
-{{ end }}
+    {{ if startsWith .Path "/players/" }}
+        <div id="player-page" data-id="{{ .DataID }}"></div>
+    {{ end }}
 
-{{ template "_flashes" . }}
+    {{ template "_flashes" . }}
 
-<div class="container" id="error-page">
+    <div class="container" id="error-page">
 
-    <div class="oldschool">
-        <h1 class="window-title">Game DB</h1>
-        <div>
-            <h2>{{ .Title }}</h2>
-            <p>{{ .Message }}</p>
+        <div class="oldschool">
+            <h1 class="window-title">Game DB</h1>
+            <div>
+                <h2>{{ .Title }}</h2>
+                <p>{{ .Message }}</p>
+            </div>
+            <h3>This error has been logged and sent to admins.</h3>
         </div>
-        <h3>This error has been logged and sent to admins.</h3>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

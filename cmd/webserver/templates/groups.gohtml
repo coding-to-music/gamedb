@@ -1,88 +1,90 @@
-{{define "groups"}} {{ template "_header" . }}
+{{define "groups"}}
+    {{ template "_header" . }}
 
-<div class="container" id="groups-page">
+    <div class="container" id="groups-page">
 
-    <div class="jumbotron">
-
-        <div class="row">
-            <div class="col-sm-12 col-lg-6">
-
-                <h1><i class="fas fa-user-friends"></i> Groups</h1>
-                <p class="lead">Keeping track of {{ .Count}} groups</p>
-
-            </div>
-            <div class="col-sm-12 col-lg-6">
-
-                <div class="input-group input-group-lg mt-1 mb-2">
-                    <!--suppress HtmlFormInputWithoutLabel -->
-                    <input class="form-control" type="search" placeholder="Search for a Group" id="search" autofocus>
-                    <div class="input-group-append">
-                        <input type="submit" value="Search" class="input-group-text">
-                    </div>
-                </div>
-
-            </div>
-            <div class="col-12">
-
-                <small>Join the <a href="https://steamcommunity.com/groups/gamedb" target="_blank">Game DB group</a></small>
-
-            </div>
-        </div>
-
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-body">
+        <div class="jumbotron">
 
             <div class="row">
-                <div class="col-sm-6 col-md-4">
-                    <div class="form-group">
-                        <label for="type">Group Type</label>
-                        <select data-placeholder="Choose Group Type" class="form-control form-control-chosen" id="type" name="type">
-                            <option value="">All Groups</option>
-                            <option value="game">Only Official Groups</option>
-                            <option value="group" selected>No Official Groups</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4">
-                    <div class="form-group">
-                        <label for="errors">Show Removed Groups</label>
-                        <select data-placeholder="Choose Group Type" class="form-control form-control-chosen" id="errors" name="errors">
-                            <option value="all">All Groups</option>
-                            <option value="removed">Only Removed Groups</option>
-                            <option value="notremoved" selected>Only Active Groups</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+                <div class="col-sm-12 col-lg-6">
 
-            <div class="table-responsive">
-                <table class="table table-hover table-striped" data-path="/groups/groups.json">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Members</th>
-                        <th scope="col">Trend Value</th>
-                        <th scope="col"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                    <h1><i class="fas fa-user-friends"></i> Groups</h1>
+                    <p class="lead">Keeping track of {{ .Count}} groups</p>
 
-                    </tbody>
-                </table>
+                </div>
+                <div class="col-sm-12 col-lg-6">
+
+                    <div class="input-group input-group-lg mt-1 mb-2">
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input class="form-control" type="search" placeholder="Search for a Group" id="search" autofocus>
+                        <div class="input-group-append">
+                            <input type="submit" value="Search" class="input-group-text">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-12">
+
+                    <small>Join the <a href="https://steamcommunity.com/groups/gamedb" target="_blank">Game DB group</a></small>
+
+                </div>
             </div>
 
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="type">Group Type</label>
+                            <select data-placeholder="Choose Group Type" class="form-control form-control-chosen" id="type" name="type">
+                                <option value="">All Groups</option>
+                                <option value="game">Only Official Groups</option>
+                                <option value="group" selected>No Official Groups</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="errors">Show Removed Groups</label>
+                            <select data-placeholder="Choose Group Type" class="form-control form-control-chosen" id="errors" name="errors">
+                                <option value="all">All Groups</option>
+                                <option value="removed">Only Removed Groups</option>
+                                <option value="notremoved" selected>Only Active Groups</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped" data-path="/groups/groups.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Members</th>
+                            <th scope="col">Trend Value</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="jumbotron bottom">
+            <h1><i class="fas fa-info"></i></h1>
+            <div>Groups are updated when a player in the group is updated, or the group is looked at (maximum once an hour).</div>
+        </div>
+
     </div>
 
-    <div class="jumbotron bottom">
-        <h1><i class="fas fa-info"></i></h1>
-        <div>Groups are updated when a player in the group is updated, or the group is looked at (maximum once an hour).</div>
-    </div>
-
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

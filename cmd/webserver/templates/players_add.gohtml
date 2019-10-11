@@ -1,53 +1,55 @@
-{{define "players_add"}} {{ template "_header" . }}
+{{define "players_add"}}
+    {{ template "_header" . }}
 
-<script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 
-<div class="container" id="add-player-page">
+    <div class="container" id="add-player-page">
 
-    <div class="jumbotron">
-        <h1 class="display-4"><i class="fas fa-plus-circle"></i> Add Player</h1>
-        <p class="lead">{{ .Description }}</p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        {{ template "_players_header" . }}
-        <div class="card-body">
-
-            <form action="/players/add" method="post" data-recaptcha>
-                <div class="row">
-                    <div class="col-sm-6">
-
-                        <div class="form-group">
-                            <label for="search">Search</label>
-                            <input type="search" class="form-control" id="search" name="search" autofocus required>
-                        </div>
-
-                        <label for="message">Captcha</label>
-                        <div class="g-recaptcha mb-3" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
-
-                        <button type="submit" class="btn btn-success">Send</button>
-
-                    </div>
-                    <div class="col-sm-6">
-                        <label>Accepted formats</label>
-                        <ul>
-                            <li>vanity_url</li>
-                            <li>12345678901234567</li>
-                            <li>STEAM_0:0:12345</li>
-                            <li>[U:1:12345]</li>
-                            <li>https://steamcommunity.com/id/vanity_url/</li>
-                            <li>https://steamcommunity.com/profiles/12345678901234567/</li>
-                            <li>https://steamcommunity.com/profiles/[U:1:12345]/</li>
-                        </ul>
-                    </div>
-                </div>
-            </form>
-
+        <div class="jumbotron">
+            <h1 class="display-4"><i class="fas fa-plus-circle"></i> Add Player</h1>
+            <p class="lead">{{ .Description }}</p>
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_players_header" . }}
+            <div class="card-body">
+
+                <form action="/players/add" method="post" data-recaptcha>
+                    <div class="row">
+                        <div class="col-sm-6">
+
+                            <div class="form-group">
+                                <label for="search">Search</label>
+                                <input type="search" class="form-control" id="search" name="search" autofocus required>
+                            </div>
+
+                            <label for="message">Captcha</label>
+                            <div class="g-recaptcha mb-3" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
+
+                            <button type="submit" class="btn btn-success">Send</button>
+
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Accepted formats</label>
+                            <ul>
+                                <li>vanity_url</li>
+                                <li>12345678901234567</li>
+                                <li>STEAM_0:0:12345</li>
+                                <li>[U:1:12345]</li>
+                                <li>https://steamcommunity.com/id/vanity_url/</li>
+                                <li>https://steamcommunity.com/profiles/12345678901234567/</li>
+                                <li>https://steamcommunity.com/profiles/[U:1:12345]/</li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

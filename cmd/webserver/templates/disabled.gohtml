@@ -1,15 +1,17 @@
-{{define "info"}} {{ template "_header" . }}
+{{define "info"}}
+    {{ template "_header" . }}
 
-<div class="container" id="info-page">
+    <div class="container" id="info-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-times-circle"></i> Site Disabled</h1>
+        <div class="jumbotron">
+            <h1><i class="fas fa-times-circle"></i> Site Disabled</h1>
+        </div>
+
+        {{ template "_flashes" . }}
+
+        xx
+
     </div>
 
-    {{ template "_flashes" . }}
-
-    xx
-
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

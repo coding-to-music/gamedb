@@ -1,372 +1,374 @@
-{{define "package"}} {{ template "_header" . }}
+{{define "package"}}
+    {{ template "_header" . }}
 
-<div class="container" id="package-page" data-id="{{ .Package.ID }}" data-path="{{ .Package.GetPath }}">
+    <div class="container" id="package-page" data-id="{{ .Package.ID }}" data-path="{{ .Package.GetPath }}">
 
-    <div class="jumbotron">
+        <div class="jumbotron">
 
-        {{ template "_social" .Package }}
+            {{ template "_social" .Package }}
 
-        <h1 class="text-truncate"><i class="fas fa-cube"></i> {{.Package.GetName}}</h1>
+            <h1 class="text-truncate"><i class="fas fa-cube"></i> {{.Package.GetName}}</h1>
 
-        <p class="lead">{{.Package.PurchaseText}}</p>
+            <p class="lead">{{.Package.PurchaseText}}</p>
 
-        {{ if ne .Package.StoreLink "" }}
-            <small><a href="{{ .Package.StoreLink }}" target="_blank"><i class="fas fa-shopping-cart"></i> Store Page</a></small>
-        {{ end }}
+            {{ if ne .Package.StoreLink "" }}
+                <small><a href="{{ .Package.StoreLink }}" target="_blank"><i class="fas fa-shopping-cart"></i> Store Page</a></small>
+            {{ end }}
 
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
-                </li>
-                {{if gt (len .Apps) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{ comma (len .Apps) }})</a>
-                    </li>
-                {{ end }}
-                {{if gt (len .Bundles) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles ({{ comma (len .Bundles) }})</a>
-                    </li>
-                {{ end }}
-                {{if gt (len .Prices) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
-                    </li>
-                {{ end }}
-                {{ if .ShowDev }}
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
-                    </li>
-                {{ end }}
-            </ul>
         </div>
-        <div class="card-body">
 
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane show active" id="details" role="tabpanel">
+        {{ template "_flashes" . }}
 
-                    <div class="row">
-                        <div class="col-12 col-md-7">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
+                    </li>
+                    {{if gt (len .Apps) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#apps" role="tab">Apps ({{ comma (len .Apps) }})</a>
+                        </li>
+                    {{ end }}
+                    {{if gt (len .Bundles) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles ({{ comma (len .Bundles) }})</a>
+                        </li>
+                    {{ end }}
+                    {{if gt (len .Prices) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
+                        </li>
+                    {{ end }}
+                    {{ if .ShowDev }}
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
+                        </li>
+                    {{ end }}
+                </ul>
+            </div>
+            <div class="card-body">
 
-                            {{ range $k, $v := .Banners }}
-                                <div class="alert alert-{{ $k }}" role="alert">
-                                    {{ range $kk, $vv := $v }}
-                                        <div>{{ $vv }}</div>
-                                    {{ end }}
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane show active" id="details" role="tabpanel">
+
+                        <div class="row">
+                            <div class="col-12 col-md-7">
+
+                                {{ range $k, $v := .Banners }}
+                                    <div class="alert alert-{{ $k }}" role="alert">
+                                        {{ range $kk, $vv := $v }}
+                                            <div>{{ $vv }}</div>
+                                        {{ end }}
+                                    </div>
+                                {{ end }}
+
+                                {{/* Package Details */}}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        {{ if ne .Package.ReleaseDate "" }}
+                                            <tr>
+                                                <th>Release Date</th>
+                                                <td>{{ .Package.ReleaseDate }}</td>
+                                            </tr>
+                                        {{ end }}
+                                        <tr>
+                                            <th>Coming Soon</th>
+                                            <td>{{ .Package.GetComingSoon }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Billing Type</th>
+                                            <td>{{ .Package.GetBillingType }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>License Type</th>
+                                            <td>{{ .Package.GetLicenseType }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td>{{ .Package.GetStatus }}</td>
+                                        </tr>
+                                        {{ if gt .Package.ChangeNumber 0 }}
+                                            <tr>
+                                                <th>Latest Change ID</th>
+                                                <td><a href="/changes/{{ .Package.ChangeNumber }}">Change {{ .Package.ChangeNumber }}</a></td>
+                                            </tr>
+                                        {{ end }}
+                                        <tr>
+                                            <th>Platforms</th>
+                                            <td class="platforms">{{ .Package.GetPlatformImages }}</td>
+                                        </tr>
+                                    </table>
                                 </div>
-                            {{ end }}
 
-                            {{/* Package Details */}}
-                            <div class="table-responsive">
+                            </div>
+                            <div class="col-12 col-md-5">
+
                                 <table class="table">
-                                    {{ if ne .Package.ReleaseDate "" }}
-                                        <tr>
-                                            <th>Release Date</th>
-                                            <td>{{ .Package.ReleaseDate }}</td>
-                                        </tr>
-                                    {{ end }}
                                     <tr>
-                                        <th>Coming Soon</th>
-                                        <td>{{ .Package.GetComingSoon }}</td>
+                                        <th>Initial Price</th>
+                                        <td>{{ .Price.GetInitial }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Billing Type</th>
-                                        <td>{{ .Package.GetBillingType }}</td>
+                                        <th>Final Price</th>
+                                        <td>{{ .Price.GetFinal }}</td>
                                     </tr>
                                     <tr>
-                                        <th>License Type</th>
-                                        <td>{{ .Package.GetLicenseType }}</td>
+                                        <th>Discount Percent</th>
+                                        <td>{{ .Price.GetDiscountPercent }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Status</th>
-                                        <td>{{ .Package.GetStatus }}</td>
-                                    </tr>
-                                    {{ if gt .Package.ChangeNumber 0 }}
-                                        <tr>
-                                            <th>Latest Change ID</th>
-                                            <td><a href="/changes/{{ .Package.ChangeNumber }}">Change {{ .Package.ChangeNumber }}</a></td>
-                                        </tr>
-                                    {{ end }}
-                                    <tr>
-                                        <th>Platforms</th>
-                                        <td class="platforms">{{ .Package.GetPlatformImages }}</td>
+                                        <th>Individual Price</th>
+                                        <td>{{ .Price.GetIndividual }}</td>
                                     </tr>
                                 </table>
+
                             </div>
-
                         </div>
-                        <div class="col-12 col-md-5">
 
-                            <table class="table">
+                    </div>
+
+                    <div class="tab-pane" id="apps" role="tabpanel">
+
+                        {{/* Apps in Package */}}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                <thead class="thead-light">
                                 <tr>
-                                    <th>Initial Price</th>
-                                    <td>{{ .Price.GetInitial }}</td>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col" data-disabled>Platforms</th>
+                                    <th scope="col">DLC #</th>
                                 </tr>
-                                <tr>
-                                    <th>Final Price</th>
-                                    <td>{{ .Price.GetFinal }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Discount Percent</th>
-                                    <td>{{ .Price.GetDiscountPercent }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Individual Price</th>
-                                    <td>{{ .Price.GetIndividual }}</td>
-                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Apps }}
+                                    <tr data-link="{{.GetPath}}">
+                                        <td data-app-id="{{ .ID }}" class="img">
+                                            <div class="icon-name">
+                                                <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
+                                                <div class="name">{{ .GetName }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ .GetType }}</td>
+                                        <td class="platforms">{{ .GetPlatformImages }}</td>
+                                        <td>{{ comma (len .GetDLCIDs) }}</td>
+                                    </tr>
+                                {{ end }}
                             </table>
-
                         </div>
+
                     </div>
 
-                </div>
+                    <div class="tab-pane" id="bundles" role="tabpanel">
 
-                <div class="tab-pane" id="apps" role="tabpanel">
-
-                    {{/* Apps in Package */}}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Type</th>
-                                <th scope="col" data-disabled>Platforms</th>
-                                <th scope="col">DLC #</th>
-                            </tr>
-                            </thead>
-                            {{ range $key, $value := .Apps }}
-                                <tr data-link="{{.GetPath}}">
-                                    <td data-app-id="{{ .ID }}" class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
-                                            <div class="name">{{ .GetName }}</div>
-                                        </div>
-                                    </td>
-                                    <td>{{ .GetType }}</td>
-                                    <td class="platforms">{{ .GetPlatformImages }}</td>
-                                    <td>{{ comma (len .GetDLCIDs) }}</td>
+                        {{/* Bundles */}}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Discount</th>
+                                    <th scope="col">Apps</th>
+                                    <th scope="col">Packages</th>
+                                    <th scope="col">Updated At</th>
                                 </tr>
-                            {{ end }}
-                        </table>
-                    </div>
-
-                </div>
-
-                <div class="tab-pane" id="bundles" role="tabpanel">
-
-                    {{/* Bundles */}}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Discount</th>
-                                <th scope="col">Apps</th>
-                                <th scope="col">Packages</th>
-                                <th scope="col">Updated At</th>
-                            </tr>
-                            </thead>
-                            {{ range $key, $value := .Bundles }}
-                                <tr data-link="{{.GetPath}}">
-                                    <td data-app-id="{{ .ID }}" class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.Name}}"></div>
-                                            <div class="name">{{ .Name }}</div>
-                                        </div>
-                                    </td>
-                                    <td>{{ .Discount }}%</td>
-                                    <td>{{ .AppsCount }}</td>
-                                    <td>{{ .PackagesCount }}</td>
-                                    <td>{{ .GetUpdatedNice }}</td>
-                                </tr>
-                            {{ end }}
-                        </table>
-                    </div>
-
-                </div>
-
-                {{/* Prices */}}
-                <div class="tab-pane" id="prices" role="tabpanel">
-
-                    <div id="prices-chart" data-ajax="/packages/{{ .Package.ID }}/prices.json">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Country</th>
-                                <th scope="col">Final</th>
-                                <th scope="col">Initial</th>
-                                <th scope="col" nowrap="nowrap">Discount %</th>
-                                <th scope="col">Individual</th>
-                            </tr>
-                            </thead>
-                            {{ range $key, $value := .Prices }}
-                                {{ $price := $.Prices.Get $key }}
-                                <tr data-code="{{ $key }}">
-                                    <td class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{ .GetFlag $key }}" class="wide" alt="{{ .GetCountryName $key }}"></div>
-                                            <div class="name">{{ .GetCountryName $key }}</div>
-                                        </div>
-                                    </td>
-                                    <td>{{ $price.GetFinal }}</td>
-                                    <td>
-                                        {{ if ne $price.GetFinal $price.GetInitial }}
-                                            {{ $price.GetInitial }}
-                                        {{ end }}
-                                    </td>
-                                    <td>
-                                        {{ if ne $price.GetFinal $price.GetInitial }}
-                                            {{ $price.GetDiscountPercent }}
-                                        {{ end }}
-                                    </td>
-                                    <td>{{ $price.GetIndividual }}</td>
-                                </tr>
-                            {{ end }}
-                        </table>
-                    </div>
-
-                </div>
-
-                {{/* Dev */}}
-                <div class="tab-pane" id="dev" role="tabpanel">
-
-                    <div class="card">
-                        <div class="card-header">
-
-                            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
-                                </li>
-                                {{if gt (len .Extended) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-extended" role="tab">Extended Values ({{ len .Extended }})</a>
-                                    </li>
+                                </thead>
+                                {{ range $key, $value := .Bundles }}
+                                    <tr data-link="{{.GetPath}}">
+                                        <td data-app-id="{{ .ID }}" class="img">
+                                            <div class="icon-name">
+                                                <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.Name}}"></div>
+                                                <div class="name">{{ .Name }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ .Discount }}%</td>
+                                        <td>{{ .AppsCount }}</td>
+                                        <td>{{ .PackagesCount }}</td>
+                                        <td>{{ .GetUpdatedNice }}</td>
+                                    </tr>
                                 {{ end }}
-                                {{if gt (len .Controller) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-controller" role="tab">Controller Values ({{ len .Controller }})</a>
-                                    </li>
-                                {{ end }}
-                                {{if gt (len .DepotIDs) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots ({{ len .DepotIDs }})</a>
-                                    </li>
-                                {{ end }}
-                            </ul>
-
+                            </table>
                         </div>
-                        <div class="card-body">
-                            <div class="tab-content" id="tab-content-dev">
 
-                                {{/* Details */}}
-                                <div class="tab-pane show active" id="dev-details" role="tabpanel">
+                    </div>
 
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Key</th>
-                                                <th scope="col">Value</th>
-                                            </tr>
-                                            </thead>
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
-                                                <td>{{ .Package.GetPICSUpdatedNice }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
-                                                <td>{{ .Package.GetUpdatedNice }}</td>
-                                            </tr>
-                                        </table>
-                                    </div>
+                    {{/* Prices */}}
+                    <div class="tab-pane" id="prices" role="tabpanel">
 
-                                </div>
+                        <div id="prices-chart" data-ajax="/packages/{{ .Package.ID }}/prices.json">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
 
-                                {{/* Extended */}}
-                                <div class="tab-pane" id="dev-extended" role="tabpanel">
-
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Key</th>
-                                                <th scope="col">Value</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range .Extended }}
-                                                <tr>
-                                                    <td><a href="/product-keys?type=package&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
-                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
-                                                </tr>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">Final</th>
+                                    <th scope="col">Initial</th>
+                                    <th scope="col" nowrap="nowrap">Discount %</th>
+                                    <th scope="col">Individual</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Prices }}
+                                    {{ $price := $.Prices.Get $key }}
+                                    <tr data-code="{{ $key }}">
+                                        <td class="img">
+                                            <div class="icon-name">
+                                                <div class="icon"><img src="{{ .GetFlag $key }}" class="wide" alt="{{ .GetCountryName $key }}"></div>
+                                                <div class="name">{{ .GetCountryName $key }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ $price.GetFinal }}</td>
+                                        <td>
+                                            {{ if ne $price.GetFinal $price.GetInitial }}
+                                                {{ $price.GetInitial }}
                                             {{ end }}
-                                        </table>
-                                    </div>
-
-                                </div>
-
-                                {{/* Controller */}}
-                                <div class="tab-pane" id="dev-controller" role="tabpanel">
-
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Key</th>
-                                                <th scope="col">Value</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range $key, $value := .Controller }}
-                                                <tr>
-                                                    <td>{{ $key }}</td>
-                                                    <td>{{ $value }}</td>
-                                                </tr>
+                                        </td>
+                                        <td>
+                                            {{ if ne $price.GetFinal $price.GetInitial }}
+                                                {{ $price.GetDiscountPercent }}
                                             {{ end }}
-                                        </table>
-                                    </div>
+                                        </td>
+                                        <td>{{ $price.GetIndividual }}</td>
+                                    </tr>
+                                {{ end }}
+                            </table>
+                        </div>
 
-                                </div>
+                    </div>
 
-                                {{/* Depots */}}
-                                <div class="tab-pane" id="dev-depots" role="tabpanel">
+                    {{/* Dev */}}
+                    <div class="tab-pane" id="dev" role="tabpanel">
 
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">ID</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range $key, $value := .DepotIDs }}
-                                                <tr>
-                                                    <td>{{ $value }}</td>
-                                                </tr>
-                                            {{ end }}
-                                        </table>
-                                    </div>
+                        <div class="card">
+                            <div class="card-header">
 
-                                </div>
+                                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
+                                    </li>
+                                    {{if gt (len .Extended) 0}}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#dev-extended" role="tab">Extended Values ({{ len .Extended }})</a>
+                                        </li>
+                                    {{ end }}
+                                    {{if gt (len .Controller) 0}}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#dev-controller" role="tab">Controller Values ({{ len .Controller }})</a>
+                                        </li>
+                                    {{ end }}
+                                    {{if gt (len .DepotIDs) 0}}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots ({{ len .DepotIDs }})</a>
+                                        </li>
+                                    {{ end }}
+                                </ul>
 
                             </div>
+                            <div class="card-body">
+                                <div class="tab-content" id="tab-content-dev">
+
+                                    {{/* Details */}}
+                                    <div class="tab-pane show active" id="dev-details" role="tabpanel">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Key</th>
+                                                    <th scope="col">Value</th>
+                                                </tr>
+                                                </thead>
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
+                                                    <td>{{ .Package.GetPICSUpdatedNice }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
+                                                    <td>{{ .Package.GetUpdatedNice }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    {{/* Extended */}}
+                                    <div class="tab-pane" id="dev-extended" role="tabpanel">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Key</th>
+                                                    <th scope="col">Value</th>
+                                                </tr>
+                                                </thead>
+                                                {{ range .Extended }}
+                                                    <tr>
+                                                        <td><a href="/product-keys?type=package&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
+                                                        <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                    </tr>
+                                                {{ end }}
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    {{/* Controller */}}
+                                    <div class="tab-pane" id="dev-controller" role="tabpanel">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Key</th>
+                                                    <th scope="col">Value</th>
+                                                </tr>
+                                                </thead>
+                                                {{ range $key, $value := .Controller }}
+                                                    <tr>
+                                                        <td>{{ $key }}</td>
+                                                        <td>{{ $value }}</td>
+                                                    </tr>
+                                                {{ end }}
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    {{/* Depots */}}
+                                    <div class="tab-pane" id="dev-depots" role="tabpanel">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">ID</th>
+                                                </tr>
+                                                </thead>
+                                                {{ range $key, $value := .DepotIDs }}
+                                                    <tr>
+                                                        <td>{{ $value }}</td>
+                                                    </tr>
+                                                {{ end }}
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
+
                     </div>
 
                 </div>
-
             </div>
+
         </div>
 
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

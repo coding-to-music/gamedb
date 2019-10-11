@@ -1,57 +1,59 @@
-{{define "tags"}} {{ template "_header" . }}
+{{define "tags"}}
+    {{ template "_header" . }}
 
-<div class="container" id="tags-page">
+    <div class="container" id="tags-page">
 
-    <div class="jumbotron">
-        <div class="row">
-            <div class="col-sm-12 col-lg-6">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
 
-                <h1><i class="fas fa-tag"></i> Tags</h1>
-                <p class="lead">{{ comma (len .Tags) }} Tags updated <span data-livestamp="{{ .Date }}"></span>.</p>
+                    <h1><i class="fas fa-tag"></i> Tags</h1>
+                    <p class="lead">{{ comma (len .Tags) }} Tags updated <span data-livestamp="{{ .Date }}"></span>.</p>
 
+                </div>
+                <div class="col-sm-12 col-lg-6">
+
+                    <div class="input-group input-group-lg mt-1">
+                        <input class="form-control" id="search" type="search" placeholder="Search for a Tag" required="required" autocomplete="off" autofocus>
+                    </div>
+
+                </div>
             </div>
-            <div class="col-sm-12 col-lg-6">
+        </div>
 
-                <div class="input-group input-group-lg mt-1">
-                    <input class="form-control" id="search" type="search" placeholder="Search for a Tag" required="required" autocomplete="off" autofocus>
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_stats_header" . }}
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-datatable mb-0" data-order='[[3, "desc"], [1, "desc"]]'>
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Tag</th>
+                            <th scope="col">Games</th>
+                            <th scope="col">Avg Price</th>
+                            <th scope="col">Avg Score</th>
+                        </tr>
+                        </thead>
+                        <tbody class="tags-list">
+                        {{ range $key, $value := .Tags }}
+                            <tr data-link="{{.GetPath}}">
+                                <td><i class="fas fa-tag"></i> {{ .GetName }}</td>
+                                <td>{{ comma .Apps }}</td>
+                                <td>{{ index $.Prices .ID }}</td>
+                                <td>{{ .GetMeanScore }}</td>
+                            </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
                 </div>
 
             </div>
         </div>
+
     </div>
 
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        {{ template "_stats_header" . }}
-        <div class="card-body">
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[3, "desc"], [1, "desc"]]'>
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Tag</th>
-                        <th scope="col">Games</th>
-                        <th scope="col">Avg Price</th>
-                        <th scope="col">Avg Score</th>
-                    </tr>
-                    </thead>
-                    <tbody class="tags-list">
-                    {{ range $key, $value := .Tags }}
-                        <tr data-link="{{.GetPath}}">
-                            <td><i class="fas fa-tag"></i> {{ .GetName }}</td>
-                            <td>{{ comma .Apps }}</td>
-                            <td>{{ index $.Prices .ID }}</td>
-                            <td>{{ .GetMeanScore }}</td>
-                        </tr>
-                    {{ end }}
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

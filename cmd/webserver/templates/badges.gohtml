@@ -1,106 +1,108 @@
-{{define "badges"}} {{ template "_header" . }}
+{{define "badges"}}
+    {{ template "_header" . }}
 
-<div class="container" id="badges-page">
+    <div class="container" id="badges-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-ribbon"></i> Badges</h1>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-header">
-
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#special" role="tab">Special Badges</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#event" role="tab">Event Badges</a>
-                </li>
-            </ul>
-
+        <div class="jumbotron">
+            <h1><i class="fas fa-ribbon"></i> Badges</h1>
         </div>
-        <div class="card-body">
 
-            <div class="tab-content">
+        {{ template "_flashes" . }}
 
-                {{/* Special Badges */}}
-                <div class="tab-pane show active" id="special" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable" data-ordering="false">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Badge</th>
-                                <th scope="col">Game DB Players</th>
-                                <th scope="col">First</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {{ range $key, $value := .GetSpecialBadges }}
-                                <tr data-link="{{ .GetPath }}">
-                                    <td class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
-                                            <div class="name">{{ .BadgeName }}</div>
-                                        </div>
-                                    </td>
-                                    <td>{{ comma64 .GetSpecialPlayers }}</td>
-                                    <td><a href="{{ .GetSpecialMax.GetPlayerPath }}">{{ .GetSpecialMax.PlayerName }}</a></td>
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#special" role="tab">Special Badges</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#event" role="tab">Event Badges</a>
+                    </li>
+                </ul>
+
+            </div>
+            <div class="card-body">
+
+                <div class="tab-content">
+
+                    {{/* Special Badges */}}
+                    <div class="tab-pane show active" id="special" role="tabpanel">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable" data-ordering="false">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Badge</th>
+                                    <th scope="col">Game DB Players</th>
+                                    <th scope="col">First</th>
                                 </tr>
-                            {{ end }}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {{ range $key, $value := .GetSpecialBadges }}
+                                    <tr data-link="{{ .GetPath }}">
+                                        <td class="img">
+                                            <div class="icon-name">
+                                                <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
+                                                <div class="name">{{ .BadgeName }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ comma64 .GetSpecialPlayers }}</td>
+                                        <td><a href="{{ .GetSpecialMax.GetPlayerPath }}">{{ .GetSpecialMax.PlayerName }}</a></td>
+                                    </tr>
+                                {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
 
-                </div>
+                    {{/* Event/App Badges */}}
+                    <div class="tab-pane" id="event" role="tabpanel">
 
-                {{/* Event/App Badges */}}
-                <div class="tab-pane" id="event" role="tabpanel">
-
-                    <div class="table-responsive mb-4">
-                        <table class="table table-hover table-striped table-datatable" data-ordering="false">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Badge</th>
-                                <th scope="col">Game DB Players</th>
-                                <th scope="col">Highest Level</th>
-                                <th scope="col">Highest Foil Level</th>
-                                <th scope="col">First</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {{ range $key, $value := .GetEventBadges }}
-                                <tr data-link="{{ .GetPath }}">
-                                    <td class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
-                                            <div class="name">{{ .BadgeName }}</div>
-                                        </div>
-                                    </td>
-                                    <td>{{ comma64 .GetEventPlayers }}</td>
-                                    <td><a href="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</a></td>
-                                    <td><a href="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil.BadgeLevel }}</a></td>
-                                    <td><a href="{{ .GetEventMaxFoil.GetPlayerPath }}">{{ .GetEventMaxFoil.PlayerName }}</a></td>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover table-striped table-datatable" data-ordering="false">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Badge</th>
+                                    <th scope="col">Game DB Players</th>
+                                    <th scope="col">Highest Level</th>
+                                    <th scope="col">Highest Foil Level</th>
+                                    <th scope="col">First</th>
                                 </tr>
-                            {{ end }}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                {{ range $key, $value := .GetEventBadges }}
+                                    <tr data-link="{{ .GetPath }}">
+                                        <td class="img">
+                                            <div class="icon-name">
+                                                <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
+                                                <div class="name">{{ .BadgeName }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ comma64 .GetEventPlayers }}</td>
+                                        <td><a href="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</a></td>
+                                        <td><a href="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil.BadgeLevel }}</a></td>
+                                        <td><a href="{{ .GetEventMaxFoil.GetPlayerPath }}">{{ .GetEventMaxFoil.PlayerName }}</a></td>
+                                    </tr>
+                                {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <h6>What are Foil Trading Cards?</h6>
-                    <p>There is a small chance whenever you get a Trading Card from playing a game that it will have a special foil border.
-                        You'll need to collect a set of foil cards in order to craft them into a foil badge.
-                        There is no extra benefit to having foil cards or foil badges aside from their rarity.</p>
+                        <h6>What are Foil Trading Cards?</h6>
+                        <p>There is a small chance whenever you get a Trading Card from playing a game that it will have a special foil border.
+                            You'll need to collect a set of foil cards in order to craft them into a foil badge.
+                            There is no extra benefit to having foil cards or foil badges aside from their rarity.</p>
+
+                    </div>
 
                 </div>
 
             </div>
-
         </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

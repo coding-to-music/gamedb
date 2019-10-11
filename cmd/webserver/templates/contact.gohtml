@@ -1,63 +1,65 @@
-{{define "contact"}} {{ template "_header" . }}
+{{define "contact"}}
+    {{ template "_header" . }}
 
-<script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 
-<div class="container" id="contact-page">
+    <div class="container" id="contact-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-envelope"></i> Contact</h1>
-        <p class="lead">{{ .Description }}</p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-body">
-
-            <form action="/contact" method="post" data-recaptcha>
-                <div class="row">
-                    <div class="col-sm-6">
-
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ .SessionName }}" autofocus required>
-                        </div>
-
-                    </div>
-                    <div class="col-sm-6">
-
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ .SessionEmail }}" required>
-                        </div>
-
-                    </div>
-                    <div class="col-sm-12">
-
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea class="form-control" id="message" rows="3" name="message" required>{{ .SessionMessage }}</textarea>
-                        </div>
-
-                    </div>
-                    <div class="col-sm-12">
-
-                        <label for="message">Captcha</label>
-                        <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
-
-                    </div>
-                    <div class="col-sm-12 mt-4">
-
-                        <button type="submit" class="btn btn-success">Send</button>
-
-                    </div>
-                </div>
-            </form>
-
+        <div class="jumbotron">
+            <h1><i class="fas fa-envelope"></i> Contact</h1>
+            <p class="lead">{{ .Description }}</p>
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <form action="/contact" method="post" data-recaptcha>
+                    <div class="row">
+                        <div class="col-sm-6">
+
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ .SessionName }}" autofocus required>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-6">
+
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ .SessionEmail }}" required>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12">
+
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea class="form-control" id="message" rows="3" name="message" required>{{ .SessionMessage }}</textarea>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12">
+
+                            <label for="message">Captcha</label>
+                            <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
+
+                        </div>
+                        <div class="col-sm-12 mt-4">
+
+                            <button type="submit" class="btn btn-success">Send</button>
+
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+
     </div>
 
-
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

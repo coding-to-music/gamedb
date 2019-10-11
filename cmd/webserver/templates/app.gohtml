@@ -1,504 +1,351 @@
-{{define "app"}} {{ template "_header" . }}
+{{define "app"}}
+    {{ template "_header" . }}
 
-<div class="container" id="app-page" data-group-id="{{ .App.GroupID }}" data-bg="{{ .App.Background }}" data-id="{{ .App.ID }}" data-path="{{ .App.GetPath }}">
+    <div class="container" id="app-page" data-group-id="{{ .App.GroupID }}" data-bg="{{ .App.Background }}" data-id="{{ .App.ID }}" data-path="{{ .App.GetPath }}">
 
-    <div class="jumbotron">
+        <div class="jumbotron">
 
-        {{ template "_social" .App }}
+            {{ template "_social" .App }}
 
-        <h1 class="text-truncate"><i class="fas fa-gamepad"></i> {{ .App.GetName }}</h1>
+            <h1 class="text-truncate"><i class="fas fa-gamepad"></i> {{ .App.GetName }}</h1>
 
-        {{ if ne .Description "" }}
-            <p class="lead">{{ .Description }}</p>
-        {{ end }}
+            {{ if ne .Description "" }}
+                <p class="lead">{{ .Description }}</p>
+            {{ end }}
 
-        <small>
-            <a href="{{ .App.GetCommunityLink }}" target="_blank">
-                <i class="fas fa-users"></i> Community Hub
-            </a>
-            <a href="{{ .App.GetStoreLink }}" target="_blank">
-                <i class="fas fa-shopping-cart"></i> Store Page
-            </a>
-            <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank">
-                <i class="fas fa-exchange-alt"></i> Market
-            </a>
-            {{if ne .App.Homepage ""}}
-                <a href="{{ .App.Homepage }}" target="_blank">
-                    <i class="fas fa-home"></i> Homepage
+            <small>
+                <a href="{{ .App.GetCommunityLink }}" target="_blank">
+                    <i class="fas fa-users"></i> Community Hub
                 </a>
-            {{end}}
-            <a href="{{ .App.GetInstallLink }}">
-                <i class="fas fa-sign-in-alt"></i> Install
-            </a>
-        </small>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-header text-white">
-
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link nav-link-small active" data-toggle="tab" href="#details" role="tab">Details</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-small" data-toggle="tab" href="#players" role="tab">Players</a>
-                </li>
-                {{if gt (len .Prices) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#prices" role="tab">Prices</a>
-                    </li>
+                <a href="{{ .App.GetStoreLink }}" target="_blank">
+                    <i class="fas fa-shopping-cart"></i> Store Page
+                </a>
+                <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank">
+                    <i class="fas fa-exchange-alt"></i> Market
+                </a>
+                {{if ne .App.Homepage ""}}
+                    <a href="{{ .App.Homepage }}" target="_blank">
+                        <i class="fas fa-home"></i> Homepage
+                    </a>
                 {{end}}
-                {{if gt (len .DLCs) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC</a>
-                    </li>
-                {{end}}
-                {{if gt (len .Packages) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages</a>
-                    </li>
-                {{end}}
-                {{if gt (len .Bundles) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
-                    </li>
-                {{end}}
-                {{if gt (len .Achievements) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
-                    </li>
-                {{end}}
-                {{if gt .App.Items 0}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items</a>
-                    </li>
-                {{end}}
-                {{if gt (len .NewsIDs) 0}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#news" role="tab">News</a>
-                    </li>
-                {{end}}
-                {{if gt .Reviews.GetTotal 0}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
-                    </li>
-                {{end}}
-                {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media</a>
-                    </li>
-                {{end}}
-                <li class="nav-item">
-                    <a class="nav-link nav-link-small" data-toggle="tab" href="#dev" role="tab">Dev</a>
-                </li>
-            </ul>
-
+                <a href="{{ .App.GetInstallLink }}">
+                    <i class="fas fa-sign-in-alt"></i> Install
+                </a>
+            </small>
         </div>
-        <div class="card-body">
-            <div class="tab-content" id="tab-content">
 
-                {{/* Details */}}
-                <div class="tab-pane active" id="details" role="tabpanel">
+        {{ template "_flashes" . }}
 
-                    {{ range $k, $v := .Banners }}
-                        {{ if gt (len $v) 0 }}
-                            <div class="alert alert-{{ $k }}" role="alert">
-                                {{ range $kk, $vv := $v }}
-                                    <div>{{ $vv }}</div>
-                                {{ end }}
-                            </div>
+        <div class="card">
+            <div class="card-header text-white">
+
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-small active" data-toggle="tab" href="#details" role="tab">Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#players" role="tab">Players</a>
+                    </li>
+                    {{if gt (len .Prices) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#prices" role="tab">Prices</a>
+                        </li>
+                    {{end}}
+                    {{if gt (len .DLCs) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC</a>
+                        </li>
+                    {{end}}
+                    {{if gt (len .Packages) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages</a>
+                        </li>
+                    {{end}}
+                    {{if gt (len .Bundles) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
+                        </li>
+                    {{end}}
+                    {{if gt (len .Achievements) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
+                        </li>
+                    {{end}}
+                    {{if gt .App.Items 0}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items</a>
+                        </li>
+                    {{end}}
+                    {{if gt (len .NewsIDs) 0}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#news" role="tab">News</a>
+                        </li>
+                    {{end}}
+                    {{if gt .Reviews.GetTotal 0}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
+                        </li>
+                    {{end}}
+                    {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media</a>
+                        </li>
+                    {{end}}
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev" role="tab">Dev</a>
+                    </li>
+                </ul>
+
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="tab-content">
+
+                    {{/* Details */}}
+                    <div class="tab-pane active" id="details" role="tabpanel">
+
+                        {{ range $k, $v := .Banners }}
+                            {{ if gt (len $v) 0 }}
+                                <div class="alert alert-{{ $k }}" role="alert">
+                                    {{ range $kk, $vv := $v }}
+                                        <div>{{ $vv }}</div>
+                                    {{ end }}
+                                </div>
+                            {{ end }}
                         {{ end }}
-                    {{ end }}
 
-                    <img class="rounded{{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">
+                        <img class="rounded{{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">
 
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            {{ if ne .App.GameName "" }}
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                {{ if ne .App.GameName "" }}
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">For Game</th>
+                                        <td><a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
+                                    </tr>
+                                {{ end }}
                                 <tr>
-                                    <th scope="row" nowrap="nowrap" width="1%">For Game</th>
-                                    <td><a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
-                                </tr>
-                            {{ end }}
-                            <tr>
-                                <th scope="row" nowrap="nowrap" width="1%">Review Score</th>
-                                <td>
-                                    {{ .App.GetReviewScore }}
-                                    <small>
-                                        ({{ comma .Reviews.Positive }}<i class="fas fa-angle-up"></i>
-                                        {{ comma .Reviews.Negative }}<i class="fas fa-angle-down"></i>)
-                                    </small>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" nowrap="nowrap" width="1%">Price</th>
-                                <td>{{ .Price.GetFinal }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row" nowrap="nowrap" width="1%">App Type</th>
-                                <td>{{ .App.GetType }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row" nowrap="nowrap" width="1%">Release Date</th>
-                                <td>{{ .GetReleaseDate }}</td>
-                            </tr>
-                            {{ if gt (len .App.GetPlatforms) 0 }}
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" width="1%">Platforms</th>
-                                    <td class="platforms">{{ .App.GetPlatformImages }}</td>
-                                </tr>
-                            {{ end }}
-                            {{ if gt (len .Demos) 0 }}
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" width="1%">Demos</th>
+                                    <th scope="row" nowrap="nowrap" width="1%">Review Score</th>
                                     <td>
-                                        {{ range $key, $value := .Demos }}
-                                            <a class="badge badge-success" href="{{ .GetPath }}">{{ .GetName }}</a>
-                                        {{ end }}
+                                        {{ .App.GetReviewScore }}
+                                        <small>
+                                            ({{ comma .Reviews.Positive }}<i class="fas fa-angle-up"></i>
+                                            {{ comma .Reviews.Negative }}<i class="fas fa-angle-down"></i>)
+                                        </small>
                                     </td>
                                 </tr>
-                            {{ end }}
-                            {{ if gt (len .Genres) 0 }}
                                 <tr>
-                                    <th scope="row" nowrap="nowrap" width="1%">Genres</th>
-                                    <td>
-                                        {{ range $key, $value := .Genres }}
-                                            <a class="badge badge-success" href="/apps?genres={{ .ID }}">{{ .GetName }}</a>
-                                        {{ end }}
-                                    </td>
-                                </tr>
-                            {{ end }}
-                            {{ if gt (len .Tags) 0 }}
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" width="1%">Tags</th>
-                                    <td>
-                                        {{ range $key, $value := .Tags }}
-                                            <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
-                                        {{ end }}
-                                    </td>
-                                </tr>
-                            {{ end }}
-                            {{ if ne .App.Categories "" }}
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" width="1%">Categories</th>
-                                    <td>
-                                        {{ range $key, $value := .Categories }}
-                                            <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
-                                        {{ end }}
-                                    </td>
-                                </tr>
-                            {{ end }}
-                            {{ if gt (len .Developers) 0 }}
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" width="1%">Developers</th>
-                                    <td>
-                                        {{ range $key, $value := .Developers }}
-                                            <a class="badge badge-success" href="/apps?developers={{ .ID }}">{{ .GetName }}</a>
-                                        {{ end }}
-                                    </td>
-                                </tr>
-                            {{ end }}
-                            {{ if gt (len .Publishers) 0 }}
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" width="1%">Publishers</th>
-                                    <td>
-                                        {{ range $key, $value := .Publishers }}
-                                            <a class="badge badge-success" href="/apps?publishers={{ .ID }}">{{ .GetName }}</a>
-                                        {{ end }}
-                                    </td>
-                                </tr>
-                            {{ end }}
-                        </table>
-                    </div>
-                </div>
-
-                {{/* Prices */}}
-                <div class="tab-pane" id="prices" role="tabpanel">
-
-                    <div id="prices-chart" data-ajax="/apps/{{ .App.ID }}/prices.json">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Country</th>
-                                <th scope="col">Final</th>
-                                <th scope="col">Initial</th>
-                                <th scope="col" nowrap="nowrap">Discount %</th>
-                            </tr>
-                            </thead>
-                            {{ range $key, $value := .Prices }}
-                                {{ $price := $.Prices.Get $key }}
-                                <tr data-code="{{ $key }}">
-                                    <td class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{ .GetFlag $key }}" class="wide" alt="{{ .GetCountryName $key }}"></div>
-                                            <div class="name">{{ .GetCountryName $key }}</div>
-                                        </div>
-                                    </td>
-                                    <td>{{ $price.GetFinal }}</td>
-                                    <td>
-                                        {{ if ne $price.GetFinal $price.GetInitial }}
-                                            {{ $price.GetInitial }}
-                                        {{ end }}
-                                    </td>
-                                    <td>
-                                        {{ if ne $price.GetFinal $price.GetInitial }}
-                                            {{ $price.GetDiscountPercent }}
-                                        {{ end }}
-                                    </td>
-                                </tr>
-                            {{ end }}
-                        </table>
-                    </div>
-
-                </div>
-
-                {{/* Players */}}
-                <div class="tab-pane" id="players" role="tabpanel">
-
-                    <h5>Player Count</h5>
-                    <div id="players-chart">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12 col-lg-8">
-
-                            <h5>
-                                Owner Estimations
-                                <small><a target="_blank" href="https://steamspy.com/app/{{ .App.ID }}">By Steam Spy</a></small>
-                            </h5>
-                            <table class="table">
-                                <tbody>
-                                <tr>
-                                    <td>Owners</td>
-                                    <td>{{ comma .SteamSpy.SSOwnersLow }} - {{ comma .SteamSpy.SSOwnersHigh }}</td>
+                                    <th scope="row" nowrap="nowrap" width="1%">Price</th>
+                                    <td>{{ .Price.GetFinal }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Average Playtime (Two Weeks)</td>
-                                    <td>{{ .SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
+                                    <th scope="row" nowrap="nowrap" width="1%">App Type</th>
+                                    <td>{{ .App.GetType }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Average Playtime (Forever)</td>
-                                    <td>{{ .SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
+                                    <th scope="row" nowrap="nowrap" width="1%">Release Date</th>
+                                    <td>{{ .GetReleaseDate }}</td>
                                 </tr>
-                                <tr>
-                                    <td>Median Playtime (Two Weeks)</td>
-                                    <td>{{ .SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
-                                </tr>
-                                <tr>
-                                    <td>Median Playtime (Forever)</td>
-                                    <td>{{ .SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
-                                </tr>
-                                </tbody>
+                                {{ if gt (len .App.GetPlatforms) 0 }}
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Platforms</th>
+                                        <td class="platforms">{{ .App.GetPlatformImages }}</td>
+                                    </tr>
+                                {{ end }}
+                                {{ if gt (len .Demos) 0 }}
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Demos</th>
+                                        <td>
+                                            {{ range $key, $value := .Demos }}
+                                                <a class="badge badge-success" href="{{ .GetPath }}">{{ .GetName }}</a>
+                                            {{ end }}
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                                {{ if gt (len .Genres) 0 }}
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Genres</th>
+                                        <td>
+                                            {{ range $key, $value := .Genres }}
+                                                <a class="badge badge-success" href="/apps?genres={{ .ID }}">{{ .GetName }}</a>
+                                            {{ end }}
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                                {{ if gt (len .Tags) 0 }}
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Tags</th>
+                                        <td>
+                                            {{ range $key, $value := .Tags }}
+                                                <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
+                                            {{ end }}
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                                {{ if ne .App.Categories "" }}
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Categories</th>
+                                        <td>
+                                            {{ range $key, $value := .Categories }}
+                                                <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
+                                            {{ end }}
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                                {{ if gt (len .Developers) 0 }}
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Developers</th>
+                                        <td>
+                                            {{ range $key, $value := .Developers }}
+                                                <a class="badge badge-success" href="/apps?developers={{ .ID }}">{{ .GetName }}</a>
+                                            {{ end }}
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                                {{ if gt (len .Publishers) 0 }}
+                                    <tr>
+                                        <th scope="row" nowrap="nowrap" width="1%">Publishers</th>
+                                        <td>
+                                            {{ range $key, $value := .Publishers }}
+                                                <a class="badge badge-success" href="/apps?publishers={{ .ID }}">{{ .GetName }}</a>
+                                            {{ end }}
+                                        </td>
+                                    </tr>
+                                {{ end }}
                             </table>
-
-                        </div>
-                        <div class="col-12 col-lg-4">
-
-                            <h5>Peaks</h5>
-                            <table class="table">
-                                <tbody>
-                                <tr>
-                                    <td>All Time</td>
-                                    <td>{{ comma .App.PlayerPeakAllTime }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Last Week</td>
-                                    <td>{{ comma .App.PlayerPeakWeek }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Last 10 minutes</td>
-                                    <td>{{ comma64 .App.GetOnlinePlayers }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Last Week Average</td>
-                                    <td>{{ commaf .App.PlayerAverageWeek }}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-
                         </div>
                     </div>
 
-                    {{ if ne .App.GroupID "" }}
+                    {{/* Prices */}}
+                    <div class="tab-pane" id="prices" role="tabpanel">
 
-                        <h5>Official Group Members</h5>
-                        <div id="group-chart">
+                        <div id="prices-chart" data-ajax="/apps/{{ .App.ID }}/prices.json">
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
 
-                    {{ end }}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">Final</th>
+                                    <th scope="col">Initial</th>
+                                    <th scope="col" nowrap="nowrap">Discount %</th>
+                                </tr>
+                                </thead>
+                                {{ range $key, $value := .Prices }}
+                                    {{ $price := $.Prices.Get $key }}
+                                    <tr data-code="{{ $key }}">
+                                        <td class="img">
+                                            <div class="icon-name">
+                                                <div class="icon"><img src="{{ .GetFlag $key }}" class="wide" alt="{{ .GetCountryName $key }}"></div>
+                                                <div class="name">{{ .GetCountryName $key }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ $price.GetFinal }}</td>
+                                        <td>
+                                            {{ if ne $price.GetFinal $price.GetInitial }}
+                                                {{ $price.GetInitial }}
+                                            {{ end }}
+                                        </td>
+                                        <td>
+                                            {{ if ne $price.GetFinal $price.GetInitial }}
+                                                {{ $price.GetDiscountPercent }}
+                                            {{ end }}
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                            </table>
+                        </div>
 
-                    {{/* Top players table */}}
-                    <h5>Top Game DB Players</h5>
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/time.json" id="top-players-table">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col" width="1%">Rank</th>
-                                <th scope="col" width="1%">Flag</th>
-                                <th scope="col">Player</th>
-                                <th scope="col">Time</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
                     </div>
 
-                </div>
+                    {{/* Players */}}
+                    <div class="tab-pane" id="players" role="tabpanel">
 
-                {{/* DLC */}}
-                <div class="tab-pane" id="dlc" role="tabpanel">
-
-                    {{if gt (len .DLCs) 0}}
-
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[ 1, "desc" ]]'>
-                                <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Release</th>
-                                </tr>
-                                </thead>
-                                {{ range $key, $value := .DLCs }}
-                                    <tr data-link="{{.GetPath}}">
-                                        <td class="img">
-                                            <div class="icon-name">
-                                                <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
-                                                <div class="name">{{.GetName}}</div>
-                                            </div>
-                                        </td>
-                                        <td data-sort="{{ .ReleaseDateUnix }}" nowrap="nowrap">{{.GetReleaseDateNice}}</td>
-                                    </tr>
-                                {{ end }}
-                            </table>
+                        <h5>Player Count</h5>
+                        <div id="players-chart">
+                            <i class="fas fa-spinner fa-spin"></i>
                         </div>
-
-                    {{ else }}
-
-                        <p>This app has no DLC.</p>
-
-                    {{ end }}
-
-                </div>
-
-                {{/* App Achievements */}}
-                <div class="tab-pane" id="achievements" role="tabpanel">
-
-                    {{ if gt .App.AchievementsCount 5000 }}
-                        <div class="alert alert-primary" role="alert">
-                            <div>Apps are now limited to 5000 achievements. This app was created before the limit was put in place.</div>
-                        </div>
-                    {{ end }}
-
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <th scope="row" width="15%">Achievements</th>
-                            <td>{{ comma .App.AchievementsCount }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" nowrap="nowrap">Average Completion</th>
-                            <td>{{ commaf .App.AchievementsAverageCompletion }}%</td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    {{if gt (len .Achievements) 0}}
-
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "desc"]]'>
-                                <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Completed</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {{ range $key, $value := .Achievements }}
-                                    <tr {{ if not .Active }}class="table-danger"{{ end }}>
-                                        <td class="img">
-                                            <div class="icon-name">
-                                                <div class="icon"><img data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .Name }}"></div>
-                                                <div class="name">{{ .Name }}</div>
-                                            </div>
-                                        </td>
-                                        <td>{{ .Description }}</td>
-                                        <td>{{ .Completed }}%</td>
-                                    </tr>
-                                {{ end }}
-                                </tbody>
-                            </table>
-
-                        </div>
-
-                    {{ else }}
-
-                        <p>This app has no achievements.</p>
-
-                    {{ end }}
-
-                </div>
-
-                {{/* News */}}
-                <div class="tab-pane" id="news" role="tabpanel">
-
-                    {{if gt (len .NewsIDs) 0}}
-
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/news.json" id="news-table">
-                                <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Title</th>
-                                    <th scope="col">Author</th>
-                                    <th scope="col">Date</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                        </div>
-
-                    {{ else }}
-
-                        <p>This app has no news.</p>
-
-                    {{ end }}
-
-                </div>
-
-                {{/* Items */}}
-                <div class="tab-pane" id="items" role="tabpanel">
-
-                    {{ if gt .App.Items 0 }}
 
                         <div class="row">
-                            <div class="col-sm-6 col-md-4">
-                                <div class="form-group">
-                                    <label for="items-search">Search</label>
-                                    <input name="search" type="search" class="form-control gdb-search" id="items-search">
-                                </div>
+                            <div class="col-12 col-lg-8">
+
+                                <h5>
+                                    Owner Estimations
+                                    <small><a target="_blank" href="https://steamspy.com/app/{{ .App.ID }}">By Steam Spy</a></small>
+                                </h5>
+                                <table class="table">
+                                    <tbody>
+                                    <tr>
+                                        <td>Owners</td>
+                                        <td>{{ comma .SteamSpy.SSOwnersLow }} - {{ comma .SteamSpy.SSOwnersHigh }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Average Playtime (Two Weeks)</td>
+                                        <td>{{ .SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Average Playtime (Forever)</td>
+                                        <td>{{ .SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Median Playtime (Two Weeks)</td>
+                                        <td>{{ .SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Median Playtime (Forever)</td>
+                                        <td>{{ .SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="col-12 col-lg-4">
+
+                                <h5>Peaks</h5>
+                                <table class="table">
+                                    <tbody>
+                                    <tr>
+                                        <td>All Time</td>
+                                        <td>{{ comma .App.PlayerPeakAllTime }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Last Week</td>
+                                        <td>{{ comma .App.PlayerPeakWeek }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Last 10 minutes</td>
+                                        <td>{{ comma64 .App.GetOnlinePlayers }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Last Week Average</td>
+                                        <td>{{ commaf .App.PlayerAverageWeek }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
                             </div>
                         </div>
 
+                        {{ if ne .App.GroupID "" }}
+
+                            <h5>Official Group Members</h5>
+                            <div id="group-chart">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+
+                        {{ end }}
+
+                        {{/* Top players table */}}
+                        <h5>Top Game DB Players</h5>
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/items.json" id="items-table">
+                            <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/time.json" id="top-players-table">
                                 <thead class="thead-light">
                                 <tr>
-                                    <th scope="col" width="1%">ID</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col"></th>
+                                    <th scope="col" width="1%">Rank</th>
+                                    <th scope="col" width="1%">Flag</th>
+                                    <th scope="col">Player</th>
+                                    <th scope="col">Time</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -507,410 +354,386 @@
                             </table>
                         </div>
 
-                    {{ else }}
+                    </div>
 
-                        <p>This app has no items.</p>
+                    {{/* DLC */}}
+                    <div class="tab-pane" id="dlc" role="tabpanel">
 
-                    {{ end }}
+                        {{if gt (len .DLCs) 0}}
 
-                </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[ 1, "desc" ]]'>
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Release</th>
+                                    </tr>
+                                    </thead>
+                                    {{ range $key, $value := .DLCs }}
+                                        <tr data-link="{{.GetPath}}">
+                                            <td class="img">
+                                                <div class="icon-name">
+                                                    <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
+                                                    <div class="name">{{.GetName}}</div>
+                                                </div>
+                                            </td>
+                                            <td data-sort="{{ .ReleaseDateUnix }}" nowrap="nowrap">{{.GetReleaseDateNice}}</td>
+                                        </tr>
+                                    {{ end }}
+                                </table>
+                            </div>
 
-                {{/* Packages */}}
-                <div class="tab-pane" id="packages" role="tabpanel">
+                        {{ else }}
 
-                    {{if gt (len .Packages) 0}}
+                            <p>This app has no DLC.</p>
 
+                        {{ end }}
+
+                    </div>
+
+                    {{/* App Achievements */}}
+                    <div class="tab-pane" id="achievements" role="tabpanel">
+
+                        {{ if gt .App.AchievementsCount 5000 }}
+                            <div class="alert alert-primary" role="alert">
+                                <div>Apps are now limited to 5000 achievements. This app was created before the limit was put in place.</div>
+                            </div>
+                        {{ end }}
+
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row" width="15%">Achievements</th>
+                                <td>{{ comma .App.AchievementsCount }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" nowrap="nowrap">Average Completion</th>
+                                <td>{{ commaf .App.AchievementsAverageCompletion }}%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        {{if gt (len .Achievements) 0}}
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "desc"]]'>
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Completed</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {{ range $key, $value := .Achievements }}
+                                        <tr {{ if not .Active }}class="table-danger"{{ end }}>
+                                            <td class="img">
+                                                <div class="icon-name">
+                                                    <div class="icon"><img data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .Name }}"></div>
+                                                    <div class="name">{{ .Name }}</div>
+                                                </div>
+                                            </td>
+                                            <td>{{ .Description }}</td>
+                                            <td>{{ .Completed }}%</td>
+                                        </tr>
+                                    {{ end }}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        {{ else }}
+
+                            <p>This app has no achievements.</p>
+
+                        {{ end }}
+
+                    </div>
+
+                    {{/* News */}}
+                    <div class="tab-pane" id="news" role="tabpanel">
+
+                        {{if gt (len .NewsIDs) 0}}
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/news.json" id="news-table">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Author</th>
+                                        <th scope="col">Date</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        {{ else }}
+
+                            <p>This app has no news.</p>
+
+                        {{ end }}
+
+                    </div>
+
+                    {{/* Items */}}
+                    <div class="tab-pane" id="items" role="tabpanel">
+
+                        {{ if gt .App.Items 0 }}
+
+                            <div class="row">
+                                <div class="col-sm-6 col-md-4">
+                                    <div class="form-group">
+                                        <label for="items-search">Search</label>
+                                        <input name="search" type="search" class="form-control gdb-search" id="items-search">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/items.json" id="items-table">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" width="1%">ID</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        {{ else }}
+
+                            <p>This app has no items.</p>
+
+                        {{ end }}
+
+                    </div>
+
+                    {{/* Packages */}}
+                    <div class="tab-pane" id="packages" role="tabpanel">
+
+                        {{if gt (len .Packages) 0}}
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Package ID</th>
+                                        <th scope="col">Billing</th>
+                                        <th scope="col">License</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Apps</th>
+                                    </tr>
+                                    </thead>
+                                    {{ range $key, $value := .Packages }}
+                                        <tr data-link="{{ .GetPath }}">
+                                            <td>{{ .GetName }}</td>
+                                            <td>{{ .GetBillingType }}</td>
+                                            <td>{{ .GetLicenseType }}</td>
+                                            <td>{{ .GetStatus }}</td>
+                                            <td>{{ comma (len .GetAppIDs) }}</td>
+                                        </tr>
+                                    {{ end }}
+                                </table>
+                            </div>
+
+                        {{ else }}
+
+                            <p>This app is not in a package.</p>
+
+                        {{ end }}
+
+                    </div>
+
+                    <div class="tab-pane" id="bundles" role="tabpanel">
+
+                        {{/* Bundles */}}
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                 <thead class="thead-light">
                                 <tr>
-                                    <th scope="col">Package ID</th>
-                                    <th scope="col">Billing</th>
-                                    <th scope="col">License</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Discount</th>
                                     <th scope="col">Apps</th>
+                                    <th scope="col">Packages</th>
+                                    <th scope="col">Updated At</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .Packages }}
-                                    <tr data-link="{{ .GetPath }}">
-                                        <td>{{ .GetName }}</td>
-                                        <td>{{ .GetBillingType }}</td>
-                                        <td>{{ .GetLicenseType }}</td>
-                                        <td>{{ .GetStatus }}</td>
-                                        <td>{{ comma (len .GetAppIDs) }}</td>
+                                {{ range $key, $value := .Bundles }}
+                                    <tr data-link="{{.GetPath}}">
+                                        <td data-app-id="{{ .ID }}" class="img">
+                                            <div class="icon-name">
+                                                <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.Name}}"></div>
+                                                <div class="name">{{ .Name }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ .Discount }}%</td>
+                                        <td>{{ .AppsCount }}</td>
+                                        <td>{{ .PackagesCount }}</td>
+                                        <td>{{ .GetUpdatedNice }}</td>
                                     </tr>
                                 {{ end }}
                             </table>
                         </div>
 
-                    {{ else }}
-
-                        <p>This app is not in a package.</p>
-
-                    {{ end }}
-
-                </div>
-
-                <div class="tab-pane" id="bundles" role="tabpanel">
-
-                    {{/* Bundles */}}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Discount</th>
-                                <th scope="col">Apps</th>
-                                <th scope="col">Packages</th>
-                                <th scope="col">Updated At</th>
-                            </tr>
-                            </thead>
-                            {{ range $key, $value := .Bundles }}
-                                <tr data-link="{{.GetPath}}">
-                                    <td data-app-id="{{ .ID }}" class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.Name}}"></div>
-                                            <div class="name">{{ .Name }}</div>
-                                        </div>
-                                    </td>
-                                    <td>{{ .Discount }}%</td>
-                                    <td>{{ .AppsCount }}</td>
-                                    <td>{{ .PackagesCount }}</td>
-                                    <td>{{ .GetUpdatedNice }}</td>
-                                </tr>
-                            {{ end }}
-                        </table>
                     </div>
 
-                </div>
+                    {{/* Reviews */}}
+                    <div class="tab-pane" id="reviews" role="tabpanel">
 
-                {{/* Reviews */}}
-                <div class="tab-pane" id="reviews" role="tabpanel">
+                        {{if gt .Reviews.GetTotal 0}}
 
-                    {{if gt .Reviews.GetTotal 0}}
+                            <table class="table mb-0">
+                                <tbody>
+                                <tr>
+                                    <th scope="row" width="10%">Score</th>
+                                    <td>{{ .App.GetReviewScore }} <a href="/info#app-scores"><i class="fas fa-question"></i></a></td>
+                                </tr>
+                                {{/*                            <tr>*/}}
+                                {{/*                                <th scope="row" width="20%">Positive / Negative</th>*/}}
+                                {{/*                                <td>*/}}
+                                {{/*                                    <div class="progress">*/}}
+                                {{/*                                        <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .Reviews.Positive }} ({{ printf "%.2f" .Reviews.GetPositivePercent }}%)" style="width: {{ .Reviews.GetPositivePercent }}%">*/}}
+                                {{/*                                            {{ comma .Reviews.Positive }} ({{ printf "%.0f" .Reviews.GetPositivePercent }}%)*/}}
+                                {{/*                                        </div>*/}}
+                                {{/*                                        <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .Reviews.Negative }} ({{ printf "%.2f" .Reviews.GetNegativePercent }}%)" style="width: {{ .Reviews.GetNegativePercent }}%">*/}}
+                                {{/*                                            {{ comma .Reviews.Negative }} ({{ printf "%.0f" .Reviews.GetNegativePercent }}%)*/}}
+                                {{/*                                        </div>*/}}
+                                {{/*                                    </div>*/}}
+                                {{/*                                </td>*/}}
+                                {{/*                            </tr>*/}}
+                                </tbody>
+                            </table>
 
-                        <table class="table mb-0">
-                            <tbody>
-                            <tr>
-                                <th scope="row" width="10%">Score</th>
-                                <td>{{ .App.GetReviewScore }} <a href="/info#app-scores"><i class="fas fa-question"></i></a></td>
-                            </tr>
-                            {{/*                            <tr>*/}}
-                            {{/*                                <th scope="row" width="20%">Positive / Negative</th>*/}}
-                            {{/*                                <td>*/}}
-                            {{/*                                    <div class="progress">*/}}
-                            {{/*                                        <div class="progress-bar bg-success" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .Reviews.Positive }} ({{ printf "%.2f" .Reviews.GetPositivePercent }}%)" style="width: {{ .Reviews.GetPositivePercent }}%">*/}}
-                            {{/*                                            {{ comma .Reviews.Positive }} ({{ printf "%.0f" .Reviews.GetPositivePercent }}%)*/}}
-                            {{/*                                        </div>*/}}
-                            {{/*                                        <div class="progress-bar bg-danger" role="progressbar" data-toggle="tooltip" data-placement="top" title="{{ comma .Reviews.Negative }} ({{ printf "%.2f" .Reviews.GetNegativePercent }}%)" style="width: {{ .Reviews.GetNegativePercent }}%">*/}}
-                            {{/*                                            {{ comma .Reviews.Negative }} ({{ printf "%.0f" .Reviews.GetNegativePercent }}%)*/}}
-                            {{/*                                        </div>*/}}
-                            {{/*                                    </div>*/}}
-                            {{/*                                </td>*/}}
-                            {{/*                            </tr>*/}}
-                            </tbody>
-                        </table>
-
-                        <div id="reviews-chart" class="mb-2">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </div>
-
-                        <h5>A selection of the {{ comma .Reviews.GetTotal }} reviews, see them all on the store page.</h5>
-
-                        {{ range $key, $value := .Reviews.Reviews }}
-
-                            <div class="card mt-3">
-                                <div class="card-header" data-vote="{{ .Vote }}">
-                                    <div class="float-right">
-                                        {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>
-                                        {{ .VotesFunny }} <i class="fas fa-grin-squint-tears" data-toggle="tooltip" data-placement="top" title="Funny Review"></i>
-                                    </div>
-                                    By <a href="{{.PlayerPath}}" rel="nofollow">{{.PlayerName}}</a> on {{ .Created }}
-                                </div>
-                                <div class="card-body">{{ .HTML }}</div>
+                            <div id="reviews-chart" class="mb-2">
+                                <i class="fas fa-spinner fa-spin"></i>
                             </div>
+
+                            <h5>A selection of the {{ comma .Reviews.GetTotal }} reviews, see them all on the store page.</h5>
+
+                            {{ range $key, $value := .Reviews.Reviews }}
+
+                                <div class="card mt-3">
+                                    <div class="card-header" data-vote="{{ .Vote }}">
+                                        <div class="float-right">
+                                            {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>
+                                            {{ .VotesFunny }} <i class="fas fa-grin-squint-tears" data-toggle="tooltip" data-placement="top" title="Funny Review"></i>
+                                        </div>
+                                        By <a href="{{.PlayerPath}}" rel="nofollow">{{.PlayerName}}</a> on {{ .Created }}
+                                    </div>
+                                    <div class="card-body">{{ .HTML }}</div>
+                                </div>
+
+                            {{ end }}
+
+                        {{ else }}
+
+                            <p>This app has no reviews.</p>
 
                         {{ end }}
 
-                    {{ else }}
+                    </div>
 
-                        <p>This app has no reviews.</p>
+                    {{/* Media */}}
+                    <div class="tab-pane" id="media" role="tabpanel">
 
-                    {{ end }}
+                        {{if gt (len .Screenshots) 0}}
 
-                </div>
-
-                {{/* Media */}}
-                <div class="tab-pane" id="media" role="tabpanel">
-
-                    {{if gt (len .Screenshots) 0}}
-
-                        <div id="carousel1">
-                            {{ range $key, $value := .Screenshots }}
-                                <div>
-                                    <img data-lazy="{{ .PathFull }}" data-lazy-alt="Media {{ $key }}">
-                                </div>
-                            {{ end }}
-                            {{ range $key, $value := .Movies }}
-                                <div>
-                                    <video controls preload="metadata">
-                                        <source src="{{ https .PathFull }}" type="video/webm">
-                                        Sorry, your browser doesn't support embedded videos.
-                                    </video>
-                                </div>
-                            {{ end }}
-                        </div>
-
-                        <div id="carousel2">
-                            {{ range $key, $value := .Screenshots }}
-                                <div class="thumb"><img data-lazy="{{ .PathThumbnail }}" data-lazy-alt="Thumbnail {{ $key }}"></div>
-                            {{ end }}
-                            {{ range $key, $value := .Movies }}
-                                <div class="thumb">
-                                    <img data-lazy="{{ .PathThumbnail }}" data-lazy-alt="{{ .Title }}">
-                                    <i class="fas fa-play"></i>
-                                </div>
-                            {{ end }}
-                        </div>
-
-                    {{ else }}
-
-                        <p>This app has no screenshots.</p>
-
-                    {{ end }}
-
-                </div>
-
-                {{/* Dev */}}
-                <div class="tab-pane" id="dev" role="tabpanel">
-
-                    <div class="card">
-                        <div class="card-header">
-
-                            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-options" role="tab">Options</a>
-                                </li>
-                                {{ if gt (len .App.GetInstall) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
-                                    </li>
-                                {{ end }}
-                                {{ if .App.GetLocalization.HasLanguages }}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
-                                    </li>
-                                {{ end }}
-                                {{ if gt (len .Stats) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
-                                    </li>
-                                {{ end }}
-                                {{ if and (ne .App.SystemRequirements "") (ne .App.SystemRequirements "{}") }}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-system-requirements" role="tab">System</a>
-                                    </li>
-                                {{ end }}
-                                {{ if or (gt (len .App.GetDepots.Depots) 0) (gt (len .App.GetDepots.Branches) 0) (gt (len .App.GetDepots.Extra) 0)}}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
-                                    </li>
-                                {{ end }}
-                                {{ if gt (len .App.GetLaunch) 0}}
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
-                                    </li>
-                                {{ end }}
-                            </ul>
-
-                        </div>
-                        <div class="card-body">
-                            <div class="tab-content">
-
-                                {{/* Details */}}
-                                <div class="tab-pane show active" id="dev-details" role="tabpanel">
-
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Key</th>
-                                                <th scope="col">Value</th>
-                                            </tr>
-                                            </thead>
-                                            {{ if ne .App.Version "" }}
-                                                <tr>
-                                                    <th scope="row" nowrap="nowrap" width="1%">Version</th>
-                                                    <td>{{ .App.Version }}</td>
-                                                </tr>
-                                            {{ end }}
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
-                                                <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
-                                                <td>{{ .App.GetPICSUpdatedNice }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
-                                                <td>{{ .App.GetUpdatedNice }}</td>
-                                            </tr>
-                                        </table>
+                            <div id="carousel1">
+                                {{ range $key, $value := .Screenshots }}
+                                    <div>
+                                        <img data-lazy="{{ .PathFull }}" data-lazy-alt="Media {{ $key }}">
                                     </div>
-
-                                </div>
-
-                                {{/* Extended / Common / UFS / Config */}}
-                                <div class="tab-pane" id="dev-options" role="tabpanel">
-
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Key</th>
-                                                <th scope="col">Value</th>
-                                                <th scope="col" width="1%">Raw</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range .Extended }}
-                                                <tr data-raw="{{ escape .Value }}">
-                                                    {{/*<td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>*/}}
-                                                    <td nowrap="nowrap">{{ .Key }}</td>
-                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
-                                                    <td><i class="fas fa-eye"></i></td>
-                                                </tr>
-                                            {{ end }}
-                                            {{ range .Common }}
-                                                <tr data-raw="{{ escape .Value }}">
-                                                    <td nowrap="nowrap">
-                                                        {{ .Key }}
-                                                        {{ if ne .Description "" }}
-                                                            <small>({{ .Description }})</small>
-                                                        {{ end }}
-                                                    </td>
-                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
-                                                    <td><i class="fas fa-eye"></i></td>
-                                                </tr>
-                                            {{ end }}
-                                            {{ range .UFS }}
-                                                <tr data-raw="{{ escape .Value }}">
-                                                    <td nowrap="nowrap">{{ .Key }}</td>
-                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
-                                                    <td><i class="fas fa-eye"></i></td>
-                                                </tr>
-                                            {{ end }}
-                                            {{ range $key, $value := .Config }}
-                                                <tr data-raw="{{ escape .Value }}">
-                                                    <td nowrap="nowrap">{{ .Key }}</td>
-                                                    <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
-                                                    <td><i class="fas fa-eye"></i></td>
-                                                </tr>
-                                            {{ end }}
-                                        </table>
+                                {{ end }}
+                                {{ range $key, $value := .Movies }}
+                                    <div>
+                                        <video controls preload="metadata">
+                                            <source src="{{ https .PathFull }}" type="video/webm">
+                                            Sorry, your browser doesn't support embedded videos.
+                                        </video>
                                     </div>
+                                {{ end }}
+                            </div>
 
-                                </div>
-
-                                {{/* System Requirements */}}
-                                <div class="tab-pane" id="dev-system-requirements" role="tabpanel">
-
-                                    <h5>System Requirements</h5>
-                                    <ul class="mb-0 pl-3">
-                                        {{ range .App.GetSystemRequirements }}
-                                            <li>{{ .Key }}: <span class="font-weight-bold">{{ .Format }}</span></li>
-                                        {{ end }}
-                                    </ul>
-
-                                </div>
-
-                                {{/* Depots */}}
-                                <div class="tab-pane" id="dev-depots" role="tabpanel">
-
-                                    <div class="table-responsive mb-4">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">ID</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Configs</th>
-                                                <th scope="col">Manifests</th>
-                                                <th scope="col">Encrypted Manifests</th>
-                                                <th scope="col">Max Size</th>
-                                                <th scope="col">App</th>
-                                                <th scope="col">DLC App</th>
-                                                <th scope="col">System Defined</th>
-                                                <th scope="col">Optional</th>
-                                                <th scope="col">Shared Install</th>
-                                                <th scope="col">Shared Depot Type</th>
-                                                <th scope="col">LV Cache</th>
-                                                <th scope="col">Allow Add Remove While Running</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range $key, $value := .App.GetDepots.Depots }}
-                                                <tr>
-                                                    <td>{{ .ID }}</td>
-                                                    <td nowrap="nowrap">{{ .Name }}</td>
-                                                    <td>
-                                                        <div class="json">{{ json .Configs }}</div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="json">{{ json .Manifests }}</div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="json">{{ .EncryptedManifests }}</div>
-                                                    </td>
-                                                    <td>{{ bytes .MaxSize }}</td>
-                                                    <td>{{ if ne .App 0 }}<a rel="nofollow" href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>
-                                                    <td>{{ if ne .DLCApp 0 }}<a rel="nofollow" href="/apps/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
-                                                    <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                    <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                    <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                    <td>{{ if .SharedDepotType }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                    <td>{{ if .LVCache }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                    <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                </tr>
-                                            {{ end }}
-                                        </table>
+                            <div id="carousel2">
+                                {{ range $key, $value := .Screenshots }}
+                                    <div class="thumb"><img data-lazy="{{ .PathThumbnail }}" data-lazy-alt="Thumbnail {{ $key }}"></div>
+                                {{ end }}
+                                {{ range $key, $value := .Movies }}
+                                    <div class="thumb">
+                                        <img data-lazy="{{ .PathThumbnail }}" data-lazy-alt="{{ .Title }}">
+                                        <i class="fas fa-play"></i>
                                     </div>
+                                {{ end }}
+                            </div>
 
-                                    {{ if gt (len .App.GetDepots.Branches) 0 }}
-                                        <h5>Branches</h5>
-                                        <div class="table-responsive mb-4">
-                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                                <thead class="thead-light">
-                                                <tr>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Description</th>
-                                                    <th scope="col">Build ID</th>
-                                                    <th scope="col">Time Updated</th>
-                                                    <th scope="col">Password Required</th>
-                                                    <th scope="col">LCS Required</th>
-                                                    <th scope="col">Default For Subs</th>
-                                                    <th scope="col">Unlock For Subs</th>
-                                                </tr>
-                                                </thead>
-                                                {{ range $key, $value := .App.GetDepots.Branches }}
-                                                    <tr>
-                                                        <td>{{ .Name }}</td>
-                                                        <td nowrap="nowrap">{{ .Description }}</td>
-                                                        <td>{{ .BuildID }}</td>
-                                                        <td>{{ .TimeUpdated }}</td>
-                                                        <td>{{ if .PasswordRequired }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .LCSRequired }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ .DefaultForSubs }}</td>
-                                                        <td>{{ .UnlockForSubs }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                            </table>
-                                        </div>
+                        {{ else }}
+
+                            <p>This app has no screenshots.</p>
+
+                        {{ end }}
+
+                    </div>
+
+                    {{/* Dev */}}
+                    <div class="tab-pane" id="dev" role="tabpanel">
+
+                        <div class="card">
+                            <div class="card-header">
+
+                                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-options" role="tab">Options</a>
+                                    </li>
+                                    {{ if gt (len .App.GetInstall) 0}}
+                                        <li class="nav-item">
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
+                                        </li>
                                     {{ end }}
+                                    {{ if .App.GetLocalization.HasLanguages }}
+                                        <li class="nav-item">
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
+                                        </li>
+                                    {{ end }}
+                                    {{ if gt (len .Stats) 0}}
+                                        <li class="nav-item">
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
+                                        </li>
+                                    {{ end }}
+                                    {{ if and (ne .App.SystemRequirements "") (ne .App.SystemRequirements "{}") }}
+                                        <li class="nav-item">
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-system-requirements" role="tab">System</a>
+                                        </li>
+                                    {{ end }}
+                                    {{ if or (gt (len .App.GetDepots.Depots) 0) (gt (len .App.GetDepots.Branches) 0) (gt (len .App.GetDepots.Extra) 0)}}
+                                        <li class="nav-item">
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
+                                        </li>
+                                    {{ end }}
+                                    {{ if gt (len .App.GetLaunch) 0}}
+                                        <li class="nav-item">
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
+                                        </li>
+                                    {{ end }}
+                                </ul>
 
-                                    {{ if gt (len .App.GetDepots.Extra) 0 }}
-                                        <h5>Extra</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+
+                                    {{/* Details */}}
+                                    <div class="tab-pane show active" id="dev-details" role="tabpanel">
+
                                         <div class="table-responsive">
                                             <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                                 <thead class="thead-light">
@@ -919,149 +742,328 @@
                                                     <th scope="col">Value</th>
                                                 </tr>
                                                 </thead>
-                                                {{ range $key, $value := .App.GetDepots.Extra }}
+                                                {{ if ne .App.Version "" }}
                                                     <tr>
-                                                        <td>{{ $key }}</td>
-                                                        <td>{{ $value }}</td>
+                                                        <th scope="row" nowrap="nowrap" width="1%">Version</th>
+                                                        <td>{{ .App.Version }}</td>
                                                     </tr>
                                                 {{ end }}
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap" width="1%">Change Number</th>
+                                                    <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap" width="1%">Updated on Steam</th>
+                                                    <td>{{ .App.GetPICSUpdatedNice }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap" width="1%">Updated on Game DB</th>
+                                                    <td>{{ .App.GetUpdatedNice }}</td>
+                                                </tr>
                                             </table>
                                         </div>
-                                    {{ end }}
 
-                                </div>
-
-                                {{/* Launch */}}
-                                <div class="tab-pane" id="dev-launch" role="tabpanel">
-
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Order</th>
-                                                <th scope="col">Executable</th>
-                                                <th scope="col">Arguments</th>
-                                                <th scope="col">Description</th>
-                                                <th scope="col">Type</th>
-                                                <th scope="col">OS List</th>
-                                                <th scope="col">OS Architecture</th>
-                                                <th scope="col">Owns DLCs</th>
-                                                <th scope="col">Beta Key</th>
-                                                <th scope="col">Working Dir</th>
-                                                <th scope="col">VAC Module Filename</th>
-                                                <th scope="col">VR Mode</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range $key, $value := .App.GetLaunch }}
-                                                <tr>
-                                                    <td>{{ .Order }}</td>
-                                                    <td nowrap="nowrap">{{ .Executable }}</td>
-                                                    <td nowrap="nowrap">{{ .Arguments }}</td>
-                                                    <td>{{ .Description }}</td>
-                                                    <td>{{ .Typex }}</td>
-                                                    <td>{{ .OSList }}</td>
-                                                    <td>{{ .OSArch }}</td>
-                                                    <td>{{ join .OwnsDLCs }}</td>
-                                                    <td>{{ .BetaKey }}</td>
-                                                    <td>{{ .WorkingDir }}</td>
-                                                    <td>{{ .VACModuleFilename }}</td>
-                                                    <td>{{ .VRMode }}</td>
-                                                </tr>
-                                            {{ end }}
-                                        </table>
                                     </div>
 
-                                </div>
+                                    {{/* Extended / Common / UFS / Config */}}
+                                    <div class="tab-pane" id="dev-options" role="tabpanel">
 
-                                {{/* Install */}}
-                                <div class="tab-pane" id="dev-install" role="tabpanel">
-
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Key</th>
-                                                <th scope="col">Value</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range $key, $value := .App.GetInstall }}
-                                                <tr>
-                                                    <td>{{ $key }}</td>
-                                                    <td>
-                                                        <div class="json">{{ json $value }}</div>
-                                                    </td>
-                                                </tr>
-                                            {{ end }}
-                                        </table>
-                                    </div>
-
-                                </div>
-
-                                {{/* Localisation */}}
-                                <div class="tab-pane" id="dev-localisation" role="tabpanel">
-
-                                    <div class="clearfix mb-2">
-                                        {{ range $key, $value := .App.GetLocalization.RichPresence }}
-                                            <a class="btn btn-primary btn-sm float-left mr-1 mb-1" href="#{{ $key }}" role="button">{{ title $key }}</a>
-                                        {{ end }}
-                                    </div>
-
-                                    {{ range $key, $value := .App.GetLocalization.RichPresence }}
-                                        <div class="table-responsive mb-2" id="{{ $key }}">
-                                            <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                                 <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col" colspan="2">{{ title $key }}</th>
+                                                    <th scope="col">Key</th>
+                                                    <th scope="col">Value</th>
+                                                    <th scope="col" width="1%">Raw</th>
                                                 </tr>
                                                 </thead>
-                                                <tbody>
-                                                {{ range $key, $value := .Tokens }}
-                                                    <tr>
-                                                        <td>{{ $key }}</td>
-                                                        <td>{{ $value }}</td>
+                                                {{ range .Extended }}
+                                                    <tr data-raw="{{ escape .Value }}">
+                                                        {{/*<td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>*/}}
+                                                        <td nowrap="nowrap">{{ .Key }}</td>
+                                                        <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                        <td><i class="fas fa-eye"></i></td>
                                                     </tr>
                                                 {{ end }}
-                                                </tbody>
-
+                                                {{ range .Common }}
+                                                    <tr data-raw="{{ escape .Value }}">
+                                                        <td nowrap="nowrap">
+                                                            {{ .Key }}
+                                                            {{ if ne .Description "" }}
+                                                                <small>({{ .Description }})</small>
+                                                            {{ end }}
+                                                        </td>
+                                                        <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                        <td><i class="fas fa-eye"></i></td>
+                                                    </tr>
+                                                {{ end }}
+                                                {{ range .UFS }}
+                                                    <tr data-raw="{{ escape .Value }}">
+                                                        <td nowrap="nowrap">{{ .Key }}</td>
+                                                        <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                        <td><i class="fas fa-eye"></i></td>
+                                                    </tr>
+                                                {{ end }}
+                                                {{ range $key, $value := .Config }}
+                                                    <tr data-raw="{{ escape .Value }}">
+                                                        <td nowrap="nowrap">{{ .Key }}</td>
+                                                        <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                                        <td><i class="fas fa-eye"></i></td>
+                                                    </tr>
+                                                {{ end }}
                                             </table>
                                         </div>
-                                    {{ end }}
 
-                                </div>
+                                    </div>
 
-                                {{/* Stats */}}
-                                <div class="tab-pane" id="dev-stats" role="tabpanel">
+                                    {{/* System Requirements */}}
+                                    <div class="tab-pane" id="dev-system-requirements" role="tabpanel">
 
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                            <thead class="thead-light">
-                                            <tr>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Default</th>
-                                                <th scope="col">Display</th>
-                                            </tr>
-                                            </thead>
-                                            {{ range $key, $value := .Stats }}
-                                                <tr>
-                                                    <td>{{ .Name }}</td>
-                                                    <td>{{ .Default }}</td>
-                                                    <td>{{ .DisplayName }}</td>
-                                                </tr>
+                                        <h5>System Requirements</h5>
+                                        <ul class="mb-0 pl-3">
+                                            {{ range .App.GetSystemRequirements }}
+                                                <li>{{ .Key }}: <span class="font-weight-bold">{{ .Format }}</span></li>
                                             {{ end }}
-                                        </table>
+                                        </ul>
+
+                                    </div>
+
+                                    {{/* Depots */}}
+                                    <div class="tab-pane" id="dev-depots" role="tabpanel">
+
+                                        <div class="table-responsive mb-4">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">ID</th>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Configs</th>
+                                                    <th scope="col">Manifests</th>
+                                                    <th scope="col">Encrypted Manifests</th>
+                                                    <th scope="col">Max Size</th>
+                                                    <th scope="col">App</th>
+                                                    <th scope="col">DLC App</th>
+                                                    <th scope="col">System Defined</th>
+                                                    <th scope="col">Optional</th>
+                                                    <th scope="col">Shared Install</th>
+                                                    <th scope="col">Shared Depot Type</th>
+                                                    <th scope="col">LV Cache</th>
+                                                    <th scope="col">Allow Add Remove While Running</th>
+                                                </tr>
+                                                </thead>
+                                                {{ range $key, $value := .App.GetDepots.Depots }}
+                                                    <tr>
+                                                        <td>{{ .ID }}</td>
+                                                        <td nowrap="nowrap">{{ .Name }}</td>
+                                                        <td>
+                                                            <div class="json">{{ json .Configs }}</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="json">{{ json .Manifests }}</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="json">{{ .EncryptedManifests }}</div>
+                                                        </td>
+                                                        <td>{{ bytes .MaxSize }}</td>
+                                                        <td>{{ if ne .App 0 }}<a rel="nofollow" href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>
+                                                        <td>{{ if ne .DLCApp 0 }}<a rel="nofollow" href="/apps/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
+                                                        <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .SharedDepotType }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .LVCache }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                        <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                    </tr>
+                                                {{ end }}
+                                            </table>
+                                        </div>
+
+                                        {{ if gt (len .App.GetDepots.Branches) 0 }}
+                                            <h5>Branches</h5>
+                                            <div class="table-responsive mb-4">
+                                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                    <thead class="thead-light">
+                                                    <tr>
+                                                        <th scope="col">Name</th>
+                                                        <th scope="col">Description</th>
+                                                        <th scope="col">Build ID</th>
+                                                        <th scope="col">Time Updated</th>
+                                                        <th scope="col">Password Required</th>
+                                                        <th scope="col">LCS Required</th>
+                                                        <th scope="col">Default For Subs</th>
+                                                        <th scope="col">Unlock For Subs</th>
+                                                    </tr>
+                                                    </thead>
+                                                    {{ range $key, $value := .App.GetDepots.Branches }}
+                                                        <tr>
+                                                            <td>{{ .Name }}</td>
+                                                            <td nowrap="nowrap">{{ .Description }}</td>
+                                                            <td>{{ .BuildID }}</td>
+                                                            <td>{{ .TimeUpdated }}</td>
+                                                            <td>{{ if .PasswordRequired }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                            <td>{{ if .LCSRequired }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                            <td>{{ .DefaultForSubs }}</td>
+                                                            <td>{{ .UnlockForSubs }}</td>
+                                                        </tr>
+                                                    {{ end }}
+                                                </table>
+                                            </div>
+                                        {{ end }}
+
+                                        {{ if gt (len .App.GetDepots.Extra) 0 }}
+                                            <h5>Extra</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                    <thead class="thead-light">
+                                                    <tr>
+                                                        <th scope="col">Key</th>
+                                                        <th scope="col">Value</th>
+                                                    </tr>
+                                                    </thead>
+                                                    {{ range $key, $value := .App.GetDepots.Extra }}
+                                                        <tr>
+                                                            <td>{{ $key }}</td>
+                                                            <td>{{ $value }}</td>
+                                                        </tr>
+                                                    {{ end }}
+                                                </table>
+                                            </div>
+                                        {{ end }}
+
+                                    </div>
+
+                                    {{/* Launch */}}
+                                    <div class="tab-pane" id="dev-launch" role="tabpanel">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Order</th>
+                                                    <th scope="col">Executable</th>
+                                                    <th scope="col">Arguments</th>
+                                                    <th scope="col">Description</th>
+                                                    <th scope="col">Type</th>
+                                                    <th scope="col">OS List</th>
+                                                    <th scope="col">OS Architecture</th>
+                                                    <th scope="col">Owns DLCs</th>
+                                                    <th scope="col">Beta Key</th>
+                                                    <th scope="col">Working Dir</th>
+                                                    <th scope="col">VAC Module Filename</th>
+                                                    <th scope="col">VR Mode</th>
+                                                </tr>
+                                                </thead>
+                                                {{ range $key, $value := .App.GetLaunch }}
+                                                    <tr>
+                                                        <td>{{ .Order }}</td>
+                                                        <td nowrap="nowrap">{{ .Executable }}</td>
+                                                        <td nowrap="nowrap">{{ .Arguments }}</td>
+                                                        <td>{{ .Description }}</td>
+                                                        <td>{{ .Typex }}</td>
+                                                        <td>{{ .OSList }}</td>
+                                                        <td>{{ .OSArch }}</td>
+                                                        <td>{{ join .OwnsDLCs }}</td>
+                                                        <td>{{ .BetaKey }}</td>
+                                                        <td>{{ .WorkingDir }}</td>
+                                                        <td>{{ .VACModuleFilename }}</td>
+                                                        <td>{{ .VRMode }}</td>
+                                                    </tr>
+                                                {{ end }}
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    {{/* Install */}}
+                                    <div class="tab-pane" id="dev-install" role="tabpanel">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Key</th>
+                                                    <th scope="col">Value</th>
+                                                </tr>
+                                                </thead>
+                                                {{ range $key, $value := .App.GetInstall }}
+                                                    <tr>
+                                                        <td>{{ $key }}</td>
+                                                        <td>
+                                                            <div class="json">{{ json $value }}</div>
+                                                        </td>
+                                                    </tr>
+                                                {{ end }}
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    {{/* Localisation */}}
+                                    <div class="tab-pane" id="dev-localisation" role="tabpanel">
+
+                                        <div class="clearfix mb-2">
+                                            {{ range $key, $value := .App.GetLocalization.RichPresence }}
+                                                <a class="btn btn-primary btn-sm float-left mr-1 mb-1" href="#{{ $key }}" role="button">{{ title $key }}</a>
+                                            {{ end }}
+                                        </div>
+
+                                        {{ range $key, $value := .App.GetLocalization.RichPresence }}
+                                            <div class="table-responsive mb-2" id="{{ $key }}">
+                                                <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
+                                                    <thead class="thead-light">
+                                                    <tr>
+                                                        <th scope="col" colspan="2">{{ title $key }}</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {{ range $key, $value := .Tokens }}
+                                                        <tr>
+                                                            <td>{{ $key }}</td>
+                                                            <td>{{ $value }}</td>
+                                                        </tr>
+                                                    {{ end }}
+                                                    </tbody>
+
+                                                </table>
+                                            </div>
+                                        {{ end }}
+
+                                    </div>
+
+                                    {{/* Stats */}}
+                                    <div class="tab-pane" id="dev-stats" role="tabpanel">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Default</th>
+                                                    <th scope="col">Display</th>
+                                                </tr>
+                                                </thead>
+                                                {{ range $key, $value := .Stats }}
+                                                    <tr>
+                                                        <td>{{ .Name }}</td>
+                                                        <td>{{ .Default }}</td>
+                                                        <td>{{ .DisplayName }}</td>
+                                                    </tr>
+                                                {{ end }}
+                                            </table>
+                                        </div>
+
                                     </div>
 
                                 </div>
-
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

@@ -1,175 +1,178 @@
-{{define "apps"}} {{ template "_header" . }}
+{{define "apps"}}
+    {{ template "_header" . }}
 
-<div class="container" id="apps-page">
+    <div class="container" id="apps-page">
 
-    <div class="jumbotron">
-        <div class="row">
-            <div class="col-sm-12 col-lg-6">
-
-                <h1><i class="fas fa-gamepad"></i> Games</h1>
-
-            </div>
-            <div class="col-sm-12 col-lg-6">
-
-                <div class="input-group input-group-lg mt-1 mb-2">
-                    <input class="form-control" type="search" placeholder="Search for a Game" id="search" name="search" autofocus>
-                    <div class="input-group-append">
-                        <input type="submit" value="Search" class="input-group-text">
-                    </div>
-                </div>
-
-            </div>
-            <div class="col-12">
-                <p class="lead">{{ .Description }}</p>
-                <small id="presets">
-                    <a href="/apps?types=game&price-low=0.00&price-high=0.00">Free Games</a>,
-                    <a href="/apps?platforms=linux">Linux Games</a>,
-                    <a href="/apps?developers=3589">Valve Games</a>,
-                    <a href="/apps?tags=5153">Kickstarted Games</a>
-                </small>
-            </div>
-        </div>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        {{ template "_apps_header" . }}
-        <div class="card-body">
-
+        <div class="jumbotron">
             <div class="row">
-                <div class="d-none">
-                    {{/* This div is so Chrome auto-fills this one and not the rest! */}}
-                    <label for="hidden">Hidden</label>
-                    <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
-                    </select>
+                <div class="col-sm-12 col-lg-6">
+
+                    <h1><i class="fas fa-gamepad"></i> Games</h1>
+
                 </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group">
-                        <label for="tags">Tag
-                            <small>(<a href="/tags" class="stop-prop">Tags</a>)</small>
-                        </label>
-                        <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags" name="tags">
-                            {{ range $key, $value := .Tags }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
-                        </select>
+                <div class="col-sm-12 col-lg-6">
+
+                    <div class="input-group input-group-lg mt-1 mb-2">
+                        <input class="form-control" type="search" placeholder="Search for a Game" id="search" name="search" autofocus>
+                        <div class="input-group-append">
+                            <input type="submit" value="Search" class="input-group-text">
+                        </div>
                     </div>
+
                 </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group">
-                        <label for="genres">Genre
-                            <small>(<a href="/genres" class="stop-prop">Genres</a>)</small>
-                        </label>
-                        <select multiple data-placeholder="Choose Genres" class="form-control form-control-chosen" id="genres" name="genres">
-                            {{ range $key, $value := .Genres }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
+                <div class="col-12">
+                    <p class="lead">{{ .Description }}</p>
+                    <small id="presets">
+                        <a href="/apps?types=game&price-low=0.00&price-high=0.00">Free Games</a>,
+                        <a href="/apps?platforms=linux">Linux Games</a>,
+                        <a href="/apps?developers=3589">Valve Games</a>,
+                        <a href="/apps?tags=5153">Kickstarted Games</a>
+                    </small>
                 </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group">
-                        <label for="categories">Categories
-                            <small>(<a href="/categories" class="stop-prop">Categories</a>)</small>
-                        </label>
-                        <select multiple data-placeholder="Choose Categories" class="form-control form-control-chosen" id="categories" name="categories">
-                            {{ range $key, $value := .Categories }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group">
-                        <label for="types">Type</label>
-                        <select multiple data-placeholder="Choose Types" class="form-control form-control-chosen" id="types" name="types">
-                            {{ range $key, $value := .Types }}
-                                <option value="{{ .ID }}">{{ .Name }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group">
-                        <label for="developers">Developer
-                            <small>(<a href="/developers" class="stop-prop">Developers</a>)</small>
-                        </label>
-                        <select multiple data-placeholder="Choose Developers" class="form-control form-control-chosen" id="developers" name="developers">
-                            {{ range $key, $value := .Developers }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group">
-                        <label for="publishers">Publisher
-                            <small>(<a href="/publishers" class="stop-prop">Publishers</a>)</small>
-                        </label>
-                        <select multiple data-placeholder="Choose Publishers" class="form-control form-control-chosen" id="publishers" name="publishers">
-                            {{ range $key, $value := .Publishers }}
-                                <option value="{{ .ID }}">{{ .GetName }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group">
-                        <label for="platforms">Operating System</label>
-                        <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="platforms" name="platforms">
-                            <option value=""></option>
-                            <option value="windows">Windows</option>
-                            <option value="macos">MacOS</option>
-                            <option value="linux">Linux</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group slider">
-                        <label id="price-label">Price</label>
-                        <div id="price-slider" data-name="price"></div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3x">
-                    <div class="form-group slider">
-                        <label id="score-label">Score</label>
-                        <div id="score-slider" data-name="score"></div>
-                    </div>
-                </div>
-                {{/*                    <div class="col-sm-6 col-md-4 col-lg-3x">*/}}
-                {{/*                        <div class="form-group">*/}}
-                {{/*                            <label for="tags">Columns</label>*/}}
-                {{/*                            <select multiple data-placeholder="Choose Columns" class="form-control form-control-chosen" id="columns" name="columns">*/}}
-                {{/*                                {{ range $key, $value := .Columns }}*/}}
-                {{/*                                    <option value="{{ .Key }}">{{ .Name }}</option>*/}}
-                {{/*                                {{ end }}*/}}
-                {{/*                            </select>*/}}
-                {{/*                        </div>*/}}
-                {{/*                    </div>*/}}
             </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0" data-path="/apps/apps.json">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col" width="1%">#</th>
-                        <th scope="col" nowrap="nowrap">Game</th>
-                        {{/*<th scope="col" nowrap="nowrap" class="d-none d-lg-table-cell">Type</th>*/}}
-                        <th scope="col" nowrap="nowrap">Players</th>
-                        <th scope="col" nowrap="nowrap">Score</th>
-                        <th scope="col" nowrap="nowrap">Price</th>
-                        <th scope="col"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
-
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_apps_header" . }}
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="d-none">
+                        {{/* This div is so Chrome auto-fills this one and not the rest! */}}
+                        <label for="hidden">Hidden</label>
+                        <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
+                        </select>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="tags">Tag
+                                <small>(<a href="/tags" class="stop-prop">Tags</a>)</small>
+                            </label>
+                            <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags" name="tags">
+                                {{ range $key, $value := .Tags }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="genres">Genre
+                                <small>(<a href="/genres" class="stop-prop">Genres</a>)</small>
+                            </label>
+                            <select multiple data-placeholder="Choose Genres" class="form-control form-control-chosen" id="genres" name="genres">
+                                {{ range $key, $value := .Genres }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="categories">Categories
+                                <small>(<a href="/categories" class="stop-prop">Categories</a>)</small>
+                            </label>
+                            <select multiple data-placeholder="Choose Categories" class="form-control form-control-chosen" id="categories" name="categories">
+                                {{ range $key, $value := .Categories }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="types">Type</label>
+                            <select multiple data-placeholder="Choose Types" class="form-control form-control-chosen" id="types" name="types">
+                                {{ range $key, $value := .Types }}
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="developers">Developer
+                                <small>(<a href="/developers" class="stop-prop">Developers</a>)</small>
+                            </label>
+                            <select multiple data-placeholder="Choose Developers" class="form-control form-control-chosen" id="developers" name="developers">
+                                {{ range $key, $value := .Developers }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="publishers">Publisher
+                                <small>(<a href="/publishers" class="stop-prop">Publishers</a>)</small>
+                            </label>
+                            <select multiple data-placeholder="Choose Publishers" class="form-control form-control-chosen" id="publishers" name="publishers">
+                                {{ range $key, $value := .Publishers }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="platforms">Operating System</label>
+                            <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="platforms" name="platforms">
+                                <option value=""></option>
+                                <option value="windows">Windows</option>
+                                <option value="macos">MacOS</option>
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group slider">
+                            <label id="price-label">Price</label>
+                            <div id="price-slider" data-name="price"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group slider">
+                            <label id="score-label">Score</label>
+                            <div id="score-slider" data-name="score"></div>
+                        </div>
+                    </div>
+                    {{/*                    <div class="col-sm-6 col-md-4 col-lg-3x">*/}}
+                    {{/*                        <div class="form-group">*/}}
+                    {{/*                            <label for="tags">Columns</label>*/}}
+                    {{/*                            <select multiple data-placeholder="Choose Columns" class="form-control form-control-chosen" id="columns" name="columns">*/}}
+                    {{/*                                {{ range $key, $value := .Columns }}*/}}
+                    {{/*                                    <option value="{{ .Key }}">{{ .Name }}</option>*/}}
+                    {{/*                                {{ end }}*/}}
+                    {{/*                            </select>*/}}
+                    {{/*                        </div>*/}}
+                    {{/*                    </div>*/}}
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0" data-path="/apps/apps.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" width="1%">#</th>
+                            <th scope="col" nowrap="nowrap">Game</th>
+                            {{/*<th scope="col" nowrap="nowrap" class="d-none d-lg-table-cell">Type</th>*/}}
+                            <th scope="col" nowrap="nowrap">Players</th>
+                            <th scope="col" nowrap="nowrap">Score</th>
+                            <th scope="col" nowrap="nowrap">Price</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
-</div>
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

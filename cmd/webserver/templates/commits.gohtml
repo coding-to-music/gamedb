@@ -1,35 +1,37 @@
-{{define "commits"}} {{ template "_header" . }}
+{{define "commits"}}
+    {{ template "_header" . }}
 
-<div class="container" id="commits-page">
+    <div class="container" id="commits-page">
 
-    <div class="jumbotron">
-        <h1><i class="fab fa-github"></i> Commits</h1>
-        <p class="lead">{{ comma .Total }} commits so far</p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-body">
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0" data-path="/commits/commits.json">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Message</th>
-                        <th scope="col">Time</th>
-                        <th scope="col">Hash</th>
-                        <th scope="col">Deployed</th>
-                    </tr>
-                    </thead>
-                    <tbody class="tags-list">
-                    </tbody>
-                </table>
-            </div>
-
+        <div class="jumbotron">
+            <h1><i class="fab fa-github"></i> Commits</h1>
+            <p class="lead">{{ comma .Total }} commits so far</p>
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0" data-path="/commits/commits.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Message</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Hash</th>
+                            <th scope="col">Deployed</th>
+                        </tr>
+                        </thead>
+                        <tbody class="tags-list">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

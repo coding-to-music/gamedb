@@ -1,54 +1,56 @@
-{{define "badge"}} {{ template "_header" . }}
+{{define "badge"}}
+    {{ template "_header" . }}
 
-<div class="container" id="badge-page" data-path="{{ .Badge.GetPath }}">
+    <div class="container" id="badge-page" data-path="{{ .Badge.GetPath }}">
 
-    <div class="jumbotron">
+        <div class="jumbotron">
 
-        <img src="{{ .Badge.GetBadgeIcon }}" alt="{{ .Badge.GetName }}">
+            <img src="{{ .Badge.GetBadgeIcon }}" alt="{{ .Badge.GetName }}">
 
-        {{ template "_social" .Badge }}
+            {{ template "_social" .Badge }}
 
-        <h1 class="text-truncate" title="{{ .Badge.GetName }}">
-            <i class="fas fa-ribbon"></i> {{ .Badge.GetName }}
-        </h1>
-
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-body">
-
-            {{ if gt .Badge.AppID 0 }}
-                <p>
-                    <a href="{{ .Badge.GetAppPath }}" class="btn btn-success">Go to App page</a>
-                    {{ if eq .Foil "1" }}
-                        <a href="{{ .Badge.GetPath }}" class="btn btn-success">Go to non-foil badge</a>
-                    {{ else }}
-                        <a href="{{ .Badge.GetPath }}?foil=1" class="btn btn-success">Go to foil badge</a>
-                    {{ end }}
-                </p>
-            {{ end }}
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0" data-ordering="false" data-path="/badges/{{ .Badge.GetUniqueID }}/players.json?foil={{ .Foil }}">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col" width="1%">Rank</th>
-                        <th scope="col">Player</th>
-                        <th scope="col">Level</th>
-                        <th scope="col">Achieved</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
+            <h1 class="text-truncate" title="{{ .Badge.GetName }}">
+                <i class="fas fa-ribbon"></i> {{ .Badge.GetName }}
+            </h1>
 
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                {{ if gt .Badge.AppID 0 }}
+                    <p>
+                        <a href="{{ .Badge.GetAppPath }}" class="btn btn-success">Go to App page</a>
+                        {{ if eq .Foil "1" }}
+                            <a href="{{ .Badge.GetPath }}" class="btn btn-success">Go to non-foil badge</a>
+                        {{ else }}
+                            <a href="{{ .Badge.GetPath }}?foil=1" class="btn btn-success">Go to foil badge</a>
+                        {{ end }}
+                    </p>
+                {{ end }}
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0" data-ordering="false" data-path="/badges/{{ .Badge.GetUniqueID }}/players.json?foil={{ .Foil }}">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" width="1%">Rank</th>
+                            <th scope="col">Player</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Achieved</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

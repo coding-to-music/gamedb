@@ -1,44 +1,46 @@
-{{define "chat_bot"}} {{ template "_header" . }}
+{{define "chat_bot"}}
+    {{ template "_header" . }}
 
-<div class="container" id="chat-bot-page">
+    <div class="container" id="chat-bot-page">
 
-    <div class="jumbotron">
-        <a href="{{ .AddBotLink }}" target="_blank">
-            <img src="/assets/img/discord.png" class="float-right" alt="Discord">
-        </a>
-        <h1><i class="fas fa-robot"></i> Chat Bot</h1>
-        <p class="lead">Add Game DB to your Discord server by clicking the image to the right.</p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-body">
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable mb-3" data-ordering="false" id="bin-logs">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Example</th>
-                        <th scope="col">Regex</th>
-                        <th scope="col">Description</th>
-                    </tr>
-                    </thead>
-                    <tbody class="tags-list">
-                    {{ range $key, $value := .Commands }}
-                        <tr>
-                            <td>{{ .Example }}</td>
-                            <td>{{ .Regex }}</td>
-                            <td>{{ .Description }}</td>
-                        </tr>
-                    {{ end }}
-                    </tbody>
-                </table>
-            </div>
-
+        <div class="jumbotron">
+            <a href="{{ .AddBotLink }}" target="_blank">
+                <img src="/assets/img/discord.png" class="float-right" alt="Discord">
+            </a>
+            <h1><i class="fas fa-robot"></i> Chat Bot</h1>
+            <p class="lead">Add Game DB to your Discord server by clicking the image to the right.</p>
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-datatable mb-3" data-ordering="false" id="bin-logs">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Example</th>
+                            <th scope="col">Regex</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                        </thead>
+                        <tbody class="tags-list">
+                        {{ range $key, $value := .Commands }}
+                            <tr>
+                                <td>{{ .Example }}</td>
+                                <td>{{ .Regex }}</td>
+                                <td>{{ .Description }}</td>
+                            </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

@@ -1,79 +1,81 @@
-{{define "price_changes"}} {{ template "_header" . }}
+{{define "price_changes"}}
+    {{ template "_header" . }}
 
-<div class="container" id="price-changes-page">
+    <div class="container" id="price-changes-page">
 
-    <div class="jumbotron">
+        <div class="jumbotron">
 
-        <h1><i class="fas fa-dollar-sign"></i> Price Changes</h1>
-        <small>Get notified on 100% price drops on the Game DB <a target="_blank" href="https://twitter.com/gamedbonline"><i class="fab fa-twitter-square"></i> Twitter</a> / <a target="_blank" href="https://www.reddit.com/r/gamedb/"><i class="fab fa-reddit-square"></i> Subreddit</a>.</small>
-
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-header">
-
-            <h5 class="float-right mb-0">
-                <span class="badge badge-secondary" id="live-badge">Live</span>
-            </h5>
-
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <span class="nav-link active" role="tab">Price Changes</span>
-                </li>
-            </ul>
+            <h1><i class="fas fa-dollar-sign"></i> Price Changes</h1>
+            <small>Get notified on 100% price drops on the Game DB <a target="_blank" href="https://twitter.com/gamedbonline"><i class="fab fa-twitter-square"></i> Twitter</a> / <a target="_blank" href="https://www.reddit.com/r/gamedb/"><i class="fab fa-reddit-square"></i> Subreddit</a>.</small>
 
         </div>
-        <div class="card-body">
 
-            <form class="mb-4">
-                <div class="row">
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-group">
-                            <label for="type">Product Type</label>
-                            <select data-placeholder="Choose Product Type" class="form-control form-control-chosen" id="type" name="type">
-                                <option value="all">Apps & Packages</option>
-                                <option value="apps" selected>Apps Only</option>
-                                <option value="packages">Packages Only</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-group slider">
-                            <label id="change-label">Price Change Percent</label>
-                            <div id="change-slider" data-name="change"></div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-group slider">
-                            <label id="price-label">Final Price</label>
-                            <div id="price-slider" data-name="price"></div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+        {{ template "_flashes" . }}
 
-            <div class="table-responsive">
-                <table class="table table-hover mb-0" data-path="/price-changes/price-changes.json">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">App / Package</th>
-                        <th scope="col">Before</th>
-                        <th scope="col">After</th>
-                        <th scope="col">Change</th>
-                        <th scope="col">Time</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+        <div class="card">
+            <div class="card-header">
 
-                    </tbody>
-                </table>
+                <h5 class="float-right mb-0">
+                    <span class="badge badge-secondary" id="live-badge">Live</span>
+                </h5>
+
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <span class="nav-link active" role="tab">Price Changes</span>
+                    </li>
+                </ul>
+
             </div>
+            <div class="card-body">
 
+                <form class="mb-4">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-group">
+                                <label for="type">Product Type</label>
+                                <select data-placeholder="Choose Product Type" class="form-control form-control-chosen" id="type" name="type">
+                                    <option value="all">Apps & Packages</option>
+                                    <option value="apps" selected>Apps Only</option>
+                                    <option value="packages">Packages Only</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-group slider">
+                                <label id="change-label">Price Change Percent</label>
+                                <div id="change-slider" data-name="change"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-group slider">
+                                <label id="price-label">Final Price</label>
+                                <div id="price-slider" data-name="price"></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" data-path="/price-changes/price-changes.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">App / Package</th>
+                            <th scope="col">Before</th>
+                            <th scope="col">After</th>
+                            <th scope="col">Change</th>
+                            <th scope="col">Time</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

@@ -1,44 +1,46 @@
-{{define "changes"}} {{ template "_header" . }}
+{{define "changes"}}
+    {{ template "_header" . }}
 
-<div class="container" id="changes-page">
+    <div class="container" id="changes-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-exchange-alt"></i> Changes</h1>
-        <p class="lead">{{ .Description }}</p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-header">
-
-            <h5 class="float-right mb-0">
-                <span class="badge badge-secondary" id="live-badge">Live</span>
-            </h5>
-
+        <div class="jumbotron">
+            <h1><i class="fas fa-exchange-alt"></i> Changes</h1>
+            <p class="lead">{{ .Description }}</p>
         </div>
-        <div class="card-body">
 
-            <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0" data-path="/changes/changes.json">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Change</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Apps</th>
-                        <th scope="col">Packages</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+        {{ template "_flashes" . }}
 
-                    </tbody>
-                </table>
+        <div class="card">
+            <div class="card-header">
+
+                <h5 class="float-right mb-0">
+                    <span class="badge badge-secondary" id="live-badge">Live</span>
+                </h5>
 
             </div>
+            <div class="card-body">
 
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0" data-path="/changes/changes.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Change</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Apps</th>
+                            <th scope="col">Packages</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
         </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

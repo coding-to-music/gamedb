@@ -1,52 +1,54 @@
-{{define "chat"}} {{ template "_header" . }}
+{{define "chat"}}
+    {{ template "_header" . }}
 
-<div class="container" id="chat-page">
+    <div class="container" id="chat-page">
 
-    <div class="jumbotron">
-        <a href="https://discord.gg/c5zrcus" target="_blank">
-            <img src="/assets/img/discord.png" class="float-right" alt="Discord">
-        </a>
-        <h1><i class="fas fa-comments"></i> Chat</h1>
-        <p class="lead">See what's going on, on our <a target="_blank" href="https://discord.gg/c5zrcus">Discord chat server</a>.</p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card mb-3">
-        <div class="card-header">Members</div>
-        <div class="card-body">
-
-            {{ range $key, $value := .Members }}
-                <span class="badge badge-success float-left mb-1 mr-1">{{ .User.Username }}</span>
-            {{ end }}
-
+        <div class="jumbotron">
+            <a href="https://discord.gg/c5zrcus" target="_blank">
+                <img src="/assets/img/discord.png" class="float-right" alt="Discord">
+            </a>
+            <h1><i class="fas fa-comments"></i> Chat</h1>
+            <p class="lead">See what's going on, on our <a target="_blank" href="https://discord.gg/c5zrcus">Discord chat server</a>.</p>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header">
+        {{ template "_flashes" . }}
 
-            <h5 class="float-right mb-0">
-                <span class="badge badge-secondary" id="live-badge">Live</span>
-            </h5>
+        <div class="card mb-3">
+            <div class="card-header">Members</div>
+            <div class="card-body">
 
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                {{ range $key, $value := .Channels }}
-                    <li class="nav-item">
-                        <a class="nav-link{{ if eq $.ChannelID .ID }} active{{ end }}" href="/chat/{{ .ID }}" role="tab">{{ .Name }}</a>
-                    </li>
+                {{ range $key, $value := .Members }}
+                    <span class="badge badge-success float-left mb-1 mr-1">{{ .User.Username }}</span>
                 {{ end }}
-            </ul>
 
+            </div>
         </div>
-        <div class="card-body">
 
-            <ul class="list-unstyled" data-channel-id="{{ .ChannelID }}">
-                <i class="fas fa-spinner fa-spin"></i>
-            </ul>
+        <div class="card">
+            <div class="card-header">
+
+                <h5 class="float-right mb-0">
+                    <span class="badge badge-secondary" id="live-badge">Live</span>
+                </h5>
+
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    {{ range $key, $value := .Channels }}
+                        <li class="nav-item">
+                            <a class="nav-link{{ if eq $.ChannelID .ID }} active{{ end }}" href="/chat/{{ .ID }}" role="tab">{{ .Name }}</a>
+                        </li>
+                    {{ end }}
+                </ul>
+
+            </div>
+            <div class="card-body">
+
+                <ul class="list-unstyled" data-channel-id="{{ .ChannelID }}">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </ul>
+            </div>
         </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

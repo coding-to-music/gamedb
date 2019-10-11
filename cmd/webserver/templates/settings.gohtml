@@ -1,260 +1,262 @@
-{{define "settings"}} {{ template "_header" . }}
+{{define "settings"}}
+    {{ template "_header" . }}
 
-<script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 
-<div class="container" id="settings-page">
+    <div class="container" id="settings-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-cog"></i> Settings</h1>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-header">
-
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#settings" role="tab">Settings</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#events" role="tab">Events</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#donations" role="tab">Donations</a>
-                </li>
-                <li class="mr-auto"></li>
-                <li class="nav-item">
-                    <a class="nav-link text-danger" data-toggle="tab" href="#delete" role="tab">Delete Account</a>
-                </li>
-            </ul>
-
+        <div class="jumbotron">
+            <h1><i class="fas fa-cog"></i> Settings</h1>
         </div>
-        <div class="card-body">
 
-            <div class="tab-content">
+        {{ template "_flashes" . }}
 
-                {{/* Settings */}}
-                <div class="tab-pane show active" id="settings" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
 
-                    <div class="row">
-                        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#settings" role="tab">Settings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#events" role="tab">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#donations" role="tab">Donations</a>
+                    </li>
+                    <li class="mr-auto"></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" data-toggle="tab" href="#delete" role="tab">Delete Account</a>
+                    </li>
+                </ul>
 
-                            <div class="card">
-                                <div class="card-header">Settings</div>
-                                <div class="card-body">
+            </div>
+            <div class="card-body">
 
-                                    <form action="/settings/update" method="post">
+                <div class="tab-content">
 
-                                        <div class="row">
-                                            <div class="col-12">
+                    {{/* Settings */}}
+                    <div class="tab-pane show active" id="settings" role="tabpanel">
 
-                                                <div class="form-group">
-                                                    <label for="email">Email</label>
-                                                    <input type="email" class="form-control" id="email" placeholder="Email" autofocus name="email" autocomplete="current-email" value="{{ .User.Email }}">
-                                                    <small class="form-text text-muted">Currently only used for login purposes.</small>
+                        <div class="row">
+                            <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+
+                                <div class="card">
+                                    <div class="card-header">Settings</div>
+                                    <div class="card-body">
+
+                                        <form action="/settings/update" method="post">
+
+                                            <div class="row">
+                                                <div class="col-12">
+
+                                                    <div class="form-group">
+                                                        <label for="email">Email</label>
+                                                        <input type="email" class="form-control" id="email" placeholder="Email" autofocus name="email" autocomplete="current-email" value="{{ .User.Email }}">
+                                                        <small class="form-text text-muted">Currently only used for login purposes.</small>
+                                                    </div>
+
+                                                    <div class="form-group" id="password-container">
+                                                        <label for="password">Password</label>
+                                                        <input type="password" class="form-control" id="password" placeholder="Password" name="password" autocomplete="new-password">
+                                                        <small class="form-text text-muted">Fill in to change.</small>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="country">Currency</label>
+                                                        <select class="form-control" id="country" name="prod_cc">
+                                                            {{ range $key, $value := .ProdCCs }}
+                                                                <option value="{{ .ProductCode }}" {{ if eq $.UserProductCC.ProductCode .ProductCode }} selected{{ end }}>{{ .Name }}</option>
+                                                            {{ end }}
+                                                        </select>
+                                                    </div>
+
+                                                    {{/*                                                <label>Settings</label>*/}}
+                                                    {{/*                                                <div class="form-check">*/}}
+                                                    {{/*                                                    <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{ if .User.HideProfile }}checked{{ end }}>*/}}
+                                                    {{/*                                                    <label class="form-check-label" for="hide-profile">Hide my profile from all areas</label>*/}}
+                                                    {{/*                                                </div>*/}}
+
+                                                    {{/*                                                <div class="form-check">*/}}
+                                                    {{/*                                                    <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{ if .User.ShowAlerts }}checked{{ end }}>*/}}
+                                                    {{/*                                                    <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>*/}}
+                                                    {{/*                                                </div>*/}}
+
+                                                    <button type="submit" class="btn btn-success">Save</button>
+
                                                 </div>
-
-                                                <div class="form-group" id="password-container">
-                                                    <label for="password">Password</label>
-                                                    <input type="password" class="form-control" id="password" placeholder="Password" name="password" autocomplete="new-password">
-                                                    <small class="form-text text-muted">Fill in to change.</small>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="country">Currency</label>
-                                                    <select class="form-control" id="country" name="prod_cc">
-                                                        {{ range $key, $value := .ProdCCs }}
-                                                            <option value="{{ .ProductCode }}" {{ if eq $.UserProductCC.ProductCode .ProductCode }} selected{{ end }}>{{ .Name }}</option>
-                                                        {{ end }}
-                                                    </select>
-                                                </div>
-
-                                                {{/*                                                <label>Settings</label>*/}}
-                                                {{/*                                                <div class="form-check">*/}}
-                                                {{/*                                                    <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{ if .User.HideProfile }}checked{{ end }}>*/}}
-                                                {{/*                                                    <label class="form-check-label" for="hide-profile">Hide my profile from all areas</label>*/}}
-                                                {{/*                                                </div>*/}}
-
-                                                {{/*                                                <div class="form-check">*/}}
-                                                {{/*                                                    <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{ if .User.ShowAlerts }}checked{{ end }}>*/}}
-                                                {{/*                                                    <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>*/}}
-                                                {{/*                                                </div>*/}}
-
-                                                <button type="submit" class="btn btn-success">Save</button>
-
                                             </div>
-                                        </div>
 
-                                    </form>
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="col-12 col-lg-6">
-
-                            <div class="card mb-3" id="connections">
-                                <div class="card-header">Connections</div>
-                                <div class="card-body">
-
-                                    {{ if eq .User.SteamID 0 }}
-                                        <form action="https://steamcommunity.com/openid/login" method="post">
-                                            <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
-                                            <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
-                                            <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
-                                            <input type="hidden" name="openid.mode" value="checkid_setup">
-                                            <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
-                                            <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/steam-callback">
-                                            <p>
-                                                <button type="submit" class="btn btn-success btn-sm">
-                                                    <i class="fab fa-steam"></i> Link Steam Account
-                                                </button>
-                                            </p>
                                         </form>
-                                    {{ else }}
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+
+                                <div class="card mb-3" id="connections">
+                                    <div class="card-header">Connections</div>
+                                    <div class="card-body">
+
+                                        {{ if eq .User.SteamID 0 }}
+                                            <form action="https://steamcommunity.com/openid/login" method="post">
+                                                <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
+                                                <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
+                                                <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
+                                                <input type="hidden" name="openid.mode" value="checkid_setup">
+                                                <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
+                                                <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/steam-callback">
+                                                <p>
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fab fa-steam"></i> Link Steam Account
+                                                    </button>
+                                                </p>
+                                            </form>
+                                        {{ else }}
+                                            <p>
+                                                <a href="/settings/unlink-steam" role="button" class="btn btn-danger btn-sm">
+                                                    <i class="fab fa-steam"></i> Unlink Steam Account
+                                                </a>
+                                            </p>
+                                        {{ end }}
+
                                         <p>
-                                            <a href="/settings/unlink-steam" role="button" class="btn btn-danger btn-sm">
-                                                <i class="fab fa-steam"></i> Unlink Steam Account
-                                            </a>
+                                            {{ if eq .User.PatreonID "" }}
+                                                <a href="/settings/link-patreon" role="button" class="btn btn-success btn-sm">
+                                                    <i class="fab fa-patreon"></i> Link Patreon Account
+                                                </a>
+                                            {{ else }}
+                                                <a href="/settings/unlink-patreon" role="button" class="btn btn-danger btn-sm">
+                                                    <i class="fab fa-patreon"></i> Unlink Patreon Account
+                                                </a>
+                                            {{ end }}
                                         </p>
-                                    {{ end }}
 
-                                    <p>
-                                        {{ if eq .User.PatreonID "" }}
-                                            <a href="/settings/link-patreon" role="button" class="btn btn-success btn-sm">
-                                                <i class="fab fa-patreon"></i> Link Patreon Account
-                                            </a>
-                                        {{ else }}
-                                            <a href="/settings/unlink-patreon" role="button" class="btn btn-danger btn-sm">
-                                                <i class="fab fa-patreon"></i> Unlink Patreon Account
-                                            </a>
-                                        {{ end }}
-                                    </p>
+                                        <p>
+                                            {{ if eq .User.DiscordID "" }}
+                                                <a href="/settings/link-discord" role="button" class="btn btn-success btn-sm">
+                                                    <i class="fab fa-discord"></i> Link Discord Account
+                                                </a>
+                                            {{ else }}
+                                                <a href="/settings/unlink-discord" role="button" class="btn btn-danger btn-sm">
+                                                    <i class="fab fa-discord"></i> Unlink Discord Account
+                                                </a>
+                                            {{ end }}
+                                        </p>
 
-                                    <p>
-                                        {{ if eq .User.DiscordID "" }}
-                                            <a href="/settings/link-discord" role="button" class="btn btn-success btn-sm">
-                                                <i class="fab fa-discord"></i> Link Discord Account
-                                            </a>
-                                        {{ else }}
-                                            <a href="/settings/unlink-discord" role="button" class="btn btn-danger btn-sm">
-                                                <i class="fab fa-discord"></i> Unlink Discord Account
-                                            </a>
-                                        {{ end }}
-                                    </p>
+                                        <p class="mb-0">
+                                            {{ if eq .User.GoogleID "" }}
+                                                <a href="/settings/link-google" role="button" class="btn btn-success btn-sm">
+                                                    <i class="fab fa-google"></i> Link Google Account
+                                                </a>
+                                            {{ else }}
+                                                <a href="/settings/unlink-google" role="button" class="btn btn-danger btn-sm">
+                                                    <i class="fab fa-google"></i> Unlink Google Account
+                                                </a>
+                                            {{ end }}
+                                        </p>
 
-                                    <p class="mb-0">
-                                        {{ if eq .User.GoogleID "" }}
-                                            <a href="/settings/link-google" role="button" class="btn btn-success btn-sm">
-                                                <i class="fab fa-google"></i> Link Google Account
-                                            </a>
-                                        {{ else }}
-                                            <a href="/settings/unlink-google" role="button" class="btn btn-danger btn-sm">
-                                                <i class="fab fa-google"></i> Unlink Google Account
-                                            </a>
-                                        {{ end }}
-                                    </p>
-
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="card" id="api">
-                                <div class="card-header">
-                                    <span>API</span>
-                                    <h5 class="float-right mb-0">
-                                        <a href="/api" class="badge badge-success">Documentation</a>
-                                    </h5>
+                                <div class="card" id="api">
+                                    <div class="card-header">
+                                        <span>API</span>
+                                        <h5 class="float-right mb-0">
+                                            <a href="/api" class="badge badge-success">Documentation</a>
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+
+                                        <p>API key: {{ .User.APIKey }}</p>
+
+                                        <a href="/settings/new-key" role="button" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-retweet"></i> Generate new key
+                                        </a>
+
+                                    </div>
                                 </div>
-                                <div class="card-body">
 
-                                    <p>API key: {{ .User.APIKey }}</p>
-
-                                    <a href="/settings/new-key" role="button" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-retweet"></i> Generate new key
-                                    </a>
-
-                                </div>
                             </div>
 
                         </div>
 
                     </div>
 
-                </div>
+                    {{/* Donations */}}
+                    <div class="tab-pane" id="donations" role="tabpanel">
 
-                {{/* Donations */}}
-                <div class="tab-pane" id="donations" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0" data-order='[[0, "desc"]]' data-path="/settings/donations.json">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Amount</th>
+                                </tr>
+                                </thead>
+                                <tbody>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0" data-order='[[0, "desc"]]' data-path="/settings/donations.json">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Date</th>
-                                <th scope="col">Amount</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-
-                {{/* Events */}}
-                <div class="tab-pane" id="events" role="tabpanel">
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0" data-order='[[0, "desc"]]' data-path="/settings/events.json">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Date</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">IP</th>
-                                <th scope="col">User Agent</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-
-                {{/* Delete */}}
-                <div class="tab-pane" id="delete" role="tabpanel">
-
-                    <form action="/delete" method="post">
-                        <div class="form-group">
-                            <label for="userid">Email</label>
-                            <input type="email" class="form-control" id="userid" placeholder="User ID" name="userid" autofocus required>
+                                </tbody>
+                            </table>
                         </div>
 
-                        <button type="submit" class="btn btn-success">Delete Account</button>
-                    </form>
+                    </div>
+
+                    {{/* Events */}}
+                    <div class="tab-pane" id="events" role="tabpanel">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0" data-order='[[0, "desc"]]' data-path="/settings/events.json">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">IP</th>
+                                    <th scope="col">User Agent</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    {{/* Delete */}}
+                    <div class="tab-pane" id="delete" role="tabpanel">
+
+                        <form action="/delete" method="post">
+                            <div class="form-group">
+                                <label for="userid">Email</label>
+                                <input type="email" class="form-control" id="userid" placeholder="User ID" name="userid" autofocus required>
+                            </div>
+
+                            <button type="submit" class="btn btn-success">Delete Account</button>
+                        </form>
+
+                    </div>
 
                 </div>
 
             </div>
-
         </div>
+
     </div>
 
-</div>
+    <script>
+        {{ if ne .Games "" }}
+        localStorage.setItem("gamedb-games", '{{ .Games }}');
+        {{ end }}
+        {{ if ne .Groups "" }}
+        localStorage.setItem("gamedb-groups", '{{ .Groups }}');
+        {{ end }}
 
-<script>
-    {{ if ne .Games "" }}
-    localStorage.setItem("gamedb-games", '{{ .Games }}');
-    {{ end }}
-    {{ if ne .Groups "" }}
-    localStorage.setItem("gamedb-groups", '{{ .Groups }}');
-    {{ end }}
+        localStorage.removeItem("games");
+        localStorage.removeItem("groups");
+    </script>
 
-    localStorage.removeItem("games");
-    localStorage.removeItem("groups");
-</script>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

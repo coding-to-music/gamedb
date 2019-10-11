@@ -1,83 +1,85 @@
-{{define "wishlists"}} {{ template "_header" . }}
+{{define "wishlists"}}
+    {{ template "_header" . }}
 
-<div class="container" id="wishlists-page">
+    <div class="container" id="wishlists-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-star"></i> Wishlists</h1>
-        <p class="lead">The most wishlisted items on Game DB</p>
-        <small>To see a limited but more accurate list, see the <a href="https://store.steampowered.com/search/?filter=popularwishlist" target="_blank">Steam store list</a>.</small>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-header">
-
-            <ul class="nav nav-tabs card-header-tabs" role="tablist">
-
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#apps" role="tab">Apps</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#tags" role="tab">Tags</a>
-                </li>
-
-            </ul>
+        <div class="jumbotron">
+            <h1><i class="fas fa-star"></i> Wishlists</h1>
+            <p class="lead">The most wishlisted items on Game DB</p>
+            <small>To see a limited but more accurate list, see the <a href="https://store.steampowered.com/search/?filter=popularwishlist" target="_blank">Steam store list</a>.</small>
         </div>
 
-        <div class="card-body">
+        {{ template "_flashes" . }}
 
-            <div class="tab-content">
+        <div class="card">
+            <div class="card-header">
 
-                {{/* Apps */}}
-                <div class="tab-pane show active" id="apps" role="tabpanel">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped" data-ordering="false" data-path="/wishlists/apps.json">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">App</th>
-                                <th scope="col">Players</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#apps" role="tab">Apps</a>
+                    </li>
 
-                            </tbody>
-                        </table>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tags" role="tab">Tags</a>
+                    </li>
+
+                </ul>
+            </div>
+
+            <div class="card-body">
+
+                <div class="tab-content">
+
+                    {{/* Apps */}}
+                    <div class="tab-pane show active" id="apps" role="tabpanel">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped" data-ordering="false" data-path="/wishlists/apps.json">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">App</th>
+                                    <th scope="col">Players</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
 
-                </div>
+                    {{/* Tags */}}
+                    <div class="tab-pane" id="tags" role="tabpanel">
 
-                {{/* Tags */}}
-                <div class="tab-pane" id="tags" role="tabpanel">
+                        <div class="table-responsive mb-0">
+                            <table class="table table-hover table-striped" data-ordering="false" data-path="/wishlists/tags.json">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" width="50%">Tag</th>
+                                    <th scope="col">Players</th>
+                                </tr>
+                                </thead>
+                                <tbody>
 
-                    <div class="table-responsive mb-0">
-                        <table class="table table-hover table-striped" data-ordering="false" data-path="/wishlists/tags.json">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col" width="50%">Tag</th>
-                                <th scope="col">Players</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                                </tbody>
+                            </table>
+                        </div>
 
-                            </tbody>
-                        </table>
                     </div>
 
                 </div>
 
             </div>
-
         </div>
+
+        <div class="jumbotron bottom">
+            <h1><i class="fas fa-info"></i></h1>
+            <div>Wishlist player counts are updated when a player is updated.</div>
+        </div>
+
     </div>
 
-    <div class="jumbotron bottom">
-        <h1><i class="fas fa-info"></i></h1>
-        <div>Wishlist player counts are updated when a player is updated.</div>
-    </div>
-
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

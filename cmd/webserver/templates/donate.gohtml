@@ -1,155 +1,157 @@
-{{define "donate"}} {{ template "_header" . }}
+{{define "donate"}}
+    {{ template "_header" . }}
 
-<div class="container" id="donate-page">
+    <div class="container" id="donate-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-heart text-danger"></i> Donate</h1>
-        <p class="lead mb-2">{{ .Description }} Donations will go towards a new extra quick site-wide search,
-            high definition charts, tracking every currency, faster hosting & more!</p>
+        <div class="jumbotron">
+            <h1><i class="fas fa-heart text-danger"></i> Donate</h1>
+            <p class="lead mb-2">{{ .Description }} Donations will go towards a new extra quick site-wide search,
+                high definition charts, tracking every currency, faster hosting & more!</p>
 
-        <div id="patreon-button">
-            <a href="https://www.patreon.com/bePatron?u=9962078" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
-            <script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
-        </div>
-
-        <small class="d-block mt-2">Or a one off <a href="https://paypal.me/jimeagle/10" target="_blank">PayPal</a> donation.</small>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    {{/* Perks */}}
-    <div class="card mb-3">
-        <div class="card-body p-0">
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Patreon Perks</th>
-                        <th scope="col">Donator</th>
-                        <th scope="col">Upgrade</th>
-                        <th scope="col">Pro</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> No ads</td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Donator flair</td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Your name in the hall of fame</td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Quicker profile updates</td>
-                        <td></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Quick add friends</td>
-                        <td></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Access to all pagination</td>
-                        <td></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Automatic profile updates, for you and your primary group</td>
-                        <td></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Remove Game DB branding from chat bot</td>
-                        <td></td>
-                        <td></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    <tr>
-                        <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> <a href="/api">API</a> access</td>
-                        <td></td>
-                        <td></td>
-                        <td><i class="fas fa-check text-success"></i></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div id="patreon-button">
+                <a href="https://www.patreon.com/bePatron?u=9962078" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
+                <script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
             </div>
 
+            <small class="d-block mt-2">Or a one off <a href="https://paypal.me/jimeagle/10" target="_blank">PayPal</a> donation.</small>
         </div>
-    </div>
 
-    {{/* Donators */}}
-    <div class="row">
-        <div class="col-12 col-md-6 mb-4 mb-md-0">
+        {{ template "_flashes" . }}
 
-            <div class="card">
-                <div class="card-header">Top Donators</div>
-                <div class="card-body">
+        {{/* Perks */}}
+        <div class="card mb-3">
+            <div class="card-body p-0">
 
-                    <p>Coming Soon</p>
-
-                    <div class="table-responsive d-none">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false" data-order='[[1, "desc"]]'>
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Player</th>
-                                <th scope="col">Total</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
-                    </div>
-
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Patreon Perks</th>
+                            <th scope="col">Donator</th>
+                            <th scope="col">Upgrade</th>
+                            <th scope="col">Pro</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> No ads</td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Donator flair</td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Your name in the hall of fame</td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Quicker profile updates</td>
+                            <td></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Quick add friends</td>
+                            <td></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Access to all pagination</td>
+                            <td></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Automatic profile updates, for you and your primary group</td>
+                            <td></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> Remove Game DB branding from chat bot</td>
+                            <td></td>
+                            <td></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td nowrap="nowrap"><i class="fas fa-star text-warning"></i> <a href="/api">API</a> access</td>
+                            <td></td>
+                            <td></td>
+                            <td><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
+
             </div>
-
         </div>
-        <div class="col-12 col-md-6">
 
-            <div class="card">
-                <div class="card-header">Recent Donations</div>
-                <div class="card-body">
+        {{/* Donators */}}
+        <div class="row">
+            <div class="col-12 col-md-6 mb-4 mb-md-0">
 
-                    <p>Coming Soon</p>
+                <div class="card">
+                    <div class="card-header">Top Donators</div>
+                    <div class="card-body">
 
-                    <div class="table-responsive d-none">
-                        <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false" data-order='[[2, "desc"]]'>
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Player</th>
-                                <th scope="col">Amount</th>
-                                <th scope="col">Date</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                        <p>Coming Soon</p>
 
-                            </tbody>
-                        </table>
+                        <div class="table-responsive d-none">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false" data-order='[[1, "desc"]]'>
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Player</th>
+                                    <th scope="col">Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
 
+            </div>
+            <div class="col-12 col-md-6">
+
+                <div class="card">
+                    <div class="card-header">Recent Donations</div>
+                    <div class="card-body">
+
+                        <p>Coming Soon</p>
+
+                        <div class="table-responsive d-none">
+                            <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false" data-order='[[2, "desc"]]'>
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Player</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
         </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}

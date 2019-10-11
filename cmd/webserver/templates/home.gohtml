@@ -1,123 +1,125 @@
-{{define "home"}} {{ template "_header" . }}
+{{define "home"}}
+    {{ template "_header" . }}
 
-<link href="https://fonts.googleapis.com/css?family=Audiowide&display=fallback&text=Game DB" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Audiowide&display=fallback&text=Game DB" rel="stylesheet">
 
-<div id="hero">
-    <h1>Game DB</h1>
-</div>
-
-<div class="container" id="home-page">
-
-    {{ template "_flashes" . }}
-
-    <div class="row">
-        <div class="col-12 col-md-8">
-
-            <div class="card mb-3" id="players">
-                <div class="card-header">
-                    Top Players
-                    <h5 class="float-right mb-0">
-                        <span class="badge badge-success cursor-pointer" data-sort="level">Level</span>
-                        <span class="badge cursor-pointer" data-sort="games">Games</span>
-                        <span class="badge cursor-pointer" data-sort="badges">Badges</span>
-                        <span class="badge cursor-pointer" data-sort="time">Time</span>
-                    </h5>
-                </div>
-                <div class="card-body">
-
-                    {{/*<i class="fas fa-spinner fa-spin"></i>*/}}
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0 d-none">
-                            <thead class="thead-light">
-                            <th width="1%">Rank</th>
-                            <th>Player</th>
-                            <th id="column">Value</th>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <td colspan="3"><a href="/players">More</a></td>
-                            </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-3" id="prices">
-                <div class="card-header">
-                    Price Drops
-                    <h5 class="float-right mb-0">
-                        <span class="badge badge-secondary" id="live-badge">Live</span>
-                    </h5>
-                </div>
-                <div class="card-body">
-
-                    {{/*<i class="fas fa-spinner fa-spin"></i>*/}}
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0 d-none">
-                            <thead class="thead-light">
-                            <th>Game</th>
-                            <th>Price</th>
-                            <th>Discount</th>
-                            <th>When</th>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <td colspan="4"><a href="/price-changes">More</a></td>
-                            </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-3 mb-md-0" id="news">
-                <div class="card-header">Popular Game News</div>
-                <div class="card-body">
-                    <ul class="list-unstyled">
-
-                        {{ range $key, $value := .News }}
-                            <li class="media mb-2" data-link="{{ .Link }}">
-                                <img src="{{ .Image2 }}" data-lazy="{{ .Image }}" alt="" data-lazy-alt="{{ .Title }}" class="mr-3 mb-2 img rounded">
-                                <div class="media-body">
-                                    <h5 class="mt-0 mb-1">{{ .Title }}</h5>
-                                    {{ .Contents }}
-                                </div>
-                            </li>
-                        {{ end }}
-
-                        <a href="/news#{{ .NewsID }}">More</a>
-
-                    </ul>
-                </div>
-            </div>
-
-        </div>
-        <div class="col-12 col-md-4" id="new-releases">
-
-            <div class="card border-0">
-                <div class="card-header">Popular New Releases</div>
-                <div class="card-body p-0">
-                    {{ range $key, $value := .Games }}
-                        <a href="{{ .GetPath }}">
-                            <img src="{{ .GetHeaderImage2 }}" data-lazy="{{ .GetHeaderImage }}" data-lazy-alt="{{ .GetName }}">
-                        </a>
-                    {{ end }}
-                </div>
-                <div class="card-footer">
-                    <a href="/new-releases">More</a>
-                </div>
-            </div>
-
-        </div>
+    <div id="hero">
+        <h1>Game DB</h1>
     </div>
 
-</div>
+    <div class="container" id="home-page">
 
-{{ template "_footer" . }} {{end}}
+        {{ template "_flashes" . }}
+
+        <div class="row">
+            <div class="col-12 col-md-8">
+
+                <div class="card mb-3" id="players">
+                    <div class="card-header">
+                        Top Players
+                        <h5 class="float-right mb-0">
+                            <span class="badge badge-success cursor-pointer" data-sort="level">Level</span>
+                            <span class="badge cursor-pointer" data-sort="games">Games</span>
+                            <span class="badge cursor-pointer" data-sort="badges">Badges</span>
+                            <span class="badge cursor-pointer" data-sort="time">Time</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+
+                        {{/*<i class="fas fa-spinner fa-spin"></i>*/}}
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0 d-none">
+                                <thead class="thead-light">
+                                <th width="1%">Rank</th>
+                                <th>Player</th>
+                                <th id="column">Value</th>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="3"><a href="/players">More</a></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3" id="prices">
+                    <div class="card-header">
+                        Price Drops
+                        <h5 class="float-right mb-0">
+                            <span class="badge badge-secondary" id="live-badge">Live</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+
+                        {{/*<i class="fas fa-spinner fa-spin"></i>*/}}
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0 d-none">
+                                <thead class="thead-light">
+                                <th>Game</th>
+                                <th>Price</th>
+                                <th>Discount</th>
+                                <th>When</th>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="4"><a href="/price-changes">More</a></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3 mb-md-0" id="news">
+                    <div class="card-header">Popular Game News</div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+
+                            {{ range $key, $value := .News }}
+                                <li class="media mb-2" data-link="{{ .Link }}">
+                                    <img src="{{ .Image2 }}" data-lazy="{{ .Image }}" alt="" data-lazy-alt="{{ .Title }}" class="mr-3 mb-2 img rounded">
+                                    <div class="media-body">
+                                        <h5 class="mt-0 mb-1">{{ .Title }}</h5>
+                                        {{ .Contents }}
+                                    </div>
+                                </li>
+                            {{ end }}
+
+                            <a href="/news#{{ .NewsID }}">More</a>
+
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-12 col-md-4" id="new-releases">
+
+                <div class="card border-0">
+                    <div class="card-header">Popular New Releases</div>
+                    <div class="card-body p-0">
+                        {{ range $key, $value := .Games }}
+                            <a href="{{ .GetPath }}">
+                                <img src="{{ .GetHeaderImage2 }}" data-lazy="{{ .GetHeaderImage }}" data-lazy-alt="{{ .GetName }}">
+                            </a>
+                        {{ end }}
+                    </div>
+                    <div class="card-footer">
+                        <a href="/new-releases">More</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}

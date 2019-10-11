@@ -1,79 +1,83 @@
-{{define "experience"}} {{ template "_header" . }}
+{{define "experience"}}
+    {{ template "_header" . }}
 
-<div class="container" id="experience-page">
+    <div class="container" id="experience-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-level-up-alt"></i> Experience</h1>
-        <p class="lead">
-            {{ .Description }}
-            <span>{{ if .IsLoggedIn }}You are level <a href="/experience/{{ .PlayerLevel }}" data-level="{{ .PlayerLevel }}">{{ .PlayerLevel }}</a>.{{ end }}</span>
-        </p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        <div class="card-body">
-
-            <div class="mb-4 row">
-                <div class="form-group col-sm-4">
-                    <label for="from">Starting Level</label>
-                    <input type="number" class="form-control" id="from" placeholder="From" value="{{ .PlayerLevel }}">
-                </div>
-                <div class="form-group col-sm-4">
-                    <label for="to">End Level</label>
-                    <input type="number" class="form-control" id="to" placeholder="To" value="{{ .PlayerLevelTo }}">
-                </div>
-                <div class="form-group col-sm-4">
-                    <label for="answer">XP Needed</label>
-                    <input type="text" readonly class="form-control" id="answer">
-                </div>
-                {{/*<div class="col-sm-3">*/}}
-                {{/*<label for="answer">&nbsp;</label>*/}}
-                {{/*<button type="submit" class="btn btn-success btn-block" id="calculate">Calculate</button>*/}}
-                {{/*</div>*/}}
-            </div>
-
-            {{/* XP Table */}}
-            <div class="table-responsive">
-                {{ range $key, $value := .Chunks }}
-                    <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col" width="20%">Level</th>
-                            <th scope="col" width="20%">Start XP</th>
-                            <th scope="col" width="20%">End XP</th>
-                            <th scope="col" width="20%">For Next Level</th>
-                            <th scope="col" width="20%">Friends Max</th>
-                        </tr>
-                        </thead>
-                        {{ range $keyx, $valuex := $value }}
-                            <tr data-level="{{ .Level }}">
-                                <td class="img">
-                                    <div class="icon-name">
-                                        <div class="icon"><div class="{{ .GetAvatar2 }}"></div></div>
-                                        <div class="name">{{ comma .Level }}</div>
-                                    </div>
-                                </td>
-                                <td>{{ comma .Start }}</td>
-                                <td>{{ comma .End }}</td>
-                                <td>{{ comma .Diff }}</td>
-                                <td>{{ comma .GetFriends }}</td>
-                            </tr>
-                        {{ end }}
-                    </table>
-                {{ end }}
-            </div>
-
+        <div class="jumbotron">
+            <h1><i class="fas fa-level-up-alt"></i> Experience</h1>
+            <p class="lead">
+                {{ .Description }}
+                <span>{{ if .IsLoggedIn }}You are level <a href="/experience/{{ .PlayerLevel }}" data-level="{{ .PlayerLevel }}">{{ .PlayerLevel }}</a>.{{ end }}</span>
+            </p>
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="mb-4 row">
+                    <div class="form-group col-sm-4">
+                        <label for="from">Starting Level</label>
+                        <input type="number" class="form-control" id="from" placeholder="From" value="{{ .PlayerLevel }}">
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label for="to">End Level</label>
+                        <input type="number" class="form-control" id="to" placeholder="To" value="{{ .PlayerLevelTo }}">
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label for="answer">XP Needed</label>
+                        <input type="text" readonly class="form-control" id="answer">
+                    </div>
+                    {{/*<div class="col-sm-3">*/}}
+                    {{/*<label for="answer">&nbsp;</label>*/}}
+                    {{/*<button type="submit" class="btn btn-success btn-block" id="calculate">Calculate</button>*/}}
+                    {{/*</div>*/}}
+                </div>
+
+                {{/* XP Table */}}
+                <div class="table-responsive">
+                    {{ range $key, $value := .Chunks }}
+                        <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" width="20%">Level</th>
+                                <th scope="col" width="20%">Start XP</th>
+                                <th scope="col" width="20%">End XP</th>
+                                <th scope="col" width="20%">For Next Level</th>
+                                <th scope="col" width="20%">Friends Max</th>
+                            </tr>
+                            </thead>
+                            {{ range $keyx, $valuex := $value }}
+                                <tr data-level="{{ .Level }}">
+                                    <td class="img">
+                                        <div class="icon-name">
+                                            <div class="icon">
+                                                <div class="{{ .GetAvatar2 }}"></div>
+                                            </div>
+                                            <div class="name">{{ comma .Level }}</div>
+                                        </div>
+                                    </td>
+                                    <td>{{ comma .Start }}</td>
+                                    <td>{{ comma .End }}</td>
+                                    <td>{{ comma .Diff }}</td>
+                                    <td>{{ comma .GetFriends }}</td>
+                                </tr>
+                            {{ end }}
+                        </table>
+                    {{ end }}
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
-</div>
+    {{ if gt .Level -1}}
+        <script>
+            let scrollTo = 'tr[data-level={{ .Level }}]'
+        </script>
+    {{end}}
 
-{{ if gt .Level -1}}
-    <script>
-        let scrollTo = 'tr[data-level={{ .Level }}]'
-    </script>
+    {{ template "_footer" . }}
 {{end}}
-
-{{ template "_footer" . }} {{end}}

@@ -1,40 +1,42 @@
-{{define "packages"}} {{ template "_header" . }}
+{{define "packages"}}
+    {{ template "_header" . }}
 
-<div class="container" id="packages-page">
+    <div class="container" id="packages-page">
 
-    <div class="jumbotron">
-        <h1><i class="fas fa-cube"></i> Packages</h1>
-        <p class="lead">{{ .Description }}</p>
-    </div>
-
-    {{ template "_flashes" . }}
-
-    <div class="card">
-        {{ template "_apps_header" . }}
-        <div class="card-body">
-
-            {{/* Packages List */}}
-            <div class="table-responsive">
-                <table class="table table-hover table-striped" data-path="/packages/packages.json">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Discount</th>
-                        <th scope="col">Apps</th>
-                        <th scope="col">Updated At</th>
-                        <th scope="col"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
-
+        <div class="jumbotron">
+            <h1><i class="fas fa-cube"></i> Packages</h1>
+            <p class="lead">{{ .Description }}</p>
         </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_apps_header" . }}
+            <div class="card-body">
+
+                {{/* Packages List */}}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped" data-path="/packages/packages.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Discount</th>
+                            <th scope="col">Apps</th>
+                            <th scope="col">Updated At</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
-</div>
-
-{{ template "_footer" . }} {{end}}
+    {{ template "_footer" . }}
+{{end}}
