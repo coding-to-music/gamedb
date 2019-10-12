@@ -239,6 +239,18 @@ func adminQueues(r *http.Request) {
 		}
 	}
 
+	if val := r.PostForm.Get("test-id"); val != "" {
+
+		val = strings.TrimSpace(val)
+		count, err := strconv.Atoi(val)
+
+		for i := 1; i <= count; i++ {
+
+			err = queue.ProduceTest(i)
+			log.Err(err, r)
+		}
+	}
+
 	if val := r.PostForm.Get("group-id"); val != "" {
 
 		vals := strings.Split(val, ",")

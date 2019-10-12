@@ -201,6 +201,17 @@ func ProduceBundle(ID int, appID int) (err error) {
 	}, queueBundles)
 }
 
+func ProduceTest(id int) (err error) {
+
+	time.Sleep(time.Millisecond)
+
+	return produce(&testMessage{
+		Message: testMessageInner{
+			ID: id,
+		},
+	}, queueTest)
+}
+
 func ProduceAppPlayers(IDs []int) (err error) {
 
 	time.Sleep(time.Millisecond)

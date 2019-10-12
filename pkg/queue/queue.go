@@ -19,6 +19,8 @@ type queueName string
 
 //noinspection GoUnusedConst
 const (
+	QueueSteam queueName = "GameDB_Go_Steam"
+
 	queueApps      queueName = "GameDB_Go_Apps"
 	queueAppPlayer queueName = "GameDB_Go_App_Players"
 	queueBundles   queueName = "GameDB_Go_Bundles"
@@ -29,10 +31,7 @@ const (
 	queueGroupsNew queueName = "GameDB_Go_Groups_New"
 	queuePackages  queueName = "GameDB_Go_Packages"
 	queuePlayers   queueName = "GameDB_Go_Profiles"
-	QueueSteam     queueName = "GameDB_Go_Steam"
-
-	//
-	maxBytesToStore int = 1024 * 10
+	queueTest      queueName = "GameDB_Go_Test"
 )
 
 var (
@@ -87,6 +86,10 @@ var (
 			Name:       QueueSteam,
 			queue:      &steamQueue{},
 			DoNotScale: true,
+		},
+		queueTest: {
+			Name:  queueTest,
+			queue: &testQueue{},
 		},
 	}
 )

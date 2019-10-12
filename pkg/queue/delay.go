@@ -209,6 +209,22 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
+	case queueTest:
+
+		message2 := testMessage{}
+
+		err = helpers.Unmarshal(msg.Body, &message2)
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		err = produce(&message2, queue)
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
 	default:
 		log.Critical("Wrong message type", msg.Body)
 		return
