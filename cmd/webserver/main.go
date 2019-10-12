@@ -29,6 +29,14 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
+	// players, err2 := mongo.GetPlayersWithWishlistOrGroups()
+	// log.Err(err2)
+	// log.Info(len(players))
+	//
+	// for _, v := range players {
+	// 	err2 = queue.ProducePlayer(v.ID, nil)
+	// }
+
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
