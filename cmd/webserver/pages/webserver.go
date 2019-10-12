@@ -574,7 +574,7 @@ type DataTablesQuery struct {
 	Order  map[string]map[string]interface{} `json:"order"`
 	Start  string                            `json:"start"`
 	Search map[string]interface{}            `json:"search"`
-	// Time   string `mapstructure:"_"`
+	// Time   string `json:"_"`
 	// Columns []string
 }
 
