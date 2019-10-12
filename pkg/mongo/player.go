@@ -352,22 +352,6 @@ func GetPlayers(offset int64, limit int64, sort D, filter interface{}, projectio
 	return getPlayers(offset, limit, sort, filter, projection, ops)
 }
 
-func GetPlayersWithWishlistOrGroups() (players []Player, err error) {
-
-	filter := M{
-		"$or": A{
-			M{
-				"wishlist_app_ids.0": M{"$exists": true},
-			},
-			M{
-				"groups.0": M{"$exists": true},
-			},
-		},
-	}
-
-	return getPlayers(0, 0, nil, filter, M{"_id": 1}, nil)
-}
-
 func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
 
 	if len(ids) < 1 {
