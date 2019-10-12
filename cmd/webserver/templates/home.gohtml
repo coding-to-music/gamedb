@@ -31,9 +31,11 @@
                         <div class="table-responsive">
                             <table class="table table-hover table-striped mb-0 d-none">
                                 <thead class="thead-light">
-                                <th width="1%">Rank</th>
-                                <th>Player</th>
-                                <th id="column">Value</th>
+                                <tr>
+                                    <th scope="col" style="width:1%">Rank</th>
+                                    <th scope="col">Player</th>
+                                    <th scope="col" id="column">Value</th>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
@@ -61,10 +63,12 @@
                         <div class="table-responsive">
                             <table class="table table-hover table-striped mb-0 d-none">
                                 <thead class="thead-light">
-                                <th>Game</th>
-                                <th>Price</th>
-                                <th>Discount</th>
-                                <th>When</th>
+                                <tr>
+                                    <th>Game</th>
+                                    <th>Price</th>
+                                    <th>Discount</th>
+                                    <th>When</th>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
@@ -107,7 +111,7 @@
                     <div class="card-body p-0">
                         {{ range $key, $value := .Games }}
                             <a href="{{ .GetPath }}">
-                                <img src="{{ .GetHeaderImage2 }}" data-lazy="{{ .GetHeaderImage }}" data-lazy-alt="{{ .GetName }}">
+                                <img src="{{ .GetHeaderImage2 }}" data-lazy="{{ .GetHeaderImage }}" alt="" data-lazy-alt="{{ .GetName }}">
                             </a>
                         {{ end }}
                     </div>

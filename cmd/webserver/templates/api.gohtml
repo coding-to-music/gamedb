@@ -67,7 +67,7 @@
                                             <table class="table table-borderless table-hover table-sm mb-0">
                                                 <thead>
                                                 <tr>
-                                                    <th scope="col" class="font-weight-bold" width="30%">Name</th>
+                                                    <th scope="col" class="font-weight-bold" style="width: 30%">Name</th>
                                                     <th scope="col" class="font-weight-bold">Type</th>
                                                 </tr>
                                                 </thead>
@@ -75,11 +75,7 @@
                                                 {{ range $key, $value := .Params }}
                                                     <tr>
                                                         <td>
-                                                            <input
-                                                                    class="api-field"
-                                                                    type="{{ .InputType }}"
-                                                                    name="{{ .Name }}"
-                                                                    {{ if eq .Name "key" }}value="{{ $.Key }}"{{ end }}>
+                                                            <input class="api-field" type="{{ .InputType }}" name="{{ .Name }}" {{ if eq .Name "key" }}value="{{ $.Key }}"{{ end }}>
                                                         </td>
                                                         <td>{{ .Name }}</td>
                                                         <td>{{ .Type }}</td>
