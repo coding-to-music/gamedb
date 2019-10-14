@@ -332,7 +332,7 @@
                 }
             } else {
                 for (const $field of this.settings.searchFields) {
-                    $field.on('change search', function (e) {
+                    $field.on('keyup', function (e) {
                         dt.search($(this).val());
                         dt.draw();
                     });
