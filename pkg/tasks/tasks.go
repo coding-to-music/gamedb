@@ -14,7 +14,7 @@ const ( //                         min hour
 	CronTimeSetBadgeCache       = "*/10 *"
 	CronTimeSteamClientPlayers  = "*/10 *"
 	CronTimeClearUpcomingCache  = "0 0"
-	CronTimePlayerRanks         = "2 0"
+	CronTimePlayerRanks         = "0 0"
 	CronTimeGenres              = "0 1"
 	CronTimeTags                = "0 2"
 	CronTimePublishers          = "0 3"
