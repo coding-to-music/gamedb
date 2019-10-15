@@ -1,6 +1,8 @@
 package tasks
 
 import (
+	"time"
+
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -23,23 +25,27 @@ func (c PlayerRanks) Cron() string {
 
 func (c PlayerRanks) work() {
 
-	log.Info("Level")
-	err := mongo.RankPlayers("level", "level_rank")
-	log.Warning(err)
+	ranks := []rankTask{
+		{"Level", "level", "level_rank"},
+		{"Games", "games_count", "games_rank"},
+		{"Badges", "badges_count", "badges_rank"},
+		{"Time", "play_time", "play_time_rank"},
+		{"Friends", "friends_count", "friends_rank"},
+	}
 
-	log.Info("Games")
-	err = mongo.RankPlayers("games_count", "games_rank")
-	log.Warning(err)
+	for _, v := range ranks {
 
-	log.Info("Badges")
-	err = mongo.RankPlayers("badges_count", "badges_rank")
-	log.Warning(err)
+		log.Info(v.name)
 
-	log.Info("Time")
-	err = mongo.RankPlayers("play_time", "play_time_rank")
-	log.Warning(err)
+		err := mongo.RankPlayers(v.readCol, v.writeCol)
+		log.Warning(err)
 
-	log.Info("Friends")
-	err = mongo.RankPlayers("friends_count", "friends_rank")
-	log.Warning(err)
+		time.Sleep(time.Second * 30)
+	}
+}
+
+type rankTask struct {
+	name     string
+	readCol  string
+	writeCol string
 }
