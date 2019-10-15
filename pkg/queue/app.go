@@ -556,12 +556,7 @@ func updateAppPICS(app *sql.App, message appMessage) (err error) {
 				}
 			}
 
-			b, err := json.Marshal(localization)
-			if err != nil {
-				return err
-			}
-
-			app.Localization = string(b)
+			app.SetLocalization(localization)
 
 		case "sysreqs":
 

@@ -1,6 +1,7 @@
 package sql
 
 import (
+	"encoding/json"
 	"errors"
 	"html/template"
 	"net/url"
@@ -15,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
+	"github.com/golang/snappy"
 	"github.com/jinzhu/gorm"
 )
 
@@ -354,13 +356,41 @@ func (app App) GetInstall() (install map[string]interface{}, err error) {
 	return install, err
 }
 
-func (app App) GetLocalization() (localization pics.Localisation) {
+func (app App) GetLocalization() (localization pics.Localisation, err error) {
+
+	if app.Localization == "" || app.Localization == "{}" {
+		return localization, nil
+	}
+
+	decoded, err := snappy.Decode(nil, []byte(app.Localization))
+	if err == nil {
+		app.Localization = string(decoded)
+	}
 
 	localization = pics.Localisation{}
-	err := helpers.Unmarshal([]byte(app.Localization), &localization)
-	log.Err(err)
+	err = helpers.Unmarshal([]byte(app.Localization), &localization)
+	return localization, err
+}
 
-	return localization
+func (app *App) SetLocalization(localization pics.Localisation) {
+
+	b, err := json.Marshal(localization)
+	if err != nil {
+		log.Err(app.ID, err)
+		app.Localization = ""
+		return
+	}
+
+	if len(b) == 0 || string(b) == "{}" {
+		app.Localization = ""
+		return
+	}
+
+	// Snappy to save space
+	encoded := snappy.Encode(nil, b)
+	app.Localization = string(encoded)
+
+	return
 }
 
 func (app App) GetSystemRequirements() (ret []SystemRequirement, err error) {

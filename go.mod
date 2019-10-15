@@ -46,7 +46,7 @@ require (
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/groupcache v0.0.0-20191002201903-404acd9df4cc // indirect
 	github.com/golang/protobuf v1.3.2
-	github.com/golang/snappy v0.0.1 // indirect
+	github.com/golang/snappy v0.0.1
 	github.com/google/go-github/v27 v27.0.6
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.1
