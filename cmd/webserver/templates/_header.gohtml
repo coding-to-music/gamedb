@@ -88,8 +88,12 @@
     <a {{ if ne .BackgroundLink "" }}href="{{ .BackgroundLink }}"{{end}} id="bg" style="background-image: url('{{ .Background }}');" title="{{ .BackgroundTitle }}"></a>
 {{ end }}
 
-<div class="progress" style="z-index: 100; position:fixed; width: 100%; bottom: 0; display: none; border-radius:0; height: 10px;" id="loading-bar">
-    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0"></div>
+<div id="top" class="rounded">
+    <i class="fas fa-level-up-alt"></i>
+</div>
+
+<div id="loading" title="Loading" class="rounded">
+    <img src="/assets/img/sa-500x500.png" alt="Loading">
 </div>
 
 <header>

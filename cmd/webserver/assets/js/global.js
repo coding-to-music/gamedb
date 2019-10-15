@@ -189,7 +189,7 @@ function addDataTablesRow(options, data, limit, $table) {
     observeLazyImages($row.find('img[data-lazy]'));
 }
 
-// Loading bar
+// Loading icon
 (function () {
 
     // const originalXhr = new window.XMLHttpRequest();
@@ -198,17 +198,14 @@ function addDataTablesRow(options, data, limit, $table) {
         xhr: function () {
             const xhr = originalXhr();
             if (xhr) {
-                xhr.addEventListener('progress', function (e) {
-                    if (e.lengthComputable) {
-                        const p = e.loaded / e.total * 100;
-                        if (p >= 100) {
-                            $('#loading-bar').fadeOut();
-                            $('#loading-bar div').width('100%');
-                        } else if (p > 1) {
-                            $('#loading-bar').fadeIn();
-                            $('#loading-bar div').width(p + '%');
-                        }
-                    }
+
+                const $loadingBar = $('#loading');
+
+                xhr.addEventListener('loadstart', function (e) {
+                    $loadingBar.addClass('show');
+                });
+                xhr.addEventListener('loadend', function (e) {
+                    $loadingBar.removeClass('show');
                 });
             }
             return xhr;
