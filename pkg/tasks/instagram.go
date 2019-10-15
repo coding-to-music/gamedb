@@ -70,8 +70,8 @@ func (c Instagram) work() {
 		text := app.GetName() + " (Score: " + helpers.FloatToString(app.ReviewsScore, 2) + ") https://gamedb.online/apps/" + strconv.Itoa(app.ID) +
 			" #steamgames #steam #gaming " + helpers.GetHashTag(app.GetName())
 
-		err = helpers.UpdateBio("https://gamedb.online" + app.GetPath())
-		log.Err(err)
+		// err = helpers.UpdateBio("https://gamedb.online" + app.GetPath())
+		// log.Err(err)
 
 		return helpers.UploadInstagram(url, text)
 	}
