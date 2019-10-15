@@ -73,6 +73,7 @@ if ($('#players-page').length > 0) {
                     $(td).addClass('img');
                 },
                 "orderSequence": ["desc"],
+                "visible": false,
             },
             // Games
             {
@@ -85,6 +86,7 @@ if ($('#players-page').length > 0) {
                     return $lockIcon;
                 },
                 "orderSequence": ["desc"],
+                "visible": false,
             },
             // Badges
             {
@@ -93,6 +95,7 @@ if ($('#players-page').length > 0) {
                     return row[7].toLocaleString();
                 },
                 "orderSequence": ["desc"],
+                "visible": false,
             },
             // Time
             {
@@ -114,6 +117,7 @@ if ($('#players-page').length > 0) {
                     }
                 },
                 "orderSequence": ["desc"],
+                "visible": false,
             },
             // Friends
             {
@@ -127,6 +131,7 @@ if ($('#players-page').length > 0) {
                     return row[10].toLocaleString();
                 },
                 "orderSequence": ["desc"],
+                "visible": false,
             },
 
             // Game Bans
@@ -136,6 +141,7 @@ if ($('#players-page').length > 0) {
                     return row[15].toLocaleString();
                 },
                 "orderSequence": ["desc"],
+                "visible": false,
             },
             // VAC Bans
             {
@@ -144,6 +150,7 @@ if ($('#players-page').length > 0) {
                     return row[16].toLocaleString();
                 },
                 "orderSequence": ["desc"],
+                "visible": false,
             },
             // Last Ban
             {
@@ -158,6 +165,7 @@ if ($('#players-page').length > 0) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 "orderSequence": ["desc"],
+                "visible": false,
             },
 
             // Link
@@ -190,32 +198,39 @@ if ($('#players-page').length > 0) {
 
         $('#player-nav a[href="' + hash + '"]').tab('show');
 
+        const oldOrder = dt.order();
+
+        let hide = [];
+        let show = [];
+
         switch (hash) {
             case '#stats':
 
-                dt.column(3).visible(true);
-                dt.column(4).visible(true);
-                dt.column(5).visible(true);
-                dt.column(6).visible(true);
-                dt.column(7).visible(true);
+                show = [3, 4, 5, 6, 7];
+                hide = [8, 9, 10];
 
-                dt.column(8).visible(false);
-                dt.column(9).visible(false);
-                dt.column(10).visible(false);
+                dt.order([3, 'desc']);
                 break;
 
             case '#bans':
 
-                dt.column(3).visible(false);
-                dt.column(4).visible(false);
-                dt.column(5).visible(false);
-                dt.column(6).visible(false);
-                dt.column(7).visible(false);
+                show = [8, 9, 10];
+                hide = [3, 4, 5, 6, 7];
 
-                dt.column(8).visible(true);
-                dt.column(9).visible(true);
-                dt.column(10).visible(true);
+                dt.order([8, 'desc']);
                 break;
+        }
+
+        hide.forEach(function (value, index, array) {
+            dt.column(value).visible(false);
+        });
+
+        show.forEach(function (value, index, array) {
+            dt.column(value).visible(true);
+        });
+
+        if (JSON.stringify(oldOrder) !== JSON.stringify(dt.order())) {
+            dt.draw();
         }
 
         const table = dt.table().container();
