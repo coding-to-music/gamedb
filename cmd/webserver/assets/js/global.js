@@ -202,10 +202,10 @@ function addDataTablesRow(options, data, limit, $table) {
                 const $loadingBar = $('#loading');
 
                 xhr.addEventListener('loadstart', function (e) {
-                    $loadingBar.addClass('show');
+                    $loadingBar.fadeTo(100, 1);
                 });
                 xhr.addEventListener('loadend', function (e) {
-                    $loadingBar.removeClass('show');
+                    $loadingBar.fadeTo(100, 0);
                 });
             }
             return xhr;
