@@ -384,11 +384,11 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 func updateAppPICS(app *sql.App, message appMessage) (err error) {
 
-	if message.Message.ChangeNumber == 0 {
+	if !message.Force && message.Message.ChangeNumber == 0 {
 		return nil
 	}
 
-	if app.ChangeNumber >= message.Message.ChangeNumber {
+	if !message.Force && app.ChangeNumber >= message.Message.ChangeNumber {
 		return nil
 	}
 
