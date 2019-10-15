@@ -98,13 +98,16 @@ func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 		profileIDs = append(profileIDs, profileID)
 	}
 
-	return produce(&steamMessage{
+	message := &steamMessage{
 		Message: steamMessageInner{
 			AppIDs:     appIDs,
 			PackageIDs: packageIDs,
 			PlayerIDs:  profileIDs,
 		},
-	}, QueueSteam)
+	}
+	message.Force = force
+
+	return produce(message, QueueSteam)
 }
 
 func ProduceApp(id int, changeNumber int, vdf map[string]interface{}) (err error) {
@@ -269,11 +272,15 @@ func ProduceGroup(ids []string, force bool) (err error) {
 	chunks := helpers.ChunkStrings(filteredIDs, 10)
 
 	for _, chunk := range chunks {
-		err = produce(&groupMessage{
+
+		message := &groupMessage{
 			Message: groupMessageInner{
 				IDs: chunk,
 			},
-		}, queueGroups)
+		}
+		message.Force = force
+
+		err = produce(message, queueGroups)
 		log.Err(err)
 	}
 
