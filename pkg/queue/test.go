@@ -34,5 +34,7 @@ func (q testQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	log.Info(message.Message.ID)
+
 	message.ack(msg)
 }
