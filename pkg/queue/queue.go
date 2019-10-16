@@ -103,7 +103,9 @@ func init() {
 			var err error
 			select {
 			case err = <-producerConnectionChannel:
+
 				log.Warning("Consumer connection closed", err)
+				time.Sleep(time.Second * 5)
 				log.Info("Getting new producer connection")
 
 				producerConnection, err = getConnection()
