@@ -373,6 +373,8 @@ func CountryCodeToName(code string) string {
 		return "Kosovo"
 	case "FX":
 		return "France, Metropolitan"
+	case "YU":
+		return "Yugoslavia"
 	}
 
 	country, err := gountriesInstance.FindCountryByAlpha(code)
