@@ -32,9 +32,9 @@ type Document interface {
 
 type (
 	D bson.D
-	// E bson.E
 	M bson.M
 	A bson.A
+	// E bson.E
 )
 
 type collection string

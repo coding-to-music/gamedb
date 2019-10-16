@@ -14,6 +14,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const (
+	RankKeyLevel    = "l"
+	RankKeyBadges   = "b"
+	RankKeyFriends  = "f"
+	RankKeyComments = "c"
+	RankKeyGames    = "g"
+	RankKeyPlaytime = "p"
+)
+
 var (
 	ErrInvalidPlayerID   = errors.New("invalid id")
 	ErrInvalidPlayerName = errors.New("invalid name")
@@ -30,6 +39,7 @@ type Player struct {
 	Donated             int            `bson:"donated"`                //
 	GameStats           string         `bson:"game_stats"`             // PlayerAppStatsTemplate
 	GamesByType         map[string]int `bson:"games_by_type"`          //
+	Ranks               map[string]int `bson:"ranks"`                  //
 	LastLogOff          time.Time      `bson:"time_logged_off"`        //
 	LastBan             time.Time      `bson:"bans_last"`              //
 	NumberOfGameBans    int            `bson:"bans_game"`              //
@@ -347,11 +357,6 @@ func SearchPlayer(s string, projection M) (player Player, err error) {
 	return player, err
 }
 
-func GetPlayers(offset int64, limit int64, sort D, filter interface{}, projection M, ops *options.FindOptions) (players []Player, err error) {
-
-	return getPlayers(offset, limit, sort, filter, projection, ops)
-}
-
 func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
 
 	if len(ids) < 1 {
@@ -363,10 +368,10 @@ func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
 		idsBSON = append(idsBSON, v)
 	}
 
-	return getPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection, nil)
+	return GetPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection, nil)
 }
 
-func getPlayers(offset int64, limit int64, sort D, filter interface{}, projection M, ops *options.FindOptions) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, filter interface{}, projection M, ops *options.FindOptions) (players []Player, err error) {
 
 	if filter == nil {
 		filter = M{}
@@ -418,6 +423,26 @@ func getPlayers(offset int64, limit int64, sort D, filter interface{}, projectio
 	return players, cur.Err()
 }
 
+func GetUniquePlayerCountries() (codes []string, err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return codes, err
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
+
+	resp, err := c.Distinct(ctx, "country_code", M{}, options.Distinct().SetMaxTime(time.Second*10))
+
+	for _, v := range resp {
+		if code, ok := v.(string); ok {
+			codes = append(codes, code)
+		}
+	}
+
+	return codes, err
+}
+
 func DeletePlayer(id int64) (err error) {
 
 	client, ctx, err := getMongo()
@@ -462,9 +487,24 @@ func CountPlayersWithBan() (count int64, err error) {
 	return count, err
 }
 
+func BulkUpdatePlayers(writes []mongo.WriteModel) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
+
+	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
+	log.Err(err)
+
+	return err
+}
+
 func RankPlayers(col string, colToUpdate string) (err error) {
 
-	players, err := getPlayers(0, 0, D{{col, -1}}, M{col: M{"$gt": 0}}, M{"_id": 1}, nil)
+	players, err := GetPlayers(0, 0, D{{col, -1}}, M{col: M{"$gt": 0}}, M{"_id": 1}, nil)
 	if err != nil {
 		return err
 	}

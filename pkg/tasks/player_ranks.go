@@ -49,3 +49,7 @@ type rankTask struct {
 	readCol  string
 	writeCol string
 }
+
+func (rt rankTask) getWriteCol(cc string) string {
+	return rt.writeCol + cc
+}
