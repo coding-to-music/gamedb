@@ -324,7 +324,7 @@ func (q baseQueue) ConsumeMessages() {
 			}()
 
 			if err != nil {
-				log.Critical("Connecting to Rabbit: " + err.Error())
+				log.Critical("Connecting to Rabbit: ", err)
 				return
 			}
 
