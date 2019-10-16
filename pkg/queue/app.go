@@ -546,7 +546,9 @@ func updateAppPICS(app *sql.App, message appMessage) (err error) {
 
 			app.SystemRequirements = child.String()
 
-			app.SystemRequirements = string(b)
+		case "albummetadata":
+
+			app.AlbumMetaData = child.String()
 
 		default:
 			log.Warning(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")

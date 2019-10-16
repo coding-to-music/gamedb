@@ -32,6 +32,7 @@ var (
 
 type App struct {
 	Achievements                  string    `gorm:"not null;column:achievements;type:text"`           // []AppAchievement
+	AlbumMetaData                 string    `gorm:"not null;column:albummetadata;type:text"`          // map[string]interface{}
 	Background                    string    `gorm:"not null;column:background"`                       //
 	BundleIDs                     string    `gorm:"not null;column:bundle_ids"`                       // []int
 	Categories                    string    `gorm:"not null;column:categories;type:json"`             // []int8
