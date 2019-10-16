@@ -207,6 +207,12 @@ function addDataTablesRow(options, data, limit, $table) {
                 xhr.addEventListener('loadend', function (e) {
                     $loadingBar.fadeTo(100, 0);
                 });
+                xhr.addEventListener('error', function (e) {
+                    console.log('XHR Error', e)
+                });
+                xhr.addEventListener('abort', function (e) {
+                    console.log('XHR Aborted', e)
+                });
             }
             return xhr;
         }
