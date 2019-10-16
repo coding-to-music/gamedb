@@ -60,6 +60,8 @@ github.com/Jleagle/valve-data-format-go v0.0.0-20191004113530-a0add993534f h1:tA
 github.com/Jleagle/valve-data-format-go v0.0.0-20191004113530-a0add993534f/go.mod h1:9j7pWT19NnlK5wZnx1Ys+xXgjDgdyMAKebl8hGqYKCU=
 github.com/Jleagle/valve-data-format-go v0.0.0-20191004170703-844f09429764 h1:L6Hd9slq7SNw/jRuCCY7a2Km757coydd1KFjf4fu3UQ=
 github.com/Jleagle/valve-data-format-go v0.0.0-20191004170703-844f09429764/go.mod h1:OSdCKL2zIj8KhEw7QBIH/p1qvrNEbg5haHVfVA5jLhI=
+github.com/Jleagle/valve-data-format-go v0.0.0-20191016120159-e2b7eec33ddd h1:/ehp7Zd3fnR8ka8XLrE+GrABdVj2/Xp8FT/8aAC8x/s=
+github.com/Jleagle/valve-data-format-go v0.0.0-20191016120159-e2b7eec33ddd/go.mod h1:OSdCKL2zIj8KhEw7QBIH/p1qvrNEbg5haHVfVA5jLhI=
 github.com/Joker/hpp v0.0.0-20180418125244-6893e659854a/go.mod h1:MzD2WMdSxvbHw5fM/OXOFily/lipJWRc9C1px0Mt0ZE=
 github.com/Joker/jade v1.0.0/go.mod h1:efZIdO0py/LtcJRSa/j2WEklMSAw84WV0zZVMxNToB8=
 github.com/Philipp15b/go-steam v1.0.0 h1:nBGLVJRyDukX9dfcMFKbQbE2g6doh7e/IZFDDP3S9pY=

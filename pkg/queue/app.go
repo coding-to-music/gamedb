@@ -445,12 +445,7 @@ func updateAppPICS(app *sql.App, message appMessage) (err error) {
 					}
 				}
 
-				s, err := vv.String()
-				if err != nil {
-					return err
-				}
-
-				common[vv.Key] = s
+				common[vv.Key] = vv.String()
 			}
 
 			b, err := json.Marshal(common)
@@ -509,13 +504,7 @@ func updateAppPICS(app *sql.App, message appMessage) (err error) {
 
 			var ufs = pics.PICSKeyValues{}
 			for _, vv := range child.Children {
-
-				s, err := vv.String()
-				if err != nil {
-					return err
-				}
-
-				ufs[vv.Key] = s
+				ufs[vv.Key] = vv.String()
 			}
 
 			b, err := json.Marshal(ufs)
@@ -527,12 +516,7 @@ func updateAppPICS(app *sql.App, message appMessage) (err error) {
 
 		case "install":
 
-			b, err := json.Marshal(child.ToMap())
-			if err != nil {
-				return err
-			}
-
-			app.Install = string(b)
+			app.Install = child.String()
 
 		case "localization":
 
@@ -560,10 +544,7 @@ func updateAppPICS(app *sql.App, message appMessage) (err error) {
 
 		case "sysreqs":
 
-			b, err := json.Marshal(child.ToMap())
-			if err != nil {
-				return err
-			}
+			app.SystemRequirements = child.String()
 
 			app.SystemRequirements = string(b)
 
