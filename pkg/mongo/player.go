@@ -316,7 +316,7 @@ func GetPlayer(id int64) (player Player, err error) {
 			return player, ErrInvalidPlayerID
 		}
 
-		err = FindDocumentByKey(CollectionPlayers, "_id", id, nil, &player)
+		err = FindOne(CollectionPlayers, M{"_id": id}, nil, nil, &player)
 		if err != nil {
 			return player, err
 		}
@@ -448,19 +448,6 @@ func GetUniquePlayerCountries() (codes []string, err error) {
 	}
 
 	return codes, err
-}
-
-func DeletePlayer(id int64) (err error) {
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
-
-	_, err = c.DeleteOne(ctx, M{"_id": id}, options.Delete())
-	return err
 }
 
 func CountPlayers() (count int64, err error) {

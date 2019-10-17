@@ -965,7 +965,7 @@ func updateAppNews(app *sql.App) error {
 		ids = append(ids, int64(v.GID))
 	}
 
-	_, err = mongo.InsertDocuments(mongo.CollectionAppArticles, documents)
+	_, err = mongo.InsertMany(mongo.CollectionAppArticles, documents)
 	if err != nil {
 		return err
 	}

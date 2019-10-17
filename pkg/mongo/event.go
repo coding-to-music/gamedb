@@ -174,7 +174,7 @@ func CreateUserEvent(r *http.Request, userID int, eventType EventEnum) (err erro
 	event.UserAgent = r.Header.Get("User-Agent")
 	event.IP = r.RemoteAddr
 
-	_, err = InsertDocument(CollectionEvents, event)
+	_, err = InsertOne(CollectionEvents, event)
 	if err != nil {
 		return err
 	}

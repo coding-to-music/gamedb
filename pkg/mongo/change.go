@@ -103,7 +103,7 @@ func GetChange(id int64) (change Change, err error) {
 
 		var change Change
 
-		err = FindDocumentByKey(CollectionChanges, "_id", id, nil, &change)
+		err = FindOne(CollectionChanges, M{"_id": id}, nil, nil, &change)
 		if change.ID == 0 {
 			return change, ErrNoDocuments
 		}

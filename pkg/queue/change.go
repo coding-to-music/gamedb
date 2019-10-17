@@ -124,7 +124,7 @@ func saveChangesToMongo(changes []*mongo.Change) (err error) {
 		})
 	}
 
-	_, err = mongo.InsertDocuments(mongo.CollectionChanges, changesDocuments)
+	_, err = mongo.InsertMany(mongo.CollectionChanges, changesDocuments)
 	return err
 }
 

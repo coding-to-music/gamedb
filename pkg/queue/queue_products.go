@@ -322,7 +322,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		}
 	}
 
-	result, err := mongo.InsertDocuments(mongo.CollectionProductPrices, documents)
+	result, err := mongo.InsertMany(mongo.CollectionProductPrices, documents)
 
 	// Send websockets to prices page
 	if err == nil && result != nil {

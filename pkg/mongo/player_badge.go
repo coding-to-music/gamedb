@@ -143,7 +143,7 @@ func (pb PlayerBadge) GetSpecialMax() (max PlayerBadge, err error) {
 // Not cached
 func (pb PlayerBadge) getSpecialMax() (max PlayerBadge, err error) {
 
-	err = GetFirstDocument(
+	err = FindOne(
 		CollectionPlayerBadges,
 		M{"app_id": 0, "badge_id": pb.BadgeID},
 		M{"badge_level": -1, "badge_completion_time": 1},
@@ -230,7 +230,7 @@ func (pb PlayerBadge) getEventMax(foil bool) (max PlayerBadge, err error) {
 
 	operation := func() (err error) {
 
-		err = GetFirstDocument(
+		err = FindOne(
 			CollectionPlayerBadges,
 			M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}, "badge_foil": foil},
 			M{"badge_level": -1, "badge_completion_time": 1},

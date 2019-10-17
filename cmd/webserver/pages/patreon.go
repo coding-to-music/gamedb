@@ -51,7 +51,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func saveWebhookToMongo(event string, pwr patreon.Webhook, body []byte) (err error) {
 
-	_, err = mongo.InsertDocument(mongo.CollectionPatreonWebhooks, mongo.PatreonWebhook{
+	_, err = mongo.InsertOne(mongo.CollectionPatreonWebhooks, mongo.PatreonWebhook{
 		CreatedAt:                   time.Now(),
 		RequestBody:                 string(body),
 		Event:                       event,
@@ -70,7 +70,7 @@ func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhoo
 
 	if pwr.User.Attributes.Email != "" {
 		player := mongo.Player{}
-		err = mongo.FindDocumentByKey(mongo.CollectionPlayers, "email", pwr.User.Attributes.Email, mongo.M{"_id": 1}, &player)
+		err = mongo.FindOne(mongo.CollectionPlayers, mongo.M{"email": pwr.User.Attributes.Email}, nil, mongo.M{"_id": 1}, &player)
 		if err == mongo.ErrNoDocuments || (err == nil && player.ID == 0) {
 			return nil
 		}

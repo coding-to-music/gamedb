@@ -223,7 +223,7 @@ func savePriceToMongo(bundle sql.Bundle, oldBundle sql.Bundle) (err error) {
 
 	if bundle.Discount != oldBundle.Discount {
 
-		_, err = mongo.InsertDocument(mongo.CollectionBundlePrices, mongo.BundlePrice{
+		_, err = mongo.InsertOne(mongo.CollectionBundlePrices, mongo.BundlePrice{
 			CreatedAt: time.Now(),
 			BundleID:  bundle.ID,
 			Discount:  bundle.Discount,

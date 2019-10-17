@@ -872,7 +872,7 @@ func updatePlayerComments(player *mongo.Player) error {
 
 func savePlayerMongo(player mongo.Player) error {
 
-	_, err := mongo.ReplaceDocument(mongo.CollectionPlayers, mongo.M{"_id": player.ID}, player)
+	_, err := mongo.ReplaceOne(mongo.CollectionPlayers, mongo.M{"_id": player.ID}, player)
 	return err
 }
 

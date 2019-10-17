@@ -119,30 +119,7 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 }
 
 // Does not return error on nothing returned
-func FindDocumentByKey(collection collection, col string, val interface{}, projection M, document Document) (err error) {
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return err
-	}
-
-	ops := options.FindOne()
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	c := client.Database(MongoDatabase).Collection(collection.String())
-	result := c.FindOne(ctx, M{col: val}, ops)
-
-	err = result.Err()
-	if err != nil {
-		return err
-	}
-
-	return result.Decode(document)
-}
-
-func GetFirstDocument(collection collection, filter interface{}, sort interface{}, projection M, document Document) (err error) {
+func FindOne(collection collection, filter interface{}, sort interface{}, projection M, document Document) (err error) {
 
 	if filter == nil {
 		filter = M{}
@@ -154,7 +131,6 @@ func GetFirstDocument(collection collection, filter interface{}, sort interface{
 	}
 
 	ops := options.FindOne()
-
 	if projection != nil {
 		ops.SetProjection(projection)
 	}
@@ -169,7 +145,7 @@ func GetFirstDocument(collection collection, filter interface{}, sort interface{
 }
 
 // Errors if key already exists
-func InsertDocument(collection collection, document Document) (resp *mongo.InsertOneResult, err error) {
+func InsertOne(collection collection, document Document) (resp *mongo.InsertOneResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -181,7 +157,7 @@ func InsertDocument(collection collection, document Document) (resp *mongo.Inser
 }
 
 // Create or update whole document
-func ReplaceDocument(collection collection, filter interface{}, document Document) (resp *mongo.UpdateResult, err error) {
+func ReplaceOne(collection collection, filter interface{}, document Document) (resp *mongo.UpdateResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -192,8 +168,58 @@ func ReplaceDocument(collection collection, filter interface{}, document Documen
 	return c.ReplaceOne(ctx, filter, document.BSON(), options.Replace().SetUpsert(true))
 }
 
+func DeleteMany(collection collection, filter M) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return nil
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
+	_, err = c.DeleteMany(ctx, filter)
+	return err
+}
+
+func DeleteOne(collection collection, filter M) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
+
+	_, err = c.DeleteOne(ctx, filter, options.Delete())
+	return err
+}
+
+func UpdateManySet(collection collection, filter M, update M) (result *mongo.UpdateResult, err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return result, nil
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
+	_, err = c.UpdateMany(ctx, filter, M{"$set": update}, options.Update())
+	return result, err
+}
+
+// M{column_to_delete: 1}
+func UpdateManyUnset(collection collection, columns M) (err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return nil
+	}
+
+	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
+	_, err = c.UpdateMany(ctx, M{}, M{"$unset": columns})
+	return err
+}
+
 // Will skip documents that already exist
-func InsertDocuments(collection collection, documents []Document) (resp *mongo.InsertManyResult, err error) {
+func InsertMany(collection collection, documents []Document) (resp *mongo.InsertManyResult, err error) {
 
 	if documents == nil || len(documents) < 1 {
 		return resp, nil
@@ -283,40 +309,4 @@ func mongoFilterToMemcacheKey(collection collection, filter interface{}) string 
 	key := hex.EncodeToString(h[:])
 
 	return collection.String() + "-" + key
-}
-
-func DeleteColumn(collection collection, column string) (err error) {
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return nil
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
-	_, err = c.UpdateMany(ctx, M{}, M{"$unset": M{column: 1}})
-	return err
-}
-
-func DeleteMany(collection collection, filter M) (err error) {
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return nil
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
-	_, err = c.DeleteMany(ctx, filter)
-	return err
-}
-
-func UpdateMany(collection collection, update M, filter M) (err error) {
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return nil
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
-	_, err = c.UpdateMany(ctx, filter, M{"$set": update}, options.Update())
-	return err
 }

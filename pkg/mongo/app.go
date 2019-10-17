@@ -29,7 +29,7 @@ func (a App) BSON() (ret interface{}) {
 
 func (a App) Save() (err error) {
 
-	_, err = ReplaceDocument(CollectionApps, M{"_id": a.ID}, a)
+	_, err = ReplaceOne(CollectionApps, M{"_id": a.ID}, a)
 	return err
 }
 
@@ -39,7 +39,7 @@ func GetApp(id int) (app App, err error) {
 		return app, ErrInvalidAppID
 	}
 
-	err = FindDocumentByKey(CollectionApps, "_id", id, nil, &app)
+	err = FindOne(CollectionApps, M{"_id": id}, nil, nil, &app)
 	if err != nil {
 		return app, err
 	}
