@@ -238,9 +238,10 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 		if err == nil && i > 0 {
 			app, err := sql.GetApp(i, []string{"id", "icon"})
 			if err != nil {
-				log.Err(err)
+				log.Err(group.URL, err)
+			} else {
+				group.Icon = app.Icon
 			}
-			group.Icon = app.Icon
 		}
 	}
 
