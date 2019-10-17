@@ -496,6 +496,10 @@ func CountPlayersWithBan() (count int64, err error) {
 
 func BulkUpdatePlayers(writes []mongo.WriteModel) (err error) {
 
+	if len(writes) == 0 {
+		return nil
+	}
+
 	client, ctx, err := getMongo()
 	if err != nil {
 		return err
