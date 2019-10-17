@@ -167,7 +167,7 @@ if ($playerPage.length > 0) {
     function loadPlayerFriends() {
 
         const options = {
-            "order": [[2, 'desc']],
+            "order": [[1, 'desc'], [4, 'asc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[1]);
             },
