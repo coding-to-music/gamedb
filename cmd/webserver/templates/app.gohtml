@@ -426,11 +426,16 @@
                                     </thead>
                                     <tbody>
                                     {{ range $key, $value := .Achievements }}
-                                        <tr {{ if not .Active }}class="table-danger"{{ end }}>
+                                        <tr>
                                             <td class="img">
                                                 <div class="icon-name">
                                                     <div class="icon"><img src="" data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .Name }}"></div>
-                                                    <div class="name">{{ .Name }}</div>
+                                                    <div class="name">
+                                                        {{ .Name }}
+                                                        {{ if not .Active }}
+                                                            <span class="badge badge-danger float-right">Hidden</span>
+                                                        {{ end }}
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>{{ .Description }}</td>
