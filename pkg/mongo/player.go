@@ -14,13 +14,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type RankKey int
+
 const (
-	RankKeyLevel    = "l"
-	RankKeyBadges   = "b"
-	RankKeyFriends  = "f"
-	RankKeyComments = "c"
-	RankKeyGames    = "g"
-	RankKeyPlaytime = "p"
+	RankKeyLevel    RankKey = 1
+	RankKeyBadges   RankKey = 2
+	RankKeyFriends  RankKey = 3
+	RankKeyComments RankKey = 4
+	RankKeyGames    RankKey = 5
+	RankKeyPlaytime RankKey = 6
+)
+
+const (
+	RankCountryAll  = "ALL"
+	RankCountryNone = "NONE"
 )
 
 var (
@@ -432,7 +439,7 @@ func GetUniquePlayerCountries() (codes []string, err error) {
 
 	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
 
-	resp, err := c.Distinct(ctx, "country_code", M{}, options.Distinct().SetMaxTime(time.Second*10))
+	resp, err := c.Distinct(ctx, "country_code", M{}, options.Distinct())
 
 	for _, v := range resp {
 		if code, ok := v.(string); ok {
@@ -496,42 +503,6 @@ func BulkUpdatePlayers(writes []mongo.WriteModel) (err error) {
 
 	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
 
-	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
-	log.Err(err)
-
-	return err
-}
-
-func RankPlayers(col string, colToUpdate string) (err error) {
-
-	players, err := GetPlayers(0, 0, D{{col, -1}}, M{col: M{"$gt": 0}}, M{"_id": 1}, nil)
-	if err != nil {
-		return err
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return err
-	}
-
-	var writes []mongo.WriteModel
-	for k, v := range players {
-
-		write := mongo.NewUpdateOneModel()
-		write.SetFilter(M{"_id": v.ID})
-		write.SetUpdate(M{"$set": M{colToUpdate: k + 1}})
-		write.SetUpsert(false)
-
-		writes = append(writes, write)
-	}
-
-	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
-
-	// Clear all current values
-	_, err = c.UpdateMany(ctx, M{colToUpdate: M{"$ne": 0}}, M{"$set": M{colToUpdate: 0}}, options.Update())
-	log.Err(err)
-
-	// Write in new values
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 	log.Err(err)
 

@@ -1,10 +1,13 @@
 package tasks
 
 import (
+	"sort"
+	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	mongodb "go.mongodb.org/mongo-driver/mongo"
 )
 
 type PlayerRanks struct {
@@ -25,31 +28,76 @@ func (c PlayerRanks) Cron() string {
 
 func (c PlayerRanks) work() {
 
-	ranks := []rankTask{
-		{"Level", "level", "level_rank"},
-		{"Games", "games_count", "games_rank"},
-		{"Badges", "badges_count", "badges_rank"},
-		{"Time", "play_time", "play_time_rank"},
-		{"Friends", "friends_count", "friends_rank"},
+	// err2 := mongo.DeleteColumn(mongo.CollectionPlayers, "ranks")
+	// log.Info(err2)
+	// return
+
+	codes, err := mongo.GetUniquePlayerCountries()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+	codes = append(codes, mongo.RankCountryAll)
+
+	sort.SliceStable(codes, func(i, j int) bool {
+		return codes[i] < codes[j]
+	})
+
+	fields := []rankTask{
+		{"level", mongo.RankKeyLevel},
+		{"games_count", mongo.RankKeyGames},
+		{"badges_count", mongo.RankKeyBadges},
+		{"play_time", mongo.RankKeyPlaytime},
+		{"friends_count", mongo.RankKeyFriends},
+		{"comments_count", mongo.RankKeyComments},
 	}
 
-	for _, v := range ranks {
+	for _, cc := range codes {
 
-		log.Info(v.name)
+		log.Info("CC: " + cc)
 
-		err := mongo.RankPlayers(v.readCol, v.writeCol)
-		log.Warning(err)
+		for _, field := range fields {
 
-		time.Sleep(time.Second * 30)
+			filter := mongo.M{field.readCol: mongo.M{"$exists": true, "$gt": 0}}
+			if cc != mongo.RankCountryAll {
+				filter["country_code"] = cc
+			}
+
+			players, err := mongo.GetPlayers(0, 0, mongo.D{{field.readCol, -1}}, filter, mongo.M{"_id": 1}, nil)
+			if err != nil {
+				log.Warning(err)
+				continue
+			}
+
+			time.Sleep(time.Second * 1)
+
+			var writes []mongodb.WriteModel
+			for k, v := range players {
+
+				write := mongodb.NewUpdateOneModel()
+				write.SetFilter(mongo.M{"_id": v.ID})
+				write.SetUpdate(mongo.M{"$set": mongo.M{field.getWriteCol(cc): k + 1}})
+				write.SetUpsert(false)
+
+				writes = append(writes, write)
+			}
+
+			err = mongo.BulkUpdatePlayers(writes)
+			log.Err(err)
+
+			time.Sleep(time.Second * 1)
+		}
 	}
 }
 
 type rankTask struct {
-	name     string
 	readCol  string
-	writeCol string
+	writeCol mongo.RankKey
 }
 
 func (rt rankTask) getWriteCol(cc string) string {
-	return rt.writeCol + cc
+	if cc == "" {
+		cc = mongo.RankCountryNone
+	}
+	return "ranks." + strconv.Itoa(int(rt.writeCol)) + "_" + cc
 }
