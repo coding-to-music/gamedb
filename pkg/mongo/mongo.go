@@ -269,7 +269,14 @@ func CountDocuments(collection collection, filter interface{}, ttl int32) (count
 			return count, err
 		}
 
-		return client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
+		ql := helpers.QueryLogger{}
+		ql.Start(filter, nil)
+
+		c, err := client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
+
+		ql.End()
+
+		return c, err
 	})
 
 	return count, err
