@@ -475,25 +475,6 @@ func CountPlayers() (count int64, err error) {
 	return count, err
 }
 
-func CountPlayersWithBan() (count int64, err error) {
-
-	var item = helpers.MemcachePlayersCount
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		filter := M{
-			"$or": A{
-				M{"bans_game": M{"$gt": 0}},
-				M{"bans_cav": M{"$gt": 0}},
-			},
-		}
-
-		return CountDocuments(CollectionPlayers, filter, 0)
-	})
-
-	return count, err
-}
-
 func BulkUpdatePlayers(writes []mongo.WriteModel) (err error) {
 
 	if len(writes) == 0 {
