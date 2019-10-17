@@ -10,16 +10,16 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-const ( //                         min hour
+const ( //                        min hour
 	CronTimeSetBadgeCache       = "*/10 *"
 	CronTimeSteamClientPlayers  = "*/10 *"
 	CronTimeClearUpcomingCache  = "0 0"
 	CronTimePlayerRanks         = "0 0"
-	CronTimeGenres              = "0 1"
-	CronTimeTags                = "0 2"
-	CronTimePublishers          = "0 3"
-	CronTimeDevelopers          = "0 4"
-	CronTimeCategories          = "0 5"
+	CronTimeGenres              = "0 3"
+	CronTimeTags                = "0 4"
+	CronTimePublishers          = "0 5"
+	CronTimeDevelopers          = "0 6"
+	CronTimeCategories          = "0 7"
 	CronTimeInstagram           = "0 12"
 	CronTimeAppPlayers          = "0 */6"
 	CronTimeAutoPlayerRefreshes = "0 */6"
