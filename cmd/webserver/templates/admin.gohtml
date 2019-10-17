@@ -52,7 +52,6 @@
                                     <th scope="col">Real</th>
                                     <th scope="col">Previous</th>
                                     <th scope="col">Next</th>
-                                    <th scope="col">Run</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -60,7 +59,7 @@
 
                                     {{ $realLast:= (index $.Configs (print "task-" .Task.ID)).Value }}
 
-                                    <tr data-id="{{ .Task.ID }}" class="{{ if .Bad }}table-danger{{ end }}">
+                                    <tr data-id="{{ .Task.ID }}" class="cursor-pointer {{ if .Bad }}table-danger{{ end }}" data-action="/admin/run-cron?cron={{ .Task.ID }}">
                                         <td>{{ .Task.Name }}</td>
                                         <td class="prev" data-sort="{{ $realLast }}">
                                             <span data-livestamp="{{ $realLast }}"></span>
@@ -72,7 +71,6 @@
                                             <td data-sort="10000000000"></td>
                                             <td data-sort="10000000000"></td>
                                         {{ end }}
-                                        <td><a href="/admin/run-cron?cron={{ .Task.ID }}" role="button" class="btnx btn-success btn-sm">Run</a></td>
                                     </tr>
                                 {{ end }}
                                 </tbody>

@@ -1,10 +1,10 @@
 if ($('#admin-page').length > 0) {
 
-    $('#actions a').on('click', function () {
+    $('#actions tr').on('click', function () {
         if (confirm('Are you sure?')) {
             $.ajax({
                 type: 'get',
-                url: $(this).attr('href'),
+                url: $(this).attr('data-action'),
                 // success: function (data, textStatus, jqXHR) {
                 //     toast(true, 'Triggered');
                 // },
