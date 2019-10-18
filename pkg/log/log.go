@@ -178,6 +178,8 @@ func log(interfaces ...interface{}) {
 		switch val := v.(type) {
 		case nil:
 			continue
+		case error:
+			entry.error = val
 		case bool:
 			entry.texts = append(entry.texts, strconv.FormatBool(val))
 		case int:
@@ -198,20 +200,18 @@ func log(interfaces ...interface{}) {
 			entry.texts = append(entry.texts, string(val))
 		case []string:
 			entry.texts = append(entry.texts, strings.Join(val, ","))
+		case time.Time:
+			entry.timestamp = val
 		case time.Duration:
 			entry.texts = append(entry.texts, val.String())
 		case net.IP:
 			entry.texts = append(entry.texts, val.String())
 		case *http.Request:
 			entry.request = val
-		case error:
-			entry.error = val
 		case LogName:
 			entry.logNames = append(entry.logNames, val)
 		case Severity:
 			entry.severity = val
-		case time.Time:
-			entry.timestamp = val
 		case Service:
 			loggingServices = append(loggingServices, val)
 		case Option:
