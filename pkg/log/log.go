@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"path"
 	"reflect"
 	"runtime/debug"
 	"strconv"
@@ -95,14 +94,14 @@ func (e entry) toText(severity Severity) string {
 
 	var ret []string
 
-	// Severity
-	ret = append(ret, e.severity.string())
-
-	// Environment
-	if !config.IsLocal() {
-		ret = append(ret, config.Config.Environment.Get())
-		ret = append(ret, path.Base(os.Args[0]))
-	}
+	// // Severity
+	// ret = append(ret, e.severity.string())
+	//
+	// // Environment
+	// if !config.IsLocal() {
+	// 	ret = append(ret, config.Config.Environment.Get())
+	// 	ret = append(ret, path.Base(os.Args[0]))
+	// }
 
 	// Request
 	if e.request != nil {
