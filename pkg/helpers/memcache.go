@@ -75,13 +75,14 @@ var (
 	MemcachePackageBundles = func(packageID int) memcache.Item { return memcache.Item{Key: "package-bundles-" + strconv.Itoa(packageID), Expiration: 0} }
 
 	// Other
-	MemcacheQueues         = memcache.Item{Key: "queues", Expiration: 10}
-	MemcachePopularApps    = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
-	MemcachePopularNewApps = memcache.Item{Key: "popular-new-apps", Expiration: 60}
-	MemcacheTrendingApps   = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
-	MemcacheTotalCommits   = memcache.Item{Key: "total-commits", Expiration: 60 * 60}
-	MemcacheStatsAppTypes  = func(code steam.ProductCC) memcache.Item { return memcache.Item{Key: "stats-app-types-" + string(code), Expiration: 60 * 60 * 25} }
-	MemcacheUserByAPIKey   = func(key string) memcache.Item { return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
+	MemcacheQueues                   = memcache.Item{Key: "queues", Expiration: 10}
+	MemcachePopularApps              = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
+	MemcachePopularNewApps           = memcache.Item{Key: "popular-new-apps", Expiration: 60}
+	MemcacheTrendingApps             = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
+	MemcacheTotalCommits             = memcache.Item{Key: "total-commits", Expiration: 60 * 60}
+	MemcacheStatsAppTypes            = func(code steam.ProductCC) memcache.Item { return memcache.Item{Key: "stats-app-types-" + string(code), Expiration: 60 * 60 * 25} }
+	MemcacheUserByAPIKey             = func(key string) memcache.Item { return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
+	MemcacheUniquePlayerCountryCodes = memcache.Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24}
 )
 
 func GetMemcache() *memcache.Memcache {

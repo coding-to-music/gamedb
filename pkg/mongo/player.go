@@ -432,20 +432,30 @@ func GetPlayers(offset int64, limit int64, sort D, filter interface{}, projectio
 
 func GetUniquePlayerCountries() (codes []string, err error) {
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return codes, err
-	}
+	var item = helpers.MemcacheUniquePlayerCountryCodes
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
 
-	resp, err := c.Distinct(ctx, "country_code", M{}, options.Distinct())
-
-	for _, v := range resp {
-		if code, ok := v.(string); ok {
-			codes = append(codes, code)
+		client, ctx, err := getMongo()
+		if err != nil {
+			return codes, err
 		}
-	}
+
+		c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
+
+		resp, err := c.Distinct(ctx, "country_code", M{}, options.Distinct())
+		if err != nil {
+			return codes, err
+		}
+
+		for _, v := range resp {
+			if code, ok := v.(string); ok {
+				codes = append(codes, code)
+			}
+		}
+
+		return codes, err
+	})
 
 	return codes, err
 }
