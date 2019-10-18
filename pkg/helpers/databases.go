@@ -4,17 +4,20 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/Jleagle/go-durationfmt"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type QueryLogger struct {
-	startTime time.Time
-	filter    interface{}
-	sort      interface{}
+	startTime  time.Time
+	collection string
+	filter     interface{}
+	sort       interface{}
 }
 
-func (ql QueryLogger) Start(filter interface{}, sort interface{}) {
+func (ql QueryLogger) Start(collection string, filter interface{}, sort interface{}) {
 	ql.startTime = time.Now()
+	ql.collection = collection
 	ql.filter = filter
 	ql.sort = sort
 }
@@ -33,6 +36,7 @@ func (ql QueryLogger) End() {
 		var is = []interface{}{
 			log.LogNameMongo,
 			"Mongo call taking " + diffFormatted,
+			ql.collection,
 		}
 
 		b, _ := json.Marshal(ql.filter)
@@ -41,6 +45,6 @@ func (ql QueryLogger) End() {
 		b, _ = json.Marshal(ql.sort)
 		is = append(is, "Sort: "+string(b))
 
-		log.Info(is...)
+		log.Warning(is...)
 	}
 }
