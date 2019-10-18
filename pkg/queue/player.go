@@ -884,24 +884,28 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 		"badges":   player.BadgesCount,
 		"playtime": player.PlayTime,
 		"friends":  player.FriendsCount,
+		"comments": player.CommentsCount,
 	}
 
-	if player.LevelRank > 0 {
-		fields["level_rank"] = player.LevelRank
-	}
-	if player.GamesRank > 0 {
-		fields["games_rank"] = player.GamesRank
-	}
-	if player.BadgesRank > 0 {
-		fields["badges_rank"] = player.BadgesRank
-	}
-	if player.PlayTimeRank > 0 {
-		fields["playtime_rank"] = player.PlayTimeRank
-	}
-	if player.FriendsRank > 0 {
-		fields["friends_rank"] = player.FriendsRank
+	// Add ranks to map
+	gamesRank := map[mongo.RankKey]string{
+		mongo.RankKeyLevel:    "level_rank",
+		mongo.RankKeyGames:    "games_rank",
+		mongo.RankKeyBadges:   "badges_rank",
+		mongo.RankKeyPlaytime: "playtime_rank",
+		mongo.RankKeyFriends:  "friends_rank",
+		mongo.RankKeyComments: "comments_rank",
 	}
 
+	for k, v := range gamesRank {
+
+		val, ok := player.GetRank(k, mongo.RankCountryAll)
+		if val > 0 && ok {
+			fields[v] = val
+		}
+	}
+
+	// Save
 	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(helpers.InfluxMeasurementPlayers),
 		Tags: map[string]string{

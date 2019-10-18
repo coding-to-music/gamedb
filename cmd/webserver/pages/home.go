@@ -149,29 +149,37 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "sort")
 
-	if !helpers.SliceHasString([]string{"level", "games", "badges", "time"}, id) {
+	if !helpers.SliceHasString([]string{"level", "games", "badges", "time", "comments", "friends"}, id) {
 		return
 	}
 
-	var sort string
+	var sortKey mongo.RankKey
 	var value string
 
 	switch id {
 	case "level":
-		sort = "level_rank"
+		sortKey = mongo.RankKeyLevel
 		value = "level"
 	case "games":
-		sort = "games_rank"
+		sortKey = mongo.RankKeyGames
 		value = "games_count"
 	case "badges":
-		sort = "badges_rank"
+		sortKey = mongo.RankKeyBadges
 		value = "badges_count"
 	case "time":
-		sort = "play_time_rank"
+		sortKey = mongo.RankKeyPlaytime
+		value = "play_time"
+	case "friends":
+		sortKey = mongo.RankKeyFriends
+		value = "friends_count"
+	case "comments":
+		sortKey = mongo.RankKeyComments
 		value = "play_time"
 	default:
 		return
 	}
+
+	sort := "ranks." + strconv.Itoa(int(sortKey)) + "_" + mongo.RankCountryAll
 
 	projection := mongo.M{
 		"_id":          1,
@@ -199,18 +207,24 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 		switch id {
 		case "level":
-			homePlayer.Rank = player.GetLevelRank()
+			homePlayer.setRank(player.GetRank(mongo.RankKeyLevel, mongo.RankCountryAll))
 			homePlayer.Value = humanize.Comma(int64(player.Level))
 			homePlayer.Class = helpers.GetPlayerAvatar2(player.Level)
 		case "games":
-			homePlayer.Rank = player.GetGamesRank()
+			homePlayer.setRank(player.GetRank(mongo.RankKeyGames, mongo.RankCountryAll))
 			homePlayer.Value = humanize.Comma(int64(player.GamesCount))
 		case "badges":
-			homePlayer.Rank = player.GetBadgesRank()
+			homePlayer.setRank(player.GetRank(mongo.RankKeyBadges, mongo.RankCountryAll))
 			homePlayer.Value = humanize.Comma(int64(player.BadgesCount))
 		case "time":
-			homePlayer.Rank = player.GetPlaytimeRank()
+			homePlayer.setRank(player.GetRank(mongo.RankKeyPlaytime, mongo.RankCountryAll))
 			homePlayer.Value = helpers.GetTimeLong(player.PlayTime, 2)
+		case "friends":
+			homePlayer.setRank(player.GetRank(mongo.RankKeyFriends, mongo.RankCountryAll))
+			homePlayer.Value = humanize.Comma(int64(player.FriendsCount))
+		case "comments":
+			homePlayer.setRank(player.GetRank(mongo.RankKeyComments, mongo.RankCountryAll))
+			homePlayer.Value = humanize.Comma(int64(player.CommentsCount))
 		}
 
 		resp = append(resp, homePlayer)
@@ -226,4 +240,11 @@ type homePlayer struct {
 	Link   string `json:"link"`
 	Avatar string `json:"avatar"`
 	Class  string `json:"class"`
+}
+
+func (hp *homePlayer) setRank(i int, b bool) {
+	if b {
+		hp.Rank = helpers.OrdinalComma(i)
+	}
+	hp.Rank = "-"
 }

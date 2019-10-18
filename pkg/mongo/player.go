@@ -16,6 +16,24 @@ import (
 
 type RankKey int
 
+func (rk RankKey) String() string {
+	switch rk {
+	case RankKeyLevel:
+		return "Level"
+	case RankKeyBadges:
+		return "Badges"
+	case RankKeyFriends:
+		return "Friends"
+	case RankKeyComments:
+		return "Comments"
+	case RankKeyGames:
+		return "Games"
+	case RankKeyPlaytime:
+		return "Playtime"
+	}
+	return "xx"
+}
+
 const (
 	RankKeyLevel    RankKey = 1
 	RankKeyBadges   RankKey = 2
@@ -68,13 +86,6 @@ type Player struct {
 	GamesCount   int `bson:"games_count"`
 	Level        int `bson:"level"`
 	PlayTime     int `bson:"play_time"`
-
-	// Ranks
-	BadgesRank   int `bson:"badges_rank"`
-	FriendsRank  int `bson:"friends_rank"`
-	GamesRank    int `bson:"games_rank"`
-	LevelRank    int `bson:"level_rank"`
-	PlayTimeRank int `bson:"play_time_rank"`
 }
 
 func (player Player) BSON() (ret interface{}) {
@@ -106,18 +117,12 @@ func (player Player) BSON() (ret interface{}) {
 		"ranks":                  player.Ranks,
 
 		// Ranked
-		"badges_count":  player.BadgesCount,
-		"friends_count": player.FriendsCount,
-		"games_count":   player.GamesCount,
-		"level":         player.Level,
-		"play_time":     player.PlayTime,
-
-		// Ranks
-		"badges_rank":    player.BadgesRank,
-		"friends_rank":   player.FriendsRank,
-		"games_rank":     player.GamesRank,
-		"level_rank":     player.LevelRank,
-		"play_time_rank": player.PlayTimeRank,
+		"badges_count":   player.BadgesCount,
+		"friends_count":  player.FriendsCount,
+		"games_count":    player.GamesCount,
+		"level":          player.Level,
+		"play_time":      player.PlayTime,
+		"comments_count": player.CommentsCount,
 	}
 }
 
@@ -192,47 +197,6 @@ func (player Player) GetTimeLong() (ret string) {
 }
 
 //
-func (player Player) GetBadgesRank() string {
-
-	if player.BadgesRank == 0 {
-		return "-"
-	}
-	return helpers.OrdinalComma(player.BadgesRank)
-}
-
-func (player Player) GetFriendsRank() string {
-
-	if player.FriendsRank == 0 {
-		return "-"
-	}
-	return helpers.OrdinalComma(player.FriendsRank)
-}
-
-func (player Player) GetGamesRank() string {
-
-	if player.GamesRank == 0 {
-		return "-"
-	}
-	return helpers.OrdinalComma(player.GamesRank)
-}
-
-func (player Player) GetLevelRank() string {
-
-	if player.LevelRank == 0 {
-		return "-"
-	}
-	return helpers.OrdinalComma(player.LevelRank)
-}
-
-func (player Player) GetPlaytimeRank() string {
-
-	if player.PlayTimeRank == 0 {
-		return "-"
-	}
-	return helpers.OrdinalComma(player.PlayTimeRank)
-}
-
-//
 func (player Player) GetSpecialBadges() (badges []PlayerBadge) {
 
 	if player.BadgeIDs == nil || len(player.BadgeIDs) == 0 {
@@ -267,6 +231,15 @@ func (player Player) GetGameStats(code steam.ProductCC) (stats PlayerAppStatsTem
 	stats.Played.ProductCC = code
 
 	return stats, err
+}
+
+func (player Player) GetRank(metric RankKey, cc string) (i int, found bool) {
+
+	if val, ok := player.Ranks[strconv.Itoa(int(metric))+"_"+cc]; ok {
+		return val, true
+	}
+
+	return 0, false
 }
 
 type UpdateType string

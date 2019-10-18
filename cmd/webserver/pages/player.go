@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -167,8 +168,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		banners["primary"] = primary
 	}
 
+	//
 	t := playerTemplate{}
 
+	// Add to Rabbit
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
 		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}}, false)
@@ -178,6 +181,34 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 		}
 	}
+
+	// Get ranks
+	ranks := []mongo.RankKey{mongo.RankKeyLevel, mongo.RankKeyBadges, mongo.RankKeyFriends, mongo.RankKeyComments, mongo.RankKeyGames, mongo.RankKeyPlaytime}
+	cc := player.CountryCode
+	if cc == "" {
+		cc = mongo.RankCountryNone
+	}
+
+	for _, v := range ranks {
+		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_"+cc]; ok {
+			t.Ranks = append(t.Ranks, playerRankTemplate{
+				CountryCode: player.CountryCode,
+				Metric:      v,
+				Position:    position,
+			})
+		}
+		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_"+mongo.RankCountryAll]; ok {
+			t.Ranks = append(t.Ranks, playerRankTemplate{
+				CountryCode: mongo.RankCountryAll,
+				Metric:      v,
+				Position:    position,
+			})
+		}
+	}
+
+	sort.Slice(t.Ranks, func(i, j int) bool {
+		return t.Ranks[i].Position < t.Ranks[j].Position
+	})
 
 	// Template
 	t.setBackground(backgroundApp, true, false)
@@ -207,6 +238,7 @@ type playerTemplate struct {
 	DefaultAvatar string
 	GameStats     mongo.PlayerAppStatsTemplate
 	Player        mongo.Player
+	Ranks         []playerRankTemplate
 }
 
 type playerMissingTemplate struct {
@@ -215,80 +247,22 @@ type playerMissingTemplate struct {
 	DefaultAvatar string
 }
 
-// // playerRanksTemplate
-// type playerRanksTemplate struct {
-// 	Ranks   mongo.PlayerRank
-// 	Players int64
-// }
-//
-// func (p playerRanksTemplate) format(rank int) string {
-//
-// 	ord := humanize.Ordinal(rank)
-// 	if ord == "0th" {
-// 		return "-"
-// 	}
-// 	return ord
-// }
-//
-// func (p playerRanksTemplate) GetLevel() string {
-// 	return p.format(p.Ranks.LevelRank)
-// }
-//
-// func (p playerRanksTemplate) GetGames() string {
-// 	return p.format(p.Ranks.GamesRank)
-// }
-//
-// func (p playerRanksTemplate) GetBadges() string {
-// 	return p.format(p.Ranks.BadgesRank)
-// }
-//
-// func (p playerRanksTemplate) GetTime() string {
-// 	return p.format(p.Ranks.PlayTimeRank)
-// }
-//
-// func (p playerRanksTemplate) GetFriends() string {
-// 	return p.format(p.Ranks.FriendsRank)
-// }
-//
-// func (p playerRanksTemplate) formatPercent(rank int) string {
-//
-// 	if rank == 0 {
-// 		return ""
-// 	}
-//
-// 	precision := 0
-// 	if rank <= 10 {
-// 		precision = 3
-// 	} else if rank <= 100 {
-// 		precision = 2
-// 	} else if rank <= 1000 {
-// 		precision = 1
-// 	}
-//
-// 	percent := (float64(rank) / float64(p.Players)) * 100
-// 	return helpers.FloatToString(percent, precision) + "%"
-//
-// }
-//
-// func (p playerRanksTemplate) GetLevelPercent() string {
-// 	return p.formatPercent(p.Ranks.LevelRank)
-// }
-//
-// func (p playerRanksTemplate) GetGamesPercent() string {
-// 	return p.formatPercent(p.Ranks.GamesRank)
-// }
-//
-// func (p playerRanksTemplate) GetBadgesPercent() string {
-// 	return p.formatPercent(p.Ranks.BadgesRank)
-// }
-//
-// func (p playerRanksTemplate) GetTimePercent() string {
-// 	return p.formatPercent(p.Ranks.PlayTimeRank)
-// }
-//
-// func (p playerRanksTemplate) GetFriendsPercent() string {
-// 	return p.formatPercent(p.Ranks.FriendsRank)
-// }
+type playerRankTemplate struct {
+	CountryCode string
+	Metric      mongo.RankKey
+	Position    int
+}
+
+func (pr playerRankTemplate) Rank() string {
+	return helpers.OrdinalComma(pr.Position)
+}
+
+func (pr playerRankTemplate) List() string {
+	if pr.CountryCode == mongo.RankCountryAll {
+		return "globally"
+	}
+	return "in country"
+}
 
 func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 

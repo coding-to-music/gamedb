@@ -212,16 +212,11 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"games_count":   1,
 			"level":         1,
 			"play_time":     1,
+			"bans_game":     1,
+			"bans_cav":      1,
+			"bans_last":     1,
 			//
-			"badges_rank":    1,
-			"friends_rank":   1,
-			"games_rank":     1,
-			"level_rank":     1,
-			"play_time_rank": 1,
-			//
-			"bans_game": 1,
-			"bans_cav":  1,
-			"bans_last": 1,
+			"ranks": 1,
 		}, nil)
 		if err != nil {
 			log.Err(err)
@@ -235,17 +230,19 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			switch query.getOrderString(columns) {
 			case "badges_count":
-				playerRow.Rank = v.BadgesRank
+				playerRow.setRank(v.GetRank(mongo.RankKeyBadges, mongo.RankCountryAll))
 			case "friends_count":
-				playerRow.Rank = v.FriendsRank
+				playerRow.setRank(v.GetRank(mongo.RankKeyFriends, mongo.RankCountryAll))
 			case "games_count":
-				playerRow.Rank = v.GamesRank
+				playerRow.setRank(v.GetRank(mongo.RankKeyGames, mongo.RankCountryAll))
 			case "level", "":
-				playerRow.Rank = v.LevelRank
+				playerRow.setRank(v.GetRank(mongo.RankKeyLevel, mongo.RankCountryAll))
 			case "play_time":
-				playerRow.Rank = v.PlayTimeRank
+				playerRow.setRank(v.GetRank(mongo.RankKeyPlaytime, mongo.RankCountryAll))
+			case "comments":
+				playerRow.setRank(v.GetRank(mongo.RankKeyComments, mongo.RankCountryAll))
 			default:
-				playerRow.Rank = query.getOffset() + (k + 1)
+				playerRow.Rank = strconv.Itoa(query.getOffset() + (k + 1))
 			}
 
 			playerRows = append(playerRows, playerRow)
@@ -288,7 +285,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range playerRows {
 
 		response.AddRow([]interface{}{
-			v.GetRank(),                               // 0
+			v.Rank,                                    // 0
 			strconv.FormatInt(v.Player.ID, 10),        // 1
 			v.Player.PersonaName,                      // 2
 			v.Player.GetAvatar(),                      // 3
@@ -316,14 +313,13 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 // Rank struct
 type PlayerRow struct {
 	Player mongo.Player
-	Rank   int
+	Rank   string
 }
 
-func (pr PlayerRow) GetRank() string {
-
-	if pr.Rank == 0 {
-		return "-"
+func (hp *PlayerRow) setRank(i int, found bool) {
+	if found {
+		hp.Rank = helpers.OrdinalComma(i)
+	} else {
+		hp.Rank = "-"
 	}
-
-	return helpers.OrdinalComma(pr.Rank)
 }

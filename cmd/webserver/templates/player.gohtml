@@ -136,41 +136,13 @@
 
                                         <div class="table-responsive">
                                             <table class="table mb-0">
-                                                <tr>
-                                                    <th scope="row">Level</th>
-                                                    <td>
-                                                        {{ .Player.GetLevelRank }}
-                                                        {{/*                                                <small>Top {{ .Ranks.GetLevelPercent }}</small>*/}}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Games</th>
-                                                    <td>
-                                                        {{ .Player.GetGamesRank }}
-                                                        {{/*                                                <small>Top {{ .Ranks.GetGamesPercent }}</small>*/}}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Badges</th>
-                                                    <td>
-                                                        {{ .Player.GetBadgesRank }}
-                                                        {{/*                                                <small>Top {{ .Ranks.GetBadgesPercent }}</small>*/}}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Time</th>
-                                                    <td>
-                                                        {{ .Player.GetPlaytimeRank }}
-                                                        {{/*                                                <small>Top {{ .Ranks.GetTimePercent }}</small>*/}}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Friends</th>
-                                                    <td>
-                                                        {{ .Player.GetFriendsRank }}
-                                                        {{/*                                                <small>Top {{ .Ranks.GetFriendsPercent }}</small>*/}}
-                                                    </td>
-                                                </tr>
+                                                {{ range $key, $value := .Ranks }}
+                                                    <tr>
+                                                        <td>{{ .Metric.String }}</td>
+                                                        <td>{{ .Rank }}</td>
+                                                        <td>{{ .List }}</td>
+                                                    </tr>
+                                                {{ end }}
                                             </table>
                                         </div>
 
