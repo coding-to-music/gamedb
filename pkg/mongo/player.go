@@ -103,8 +103,7 @@ func (player Player) BSON() (ret interface{}) {
 		"wishlist_apps_count":    player.WishlistAppsCount,
 		"recent_apps_count":      player.RecentAppsCount,
 		"groups_count":           player.GroupsCount,
-		// "wishlist_app_ids":       player.Wishlist,
-		// "groups":                 player.Groups,
+		"ranks":                  player.Ranks,
 
 		// Ranked
 		"badges_count":  player.BadgesCount,
