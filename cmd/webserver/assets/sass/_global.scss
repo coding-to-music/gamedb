@@ -151,6 +151,7 @@ div#loading, div#top {
     right: 20px;
     opacity: 0;
     display: inline-block;
+    z-index: 10;
 }
 
 div#loading.show, div#top.show {
@@ -171,13 +172,10 @@ div#top {
 }
 
 div#loading {
-    top: 76px;
-    width: 60px;
-    height: 60px;
-
-    @include media-breakpoint-up(lg) {
-        top: 20px;
-    }
+    top: 20px;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
 
     img {
         width: 100%;
