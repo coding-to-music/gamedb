@@ -8,35 +8,20 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/go-chi/chi"
 )
 
 const urlBase = "https://gamedb.online"
 
-func SiteMapRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Get("/index.xml", siteMapIndexHandler)
-	r.Get("/pages.xml", siteMapPagesHandler)
-	r.Get("/games-by-score.xml", siteMapGamesByScoreHandler)
-	r.Get("/games-by-players.xml", siteMapGamesByPlayersHandler)
-	r.Get("/players-by-level.xml", siteMapPlayersByLevel)
-	r.Get("/players-by-games.xml", siteMapPlayersByGamesCount)
-	r.Get("/groups.xml", siteMapGroups)
-	r.Get("/badges.xml", siteMapBadges)
-	return r
-}
-
-//noinspection GoUnusedParameter
-func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
+func SiteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	var sitemaps = []string{
-		"/sitemap/pages.xml",
-		"/sitemap/games-by-score.xml",
-		"/sitemap/games-by-players.xml",
-		"/sitemap/players-by-level.xml",
-		"/sitemap/players-by-games.xml",
-		"/sitemap/groups.xml",
-		"/sitemap/badges.xml",
+		"/sitemap-pages.xml",
+		"/sitemap-games-by-score.xml",
+		"/sitemap-games-by-players.xml",
+		"/sitemap-players-by-level.xml",
+		"/sitemap-players-by-games.xml",
+		"/sitemap-groups.xml",
+		"/sitemap-badges.xml",
 	}
 
 	sm := sitemap.NewSiteMapIndex()
@@ -50,7 +35,7 @@ func siteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //noinspection GoUnusedParameter
-func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
+func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var pages = []string{
 		"/",
@@ -95,7 +80,7 @@ func siteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
-func siteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
+func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
@@ -107,7 +92,7 @@ func siteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
-func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
+func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
@@ -120,7 +105,7 @@ func siteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //noinspection GoUnusedParameter
-func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
+func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
@@ -134,7 +119,7 @@ func siteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 }
 
 //noinspection GoUnusedParameter
-func siteMapGroups(w http.ResponseWriter, r *http.Request) {
+func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
@@ -147,7 +132,7 @@ func siteMapGroups(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
-func siteMapBadges(w http.ResponseWriter, r *http.Request) {
+func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
@@ -160,7 +145,7 @@ func siteMapBadges(w http.ResponseWriter, r *http.Request) {
 }
 
 //noinspection GoUnusedParameter
-func siteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
+func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 

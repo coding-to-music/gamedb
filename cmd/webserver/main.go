@@ -93,13 +93,23 @@ func main() {
 	r.Mount("/sales", pages.OffersRouter())
 	r.Mount("/settings", pages.SettingsRouter())
 	r.Mount("/signup", pages.SignupRouter())
-	r.Mount("/sitemap", pages.SiteMapRouter())
-	r.Mount("/sitemap-google", pages.SiteMapRouter())
 	r.Mount("/stats", pages.StatsRouter())
 	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
 	r.Mount("/upcoming", pages.UpcomingRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
+
+	// Sitemaps, Google doesnt like having a sitemap in a sub directory
+	r.Route("/", func(r chi.Router) {
+		r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
+		r.Get("/sitemap-pages.xml", pages.SiteMapPagesHandler)
+		r.Get("/sitemap-games-by-score.xml", pages.SiteMapGamesByScoreHandler)
+		r.Get("/sitemap-games-by-players.xml", pages.SiteMapGamesByPlayersHandler)
+		r.Get("/sitemap-players-by-level.xml", pages.SiteMapPlayersByLevel)
+		r.Get("/sitemap-players-by-games.xml", pages.SiteMapPlayersByGamesCount)
+		r.Get("/sitemap-groups.xml", pages.SiteMapGroups)
+		r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
+	})
 
 	// Profiling
 	if config.IsLocal() {
@@ -113,7 +123,7 @@ func main() {
 	r.Get("/ads.txt", pages.RootFileHandler)
 
 	// Redirects
-	r.Get("/sitemap.xml", pages.RedirectHandler("/sitemap/index.xml"))
+	r.Get("/sitemap/index.xml", pages.RedirectHandler("/sitemap.xml"))
 	r.Get("/trending", pages.RedirectHandler("/apps/trending"))
 
 	// File server
