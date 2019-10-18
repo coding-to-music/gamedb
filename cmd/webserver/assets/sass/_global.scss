@@ -171,9 +171,13 @@ div#top {
 }
 
 div#loading {
-    top: 20px;
+    top: 76px;
     width: 60px;
     height: 60px;
+
+    @include media-breakpoint-up(lg) {
+        top: 20px;
+    }
 
     img {
         width: 100%;
