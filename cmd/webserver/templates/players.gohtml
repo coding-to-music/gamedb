@@ -48,7 +48,7 @@
                                 </optgroup>
                                 <optgroup label="Countries">
                                     {{ range .Countries }}
-                                        <option value="{{ .Alpha2 }}">{{ .Name.Common }}</option>
+                                        <option value="{{ .CC }}">{{ .Name }}</option>
                                     {{ end }}
                                 </optgroup>
                             </select>

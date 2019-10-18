@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
-	"github.com/pariz/gountries"
 )
 
 const CAF = "C-AF"
@@ -39,20 +38,6 @@ var continents = []continent{
 	{Key: CNA, Value: "Europe"},
 	{Key: CSA, Value: "North America"},
 	{Key: COC, Value: "South America"},
-}
-
-var countries []gountries.Country
-
-func init() {
-
-	countriesMap := gountries.New().FindAllCountries()
-	for _, v := range countriesMap {
-		countries = append(countries, v)
-	}
-
-	sort.Slice(countries, func(i, j int) bool {
-		return countries[i].Name.Common < countries[j].Name.Common
-	})
 }
 
 func PlayersRouter() http.Handler {
@@ -97,6 +82,33 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	// Count players
+	var countries []playersCountriesTemplate
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		codes, err := mongo.GetUniquePlayerCountries()
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		for _, v := range codes {
+			countries = append(countries, playersCountriesTemplate{
+				CC:   v,
+				Name: helpers.CountryCodeToName(v),
+			})
+		}
+
+		sort.Slice(countries, func(i, j int) bool {
+			return countries[i].Name < countries[j].Name
+		})
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -112,8 +124,13 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 type playersTemplate struct {
 	GlobalTemplate
 	Date       string
-	Countries  []gountries.Country
+	Countries  []playersCountriesTemplate
 	Continents []continent
+}
+
+type playersCountriesTemplate struct {
+	CC   string
+	Name string
 }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
