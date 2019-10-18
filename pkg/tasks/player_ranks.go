@@ -28,10 +28,6 @@ func (c PlayerRanks) Cron() string {
 
 func (c PlayerRanks) work() {
 
-	// err2 := mongo.DeleteColumn(mongo.CollectionPlayers, "ranks")
-	// log.Info(err2)
-	// return
-
 	codes, err := mongo.GetUniquePlayerCountries()
 	if err != nil {
 		log.Err(err)
