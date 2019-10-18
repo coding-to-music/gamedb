@@ -25,9 +25,14 @@ func (ql QueryLogger) End() {
 
 	if diff > (time.Second * 1) {
 
+		diffFormatted, err := durationfmt.Format(diff, "%mmin %ssec %imil")
+		if err != nil {
+			diffFormatted = diff.String()
+		}
+
 		var is = []interface{}{
 			log.LogNameMongo,
-			"Mongo call taking " + diff.String(),
+			"Mongo call taking " + diffFormatted,
 		}
 
 		b, _ := json.Marshal(ql.filter)
