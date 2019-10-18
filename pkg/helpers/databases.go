@@ -15,7 +15,7 @@ type QueryLogger struct {
 	sort       interface{}
 }
 
-func (ql QueryLogger) Start(collection string, filter interface{}, sort interface{}) {
+func (ql *QueryLogger) Start(collection string, filter interface{}, sort interface{}) {
 	ql.startTime = time.Now()
 	ql.collection = collection
 	ql.filter = filter
