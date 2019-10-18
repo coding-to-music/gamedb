@@ -119,12 +119,12 @@
                             <table class="table mb-0">
                                 {{ if ne .App.GameName "" }}
                                     <tr>
-                                        <th scope="row" nowrap="nowrap" style="width: 1%">For Game</th>
+                                        <th scope="row" nowrap="nowrap" class="thin">For Game</th>
                                         <td><a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
                                     </tr>
                                 {{ end }}
                                 <tr>
-                                    <th scope="row" nowrap="nowrap" style="width: 1%">Review Score</th>
+                                    <th scope="row" nowrap="nowrap" class="thin">Review Score</th>
                                     <td>
                                         {{ .App.GetReviewScore }}
                                         <small>
@@ -134,26 +134,26 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" nowrap="nowrap" style="width: 1%">Price</th>
+                                    <th scope="row" nowrap="nowrap" class="thin">Price</th>
                                     <td>{{ .Price.GetFinal }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" nowrap="nowrap" style="width: 1%">App Type</th>
+                                    <th scope="row" nowrap="nowrap" class="thin">App Type</th>
                                     <td>{{ .App.GetType }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" nowrap="nowrap" style="width: 1%">Release Date</th>
+                                    <th scope="row" nowrap="nowrap" class="thin">Release Date</th>
                                     <td>{{ .GetReleaseDate }}</td>
                                 </tr>
                                 {{ if gt (len .App.GetPlatforms) 0 }}
                                     <tr>
-                                        <th scope="row" nowrap="nowrap" style="width: 1%">Platforms</th>
+                                        <th scope="row" nowrap="nowrap" class="thin">Platforms</th>
                                         <td class="platforms">{{ .App.GetPlatformImages }}</td>
                                     </tr>
                                 {{ end }}
                                 {{ if gt (len .Demos) 0 }}
                                     <tr>
-                                        <th scope="row" nowrap="nowrap" style="width: 1%">Demos</th>
+                                        <th scope="row" nowrap="nowrap" class="thin">Demos</th>
                                         <td>
                                             {{ range $key, $value := .Demos }}
                                                 <a class="badge badge-success" href="{{ .GetPath }}">{{ .GetName }}</a>
@@ -163,7 +163,7 @@
                                 {{ end }}
                                 {{ if gt (len .Genres) 0 }}
                                     <tr>
-                                        <th scope="row" nowrap="nowrap" style="width: 1%">Genres</th>
+                                        <th scope="row" nowrap="nowrap" class="thin">Genres</th>
                                         <td>
                                             {{ range $key, $value := .Genres }}
                                                 <a class="badge badge-success" href="/apps?genres={{ .ID }}">{{ .GetName }}</a>
@@ -173,7 +173,7 @@
                                 {{ end }}
                                 {{ if gt (len .Tags) 0 }}
                                     <tr>
-                                        <th scope="row" nowrap="nowrap" style="width: 1%">Tags</th>
+                                        <th scope="row" nowrap="nowrap" class="thin">Tags</th>
                                         <td>
                                             {{ range $key, $value := .Tags }}
                                                 <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
@@ -183,7 +183,7 @@
                                 {{ end }}
                                 {{ if ne .App.Categories "" }}
                                     <tr>
-                                        <th scope="row" nowrap="nowrap" style="width: 1%">Categories</th>
+                                        <th scope="row" nowrap="nowrap" class="thin">Categories</th>
                                         <td>
                                             {{ range $key, $value := .Categories }}
                                                 <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
@@ -193,7 +193,7 @@
                                 {{ end }}
                                 {{ if gt (len .Developers) 0 }}
                                     <tr>
-                                        <th scope="row" nowrap="nowrap" style="width: 1%">Developers</th>
+                                        <th scope="row" nowrap="nowrap" class="thin">Developers</th>
                                         <td>
                                             {{ range $key, $value := .Developers }}
                                                 <a class="badge badge-success" href="/apps?developers={{ .ID }}">{{ .GetName }}</a>
@@ -203,7 +203,7 @@
                                 {{ end }}
                                 {{ if gt (len .Publishers) 0 }}
                                     <tr>
-                                        <th scope="row" nowrap="nowrap" style="width: 1%">Publishers</th>
+                                        <th scope="row" nowrap="nowrap" class="thin">Publishers</th>
                                         <td>
                                             {{ range $key, $value := .Publishers }}
                                                 <a class="badge badge-success" href="/apps?publishers={{ .ID }}">{{ .GetName }}</a>
@@ -342,8 +342,8 @@
                             <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/time.json" id="top-players-table">
                                 <thead class="thead-light">
                                 <tr>
-                                    <th scope="col" style="width: 1%">Rank</th>
-                                    <th scope="col" style="width: 1%">Flag</th>
+                                    <th scope="col" class="thin">Rank</th>
+                                    <th scope="col" class="thin">Flag</th>
                                     <th scope="col">Player</th>
                                     <th scope="col">Time</th>
                                 </tr>
@@ -497,7 +497,7 @@
                                 <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/items.json" id="items-table">
                                     <thead class="thead-light">
                                     <tr>
-                                        <th scope="col" style="width: 1%">ID</th>
+                                        <th scope="col" class="thin">ID</th>
                                         <th scope="col">Name</th>
                                         <th scope="col">Description</th>
                                         <th scope="col"></th>
@@ -745,20 +745,20 @@
                                                 </thead>
                                                 {{ if ne .App.Version "" }}
                                                     <tr>
-                                                        <th scope="row" nowrap="nowrap" style="width: 1%">Version</th>
+                                                        <th scope="row" nowrap="nowrap" class="thin">Version</th>
                                                         <td>{{ .App.Version }}</td>
                                                     </tr>
                                                 {{ end }}
                                                 <tr>
-                                                    <th scope="row" nowrap="nowrap" style="width: 1%">Change Number</th>
+                                                    <th scope="row" nowrap="nowrap" class="thin">Change Number</th>
                                                     <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row" nowrap="nowrap" style="width: 1%">Updated on Steam</th>
+                                                    <th scope="row" nowrap="nowrap" class="thin">Updated on Steam</th>
                                                     <td>{{ .App.GetPICSUpdatedNice }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row" nowrap="nowrap" style="width: 1%">Updated on Game DB</th>
+                                                    <th scope="row" nowrap="nowrap" class="thin">Updated on Game DB</th>
                                                     <td>{{ .App.GetUpdatedNice }}</td>
                                                 </tr>
                                             </table>
@@ -775,7 +775,7 @@
                                                 <tr>
                                                     <th scope="col">Key</th>
                                                     <th scope="col">Value</th>
-                                                    <th scope="col" style="width: 1%">Raw</th>
+                                                    <th scope="col" class="thin">Raw</th>
                                                 </tr>
                                                 </thead>
                                                 {{ range .Extended }}
