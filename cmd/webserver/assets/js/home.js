@@ -10,24 +10,16 @@ if ($('#home-page').length > 0) {
 
     function loadPlayers(sort) {
 
-        $('#players .fa-spin').removeClass('d-none');
-        $('#players table').addClass('d-none');
-
-        $('[data-sort]').removeClass('badge-success');
-        $('[data-sort="' + sort + '"]').addClass('badge-success');
-
-        $('#column').html(sort);
-
         $.ajax({
             url: '/home/' + sort + '/players.json',
             dataType: 'json',
             cache: true,
             success: function (data, textStatus, jqXHR) {
 
-                // Reset, for when changing order
-                $('#players .fa-spin').addClass('d-none');
-                $('#players table').removeClass('d-none');
+                $('[data-sort]').removeClass('badge-success');
+                $('[data-sort="' + sort + '"]').addClass('badge-success');
                 $('#players tbody tr').remove();
+                $('#column').html(sort);
 
                 if (isIterable(data)) {
 
@@ -67,9 +59,10 @@ if ($('#home-page').length > 0) {
                                             case 'level':
                                                 return '<div class="icon-name"><div class="icon"><div class="' + this.class + '"></div></div><div class="name min">' + this.value + '</div></div>';
                                             case 'games':
-                                                return this.value + ' games';
                                             case 'badges':
-                                                return this.value + ' badges';
+                                            case 'friends':
+                                            case 'comments':
+                                                return this.value + ' ' + sort;
                                             default:
                                                 return this.value;
                                         }
