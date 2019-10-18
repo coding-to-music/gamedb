@@ -40,10 +40,10 @@ func (ql QueryLogger) End() {
 		}
 
 		b, _ := json.Marshal(ql.filter)
-		is = append(is, "Filter: "+string(b))
+		is = append(is, string(b))
 
 		b, _ = json.Marshal(ql.sort)
-		is = append(is, "Sort: "+string(b))
+		is = append(is, string(b))
 
 		log.Warning(is...)
 	}
