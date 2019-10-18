@@ -51,6 +51,11 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#prices" role="tab">Prices</a>
                         </li>
                     {{end}}
+                    {{ if gt (len .Album.Tracks) 0 }}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks</a>
+                        </li>
+                    {{ end }}
                     {{if gt (len .DLCs) 0}}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC</a>
@@ -386,6 +391,40 @@
                         {{ else }}
 
                             <p>This app has no DLC.</p>
+
+                        {{ end }}
+
+                    </div>
+
+                    {{/* Album Tracks */}}
+                    <div class="tab-pane" id="tracks" role="tabpanel">
+
+                        {{ if gt (len .Album.Tracks) 0 }}
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"],[1, "asc"]]'>
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="thin">Disk</th>
+                                        <th scope="col" class="thin">Track</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col" class="thin">Duration</th>
+                                    </tr>
+                                    </thead>
+                                    {{ range $key, $value := .Album.Tracks }}
+                                        <tr>
+                                            <td>{{ .DiscNumber }}</td>
+                                            <td>{{ .TrackNumber }}</td>
+                                            <td>{{ .OriginalName }}</td>
+                                            <td>{{ .Minutes }}:{{ .Seconds }}</td>
+                                        </tr>
+                                    {{ end }}
+                                </table>
+                            </div>
+
+                        {{ else }}
+
+                            <p>This app has no tracks.</p>
 
                         {{ end }}
 

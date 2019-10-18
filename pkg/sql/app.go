@@ -307,6 +307,19 @@ func (app App) GetExtended() (extended pics.PICSKeyValues) {
 	return extended
 }
 
+func (app App) GetAlbum() (data pics.AlbumMetaData) {
+
+	if len(app.AlbumMetaData) < 3 {
+		return data
+	}
+
+	data = pics.AlbumMetaData{}
+	err := helpers.Unmarshal([]byte(app.AlbumMetaData), &data)
+	log.Err(err)
+
+	return data
+}
+
 func (app App) GetCommon() (common pics.PICSKeyValues) {
 
 	common = pics.PICSKeyValues{}

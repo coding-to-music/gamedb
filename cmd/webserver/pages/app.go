@@ -204,6 +204,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Functions that get called multiple times in the template
 	t.Price = app.GetPrice(helpers.GetProductCC(r))
 
+	t.Album = t.App.GetAlbum()
+
 	t.Achievements, err = t.App.GetAchievements()
 	log.Err(err, r)
 
@@ -279,6 +281,7 @@ type appTemplate struct {
 	Packages     []sql.Package
 	Price        sql.ProductPrice
 	Prices       sql.ProductPrices
+	Album        pics.AlbumMetaData
 	Publishers   []sql.Publisher
 	Reviews      sql.AppReviewSummary
 	Screenshots  []sql.AppImage
