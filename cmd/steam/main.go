@@ -141,8 +141,6 @@ func checkForChanges() {
 				}
 			}
 
-			log.Info("Trying from: " + strconv.FormatUint(uint64(steamChangeNumber), 10))
-
 			var t = true
 			steamClient.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
 				SendAppInfoChanges:     &t,
@@ -252,7 +250,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	appChanges := body.GetAppChanges()
 	if appChanges != nil && len(appChanges) > 0 {
-		log.Info(len(appChanges), "apps")
+		log.Info(strconv.Itoa(len(appChanges)) + " apps in change " + strconv.FormatUint(uint64(steamChangeNumber), 10))
 		for _, appChange := range appChanges {
 
 			appMap[int(appChange.GetChangeNumber())] = int(appChange.GetAppid())
@@ -266,7 +264,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	packageChanges := body.GetPackageChanges()
 	if packageChanges != nil && len(packageChanges) > 0 {
-		log.Info(len(packageChanges), "packages")
+		log.Info(strconv.Itoa(len(packageChanges)) + " packages in change " + strconv.FormatUint(uint64(steamChangeNumber), 10))
 		for _, packageChange := range packageChanges {
 
 			packageMap[int(packageChange.GetChangeNumber())] = int(packageChange.GetPackageid())
