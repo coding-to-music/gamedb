@@ -245,6 +245,7 @@ type homePlayer struct {
 func (hp *homePlayer) setRank(i int, b bool) {
 	if b {
 		hp.Rank = helpers.OrdinalComma(i)
+	} else {
+		hp.Rank = "-"
 	}
-	hp.Rank = "-"
 }
