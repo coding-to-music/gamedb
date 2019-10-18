@@ -207,8 +207,14 @@
                                                     <td>{{ .Bans.EconomyBan }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row">Time Since Ban</th>
-                                                    <td>{{ comma .Bans.DaysSinceLastBan }} days</td>
+                                                    <th scope="row">Time Since VAC Ban</th>
+                                                    <td>
+                                                        {{ if gt .Bans.NumberOfVACBans 0}}
+                                                            {{ comma .Bans.DaysSinceLastBan }} days
+                                                        {{ else }}
+                                                            -
+                                                        {{ end }}
+                                                    </td>
                                                 </tr>
                                             </table>
                                         </div>
