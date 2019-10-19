@@ -82,7 +82,13 @@ func (c PlayerRanks) work() {
 			}
 
 			err = mongo.BulkUpdatePlayers(writes)
-			log.Err(err)
+			if val, ok := err.(mongodb.BulkWriteException); ok {
+				for _, v := range val.WriteErrors {
+					log.Err(v)
+				}
+			} else {
+				log.Err(err)
+			}
 
 			time.Sleep(time.Second * 1)
 		}
