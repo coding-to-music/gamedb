@@ -28,6 +28,9 @@ func (c PlayerRanks) Cron() string {
 
 func (c PlayerRanks) work() {
 
+	// err2 := mongo.UpdateManyUnset(mongo.CollectionPlayers, mongo.M{"ranks": 1})
+	// log.Info(err2)
+
 	codes, err := mongo.GetUniquePlayerCountries()
 	if err != nil {
 		log.Err(err)
