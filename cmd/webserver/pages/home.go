@@ -167,7 +167,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 	case "friends":
 		sort = "friends_count"
 	case "comments":
-		sort = "play_time"
+		sort = "comments_count"
 	default:
 		return
 	}
