@@ -111,12 +111,10 @@ func (p *Page) Send(data interface{}) {
 			err := v.WriteJSON(payload)
 			if err != nil {
 
-				if strings.Contains(err.Error(), "broken pipe") {
+				connsToDelete = append(connsToDelete, k)
 
-					connsToDelete = append(connsToDelete, k)
-
-				} else {
-
+				if !strings.Contains(err.Error(), "broken pipe") &&
+					!strings.Contains(err.Error(), "connection reset by peer") {
 					log.Err(err, fmt.Sprint(payload))
 				}
 			}
