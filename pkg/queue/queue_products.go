@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/Jleagle/valve-data-format-go"
+	"github.com/Jleagle/valve-data-format-go/vdf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"

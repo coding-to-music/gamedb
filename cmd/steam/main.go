@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	vdf "github.com/Jleagle/valve-data-format-go"
+	"github.com/Jleagle/valve-data-format-go/vdf"
 	"github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/protocol"
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
