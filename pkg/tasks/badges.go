@@ -33,7 +33,7 @@ func (c SetBadgeCache) work() {
 
 	if badge.IsSpecial() {
 
-		err = badge.SetSpecialMax()
+		err = badge.SetSpecialFirst()
 		log.Err(err)
 
 		time.Sleep(time.Second * 10)

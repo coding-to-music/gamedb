@@ -48,7 +48,7 @@
                                             </div>
                                         </td>
                                         <td>{{ comma64 .GetSpecialPlayers }}</td>
-                                        <td><a href="{{ .GetSpecialMax.GetPlayerPath }}">{{ .GetSpecialMax.PlayerName }}</a></td>
+                                        <td><a href="{{ .GetSpecialFirst.GetPlayerPath }}">{{ .GetSpecialFirst.PlayerName }}</a></td>
                                     </tr>
                                 {{ end }}
                                 </tbody>
@@ -83,7 +83,7 @@
                                         <td>{{ comma64 .GetEventPlayers }}</td>
                                         <td><a href="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</a></td>
                                         <td><a href="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil.BadgeLevel }}</a></td>
-                                        <td><a href="{{ .GetEventMaxFoil.GetPlayerPath }}">{{ .GetEventMaxFoil.PlayerName }}</a></td>
+                                        <td><a href="{{ .GetEventMax.GetPlayerPath }}">{{ .GetEventMax.PlayerName }}</a></td>
                                     </tr>
                                 {{ end }}
                                 </tbody>

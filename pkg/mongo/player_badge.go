@@ -129,19 +129,19 @@ func (pb PlayerBadge) specialPlayersCountFilter() M {
 }
 
 // Cached
-func (pb PlayerBadge) GetSpecialMax() (max PlayerBadge, err error) {
+func (pb PlayerBadge) GetSpecialFirst() (max PlayerBadge, err error) {
 
 	var item = helpers.MemcacheBadgeMaxSpecial(pb.BadgeID)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
-		return pb.getSpecialMax()
+		return pb.getSpecialFirst()
 	})
 
 	return max, err
 }
 
 // Not cached
-func (pb PlayerBadge) getSpecialMax() (max PlayerBadge, err error) {
+func (pb PlayerBadge) getSpecialFirst() (max PlayerBadge, err error) {
 
 	err = FindOne(
 		CollectionPlayerBadges,
@@ -154,11 +154,11 @@ func (pb PlayerBadge) getSpecialMax() (max PlayerBadge, err error) {
 	return max, err
 }
 
-func (pb PlayerBadge) SetSpecialMax() (err error) {
+func (pb PlayerBadge) SetSpecialFirst() (err error) {
 
 	item := helpers.MemcacheBadgeMaxSpecial(pb.BadgeID)
 
-	max, err := pb.getSpecialMax()
+	max, err := pb.getSpecialFirst()
 	if err != nil {
 		return err
 	}
