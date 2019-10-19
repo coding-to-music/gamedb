@@ -61,6 +61,9 @@ var (
 	MemcacheBadgeMaxEventFoil = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-foil-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
 	MemcacheBadgeMaxSpecial   = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-special-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
 
+	// Home
+	MemcacheHomePlayers = func(sort string) memcache.Item { return memcache.Item{Key: "home-players-" + sort, Expiration: 60 * 60 * 48} }
+
 	// App Bits
 	MemcacheAppTags       = func(appID int) memcache.Item { return memcache.Item{Key: "app-tags-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppCategories = func(appID int) memcache.Item { return memcache.Item{Key: "app-categories-" + strconv.Itoa(appID), Expiration: 0} }

@@ -153,43 +153,26 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var sortKey mongo.RankKey
-	var value string
+	var sort string
 
 	switch id {
 	case "level":
-		sortKey = mongo.RankKeyLevel
-		value = "level"
+		sort = "level"
 	case "games":
-		sortKey = mongo.RankKeyGames
-		value = "games_count"
+		sort = "games_count"
 	case "badges":
-		sortKey = mongo.RankKeyBadges
-		value = "badges_count"
+		sort = "badges_count"
 	case "time":
-		sortKey = mongo.RankKeyPlaytime
-		value = "play_time"
+		sort = "play_time"
 	case "friends":
-		sortKey = mongo.RankKeyFriends
-		value = "friends_count"
+		sort = "friends_count"
 	case "comments":
-		sortKey = mongo.RankKeyComments
-		value = "play_time"
+		sort = "play_time"
 	default:
 		return
 	}
 
-	sort := "ranks." + strconv.Itoa(int(sortKey)) + "_" + mongo.RankCountryAll
-
-	projection := mongo.M{
-		"_id":          1,
-		"persona_name": 1,
-		"avatar":       1,
-		sort:           1,
-		value:          1,
-	}
-
-	players, err := mongo.GetPlayers(0, 15, mongo.D{{sort, 1}}, mongo.M{sort: mongo.M{"$gt": 0}}, projection, nil)
+	players, err := getPlayersForHome(sort)
 	if err != nil {
 		log.Err(err)
 		return
@@ -248,4 +231,24 @@ func (hp *homePlayer) setRank(i int, b bool) {
 	} else {
 		hp.Rank = "-"
 	}
+}
+
+func getPlayersForHome(sort string) (players []mongo.Player, err error) {
+
+	var item = helpers.MemcacheHomePlayers(sort)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+
+		projection := mongo.M{
+			"_id":          1,
+			"persona_name": 1,
+			"avatar":       1,
+			"ranks":        1,
+			sort:           1,
+		}
+
+		return mongo.GetPlayers(0, 15, mongo.D{{sort, -1}}, mongo.M{sort: mongo.M{"$gt": 0}}, projection, nil)
+	})
+
+	return players, err
 }
