@@ -340,7 +340,7 @@
             }
 
             // Fixes scrolling to pagination on every click
-            $(this.element).parent().find(".paginate_button > a").one("focus", function () {
+            $('div.dt-pagination').on('focus', '.paginate_button > a', function () {
                 $(this).blur();
             });
 
