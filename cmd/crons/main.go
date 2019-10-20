@@ -44,7 +44,7 @@ type cronLogger struct {
 }
 
 func (cl cronLogger) Info(msg string, keysAndValues ...interface{}) {
-	log.Info(msg)
+	// log.Info(msg)
 }
 
 func (cl cronLogger) Error(err error, msg string, keysAndValues ...interface{}) {
