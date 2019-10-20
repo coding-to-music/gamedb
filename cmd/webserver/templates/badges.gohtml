@@ -35,21 +35,23 @@
                                 <tr>
                                     <th scope="col">Badge</th>
                                     <th scope="col">Game DB Players</th>
-                                    <th scope="col">First</th>
+                                    <th scope="col">First Player</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {{ range $key, $value := .GetSpecialBadges }}
-                                    <tr data-link="{{ .GetPath }}">
-                                        <td class="img">
-                                            <div class="icon-name">
-                                                <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
-                                                <div class="name">{{ .BadgeName }}</div>
-                                            </div>
-                                        </td>
-                                        <td>{{ comma64 .GetSpecialPlayers }}</td>
-                                        <td><a href="{{ .GetSpecialFirst.GetPlayerPath }}">{{ .GetSpecialFirst.PlayerName }}</a></td>
-                                    </tr>
+                                    {{ if .IsSpecial }}
+                                        <tr>
+                                            <td class="img" nowrap="nowrap">
+                                                <div class="icon-name">
+                                                    <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
+                                                    <div class="name"><a href="{{ .GetPath }}">{{ .BadgeName }}</a></div>
+                                                </div>
+                                            </td>
+                                            <td>{{ comma64 .GetSpecialPlayers }}</td>
+                                            <td>{{ .GetSpecialFirsts }}</td>
+                                        </tr>
+                                    {{ end }}
                                 {{ end }}
                                 </tbody>
                             </table>
@@ -68,23 +70,25 @@
                                     <th scope="col">Game DB Players</th>
                                     <th scope="col">Highest Level</th>
                                     <th scope="col">Highest Foil Level</th>
-                                    <th scope="col">First</th>
+                                    <th scope="col">Leader</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {{ range $key, $value := .GetEventBadges }}
-                                    <tr data-link="{{ .GetPath }}">
-                                        <td class="img">
-                                            <div class="icon-name">
-                                                <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
-                                                <div class="name">{{ .BadgeName }}</div>
-                                            </div>
-                                        </td>
-                                        <td>{{ comma64 .GetEventPlayers }}</td>
-                                        <td><a href="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</a></td>
-                                        <td><a href="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil.BadgeLevel }}</a></td>
-                                        <td><a href="{{ .GetEventMax.GetPlayerPath }}">{{ .GetEventMax.PlayerName }}</a></td>
-                                    </tr>
+                                    {{ if not .IsSpecial }}
+                                        <tr>
+                                            <td class="img" nowrap="nowrap">
+                                                <div class="icon-name">
+                                                    <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
+                                                    <div class="name"><a href="{{ .GetPath }}">{{ .BadgeName }}</a></div>
+                                                </div>
+                                            </td>
+                                            <td>{{ comma64 .GetEventPlayers }}</td>
+                                            <td><a href="{{ .GetPath }}">{{ comma .GetEventMax.BadgeLevel }}</a></td>
+                                            <td><a href="{{ .GetPath }}?foil=1">{{ comma .GetEventMaxFoil.BadgeLevel }}</a></td>
+                                            <td><a href="{{ .GetEventMax.GetPlayerPath }}">{{ .GetEventMax.PlayerName }}</a></td>
+                                        </tr>
+                                    {{ end }}
                                 {{ end }}
                                 </tbody>
                             </table>

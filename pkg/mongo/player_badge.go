@@ -2,6 +2,8 @@ package mongo
 
 import (
 	"errors"
+	"html/template"
+	"sort"
 	"strconv"
 	"time"
 
@@ -129,41 +131,65 @@ func (pb PlayerBadge) specialPlayersCountFilter() M {
 }
 
 // Cached
-func (pb PlayerBadge) GetSpecialFirst() (max PlayerBadge, err error) {
+func (pb PlayerBadge) GetSpecialFirsts() (ret template.HTML, err error) {
 
-	var item = helpers.MemcacheBadgeMaxSpecial(pb.BadgeID)
+	var item = helpers.MemcacheBadgeSpecialFirsts(pb.BadgeID)
+	var firsts []PlayerBadge
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
-		return pb.getSpecialFirst()
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &firsts, func() (interface{}, error) {
+		return pb.getSpecialFirsts()
 	})
 
-	return max, err
+	if len(firsts) > 10 {
+		return template.HTML(strconv.Itoa(len(firsts))) + " joint firsts", nil
+	}
+
+	sort.Slice(firsts, func(i, j int) bool {
+		return firsts[i].PlayerName < firsts[j].PlayerName
+	})
+
+	for k, v := range firsts {
+		ret += "<a href=" + template.HTML(v.GetPlayerPath()) + ">" + template.HTML(v.PlayerName) + "</a>"
+		if k < len(firsts)-1 {
+			ret += " / "
+		}
+	}
+
+	return ret, err
 }
 
 // Not cached
-func (pb PlayerBadge) getSpecialFirst() (max PlayerBadge, err error) {
+func (pb PlayerBadge) getSpecialFirsts() (playerBadges []PlayerBadge, err error) {
+
+	var max PlayerBadge
 
 	err = FindOne(
 		CollectionPlayerBadges,
 		M{"app_id": 0, "badge_id": pb.BadgeID},
 		M{"badge_level": -1, "badge_completion_time": 1},
-		M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+		M{"badge_level": 1, "badge_completion_time": 1},
 		&max,
 	)
 
-	return max, err
+	return getBadges(
+		0,
+		0,
+		M{"app_id": 0, "badge_id": pb.BadgeID, "badge_level": max.BadgeLevel, "badge_completion_time": max.BadgeCompletionTime},
+		D{{"badge_completion_time", -1}},
+		M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+	)
 }
 
-func (pb PlayerBadge) SetSpecialFirst() (err error) {
+func (pb PlayerBadge) SetSpecialFirsts() (err error) {
 
-	item := helpers.MemcacheBadgeMaxSpecial(pb.BadgeID)
+	item := helpers.MemcacheBadgeSpecialFirsts(pb.BadgeID)
 
-	max, err := pb.getSpecialFirst()
+	firsts, err := pb.getSpecialFirsts()
 	if err != nil {
 		return err
 	}
 
-	return helpers.GetMemcache().SetInterface(item.Key, max, 60*60*24)
+	return helpers.GetMemcache().SetInterface(item.Key, firsts, 60*60*24)
 }
 
 func (pb PlayerBadge) GetEventPlayers() (int64, error) {
@@ -184,7 +210,7 @@ func (pb PlayerBadge) GetEventMax() (max PlayerBadge, err error) {
 	var item = helpers.MemcacheBadgeMaxEvent(pb.AppID)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
-		return pb.getEventMax(false)
+		return pb.getEventFirst(false)
 	})
 
 	return max, err
@@ -194,7 +220,7 @@ func (pb PlayerBadge) SetEventMax() (err error) {
 
 	item := helpers.MemcacheBadgeMaxEvent(pb.AppID)
 
-	max, err := pb.getEventMax(false)
+	max, err := pb.getEventFirst(false)
 	if err != nil {
 		return err
 	}
@@ -208,7 +234,7 @@ func (pb PlayerBadge) GetEventMaxFoil() (max PlayerBadge, err error) {
 	var item = helpers.MemcacheBadgeMaxEventFoil(pb.AppID)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
-		return pb.getEventMax(true)
+		return pb.getEventFirst(true)
 	})
 
 	return max, err
@@ -218,7 +244,7 @@ func (pb PlayerBadge) SetEventFoilMax() (err error) {
 
 	item := helpers.MemcacheBadgeMaxEventFoil(pb.AppID)
 
-	max, err := pb.getEventMax(true)
+	max, err := pb.getEventFirst(true)
 	if err != nil {
 		return err
 	}
@@ -226,7 +252,7 @@ func (pb PlayerBadge) SetEventFoilMax() (err error) {
 	return helpers.GetMemcache().SetInterface(item.Key, max, 60*60*24)
 }
 
-func (pb PlayerBadge) getEventMax(foil bool) (max PlayerBadge, err error) {
+func (pb PlayerBadge) getEventFirst(foil bool) (max PlayerBadge, err error) {
 
 	operation := func() (err error) {
 
