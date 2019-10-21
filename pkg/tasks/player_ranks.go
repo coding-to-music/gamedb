@@ -51,7 +51,13 @@ func (c PlayerRanks) work() {
 		{"comments_count", mongo.RankKeyComments},
 	}
 
+	var ranks = map[int64]mongo.M{}
+
 	for _, cc := range codes {
+
+		if cc == "" {
+			cc = mongo.RankCountryNone
+		}
 
 		log.Info("CC: " + cc)
 
@@ -68,41 +74,43 @@ func (c PlayerRanks) work() {
 				continue
 			}
 
-			time.Sleep(time.Second * 1)
-
-			var writes []mongodb.WriteModel
 			for k, v := range players {
 
-				write := mongodb.NewUpdateOneModel()
-				write.SetFilter(mongo.M{"_id": v.ID})
-				write.SetUpdate(mongo.M{"$set": mongo.M{field.getWriteCol(cc): k + 1}})
-				write.SetUpsert(false)
+				key := strconv.Itoa(int(field.writeCol)) + "_" + cc
 
-				writes = append(writes, write)
-			}
-
-			err = mongo.BulkUpdatePlayers(writes)
-			if val, ok := err.(mongodb.BulkWriteException); ok {
-				for _, v := range val.WriteErrors {
-					log.Err(v)
+				if _, ok := ranks[v.ID]; !ok {
+					ranks[v.ID] = mongo.M{}
 				}
-			} else {
-				log.Err(err)
+
+				ranks[v.ID][key] = k + 1
 			}
 
 			time.Sleep(time.Second * 1)
 		}
+	}
+
+	var writes []mongodb.WriteModel
+	for playerID, m := range ranks {
+
+		write := mongodb.NewUpdateOneModel()
+		write.SetFilter(mongo.M{"_id": playerID})
+		write.SetUpdate(mongo.M{"$set": mongo.M{"ranks": m}})
+		write.SetUpsert(false)
+
+		writes = append(writes, write)
+	}
+
+	err = mongo.BulkUpdatePlayers(writes)
+	if val, ok := err.(mongodb.BulkWriteException); ok {
+		for _, err2 := range val.WriteErrors {
+			log.Err(err2, err2.Request)
+		}
+	} else {
+		log.Err(err)
 	}
 }
 
 type rankTask struct {
 	readCol  string
 	writeCol mongo.RankKey
-}
-
-func (rt rankTask) getWriteCol(cc string) string {
-	if cc == "" {
-		cc = mongo.RankCountryNone
-	}
-	return "ranks." + strconv.Itoa(int(rt.writeCol)) + "_" + cc
 }
