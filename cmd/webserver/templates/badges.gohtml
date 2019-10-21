@@ -33,6 +33,7 @@
                             <table class="table table-hover table-striped table-datatable" data-ordering="false">
                                 <thead class="thead-light">
                                 <tr>
+                                    <th scope="col">ID</th>
                                     <th scope="col">Badge</th>
                                     <th scope="col">Players</th>
                                     <th scope="col">First Players</th>
@@ -42,6 +43,7 @@
                                 {{ range $key, $value := .GetSpecialBadges }}
                                     {{ if .IsSpecial }}
                                         <tr>
+                                            <td>{{ .BadgeID }}</td>
                                             <td class="img" nowrap="nowrap">
                                                 <div class="icon-name">
                                                     <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
@@ -66,6 +68,7 @@
                             <table class="table table-hover table-striped table-datatable" data-ordering="false">
                                 <thead class="thead-light">
                                 <tr>
+                                    <th scope="col">ID</th>
                                     <th scope="col">Badge</th>
                                     <th scope="col">Players</th>
                                     <th scope="col">Max Level</th>
@@ -77,6 +80,7 @@
                                 {{ range $key, $value := .GetEventBadges }}
                                     {{ if not .IsSpecial }}
                                         <tr>
+                                            <td>{{ .AppID }}</td>
                                             <td class="img" nowrap="nowrap">
                                                 <div class="icon-name">
                                                     <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="{{ .BadgeName }}"></div>
