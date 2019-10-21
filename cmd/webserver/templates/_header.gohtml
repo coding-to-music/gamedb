@@ -110,33 +110,17 @@
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="navbar-nav mr-auto">
 
-                    <li class="nav-item dropdown {{if .IsAppsPage }}active{{end}}">
-                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/apps" data-toggle="dropdown">Games</a>
-                        <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Games</a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item d-block d-lg-none" href="/apps">Games</a>
-                            <a class="dropdown-item" href="/packages">Packages</a>
-                            <a class="dropdown-item" href="/bundles">Bundles</a>
-                            <a class="dropdown-item" href="/new-releases">New Releases</a>
-                            <a class="dropdown-item" href="/upcoming">Upcoming</a>
-                            <a class="dropdown-item" href="/apps/trending">Trending</a>
-                            <a class="dropdown-item" href="/achievements">Achievements</a>
-                        </div>
-                    </li>
-
-                    <li class="nav-item {{if startsWith .Path "/price-changes" }}active{{end}}">
-                        <a class="nav-link" href="/price-changes">Price Changes</a>
+                    <li class="nav-item {{if startsWith .Path "/apps" }}active{{end}}">
+                        <a class="nav-link" href="/apps">Games</a>
                     </li>
 
                     <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
                         <a class="nav-link" href="/players">Players</a>
                     </li>
 
-                    {{ if eq .Env "local" }}
-                        <li class="nav-item {{if startsWith .Path "/sales" }}active{{end}}">
-                            <a class="nav-link" href="/sales">Sales</a>
-                        </li>
-                    {{ end }}
+                    <li class="nav-item {{if startsWith .Path "/sales" }}active{{end}}">
+                        <a class="nav-link" href="/sales">Sales</a>
+                    </li>
 
                     <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
                         <a class="nav-link" href="/groups">Groups</a>
@@ -166,6 +150,12 @@
                     <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
                         <div class="dropdown-menu" id="header-settings">
+
+                            <a class="dropdown-item" href="/packages">Packages</a>
+                            <a class="dropdown-item" href="/bundles">Bundles</a>
+                            <a class="dropdown-item" href="/price-changes">Price Changes</a>
+
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/changes">Changes</a>
                             {{ if eq .Env "local" }}
                                 <a class="dropdown-item" href="/chat">Chat</a>
@@ -176,6 +166,7 @@
                             <a class="dropdown-item" href="/experience">Experience</a>
                             {{/*<a class="dropdown-item" href="/info">Info</a>*/}}
                             <a class="dropdown-item" href="/queues">Queues</a>
+
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/api">API (Game DB)</a>
                             <a class="dropdown-item" href="/steam-api">API (Steam)</a>
