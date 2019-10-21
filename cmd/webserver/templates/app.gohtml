@@ -216,6 +216,12 @@
                                         </td>
                                     </tr>
                                 {{ end }}
+                                {{ if ne .App.TwitchURL "" }}
+                                    <tr>
+                                        <th scope="row">Twitch</th>
+                                        <td><a href="https://www.twitch.tv/directory/game/{{ .App.TwitchURL }}" target="_blank">https://www.twitch.tv/directory/game/{{ .App.TwitchURL }}</a></td>
+                                    </tr>
+                                {{ end }}
                             </table>
                         </div>
                     </div>
