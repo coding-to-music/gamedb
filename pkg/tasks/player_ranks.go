@@ -53,13 +53,13 @@ func (c PlayerRanks) work() {
 
 	var ranks = map[int64]mongo.M{}
 
-	for _, cc := range codes {
+	for k, cc := range codes {
 
 		if cc == "" {
 			cc = mongo.RankCountryNone
 		}
 
-		log.Info("CC: " + cc)
+		log.Info("CC: " + cc + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(codes)) + ")")
 
 		for _, field := range fields {
 
@@ -74,7 +74,7 @@ func (c PlayerRanks) work() {
 				continue
 			}
 
-			for k, v := range players {
+			for playerK, v := range players {
 
 				key := strconv.Itoa(int(field.writeCol)) + "_" + cc
 
@@ -82,7 +82,7 @@ func (c PlayerRanks) work() {
 					ranks[v.ID] = mongo.M{}
 				}
 
-				ranks[v.ID][key] = k + 1
+				ranks[v.ID][key] = playerK + 1
 			}
 
 			time.Sleep(time.Second * 1)
