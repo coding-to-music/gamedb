@@ -457,7 +457,7 @@ func BulkUpdatePlayers(writes []mongo.WriteModel) (err error) {
 
 	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
 
-	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
+	_, err = c.BulkWrite(ctx, writes, options.BulkWrite().SetOrdered(false))
 	return err
 }
 
