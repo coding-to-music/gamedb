@@ -32,6 +32,8 @@ var (
 
 type App struct {
 	Achievements                  string    `gorm:"not null;column:achievements;type:text"`           // []AppAchievement
+	AchievementsAverageCompletion float64   `gorm:"not null;column:achievements_average_completion"`  //
+	AchievementsCount             int       `gorm:"not null;column:achievements_count"`               //
 	AlbumMetaData                 string    `gorm:"not null;column:albummetadata;type:text"`          // map[string]interface{}
 	Background                    string    `gorm:"not null;column:background"`                       //
 	BundleIDs                     string    `gorm:"not null;column:bundle_ids"`                       // []int
@@ -43,9 +45,9 @@ type App struct {
 	Common                        string    `gorm:"not null;column:common"`                           // PICSAppCommon
 	Config                        string    `gorm:"not null;column:config"`                           // PICSAppConfig
 	CreatedAt                     time.Time `gorm:"not null;column:created_at;type:datetime"`         //
+	DemoIDs                       string    `gorm:"not null;column:demo_ids;type:json"`               // []int
 	Depots                        string    `gorm:"not null;column:depots"`                           // Depots
 	Developers                    string    `gorm:"not null;column:developers;type:json"`             // []int
-	DemoIDs                       string    `gorm:"not null;column:demo_ids;type:json"`               // []int
 	DLC                           string    `gorm:"not null;column:dlc;type:json"`                    // []int
 	DLCCount                      int       `gorm:"not null;column:dlc_count"`                        //
 	Extended                      string    `gorm:"not null;column:extended"`                         // PICSExtended
@@ -70,10 +72,12 @@ type App struct {
 	NewsIDs                       string    `gorm:"not null;column:news_ids"`                         // []int64
 	Packages                      string    `gorm:"not null;column:packages;type:json"`               // []int
 	Platforms                     string    `gorm:"not null;column:platforms;type:json"`              // []string
-	PlayerPeakWeek                int       `gorm:"not null;column:player_peak_week"`                 //
-	PlayerPeakAllTime             int       `gorm:"not null;column:player_peak_alltime"`              //
 	PlayerAverageWeek             float64   `gorm:"not null;column:player_avg_week;type:float"`       //
+	PlayerPeakAllTime             int       `gorm:"not null;column:player_peak_alltime"`              //
+	PlayerPeakWeek                int       `gorm:"not null;column:player_peak_week"`                 //
 	PlayerTrend                   int64     `gorm:"not null;column:player_trend"`                     //
+	PlaytimeAverage               float64   `gorm:"not null;column:playtime_average"`                 // Minutes
+	PlaytimeTotal                 int64     `gorm:"not null;column:playtime_total"`                   // Minutes
 	Prices                        string    `gorm:"not null;column:prices"`                           // ProductPrices
 	PublicOnly                    bool      `gorm:"not null;column:public_only"`                      //
 	Publishers                    string    `gorm:"not null;column:publishers;type:json"`             // []int
@@ -89,18 +93,14 @@ type App struct {
 	SteamSpy                      string    `gorm:"not null;column:steam_spy"`                        // AppSteamSpy
 	SystemRequirements            string    `gorm:"not null;column:system_requirements"`              // map[string]interface{}
 	Tags                          string    `gorm:"not null;column:tags;type:json"`                   // []int
-	Type                          string    `gorm:"not null;column:type"`                             //
 	TwitchID                      int       `gorm:"not null;column:twitch_id"`                        //
 	TwitchURL                     string    `gorm:"not null;column:twitch_url"`                       //
+	Type                          string    `gorm:"not null;column:type"`                             //
 	UFS                           string    `gorm:"not null;column:ufs"`                              // PICSAppUFS
 	UpdatedAt                     time.Time `gorm:"not null;column:updated_at;type:datetime"`         //
 	Version                       string    `gorm:"not null;column:version"`                          //
-	AchievementsCount             int       `gorm:"not null;column:achievements_count"`               //
-	AchievementsAverageCompletion float64   `gorm:"not null;column:achievements_average_completion"`  //
-	PlaytimeTotal                 int64     `gorm:"not null;column:playtime_total"`                   // Minutes
-	PlaytimeAverage               float64   `gorm:"not null;column:playtime_average"`                 // Minutes
-	WishlistCount                 int       `gorm:"not null;column:wishlist_count"`                   //
 	WishlistAvgPosition           float64   `gorm:"not null;column:wishlist_avg_position"`            //
+	WishlistCount                 int       `gorm:"not null;column:wishlist_count"`                   //
 }
 
 func (app *App) BeforeCreate(scope *gorm.Scope) error {
