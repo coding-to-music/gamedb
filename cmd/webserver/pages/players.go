@@ -304,6 +304,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.Player.NumberOfVACBans,                  // 16
 			v.Player.LastBan.Unix(),                   // 17
 			v.Player.LastBan.Format(helpers.DateYear), // 18
+			v.Player.CountryCode,                      // 19
 		})
 	}
 

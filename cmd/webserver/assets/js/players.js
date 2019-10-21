@@ -43,7 +43,8 @@ if ($('#players-page').length > 0) {
                 "targets": 1,
                 "render": function (data, type, row) {
                     if (row[11]) {
-                        return '<img data-lazy="' + row[11] + '" alt="" data-lazy-alt="' + row[12] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[12] + '">';
+                        const img = '<img data-lazy="' + row[11] + '" alt="" data-lazy-alt="' + row[12] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[12] + '">';
+                        return '<a href="/players?country=' + row[19] + '">' + img + '</a>';
                     }
                     return '';
                 },
