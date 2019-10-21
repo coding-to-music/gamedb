@@ -1421,6 +1421,7 @@ func updateAppTwitch(app *sql.App) error {
 			}
 
 			app.TwitchID = i
+			app.TwitchURL = resp.Data.Games[0].Name
 		}
 	}
 

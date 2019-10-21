@@ -91,6 +91,7 @@ type App struct {
 	Tags                          string    `gorm:"not null;column:tags;type:json"`                   // []int
 	Type                          string    `gorm:"not null;column:type"`                             //
 	TwitchID                      int       `gorm:"not null;column:twitch_id"`                        //
+	TwitchURL                     string    `gorm:"not null;column:twitch_url"`                       //
 	UFS                           string    `gorm:"not null;column:ufs"`                              // PICSAppUFS
 	UpdatedAt                     time.Time `gorm:"not null;column:updated_at;type:datetime"`         //
 	Version                       string    `gorm:"not null;column:version"`                          //
