@@ -3,6 +3,7 @@ package pages
 import (
 	"html/template"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -127,6 +128,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		sort.Slice(t.Publishers, func(i, j int) bool {
+			return strings.ToLower(t.Publishers[i].Name) < strings.ToLower(t.Publishers[j].Name)
+		})
 	}()
 
 	// Get developers
@@ -174,6 +178,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		sort.Slice(t.Developers, func(i, j int) bool {
+			return strings.ToLower(t.Developers[i].Name) < strings.ToLower(t.Developers[j].Name)
+		})
 	}()
 
 	// Wait
