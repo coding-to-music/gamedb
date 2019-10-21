@@ -242,6 +242,11 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.UFS, err = t.App.GetUFS().Formatted(app.ID, pics.UFSKeys)
 	log.Err(err, r)
 
+	//
+	sort.Slice(t.Reviews.Reviews, func(i, j int) bool {
+		return t.Reviews.Reviews[i].VotesGood > t.Reviews.Reviews[j].VotesGood
+	})
+
 	// Make banners
 	var banners = map[string][]string{
 		"primary": {},
