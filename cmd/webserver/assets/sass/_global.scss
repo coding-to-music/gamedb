@@ -47,6 +47,16 @@ body.dark {
     }
 }
 
+// Debug sizes
+div#sizes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: white;
+    z-index: 20;
+}
+
+//
 header {
     background-color: rgba(27, 39, 56, 0.9);
     position: relative;
