@@ -8,7 +8,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var ErrInvalidGroupID = errors.New("invalid group id")
@@ -186,32 +185,7 @@ func GetGroups(limit int64, offset int64, sort D, filter M, projection M) (group
 
 func getGroups(offset int64, limit int64, sort D, filter interface{}, projection M) (groups []Group, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return groups, err
-	}
-
-	ops := options.Find()
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionGroups.String())
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionGroups, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return groups, err
 	}

@@ -94,26 +94,7 @@ func GetRecentApps(playerID int64, offset int64, limit int64, sort D) (apps []Pl
 
 	filter := M{"player_id": playerID}
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return apps, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerAppsRecent.String())
-
-	ops := options.Find()
-
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionPlayerAppsRecent, offset, limit, sort, filter, nil, nil)
 	if err != nil {
 		return apps, err
 	}

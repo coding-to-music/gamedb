@@ -133,30 +133,9 @@ func (a *AppItem) Image(size int, crop bool) string {
 
 func GetAppItems(offset int64, limit int64, filter interface{}, projection M) (items []AppItem, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
+	var sort = D{{"item_def_id", 1}}
 
-	//
-	client, ctx, err := getMongo()
-	if err != nil {
-		return items, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppItems.String())
-
-	ops := options.Find().SetSort(D{{"item_def_id", 1}})
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionAppItems, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return items, err
 	}
@@ -168,10 +147,10 @@ func GetAppItems(offset int64, limit int64, filter interface{}, projection M) (i
 
 	for cur.Next(ctx) {
 
-		var item AppItem
+		item := AppItem{}
 		err := cur.Decode(&item)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, item.getKey())
 		}
 		items = append(items, item)
 	}

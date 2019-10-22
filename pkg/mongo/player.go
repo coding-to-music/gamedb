@@ -347,39 +347,12 @@ func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
 		idsBSON = append(idsBSON, v)
 	}
 
-	return GetPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection, nil)
+	return GetPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection)
 }
 
-func GetPlayers(offset int64, limit int64, sort D, filter interface{}, projection M, ops *options.FindOptions) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, filter interface{}, projection M) (players []Player, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return players, err
-	}
-
-	if ops == nil {
-		ops = options.Find()
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionPlayers, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return players, err
 	}

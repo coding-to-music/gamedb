@@ -190,6 +190,9 @@ func DeleteOne(collection collection, filter M) (err error) {
 	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
 
 	_, err = c.DeleteOne(ctx, filter, options.Delete())
+
+	ql.End()
+
 	return err
 }
 
@@ -300,6 +303,45 @@ func SetCountDocuments(collection collection, filter interface{}, ttl int32) err
 	}
 
 	return helpers.GetMemcache().SetInterface(item.Key, count, ttl)
+}
+
+// Need to close cursor after calling this
+func Find(collection collection, offset int64, limit int64, sort D, filter interface{}, projection M, ops *options.FindOptions) (cur *mongo.Cursor, ctx context.Context, err error) {
+
+	if filter == nil {
+		filter = M{}
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return cur, ctx, err
+	}
+
+	if ops == nil {
+		ops = options.Find()
+	}
+	if offset > 0 {
+		ops.SetSkip(offset)
+	}
+	if limit > 0 {
+		ops.SetLimit(limit)
+	}
+	if sort != nil {
+		ops.SetSort(sort)
+	}
+
+	if projection != nil {
+		ops.SetProjection(projection)
+	}
+
+	ql := helpers.QueryLogger{}
+	ql.Start(CollectionAppItems.String(), filter, sort)
+
+	cur, err = client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Find(ctx, filter, ops)
+
+	ql.End()
+
+	return cur, ctx, err
 }
 
 func mongoFilterToMemcacheKey(collection collection, filter interface{}) string {

@@ -247,7 +247,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			sort:           1,
 		}
 
-		return mongo.GetPlayers(0, 15, mongo.D{{sort, -1}}, mongo.M{sort: mongo.M{"$gt": 0}}, projection, nil)
+		return mongo.GetPlayers(0, 15, mongo.D{{sort, -1}}, mongo.M{sort: mongo.M{"$gt": 0}}, projection)
 	})
 
 	return players, err

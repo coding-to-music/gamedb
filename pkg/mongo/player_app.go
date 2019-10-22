@@ -118,33 +118,9 @@ func GetAppPlayTimes(appID int) (apps []PlayerApp, err error) {
 	return getPlayerApps(0, 0, M{"app_id": appID}, nil, M{"_id": -1, "app_time": 1})
 }
 
-func getPlayerApps(offset int64, limit int64, filter interface{}, sort D, projection interface{}) (apps []PlayerApp, err error) {
+func getPlayerApps(offset int64, limit int64, filter interface{}, sort D, projection M) (apps []PlayerApp, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return apps, err
-	}
-
-	ops := options.Find()
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String())
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionPlayerApps, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return apps, err
 	}

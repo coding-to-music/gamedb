@@ -68,7 +68,7 @@ func (c PlayerRanks) work() {
 				filter["country_code"] = cc
 			}
 
-			players, err := mongo.GetPlayers(0, 0, mongo.D{{field.readCol, -1}}, filter, mongo.M{"_id": 1}, nil)
+			players, err := mongo.GetPlayers(0, 0, mongo.D{{field.readCol, -1}}, filter, mongo.M{"_id": 1})
 			if err != nil {
 				log.Warning(err)
 				continue

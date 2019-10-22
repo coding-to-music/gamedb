@@ -91,23 +91,9 @@ func DeletePackageApps(packageID int, appIDs []int) (err error) {
 
 func GetPackageApps(packageID int, offset int64, sort D) (apps []PackageApp, err error) {
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return apps, err
-	}
+	var filter = M{"package_id": packageID}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPackageApps.String())
-
-	ops := options.Find()
-
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-
-	cur, err := c.Find(ctx, M{"package_id": packageID}, ops)
+	cur, ctx, err := Find(CollectionPackageApps, offset, 100, sort, filter, nil, nil)
 	if err != nil {
 		return apps, err
 	}

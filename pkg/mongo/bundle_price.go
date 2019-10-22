@@ -6,7 +6,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BundlePrice struct {
@@ -31,19 +30,10 @@ func (price BundlePrice) getKey() string {
 
 func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 
-	filter := M{"bundle_id": bundleID}
+	var sort = D{{"created_at", 1}}
+	var filter = M{"bundle_id": bundleID}
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return prices, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionBundlePrices.String())
-
-	ops := options.Find()
-	ops.SetSort(D{{"created_at", 1}})
-
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionBundlePrices, 0, 0, sort, filter, nil, nil)
 	if err != nil {
 		return prices, err
 	}

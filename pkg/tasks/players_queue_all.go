@@ -26,7 +26,7 @@ func (c PlayersQueueAll) Cron() string {
 
 func (c PlayersQueueAll) work() {
 
-	players, err := mongo.GetPlayers(0, 0, mongo.D{{"_id", 1}}, nil, mongo.M{"_id": 1}, nil)
+	players, err := mongo.GetPlayers(0, 0, mongo.D{{"_id", 1}}, nil, mongo.M{"_id": 1})
 	if err != nil {
 		log.Err(err)
 		return

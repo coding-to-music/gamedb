@@ -55,39 +55,18 @@ func (offer Offer) getKey() (ret string) {
 }
 
 func GetAppOffers(appID int) (offers []Offer, err error) {
-	return getOffers(0, 0, M{"app_id": appID}, nil)
+	return getOffers(0, 0, M{"app_id": appID}, M{"sub_id": 1})
 }
 
 func GetAllOffers(offset int64, limit int64, filter D) (offers []Offer, err error) {
 	return getOffers(offset, limit, filter, nil)
 }
 
-func getOffers(offset int64, limit int64, filter interface{}, projection interface{}) (offers []Offer, err error) {
+func getOffers(offset int64, limit int64, filter interface{}, projection M) (offers []Offer, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
+	var sort = D{{"offer_end", 1}}
 
-	//
-	client, ctx, err := getMongo()
-	if err != nil {
-		return offers, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppOffers.String())
-
-	ops := options.Find().SetSort(D{{"offer_end", 1}})
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionAppOffers, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return offers, err
 	}

@@ -6,7 +6,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Change struct {
@@ -116,14 +115,9 @@ func GetChange(id int64) (change Change, err error) {
 
 func GetChanges(offset int64) (changes []Change, err error) {
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return changes, err
-	}
+	var sort = D{{"_id", -1}}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionChanges.String())
-
-	cur, err := c.Find(ctx, M{}, options.Find().SetLimit(100).SetSkip(offset).SetSort(D{{"_id", -1}}))
+	cur, ctx, err := Find(CollectionChanges, offset, 100, sort, nil, nil, nil)
 	if err != nil {
 		return changes, err
 	}

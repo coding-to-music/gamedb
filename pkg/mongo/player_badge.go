@@ -319,35 +319,9 @@ func GetBadgePlayers(offset int64, filter interface{}) (badges []PlayerBadge, er
 	return getBadges(offset, 100, filter, D{{"badge_level", -1}, {"badge_completion_time", 1}}, nil)
 }
 
-func getBadges(offset int64, limit int64, filter interface{}, sort D, projection interface{}) (badges []PlayerBadge, err error) {
+func getBadges(offset int64, limit int64, filter interface{}, sort D, projection M) (badges []PlayerBadge, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return badges, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerBadges.String())
-
-	ops := options.Find()
-
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionPlayerBadges, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return badges, err
 	}

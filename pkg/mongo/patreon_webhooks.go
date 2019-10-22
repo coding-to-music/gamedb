@@ -6,7 +6,6 @@ import (
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type PatreonWebhook struct {
@@ -56,36 +55,9 @@ func CountPatreonWebhooks(userID int) (count int64, err error) {
 	return count, err
 }
 
-func GetPatreonWebhooks(offset int64, limit int64, sort bool, filter interface{}, projection M) (webhooks []PatreonWebhook, err error) {
+func GetPatreonWebhooks(offset int64, limit int64, sort D, filter interface{}, projection M) (webhooks []PatreonWebhook, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return webhooks, err
-	}
-
-	ops := options.Find()
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if sort {
-		ops.SetSort(D{{"created_at", 1}})
-	} else {
-		ops.SetSort(D{{"created_at", -1}})
-	}
-
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPatreonWebhooks.String())
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionPatreonWebhooks, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return webhooks, err
 	}

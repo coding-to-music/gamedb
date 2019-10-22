@@ -128,33 +128,7 @@ func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, limit int64, or
 
 func getPlayerWishlistApps(offset int64, limit int64, filter M, sort D, projection M) (apps []PlayerWishlistApp, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return apps, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerWishlistApps.String())
-
-	ops := options.Find()
-
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionPlayerWishlistApps, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return apps, err
 	}

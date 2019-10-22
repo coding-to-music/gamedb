@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type EventEnum string
@@ -123,14 +122,10 @@ func (event Event) GetIcon() string {
 
 func GetEvents(userID int, offset int64) (events []Event, err error) {
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return events, err
-	}
+	var sort = D{{"created_at", -1}}
+	var filter = M{"user_id": userID}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionEvents.String())
-
-	cur, err := c.Find(ctx, M{"user_id": userID}, options.Find().SetLimit(100).SetSkip(offset).SetSort(D{{"created_at", -1}}))
+	cur, ctx, err := Find(CollectionEvents, offset, 100, sort, filter, nil, nil)
 	if err != nil {
 		return events, err
 	}

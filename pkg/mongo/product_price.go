@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ProductPrice struct {
@@ -111,7 +110,7 @@ func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
 		}
 	}
 
-	return getProductPrices(M{"_id": M{"$in": idsBSON}}, 0, 0, true)
+	return getProductPrices(M{"_id": M{"$in": idsBSON}}, 0, 0, D{{"created_at", 1}})
 }
 
 func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.ProductCC) (prices []ProductPrice, err error) {
@@ -128,40 +127,17 @@ func GetPricesForProduct(productID int, productType helpers.ProductType, cc stea
 		return prices, errors.New("invalid product type")
 	}
 
-	return getProductPrices(filter, 0, 0, true)
+	return getProductPrices(filter, 0, 0, D{{"created_at", 1}})
 }
 
 func GetPrices(offset int64, limit int64, filter interface{}) (prices []ProductPrice, err error) {
 
-	return getProductPrices(filter, offset, limit, false)
+	return getProductPrices(filter, offset, limit, D{{"created_at", -1}})
 }
 
-func getProductPrices(filter interface{}, offset int64, limit int64, sortOrder bool) (prices []ProductPrice, err error) {
+func getProductPrices(filter interface{}, offset int64, limit int64, sort D) (prices []ProductPrice, err error) {
 
-	if filter == nil {
-		filter = D{}
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return prices, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionProductPrices.String())
-
-	o := options.Find()
-	o.SetSkip(offset)
-	if limit > 0 {
-		o.SetLimit(limit)
-	}
-
-	if sortOrder {
-		o.SetSort(D{{"created_at", 1}})
-	} else {
-		o.SetSort(D{{"created_at", -1}})
-	}
-
-	cur, err := c.Find(ctx, filter, o)
+	cur, ctx, err := Find(CollectionProductPrices, offset, limit, sort, filter, nil, nil)
 	if err != nil {
 		return prices, err
 	}

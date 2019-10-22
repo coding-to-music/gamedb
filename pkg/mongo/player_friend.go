@@ -132,28 +132,9 @@ func UpdateFriends(friends []*PlayerFriend) (err error) {
 
 func GetFriends(playerID int64, offset int64, limit int64, sort D) (friends []PlayerFriend, err error) {
 
-	filter := M{"player_id": playerID}
+	var filter = M{"player_id": playerID}
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return friends, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerFriends.String())
-
-	ops := options.Find()
-
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionPlayerFriends, offset, limit, sort, filter, nil, nil)
 	if err != nil {
 		return friends, err
 	}

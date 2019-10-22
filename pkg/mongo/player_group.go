@@ -120,26 +120,9 @@ func DeletePlayerGroups(playerID int64, groupIDs []string) (err error) {
 
 func GetPlayerGroups(playerID int64, offset int64, limit int64, sort D) (groups []PlayerGroup, err error) {
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return groups, err
-	}
+	var filter = M{"player_id": playerID}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerGroups.String())
-
-	ops := options.Find()
-
-	if sort != nil {
-		ops.SetSort(sort)
-	}
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-
-	cur, err := c.Find(ctx, M{"player_id": playerID}, ops)
+	cur, ctx, err := Find(CollectionPlayerGroups, offset, limit, sort, filter, nil, nil)
 	if err != nil {
 		return groups, err
 	}

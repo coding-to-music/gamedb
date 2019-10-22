@@ -7,7 +7,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Article struct {
@@ -123,26 +122,9 @@ func GetArticles(offset int64) (news []Article, err error) {
 
 func getArticles(offset int64, limit int64, filter interface{}) (news []Article, err error) {
 
-	if filter == nil {
-		filter = M{}
-	}
+	var sort = D{{"date", -1}}
 
-	client, ctx, err := getMongo()
-	if err != nil {
-		return news, err
-	}
-
-	c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppArticles.String())
-
-	ops := options.Find().SetSort(D{{"date", -1}})
-	if limit > 0 {
-		ops.SetLimit(limit)
-	}
-	if offset > 0 {
-		ops.SetSkip(offset)
-	}
-
-	cur, err := c.Find(ctx, filter, ops)
+	cur, ctx, err := Find(CollectionAppArticles, offset, limit, sort, filter, nil, nil)
 	if err != nil {
 		return news, err
 	}
