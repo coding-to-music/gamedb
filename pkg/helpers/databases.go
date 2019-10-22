@@ -10,13 +10,15 @@ import (
 
 type QueryLogger struct {
 	startTime  time.Time
+	method     string
 	collection string
 	filter     interface{}
 	sort       interface{}
 }
 
-func (ql *QueryLogger) Start(collection string, filter interface{}, sort interface{}) {
+func (ql *QueryLogger) Start(method string, collection string, filter interface{}, sort interface{}) {
 	ql.startTime = time.Now()
+	ql.method = method
 	ql.collection = collection
 	ql.filter = filter
 	ql.sort = sort
@@ -36,6 +38,7 @@ func (ql QueryLogger) End() {
 		var is = []interface{}{
 			log.LogNameMongo,
 			"Mongo call taking " + diffFormatted,
+			ql.method,
 			ql.collection,
 		}
 

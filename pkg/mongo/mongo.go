@@ -138,8 +138,12 @@ func FindOne(collection collection, filter interface{}, sort interface{}, projec
 		ops.SetSort(sort)
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection.String())
-	result := c.FindOne(ctx, filter, ops)
+	ql := helpers.QueryLogger{}
+	ql.Start("FindOne", collection.String(), nil, nil)
+
+	result := client.Database(MongoDatabase).Collection(collection.String()).FindOne(ctx, filter, ops)
+
+	ql.End()
 
 	return result.Decode(document)
 }
@@ -152,8 +156,14 @@ func InsertOne(collection collection, document Document) (resp *mongo.InsertOneR
 		return resp, err
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection.String())
-	return c.InsertOne(ctx, document.BSON(), options.InsertOne())
+	ql := helpers.QueryLogger{}
+	ql.Start("InsertOne", collection.String(), nil, nil)
+
+	r, err := client.Database(MongoDatabase).Collection(collection.String()).InsertOne(ctx, document.BSON(), options.InsertOne())
+
+	ql.End()
+
+	return r, err
 }
 
 // Create or update whole document
@@ -164,8 +174,14 @@ func ReplaceOne(collection collection, filter interface{}, document Document) (r
 		return resp, err
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection.String())
-	return c.ReplaceOne(ctx, filter, document.BSON(), options.Replace().SetUpsert(true))
+	ql := helpers.QueryLogger{}
+	ql.Start("ReplaceOne", collection.String(), filter, nil)
+
+	r, err := client.Database(MongoDatabase).Collection(collection.String()).ReplaceOne(ctx, filter, document.BSON(), options.Replace().SetUpsert(true))
+
+	ql.End()
+
+	return r, err
 }
 
 func DeleteMany(collection collection, filter M) (err error) {
@@ -175,8 +191,13 @@ func DeleteMany(collection collection, filter M) (err error) {
 		return nil
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
-	_, err = c.DeleteMany(ctx, filter)
+	ql := helpers.QueryLogger{}
+	ql.Start("DeleteMany", collection.String(), filter, nil)
+
+	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).DeleteMany(ctx, filter)
+
+	ql.End()
+
 	return err
 }
 
@@ -187,9 +208,10 @@ func DeleteOne(collection collection, filter M) (err error) {
 		return err
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
+	ql := helpers.QueryLogger{}
+	ql.Start("DeleteOne", collection.String(), filter, nil)
 
-	_, err = c.DeleteOne(ctx, filter, options.Delete())
+	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).DeleteOne(ctx, filter, options.Delete())
 
 	ql.End()
 
@@ -203,8 +225,13 @@ func UpdateManySet(collection collection, filter M, update M) (result *mongo.Upd
 		return result, nil
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
-	_, err = c.UpdateMany(ctx, filter, M{"$set": update}, options.Update())
+	ql := helpers.QueryLogger{}
+	ql.Start("UpdateMany", collection.String(), filter, nil)
+
+	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, filter, M{"$set": update}, options.Update())
+
+	ql.End()
+
 	return result, err
 }
 
@@ -216,8 +243,13 @@ func UpdateManyUnset(collection collection, columns M) (err error) {
 		return nil
 	}
 
-	c := client.Database(MongoDatabase, options.Database()).Collection(collection.String())
-	_, err = c.UpdateMany(ctx, M{}, M{"$unset": columns})
+	ql := helpers.QueryLogger{}
+	ql.Start("UpdateMany", collection.String(), nil, nil)
+
+	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, M{}, M{"$unset": columns})
+
+	ql.End()
+
 	return err
 }
 
@@ -238,8 +270,12 @@ func InsertMany(collection collection, documents []Document) (resp *mongo.Insert
 		many = append(many, v.BSON())
 	}
 
-	c := client.Database(MongoDatabase).Collection(collection.String())
-	resp, err = c.InsertMany(ctx, many, options.InsertMany().SetOrdered(false))
+	ql := helpers.QueryLogger{}
+	ql.Start("InsertMany", collection.String(), nil, nil)
+
+	resp, err = client.Database(MongoDatabase).Collection(collection.String()).InsertMany(ctx, many, options.InsertMany().SetOrdered(false))
+
+	ql.End()
 
 	bulkErr, ok := err.(mongo.BulkWriteException)
 	if ok {
@@ -273,13 +309,13 @@ func CountDocuments(collection collection, filter interface{}, ttl int32) (count
 		}
 
 		ql := helpers.QueryLogger{}
-		ql.Start(collection.String(), filter, nil)
+		ql.Start("CountDocuments", collection.String(), filter, nil)
 
-		c, err := client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
+		count, err = client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
 
 		ql.End()
 
-		return c, err
+		return count, err
 	})
 
 	return count, err
@@ -297,7 +333,13 @@ func SetCountDocuments(collection collection, filter interface{}, ttl int32) err
 		return err
 	}
 
+	ql := helpers.QueryLogger{}
+	ql.Start("CountDocuments", collection.String(), filter, nil)
+
 	count, err := client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
+
+	ql.End()
+
 	if err != nil {
 		return err
 	}
@@ -329,15 +371,14 @@ func Find(collection collection, offset int64, limit int64, sort D, filter inter
 	if sort != nil {
 		ops.SetSort(sort)
 	}
-
 	if projection != nil {
 		ops.SetProjection(projection)
 	}
 
 	ql := helpers.QueryLogger{}
-	ql.Start(CollectionAppItems.String(), filter, sort)
+	ql.Start("Find", collection.String(), filter, sort)
 
-	cur, err = client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Find(ctx, filter, ops)
+	cur, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).Find(ctx, filter, ops)
 
 	ql.End()
 
