@@ -1505,8 +1505,8 @@ func saveOffers(app sql.App, newOffers []mongo.Offer) (err error) {
 	}
 
 	var oldOffersMap = map[int]mongo.Offer{}
-	for _, v := range oldOffers {
-		oldOffersMap[v.SubID] = v
+	for _, oldOffer := range oldOffers {
+		oldOffersMap[oldOffer.SubID] = oldOffer
 	}
 
 	// Delete old offers that are no longer
