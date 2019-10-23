@@ -1395,7 +1395,7 @@ func updateAppTwitch(app *sql.App) error {
 		return err
 	}
 
-	if app.TwitchID == 0 && app.Name != "" {
+	if (app.TwitchID == 0 || app.TwitchURL == "") && app.Name != "" {
 
 		var resp *helix.GamesResponse
 
