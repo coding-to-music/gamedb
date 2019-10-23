@@ -110,6 +110,14 @@
             </div>
             <div class="col-12 col-md-4" id="new-releases">
 
+                <div class="card mb-4">
+                    <h5 class="card-header">{{ .Spotlight.Title }}</h5>
+                    <div class="card-body">
+                        <p>{{ .Spotlight.Text }}</p>
+                        <a href="{{ .Spotlight.Link }}">Check it out</a>
+                    </div>
+                </div>
+
                 <div class="card border-0">
                     <div class="card-header">Popular New Releases</div>
                     <div class="card-body p-0">

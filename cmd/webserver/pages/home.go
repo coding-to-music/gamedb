@@ -3,6 +3,7 @@ package pages
 import (
 	"html/template"
 	"math"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -87,16 +88,24 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
+	var spotlights = []homeSpotlight{
+		{"Discord Bot", "If you run a Discord chat server, we offer a bot to get player and game information!", "/chat-bot"},
+		{"Experience Table", "Trying to level up and need to know how much XP you need?", "/experience"},
+	}
+
+	t.Spotlight = spotlights[rand.Intn(len(spotlights))]
+
 	//
 	returnTemplate(w, r, "home", t)
 }
 
 type homeTemplate struct {
 	GlobalTemplate
-	Games   []sql.App
-	News    []homeNews
-	NewsID  int64
-	Players []mongo.Player
+	Games     []sql.App
+	News      []homeNews
+	NewsID    int64
+	Players   []mongo.Player
+	Spotlight homeSpotlight
 }
 
 type homeNews struct {
@@ -105,6 +114,12 @@ type homeNews struct {
 	Link     string
 	Image    template.HTMLAttr
 	Image2   template.HTMLAttr
+}
+
+type homeSpotlight struct {
+	Title string
+	Text  template.HTML
+	Link  string
 }
 
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
