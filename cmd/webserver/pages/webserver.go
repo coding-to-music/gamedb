@@ -234,6 +234,7 @@ type GlobalTemplate struct {
 
 	// Internal
 	request   *http.Request
+	response  http.ResponseWriter
 	metaImage string
 	toasts    []Toast
 	hideAds   bool
@@ -244,6 +245,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	var err error
 
 	t.request = r
+	t.response = w
 
 	t.Title = title + " - Game DB"
 	t.Description = description
@@ -439,6 +441,37 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	}
 
 	return t.metaImage
+}
+
+func (t GlobalTemplate) GetCookieFlag(flag string) bool {
+
+	c, err := t.request.Cookie("gamedb-session-2")
+
+	if err == http.ErrNoCookie {
+		return false
+	} else if err != nil {
+		log.Err(err)
+		return false
+	}
+
+	c.Value, err = url.PathUnescape(c.Value)
+	if err != nil {
+		log.Err(err)
+		return false
+	}
+
+	var vals = map[string]bool{}
+	err = json.Unmarshal([]byte(c.Value), &vals)
+	if err != nil {
+		log.Err(err)
+		return false
+	}
+
+	if val, ok := vals[flag]; ok {
+		return val
+	}
+
+	return false
 }
 
 func (t GlobalTemplate) GetCanonical() (text string) {

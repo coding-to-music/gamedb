@@ -218,3 +218,22 @@ function addDataTablesRow(options, data, limit, $table) {
         }
     });
 })();
+
+function setCookieFlag(name) {
+
+    let val = Cookies.get('gamedb-session-2');
+    if (val === undefined || val === 'val') {
+        val = {};
+    } else {
+        val = JSON.parse(val);
+    }
+
+    val[name] = true;
+
+    Cookies.set('gamedb-session-2', JSON.stringify(val));
+}
+
+$('.jumbotron button.close').on('click', function (e) {
+    $(this).closest('.jumbotron').slideUp();
+    setCookieFlag($(this).attr('data-id'));
+});

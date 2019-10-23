@@ -1,5 +1,13 @@
 #home-page {
 
+    .jumbotron {
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+        }
+    }
+
     #players {
         #column {
             text-transform: capitalize;
