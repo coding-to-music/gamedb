@@ -219,7 +219,12 @@
                                 {{ if ne .App.TwitchURL "" }}
                                     <tr>
                                         <th scope="row">Twitch</th>
-                                        <td><a href="https://www.twitch.tv/directory/game/{{ .App.TwitchURL }}" target="_blank">https://www.twitch.tv/directory/game/{{ .App.TwitchURL }}</a></td>
+                                        <td>
+                                            <a href="https://www.twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank" style="color: #6441A4;">
+                                                <i class="fab fa-twitch"></i>
+                                                {{ .App.TwitchURL }}
+                                            </a>
+                                        </td>
                                     </tr>
                                 {{ end }}
                             </table>
@@ -812,7 +817,7 @@
                                                 </tr>
                                                 </thead>
                                                 {{ range .Extended }}
-                                                    <tr data-raw="{{ escape .Value }}">
+                                                    <tr data-raw="{{ htmlEscape .Value }}">
                                                         {{/*<td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>*/}}
                                                         <td>Extended</td>
                                                         <td nowrap="nowrap">{{ .Key }}</td>
@@ -821,7 +826,7 @@
                                                     </tr>
                                                 {{ end }}
                                                 {{ range .Common }}
-                                                    <tr data-raw="{{ escape .Value }}">
+                                                    <tr data-raw="{{ htmlEscape .Value }}">
                                                         <td>Common</td>
                                                         <td nowrap="nowrap">
                                                             {{ .Key }}
@@ -834,7 +839,7 @@
                                                     </tr>
                                                 {{ end }}
                                                 {{ range .UFS }}
-                                                    <tr data-raw="{{ escape .Value }}">
+                                                    <tr data-raw="{{ htmlEscape .Value }}">
                                                         <td>UFS</td>
                                                         <td nowrap="nowrap">{{ .Key }}</td>
                                                         <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
@@ -842,7 +847,7 @@
                                                     </tr>
                                                 {{ end }}
                                                 {{ range $key, $value := .Config }}
-                                                    <tr data-raw="{{ escape .Value }}">
+                                                    <tr data-raw="{{ htmlEscape .Value }}">
                                                         <td>Config</td>
                                                         <td nowrap="nowrap">{{ .Key }}</td>
                                                         <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>

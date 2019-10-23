@@ -188,7 +188,8 @@ func getTemplateFuncMap() map[string]interface{} {
 		"inc":          func(i int) int { return i + 1 },
 		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
 		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
-		"escape":       func(text string) string { return html.EscapeString(text) },
+		"htmlEscape":   func(text string) string { return html.EscapeString(text) },
+		"pathEscape":   func(text string) string { return url.PathEscape(text) },
 		"round":        func(i int) string { return rounding.NearestThousandFormat(float64(i)) },
 	}
 }
