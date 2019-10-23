@@ -139,7 +139,7 @@ func FindOne(collection collection, filter interface{}, sort interface{}, projec
 	}
 
 	ql := helpers.QueryLogger{}
-	ql.Start("FindOne", collection.String(), nil, nil)
+	ql.Start("FindOne", collection.String(), filter, sort)
 
 	result := client.Database(MongoDatabase).Collection(collection.String()).FindOne(ctx, filter, ops)
 
