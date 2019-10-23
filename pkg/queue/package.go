@@ -315,6 +315,10 @@ func updatePackageFromPICS(pack *sql.Package, message packageMessage) (err error
 				pack.Extended = string(b)
 			}
 
+		case "":
+
+			// Some packages (46028) have blank children
+
 		default:
 			err = errors.New(child.Key + " field in package PICS ignored (Package: " + strconv.Itoa(pack.ID) + ")")
 		}
