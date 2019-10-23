@@ -235,7 +235,6 @@ func UpdateManySet(collection collection, filter M, update M) (result *mongo.Upd
 	return result, err
 }
 
-// M{column_to_delete: 1}
 func UpdateManyUnset(collection collection, columns M) (err error) {
 
 	client, ctx, err := getMongo()
