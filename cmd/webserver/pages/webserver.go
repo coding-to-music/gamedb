@@ -381,7 +381,7 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	return t.metaImage
 }
 
-func (t GlobalTemplate) GetCookieFlag(flag string) bool {
+func (t GlobalTemplate) GetCookieFlag(key string) interface{} {
 
 	c, err := t.request.Cookie("gamedb-session-2")
 
@@ -398,14 +398,14 @@ func (t GlobalTemplate) GetCookieFlag(flag string) bool {
 		return false
 	}
 
-	var vals = map[string]bool{}
+	var vals = map[string]interface{}{}
 	err = json.Unmarshal([]byte(c.Value), &vals)
 	if err != nil {
 		log.Err(err)
 		return false
 	}
 
-	if val, ok := vals[flag]; ok {
+	if val, ok := vals[key]; ok {
 		return val
 	}
 

@@ -219,21 +219,46 @@ function addDataTablesRow(options, data, limit, $table) {
     });
 })();
 
-function setCookieFlag(name) {
+function setCookieFlag(key, value) {
 
-    let val = Cookies.get('gamedb-session-2');
-    if (val === undefined || val === 'val') {
-        val = {};
+    let cookie = Cookies.get('gamedb-session-2');
+    if (cookie === undefined || cookie === '') {
+        cookie = {};
     } else {
-        val = JSON.parse(val);
+        cookie = JSON.parse(cookie);
     }
 
-    val[name] = true;
+    cookie[key] = value;
 
-    Cookies.set('gamedb-session-2', JSON.stringify(val));
+    Cookies.set('gamedb-session-2', JSON.stringify(cookie));
 }
 
 $('.jumbotron button.close').on('click', function (e) {
     $(this).closest('.jumbotron').slideUp();
-    setCookieFlag($(this).attr('data-id'));
+    setCookieFlag($(this).attr('data-id'), true);
+});
+
+const $darkMode = $('#dark-mode');
+$darkMode.on('click', '.fa-sun, .fa-moon', function (e) {
+
+    const $sun = $darkMode.find('.fa-sun');
+    const $moon = $darkMode.find('.fa-moon');
+
+    if ($sun.hasClass("d-none")) {
+
+        $sun.removeClass('d-none');
+        $moon.addClass('d-none');
+        setCookieFlag('dark', true);
+
+        $('body').removeClass('dark');
+
+    } else {
+
+        $sun.addClass('d-none');
+        $moon.removeClass('d-none');
+        $('body').addClass('dark');
+        setCookieFlag('dark', false);
+    }
+
+    return false;
 });
