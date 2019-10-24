@@ -89,24 +89,24 @@
                                         <div class="table-responsive">
                                             <table class="table mb-0">
                                                 <tr>
-                                                    <th scope="row" nowrap="nowrap">Level</th>
+                                                    <th scope="col" nowrap="nowrap">Level</th>
                                                     <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row" nowrap="nowrap">On Steam</th>
+                                                    <th scope="col" nowrap="nowrap">On Steam</th>
                                                     <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span></td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row" nowrap="nowrap">Signed Off</th>
+                                                    <th scope="col" nowrap="nowrap">Signed Off</th>
                                                     <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetLogoffNice }}" data-livestamp="{{ .Player.GetLogoffUnix }}">{{ .Player.GetLogoffNice }}</span></td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row" nowrap="nowrap">Last Updated</th>
+                                                    <th scope="col" nowrap="nowrap">Last Updated</th>
                                                     <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
                                                 </tr>
                                                 {{ if ne .Player.CountryCode "" }}
                                                     <tr>
-                                                        <th scope="row" nowrap="nowrap">Country</th>
+                                                        <th scope="col" nowrap="nowrap">Country</th>
                                                         <td class="img">
                                                             <div class="icon-name">
                                                                 <div class="icon"><img data-toggle="tooltip" data-placement="top" class="wide" alt="{{ .Player.GetCountry }}" title="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}"></div>
@@ -117,7 +117,7 @@
                                                 {{ end }}
                                                 {{ if eq .Player.CountryCode "US" }}
                                                     <tr>
-                                                        <th scope="row" nowrap="nowrap">State</th>
+                                                        <th scope="col" nowrap="nowrap">State</th>
                                                         <td>{{ .Player.StateCode }}</td>
                                                     </tr>
                                                 {{ end }}
@@ -134,27 +134,27 @@
                                         <div class="table-responsive">
                                             <table class="table mb-0">
                                                 <tr>
-                                                    <th scope="row">Community Banned</th>
+                                                    <th scope="col">Community Banned</th>
                                                     <td>{{ if .Bans.CommunityBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row">VAC Banned</th>
+                                                    <th scope="col">VAC Banned</th>
                                                     <td>{{ if .Bans.VACBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row">Game Bans</th>
+                                                    <th scope="col">Game Bans</th>
                                                     <td>{{ comma .Bans.NumberOfGameBans }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row">VAC Bans</th>
+                                                    <th scope="col">VAC Bans</th>
                                                     <td>{{ comma .Bans.NumberOfVACBans }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row">Economy Ban</th>
+                                                    <th scope="col">Economy Ban</th>
                                                     <td>{{ .Bans.EconomyBan }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row">Time Since VAC Ban</th>
+                                                    <th scope="col">Time Since VAC Ban</th>
                                                     <td>
                                                         {{ if gt .Bans.NumberOfVACBans 0}}
                                                             {{ comma .Bans.DaysSinceLastBan }} days
@@ -391,17 +391,17 @@
                                         </thead>
                                         <tbody>
                                         <tr>
-                                            <th scope="row" nowrap="nowrap">Average Price</th>
+                                            <th scope="col" nowrap="nowrap">Average Price</th>
                                             <td>{{ .GameStats.All.GetAveragePrice }}</td>
                                             <td>{{ .GameStats.Played.GetAveragePrice }}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row" nowrap="nowrap">Average Price / Hour</th>
+                                            <th scope="col" nowrap="nowrap">Average Price / Hour</th>
                                             <td>{{ .GameStats.All.GetAveragePriceHour }}</td>
                                             <td>{{ .GameStats.Played.GetAveragePriceHour }}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row" nowrap="nowrap">Total Price</th>
+                                            <th scope="col" nowrap="nowrap">Total Price</th>
                                             <td>{{ .GameStats.All.GetTotalPrice }}</td>
                                             <td>{{ .GameStats.Played.GetTotalPrice }}</td>
                                         </tr>
@@ -418,12 +418,12 @@
                                         </thead>
                                         <tbody>
                                         <tr>
-                                            <th scope="row" nowrap="nowrap">Average Time</th>
+                                            <th scope="col" nowrap="nowrap">Average Time</th>
                                             <td>{{ .GameStats.All.GetAverageTime }}</td>
                                             <td>{{ .GameStats.Played.GetAverageTime }}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row" nowrap="nowrap">Total Time</th>
+                                            <th scope="col" nowrap="nowrap">Total Time</th>
                                             <td>{{ .GameStats.All.GetTotalTime }}</td>
                                             <td>{{ .GameStats.Played.GetTotalTime }}</td>
                                         </tr>
