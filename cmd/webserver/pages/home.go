@@ -91,6 +91,10 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	var spotlights = []homeSpotlight{
 		{"Discord Bot", "If you run a Discord chat server, we offer a bot to get player and game information!", "/chat-bot"},
 		{"Experience Table", "Trying to level up and need to know how much XP you need?", "/experience"},
+		{"Trending Groups", "Looking for trending groups to join?", "/groups?order=desc&sort=2"},
+		{"Play with friends", "Find all the games you and your friends have in common and which ones are coop!", "/coop"},
+		{"Game DB API", "Have a website and want to pull in information from Steam/Game DB?", "/api"},
+		{"The most bans", "Curious who has been banned the most on all of Steam?", "/players?order=desc&sort=9#bans"},
 	}
 
 	t.Spotlight = spotlights[rand.Intn(len(spotlights))]
