@@ -2,16 +2,37 @@ div.container {
     color: rgb(233, 236, 239) !important;
 }
 
+.page-item .page-link {
+    background-color: transparent;
+}
+
+.page-item.active .page-link {
+    border: 1px solid #dee2e6;
+}
+
+.chosen-container-multi .chosen-choices {
+    background-color: transparent;
+}
+
+.container .card .nav-tabs .nav-link.active {
+    background-color: transparent;
+    color: #28a745;
+}
+
 div.jumbotron {
     background: rgba(33, 37, 41, .9) !important;
 }
 
 div.card {
-    background: rgba(33, 37, 41, .9) !important;
+    background: rgba(33, 37, 41, .95) !important;
 }
 
 table.table {
     color: #e9ecef !important;
+
+    th[scope=col] {
+        border-top: 1px solid #343a40;
+    }
 
     tr:hover {
         color: #e9ecef !important;
