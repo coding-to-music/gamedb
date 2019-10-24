@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
@@ -61,6 +62,22 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	level, err := session.Get(r, helpers.SessionPlayerLevel)
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	if level == "" {
+		t.PlayerLevel = 10
+		t.PlayerLevelTo = 20
+	} else {
+		t.PlayerLevel, err = strconv.Atoi(level)
+		if err != nil {
+			log.Err(err, r)
+		}
+		t.PlayerLevelTo = t.PlayerLevel + 10
+	}
+
 	returnTemplate(w, r, "experience", t)
 }
 
@@ -77,7 +94,7 @@ func getExperienceRows() (chunked [][]level) {
 			Start: xp,
 		})
 
-		xp = xp + int((math.Ceil((float64(i) + 1) / 10))*100)
+		xp = xp + int((math.Ceil((float64(i)+1)/10))*100)
 	}
 
 	rows[0] = level{
@@ -113,8 +130,10 @@ func getExperienceRows() (chunked [][]level) {
 
 type experienceTemplate struct {
 	GlobalTemplate
-	Chunks [][]level
-	Level  int // Low value in form
+	Chunks        [][]level
+	Level         int // Low value in form
+	PlayerLevel   int
+	PlayerLevelTo int
 }
 
 type level struct {

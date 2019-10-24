@@ -205,32 +205,21 @@ type GlobalTemplate struct {
 	Canonical   string
 	ProductCCs  []helpers.ProductCountryCode
 
-	backgroundSet   bool
 	Background      string
 	BackgroundTitle string
 	BackgroundLink  string
+	backgroundSet   bool
 
 	FlashesGood []string
 	FlashesBad  []string
 
 	UserID        int
 	UserName      string
-	userEmail     string
 	UserProductCC helpers.ProductCountryCode
 	userLevel     int
 
 	PlayerID   int64
 	PlayerName string
-
-	// contact page
-	contactPage map[string]string
-
-	// login page
-	loginPage map[string]string
-
-	// xp page
-	PlayerLevel   int
-	PlayerLevelTo int
 
 	// Internal
 	request   *http.Request
@@ -290,11 +279,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		log.Err(err, r)
 	}
 
-	t.userEmail, err = session.Get(r, helpers.SessionUserEmail)
-	if err != nil {
-		log.Err(err, r)
-	}
-
 	t.UserName, err = session.Get(r, helpers.SessionPlayerName)
 	if err != nil {
 		log.Err(err, r)
@@ -308,52 +292,6 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	//
 	t.setRandomBackground(true, false)
 	t.setFlashes()
-
-	// Pages
-	switch true {
-	case strings.HasPrefix(t.Path, "/contact"):
-
-		// Details from form
-		contactName, err := session.Get(r, "contact-name")
-		log.Err(err)
-		contactEmail, err := session.Get(r, "contact-email")
-		log.Err(err)
-		contactMessage, err := session.Get(r, "contact-message")
-		log.Err(err)
-
-		t.contactPage = map[string]string{
-			"name":    contactName,
-			"email":   contactEmail,
-			"message": contactMessage,
-		}
-
-	case strings.HasPrefix(t.Path, "/login"):
-
-		loginEmail, err := session.Get(r, "login-email")
-		log.Err(err)
-
-		t.loginPage = map[string]string{
-			"email": loginEmail,
-		}
-
-	case strings.HasPrefix(t.Path, "/experience"):
-
-		level, err := session.Get(r, helpers.SessionPlayerLevel)
-		if err != nil {
-			log.Err(err, r)
-		}
-
-		if level == "" {
-			t.PlayerLevel = 10
-			t.PlayerLevelTo = 20
-		} else {
-			t.PlayerLevel, err = strconv.Atoi(level)
-			if err != nil {
-				log.Err(err, r)
-			}
-			t.PlayerLevelTo = t.PlayerLevel + 10
-		}
-	}
 }
 
 func (t *GlobalTemplate) setBackground(app sql.App, title bool, link bool) {
