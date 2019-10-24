@@ -83,7 +83,7 @@
 
 </head>
 <body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }}
-        class="{{ if ne .Background "" }} bg{{end}}{{ if eq .Env "local" }} local{{ end }}{{ if not (.GetCookieFlag "dark") }} dark{{end}}">
+        class="{{ if ne .Background "" }} bg{{end}}{{ if eq .Env "local" }} local{{ end }}{{ if .GetCookieFlag "dark" }} dark{{end}}">
 
 {{ if ne .Background "" }}
     <a {{ if ne .BackgroundLink "" }}href="{{ .BackgroundLink }}"{{end}} id="bg" style="background-image: url('{{ .Background }}');" title="{{ .BackgroundTitle }}"></a>
@@ -193,8 +193,8 @@
 
                     <li class="nav-item">
                         <span class="nav-link cursor-pointer" id="dark-mode">
-                            <i class="fas fa-moon {{ if .GetCookieFlag "dark" }}d-none{{end}}"></i>
-                            <i class="fas fa-sun {{ if not (.GetCookieFlag "dark") }}d-none{{end}}"></i>
+                            <i class="fas fa-moon {{ if not (.GetCookieFlag "dark") }}d-none{{end}}"></i>
+                            <i class="fas fa-sun {{ if .GetCookieFlag "dark" }}d-none{{end}}"></i>
                         </span>
                     </li>
 
