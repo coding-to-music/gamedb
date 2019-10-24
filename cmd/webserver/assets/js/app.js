@@ -70,7 +70,7 @@ if ($appPage.length > 0) {
         }
 
         // On leaving tab
-        if (from.attr('href') === '') {
+        if (from.attr('href') === '#media') {
             resetVideos();
         }
     });
