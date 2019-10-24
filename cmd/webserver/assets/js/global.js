@@ -248,16 +248,15 @@ $darkMode.on('click', '.fa-sun, .fa-moon', function (e) {
 
         $sun.removeClass('d-none');
         $moon.addClass('d-none');
-        setCookieFlag('dark', true);
-
         $('body').removeClass('dark');
+        setCookieFlag('dark', false);
 
     } else {
 
         $sun.addClass('d-none');
         $moon.removeClass('d-none');
         $('body').addClass('dark');
-        setCookieFlag('dark', false);
+        setCookieFlag('dark', true);
     }
 
     return false;
