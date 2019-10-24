@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -51,6 +52,26 @@ func offersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	// Upcoming days
+
+	pst, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	upcomingSales := []UpcomingSale{
+		{time.Date(2019, 10, 28, 10, 0, 0, 0, pst), time.Date(2019, 11, 1, 10, 0, 0, 0, pst), "Halloween Sale", "🎃"},
+		{time.Date(2019, 11, 26, 10, 0, 0, 0, pst), time.Date(2019, 12, 3, 10, 0, 0, 0, pst), "Autumn Sale", "🍁"},
+		{time.Date(2019, 12, 19, 10, 0, 0, 0, pst), time.Date(2019, 01, 2, 10, 0, 0, 0, pst), "Winter Sale", "⛄"},
+	}
+
+	for _, v := range upcomingSales {
+		if !v.Ended() {
+			t.UpcomingSale = v
+			break
+		}
+	}
+
 	// Wait
 	wg.Wait()
 
@@ -59,8 +80,28 @@ func offersHandler(w http.ResponseWriter, r *http.Request) {
 
 type offersTemplate struct {
 	GlobalTemplate
-	Tags       []sql.Tag
-	Categories []sql.Category
+	Tags         []sql.Tag
+	Categories   []sql.Category
+	UpcomingSale UpcomingSale
+}
+
+type UpcomingSale struct {
+	Start time.Time
+	End   time.Time
+	Name  string
+	Icon  string
+}
+
+func (ud UpcomingSale) ID() string {
+	return "sale-" + strconv.FormatInt(ud.Start.Unix(), 10)
+}
+
+func (ud UpcomingSale) Started() bool {
+	return ud.Start.Unix() < time.Now().Unix()
+}
+
+func (ud UpcomingSale) Ended() bool {
+	return ud.End.Unix() < time.Now().Unix()
 }
 
 func offersAjaxHandler(w http.ResponseWriter, r *http.Request) {

@@ -11,6 +11,16 @@
 
         {{ template "_flashes" . }}
 
+        {{ if and (ne .UpcomingSale.Name "") (not ($.GetCookieFlag .UpcomingSale.ID)) }}
+            <div class="jumbotron">
+                <button type="button" class="close" data-dismiss="alert" data-id="{{ .UpcomingSale.ID }}">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <span class="icon">{{ .UpcomingSale.Icon }}</span>
+                <p class="mb-0">Upcoming {{ .UpcomingSale.Name }}: <span data-livestamp="{{ .UpcomingSale.End.Unix }}"></span></p>
+            </div>
+        {{ end }}
+
         <div class="card">
             <div class="card-body">
 
