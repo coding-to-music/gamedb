@@ -116,8 +116,19 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 			return totals, nil
 		})
+		if err != nil {
+			log.Err(err)
+			return
+		}
 
-		log.Err(err)
+		// Get total
+		var total float64
+		for _, v := range t.Totals {
+			total += v.Total
+		}
+
+		t.TypeTotal = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(total))
+
 	}()
 
 	wg.Wait()
@@ -132,6 +143,7 @@ type statsTemplate struct {
 	PackagesCount int
 	PlayersCount  int64
 	Totals        []statsAppTypeTotalsRow
+	TypeTotal     string
 }
 
 type statsAppTypeTotalsRow struct {
