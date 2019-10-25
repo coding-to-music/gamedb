@@ -693,6 +693,7 @@ func updatePlayerBans(player *mongo.Player) error {
 	return nil
 }
 
+// todo, get old groups first, then i only need to GetGroupsByID for ids that are not in old groups.
 func updatePlayerGroups(player *mongo.Player, force bool) error {
 
 	// New groups
