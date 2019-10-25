@@ -53,9 +53,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query.limit(r)
 
 	// Filter
-	filter := D{
-		E{Key: "trending", Value: M{"$exists": true}},
-	}
+	filter := D{}
 
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
