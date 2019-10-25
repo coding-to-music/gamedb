@@ -300,10 +300,15 @@ func CountDocuments(collection collection, filter D, ttl int32) (count int64, er
 			return count, err
 		}
 
+		ops := options.Count()
+		if config.IsLocal() {
+			ops.SetLimit(1000)
+		}
+
 		ql := helpers.QueryLogger{}
 		ql.Start("CountDocuments", collection.String(), filter, nil)
 
-		count, err = client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
+		count, err = client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, ops)
 
 		ql.End()
 
@@ -325,10 +330,15 @@ func SetCountDocuments(collection collection, filter D, ttl int32) error {
 		return err
 	}
 
+	ops := options.Count()
+	if config.IsLocal() {
+		ops.SetLimit(1000)
+	}
+
 	ql := helpers.QueryLogger{}
 	ql.Start("CountDocuments", collection.String(), filter, nil)
 
-	count, err := client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
+	count, err := client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, ops)
 
 	ql.End()
 
