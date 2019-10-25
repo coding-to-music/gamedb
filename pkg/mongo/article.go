@@ -7,7 +7,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"go.mongodb.org/mongo-driver/bson"
 	. "go.mongodb.org/mongo-driver/bson"
 )
 
@@ -106,7 +105,7 @@ func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []A
 	}
 
 	if !afterDate.IsZero() {
-		filter = append(filter, bson.E{Key: "$gte", Value: afterDate})
+		filter = append(filter, E{Key: "date", Value: M{"$gte": afterDate}})
 	}
 
 	return getArticles(0, limit, filter)
