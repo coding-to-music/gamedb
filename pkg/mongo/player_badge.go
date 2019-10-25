@@ -141,7 +141,7 @@ func (pb PlayerBadge) GetSpecialFirsts() (ret template.HTML, err error) {
 		return pb.getSpecialFirsts()
 	})
 
-	if len(firsts) > 10 {
+	if len(firsts) > 1 {
 		return template.HTML(strconv.Itoa(len(firsts))) + " joint firsts", nil
 	}
 
@@ -174,7 +174,7 @@ func (pb PlayerBadge) getSpecialFirsts() (playerBadges []PlayerBadge, err error)
 
 	return getBadges(
 		0,
-		0,
+		2, // We don't show names if above 1
 		D{{"app_id", 0}, {"badge_id", pb.BadgeID}, {"badge_level", max.BadgeLevel}, {"badge_completion_time", max.BadgeCompletionTime}},
 		D{{"badge_completion_time", -1}},
 		M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
