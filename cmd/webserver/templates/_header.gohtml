@@ -141,17 +141,8 @@
                         <a class="nav-link" href="/badges">Badges</a>
                     </li>
 
-                    <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
-                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="#" data-link="/stats" data-toggle="dropdown">Stats</a>
-                        <a class="nav-link dropdown-toggle d-block d-lg-none" href="#" data-toggle="dropdown">Stats</a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item d-block d-lg-none" href="/stats">Stats</a>
-                            <a class="dropdown-item" href="/tags">Tags</a>
-                            <a class="dropdown-item" href="/genres">Genres</a>
-                            <a class="dropdown-item" href="/categories">Categories</a>
-                            <a class="dropdown-item" href="/publishers">Publishers</a>
-                            <a class="dropdown-item" href="/developers">Developers</a>
-                        </div>
+                    <li class="nav-item {{if startsWith .Path "/stats" }}active{{end}}">
+                        <a class="nav-link" href="/stats">Stats</a>
                     </li>
 
                     <li class="nav-item {{if startsWith .Path "/news" }}active{{end}}">
