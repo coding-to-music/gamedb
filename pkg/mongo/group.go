@@ -8,6 +8,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 var ErrInvalidGroupID = errors.New("invalid group id")
@@ -107,11 +108,11 @@ func GetGroup(id string) (group Group, err error) {
 	}
 
 	if len(id) == 18 {
-		err = FindOne(CollectionGroups, M{"_id": id}, nil, nil, &group)
+		err = FindOne(CollectionGroups, D{{"_id", id}}, nil, nil, &group)
 	} else {
 		i, err := strconv.ParseInt(id, 10, 32)
 		if err == nil {
-			err = FindOne(CollectionGroups, M{"id": i}, nil, nil, &group)
+			err = FindOne(CollectionGroups, D{{"id", i}}, nil, nil, &group)
 		}
 	}
 
@@ -162,7 +163,7 @@ func GetGroupsByID(ids []string, projection M) (groups []Group, err error) {
 				or = append(or, M{"id": M{"$in": idsBSON}})
 			}
 
-			resp, err := getGroups(0, 0, nil, M{"$or": or}, projection)
+			resp, err := getGroups(0, 0, nil, D{{"$or", or}}, projection)
 			if err != nil {
 				log.Err(err)
 				return
@@ -178,12 +179,12 @@ func GetGroupsByID(ids []string, projection M) (groups []Group, err error) {
 	return groups, err
 }
 
-func GetGroups(limit int64, offset int64, sort D, filter M, projection M) (groups []Group, err error) {
+func GetGroups(limit int64, offset int64, sort D, filter D, projection M) (groups []Group, err error) {
 
 	return getGroups(offset, limit, sort, filter, projection)
 }
 
-func getGroups(offset int64, limit int64, sort D, filter interface{}, projection M) (groups []Group, err error) {
+func getGroups(offset int64, limit int64, sort D, filter D, projection M) (groups []Group, err error) {
 
 	cur, ctx, err := Find(CollectionGroups, offset, limit, sort, filter, projection, nil)
 	if err != nil {

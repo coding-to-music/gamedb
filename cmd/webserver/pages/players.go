@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 const CAF = "C-AF"
@@ -154,7 +155,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var sortOrder = query.getOrderMongo(columns, nil)
-	var filter = mongo.M{}
+	var filter = D{}
 
 	country := query.getSearchString("country")
 
@@ -163,30 +164,30 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if v.Key == country {
 			isContinent = true
 			countriesIn := helpers.CountriesInContinent(v.Value)
-			var countriesInA mongo.A
+			var countriesInA A
 			for _, v := range countriesIn {
 				countriesInA = append(countriesInA, v)
 			}
-			filter["country_code"] = mongo.M{"$in": countriesInA}
+			filter = append(filter, E{Key: "country_code", Value: M{"$in": countriesInA}})
 			break
 		}
 	}
 	if !isContinent && country != "" {
-		filter["country_code"] = country
+		filter = append(filter, E{Key: "country_code", Value: country})
 	}
 
 	state := query.getSearchString("state")
 	if country == "US" && state != "" {
-		filter["status_code"] = state
+		filter = append(filter, E{Key: "status_code", Value: state})
 	}
 
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
 		sortOrder = nil
-		filter["$or"] = mongo.A{
-			mongo.M{"$text": mongo.M{"$search": search}},
-			mongo.M{"_id": search},
-		}
+		filter = append(filter, E{"$or", A{
+			M{"$text": M{"$search": search}},
+			M{"_id": search},
+		}})
 	}
 
 	//
@@ -201,7 +202,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		players, err := mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, mongo.M{
+		players, err := mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,

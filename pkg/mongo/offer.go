@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -55,14 +56,14 @@ func (offer Offer) getKey() (ret string) {
 }
 
 func GetAppOffers(appID int) (offers []Offer, err error) {
-	return getOffers(0, 0, M{"app_id": appID}, M{"sub_id": 1})
+	return getOffers(0, 0, D{{"app_id", appID}}, M{"sub_id": 1})
 }
 
 func GetAllOffers(offset int64, limit int64, filter D) (offers []Offer, err error) {
 	return getOffers(offset, limit, filter, nil)
 }
 
-func getOffers(offset int64, limit int64, filter interface{}, projection M) (offers []Offer, err error) {
+func getOffers(offset int64, limit int64, filter D, projection M) (offers []Offer, err error) {
 
 	var sort = D{{"offer_end", 1}}
 

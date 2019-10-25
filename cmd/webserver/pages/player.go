@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 func PlayerRouter() http.Handler {
@@ -312,7 +313,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Remove players we already have
-	players, err := mongo.GetPlayersByID(friendIDs, mongo.M{"_id": 1})
+	players, err := mongo.GetPlayersByID(friendIDs, M{"_id": 1})
 	for _, v := range players {
 		delete(friendIDsMap, v.ID)
 	}
@@ -599,7 +600,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make filter
-	var filter = mongo.M{"app_id": mongo.M{"$gt": 0}, "player_id": idx}
+	var filter = D{{"app_id", M{"$gt": 0}}, {"player_id", idx}}
 
 	//
 	var wg sync.WaitGroup

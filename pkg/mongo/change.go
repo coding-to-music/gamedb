@@ -6,6 +6,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 type Change struct {
@@ -102,7 +103,7 @@ func GetChange(id int64) (change Change, err error) {
 
 		var change Change
 
-		err = FindOne(CollectionChanges, M{"_id": id}, nil, nil, &change)
+		err = FindOne(CollectionChanges, D{{"_id", id}}, nil, nil, &change)
 		if change.ID == 0 {
 			return change, ErrNoDocuments
 		}

@@ -9,6 +9,8 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"go.mongodb.org/mongo-driver/bson"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -110,19 +112,17 @@ func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
 		}
 	}
 
-	return getProductPrices(M{"_id": M{"$in": idsBSON}}, 0, 0, D{{"created_at", 1}})
+	return getProductPrices(D{{"_id", M{"$in": idsBSON}}}, 0, 0, D{{"created_at", 1}})
 }
 
 func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.ProductCC) (prices []ProductPrice, err error) {
 
-	var filter = M{
-		"prod_cc": string(cc),
-	}
+	var filter = D{{"prod_cc", string(cc)}}
 
 	if productType == helpers.ProductTypeApp {
-		filter["app_id"] = productID
+		filter = append(filter, bson.E{Key: "app_id", Value: productID})
 	} else if productType == helpers.ProductTypePackage {
-		filter["package_id"] = productID
+		filter = append(filter, bson.E{Key: "package_id", Value: productID})
 	} else {
 		return prices, errors.New("invalid product type")
 	}
@@ -130,12 +130,12 @@ func GetPricesForProduct(productID int, productType helpers.ProductType, cc stea
 	return getProductPrices(filter, 0, 0, D{{"created_at", 1}})
 }
 
-func GetPrices(offset int64, limit int64, filter interface{}) (prices []ProductPrice, err error) {
+func GetPrices(offset int64, limit int64, filter D) (prices []ProductPrice, err error) {
 
 	return getProductPrices(filter, offset, limit, D{{"created_at", -1}})
 }
 
-func getProductPrices(filter interface{}, offset int64, limit int64, sort D) (prices []ProductPrice, err error) {
+func getProductPrices(filter D, offset int64, limit int64, sort D) (prices []ProductPrice, err error) {
 
 	cur, ctx, err := Find(CollectionProductPrices, offset, limit, sort, filter, nil, nil)
 	if err != nil {

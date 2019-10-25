@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 const urlBase = "https://gamedb.online"
@@ -109,7 +110,7 @@ func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"level", -1}}, nil, mongo.M{"_id": 1, "persona_name": 1, "updated_at": 1})
+	players, err := mongo.GetPlayers(0, 1000, D{{"level", -1}}, nil, M{"_id": 1, "persona_name": 1, "updated_at": 1})
 	for _, player := range players {
 		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
@@ -123,7 +124,7 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	groups, err := mongo.GetGroups(1000, 0, mongo.D{{"members", -1}}, mongo.M{"type": "group"}, mongo.M{"_id": 1, "name": 1, "updated_at": 1})
+	groups, err := mongo.GetGroups(1000, 0, D{{"members", -1}}, D{{"type", "group"}}, M{"_id": 1, "name": 1, "updated_at": 1})
 	for _, v := range groups {
 		sm.AddLocation(urlBase+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
@@ -149,7 +150,7 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := mongo.GetPlayers(0, 1000, mongo.D{{"games_count", -1}}, nil, mongo.M{"_id": 1, "persona_name": 1, "updated_at": 1})
+	players, err := mongo.GetPlayers(0, 1000, D{{"games_count", -1}}, nil, M{"_id": 1, "persona_name": 1, "updated_at": 1})
 	for _, player := range players {
 		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}

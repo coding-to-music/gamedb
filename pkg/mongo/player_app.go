@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -89,14 +90,14 @@ func (pa PlayerApp) GetPriceHourFormatted(code steam.ProductCC) string {
 	}
 }
 
-func GetPlayerAppsByApp(offset int64, filter interface{}) (apps []PlayerApp, err error) {
+func GetPlayerAppsByApp(offset int64, filter D) (apps []PlayerApp, err error) {
 
 	return getPlayerApps(offset, 100, filter, D{{"app_time", -1}}, M{"_id": -1, "player_id": 1, "app_time": 1})
 }
 
 func GetPlayerApps(playerID int64, offset int64, limit int64, sort D) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, limit, M{"player_id": playerID}, sort, nil)
+	return getPlayerApps(offset, limit, D{{"player_id", playerID}}, sort, nil)
 }
 
 func GetPlayersApps(playerIDs []int64) (apps []PlayerApp, err error) {
@@ -110,15 +111,15 @@ func GetPlayersApps(playerIDs []int64) (apps []PlayerApp, err error) {
 		playersFilter = append(playersFilter, v)
 	}
 
-	return getPlayerApps(0, 0, M{"player_id": M{"$in": playersFilter}}, nil, M{"_id": -1, "player_id": 1, "app_id": 1})
+	return getPlayerApps(0, 0, D{{"player_id", M{"$in": playersFilter}}}, nil, M{"_id": -1, "player_id": 1, "app_id": 1})
 }
 
 func GetAppPlayTimes(appID int) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(0, 0, M{"app_id": appID}, nil, M{"_id": -1, "app_time": 1})
+	return getPlayerApps(0, 0, D{{"app_id", appID}}, nil, M{"_id": -1, "app_time": 1})
 }
 
-func getPlayerApps(offset int64, limit int64, filter interface{}, sort D, projection M) (apps []PlayerApp, err error) {
+func getPlayerApps(offset int64, limit int64, filter D, sort D, projection M) (apps []PlayerApp, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerApps, offset, limit, sort, filter, projection, nil)
 	if err != nil {

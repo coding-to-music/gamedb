@@ -6,6 +6,7 @@ import (
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 type PatreonWebhook struct {
@@ -49,13 +50,13 @@ func CountPatreonWebhooks(userID int) (count int64, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionPatreonWebhooks, M{"user_id": userID}, 0)
+		return CountDocuments(CollectionPatreonWebhooks, D{{"user_id", userID}}, 0)
 	})
 
 	return count, err
 }
 
-func GetPatreonWebhooks(offset int64, limit int64, sort D, filter interface{}, projection M) (webhooks []PatreonWebhook, err error) {
+func GetPatreonWebhooks(offset int64, limit int64, sort D, filter D, projection M) (webhooks []PatreonWebhook, err error) {
 
 	cur, ctx, err := Find(CollectionPatreonWebhooks, offset, limit, sort, filter, projection, nil)
 	if err != nil {

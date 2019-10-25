@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -91,7 +92,7 @@ func DeletePackageApps(packageID int, appIDs []int) (err error) {
 
 func GetPackageApps(packageID int, offset int64, sort D) (apps []PackageApp, err error) {
 
-	var filter = M{"package_id": packageID}
+	var filter = D{{"package_id", packageID}}
 
 	cur, ctx, err := Find(CollectionPackageApps, offset, 100, sort, filter, nil, nil)
 	if err != nil {

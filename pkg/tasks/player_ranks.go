@@ -7,6 +7,8 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	. "go.mongodb.org/mongo-driver/bson"
 	mongodb "go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -28,7 +30,7 @@ func (c PlayerRanks) Cron() string {
 
 func (c PlayerRanks) work() {
 
-	// err2 := mongo.UpdateManyUnset(mongo.CollectionPlayers, mongo.M{"ranks": 1})
+	// err2 := mongo.UpdateManyUnset(mongo.CollectionPlayers, M{"ranks": 1})
 	// log.Info(err2)
 
 	codes, err := mongo.GetUniquePlayerCountries()
@@ -51,7 +53,7 @@ func (c PlayerRanks) work() {
 		{"comments_count", mongo.RankKeyComments},
 	}
 
-	var ranks = map[int64]mongo.M{}
+	var ranks = map[int64]M{}
 
 	for k, cc := range codes {
 
@@ -63,12 +65,12 @@ func (c PlayerRanks) work() {
 
 		for _, field := range fields {
 
-			filter := mongo.M{field.readCol: mongo.M{"$exists": true, "$gt": 0}}
+			filter := D{{field.readCol, M{"$exists": true, "$gt": 0}}}
 			if cc != mongo.RankCountryAll {
-				filter["country_code"] = cc
+				filter = append(filter, bson.E{Key: "country_code", Value: cc})
 			}
 
-			players, err := mongo.GetPlayers(0, 0, mongo.D{{field.readCol, -1}}, filter, mongo.M{"_id": 1})
+			players, err := mongo.GetPlayers(0, 0, D{{field.readCol, -1}}, filter, M{"_id": 1})
 			if err != nil {
 				log.Warning(err)
 				continue
@@ -79,7 +81,7 @@ func (c PlayerRanks) work() {
 				key := strconv.Itoa(int(field.writeCol)) + "_" + cc
 
 				if _, ok := ranks[v.ID]; !ok {
-					ranks[v.ID] = mongo.M{}
+					ranks[v.ID] = M{}
 				}
 
 				ranks[v.ID][key] = playerK + 1
@@ -93,8 +95,8 @@ func (c PlayerRanks) work() {
 	for playerID, m := range ranks {
 
 		write := mongodb.NewUpdateOneModel()
-		write.SetFilter(mongo.M{"_id": playerID})
-		write.SetUpdate(mongo.M{"$set": mongo.M{"ranks": m}})
+		write.SetFilter(M{"_id": playerID})
+		write.SetUpdate(M{"$set": M{"ranks": m}})
 		write.SetUpsert(false)
 
 		writes = append(writes, write)

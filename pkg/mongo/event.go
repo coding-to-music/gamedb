@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 type EventEnum string
@@ -123,7 +124,7 @@ func (event Event) GetIcon() string {
 func GetEvents(userID int, offset int64) (events []Event, err error) {
 
 	var sort = D{{"created_at", -1}}
-	var filter = M{"user_id": userID}
+	var filter = D{{"user_id", userID}}
 
 	cur, ctx, err := Find(CollectionEvents, offset, 100, sort, filter, nil, nil)
 	if err != nil {
@@ -187,7 +188,7 @@ func CountEvents(userID int) (count int64, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionEvents, M{"user_id": userID}, 0)
+		return CountDocuments(CollectionEvents, D{{"user_id", userID}}, 0)
 	})
 
 	return count, err

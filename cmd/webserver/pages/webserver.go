@@ -20,11 +20,11 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/jinzhu/gorm"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
@@ -631,7 +631,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, defaultCol strin
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(string) string) mongo.D {
+func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(string) string) D {
 
 	for _, v := range q.Order {
 
@@ -649,10 +649,10 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 								}
 
 								if dir == "desc" {
-									return mongo.D{{col, -1}}
+									return D{{col, -1}}
 								}
 
-								return mongo.D{{col, 1}}
+								return D{{col, 1}}
 							}
 						}
 					}
@@ -661,7 +661,7 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 		}
 	}
 
-	return mongo.D{}
+	return D{}
 }
 
 func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) {

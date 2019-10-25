@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -92,7 +93,7 @@ func UpdateRecentApps(apps []PlayerRecentApp) (err error) {
 
 func GetRecentApps(playerID int64, offset int64, limit int64, sort D) (apps []PlayerRecentApp, err error) {
 
-	filter := M{"player_id": playerID}
+	filter := D{{"player_id", playerID}}
 
 	cur, ctx, err := Find(CollectionPlayerAppsRecent, offset, limit, sort, filter, nil, nil)
 	if err != nil {

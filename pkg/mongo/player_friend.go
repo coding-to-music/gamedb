@@ -7,6 +7,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -74,7 +75,7 @@ func (f PlayerFriend) GetLevel() string {
 
 func CountFriends(playerID int64) (count int64, err error) {
 
-	return CountDocuments(CollectionPlayerFriends, M{"player_id": playerID}, 0)
+	return CountDocuments(CollectionPlayerFriends, D{{"player_id", playerID}}, 0)
 }
 
 func DeleteFriends(playerID int64, friends []int64) (err error) {
@@ -132,7 +133,7 @@ func UpdateFriends(friends []*PlayerFriend) (err error) {
 
 func GetFriends(playerID int64, offset int64, limit int64, sort D) (friends []PlayerFriend, err error) {
 
-	var filter = M{"player_id": playerID}
+	var filter = D{{"player_id", playerID}}
 
 	cur, ctx, err := Find(CollectionPlayerFriends, offset, limit, sort, filter, nil, nil)
 	if err != nil {

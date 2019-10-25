@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 func BadgeRouter() http.Handler {
@@ -81,15 +82,15 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	var filter = mongo.M{}
+	var filter = D{}
 
 	if badge.IsSpecial() {
-		filter["app_id"] = 0
-		filter["badge_id"] = idx
+		filter = append(filter, E{Key: "app_id", Value: 0})
+		filter = append(filter, E{Key: "badge_id", Value: idx})
 	} else {
-		filter["app_id"] = idx
-		filter["badge_id"] = mongo.M{"$gt": 0}
-		filter["badge_foil"] = r.URL.Query().Get("foil") == "1"
+		filter = append(filter, E{Key: "app_id", Value: idx})
+		filter = append(filter, E{Key: "badge_id", Value: M{"$gt": 0}})
+		filter = append(filter, E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"})
 	}
 
 	var badges []mongo.PlayerBadge

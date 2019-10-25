@@ -128,7 +128,7 @@ type homeSpotlight struct {
 
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
-	var filter = mongo.D{
+	var filter = bson.D{
 		{"prod_cc", string(helpers.GetProductCC(r))},
 		{"app_id", bson.M{"$gt": 0}},
 		{"difference", bson.M{"$lt": 0}},
@@ -258,7 +258,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
-		projection := mongo.M{
+		projection := bson.M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
@@ -266,7 +266,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			sort:           1,
 		}
 
-		return mongo.GetPlayers(0, 15, mongo.D{{sort, -1}}, mongo.M{sort: mongo.M{"$gt": 0}}, projection)
+		return mongo.GetPlayers(0, 15, bson.D{{sort, -1}}, bson.D{{sort, bson.M{"$gt": 0}}}, projection)
 	})
 
 	return players, err

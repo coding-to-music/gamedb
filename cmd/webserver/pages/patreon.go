@@ -9,6 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 func PatreonRouter() http.Handler {
@@ -70,7 +71,7 @@ func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhoo
 
 	if pwr.User.Attributes.Email != "" {
 		player := mongo.Player{}
-		err = mongo.FindOne(mongo.CollectionPlayers, mongo.M{"email": pwr.User.Attributes.Email}, nil, mongo.M{"_id": 1}, &player)
+		err = mongo.FindOne(mongo.CollectionPlayers, D{{"email", pwr.User.Attributes.Email}}, nil, M{"_id": 1}, &player)
 		if err == mongo.ErrNoDocuments || (err == nil && player.ID == 0) {
 			return nil
 		}

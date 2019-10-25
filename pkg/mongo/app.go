@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 var ErrInvalidAppID = errors.New("invalid app id")
@@ -29,7 +30,7 @@ func (a App) BSON() (ret interface{}) {
 
 func (a App) Save() (err error) {
 
-	_, err = ReplaceOne(CollectionApps, M{"_id": a.ID}, a)
+	_, err = ReplaceOne(CollectionApps, D{{"_id", a.ID}}, a)
 	return err
 }
 
@@ -39,7 +40,7 @@ func GetApp(id int) (app App, err error) {
 		return app, ErrInvalidAppID
 	}
 
-	err = FindOne(CollectionApps, M{"_id": id}, nil, nil, &app)
+	err = FindOne(CollectionApps, D{{"_id", id}}, nil, nil, &app)
 	if err != nil {
 		return app, err
 	}

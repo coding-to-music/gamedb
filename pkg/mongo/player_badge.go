@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -126,8 +127,8 @@ func (pb PlayerBadge) SetSpecialPlayers() error {
 	return SetCountDocuments(CollectionPlayerBadges, pb.specialPlayersCountFilter(), 60*60*24*24)
 }
 
-func (pb PlayerBadge) specialPlayersCountFilter() M {
-	return M{"app_id": 0, "badge_id": pb.BadgeID}
+func (pb PlayerBadge) specialPlayersCountFilter() D {
+	return D{{"app_id", 0}, {"badge_id", pb.BadgeID}}
 }
 
 // Cached
@@ -165,8 +166,8 @@ func (pb PlayerBadge) getSpecialFirsts() (playerBadges []PlayerBadge, err error)
 
 	err = FindOne(
 		CollectionPlayerBadges,
-		M{"app_id": 0, "badge_id": pb.BadgeID},
-		M{"badge_level": -1, "badge_completion_time": 1},
+		D{{"app_id", 0}, {"badge_id", pb.BadgeID}},
+		D{{"badge_level", -1}, {"badge_completion_time", 1}},
 		M{"badge_level": 1, "badge_completion_time": 1},
 		&max,
 	)
@@ -174,7 +175,7 @@ func (pb PlayerBadge) getSpecialFirsts() (playerBadges []PlayerBadge, err error)
 	return getBadges(
 		0,
 		0,
-		M{"app_id": 0, "badge_id": pb.BadgeID, "badge_level": max.BadgeLevel, "badge_completion_time": max.BadgeCompletionTime},
+		D{{"app_id", 0}, {"badge_id", pb.BadgeID}, {"badge_level", max.BadgeLevel}, {"badge_completion_time", max.BadgeCompletionTime}},
 		D{{"badge_completion_time", -1}},
 		M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
 	)
@@ -200,8 +201,8 @@ func (pb PlayerBadge) SetEventPlayers() error {
 	return SetCountDocuments(CollectionPlayerBadges, pb.eventPlayersCountFilter(), 60*60*24*24)
 }
 
-func (pb PlayerBadge) eventPlayersCountFilter() M {
-	return M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}}
+func (pb PlayerBadge) eventPlayersCountFilter() D {
+	return D{{"app_id", pb.AppID}, {"badge_id", M{"$gt": 0}}}
 }
 
 // Cached
@@ -258,8 +259,8 @@ func (pb PlayerBadge) getEventFirst(foil bool) (max PlayerBadge, err error) {
 
 		err = FindOne(
 			CollectionPlayerBadges,
-			M{"app_id": pb.AppID, "badge_id": M{"$gt": 0}, "badge_foil": foil},
-			M{"badge_level": -1, "badge_completion_time": 1},
+			D{{"app_id", pb.AppID}, {"badge_id", M{"$gt": 0}}, {"badge_foil", foil}},
+			D{{"badge_level", -1}, {"badge_completion_time", 1}},
 			M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
 			&max,
 		)
@@ -311,15 +312,15 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	return err
 }
 
-func GetPlayerEventBadges(offset int64, filter interface{}) (badges []PlayerBadge, err error) {
+func GetPlayerEventBadges(offset int64, filter D) (badges []PlayerBadge, err error) {
 	return getBadges(offset, 100, filter, D{{"badge_completion_time", -1}}, nil)
 }
 
-func GetBadgePlayers(offset int64, filter interface{}) (badges []PlayerBadge, err error) {
+func GetBadgePlayers(offset int64, filter D) (badges []PlayerBadge, err error) {
 	return getBadges(offset, 100, filter, D{{"badge_level", -1}, {"badge_completion_time", 1}}, nil)
 }
 
-func getBadges(offset int64, limit int64, filter interface{}, sort D, projection M) (badges []PlayerBadge, err error) {
+func getBadges(offset int64, limit int64, filter D, sort D, projection M) (badges []PlayerBadge, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerBadges, offset, limit, sort, filter, projection, nil)
 	if err != nil {

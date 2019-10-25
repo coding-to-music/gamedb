@@ -5,6 +5,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -120,7 +121,7 @@ func DeletePlayerGroups(playerID int64, groupIDs []string) (err error) {
 
 func GetPlayerGroups(playerID int64, offset int64, limit int64, sort D) (groups []PlayerGroup, err error) {
 
-	var filter = M{"player_id": playerID}
+	var filter = D{{"player_id", playerID}}
 
 	cur, ctx, err := Find(CollectionPlayerGroups, offset, limit, sort, filter, nil, nil)
 	if err != nil {

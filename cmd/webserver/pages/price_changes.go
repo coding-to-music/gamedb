@@ -48,7 +48,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get ranks
 	var code = helpers.GetProductCC(r)
 
-	var filter = mongo.D{
+	var filter = bson.D{
 		{"prod_cc", string(code)},
 	}
 
@@ -65,14 +65,14 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			min, err := strconv.ParseFloat(percents[0], 64)
 			log.Err(err)
 			if err == nil {
-				filter = append(filter, bson.E{Key: "difference_percent", Value: mongo.M{"$gte": min}})
+				filter = append(filter, bson.E{Key: "difference_percent", Value: bson.M{"$gte": min}})
 			}
 		}
 		if percents[1] != "100.00" {
 			max, err := strconv.ParseFloat(percents[1], 64)
 			log.Err(err)
 			if err == nil {
-				filter = append(filter, bson.E{Key: "difference_percent", Value: mongo.M{"$lte": max}})
+				filter = append(filter, bson.E{Key: "difference_percent", Value: bson.M{"$lte": max}})
 			}
 		}
 	}
@@ -83,14 +83,14 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			min, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 			log.Err(err)
 			if err == nil {
-				filter = append(filter, bson.E{Key: "price_after", Value: mongo.M{"$gte": min}})
+				filter = append(filter, bson.E{Key: "price_after", Value: bson.M{"$gte": min}})
 			}
 		}
 		if prices[1] != "100.00" {
 			max, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			log.Err(err)
 			if err == nil {
-				filter = append(filter, bson.E{Key: "price_after", Value: mongo.M{"$lte": max}})
+				filter = append(filter, bson.E{Key: "price_after", Value: bson.M{"$lte": max}})
 			}
 		}
 	}
@@ -130,7 +130,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, mongo.M{"prod_cc": string(code)}, 0)
+		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, bson.D{{"prod_cc", string(code)}}, 0)
 		log.Err(err, r)
 	}(r)
 

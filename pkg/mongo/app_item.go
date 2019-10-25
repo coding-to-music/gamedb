@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -131,7 +132,7 @@ func (a *AppItem) Image(size int, crop bool) string {
 	return "https://images.weserv.nl?" + params.Encode()
 }
 
-func GetAppItems(offset int64, limit int64, filter interface{}, projection M) (items []AppItem, err error) {
+func GetAppItems(offset int64, limit int64, filter D, projection M) (items []AppItem, err error) {
 
 	var sort = D{{"item_def_id", 1}}
 

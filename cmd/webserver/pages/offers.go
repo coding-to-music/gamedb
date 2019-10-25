@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 func OffersRouter() http.Handler {
@@ -110,8 +111,8 @@ func offersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	var filter = mongo.D{
-		{"offer_end", mongo.M{"$gt": time.Now()}},
+	var filter = D{
+		{"offer_end", M{"$gt": time.Now()}},
 	}
 
 	//

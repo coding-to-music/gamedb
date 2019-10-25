@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -288,7 +289,7 @@ func GetPlayer(id int64) (player Player, err error) {
 			return player, ErrInvalidPlayerID
 		}
 
-		err = FindOne(CollectionPlayers, M{"_id": id}, nil, nil, &player)
+		err = FindOne(CollectionPlayers, D{{"_id", id}}, nil, nil, &player)
 		if err != nil {
 			return player, err
 		}
@@ -347,10 +348,10 @@ func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
 		idsBSON = append(idsBSON, v)
 	}
 
-	return GetPlayers(0, 0, nil, M{"_id": M{"$in": idsBSON}}, projection)
+	return GetPlayers(0, 0, nil, D{{"_id", M{"$in": idsBSON}}}, projection)
 }
 
-func GetPlayers(offset int64, limit int64, sort D, filter interface{}, projection M) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort D, filter D, projection M) (players []Player, err error) {
 
 	cur, ctx, err := Find(CollectionPlayers, offset, limit, sort, filter, projection, nil)
 	if err != nil {
@@ -411,7 +412,7 @@ func CountPlayers() (count int64, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionPlayers, M{}, 0)
+		return CountDocuments(CollectionPlayers, nil, 0)
 	})
 
 	return count, err

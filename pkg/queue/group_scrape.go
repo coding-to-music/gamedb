@@ -21,6 +21,7 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/powerslacker/ratelimit"
 	"github.com/streadway/amqp"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 var (
@@ -423,7 +424,7 @@ func getGroupTrending(group *mongo.Group) (err error) {
 
 func saveGroupToMongo(group mongo.Group) (err error) {
 
-	_, err = mongo.ReplaceOne(mongo.CollectionGroups, mongo.M{"_id": group.ID64}, group)
+	_, err = mongo.ReplaceOne(mongo.CollectionGroups, D{{"_id", group.ID64}}, group)
 	return err
 }
 

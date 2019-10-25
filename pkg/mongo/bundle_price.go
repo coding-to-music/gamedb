@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -31,7 +32,7 @@ func (price BundlePrice) getKey() string {
 func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 
 	var sort = D{{"created_at", 1}}
-	var filter = M{"bundle_id": bundleID}
+	var filter = D{{"bundle_id", bundleID}}
 
 	cur, ctx, err := Find(CollectionBundlePrices, 0, 0, sort, filter, nil, nil)
 	if err != nil {

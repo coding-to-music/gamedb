@@ -9,6 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 func GroupsRouter() http.Handler {
@@ -52,30 +53,30 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query.limit(r)
 
 	// Filter
-	filter := mongo.M{}
+	filter := D{
+		E{Key: "trending", Value: M{"$exists": true}},
+	}
 
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
-		filter["$or"] = mongo.A{
-			mongo.M{"$text": mongo.M{"$search": search}},
-			mongo.M{"_id": search},
-			mongo.M{"id": search},
-		}
+		filter = append(filter, E{Key: "$or", Value: A{
+			M{"$text": M{"$search": search}},
+			M{"_id": search},
+			M{"id": search},
+		}})
 	}
 
 	typ := query.getSearchString("type")
 	if typ == "group" || typ == "game" {
-		filter["type"] = typ
+		filter = append(filter, E{Key: "type", Value: typ})
 	}
 
 	showErrors := query.getSearchString("errors")
 	if showErrors == "removed" {
-		filter["error"] = mongo.M{"$exists": true, "$ne": ""}
+		filter = append(filter, E{Key: "error", Value: M{"$exists": true, "$ne": ""}})
 	} else if showErrors == "notremoved" {
-		filter["error"] = mongo.M{"$exists": true, "$eq": ""}
+		filter = append(filter, E{Key: "error", Value: M{"$exists": true, "$eq": ""}})
 	}
-
-	filter["trending"] = mongo.M{"$ne": 0, "$exists": true}
 
 	//
 	var wg sync.WaitGroup

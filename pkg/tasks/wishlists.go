@@ -1,4 +1,5 @@
 package tasks
+
 //
 // import (
 // 	"strconv"
@@ -7,6 +8,7 @@ package tasks
 // 	"github.com/gamedb/gamedb/pkg/mongo"
 // 	"github.com/gamedb/gamedb/pkg/sql"
 // 	"go.mongodb.org/mongo-driver/mongo/options"
+//  . "go.mongodb.org/mongo-driver/bson"
 // )
 //
 // type Wishlists struct {
@@ -31,7 +33,7 @@ package tasks
 // 	var appCounts = map[int]int{}
 //
 // 	ops := options.Find().SetReturnKey(false)
-// 	players, err := mongo.GetPlayers(0, 0, nil, mongo.M{"wishlist_app_ids": mongo.M{"$exists": true, "$not": mongo.M{"$size": 0}}}, mongo.M{"_id": 1, "wishlist_app_ids": 1}, ops)
+// 	players, err := mongo.GetPlayers(0, 0, nil, M{"wishlist_app_ids": M{"$exists": true, "$not": M{"$size": 0}}}, M{"_id": 1, "wishlist_app_ids": 1}, ops)
 // 	if err != nil {
 // 		log.Err(err)
 // 		return

@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 const (
@@ -48,7 +49,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get players
 	var err error
-	t.Players, err = mongo.GetPlayersByID(playerIDs, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1})
+	t.Players, err = mongo.GetPlayersByID(playerIDs, M{"_id": 1, "persona_name": 1, "avatar": 1})
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
 		return

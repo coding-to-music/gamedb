@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	. "go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -91,7 +92,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		playerApps, err := mongo.GetPlayerApps(t.Player.ID, 0, 0, mongo.D{})
+		playerApps, err := mongo.GetPlayerApps(t.Player.ID, 0, 0, D{})
 		if err != nil {
 			log.Err(err, r)
 			return

@@ -27,6 +27,7 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/nicklaw5/helix"
 	"github.com/streadway/amqp"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 type appMessage struct {
@@ -1000,7 +1001,7 @@ func updateAppReviews(app *sql.App) error {
 	}
 
 	// Get players
-	players, err := mongo.GetPlayersByID(playersSlice, mongo.M{"_id": 1, "persona_name": 1})
+	players, err := mongo.GetPlayersByID(playersSlice, M{"_id": 1, "persona_name": 1})
 	if err != nil {
 		return err
 	}
@@ -1430,7 +1431,7 @@ func updateAppTwitch(app *sql.App) error {
 
 func getCurrentAppItems(appID int) (items []int, err error) {
 
-	resp, err := mongo.GetAppItems(0, 0, mongo.M{"app_id": appID}, mongo.M{"item_def_id": 1})
+	resp, err := mongo.GetAppItems(0, 0, D{{"app_id", appID}}, M{"item_def_id": 1})
 	for _, v := range resp {
 		items = append(items, v.ItemDefID)
 	}

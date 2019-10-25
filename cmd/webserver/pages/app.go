@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/go-chi/chi"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 func appRouter() http.Handler {
@@ -420,15 +421,15 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Make filter
 	var search = query.getSearchString("search")
 
-	filter := mongo.M{
-		"app_id": idx,
+	filter := D{
+		{"app_id", idx},
 	}
 
 	if len(search) > 1 {
-		filter["$or"] = mongo.A{
-			mongo.M{"name": mongo.M{"$regex": search, "$options": "i"}},
-			mongo.M{"description": mongo.M{"$regex": search, "$options": "i"}},
-		}
+		filter = append(filter, E{Key: "$or", Value: A{
+			M{"name": M{"$regex": search, "$options": "i"}},
+			M{"description": M{"$regex": search, "$options": "i"}},
+		}})
 	}
 
 	//
@@ -458,7 +459,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppItems, mongo.M{"app_id": idx}, 0)
+		total, err = mongo.CountDocuments(mongo.CollectionAppItems, D{{"app_id", idx}}, 0)
 		log.Err(err, r)
 	}()
 
@@ -577,7 +578,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	playerAppFilter := mongo.M{"app_id": idx, "app_time": mongo.M{"$gt": 0}}
+	playerAppFilter := D{{"app_id", idx}, {"app_time", M{"$gt": 0}}}
 
 	playerApps, err := mongo.GetPlayerAppsByApp(query.getOffset64(), playerAppFilter)
 	if err != nil {
@@ -606,7 +607,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		players, err := mongo.GetPlayersByID(playerIDsSlice, mongo.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
+		players, err := mongo.GetPlayersByID(playerIDsSlice, M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
 		if err != nil {
 			log.Err(err)
 			return

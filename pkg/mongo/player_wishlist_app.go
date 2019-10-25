@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -118,15 +119,15 @@ func DeletePlayerWishlistApps(playerID int64, apps []int) (err error) {
 
 func GetPlayerWishlistAppsByApp(appID int) (apps []PlayerWishlistApp, err error) {
 
-	return getPlayerWishlistApps(0, 0, M{"app_id": appID}, nil, M{"order": 1})
+	return getPlayerWishlistApps(0, 0, D{{"app_id", appID}}, nil, M{"order": 1})
 }
 
 func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, limit int64, order D) (apps []PlayerWishlistApp, err error) {
 
-	return getPlayerWishlistApps(offset, limit, M{"player_id": playerID}, order, nil)
+	return getPlayerWishlistApps(offset, limit, D{{"player_id", playerID}}, order, nil)
 }
 
-func getPlayerWishlistApps(offset int64, limit int64, filter M, sort D, projection M) (apps []PlayerWishlistApp, err error) {
+func getPlayerWishlistApps(offset int64, limit int64, filter D, sort D, projection M) (apps []PlayerWishlistApp, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerWishlistApps, offset, limit, sort, filter, projection, nil)
 	if err != nil {
