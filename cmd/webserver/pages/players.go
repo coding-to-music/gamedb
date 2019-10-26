@@ -142,6 +142,12 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
+	country := query.getSearchString("country")
+	if len(country) > 4 {
+		log.Err(errors.New("invalid cc"))
+		return
+	}
+
 	var columns = map[string]string{
 		"3": "level",
 		"4": "games_count",
@@ -156,8 +162,6 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var sortOrder = query.getOrderMongo(columns, nil)
 	var filter = D{}
-
-	country := query.getSearchString("country")
 
 	var isContinent bool
 	for _, v := range continents {
