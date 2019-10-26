@@ -10,8 +10,22 @@ div.container {
     border: 1px solid #dee2e6;
 }
 
-.chosen-container-multi .chosen-choices {
-    background-color: transparent;
+.form-control {
+    background-color: #21262a;
+    color: #e9ecef;
+}
+
+.chosen-container {
+
+    .chosen-choices {
+        background-color: #21262a;
+        color: #e9ecef;
+    }
+
+    .chosen-drop {
+        background-color: #21262a;
+        color: #e9ecef;
+    }
 }
 
 .container .card .nav-tabs .nav-link.active {
