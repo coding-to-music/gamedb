@@ -75,13 +75,16 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 		// Get `type` if missing
 		if group.Type == "" {
+
 			group.Type, err = getGroupType(groupID)
 			if err != nil {
 				helpers.LogSteamError(err, groupID)
 				ackRetry(msg, &message)
 				return
 			}
-			if group.Type == "" { // IDs like 11488905 don't redirect to get a type.
+
+			// Deleted groups can not redirect to get a type.
+			if group.Type == "" {
 				message.ack(msg)
 				return
 			}
