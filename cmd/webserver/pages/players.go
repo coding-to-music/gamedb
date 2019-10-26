@@ -184,7 +184,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
 		sortOrder = nil
-		filter = append(filter, E{"$or", A{
+		filter = append(filter, E{Key: "$or", Value: A{
 			M{"$text": M{"$search": search}},
 			M{"_id": search},
 		}})
