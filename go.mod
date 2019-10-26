@@ -34,7 +34,7 @@ require (
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/didip/tollbooth/v5 v5.1.0
-	github.com/djherbis/fscache v0.8.1
+	github.com/djherbis/fscache v0.9.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/getkin/kin-openapi v0.2.0
@@ -44,33 +44,32 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
-	github.com/golang/groupcache v0.0.0-20191002201903-404acd9df4cc // indirect
+	github.com/golang/groupcache v0.0.0-20191025150517-4a4ac3fbac33 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1
 	github.com/google/go-github/v27 v27.0.6
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.1
-	github.com/gosimple/slug v1.8.0
+	github.com/gosimple/slug v1.9.0
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/influxdata/influxdb1-client v0.0.0-20190809212627-fc22c7df067e
 	github.com/jinzhu/gorm v1.9.11
-	github.com/jinzhu/now v1.0.1
+	github.com/jinzhu/now v1.1.1
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/justinas/nosurf v0.0.0-20190416172904-05988550ea18
 	github.com/jzelinskie/geddit v0.0.0-20190913104144-95ef6806b073
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20191017060258-dc85c304c434
-	github.com/mattn/go-runewidth v0.0.4 // indirect
+	github.com/mattn/go-runewidth v0.0.5 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
-	github.com/nicklaw5/helix v0.5.3
+	github.com/nicklaw5/helix v0.5.4
 	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/oschwald/maxminddb-golang v1.5.0
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
-	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rollbar/rollbar-go v1.2.0
 	github.com/russross/blackfriday v2.0.0+incompatible
@@ -91,14 +90,14 @@ require (
 	go.opencensus.io v0.22.1 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
-	golang.org/x/exp v0.0.0-20191014171548-69215a2ee97e // indirect
-	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582 // indirect
+	golang.org/x/exp v0.0.0-20191024150812-c286b889502e // indirect
+	golang.org/x/net v0.0.0-20191021144547-ec77196f6094 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20191018095205-727590c5006e // indirect
+	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/time v0.0.0-20190921001708-c4c64cad1fd0 // indirect
-	golang.org/x/tools v0.0.0-20191018212557-ed542cd5b28a // indirect
+	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
+	golang.org/x/tools v0.0.0-20191026034945-b2104f82a97d // indirect
 	google.golang.org/api v0.11.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/grpc v1.24.0
