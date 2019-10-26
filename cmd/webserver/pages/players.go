@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"errors"
 	"html/template"
 	"net/http"
 	"sort"
@@ -99,10 +100,17 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, v := range codes {
-			countries = append(countries, playersCountriesTemplate{
-				CC:   v,
-				Name: helpers.CountryCodeToName(v),
-			})
+			if v == "" {
+				countries = append(countries, playersCountriesTemplate{
+					CC:   mongo.RankCountryNone,
+					Name: "No Country",
+				})
+			} else {
+				countries = append(countries, playersCountriesTemplate{
+					CC:   v,
+					Name: helpers.CountryCodeToName(v),
+				})
+			}
 		}
 
 		sort.Slice(countries, func(i, j int) bool {
