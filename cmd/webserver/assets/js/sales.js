@@ -109,7 +109,7 @@ if ($('#sales-page').length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return row[5];
+                        return row[5] + '%';
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
