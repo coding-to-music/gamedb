@@ -168,7 +168,6 @@ if ($('#players-page').length > 0) {
                 "orderSequence": ["desc"],
                 "visible": false,
             },
-
             // Link
             {
                 "targets": 11,

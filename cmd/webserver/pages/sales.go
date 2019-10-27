@@ -127,7 +127,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		offers, err = mongo.GetAllSales(query.getOffset64(), 100, filter)
+		offers, err = mongo.GetAllSales(query.getOffset64(), 1000, filter)
 		if err != nil {
 			log.Err(err, r)
 			return

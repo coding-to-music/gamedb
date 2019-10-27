@@ -77,7 +77,7 @@ if ($('#sales-page').length > 0) {
         //
         const options = {
             "order": [[0, 'asc']],
-            "pageLength": 100,
+            "pageLength": 1000,
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
                 $(row).attr('data-app-id', data[0]);
