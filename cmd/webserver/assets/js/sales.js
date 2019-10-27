@@ -117,7 +117,7 @@ if ($('#sales-page').length > 0) {
                 {
                     "targets": 3,
                     "render": function (data, type, row) {
-                        return row[6];
+                        return row[6] + '%';
                     },
                     'orderSequence': ['desc', 'asc'],
                 },

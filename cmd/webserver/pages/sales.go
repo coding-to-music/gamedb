@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"math"
 	"net/http"
 	"strconv"
 	"sync"
@@ -189,11 +190,11 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			offer.AppName, // 1
 			offer.AppIcon, // 2
 			helpers.GetAppPath(offer.AppID, offer.AppName), // 3
-			priceString,                          // 4
-			offer.SalePercent,                    // 5
-			offer.AppRating,                      // 6
-			offer.SaleEnd.String(),               // 7
-			helpers.GetAppStoreLink(offer.AppID), // 8
+			priceString,                           // 4
+			offer.SalePercent,                     // 5
+			math.Round(offer.AppRating*100) / 100, // 6
+			offer.SaleEnd.String(),                // 7
+			helpers.GetAppStoreLink(offer.AppID),  // 8
 		})
 	}
 
