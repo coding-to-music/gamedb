@@ -174,11 +174,14 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, offer := range offers {
 
-		var val interface{}
+		var priceString string
 
-		val, ok := offer.AppPrices[code]
-		if !ok {
-			val = ""
+		priceInt, ok := offer.AppPrices[code]
+		if ok {
+			cc := helpers.GetProdCC(code)
+			priceString = helpers.FormatPrice(cc.CurrencyCode, priceInt)
+		} else {
+			priceString = "-"
 		}
 
 		response.AddRow([]interface{}{
@@ -186,7 +189,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			offer.AppName, // 1
 			offer.AppIcon, // 2
 			helpers.GetAppPath(offer.AppID, offer.AppName), // 3
-			val,                    // 4
+			priceString,            // 4
 			offer.SalePercent,      // 5
 			offer.AppRating,        // 6
 			offer.SaleEnd.String(), // 7
