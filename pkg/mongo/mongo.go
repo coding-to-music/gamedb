@@ -39,7 +39,7 @@ func (c collection) String() string {
 const (
 	CollectionAppArticles        collection = "app_articles"
 	CollectionAppItems           collection = "app_items"
-	CollectionAppOffers          collection = "app_offers"
+	CollectionAppSales           collection = "app_offers"
 	CollectionApps               collection = "apps"
 	CollectionBundlePrices       collection = "bundle_prices"
 	CollectionChangeItems        collection = "change_products"

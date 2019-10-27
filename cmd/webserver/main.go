@@ -90,7 +90,7 @@ func main() {
 	r.Mount("/product-keys", pages.ProductKeysRouter())
 	r.Mount("/publishers", pages.PublishersRouter())
 	r.Mount("/queues", pages.QueuesRouter())
-	r.Mount("/sales", pages.OffersRouter())
+	r.Mount("/sales", pages.SalesRouter())
 	r.Mount("/settings", pages.SettingsRouter())
 	r.Mount("/signup", pages.SignupRouter())
 	r.Mount("/stats", pages.StatsRouter())

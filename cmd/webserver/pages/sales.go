@@ -14,17 +14,17 @@ import (
 	. "go.mongodb.org/mongo-driver/bson"
 )
 
-func OffersRouter() http.Handler {
+func SalesRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Get("/", offersHandler)
-	r.Get("/sales.json", offersAjaxHandler)
+	r.Get("/", salesHandler)
+	r.Get("/sales.json", salesAjaxHandler)
 	return r
 }
 
-func offersHandler(w http.ResponseWriter, r *http.Request) {
+func salesHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := offersTemplate{}
+	t := salesTemplate{}
 	t.addAssetChosen()
 	t.addAssetSlider()
 	t.fill(w, r, "Offers", "")
@@ -60,7 +60,7 @@ func offersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
-	upcomingSales := []UpcomingSale{
+	upcomingSales := []upcomingSale{
 		{time.Date(2019, 10, 28, 10, 0, 0, 0, pst), time.Date(2019, 11, 1, 10, 0, 0, 0, pst), "Halloween Sale", "🎃"},
 		{time.Date(2019, 11, 26, 10, 0, 0, 0, pst), time.Date(2019, 12, 3, 10, 0, 0, 0, pst), "Autumn Sale", "🍁"},
 		{time.Date(2019, 12, 19, 10, 0, 0, 0, pst), time.Date(2019, 01, 2, 10, 0, 0, 0, pst), "Winter Sale", "⛄"},
@@ -76,36 +76,36 @@ func offersHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	returnTemplate(w, r, "offers", t)
+	returnTemplate(w, r, "sales", t)
 }
 
-type offersTemplate struct {
+type salesTemplate struct {
 	GlobalTemplate
 	Tags         []sql.Tag
 	Categories   []sql.Category
-	UpcomingSale UpcomingSale
+	UpcomingSale upcomingSale
 }
 
-type UpcomingSale struct {
+type upcomingSale struct {
 	Start time.Time
 	End   time.Time
 	Name  string
 	Icon  string
 }
 
-func (ud UpcomingSale) ID() string {
+func (ud upcomingSale) ID() string {
 	return "sale-" + strconv.FormatInt(ud.Start.Unix(), 10)
 }
 
-func (ud UpcomingSale) Started() bool {
+func (ud upcomingSale) Started() bool {
 	return ud.Start.Unix() < time.Now().Unix()
 }
 
-func (ud UpcomingSale) Ended() bool {
+func (ud upcomingSale) Ended() bool {
 	return ud.End.Unix() < time.Now().Unix()
 }
 
-func offersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
@@ -118,7 +118,7 @@ func offersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	var offers []mongo.Offer
+	var offers []mongo.Sale
 
 	// Get rows
 	wg.Add(1)
@@ -142,7 +142,7 @@ func offersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionAppOffers, nil, 0)
+		count, err = mongo.CountDocuments(mongo.CollectionAppSales, nil, 0)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -156,7 +156,7 @@ func offersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		filtered, err = mongo.CountDocuments(mongo.CollectionAppOffers, filter, 0)
+		filtered, err = mongo.CountDocuments(mongo.CollectionAppSales, filter, 0)
 		if err != nil {
 			log.Err(err, r)
 		}

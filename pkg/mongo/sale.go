@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Offer struct {
+type Sale struct {
 	SubID            int                     `bson:"sub_id"`
 	SubOrder         int                     `bson:"sub_order"` // Order in the API response
 	AppID            int                     `bson:"app_id"`
@@ -29,7 +29,7 @@ type Offer struct {
 	OfferPercent     int                     `bson:"offer_percent"`
 }
 
-func (offer Offer) BSON() (ret interface{}) {
+func (offer Sale) BSON() (ret interface{}) {
 
 	return M{
 		"_id":                offer.getKey(),
@@ -51,23 +51,23 @@ func (offer Offer) BSON() (ret interface{}) {
 	}
 }
 
-func (offer Offer) getKey() (ret string) {
+func (offer Sale) getKey() (ret string) {
 	return strconv.Itoa(offer.AppID) + "-" + strconv.Itoa(offer.SubID)
 }
 
-func GetAppOffers(appID int) (offers []Offer, err error) {
+func GetAppOffers(appID int) (offers []Sale, err error) {
 	return getOffers(0, 0, D{{"app_id", appID}}, M{"sub_id": 1})
 }
 
-func GetAllOffers(offset int64, limit int64, filter D) (offers []Offer, err error) {
+func GetAllOffers(offset int64, limit int64, filter D) (offers []Sale, err error) {
 	return getOffers(offset, limit, filter, nil)
 }
 
-func getOffers(offset int64, limit int64, filter D, projection M) (offers []Offer, err error) {
+func getOffers(offset int64, limit int64, filter D, projection M) (offers []Sale, err error) {
 
 	var sort = D{{"offer_end", 1}}
 
-	cur, ctx, err := Find(CollectionAppOffers, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := Find(CollectionAppSales, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return offers, err
 	}
@@ -79,12 +79,12 @@ func getOffers(offset int64, limit int64, filter D, projection M) (offers []Offe
 
 	for cur.Next(ctx) {
 
-		var offer Offer
-		err := cur.Decode(&offer)
+		var sale Sale
+		err := cur.Decode(&sale)
 		if err != nil {
 			log.Err(err)
 		}
-		offers = append(offers, offer)
+		offers = append(offers, sale)
 	}
 
 	return offers, cur.Err()
@@ -104,20 +104,20 @@ func DeleteOffers(appID int, subs []int) (err error) {
 	keys := A{}
 	for _, subID := range subs {
 
-		offer := Offer{}
+		offer := Sale{}
 		offer.AppID = appID
 		offer.SubID = subID
 
 		keys = append(keys, offer.getKey())
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionAppOffers.String())
+	collection := client.Database(MongoDatabase).Collection(CollectionAppSales.String())
 	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
 
 	return err
 }
 
-func UpdateOffers(offers []Offer) (err error) {
+func UpdateOffers(offers []Sale) (err error) {
 
 	if len(offers) < 1 {
 		return nil
@@ -139,7 +139,7 @@ func UpdateOffers(offers []Offer) (err error) {
 		writes = append(writes, write)
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionAppOffers.String())
+	collection := client.Database(MongoDatabase).Collection(CollectionAppSales.String())
 	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
 	return err
 }

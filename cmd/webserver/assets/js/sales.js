@@ -1,4 +1,4 @@
-if ($('#offers-page').length > 0) {
+if ($('#sales-page').length > 0) {
 
     (function ($, document) {
         'use strict';

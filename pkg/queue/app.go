@@ -159,7 +159,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}()
 
 	// Calls to store.steampowered.com
-	var offers []mongo.Offer
+	var offers []mongo.Sale
 	wg.Add(1)
 	go func() {
 
@@ -1148,7 +1148,7 @@ func updateAppSteamSpy(app *sql.App) error {
 //noinspection RegExpRedundantEscape
 var appStorePage = regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
 
-func scrapeApp(app *sql.App) (offers []mongo.Offer, err error) {
+func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 
 	// This app causes infinite redirects..
 	if app.ID == 12820 {
@@ -1204,7 +1204,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Offer, err error) {
 
 				// DAILY DEAL! Offer ends in <span id=348647_countdown_0></span>
 
-				var offer = mongo.Offer{
+				var offer = mongo.Sale{
 					AppID:    app.ID,
 					SubOrder: i,
 				}
@@ -1249,7 +1249,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Offer, err error) {
 
 				// SPECIAL PROMOTION! Offer ends 29 August
 
-				var offer = mongo.Offer{
+				var offer = mongo.Sale{
 					AppID:            app.ID,
 					SubOrder:         i,
 					OfferEndEstimate: true,
@@ -1491,10 +1491,10 @@ func getWishlistCount(app *sql.App) (err error) {
 	return nil
 }
 
-func saveOffers(app sql.App, newOffers []mongo.Offer) (err error) {
+func saveOffers(app sql.App, newOffers []mongo.Sale) (err error) {
 
 	// Make map of new offers
-	var newOffersMap = map[int]mongo.Offer{}
+	var newOffersMap = map[int]mongo.Sale{}
 	for _, v := range newOffers {
 		newOffersMap[v.SubID] = v
 	}
@@ -1505,7 +1505,7 @@ func saveOffers(app sql.App, newOffers []mongo.Offer) (err error) {
 		return err
 	}
 
-	var oldOffersMap = map[int]mongo.Offer{}
+	var oldOffersMap = map[int]mongo.Sale{}
 	for _, oldOffer := range oldOffers {
 		oldOffersMap[oldOffer.SubID] = oldOffer
 	}
