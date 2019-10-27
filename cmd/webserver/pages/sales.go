@@ -127,7 +127,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		offers, err = mongo.GetAllOffers(query.getOffset64(), 100, filter)
+		offers, err = mongo.GetAllSales(query.getOffset64(), 100, filter)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -186,10 +186,10 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			offer.AppName, // 1
 			offer.AppIcon, // 2
 			helpers.GetAppPath(offer.AppID, offer.AppName), // 3
-			val,                     // 4
-			offer.OfferPercent,      // 5
-			offer.AppRating,         // 6
-			offer.OfferEnd.String(), // 7
+			val,                    // 4
+			offer.SalePercent,      // 5
+			offer.AppRating,        // 6
+			offer.SaleEnd.String(), // 7
 		})
 	}
 

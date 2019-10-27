@@ -12,21 +12,21 @@ import (
 )
 
 type Sale struct {
-	SubID            int                     `bson:"sub_id"`
-	SubOrder         int                     `bson:"sub_order"` // Order in the API response
-	AppID            int                     `bson:"app_id"`
-	AppName          string                  `bson:"app_name"`
-	AppIcon          string                  `bson:"app_icon"`
-	AppRating        float64                 `bson:"app_rating"`
-	AppReleaseDate   time.Time               `bson:"app_date"`
-	AppPrices        map[steam.ProductCC]int `bson:"app_prices"`
-	AppLowestPrice   map[steam.ProductCC]int `bson:"app_lowest_price"`
-	AppPlayersWeek   int                     `bson:"app_players"`
-	OfferStart       time.Time               `bson:"offer_start"`
-	OfferEnd         time.Time               `bson:"offer_end"`
-	OfferEndEstimate bool                    `bson:"offer_end_estimate"`
-	OfferType        string                  `bson:"offer_type"`
-	OfferPercent     int                     `bson:"offer_percent"`
+	SubID           int                     `bson:"sub_id"`
+	SubOrder        int                     `bson:"sub_order"` // Order in the API response
+	AppID           int                     `bson:"app_id"`
+	AppName         string                  `bson:"app_name"`
+	AppIcon         string                  `bson:"app_icon"`
+	AppRating       float64                 `bson:"app_rating"`
+	AppReleaseDate  time.Time               `bson:"app_date"`
+	AppPrices       map[steam.ProductCC]int `bson:"app_prices"`
+	AppLowestPrice  map[steam.ProductCC]int `bson:"app_lowest_price"`
+	AppPlayersWeek  int                     `bson:"app_players"`
+	SaleStart       time.Time               `bson:"offer_start"`
+	SaleEnd         time.Time               `bson:"offer_end"`
+	SaleEndEstimate bool                    `bson:"offer_end_estimate"`
+	SaleType        string                  `bson:"offer_type"`
+	SalePercent     int                     `bson:"offer_percent"`
 }
 
 func (offer Sale) BSON() (ret interface{}) {
@@ -43,11 +43,11 @@ func (offer Sale) BSON() (ret interface{}) {
 		"app_prices":         offer.AppPrices,
 		"app_lowest_price":   offer.AppLowestPrice,
 		"app_players":        offer.AppPlayersWeek,
-		"offer_start":        offer.OfferStart,
-		"offer_end":          offer.OfferEnd,
-		"offer_end_estimate": offer.OfferEndEstimate,
-		"offer_type":         offer.OfferType,
-		"offer_percent":      offer.OfferPercent,
+		"offer_start":        offer.SaleStart,
+		"offer_end":          offer.SaleEnd,
+		"offer_end_estimate": offer.SaleEndEstimate,
+		"offer_type":         offer.SaleType,
+		"offer_percent":      offer.SalePercent,
 	}
 }
 
@@ -55,15 +55,15 @@ func (offer Sale) getKey() (ret string) {
 	return strconv.Itoa(offer.AppID) + "-" + strconv.Itoa(offer.SubID)
 }
 
-func GetAppOffers(appID int) (offers []Sale, err error) {
-	return getOffers(0, 0, D{{"app_id", appID}}, M{"sub_id": 1})
+func GetAppSales(appID int) (offers []Sale, err error) {
+	return getSales(0, 0, D{{"app_id", appID}}, M{"sub_id": 1})
 }
 
-func GetAllOffers(offset int64, limit int64, filter D) (offers []Sale, err error) {
-	return getOffers(offset, limit, filter, nil)
+func GetAllSales(offset int64, limit int64, filter D) (offers []Sale, err error) {
+	return getSales(offset, limit, filter, nil)
 }
 
-func getOffers(offset int64, limit int64, filter D, projection M) (offers []Sale, err error) {
+func getSales(offset int64, limit int64, filter D, projection M) (offers []Sale, err error) {
 
 	var sort = D{{"offer_end", 1}}
 

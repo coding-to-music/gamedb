@@ -278,7 +278,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		err = saveOffers(app, offers)
+		err = saveSales(app, offers)
 		if err != nil {
 			log.Err(err, id)
 			ackRetry(msg, &message)
@@ -1213,7 +1213,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 				// Set discount percent
 				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
 				if discountText != "" {
-					offer.OfferPercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
+					offer.SalePercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
 					if err != nil {
 						log.Err(app.ID, err)
 					}
@@ -1230,7 +1230,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 
 				// Get type
 				index := strings.Index(e.Text, s1)
-				offer.OfferType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
+				offer.SaleType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
 
 				// Get end time
 				ts := helpers.RegexTimestamps.FindString(e.DOM.Parent().Text())
@@ -1239,7 +1239,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 					if err != nil {
 						log.Err(app.ID, err)
 					} else {
-						offer.OfferEnd = time.Unix(t, 0)
+						offer.SaleEnd = time.Unix(t, 0)
 					}
 				}
 
@@ -1250,16 +1250,16 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 				// SPECIAL PROMOTION! Offer ends 29 August
 
 				var offer = mongo.Sale{
-					AppID:            app.ID,
-					SubOrder:         i,
-					OfferEndEstimate: true,
+					AppID:           app.ID,
+					SubOrder:        i,
+					SaleEndEstimate: true,
 				}
 				i++
 
 				// Set discount percent
 				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
 				if discountText != "" {
-					offer.OfferPercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
+					offer.SalePercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
 					if err != nil {
 						log.Err(app.ID, err)
 					}
@@ -1276,7 +1276,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 
 				// Get type
 				index := strings.Index(e.Text, s2)
-				offer.OfferType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
+				offer.SaleType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
 
 				// Get end time
 				dateString := strings.TrimSpace(e.Text[index+len(s2):])
@@ -1296,7 +1296,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 						}
 						t.Add(time.Hour * 12)
 
-						offer.OfferEnd = t
+						offer.SaleEnd = t
 					}
 				}
 
@@ -1491,7 +1491,7 @@ func getWishlistCount(app *sql.App) (err error) {
 	return nil
 }
 
-func saveOffers(app sql.App, newOffers []mongo.Sale) (err error) {
+func saveSales(app sql.App, newOffers []mongo.Sale) (err error) {
 
 	// Make map of new offers
 	var newOffersMap = map[int]mongo.Sale{}
@@ -1500,7 +1500,7 @@ func saveOffers(app sql.App, newOffers []mongo.Sale) (err error) {
 	}
 
 	// Make map of old offers
-	oldOffers, err := mongo.GetAppOffers(app.ID)
+	oldOffers, err := mongo.GetAppSales(app.ID)
 	if err != nil {
 		return err
 	}
@@ -1515,13 +1515,13 @@ func saveOffers(app sql.App, newOffers []mongo.Sale) (err error) {
 
 		if val, ok := oldOffersMap[newOffer.SubID]; ok {
 			if ok {
-				newOffers[k].OfferStart = val.OfferStart
+				newOffers[k].SaleStart = val.SaleStart
 			} else {
-				newOffers[k].OfferStart = time.Now()
+				newOffers[k].SaleStart = time.Now()
 				newOffers[k].AppRating = app.ReviewsScore
 				newOffers[k].AppReleaseDate = time.Unix(app.ReleaseDateUnix, 0)
 				newOffers[k].AppPlayersWeek = app.PlayerPeakWeek
-				newOffers[k].OfferPercent = app.PlayerPeakWeek
+				newOffers[k].SalePercent = app.PlayerPeakWeek
 
 				prices, err := app.GetPrices()
 				if err == nil {
@@ -1531,7 +1531,7 @@ func saveOffers(app sql.App, newOffers []mongo.Sale) (err error) {
 		}
 	}
 
-	return mongo.UpdateOffers(newOffers)
+	return mongo.UpdateSales(newOffers)
 }
 
 func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []int) (err error) {
