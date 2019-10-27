@@ -132,6 +132,17 @@ if ($('#sales-page').length > 0) {
                     },
                     "orderable": false
                 },
+                // Link
+                {
+                    "targets": 5,
+                    "render": function (data, type, row) {
+                        if (row[8]) {
+                            return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
+                        }
+                        return '';
+                    },
+                    "orderable": false,
+                },
             ]
         };
 

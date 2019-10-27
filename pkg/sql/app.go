@@ -489,8 +489,7 @@ func (app App) GetCommunityLink() string {
 }
 
 func (app App) GetStoreLink() string {
-	name := config.Config.GameDBShortName.Get()
-	return "https://store.steampowered.com/app/" + strconv.Itoa(app.ID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
+	return helpers.GetAppStoreLink(app.ID)
 }
 
 func (app App) GetPCGamingWikiLink() string {

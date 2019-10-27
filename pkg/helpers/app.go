@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
 )
@@ -77,4 +78,9 @@ func GetAppReleaseDateNice(releaseDateUnix int64, releaseDate string) string {
 	}
 
 	return time.Unix(releaseDateUnix, 0).Format(DateYear)
+}
+
+func GetAppStoreLink(appID int) string {
+	name := config.Config.GameDBShortName.Get()
+	return "https://store.steampowered.com/app/" + strconv.Itoa(appID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
 }
