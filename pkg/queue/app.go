@@ -1491,12 +1491,18 @@ func getWishlistCount(app *sql.App) (err error) {
 	return nil
 }
 
-func saveSales(app sql.App, newOffers []mongo.Sale) (err error) {
+func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
+
+	if len(newSales) == 0 {
+		return nil
+	}
 
 	// Make map of new offers
-	var newOffersMap = map[int]mongo.Sale{}
-	for _, v := range newOffers {
-		newOffersMap[v.SubID] = v
+	var newSalesMap = map[int]mongo.Sale{}
+	var newSalesSlice []int
+	for _, newSale := range newSales {
+		newSalesMap[newSale.SubID] = newSale
+		newSalesSlice = append(newSalesSlice, newSale.AppID)
 	}
 
 	// Make map of old offers
@@ -1511,27 +1517,35 @@ func saveSales(app sql.App, newOffers []mongo.Sale) (err error) {
 	}
 
 	// Upsert new offers
-	for k, newOffer := range newOffers {
+	apps, err := sql.GetAppsByID(newSalesSlice, nil)
 
-		if val, ok := oldOffersMap[newOffer.SubID]; ok {
-			if ok {
-				newOffers[k].SaleStart = val.SaleStart
-			} else {
-				newOffers[k].SaleStart = time.Now()
-				newOffers[k].AppRating = app.ReviewsScore
-				newOffers[k].AppReleaseDate = time.Unix(app.ReleaseDateUnix, 0)
-				newOffers[k].AppPlayersWeek = app.PlayerPeakWeek
-				newOffers[k].SalePercent = app.PlayerPeakWeek
-
-				prices, err := app.GetPrices()
-				if err == nil {
-					newOffers[k].AppPrices = prices.Map()
-				}
-			}
-		}
+	var appsMap = map[int]sql.App{}
+	for _, app := range apps {
+		appsMap[app.ID] = app
 	}
 
-	return mongo.UpdateSales(newOffers)
+	for k, _ := range newSales {
+		// if _, ok := oldOffersMap[newOffer.SubID]; !ok {
+
+			newSales[k].AppRating = app.ReviewsScore
+			newSales[k].AppReleaseDate = time.Unix(app.ReleaseDateUnix, 0)
+			newSales[k].AppPlayersWeek = app.PlayerPeakWeek
+			newSales[k].SaleStart = time.Now()
+
+			if app, ok := appsMap[newSales[k].AppID]; ok {
+				newSales[k].AppName = app.GetName()
+				newSales[k].AppIcon = app.GetIcon()
+				newSales[k].AppLowestPrice = map[steam.ProductCC]int{}
+			}
+
+			prices, err := app.GetPrices()
+			if err == nil {
+				newSales[k].AppPrices = prices.Map()
+			}
+		// }
+	}
+
+	return mongo.UpdateSales(newSales)
 }
 
 func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []int) (err error) {
