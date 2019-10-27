@@ -90,34 +90,7 @@ func getOffers(offset int64, limit int64, filter D, projection M) (offers []Sale
 	return offers, cur.Err()
 }
 
-func DeleteOffers(appID int, subs []int) (err error) {
-
-	if len(subs) < 1 {
-		return nil
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return err
-	}
-
-	keys := A{}
-	for _, subID := range subs {
-
-		offer := Sale{}
-		offer.AppID = appID
-		offer.SubID = subID
-
-		keys = append(keys, offer.getKey())
-	}
-
-	collection := client.Database(MongoDatabase).Collection(CollectionAppSales.String())
-	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
-
-	return err
-}
-
-func UpdateOffers(offers []Sale) (err error) {
+func UpdateSales(offers []Sale) (err error) {
 
 	if len(offers) < 1 {
 		return nil

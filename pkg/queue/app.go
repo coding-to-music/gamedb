@@ -1510,22 +1510,6 @@ func saveOffers(app sql.App, newOffers []mongo.Sale) (err error) {
 		oldOffersMap[oldOffer.SubID] = oldOffer
 	}
 
-	// Delete old offers that are no longer
-	var toDelete []int
-
-	for _, oldOffer := range oldOffers {
-		if val, ok := newOffersMap[oldOffer.SubID]; ok {
-			if !ok {
-				toDelete = append(toDelete, val.SubID)
-			}
-		}
-	}
-
-	err = mongo.DeleteOffers(app.ID, toDelete)
-	if err != nil {
-		return err
-	}
-
 	// Upsert new offers
 	for k, newOffer := range newOffers {
 
