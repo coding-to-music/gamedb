@@ -29,6 +29,14 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
+	// sales, err2 := mongo.GetAllSales(0, 0, bson.D{{"offer_end", bson.M{"$gt": time.Now()}}})
+	// log.Err(err2)
+	// for _, v := range sales {
+	// 	err3 := queue.ProduceApp(v.AppID, 0, nil)
+	// 	log.Err(err3)
+	// }
+	// log.Info(len(sales))
+
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
