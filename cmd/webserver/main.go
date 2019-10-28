@@ -29,7 +29,7 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	// sales, err2 := mongo.GetAllSales(0, 0, bson.D{{"offer_end", bson.M{"$gt": time.Now()}}})
+	// sales, err2 := mongo.GetAllSales(0, 0, bson.D{{"app_name", ""}}, nil)
 	// log.Err(err2)
 	// for _, v := range sales {
 	// 	err3 := queue.ProduceApp(v.AppID, 0, nil)
