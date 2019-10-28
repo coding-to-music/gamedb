@@ -12,8 +12,8 @@ if ($('#sales-page').length > 0) {
         });
 
         // Price slider
-        const priceElement = $('#price-slider');
-        const priceSlider = noUiSlider.create(priceElement[0], {
+        const $priceElement = $('#price-slider');
+        const priceSlider = noUiSlider.create($priceElement[0], {
             start: [0, 100],
             connect: true,
             step: 1,
@@ -24,8 +24,8 @@ if ($('#sales-page').length > 0) {
         });
 
         // Score slider
-        const scoreElement = $('#score-slider');
-        const scoreSlider = noUiSlider.create(scoreElement[0], {
+        const $scoreElement = $('#score-slider');
+        const scoreSlider = noUiSlider.create($scoreElement[0], {
             start: [0, 100],
             connect: true,
             step: 1,
@@ -36,8 +36,8 @@ if ($('#sales-page').length > 0) {
         });
 
         // Discount slider
-        const discountElement = $('#discount-slider');
-        const discountSlider = noUiSlider.create(discountElement[0], {
+        const $discountElement = $('#discount-slider');
+        const discountSlider = noUiSlider.create($discountElement[0], {
             start: [0, 100],
             connect: true,
             step: 1,
@@ -151,9 +151,9 @@ if ($('#sales-page').length > 0) {
             $('#tags-out'),
             $('#categories'),
             $('#platforms'),
-            priceElement,
-            scoreElement,
-            discountElement,
+            $priceElement,
+            $scoreElement,
+            $discountElement,
         ];
 
         $('table.table').gdbTable({

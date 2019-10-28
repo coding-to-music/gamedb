@@ -12,8 +12,8 @@ if ($('#apps-page').length > 0) {
         });
 
         // Price slider
-        const priceElement = $('#price-slider');
-        const priceSlider = noUiSlider.create(priceElement[0], {
+        const $priceElement = $('#price-slider');
+        const priceSlider = noUiSlider.create($priceElement[0], {
             start: [0, 100],
             connect: true,
             step: 1,
@@ -24,8 +24,8 @@ if ($('#apps-page').length > 0) {
         });
 
         // Score slider
-        const scoreElement = $('#score-slider');
-        const scoreSlider = noUiSlider.create(scoreElement[0], {
+        const $scoreElement = $('#score-slider');
+        const scoreSlider = noUiSlider.create($scoreElement[0], {
             start: [0, 100],
             connect: true,
             step: 1,
@@ -141,8 +141,8 @@ if ($('#apps-page').length > 0) {
             $('#platforms'),
             $('#types'),
             $('#search'),
-            priceElement,
-            scoreElement,
+            $priceElement,
+            $scoreElement,
         ];
 
         $('table.table').gdbTable({

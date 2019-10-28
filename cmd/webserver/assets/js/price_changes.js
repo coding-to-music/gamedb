@@ -11,8 +11,8 @@ if ($('#price-changes-page').length > 0) {
     // Change slider
     const changeLow = $('#change-low').val();
     const changeHigh = $('#change-high').val();
-    const changeElement = $('#change-slider');
-    const changeSlider = noUiSlider.create(changeElement[0], {
+    const $changeElement = $('#change-slider');
+    const changeSlider = noUiSlider.create($changeElement[0], {
         start: [
             parseInt(changeLow ? changeLow : -100),
             parseInt(changeHigh ? changeHigh : 0)
@@ -28,8 +28,8 @@ if ($('#price-changes-page').length > 0) {
     // Price slider
     const priceLow = $('#price-low').val();
     const priceHigh = $('#price-high').val();
-    const priceElement = $('#price-slider');
-    const priceSlider = noUiSlider.create(priceElement[0], {
+    const $priceElement = $('#price-slider');
+    const priceSlider = noUiSlider.create($priceElement[0], {
         start: [
             parseInt(priceLow ? priceLow : -100),
             parseInt(priceHigh ? priceHigh : 100)
@@ -161,8 +161,8 @@ if ($('#price-changes-page').length > 0) {
     // Update table live
     const searchFields = [
         $typeField,
-        changeElement,
-        priceElement,
+        $changeElement,
+        $priceElement,
     ];
 
     const $table = $('table.table');
