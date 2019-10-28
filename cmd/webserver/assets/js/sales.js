@@ -78,8 +78,7 @@ if ($('#sales-page').length > 0) {
 
         //
         const options = {
-            "order": [[0, 'asc']],
-            "pageLength": 1000,
+            "order": [[4, 'asc'], [3, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
                 $(row).attr('data-app-id', data[0]);
@@ -113,7 +112,7 @@ if ($('#sales-page').length > 0) {
                     "render": function (data, type, row) {
                         return row[5] + '%';
                     },
-                    'orderSequence': ['desc', 'asc'],
+                    'orderSequence': ['asc'],
                 },
                 // Rating
                 {
@@ -132,7 +131,7 @@ if ($('#sales-page').length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderable": false
+                    'orderSequence': ['desc', 'asc'],
                 },
                 // Link
                 {
