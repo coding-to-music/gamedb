@@ -53,6 +53,8 @@ if ($('#apps-page').length > 0) {
             }
         }
 
+        window.updateLabels = updateLabels;
+
         $(document).on('ready', updateLabels);
 
         // Setup datatable

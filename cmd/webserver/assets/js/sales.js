@@ -72,6 +72,8 @@ if ($('#sales-page').length > 0) {
             }
         }
 
+        window.updateLabels = updateLabels;
+
         $(document).ready(updateLabels);
 
         //

@@ -60,6 +60,8 @@ if ($('#price-changes-page').length > 0) {
         }
     }
 
+    window.updateLabels = updateLabels;
+
     $(document).ready(updateLabels);
 
     $typeField = $('#type');

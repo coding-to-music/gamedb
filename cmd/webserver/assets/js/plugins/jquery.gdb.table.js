@@ -281,7 +281,7 @@
             if (this.settings.isAjax()) {
                 for (const $field of this.settings.searchFields) {
 
-                    if ($field.hasClass('noUi-target')) { // Slider
+                    if ($field.hasClass('noUi-target')) { // Sliders
 
                         const slider = $field[0].noUiSlider;
                         const name = $field.attr('data-name');
@@ -296,8 +296,8 @@
                                 deleteUrlParam(name);
                             }
 
-                            if (typeof updateLabels == 'function') {
-                                updateLabels();
+                            if (typeof window.updateLabels == 'function') {
+                                window.updateLabels();
                             }
 
                             dt.draw();
@@ -305,8 +305,8 @@
 
 
                         slider.on('update', function (e) {
-                            if (typeof updateLabels == 'function') {
-                                updateLabels();
+                            if (typeof window.updateLabels == 'function') {
+                                window.updateLabels();
                             }
                         });
 
