@@ -473,8 +473,7 @@ func (t *GlobalTemplate) addAssetChosen() {
 
 func (t *GlobalTemplate) addAssetJSON2HTML() {
 	// This is included in webpack now
-	// t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.2.0/json2html.min.js", Integrity: "sha256-5iWhgkOOkWSQMxoIXqSKvZQHOTJ1wYDBqhMTFm5DkDw="})
-	// t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/jquery.json2html/1.2.0/jquery.json2html.min.js", Integrity: "sha256-NVPR5gsJCl/e6xUJ3Wv2+4Tui2vhZY6KBhx0RY0DNcs="})
+	// t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.3.0/json2html.min.js", Integrity: "sha256-99iKvXmXDqqj9wm3jtTv5Iwn7MTPw4npjQhIY3gY2rw="})
 }
 
 func (t *GlobalTemplate) addAssetHighCharts() {
