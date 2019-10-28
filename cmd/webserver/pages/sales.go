@@ -43,6 +43,16 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.HighestOrder, err = mongo.GetHighestSaleOrder()
+		log.Err(err, r)
+	}()
+
 	// Get categories
 	wg.Add(1)
 	go func() {
@@ -85,6 +95,7 @@ type salesTemplate struct {
 	Tags         []sql.Tag
 	Categories   []sql.Category
 	UpcomingSale upcomingSale
+	HighestOrder int
 }
 
 type upcomingSale struct {

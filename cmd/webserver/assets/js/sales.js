@@ -47,6 +47,19 @@ if ($('#sales-page').length > 0) {
             }
         });
 
+        // Order slider
+        const $orderElement = $('#order-slider');
+        const orderMax = parseInt($orderElement.attr('data-max'));
+        const orderSlider = noUiSlider.create($orderElement[0], {
+            start: 1,
+            connect: true,
+            step: 1,
+            range: {
+                'min': 1,
+                'max': orderMax,
+            }
+        });
+
         //
         function updateLabels(e) {
 
@@ -70,6 +83,8 @@ if ($('#sales-page').length > 0) {
             } else {
                 $('label#score-label').html('Score (' + Math.round(discounts[0]) + '% - ' + Math.round(discounts[1]) + '%)');
             }
+
+            $('label#order-label').html('Max Per Game (' + Math.trunc(orderSlider.get()) + ')');
         }
 
         window.updateLabels = updateLabels;
@@ -155,6 +170,7 @@ if ($('#sales-page').length > 0) {
             $priceElement,
             $scoreElement,
             $discountElement,
+            $orderElement,
         ];
 
         $('table.table').gdbTable({

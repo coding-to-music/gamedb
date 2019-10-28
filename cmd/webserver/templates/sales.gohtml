@@ -36,25 +36,25 @@
                     <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group slider">
                             <label id="price-label">Price</label>
-                            <div id="price-slider"></div>
-                            <input type="hidden" name="price-low" id="price-low">
-                            <input type="hidden" name="price-high" id="price-high">
+                            <div id="price-slider" data-name="price"></div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group slider">
                             <label id="score-label">Score</label>
-                            <div id="score-slider"></div>
-                            <input type="hidden" name="score-low" id="score-low">
-                            <input type="hidden" name="score-high" id="score-high">
+                            <div id="score-slider" data-name="score"></div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group slider">
                             <label id="discount-label">Discount</label>
-                            <div id="discount-slider"></div>
-                            <input type="hidden" name="discount-low" id="discount-low">
-                            <input type="hidden" name="discount-high" id="discount-high">
+                            <div id="discount-slider" data-name="discount"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group slider">
+                            <label id="order-label">Max Per Game</label>
+                            <div id="order-slider" data-name="order" data-max="{{.HighestOrder}}"></div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3x">
