@@ -129,7 +129,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var wg sync.WaitGroup
-
+	var code = helpers.GetProductCC(r)
 	var offers []mongo.Sale
 
 	// Get rows
@@ -138,8 +138,16 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		var columns = map[string]string{
+			"0": "app_name",
+			"1": "price." + string(code),
+			"2": "offer_percent",
+			"3": "app_rating",
+			"4": "offer_end",
+		}
+
 		var err error
-		offers, err = mongo.GetAllSales(query.getOffset64(), 1000, filter)
+		offers, err = mongo.GetAllSales(query.getOffset64(), 100, filter, query.getOrderMongo(columns, nil))
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -181,8 +189,6 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
-
-	var code = helpers.GetProductCC(r)
 
 	for _, offer := range offers {
 
