@@ -79,7 +79,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 				Contents: template.HTML(contents),
 				Link:     "/news#" + strconv.FormatInt(v.ID, 10),
 				Image:    template.HTMLAttr(appIDmap[v.AppID].GetHeaderImage()),
-				Image2:   template.HTMLAttr(appIDmap[v.AppID].GetHeaderImage()),
 			})
 
 			t.NewsID = v.ID
@@ -117,7 +116,6 @@ type homeNews struct {
 	Contents template.HTML
 	Link     string
 	Image    template.HTMLAttr
-	Image2   template.HTMLAttr
 }
 
 type homeSpotlight struct {
