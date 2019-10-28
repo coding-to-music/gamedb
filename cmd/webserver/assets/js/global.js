@@ -261,3 +261,12 @@ $darkMode.on('click', '.fa-sun, .fa-moon', function (e) {
 
     return false;
 });
+
+function getOS() {
+
+    let os = "windows";
+    if (navigator.appVersion.indexOf("Mac") !== -1) os = "macos";
+    if (navigator.appVersion.indexOf("Linux") !== -1) os = "linux";
+
+    return os;
+}
