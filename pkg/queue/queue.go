@@ -121,8 +121,8 @@ func init() {
 
 type messageInterface interface {
 	produce(queue queueName)
-	ackRetry() // Don't call this directly
-	ackFail()  // Don't call this directly
+	ackRetry() (actionAlreadyTaken bool) // Don't call this directly
+	ackFail() (actionAlreadyTaken bool)  // Don't call this directly
 }
 
 type baseMessage struct {
@@ -194,20 +194,25 @@ func (payload *baseMessage) ackMulti(msg amqp.Delivery) {
 }
 
 // Send to failed queue
-func (payload *baseMessage) ackFail() {
+func (payload *baseMessage) ackFail() (actionAlreadyTaken bool) {
 
 	payload.Lock()
 	defer payload.Unlock()
 
 	if payload.actionTaken {
-		return
+		return true
 	}
 	payload.actionTaken = true
+
+	return false
 }
 
 func ackFail(msg amqp.Delivery, message messageInterface) {
 
-	message.ackFail()
+	b := message.ackFail()
+	if b {
+		return
+	}
 
 	err := produce(message, queueFailed)
 	if err != nil {
@@ -222,13 +227,13 @@ func ackFail(msg amqp.Delivery, message messageInterface) {
 	}
 }
 
-func (payload *baseMessage) ackRetry() {
+func (payload *baseMessage) ackRetry() (actionAlreadyTaken bool) {
 
 	payload.Lock()
 	defer payload.Unlock()
 
 	if payload.actionTaken {
-		return
+		return true
 	}
 	payload.actionTaken = true
 
@@ -243,11 +248,16 @@ func (payload *baseMessage) ackRetry() {
 	}
 
 	log.Info("Adding to delay queue for " + leftStr + ", " + totalStr + " total, attempt " + strconv.Itoa(payload.Attempt))
+
+	return false
 }
 
 func ackRetry(msg amqp.Delivery, message messageInterface) {
 
-	message.ackRetry()
+	b := message.ackRetry()
+	if b {
+		return
+	}
 
 	err := produce(message, queueDelays)
 	if err != nil {
