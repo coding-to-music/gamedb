@@ -58,6 +58,7 @@ func main() {
 	r.Use(MiddlewareCors())
 	r.Use(middleware.RedirectSlashes)
 	r.Use(MiddlewareRealIP)
+	r.Use(middleware.DefaultCompress)
 
 	// Pages
 	r.Get("/", pages.HomeHandler)
