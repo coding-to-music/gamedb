@@ -4,6 +4,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -28,6 +29,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	t := salesTemplate{}
 	t.addAssetChosen()
 	t.addAssetSlider()
+	t.addAssetCountdown()
 	t.fill(w, r, "Offers", "")
 
 	var wg sync.WaitGroup
@@ -121,8 +123,12 @@ func (ud upcomingSale) ID() string {
 	return "sale-" + strconv.FormatInt(ud.Start.Unix(), 10)
 }
 
-func (ud upcomingSale) Started() bool {
-	return ud.Start.Unix() < time.Now().Unix()
+func (ud upcomingSale) Time() int64 {
+	if ud.Start.Unix() < time.Now().Unix() {
+		return ud.Start.AddDate(0, 0, ud.Days).Unix() * 1000
+	} else {
+		return ud.Start.Unix() * 1000
+	}
 }
 
 func (ud upcomingSale) Ended() bool {
@@ -137,6 +143,12 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var filter = D{
 		{"offer_end", M{"$gt": time.Now()}},
+	}
+
+	order := query.getSearchString("order")
+	orderI, err := strconv.Atoi(strings.TrimSuffix(order, ".00"))
+	if err == nil {
+		filter = append(filter, E{Key: "sub_order", Value: M{"$lte": orderI - 1}})
 	}
 
 	//
@@ -224,6 +236,8 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			math.Round(offer.AppRating*100) / 100, // 6
 			offer.SaleEnd.String(),                // 7
 			helpers.GetAppStoreLink(offer.AppID),  // 8
+			offer.AppReleaseDate.String(),         // 9
+			offer.GetType(),                       // 10
 		})
 	}
 

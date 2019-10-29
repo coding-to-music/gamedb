@@ -69,8 +69,8 @@
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group slider">
-                            <label id="order-label">Max Per Game</label>
-                            <div id="order-slider" data-name="order" data-max="{{.HighestOrder}}"></div>
+                            <label id="index-label">Max Per Game</label>
+                            <div id="index-slider" data-name="index" data-max="{{.HighestOrder}}"></div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3x">
@@ -116,6 +116,14 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="types">Sale Type</label>
+                            <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="types" name="types">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="table-responsive">
@@ -127,6 +135,7 @@
                             <th scope="col">Discount</th>
                             <th scope="col">Rating</th>
                             <th scope="col">Ends</th>
+                            <th scope="col">Released</th>
                             <th scope="col"></th>
                         </tr>
                         </thead>

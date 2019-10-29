@@ -56,15 +56,15 @@ if ($('#sales-page').length > 0) {
         });
 
         // Order slider
-        const $orderElement = $('#order-slider');
-        const orderMax = parseInt($orderElement.attr('data-max'));
-        const orderSlider = noUiSlider.create($orderElement[0], {
+        const $indexElement = $('#index-slider');
+        const indexMax = parseInt($indexElement.attr('data-max'));
+        const indexSlider = noUiSlider.create($indexElement[0], {
             start: 1,
             connect: true,
             step: 1,
             range: {
                 'min': 1,
-                'max': orderMax,
+                'max': indexMax + 1,
             }
         });
 
@@ -92,7 +92,7 @@ if ($('#sales-page').length > 0) {
                 $('label#score-label').html('Score (' + Math.round(discounts[0]) + '% - ' + Math.round(discounts[1]) + '%)');
             }
 
-            $('label#order-label').html('Max Per Game (' + Math.trunc(orderSlider.get()) + ')');
+            $('label#index-label').html('Max Per Game (' + Math.trunc(indexSlider.get()) + ')');
         }
 
         window.updateLabels = updateLabels;
@@ -111,7 +111,11 @@ if ($('#sales-page').length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+
+                        let field = row[1];
+                        field = field + ' <br /><small>' + row[10] + '</small>';
+
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + field + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -127,7 +131,7 @@ if ($('#sales-page').length > 0) {
                         }
                         return row[4];
                     },
-                    "orderSequence": ["desc"],
+                    "orderSequence": ["asc", "desc"],
                 },
                 // Discount
                 {
@@ -143,9 +147,9 @@ if ($('#sales-page').length > 0) {
                     "render": function (data, type, row) {
                         return row[6] + '%';
                     },
-                    'orderSequence': ['desc', 'asc'],
+                    'orderSequence': ['desc'],
                 },
-                // Date
+                // End Date
                 {
                     "targets": 4,
                     "render": function (data, type, row) {
@@ -156,9 +160,20 @@ if ($('#sales-page').length > 0) {
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
-                // Link
+                // Release Date
                 {
                     "targets": 5,
+                    "render": function (data, type, row) {
+                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[9] + '" data-livestamp="' + row[9] + '"></span>';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+                // Link
+                {
+                    "targets": 6,
                     "render": function (data, type, row) {
                         if (row[8]) {
                             return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
@@ -181,7 +196,7 @@ if ($('#sales-page').length > 0) {
             $priceElement,
             $scoreElement,
             $discountElement,
-            $orderElement,
+            $indexElement,
         ];
 
         $('table.table').gdbTable({

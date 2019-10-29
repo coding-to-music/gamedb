@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -50,11 +51,16 @@ func (offer Sale) BSON() (ret interface{}) {
 		"offer_end_estimate": offer.SaleEndEstimate,
 		"offer_type":         offer.SaleType,
 		"offer_percent":      offer.SalePercent,
+		"offer_name":         offer.SaleName,
 	}
 }
 
 func (offer Sale) getKey() (ret string) {
 	return strconv.Itoa(offer.AppID) + "-" + strconv.Itoa(offer.SubID)
+}
+
+func (offer Sale) GetType() string {
+	return strings.Title(offer.SaleType)
 }
 
 func GetAppSales(appID int) (offers []Sale, err error) {
