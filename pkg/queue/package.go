@@ -182,6 +182,16 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		log.Err(err)
 	}
 
+	// Queue apps
+	appIDs, err := pack.GetAppIDs()
+	if err != nil {
+		log.Err(err)
+	} else {
+		err = ProduceToSteam(SteamPayload{AppIDs: appIDs}, true)
+		log.Err(err)
+	}
+
+	//
 	message.ack(msg)
 }
 
