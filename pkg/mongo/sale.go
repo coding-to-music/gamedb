@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -58,6 +59,18 @@ func (offer Sale) getKey() (ret string) {
 
 func GetAppSales(appID int) (offers []Sale, err error) {
 	return getSales(0, 0, D{{"app_id", appID}}, D{{"offer_end", 1}}, M{"sub_id": 1})
+}
+
+func CountSales() (count int64, err error) {
+
+	var item = helpers.MemcacheSalesCount
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+
+		return CountDocuments(CollectionAppSales, D{{"offer_end", M{"$gt": time.Now()}}}, 0)
+	})
+
+	return count, err
 }
 
 func GetHighestSaleOrder() (int, error) {

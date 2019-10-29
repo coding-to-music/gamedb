@@ -43,6 +43,17 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	// Count players
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Count, err = mongo.CountSales()
+		log.Err(err, r)
+	}()
+
 	wg.Add(1)
 	go func() {
 
@@ -96,6 +107,7 @@ type salesTemplate struct {
 	Categories   []sql.Category
 	UpcomingSale upcomingSale
 	HighestOrder int
+	Count        int64
 }
 
 type upcomingSale struct {
