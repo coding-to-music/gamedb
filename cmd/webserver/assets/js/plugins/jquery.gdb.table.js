@@ -341,7 +341,7 @@
 
             // Fixes scrolling to pagination on every click
             $('div.dt-pagination').on('focus', '.paginate_button > a', function () {
-                $(this).blur();
+                $(this).trigger('blur');
             });
 
             // Local tables finish initializing before event handlers are attached,

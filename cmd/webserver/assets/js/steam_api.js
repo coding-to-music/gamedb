@@ -8,7 +8,7 @@ if ($steamApiPage.length > 0) {
     });
 
     $('.endpoint').on('mouseenter', function () {
-        $(this).select();
+        $(this).trigger('select');
     });
 
     const $form = $steamApiPage.find('form#key-form');

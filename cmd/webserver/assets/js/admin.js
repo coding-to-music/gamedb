@@ -45,7 +45,8 @@ if ($('#admin-page').length > 0) {
                 $row.removeClass('table-danger');
                 // toast(true, taskID + ' started', '', 0);
             } else if (action === 'finished') {
-                $row.removeClass('table-warning', 'table-danger');
+                $row.removeClass('table-warning');
+                $row.removeClass('table-danger');
                 $row.find('.prev').livestamp();
                 $row.find('.next').livestamp(new Date(data.Data.time * 1000));
                 toast(true, taskID + ' finished', '', 0);

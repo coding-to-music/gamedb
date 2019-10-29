@@ -61,13 +61,13 @@ $('.stop-prop').on('click', function (e) {
 });
 
 // Auto dropdowns
-$('.navbar .dropdown').hover(
-    function () {
-        $(this).addClass("show").find('.dropdown-menu').addClass("show");
-    }, function () {
-        $(this).removeClass("show").find('.dropdown-menu').removeClass("show");
-    }
-).click(function (e) {
+$('.navbar .dropdown').on('mouseenter', function (e) {
+    $(this).addClass("show").find('.dropdown-menu').addClass("show")
+});
+$('.navbar .dropdown').on('mouseleave', function (e) {
+    $(this).removeClass("show").find('.dropdown-menu').removeClass("show");
+});
+$('.navbar .dropdown').on('click', function (e) {
     e.stopPropagation();
 });
 
@@ -91,7 +91,7 @@ $('.json').each(function (i, value) {
 (function ($, window) {
     'use strict';
 
-    $(document).ready(function () {
+    $(document).on('ready', function (e) {
 
         // Choose tab from URL
         const hash = window.location.hash;
@@ -132,7 +132,7 @@ $(window).on('scroll', function (e) {
     }
 });
 
-$top.click(function (e) {
+$top.on('click', function (e) {
     $('html, body').animate({scrollTop: 0}, 500);
 });
 
@@ -144,7 +144,7 @@ if (isIterable(user.toasts)) {
 }
 
 // Fix URLs
-$(document).ready(function () {
+$(document).on('ready', function (e) {
     const path = $('#app-page, #package-page, #player-page, #bundle-page, #group-page').attr('data-path');
     if (path && path !== window.location.pathname) {
         history.replaceState(null, null, path + window.location.hash);

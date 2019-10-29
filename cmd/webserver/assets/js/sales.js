@@ -89,7 +89,7 @@ if ($('#sales-page').length > 0) {
 
         window.updateLabels = updateLabels;
 
-        $(document).ready(updateLabels);
+        $(document).on('ready', updateLabels);
 
         //
         const options = {

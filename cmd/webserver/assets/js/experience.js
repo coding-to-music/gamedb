@@ -57,13 +57,15 @@ if ($xpPage.length > 0) {
         answer.val((levelToXP(to) - levelToXP(from)).toLocaleString());
     }
 
-    $('#from, #to').change(update);
+    $('#from, #to').on('change', update);
 
-    $('#calculate').click(function (e) {
+    $('#calculate').on('click', function (e) {
         e.preventDefault();
         update();
     });
 
-    $(document).ready(scroll);
-    $(document).ready(update);
+    $(document).on('ready', function (e) {
+        scroll();
+        update();
+    });
 }

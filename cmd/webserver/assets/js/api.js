@@ -8,6 +8,6 @@ if ($apiPage.length > 0) {
     });
 
     $('.endpoint').on('mouseenter', function () {
-        $(this).select();
+        $(this).trigger('select');
     });
 }

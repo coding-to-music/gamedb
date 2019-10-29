@@ -1,6 +1,6 @@
 if ($('#coop-page').length > 0) {
 
-    $('form#add').submit(function (e) {
+    $('form#add').on('submit', function (e) {
 
         e.preventDefault();
 
@@ -17,11 +17,11 @@ if ($('#coop-page').length > 0) {
         document.location = url;
     });
 
-    $('#addme input').click(function (e) {
+    $('#addme input').on('click', function (e) {
 
         const val = $(this).attr('data-id');
 
         $('input#id').val(val);
-        $('form#add').submit();
+        $('form#add').trigger('submit');
     });
 }
