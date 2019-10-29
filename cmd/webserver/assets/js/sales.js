@@ -205,10 +205,10 @@ if ($('#sales-page').length > 0) {
         });
 
         // Default OS
-        if ($platforms.val().length === 0) {
-            $platforms.val([getOS()]);
-            $platforms.trigger("chosen:updated");
-        }
+        // if ($platforms.val().length === 0) {
+        // $platforms.val([getOS()]);
+        // $platforms.trigger("chosen:updated");
+        // }
 
     })(jQuery, document);
 }
