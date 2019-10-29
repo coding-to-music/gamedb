@@ -3,6 +3,14 @@ if ($('#sales-page').length > 0) {
     (function ($, document) {
         'use strict';
 
+        // Count down
+        const $clock = $('#clock');
+        const timestamp = $clock.attr('data-time');
+
+        $clock.countdown(timestamp, function (e) {
+            $(this).html(e.strftime('%D:%H:%M:%S'));
+        });
+
         // Setup drop downs
         $('select.form-control-chosen').chosen({
             disable_search_threshold: 10,

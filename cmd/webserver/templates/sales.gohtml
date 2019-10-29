@@ -35,7 +35,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <span class="icon">{{ .UpcomingSale.Icon }}</span>
-                <p class="mb-0">Upcoming {{ .UpcomingSale.Name }}: <span data-livestamp="{{ .UpcomingSale.Start.Unix }}"></span></p>
+                <p class="mb-0">Upcoming {{ .UpcomingSale.Name }}: <span id="clock" data-time="{{ .UpcomingSale.Time }}"></span></p>
             </div>
         {{ end }}
 
