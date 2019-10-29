@@ -74,7 +74,11 @@
 
                         // Slider
                         name = $field.attr('data-name');
-                        value = params.getAll(name);
+                        if ($field.find('.noUi-connect').length > 0) {
+                            value = params.getAll(name);
+                        } else {
+                            value = params.get(name);
+                        }
 
                     } else { // Inputs
 
