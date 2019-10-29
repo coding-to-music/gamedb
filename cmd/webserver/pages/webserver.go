@@ -51,6 +51,23 @@ func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
 	w.Header().Set("Server", "")
 }
 
+func SetCacheHeaders(w http.ResponseWriter, duration time.Duration) {
+
+	if w.Header().Get("Cache-Control") == "" || w.Header().Get("Expires") == "" {
+
+		if duration == 0 || config.IsLocal() {
+
+			w.Header().Set("Cache-Control", "max-age=0")
+			w.Header().Set("Expires", time.Now().AddDate(0, 0, -2).Format(time.RFC1123))
+
+		} else {
+
+			w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
+			w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
+		}
+	}
+}
+
 func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	setHeaders(w, r, "application/json")
@@ -469,6 +486,10 @@ func (t *GlobalTemplate) addToast(toast Toast) {
 
 func (t *GlobalTemplate) addAssetChosen() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js", Integrity: "sha256-c4gVE6fn+JRKMRvqjoDp+tlG4laudNYrXI1GncbfAYY="})
+}
+
+func (t *GlobalTemplate) addAssetCountdown() {
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js", Integrity: "sha256-Ikk5myJowmDQaYVCUD0Wr+vIDkN8hGI58SGWdE671A8="})
 }
 
 func (t *GlobalTemplate) addAssetJSON2HTML() {

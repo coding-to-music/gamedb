@@ -170,6 +170,7 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 	}
 
 	r.Get(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pages.SetCacheHeaders(w, time.Hour*24)
 		fs.ServeHTTP(w, r)
 	}))
 }
