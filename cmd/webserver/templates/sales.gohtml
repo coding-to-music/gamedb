@@ -4,11 +4,26 @@
     <div class="container" id="sales-page">
 
         <div class="jumbotron">
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
 
-            {{/*{{ template "_social" }}*/}}
+                    <h1><i class="fas fa-piggy-bank"></i> Sales <small>(under construction)</small></h1>
 
-            <h1><i class="fas fa-piggy-bank"></i> Sales <small>(under construction)</small></h1>
-            <p class="lead">{{ .Count }} games.</p>
+                </div>
+                <div class="col-sm-12 col-lg-6">
+
+                    <div class="input-group input-group-lg mt-1 mb-0">
+                        <input class="form-control" type="search" placeholder="Search for a Game" id="search" name="search" autofocus>
+                        <div class="input-group-append">
+                            <input type="submit" value="Search" class="input-group-text">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-12">
+                    <p class="lead">{{ .Count }} games.</p>
+                </div>
+            </div>
 
         </div>
 

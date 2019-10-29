@@ -165,6 +165,7 @@ if ($('#sales-page').length > 0) {
         const $platforms = $('#platforms');
 
         const searchFields = [
+            $('#search'),
             $('#tags-in'),
             $('#tags-out'),
             $('#categories'),
