@@ -168,6 +168,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"2": "offer_percent",
 			"3": "app_rating",
 			"4": "offer_end",
+			"5": "app_date",
 		}
 
 		var err error

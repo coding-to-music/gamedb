@@ -158,7 +158,7 @@ if ($('#sales-page').length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    'orderSequence': ['desc', 'asc'],
+                    'orderSequence': ['asc'],
                 },
                 // Release Date
                 {
