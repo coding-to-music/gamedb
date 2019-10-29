@@ -357,7 +357,7 @@
         highlightRows: function () {
 
             if (this.user.isLoggedIn) {
-                let games = localStorage.getItem('games');
+                let games = localStorage.getItem('gamedb-games');
                 if (games != null) {
                     games = JSON.parse(games);
                     if (games != null) {
@@ -370,7 +370,7 @@
                     }
                 }
 
-                let groups = localStorage.getItem('groups');
+                let groups = localStorage.getItem('gamedb-groups');
                 if (groups != null) {
                     groups = JSON.parse(groups);
                     if (groups != null) {

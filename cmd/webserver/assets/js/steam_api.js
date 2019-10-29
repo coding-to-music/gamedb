@@ -16,7 +16,7 @@ if ($steamApiPage.length > 0) {
     $form.on('submit', function (e) {
 
         e.preventDefault();
-        localStorage.setItem('settings', $form.serialize());
+        localStorage.setItem('gamedb-settings', $form.serialize());
         setMethodSettings();
         toast(true, 'Settings Saved');
     });
@@ -36,6 +36,6 @@ if ($steamApiPage.length > 0) {
         $('div.interface input[name=format]').val(format);
     }
 
-    $form.deserialize(localStorage.getItem('settings'));
+    $form.deserialize(localStorage.getItem('gamedb-settings'));
     setMethodSettings();
 }
