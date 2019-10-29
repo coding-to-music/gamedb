@@ -15,10 +15,6 @@ function websocketListener(page, onMessage, attempt = 1) {
         return;
     }
 
-    // Save websocket details for connecting later
-    _websocketPage = page;
-    _websocketHandler = onMessage;
-
     // Connect
     _websocket = new WebSocket((location.protocol === 'https:' ? "wss://gamedb.online" : "ws://" + location.host) + "/websocket/" + page);
 
