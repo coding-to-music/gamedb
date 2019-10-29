@@ -159,7 +159,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	}()
 
 	// Calls to store.steampowered.com
-	var offers []mongo.Sale
+	var sales []mongo.Sale
 	wg.Add(1)
 	go func() {
 
@@ -181,7 +181,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		offers, err = scrapeApp(&app)
+		sales, err = scrapeApp(&app)
 		if err != nil {
 			helpers.LogSteamError(err, id)
 			ackRetry(msg, &message)
@@ -278,7 +278,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-		err = saveSales(app, offers)
+		err = saveSales(app, sales)
 		if err != nil {
 			log.Err(err, id)
 			ackRetry(msg, &message)
@@ -1148,16 +1148,16 @@ func updateAppSteamSpy(app *sql.App) error {
 //noinspection RegExpRedundantEscape
 var appStorePage = regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
 
-func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
+func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 
 	// This app causes infinite redirects..
 	if app.ID == 12820 {
-		return offers, nil
+		return sales, nil
 	}
 
 	// Skip these app types
 	if helpers.SliceHasString([]string{"media", "movie"}, app.Type) {
-		return offers, nil
+		return sales, nil
 	}
 
 	var bundleIDs []string
@@ -1243,7 +1243,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 					}
 				}
 
-				offers = append(offers, offer)
+				sales = append(sales, offer)
 
 			} else if strings.Contains(e.Text, s2) {
 
@@ -1300,7 +1300,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 					}
 				}
 
-				offers = append(offers, offer)
+				sales = append(sales, offer)
 			}
 		})
 
@@ -1325,7 +1325,7 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 
 	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, app.ID) })
 	if err != nil {
-		return offers, err
+		return sales, err
 	}
 
 	// Save bundle IDs
@@ -1334,13 +1334,13 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 	for _, v := range IDInts {
 		err := ProduceBundle(v, app.ID)
 		if err != nil {
-			return offers, err
+			return sales, err
 		}
 	}
 
 	b, err := json.Marshal(IDInts)
 	if err != nil {
-		return offers, err
+		return sales, err
 	}
 
 	app.BundleIDs = string(b)
@@ -1348,12 +1348,12 @@ func scrapeApp(app *sql.App) (offers []mongo.Sale, err error) {
 	// Save related apps
 	b, err = json.Marshal(relatedAppIDs)
 	if err != nil {
-		return offers, err
+		return sales, err
 	}
 
 	app.RelatedAppIDs = string(b)
 
-	return offers, nil
+	return sales, nil
 }
 
 func saveAppToInflux(app sql.App) (err error) {
