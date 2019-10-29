@@ -152,7 +152,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var columns = map[string]string{
 			"0": "app_name",
-			"1": "price." + string(code),
+			"1": "app_prices." + string(code),
 			"2": "offer_percent",
 			"3": "app_rating",
 			"4": "offer_end",
