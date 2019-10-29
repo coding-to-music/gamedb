@@ -83,9 +83,9 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	upcomingSales := []upcomingSale{
-		{time.Date(2019, 10, 28, 10, 0, 0, 0, pst), time.Date(2019, 11, 1, 10, 0, 0, 0, pst), "Halloween Sale", "🎃"},
-		{time.Date(2019, 11, 26, 10, 0, 0, 0, pst), time.Date(2019, 12, 3, 10, 0, 0, 0, pst), "Autumn Sale", "🍁"},
-		{time.Date(2019, 12, 19, 10, 0, 0, 0, pst), time.Date(2019, 01, 2, 10, 0, 0, 0, pst), "Winter Sale", "⛄"},
+		{time.Date(2019, 10, 28, 10, 0, 0, 0, pst), 4, "Halloween Sale", "🎃"},
+		{time.Date(2019, 11, 26, 10, 0, 0, 0, pst), 7, "Autumn Sale", "🍁"},
+		{time.Date(2019, 12, 19, 10, 0, 0, 0, pst), 14, "Winter Sale", "⛄"},
 	}
 
 	for _, v := range upcomingSales {
@@ -112,7 +112,7 @@ type salesTemplate struct {
 
 type upcomingSale struct {
 	Start time.Time
-	End   time.Time
+	Days  int
 	Name  string
 	Icon  string
 }
@@ -126,7 +126,7 @@ func (ud upcomingSale) Started() bool {
 }
 
 func (ud upcomingSale) Ended() bool {
-	return ud.End.Unix() < time.Now().Unix()
+	return ud.Start.AddDate(0, 0, ud.Days).Unix() < time.Now().Unix()
 }
 
 func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
