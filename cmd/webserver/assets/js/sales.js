@@ -162,11 +162,13 @@ if ($('#sales-page').length > 0) {
             ]
         };
 
+        const $platforms = $('#platforms');
+
         const searchFields = [
             $('#tags-in'),
             $('#tags-out'),
             $('#categories'),
-            $('#platforms'),
+            $platforms,
             $priceElement,
             $scoreElement,
             $discountElement,
@@ -177,6 +179,12 @@ if ($('#sales-page').length > 0) {
             tableOptions: options,
             searchFields: searchFields
         });
+
+        // Default OS
+        if ($platforms.val().length === 0) {
+            $platforms.val([getOS()]);
+            $platforms.trigger("chosen:updated");
+        }
 
     })(jQuery, document);
 }
