@@ -310,6 +310,9 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
+                        if (row[4] === 0) {
+                            return '-';
+                        }
                         return ordinal(row[4]);
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
