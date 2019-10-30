@@ -131,6 +131,10 @@ func (ud upcomingSale) Time() int64 {
 	}
 }
 
+func (ud upcomingSale) Started() bool {
+	return ud.Start.Unix() < time.Now().Unix()
+}
+
 func (ud upcomingSale) Ended() bool {
 	return ud.Start.AddDate(0, 0, ud.Days).Unix() < time.Now().Unix()
 }
@@ -226,8 +230,12 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"5": "app_date",
 		}
 
+		var order = query.getOrderMongo(columns, nil)
+		order = append(order, E{Key: "app_name", Value: 1})
+		order = append(order, E{Key: "sub_order", Value: 1})
+
 		var err error
-		offers, err = mongo.GetAllSales(query.getOffset64(), 100, filter, query.getOrderMongo(columns, nil))
+		offers, err = mongo.GetAllSales(query.getOffset64(), 100, filter, order)
 		if err != nil {
 			log.Err(err, r)
 			return
