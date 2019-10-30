@@ -63,6 +63,10 @@ func (offer Sale) GetType() string {
 	return strings.Title(offer.SaleType)
 }
 
+func (offer Sale) GetOfferName() string {
+	return strings.TrimPrefix(offer.SaleName, "Buy ")
+}
+
 func GetAppSales(appID int) (offers []Sale, err error) {
 	return getSales(0, 0, D{{"app_id", appID}}, D{{"offer_end", 1}}, M{"sub_id": 1})
 }

@@ -228,9 +228,9 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response.AddRow([]interface{}{
-			offer.AppID,   // 0
-			offer.AppName, // 1
-			offer.AppIcon, // 2
+			offer.AppID,          // 0
+			offer.GetOfferName(), // 1
+			offer.AppIcon,        // 2
 			helpers.GetAppPath(offer.AppID, offer.AppName), // 3
 			priceString,                           // 4
 			offer.SalePercent,                     // 5
