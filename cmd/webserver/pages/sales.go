@@ -217,8 +217,8 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, offer := range offers {
 
+		// Price
 		var priceString string
-
 		priceInt, ok := offer.AppPrices[code]
 		if ok {
 			cc := helpers.GetProdCC(code)
@@ -227,6 +227,14 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			priceString = "-"
 		}
 
+		// Lowest price
+		var lowest bool
+		lowestPriceInt, ok := offer.AppLowestPrice[code]
+		if ok {
+			lowest = priceInt <= lowestPriceInt
+		}
+
+		//
 		response.AddRow([]interface{}{
 			offer.AppID,          // 0
 			offer.GetOfferName(), // 1
@@ -239,6 +247,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			helpers.GetAppStoreLink(offer.AppID),  // 8
 			offer.AppReleaseDate.String(),         // 9
 			offer.GetType(),                       // 10
+			lowest,                                // 11
 		})
 	}
 

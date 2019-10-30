@@ -101,7 +101,7 @@ if ($('#sales-page').length > 0) {
 
         //
         const options = {
-            "order": [[4, 'asc'], [3, 'desc']],
+            "order": [[4, 'asc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
                 $(row).attr('data-app-id', data[0]);
@@ -114,6 +114,10 @@ if ($('#sales-page').length > 0) {
 
                         let field = row[1];
                         field = field + ' <br /><small>' + row[10] + '</small>';
+
+                        if (row[11]) {
+                            field = field + ' <span class="badge badge-success float-right">Record Low</span>';
+                        }
 
                         return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + field + '</div></div>'
                     },
