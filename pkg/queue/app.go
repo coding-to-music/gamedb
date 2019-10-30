@@ -1505,13 +1505,16 @@ func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
 
 	for k := range newSales {
 
+		// newSales[k].SaleStart = time.Now()
 		newSales[k].AppName = app.GetName()
 		newSales[k].AppIcon = app.GetIcon()
 		newSales[k].AppLowestPrice = map[steam.ProductCC]int{} // todo
 		newSales[k].AppRating = app.ReviewsScore
 		newSales[k].AppReleaseDate = time.Unix(app.ReleaseDateUnix, 0)
 		newSales[k].AppPlayersWeek = app.PlayerPeakWeek
-		newSales[k].SaleStart = time.Now()
+		newSales[k].AppTags = app.GetTagIDs()
+		newSales[k].AppPlatforms = app.GetPlatforms()
+		newSales[k].AppCategories = app.GetCategoryIDs()
 
 		prices, err := app.GetPrices()
 		if err == nil {

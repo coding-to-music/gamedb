@@ -59,18 +59,8 @@ func (c Tags) work() {
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
 
-		appTags, err := app.GetTagIDs()
-		if err != nil {
-			log.Err(err)
-			continue
-		}
-
-		if len(appTags) == 0 {
-			// appTags = []int{}
-		}
-
 		// For each tag in an app
-		for _, tagID := range appTags {
+		for _, tagID := range app.GetTagIDs() {
 
 			delete(tagsToDelete, tagID)
 

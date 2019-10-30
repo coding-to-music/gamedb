@@ -30,10 +30,7 @@ func (app *App) Fill(sqlApp sql.App) (err error) {
 
 	app.ID = sqlApp.ID
 	app.Name = sqlApp.GetName()
-	app.Tags, err = sqlApp.GetTagIDs()
-	if err != nil {
-		return err
-	}
+	app.Tags = sqlApp.GetTagIDs()
 	app.Genres, err = sqlApp.GetGenreIDs()
 	if err != nil {
 		return err
@@ -42,10 +39,7 @@ func (app *App) Fill(sqlApp sql.App) (err error) {
 	if err != nil {
 		return err
 	}
-	app.Categories, err = sqlApp.GetCategoryIDs()
-	if err != nil {
-		return err
-	}
+	app.Categories = sqlApp.GetCategoryIDs()
 	app.Publishers, err = sqlApp.GetPublisherIDs()
 	if err != nil {
 		return err

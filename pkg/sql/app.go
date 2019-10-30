@@ -539,11 +539,6 @@ func (app App) GetSteamSpy() (ss AppSteamSpy, err error) {
 
 func (app App) GetCoopTags() (string, error) {
 
-	tags, err := app.GetTagIDs()
-	if err != nil {
-		return "", err
-	}
-
 	var tagMap = map[int]string{
 		1685: "Co-op",
 		3843: "Online co-op",
@@ -557,7 +552,7 @@ func (app App) GetCoopTags() (string, error) {
 	}
 
 	var coopTags []string
-	for _, v := range tags {
+	for _, v := range app.GetTagIDs() {
 		if val, ok := tagMap[v]; ok {
 			coopTags = append(coopTags, val)
 		}
@@ -587,6 +582,8 @@ func (app App) GetDemoIDs() (demos []int, err error) {
 
 func (app App) GetDemos() (demos []App, err error) {
 
+	demos = []App{} // Needed for marshalling into type
+
 	var item = helpers.MemcacheAppDemos(app.ID)
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
@@ -599,29 +596,25 @@ func (app App) GetDemos() (demos []App, err error) {
 		return GetAppsByID(ids, []string{"id", "name"})
 	})
 
-	if len(demos) == 0 {
-		demos = []App{} // Needed for marshalling into type
-	}
-
 	return demos, err
 }
 
-func (app App) GetPlatforms() (platforms []string, err error) {
+func (app App) GetPlatforms() (platforms []string) {
 
-	err = helpers.Unmarshal([]byte(app.Platforms), &platforms)
-	return platforms, err
+	platforms = []string{} // Needed for marshalling into array
+
+	err := helpers.Unmarshal([]byte(app.Platforms), &platforms)
+	log.Err(err)
+
+	return platforms
 }
 
 func (app App) GetPlatformImages() (ret template.HTML, err error) {
 
-	if app.Platforms == "" {
-		return template.HTML(""), nil
-	}
+	platforms := app.GetPlatforms()
 
-	platforms, err := app.GetPlatforms()
-	if err != nil {
-		log.Err(err)
-		return ret, err
+	if len(platforms) == 0 {
+		return "", nil
 	}
 
 	if helpers.SliceHasString(platforms, platformWindows) {
@@ -729,16 +722,14 @@ func (app App) GetGenres() (genres []Genre, err error) {
 	return genres, err
 }
 
-func (app App) GetCategoryIDs() (categories []int, err error) {
+func (app App) GetCategoryIDs() (categories []int) {
 
-	err = helpers.Unmarshal([]byte(app.Categories), &categories)
+	categories = []int{} // Needed for marshalling into array
 
-	// Needed for marshalling into array
-	if len(categories) == 0 {
-		categories = []int{}
-	}
+	err := helpers.Unmarshal([]byte(app.Categories), &categories)
+	log.Err(err)
 
-	return categories, err
+	return categories
 }
 
 func (app App) GetCategories() (categories []Category, err error) {
@@ -747,12 +738,7 @@ func (app App) GetCategories() (categories []Category, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &categories, func() (interface{}, error) {
 
-		ids, err := app.GetCategoryIDs()
-		if err != nil {
-			return categories, err
-		}
-
-		return GetCategoriesByID(ids, []string{"id", "name"})
+		return GetCategoriesByID(app.GetCategoryIDs(), []string{"id", "name"})
 	})
 
 	if len(categories) == 0 {
@@ -762,20 +748,23 @@ func (app App) GetCategories() (categories []Category, err error) {
 	return categories, err
 }
 
-func (app App) GetTagIDs() (tags []int, err error) {
+func (app App) GetTagIDs() (tags []int) {
 
 	tags = []int{} // Needed for marshalling into type
 
 	if app.Tags == "" || app.Tags == "null" || app.Tags == "[]" {
-		return tags, err
+		return tags
 	}
 
-	err = helpers.Unmarshal([]byte(app.Tags), &tags)
+	err := helpers.Unmarshal([]byte(app.Tags), &tags)
 	if err != nil {
 		log.Err(err)
 		return
 	}
-	return tags, err
+
+	log.Err(err)
+
+	return tags
 }
 
 func (app App) GetTags() (tags []Tag, err error) {
@@ -784,12 +773,7 @@ func (app App) GetTags() (tags []Tag, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 
-		ids, err := app.GetTagIDs()
-		if err != nil {
-			return tags, err
-		}
-
-		return GetTagsByID(ids, []string{"id", "name"})
+		return GetTagsByID(app.GetTagIDs(), []string{"id", "name"})
 	})
 
 	if len(tags) == 0 {
