@@ -350,10 +350,10 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		scores := query.getSearchSlice("score")
 		if len(scores) == 2 {
 
-			low, err := strconv.Atoi(strings.Replace(scores[0], ".00", "", 1))
+			low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
 			log.Err(err, r)
 
-			high, err := strconv.Atoi(strings.Replace(scores[1], ".00", "", 1))
+			high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
 			log.Err(err, r)
 
 			if low > 0 {
