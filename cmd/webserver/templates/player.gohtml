@@ -381,74 +381,88 @@
                             <div class="row">
                                 <div class="col-12 col-md-6 mb-3">
 
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th scope="col" style="width: 40%"></th>
-                                            <th scope="col" style="width: 30%">All</th>
-                                            <th scope="col" style="width: 30%">Played</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <th scope="col" nowrap="nowrap">Average Price</th>
-                                            <td>{{ .GameStats.All.GetAveragePrice }}</td>
-                                            <td>{{ .GameStats.Played.GetAveragePrice }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="col" nowrap="nowrap">Average Price / Hour</th>
-                                            <td>{{ .GameStats.All.GetAveragePriceHour }}</td>
-                                            <td>{{ .GameStats.Played.GetAveragePriceHour }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="col" nowrap="nowrap">Total Price</th>
-                                            <td>{{ .GameStats.All.GetTotalPrice }}</td>
-                                            <td>{{ .GameStats.Played.GetTotalPrice }}</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="card mb-4">
+                                        <div class="card-header">Library Stats</div>
+                                        <div class="card-body">
 
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th scope="col" style="width: 40%"></th>
-                                            <th scope="col" style="width: 30%">All</th>
-                                            <th scope="col" style="width: 30%">Played</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <th scope="col" nowrap="nowrap">Average Time</th>
-                                            <td>{{ .GameStats.All.GetAverageTime }}</td>
-                                            <td>{{ .GameStats.Played.GetAverageTime }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="col" nowrap="nowrap">Total Time</th>
-                                            <td>{{ .GameStats.All.GetTotalTime }}</td>
-                                            <td>{{ .GameStats.Played.GetTotalTime }}</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col" style="width: 40%"></th>
+                                                    <th scope="col" style="width: 30%">All</th>
+                                                    <th scope="col" style="width: 30%">Played</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Average Price</th>
+                                                    <td>{{ .GameStats.All.GetAveragePrice }}</td>
+                                                    <td>{{ .GameStats.Played.GetAveragePrice }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Average Price / Hour</th>
+                                                    <td>{{ .GameStats.All.GetAveragePriceHour }}</td>
+                                                    <td>{{ .GameStats.Played.GetAveragePriceHour }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Total Price</th>
+                                                    <td>{{ .GameStats.All.GetTotalPrice }}</td>
+                                                    <td>{{ .GameStats.Played.GetTotalPrice }}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col" style="width: 40%"></th>
+                                                    <th scope="col" style="width: 30%">All</th>
+                                                    <th scope="col" style="width: 30%">Played</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Average Time</th>
+                                                    <td>{{ .GameStats.All.GetAverageTime }}</td>
+                                                    <td>{{ .GameStats.Played.GetAverageTime }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Total Time</th>
+                                                    <td>{{ .GameStats.All.GetTotalTime }}</td>
+                                                    <td>{{ .GameStats.Played.GetTotalTime }}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
 
                                 </div>
                                 <div class="col-12 col-md-6 mb-3">
 
-                                    <table class="table table-datatable" data-order='[[1, "desc"]]'>
-                                        <thead>
-                                        <tr>
-                                            <th data-disabled>Game Type</th>
-                                            <th data-disabled>Count</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {{ range $key, $value := .Player.GamesByType }}
-                                            <tr>
-                                                <td>{{ $key }}</td>
-                                                <td>{{ comma $value }}</td>
-                                            </tr>
-                                        {{ end }}
-                                        </tbody>
-                                    </table>
+                                    <div class="card mb-4">
+                                        <div class="card-header">App Types</div>
+                                        <div class="card-body">
+
+                                            <table class="table table-datatable" data-order='[[1, "desc"]]'>
+                                                <thead>
+                                                <tr>
+                                                    <th data-disabled>Type</th>
+                                                    <th data-disabled>Count</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {{ range $key, $value := .Player.GamesByType }}
+                                                    <tr>
+                                                        <td>{{ $key }}</td>
+                                                        <td>{{ comma $value }}</td>
+                                                    </tr>
+                                                {{ end }}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
