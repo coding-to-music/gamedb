@@ -78,8 +78,8 @@
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group">
-                            <label for="tags">Tag <small>(Filter in)</small></label>
-                            <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags" name="tags">
+                            <label for="tags-in">Tag <small>(Filter in)</small></label>
+                            <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags-in" name="tags-in">
                                 {{ range $key, $value := .Tags }}
                                     <option value="{{ .ID }}">{{ .GetName }}</option>
                                 {{ end }}
@@ -88,8 +88,8 @@
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group">
-                            <label for="tags">Tag <small>(Filter out)</small></label>
-                            <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags" name="tags">
+                            <label for="tags-out">Tag <small>(Filter out)</small></label>
+                            <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags-out" name="tags-out">
                                 {{ range $key, $value := .Tags }}
                                     <option value="{{ .ID }}">{{ .GetName }}</option>
                                 {{ end }}
