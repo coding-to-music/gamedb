@@ -4,28 +4,46 @@ html {
 
 body {
     background-color: #1b2738;
+
+    #bg {
+        display: none;
+    }
 }
 
 // Only if background is there
 body.bg {
+
     div.jumbotron {
-
-        background-color: rgba(233, 236, 239, 0.9); // Using opacity makes images translucent too
-        margin-top: 1rem;
-
-        @include media-breakpoint-up(lg) {
-            margin-top: 0;
-        }
+        opacity: .9;
     }
 
     .container {
         .card {
-            background-color: rgba(255, 255, 255, 0.95); // Using opacity makes images translucent too
+            opacity: .95;
+        }
+    }
 
-            .nav-tabs .nav-link.active {
-                background-color: rgba(255, 255, 255, .6);
-                border-bottom-color: rgba(255, 255, 255, .5);
-            }
+    #bg {
+        top: 0;
+        height: 620px;
+        width: 100%;
+        display: block;
+
+        background-color: #1b2738;
+        background-position-x: center;
+        background-position-y: top;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: absolute;
+
+        &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-image: linear-gradient(to bottom, rgba(27, 39, 56, 1) 0, rgba(40, 134, 212, 0) 168px, rgba(41, 137, 216, 0) 452px, rgba(27, 39, 56, 1) 100%);
         }
     }
 }
@@ -37,15 +55,101 @@ body.local {
 }
 
 body.dark {
-    @import "dark";
-}
 
-// Only in dark mode
-@media (prefers-color-scheme: dark) {
-    body {
-        //@import "dark";
+    div.container {
+        color: #e9ecef;
+    }
+
+    div.jumbotron {
+        background: #212529;
+    }
+
+    div.card {
+        background: #212529;
+    }
+
+    // Tabs
+    .nav-tabs {
+        .nav-link.active {
+            background-color: transparent;
+            border-bottom-color: transparent;
+            color: #28a745;
+        }
+
+        .nav-link:hover {
+            border-bottom-color: transparent;
+            color: #28a745;
+        }
+    }
+
+    // Pagination
+    .page-item {
+        .page-link {
+            background-color: transparent;
+        }
+    }
+
+    .page-item.active {
+        .page-link {
+            border: 1px solid #dee2e6;
+        }
+    }
+
+    // Forms
+    .form-control {
+        background-color: #21262a;
+        color: #e9ecef;
+    }
+
+    .chosen-container {
+
+        .chosen-choices {
+            background-color: #21262a;
+            color: #e9ecef;
+        }
+
+        .chosen-drop {
+            background-color: #21262a;
+            color: #e9ecef;
+        }
+    }
+
+    .noUi-handle {
+        background: #212529;
+        box-shadow: none;
+    }
+
+    // Tables
+    table.table {
+        color: #e9ecef !important;
+
+        th[scope=col] {
+            border-top: 1px solid #343a40;
+        }
+
+        tr:hover {
+            color: #e9ecef !important;
+        }
+
+        .thead-light th {
+            color: #fff;
+            background-color: #343a40;
+            border-color: #454d55;
+        }
+
+        td {
+            border-top: 1px solid #343a40;
+        }
+    }
+
+    //
+    #price-changes-page {
+        table.table tbody {
+            color: #212529;
+        }
     }
 }
+
 
 // Debug sizes
 div#sizes {
@@ -73,50 +177,6 @@ header {
     header {
         background-color: transparent;
         position: static;
-    }
-}
-
-
-#bg {
-    top: 0;
-    height: 620px;
-    width: 100%;
-
-    background-color: #1b2738;
-    background-position-x: center;
-    background-position-y: top;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: absolute;
-    @include media-breakpoint-up(sm) {
-        //position: fixed;
-    }
-
-    &:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        background-image: linear-gradient(to bottom, rgba(27, 39, 56, 1) 0, rgba(40, 134, 212, 0) 168px, rgba(41, 137, 216, 0) 452px, rgba(27, 39, 56, 1) 100%);
-    }
-}
-
-#hero {
-
-    margin-top: 140px;
-    margin-bottom: 140px;
-    position: relative;
-    pointer-events: none;
-
-    h1 {
-        color: #28a745;
-        font-family: 'Audiowide', sans-serif;
-        text-align: center;
-        text-shadow: 0 0 10px #1b2738, 0 0 10px #1b2738;
-        font-size: 5rem;
-        margin: 0;
     }
 }
 
@@ -241,9 +301,11 @@ div#loading {
     }
 }
 
-li.nav-item {
-    a.nav-link.nav-link-small {
-        padding: .5rem .5rem
+.nav-tabs {
+    li.nav-item {
+        .nav-link.nav-link-small {
+            padding: .5rem .5rem
+        }
     }
 }
 
@@ -252,6 +314,11 @@ li.nav-item {
     margin-bottom: 1rem;
     overflow: hidden;
     position: relative;
+    margin-top: 1rem;
+
+    @include media-breakpoint-up(lg) {
+        margin-top: 0;
+    }
 
     .close {
         position: absolute;
@@ -431,11 +498,6 @@ body #toast-container > div {
 }
 
 //
-.cursor-pointer {
-    cursor: pointer;
-}
-
-//
 div.json {
     white-space: pre;
     max-height: 200px;
@@ -501,4 +563,8 @@ div.json.fullheight {
 //
 .wbba {
     word-break: break-all;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }
