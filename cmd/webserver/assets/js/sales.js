@@ -87,9 +87,9 @@ if ($('#sales-page').length > 0) {
 
             const discounts = discountSlider.get();
             if (discounts[0] === discounts[1]) {
-                $('label#score-label').html('Score (' + Math.round(discounts[0]) + '%)');
+                $('label#discount-label').html('Discount (' + Math.round(discounts[0]) + '%)');
             } else {
-                $('label#score-label').html('Score (' + Math.round(discounts[0]) + '% - ' + Math.round(discounts[1]) + '%)');
+                $('label#discount-label').html('Discount (' + Math.round(discounts[0]) + '% - ' + Math.round(discounts[1]) + '%)');
             }
 
             $('label#index-label').html('Max Per Game (' + Math.trunc(indexSlider.get()) + ')');
