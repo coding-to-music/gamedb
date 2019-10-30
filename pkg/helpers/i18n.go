@@ -399,6 +399,10 @@ func CountriesInContinent(continent string) (ret []string) {
 // Value is cents
 func FormatPrice(currencyCode steam.CurrencyCode, value int) string {
 
+	if value == 0 {
+		return "Free"
+	}
+
 	unit, _ := currency.ParseISO(string(currencyCode))
 	printer := message.NewPrinter(language.AmericanEnglish)
 	return printer.Sprint(currency.Symbol(unit.Amount(float64(value) / 100)))
