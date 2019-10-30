@@ -141,19 +141,74 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	var code = helpers.GetProductCC(r)
 	var filter = D{
 		{"offer_end", M{"$gt": time.Now()}},
 	}
 
-	order := query.getSearchString("order")
-	orderI, err := strconv.Atoi(strings.TrimSuffix(order, ".00"))
+	// Index
+	index := query.getSearchString("index")
+	orderI, err := strconv.Atoi(strings.TrimSuffix(index, ".00"))
 	if err == nil {
 		filter = append(filter, E{Key: "sub_order", Value: M{"$lte": orderI - 1}})
 	}
 
+	// Score
+	scores := query.getSearchSlice("score")
+	if len(scores) == 2 {
+
+		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
+		log.Err(err, r)
+
+		high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
+		log.Err(err, r)
+
+		if low > 0 {
+			filter = append(filter, E{Key: "app_rating", Value: M{"$gte": low}})
+		}
+		if high < 100 {
+			filter = append(filter, E{Key: "app_rating", Value: M{"$lte": high}})
+		}
+	}
+
+	// Price
+	prices := query.getSearchSlice("price")
+	if len(prices) == 2 {
+
+		low, err := strconv.Atoi(strings.TrimSuffix(prices[0], ".00"))
+		log.Err(err, r)
+
+		high, err := strconv.Atoi(strings.TrimSuffix(prices[1], ".00"))
+		log.Err(err, r)
+
+		if low > 0 {
+			filter = append(filter, E{Key: "app_prices." + string(code), Value: M{"$gte": low * 100}})
+		}
+		if high < 100 {
+			filter = append(filter, E{Key: "app_prices." + string(code), Value: M{"$lte": high * 100}})
+		}
+	}
+
+	// Discount
+	discounts := query.getSearchSlice("discount")
+	if len(discounts) == 2 {
+
+		low, err := strconv.Atoi(strings.TrimSuffix(discounts[0], ".00"))
+		log.Err(err, r)
+
+		high, err := strconv.Atoi(strings.TrimSuffix(discounts[1], ".00"))
+		log.Err(err, r)
+
+		if low > 0 {
+			filter = append(filter, E{Key: "offer_percent", Value: M{"$gte": low}})
+		}
+		if high < 100 {
+			filter = append(filter, E{Key: "offer_percent", Value: M{"$lte": high}})
+		}
+	}
+
 	//
 	var wg sync.WaitGroup
-	var code = helpers.GetProductCC(r)
 	var offers []mongo.Sale
 
 	// Get rows
