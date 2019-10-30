@@ -25,6 +25,7 @@ type Sale struct {
 	AppLowestPrice  map[steam.ProductCC]int `bson:"app_lowest_price"`
 	AppPlayersWeek  int                     `bson:"app_players"`
 	AppCategories   []int                   `bson:"app_categories"`
+	AppType         string                  `bson:"app_type"`
 	AppPlatforms    []string                `bson:"app_platforms"`
 	AppTags         []int                   `bson:"app_tags"`
 	SaleStart       time.Time               `bson:"offer_start"`
@@ -50,6 +51,7 @@ func (offer Sale) BSON() (ret interface{}) {
 		"app_lowest_price":   offer.AppLowestPrice,
 		"app_players":        offer.AppPlayersWeek,
 		"app_categories":     offer.AppCategories,
+		"app_type":           offer.AppType,
 		"app_platforms":      offer.AppPlatforms,
 		"app_tags":           offer.AppTags,
 		"offer_start":        offer.SaleStart,

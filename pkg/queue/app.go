@@ -1511,6 +1511,7 @@ func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
 		newSales[k].AppTags = app.GetTagIDs()
 		newSales[k].AppPlatforms = app.GetPlatforms()
 		newSales[k].AppCategories = app.GetCategoryIDs()
+		newSales[k].AppType = app.Type
 
 		prices, err := app.GetPrices()
 		if err == nil {
