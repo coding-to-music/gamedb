@@ -34,8 +34,11 @@
                 <button type="button" class="close" data-dismiss="alert" data-id="{{ .UpcomingSale.ID }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <span class="icon">{{ .UpcomingSale.Icon }}</span>
-                <p class="mb-0">Upcoming {{ .UpcomingSale.Name }}: <span id="clock" data-time="{{ .UpcomingSale.Time }}"></span></p>
+                <h2 class="mb-0">
+                    <span class="icon">{{ .UpcomingSale.Icon }}</span>
+                    {{ if not .UpcomingSale.Started }}Upcoming {{ end }}
+                    {{ .UpcomingSale.Name }}: <span id="clock" data-time="{{ .UpcomingSale.Time }}"></span>
+                </h2>
             </div>
         {{ end }}
 
