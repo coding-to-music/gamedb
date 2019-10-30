@@ -1499,10 +1499,6 @@ func getWishlistCount(app *sql.App) (err error) {
 
 func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
 
-	if len(newSales) == 0 {
-		return nil
-	}
-
 	for k := range newSales {
 
 		// newSales[k].SaleStart = time.Now()
