@@ -100,6 +100,8 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
+	t.Types = sql.GetTypesForSelect()
+
 	returnTemplate(w, r, "sales", t)
 }
 
@@ -110,6 +112,7 @@ type salesTemplate struct {
 	UpcomingSale upcomingSale
 	HighestOrder int
 	Count        int64
+	Types        []sql.AppType
 }
 
 type upcomingSale struct {

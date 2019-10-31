@@ -88,7 +88,9 @@
                         <div class="form-group">
                             <label for="app-type">App Type</label>
                             <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="app-type" name="app-type">
-                                <option value=""></option>
+                                {{ range $key, $value := .Types }}
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
+                                {{ end }}
                             </select>
                         </div>
                     </div>
