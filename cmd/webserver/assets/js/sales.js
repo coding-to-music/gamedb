@@ -190,12 +190,27 @@ if ($('#sales-page').length > 0) {
         };
 
         const $platforms = $('#platforms');
+        const $appType = $('#app-type');
 
+        // Default OS
+        if ($platforms.val().length === 0) {
+            $platforms.val(getOS());
+            $platforms.trigger("chosen:updated");
+        }
+
+        if ($appType.val().length === 0) {
+            $appType.val(['game', 'application']);
+            $appType.trigger("chosen:updated");
+        }
+
+        // Init table
         const searchFields = [
             $('#search'),
             $('#tags-in'),
             $('#tags-out'),
             $('#categories'),
+            $('#sale-type'),
+            $appType,
             $platforms,
             $priceElement,
             $scoreElement,
@@ -207,12 +222,6 @@ if ($('#sales-page').length > 0) {
             tableOptions: options,
             searchFields: searchFields
         });
-
-        // Default OS
-        // if ($platforms.val().length === 0) {
-        // $platforms.val([getOS()]);
-        // $platforms.trigger("chosen:updated");
-        // }
 
     })(jQuery, document);
 }
