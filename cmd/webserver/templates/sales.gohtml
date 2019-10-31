@@ -78,6 +78,22 @@
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3x">
                         <div class="form-group">
+                            <label for="sale-type">Sale Type</label>
+                            <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="sale-type" name="sale-type">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
+                            <label for="app-type">App Type</label>
+                            <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="app-type" name="app-type">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3x">
+                        <div class="form-group">
                             <label for="tags-in">Tag <small>(Filter in)</small></label>
                             <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags-in" name="tags-in">
                                 {{ range $key, $value := .Tags }}
@@ -116,14 +132,6 @@
                                 <option value="windows">Windows</option>
                                 <option value="macos">MacOS</option>
                                 <option value="linux">Linux</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4 col-lg-3x">
-                        <div class="form-group">
-                            <label for="types">Sale Type</label>
-                            <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="types" name="types">
-                                <option value=""></option>
                             </select>
                         </div>
                     </div>
