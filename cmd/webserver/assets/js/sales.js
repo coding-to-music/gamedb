@@ -75,21 +75,21 @@ if ($('#sales-page').length > 0) {
             if (prices[0] === prices[1]) {
                 $('label#price-label').html('Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ')');
             } else {
-                $('label#price-label').html('Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ' - ' + user.userCurrencySymbol + Math.round(prices[1]) + ')');
+                $('label#price-label').html('Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ' to ' + user.userCurrencySymbol + Math.round(prices[1]) + ')');
             }
 
             const scores = scoreSlider.get();
             if (scores[0] === scores[1]) {
                 $('label#score-label').html('Score (' + Math.round(scores[0]) + '%)');
             } else {
-                $('label#score-label').html('Score (' + Math.round(scores[0]) + '% - ' + Math.round(scores[1]) + '%)');
+                $('label#score-label').html('Score (' + Math.round(scores[0]) + '% to ' + Math.round(scores[1]) + '%)');
             }
 
             const discounts = discountSlider.get();
             if (discounts[0] === discounts[1]) {
-                $('label#discount-label').html('Discount (' + Math.round(discounts[0]) + '%)');
+                $('label#discount-label').html('Discount (-' + Math.round(discounts[0]) + '%)');
             } else {
-                $('label#discount-label').html('Discount (' + Math.round(discounts[0]) + '% - ' + Math.round(discounts[1]) + '%)');
+                $('label#discount-label').html('Discount (-' + Math.round(discounts[0]) + '% - to -' + Math.round(discounts[1]) + '%)');
             }
 
             $('label#index-label').html('Max Per Game (' + Math.trunc(indexSlider.get()) + ')');

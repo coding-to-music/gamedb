@@ -204,10 +204,10 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 
 		if low > 0 {
-			filter = append(filter, E{Key: "offer_percent", Value: M{"$gte": low}})
+			filter = append(filter, E{Key: "offer_percent", Value: M{"$lte": -low}})
 		}
 		if high < 100 {
-			filter = append(filter, E{Key: "offer_percent", Value: M{"$lte": high}})
+			filter = append(filter, E{Key: "offer_percent", Value: M{"$gte": -high}})
 		}
 	}
 
