@@ -133,7 +133,7 @@
         //
         this.settingsWithoutUrl = $.extend(true, {}, defaults, options);
 
-        // Add url params to options
+        // Add pagination url params to options
         const urlOptions = {};
         const params = new URL(window.location).searchParams;
         if (params.get('page')) {

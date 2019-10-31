@@ -189,17 +189,18 @@ if ($('#sales-page').length > 0) {
             ]
         };
 
-        const $platforms = $('#platforms');
-        const $appType = $('#app-type');
+        // Default form inputs
+        const params = new URL(window.location).searchParams;
 
-        // Default OS
-        if ($platforms.val().length === 0) {
-            $platforms.val(getOS());
+        const $platforms = $('#platforms');
+        if (params.getAll($platforms.attr('name')).length === 0) {
+            setUrlParam($platforms.attr('name'), getOS());
             $platforms.trigger("chosen:updated");
         }
 
-        if ($appType.val().length === 0) {
-            $appType.val(['game', 'application']);
+        const $appType = $('#app-type');
+        if (params.getAll($appType.attr('name')).length === 0) {
+            setUrlParam($appType.attr('name'), ['game']);
             $appType.trigger("chosen:updated");
         }
 
