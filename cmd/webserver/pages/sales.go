@@ -214,6 +214,28 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// App type
+	appTypes := query.getSearchSlice("app-type")
+	if len(appTypes) > 0 {
+
+		var or A
+		for _, v := range appTypes {
+			or = append(or, M{"app_type": v})
+		}
+		filter = append(filter, E{Key: "$or", Value: or})
+	}
+
+	// Sale type
+	saleTypes := query.getSearchSlice("sale-type")
+	if len(saleTypes) > 0 {
+
+		var or A
+		for _, v := range saleTypes {
+			or = append(or, M{"offer_type": v})
+		}
+		filter = append(filter, E{Key: "$or", Value: or})
+	}
+
 	//
 	var wg sync.WaitGroup
 	var offers []mongo.Sale
