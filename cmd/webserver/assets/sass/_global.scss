@@ -68,6 +68,10 @@ body.dark {
         background: #212529;
     }
 
+    img {
+        filter: grayscale(30%);
+    }
+
     // Tabs
     .nav-tabs {
         .nav-link.active {
