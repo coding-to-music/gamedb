@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -154,4 +155,38 @@ func UpdateSales(offers []Sale) (err error) {
 	collection := client.Database(MongoDatabase).Collection(CollectionAppSales.String())
 	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
 	return err
+}
+
+func GetUniqueSaleTypes() (types []string, err error) {
+
+	var item = helpers.MemcacheUniqueSaleTypes
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &types, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return types, err
+		}
+
+		c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppSales.String())
+
+		resp, err := c.Distinct(ctx, "offer_type", M{"offer_end": M{"$gt": time.Now()}}, options.Distinct())
+		if err != nil {
+			return types, err
+		}
+
+		for _, v := range resp {
+			if val, ok := v.(string); ok {
+				types = append(types, val)
+			}
+		}
+
+		sort.Slice(types, func(i, j int) bool {
+			return types[i] < types[j]
+		})
+
+		return types, err
+	})
+
+	return types, err
 }

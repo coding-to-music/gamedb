@@ -100,7 +100,9 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	t.Types = sql.GetTypesForSelect()
+	t.AppTypes = sql.GetTypesForSelect()
+	t.SaleTypes, err = mongo.GetUniqueSaleTypes()
+	log.Err(err)
 
 	returnTemplate(w, r, "sales", t)
 }
@@ -112,7 +114,8 @@ type salesTemplate struct {
 	UpcomingSale upcomingSale
 	HighestOrder int
 	Count        int64
-	Types        []sql.AppType
+	AppTypes     []sql.AppType
+	SaleTypes    []string
 }
 
 type upcomingSale struct {

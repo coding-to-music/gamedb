@@ -80,7 +80,9 @@
                         <div class="form-group">
                             <label for="sale-type">Sale Type</label>
                             <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="sale-type" name="sale-type">
-                                <option value=""></option>
+                                {{ range $key, $value := .SaleTypes }}
+                                    <option value="{{ $value }}">{{ title $value }}</option>
+                                {{ end }}
                             </select>
                         </div>
                     </div>
@@ -88,7 +90,7 @@
                         <div class="form-group">
                             <label for="app-type">App Type</label>
                             <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="app-type" name="app-type">
-                                {{ range $key, $value := .Types }}
+                                {{ range $key, $value := .AppTypes }}
                                     <option value="{{ .ID }}">{{ .Name }}</option>
                                 {{ end }}
                             </select>
