@@ -48,6 +48,18 @@ body.bg {
     }
 }
 
+body.bg.dark {
+    div.jumbotron {
+        opacity: .95;
+    }
+
+    .container {
+        .card {
+            opacity: .98;
+        }
+    }
+}
+
 body.local {
     img:not([alt]) {
         border: solid 2px red;
