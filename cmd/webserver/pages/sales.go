@@ -239,6 +239,59 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter = append(filter, E{Key: "$or", Value: or})
 	}
 
+	// Tag in
+	tagsIn := query.getSearchSlice("tagsIn")
+	if len(tagsIn) > 0 {
+
+		var or A
+		for _, tag := range tagsIn {
+			i, err := strconv.Atoi(tag)
+			if err == nil {
+				or = append(or, M{"app_tags": i})
+			}
+		}
+		filter = append(filter, E{Key: "$or", Value: or})
+	}
+
+	// Tag out
+	tagsOut := query.getSearchSlice("tagsOut")
+	if len(tagsOut) > 0 {
+
+		var or A
+		for _, tag := range tagsOut {
+			i, err := strconv.Atoi(tag)
+			if err == nil {
+				or = append(or, M{"app_tags": M{"$ne": i}})
+			}
+		}
+		filter = append(filter, E{Key: "$or", Value: or})
+	}
+
+	// Categories
+	categories := query.getSearchSlice("tagsIn")
+	if len(categories) > 0 {
+
+		var in A
+		for _, tag := range categories {
+			i, err := strconv.Atoi(tag)
+			if err == nil {
+				in = append(in, i)
+			}
+		}
+		filter = append(filter, E{Key: "app_categories", Value: M{"$in": in}})
+	}
+
+	// Platforms
+	platforms := query.getSearchSlice("platforms")
+	if len(platforms) > 0 {
+
+		var in A
+		for _, tag := range platforms {
+			in = append(in, tag)
+		}
+		filter = append(filter, E{Key: "app_platforms", Value: M{"$in": in}})
+	}
+
 	//
 	var wg sync.WaitGroup
 	var offers []mongo.Sale
