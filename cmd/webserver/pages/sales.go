@@ -158,9 +158,13 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Index
 	index := query.getSearchString("index")
-	orderI, err := strconv.Atoi(strings.TrimSuffix(index, ".00"))
-	if err == nil {
-		filter = append(filter, E{Key: "sub_order", Value: M{"$lte": orderI - 1}})
+	if index != "" {
+		orderI, err := strconv.Atoi(strings.TrimSuffix(index, ".00"))
+		if err == nil {
+			filter = append(filter, E{Key: "sub_order", Value: M{"$lte": orderI - 1}})
+		}
+	} else {
+		filter = append(filter, E{Key: "sub_order", Value: M{"$lte": 0}}) // Default
 	}
 
 	// Score
