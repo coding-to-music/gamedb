@@ -1,3 +1,12 @@
+*::-webkit-scrollbar {
+    width: 12px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #28a745;
+    border-radius: 2px;
+}
+
 html {
     overflow-y: scroll;
 }
@@ -135,6 +144,15 @@ body.dark {
         box-shadow: none;
     }
 
+    .chosen-container-multi {
+        .chosen-choices {
+            .search-choice {
+                background-color: #28a745;
+                color: #e9ecef;
+            }
+        }
+    }
+
     // Tables
     table.table {
         color: #e9ecef !important;
@@ -166,7 +184,6 @@ body.dark {
     }
 }
 
-
 // Debug sizes
 div#sizes {
     position: fixed;
@@ -194,41 +211,6 @@ header {
         background-color: transparent;
         position: static;
     }
-}
-
-// Info panels
-div.jumbotron.bottom {
-
-    @extend .mt-3;
-    @extend .p-3;
-
-    display: table;
-    width: 100%;
-
-    h1 {
-        display: table-cell;
-        width: 1%;
-        vertical-align: middle;
-
-        i, svg {
-            @extend .ml-2;
-            @extend .mr-3;
-        }
-    }
-
-    div {
-        display: table-cell;
-        vertical-align: middle;
-    }
-}
-
-*::-webkit-scrollbar {
-    width: 12px;
-}
-
-*::-webkit-scrollbar-thumb {
-    background-color: #28a745;
-    border-radius: 2px;
 }
 
 //
@@ -400,9 +382,37 @@ div#loading {
     }
 }
 
+// Info panels
+div.jumbotron.bottom {
+
+    @extend .mt-3;
+    @extend .p-3;
+
+    display: table;
+    width: 100%;
+
+    h1 {
+        display: table-cell;
+        width: 1%;
+        vertical-align: middle;
+
+        i, svg {
+            @extend .ml-2;
+            @extend .mr-3;
+        }
+    }
+
+    div {
+        display: table-cell;
+        vertical-align: middle;
+    }
+}
+
 // Toasts
-body #toast-container > div {
-    box-shadow: none;
+body {
+    #toast-container > div {
+        box-shadow: none;
+    }
 }
 
 // Top ads
@@ -431,14 +441,12 @@ body #toast-container > div {
     }
 }
 
-.card-body {
-    padding: 1.25rem 1.25rem 1rem 1.25rem;
-}
-
-.small-print {
-    margin: 30px 0;
-    display: block;
-    position: relative;
+footer {
+    small {
+        margin: 30px 0;
+        display: block;
+        position: relative;
+    }
 }
 
 [data-link] {
@@ -534,9 +542,13 @@ div.json.fullheight {
         margin-bottom: 18px;
     }
 
-    .noUi-base {
-        .noUi-connect {
-            background-color: $link-color;
+    .noUi-target {
+        background: #e9ecef;
+
+        .noUi-base {
+            .noUi-connect {
+                background-color: $link-color;
+            }
         }
     }
 }
