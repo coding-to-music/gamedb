@@ -1195,43 +1195,40 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 
 		// Offers
 		var i = 0
-		c.OnHTML(".game_purchase_discount_countdown", func(e *colly.HTMLElement) {
-
-			s1 := "Offer ends in"
-			s2 := "Offer ends"
+		c.OnHTML("div.game_area_purchase_game p", func(e *colly.HTMLElement) {
 
 			h1 := strings.TrimSuffix(e.DOM.Parent().Find("h1").Text(), "Buy ")
 
-			if strings.Contains(e.Text, s1) {
+			var sale = mongo.Sale{
+				AppID:    app.ID,
+				SubOrder: i,
+				SaleName: h1,
+			}
+
+			// Set discount percent
+			discountText := e.DOM.Parent().Find("div.discount_pct").Text()
+			if discountText != "" {
+				sale.SalePercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
+				if err != nil {
+					log.Err(app.ID, err)
+				}
+			}
+
+			// Get sub ID
+			subIDString, exists := e.DOM.Parent().Find("input[name=subid]").Attr("value")
+			if exists {
+				subID, err := strconv.Atoi(subIDString)
+				if err == nil {
+					sale.SubID = subID
+				}
+			}
+
+			if strings.Contains(e.Text, "Offer ends in") {
 
 				// DAILY DEAL! Offer ends in <span id=348647_countdown_0></span>
 
-				var sale = mongo.Sale{
-					AppID:    app.ID,
-					SaleName: h1,
-					SubOrder: i,
-				}
-
-				// Set discount percent
-				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
-				if discountText != "" {
-					sale.SalePercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
-					if err != nil {
-						log.Err(app.ID, err)
-					}
-				}
-
-				// Get sub ID
-				subIDString, exists := e.DOM.Parent().Find("input[name=subid]").Attr("value")
-				if exists {
-					subID, err := strconv.Atoi(subIDString)
-					if err == nil {
-						sale.SubID = subID
-					}
-				}
-
 				// Get type
-				index := strings.Index(e.Text, s1)
+				index := strings.Index(e.Text, "Offer ends in")
 				sale.SaleType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
 
 				// Get end time
@@ -1246,44 +1243,20 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 				}
 
 				sales = append(sales, sale)
-
 				i++
 
-			} else if strings.Contains(e.Text, s2) {
+			} else if strings.Contains(e.Text, "Offer ends") {
 
 				// SPECIAL PROMOTION! Offer ends 29 August
 
-				var sale = mongo.Sale{
-					AppID:           app.ID,
-					SubOrder:        i,
-					SaleEndEstimate: true,
-					SaleName:        h1,
-				}
-
-				// Set discount percent
-				discountText := e.DOM.Parent().Find("div.discount_pct").Text()
-				if discountText != "" {
-					sale.SalePercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
-					if err != nil {
-						log.Err(app.ID, err)
-					}
-				}
-
-				// Get sub ID
-				subIDString, exists := e.DOM.Parent().Find("input[name=subid]").Attr("value")
-				if exists {
-					subID, err := strconv.Atoi(subIDString)
-					if err == nil {
-						sale.SubID = subID
-					}
-				}
+				sale.SaleEndEstimate = true
 
 				// Get type
-				index := strings.Index(e.Text, s2)
+				index := strings.Index(e.Text, "Offer ends")
 				sale.SaleType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
 
 				// Get end time
-				dateString := strings.TrimSpace(e.Text[index+len(s2):])
+				dateString := strings.TrimSpace(e.Text[index+len("Offer ends"):])
 
 				t, err := time.Parse("2 January", dateString)
 				if err != nil {
@@ -1305,7 +1278,40 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 				}
 
 				sales = append(sales, sale)
+				i++
 
+			} else if strings.Contains(e.Text, "Ends in") {
+
+				// Play for free! Ends in 2 days
+
+				sale.SaleEndEstimate = true
+
+				// Get type
+				index := strings.Index(e.Text, "Ends in")
+				sale.SaleType = strings.ToLower(strings.TrimSpace(e.Text[:index]))
+
+				// Get end time
+				dateString := strings.TrimSpace(e.Text[index+len("Ends in"):])
+
+				daysRegex := regexp.MustCompile("([0-9]{1,2}) day")
+				daysMatches := daysRegex.FindStringSubmatch(dateString)
+				if len(daysMatches) == 2 {
+					i, err := strconv.Atoi(daysMatches[1])
+					if err == nil {
+						sale.SaleEnd.AddDate(0, 0, i)
+					}
+				}
+
+				hoursRegex := regexp.MustCompile("([0-9]{1,2}) day")
+				hoursMatches := hoursRegex.FindStringSubmatch(dateString)
+				if len(hoursMatches) == 2 {
+					i, err := strconv.Atoi(hoursMatches[1])
+					if err == nil {
+						sale.SaleEnd.Add(time.Hour * time.Duration(i))
+					}
+				}
+
+				sales = append(sales, sale)
 				i++
 			}
 		})
