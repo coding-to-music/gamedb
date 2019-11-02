@@ -1,9 +1,6 @@
 package main
 
 import (
-	"math/rand"
-	"time"
-
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/tasks"
@@ -18,8 +15,6 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameCrons})
 
 	log.Info("Starting crons")
-
-	rand.Seed(time.Now().Unix())
 
 	c := cron.New(
 		cron.WithLogger(cronLogger{}),

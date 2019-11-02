@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math/rand"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -27,8 +26,6 @@ func main() {
 	config.SetVersion(version)
 	log.Initialise([]log.LogName{log.LogNameWebserver})
 
-	rand.Seed(time.Now().Unix())
-
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
@@ -45,7 +42,6 @@ func main() {
 	helpers.InitSession()
 
 	// Routes
-	// Don't add compression headers here, it stops js from being able to read the response content-length
 	r := chi.NewRouter()
 	r.Use(MiddlewareCors())
 	r.Use(middleware.RedirectSlashes)
