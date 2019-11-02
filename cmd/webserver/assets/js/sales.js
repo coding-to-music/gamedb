@@ -124,7 +124,7 @@ if ($('#sales-page').length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    // "orderable": false,
                 },
                 // Price
                 {
@@ -160,7 +160,7 @@ if ($('#sales-page').length > 0) {
 
                         let time = '<span data-toggle="tooltip" data-placement="left" title="' + row[7] + '" data-livestamp="' + row[7] + '"></span>';
                         if (row[11]) {
-                            time = +'*';
+                            time = time + '*';
                         }
                         return time;
 

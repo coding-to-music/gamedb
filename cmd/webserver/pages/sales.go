@@ -319,7 +319,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var columns = map[string]string{
-			"0": "app_name",
+			"0": "offer_name",
 			"1": "app_prices." + string(code),
 			"2": "offer_percent",
 			"3": "app_rating",
