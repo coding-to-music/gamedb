@@ -157,7 +157,13 @@ if ($('#sales-page').length > 0) {
                 {
                     "targets": 4,
                     "render": function (data, type, row) {
-                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[7] + '" data-livestamp="' + row[7] + '"></span>';
+
+                        let time = '<span data-toggle="tooltip" data-placement="left" title="' + row[7] + '" data-livestamp="' + row[7] + '"></span>';
+                        if (row[11]) {
+                            time = +'*';
+                        }
+                        return time;
+
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');

@@ -409,6 +409,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			offer.AppReleaseDate.String(),         // 9
 			offer.GetType(),                       // 10
 			lowest,                                // 11
+			offer.SaleEndEstimate,                 // 12
 		})
 	}
 
