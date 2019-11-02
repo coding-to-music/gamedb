@@ -160,6 +160,14 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		{"offer_end", M{"$gt": time.Now()}},
 	}
 
+	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
+	if search != "" {
+		filter = append(filter, E{Key: "$or", Value: A{
+			M{"app_name": M{"$regex": search, "$options": "i"}},
+			M{"offer_name": M{"$regex": search, "$options": "i"}},
+		}})
+	}
+
 	// Index
 	index := query.getSearchString("index")
 	if index != "" {
