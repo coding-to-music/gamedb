@@ -29,7 +29,7 @@
 
         {{ template "_flashes" . }}
 
-        {{ if and (ne .UpcomingSale.Name "") (not ($.GetCookieFlag .UpcomingSale.ID)) }}
+        {{ if and (.UpcomingSale.Show) (not ($.GetCookieFlag .UpcomingSale.ID)) }}
             <div class="jumbotron">
                 <button type="button" class="close" data-dismiss="alert" data-id="{{ .UpcomingSale.ID }}">
                     <span aria-hidden="true">&times;</span>

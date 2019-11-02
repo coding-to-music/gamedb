@@ -19,6 +19,7 @@ import (
 )
 
 func AdminRouter() http.Handler {
+
 	r := chi.NewRouter()
 
 	r.Use(middleware.MiddlewareAuthCheck())

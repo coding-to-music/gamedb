@@ -145,6 +145,10 @@ func (ud upcomingSale) Ended() bool {
 	return ud.Start.AddDate(0, 0, ud.Days).Unix() < time.Now().Unix()
 }
 
+func (ud upcomingSale) Show() bool {
+	return ud.Name != "" && (ud.Time() < time.Now().AddDate(0, 0, 7).Unix())
+}
+
 func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
