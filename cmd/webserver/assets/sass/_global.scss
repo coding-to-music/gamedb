@@ -139,16 +139,22 @@ body.dark {
         }
     }
 
-    .noUi-handle {
-        background: #212529;
-        box-shadow: none;
-    }
-
     .chosen-container-multi {
         .chosen-choices {
             .search-choice {
                 background-color: #28a745;
                 color: #e9ecef;
+            }
+        }
+    }
+
+    .slider {
+        .noUi-target {
+            background: #e9ecef;
+
+            .noUi-handle {
+                background: #212529;
+                box-shadow: none;
             }
         }
     }
@@ -543,8 +549,6 @@ div.json.fullheight {
     }
 
     .noUi-target {
-        background: #e9ecef;
-
         .noUi-base {
             .noUi-connect {
                 background-color: $link-color;
