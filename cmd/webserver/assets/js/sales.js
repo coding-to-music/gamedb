@@ -55,11 +55,11 @@ if ($('#sales-page').length > 0) {
             }
         });
 
-        // Order slider
+        // Index slider
         const $indexElement = $('#index-slider');
         const indexMax = parseInt($indexElement.attr('data-max'));
         const indexSlider = noUiSlider.create($indexElement[0], {
-            start: 1,
+            start: indexMax + 1,
             connect: true,
             step: 1,
             range: {
