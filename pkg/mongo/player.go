@@ -406,6 +406,36 @@ func GetUniquePlayerCountries() (codes []string, err error) {
 	return codes, err
 }
 
+func GetUniquePlayerStates(country string) (codes []string, err error) {
+
+	var item = helpers.MemcacheUniquePlayerStateCodes(country)
+
+	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return codes, err
+		}
+
+		c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
+
+		resp, err := c.Distinct(ctx, "status_code", M{"country_code": country}, options.Distinct())
+		if err != nil {
+			return codes, err
+		}
+
+		for _, v := range resp {
+			if code, ok := v.(string); ok {
+				codes = append(codes, code)
+			}
+		}
+
+		return codes, err
+	})
+
+	return codes, err
+}
+
 func CountPlayers() (count int64, err error) {
 
 	var item = helpers.MemcachePlayersCount

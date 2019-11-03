@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"sort"
 	"strconv"
 	"time"
 
@@ -33,18 +32,8 @@ func (c PlayerRanks) work() {
 	// err2 := mongo.UpdateManyUnset(mongo.CollectionPlayers, M{"ranks": 1})
 	// log.Info(err2)
 
-	codes, err := mongo.GetUniquePlayerCountries()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-	codes = append(codes, mongo.RankCountryAll)
-
-	sort.SliceStable(codes, func(i, j int) bool {
-		return codes[i] < codes[j]
-	})
-
-	fields := []rankTask{
+	var ranks = map[int64]M{}
+	var fields = []rankTask{
 		{"level", mongo.RankKeyLevel},
 		{"games_count", mongo.RankKeyGames},
 		{"badges_count", mongo.RankKeyBadges},
@@ -53,15 +42,21 @@ func (c PlayerRanks) work() {
 		{"comments_count", mongo.RankKeyComments},
 	}
 
-	var ranks = map[int64]M{}
+	// Countries
+	countryCodes, err := mongo.GetUniquePlayerCountries()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+	countryCodes = append(countryCodes, mongo.RankCountryAll)
 
-	for k, cc := range codes {
+	for k, cc := range countryCodes {
 
 		if cc == "" {
 			cc = mongo.RankCountryNone
 		}
 
-		log.Info("CC: " + cc + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(codes)) + ")")
+		log.Info("Country: " + cc + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(countryCodes)) + ")")
 
 		for _, field := range fields {
 
@@ -72,7 +67,7 @@ func (c PlayerRanks) work() {
 
 			players, err := mongo.GetPlayers(0, 0, D{{field.readCol, -1}}, filter, M{"_id": 1})
 			if err != nil {
-				log.Warning(err)
+				log.Err(err)
 				continue
 			}
 
@@ -91,6 +86,43 @@ func (c PlayerRanks) work() {
 		}
 	}
 
+	// US states
+	stateCodes, err := mongo.GetUniquePlayerStates("US")
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	for k, cc := range stateCodes {
+
+		log.Info("State: " + cc + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(stateCodes)) + ")")
+
+		for _, field := range fields {
+
+			filter := D{{field.readCol, M{"$exists": true, "$gt": 0}}, {"country_code", "US"}}
+
+			players, err := mongo.GetPlayers(0, 0, D{{field.readCol, -1}}, filter, M{"_id": 1})
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			for playerK, v := range players {
+
+				key := strconv.Itoa(int(field.writeCol)) + "_s-" + cc
+
+				if _, ok := ranks[v.ID]; !ok {
+					ranks[v.ID] = M{}
+				}
+
+				ranks[v.ID][key] = playerK + 1
+			}
+
+			time.Sleep(time.Second * 1)
+		}
+	}
+
+	//
 	var writes []mongodb.WriteModel
 	for playerID, m := range ranks {
 
