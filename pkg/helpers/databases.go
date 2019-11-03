@@ -28,7 +28,7 @@ func (ql QueryLogger) End() {
 
 	diff := time.Now().Sub(ql.startTime)
 
-	if diff > (time.Second * 1) {
+	if diff > (time.Second * 3) {
 
 		diffFormatted, err := durationfmt.Format(diff, "%s.%is")
 		if err != nil {
