@@ -175,8 +175,6 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			filter = append(filter, E{Key: "sub_order", Value: M{"$lte": orderI - 1}})
 		}
-	} else {
-		filter = append(filter, E{Key: "sub_order", Value: M{"$lte": 0}}) // Default
 	}
 
 	// Score
