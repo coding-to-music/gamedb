@@ -206,7 +206,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get players
-	var playerRows []PlayerRow
+	var players []mongo.Player
 	wg.Add(1)
 	go func() {
 
@@ -214,7 +214,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		players, err := mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, M{
+		players, err = mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
@@ -228,38 +228,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"bans_game":     1,
 			"bans_cav":      1,
 			"bans_last":     1,
-			//
-			"ranks": 1,
 		})
-		if err != nil {
-			log.Err(err)
-			return
-		}
-
-		for k, v := range players {
-
-			playerRow := PlayerRow{}
-			playerRow.Player = v
-
-			switch query.getOrderString(columns) {
-			case "badges_count":
-				playerRow.setRank(v.GetRank(mongo.RankKeyBadges, mongo.RankCountryAll))
-			case "friends_count":
-				playerRow.setRank(v.GetRank(mongo.RankKeyFriends, mongo.RankCountryAll))
-			case "games_count":
-				playerRow.setRank(v.GetRank(mongo.RankKeyGames, mongo.RankCountryAll))
-			case "level", "":
-				playerRow.setRank(v.GetRank(mongo.RankKeyLevel, mongo.RankCountryAll))
-			case "play_time":
-				playerRow.setRank(v.GetRank(mongo.RankKeyPlaytime, mongo.RankCountryAll))
-			case "comments":
-				playerRow.setRank(v.GetRank(mongo.RankKeyComments, mongo.RankCountryAll))
-			default:
-				playerRow.Rank = strconv.Itoa(query.getOffset() + (k + 1))
-			}
-
-			playerRows = append(playerRows, playerRow)
-		}
+		log.Err(err)
 	}()
 
 	// Get total
@@ -295,45 +265,31 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.Draw = query.Draw
 	response.limit(r)
 
-	for _, v := range playerRows {
+	for k, v := range players {
 
 		response.AddRow([]interface{}{
-			v.Rank,                                    // 0
-			strconv.FormatInt(v.Player.ID, 10),        // 1
-			v.Player.PersonaName,                      // 2
-			v.Player.GetAvatar(),                      // 3
-			v.Player.GetAvatar2(),                     // 4
-			v.Player.Level,                            // 5
-			v.Player.GamesCount,                       // 6
-			v.Player.BadgesCount,                      // 7
-			v.Player.GetTimeShort(),                   // 8
-			v.Player.GetTimeLong(),                    // 9
-			v.Player.FriendsCount,                     // 10
-			v.Player.GetFlag(),                        // 11
-			v.Player.GetCountry(),                     // 12
-			v.Player.GetPath(),                        // 13
-			v.Player.CommunityLink(),                  // 14
-			v.Player.NumberOfGameBans,                 // 15
-			v.Player.NumberOfVACBans,                  // 16
-			v.Player.LastBan.Unix(),                   // 17
-			v.Player.LastBan.Format(helpers.DateYear), // 18
-			v.Player.CountryCode,                      // 19
+			query.getOffset() + k + 1,          // 0
+			strconv.FormatInt(v.ID, 10),        // 1
+			v.PersonaName,                      // 2
+			v.GetAvatar(),                      // 3
+			v.GetAvatar2(),                     // 4
+			v.Level,                            // 5
+			v.GamesCount,                       // 6
+			v.BadgesCount,                      // 7
+			v.GetTimeShort(),                   // 8
+			v.GetTimeLong(),                    // 9
+			v.FriendsCount,                     // 10
+			v.GetFlag(),                        // 11
+			v.GetCountry(),                     // 12
+			v.GetPath(),                        // 13
+			v.CommunityLink(),                  // 14
+			v.NumberOfGameBans,                 // 15
+			v.NumberOfVACBans,                  // 16
+			v.LastBan.Unix(),                   // 17
+			v.LastBan.Format(helpers.DateYear), // 18
+			v.CountryCode,                      // 19
 		})
 	}
 
 	response.output(w, r)
-}
-
-// Rank struct
-type PlayerRow struct {
-	Player mongo.Player
-	Rank   string
-}
-
-func (hp *PlayerRow) setRank(i int, found bool) {
-	if found {
-		hp.Rank = helpers.OrdinalComma(i)
-	} else {
-		hp.Rank = "-"
-	}
 }
