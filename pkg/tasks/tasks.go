@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"runtime"
 	"strconv"
 	"time"
 
@@ -126,6 +127,9 @@ func Run(task TaskInterface) {
 		Action: "finished",
 		Time:   Next(task).Unix(),
 	})
+
+	// GC
+	runtime.GC()
 
 	//
 	log.Info("Cron complete: " + task.Name())

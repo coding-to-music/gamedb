@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"runtime"
 	"strconv"
 	"time"
 
@@ -84,6 +85,8 @@ func (c PlayerRanks) work() {
 
 			time.Sleep(time.Second * 1)
 		}
+
+		runtime.GC()
 	}
 
 	// US states
@@ -120,6 +123,8 @@ func (c PlayerRanks) work() {
 
 			time.Sleep(time.Second * 1)
 		}
+
+		runtime.GC()
 	}
 
 	//
