@@ -138,10 +138,10 @@ if ($('#apps-page').length > 0) {
         const params = new URL(window.location).searchParams;
 
         const $platforms = $('#platforms');
-        if (params.getAll($platforms.attr('name')).length === 0) {
-            setUrlParam($platforms.attr('name'), getOS());
-            $platforms.trigger("chosen:updated");
-        }
+        // if (params.getAll($platforms.attr('name')).length === 0) {
+        //     setUrlParam($platforms.attr('name'), getOS());
+        //     $platforms.trigger("chosen:updated");
+        // }
 
         // Init table
         const searchFields = [
