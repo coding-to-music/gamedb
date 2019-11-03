@@ -241,7 +241,7 @@ if ($playerPage.length > 0) {
     function loadPlayerGroups() {
 
         const options = {
-            "order": [[0, 'asc']],
+            "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
                 $(row).attr('data-group-id64', data[0]);
