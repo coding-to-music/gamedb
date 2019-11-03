@@ -410,6 +410,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			offer.GetType(),                       // 10
 			lowest,                                // 11
 			offer.SaleEndEstimate,                 // 12
+			helpers.GetAppType(offer.AppType),     // 13
 		})
 	}
 

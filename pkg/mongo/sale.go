@@ -40,7 +40,7 @@ type Sale struct {
 func (offer Sale) BSON() (ret interface{}) {
 
 	return M{
-		"_id":                offer.getKey(),
+		"_id":                offer.GetKey(),
 		"sub_id":             offer.SubID,
 		"sub_order":          offer.SubOrder,
 		"app_id":             offer.AppID,
@@ -64,7 +64,7 @@ func (offer Sale) BSON() (ret interface{}) {
 	}
 }
 
-func (offer Sale) getKey() (ret string) {
+func (offer Sale) GetKey() (ret string) {
 	return strconv.Itoa(offer.AppID) + "-" + strconv.Itoa(offer.SubID)
 }
 
@@ -145,7 +145,7 @@ func UpdateSales(offers []Sale) (err error) {
 	for _, offer := range offers {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": offer.getKey()})
+		write.SetFilter(M{"_id": offer.GetKey()})
 		write.SetReplacement(offer.BSON())
 		write.SetUpsert(true)
 
