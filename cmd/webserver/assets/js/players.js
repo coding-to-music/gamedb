@@ -16,8 +16,6 @@ if ($('#players-page').length > 0) {
         }
     }
 
-    toggleStateDropDown();
-
     const options = {
         "language": {
             "zeroRecords": "No players found <a href='/players/add'>Add a Player</a>",
@@ -253,4 +251,6 @@ if ($('#players-page').length > 0) {
         },
         1000
     );
+
+    toggleStateDropDown();
 }
