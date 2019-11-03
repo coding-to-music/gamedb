@@ -213,15 +213,7 @@ func (app App) GetPath() string {
 }
 
 func (app App) GetType() (ret string) {
-
-	switch app.Type {
-	case "dlc":
-		return "DLC"
-	case "":
-		return "Unknown"
-	default:
-		return strings.Title(app.Type)
-	}
+	return helpers.GetAppType(app.Type)
 }
 
 func (app App) GetReviewScore() string {

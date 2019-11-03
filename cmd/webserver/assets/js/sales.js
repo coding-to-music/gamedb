@@ -113,7 +113,7 @@ if ($('#sales-page').length > 0) {
                     "render": function (data, type, row) {
 
                         let field = row[1];
-                        field = field + ' <br /><small>' + row[10] + '</small>';
+                        field = field + ' <br /><small>' + row[10] + ' / ' + row[13] + '</small>';
 
                         if (row[11]) {
                             field = field + ' <span class="badge badge-success float-right">Record Low</span>';

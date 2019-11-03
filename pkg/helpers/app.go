@@ -84,3 +84,15 @@ func GetAppStoreLink(appID int) string {
 	name := config.Config.GameDBShortName.Get()
 	return "https://store.steampowered.com/app/" + strconv.Itoa(appID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
 }
+
+func GetAppType(appType string) (ret string) {
+
+	switch appType {
+	case "dlc":
+		return "DLC"
+	case "":
+		return "Unknown"
+	default:
+		return strings.Title(appType)
+	}
+}
