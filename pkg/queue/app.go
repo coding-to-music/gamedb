@@ -1193,7 +1193,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 			}
 		})
 
-		// Offers
+		// Sales
 		var i = 0
 		c.OnHTML("div.game_area_purchase_game p", func(e *colly.HTMLElement) {
 
@@ -1505,9 +1505,19 @@ func getWishlistCount(app *sql.App) (err error) {
 
 func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
 
-	for k := range newSales {
+	// Get current app sales
+	oldSales, err := mongo.GetAppSales(app.ID)
+	if err != nil {
+		return err
+	}
 
-		// newSales[k].SaleStart = time.Now()
+	var oldSalesMap = map[string]mongo.Sale{}
+	for _, v := range oldSales {
+		oldSalesMap[v.GetKey()] = v
+	}
+
+	for k, v := range newSales {
+
 		newSales[k].AppName = app.GetName()
 		newSales[k].AppIcon = app.GetIcon()
 		newSales[k].AppLowestPrice = map[steam.ProductCC]int{} // todo
@@ -1518,6 +1528,12 @@ func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
 		newSales[k].AppPlatforms = app.GetPlatforms()
 		newSales[k].AppCategories = app.GetCategoryIDs()
 		newSales[k].AppType = app.Type
+
+		if val, ok := oldSalesMap[v.GetKey()]; ok {
+			newSales[k].SaleStart = val.SaleStart
+		} else {
+			newSales[k].SaleStart = time.Now()
+		}
 
 		prices, err := app.GetPrices()
 		if err == nil {

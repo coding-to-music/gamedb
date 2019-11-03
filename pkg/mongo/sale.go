@@ -77,7 +77,7 @@ func (offer Sale) GetOfferName() string {
 }
 
 func GetAppSales(appID int) (offers []Sale, err error) {
-	return getSales(0, 0, D{{"app_id", appID}}, D{{"offer_end", 1}}, M{"sub_id": 1})
+	return getSales(0, 0, D{{"app_id", appID}}, D{{"offer_end", 1}}, M{"sub_id": 1, "offer_start": 1})
 }
 
 func CountSales() (count int64, err error) {
