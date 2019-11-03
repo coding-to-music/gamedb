@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -40,7 +39,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	count, err := mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
 	log.Err(err, r)
 
-	t.Count = rounding.NearestThousandFormat(float64(count))
+	t.Count = helpers.ShortHandNumber(count)
 
 	returnTemplate(w, r, "news", t)
 }

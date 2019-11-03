@@ -18,7 +18,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/jinzhu/gorm"
@@ -207,7 +206,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
 		"htmlEscape":   func(text string) string { return html.EscapeString(text) },
 		"pathEscape":   func(text string) string { return url.PathEscape(text) },
-		"round":        func(i int) string { return rounding.NearestThousandFormat(float64(i)) },
+		"round":        func(i int) string { return helpers.ShortHandNumber(int64(i)) },
 	}
 }
 

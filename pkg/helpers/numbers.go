@@ -50,3 +50,24 @@ func PercentageChange(old, new int) (delta float64) {
 	delta = (diff / float64(old)) * 100
 	return
 }
+
+func ShortHandNumber(i int64) string {
+
+	if i >= 1000000000 {
+		return humanize.FormatFloat("#,###.###", float64(i)/1000000000) + "B"
+	}
+
+	if i >= 1000000 {
+		return humanize.FormatFloat("#,###.##", float64(i)/1000000) + "M"
+	}
+
+	if i >= 1000 {
+		return humanize.FormatFloat("#,###.#", float64(i)/1000) + "K"
+	}
+
+	return humanize.FormatFloat("", float64(i))
+}
+
+func RoundTo(x, unit float64) float64 {
+	return math.Round(x/unit) * unit
+}

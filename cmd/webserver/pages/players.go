@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -122,7 +121,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	t := playersTemplate{}
-	t.fill(w, r, "Players", "See where you come against the rest of the world ("+template.HTML(rounding.NearestThousandFormat(float64(count)))+" players).")
+	t.fill(w, r, "Players", "See where you come against the rest of the world ("+template.HTML(helpers.ShortHandNumber(count))+" players).")
 	t.Date = date
 	t.Countries = countries
 	t.Continents = continents

@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/rounding"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -27,7 +26,7 @@ func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := packagesTemplate{}
-	t.fill(w, r, "Packages", "The last "+template.HTML(rounding.NearestThousandFormat(float64(total)))+" packages to be updated.")
+	t.fill(w, r, "Packages", "The last "+template.HTML(helpers.ShortHandNumber(int64(total)))+" packages to be updated.")
 
 	returnTemplate(w, r, "packages", t)
 }
