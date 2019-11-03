@@ -158,14 +158,17 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var columns = map[string]string{
 		"3": "level",
-		"4": "games_count",
-		"5": "badges_count",
-		"6": "play_time",
-		"7": "friends_count",
+		"4": "badges_count",
 
-		"8":  "bans_game",
-		"9":  "bans_cav",
-		"10": "bans_last",
+		"5": "games_count",
+		"6": "play_time",
+
+		"7": "bans_game",
+		"8": "bans_cav",
+		"9": "bans_last",
+
+		"10": "friends_count",
+		"11": "comments_count",
 	}
 
 	var sortOrder = query.getOrderMongo(columns, nil)
@@ -220,14 +223,18 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"avatar":       1,
 			"country_code": 1,
 			//
-			"badges_count":  1,
-			"friends_count": 1,
-			"games_count":   1,
-			"level":         1,
-			"play_time":     1,
-			"bans_game":     1,
-			"bans_cav":      1,
-			"bans_last":     1,
+			"level":        1,
+			"badges_count": 1,
+			//
+			"games_count": 1,
+			"play_time":   1,
+			//
+			"bans_game": 1,
+			"bans_cav":  1,
+			"bans_last": 1,
+			//
+			"friends_count":  1,
+			"comments_count": 1,
 		})
 		log.Err(err)
 	}()
@@ -288,6 +295,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.LastBan.Unix(),                   // 17
 			v.LastBan.Format(helpers.DateYear), // 18
 			v.CountryCode,                      // 19
+			v.CommentsCount,                    // 20
 		})
 	}
 

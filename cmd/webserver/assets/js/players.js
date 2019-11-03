@@ -72,11 +72,18 @@ if ($('#players-page').length > 0) {
                     $(td).addClass('img');
                 },
                 "orderSequence": ["desc"],
-                "visible": false,
+            },
+            // Badges
+            {
+                "targets": 4,
+                "render": function (data, type, row) {
+                    return row[7].toLocaleString();
+                },
+                "orderSequence": ["desc"],
             },
             // Games
             {
-                "targets": 4,
+                "targets": 5,
                 "render": function (data, type, row) {
 
                     if (row[6]) {
@@ -85,16 +92,6 @@ if ($('#players-page').length > 0) {
                     return $lockIcon;
                 },
                 "orderSequence": ["desc"],
-                "visible": false,
-            },
-            // Badges
-            {
-                "targets": 5,
-                "render": function (data, type, row) {
-                    return row[7].toLocaleString();
-                },
-                "orderSequence": ["desc"],
-                "visible": false,
             },
             // Time
             {
@@ -116,11 +113,40 @@ if ($('#players-page').length > 0) {
                     }
                 },
                 "orderSequence": ["desc"],
-                "visible": false,
+            },
+            // Game Bans
+            {
+                "targets": 7,
+                "render": function (data, type, row) {
+                    return row[15].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+            // VAC Bans
+            {
+                "targets": 8,
+                "render": function (data, type, row) {
+                    return row[16].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+            // Last Ban
+            {
+                "targets": 9,
+                "render": function (data, type, row) {
+                    if (row[17] > 0) {
+                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[18] + '" data-livestamp="' + row[17] + '"></span>';
+                    }
+                    return '';
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
+                "orderSequence": ["desc"],
             },
             // Friends
             {
-                "targets": 7,
+                "targets": 10,
                 "render": function (data, type, row) {
 
                     if (row[10] === 0) {
@@ -132,43 +158,18 @@ if ($('#players-page').length > 0) {
                 "orderSequence": ["desc"],
                 "visible": false,
             },
-
-            // Game Bans
+            // Comments
             {
-                "targets": 8,
+                "targets": 11,
                 "render": function (data, type, row) {
-                    return row[15].toLocaleString();
-                },
-                "orderSequence": ["desc"],
-                "visible": false,
-            },
-            // VAC Bans
-            {
-                "targets": 9,
-                "render": function (data, type, row) {
-                    return row[16].toLocaleString();
-                },
-                "orderSequence": ["desc"],
-                "visible": false,
-            },
-            // Last Ban
-            {
-                "targets": 10,
-                "render": function (data, type, row) {
-                    if (row[17] > 0) {
-                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[18] + '" data-livestamp="' + row[17] + '"></span>';
-                    }
-                    return '';
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).attr('nowrap', 'nowrap');
+                    return row[20].toLocaleString();
                 },
                 "orderSequence": ["desc"],
                 "visible": false,
             },
             // Link
             {
-                "targets": 11,
+                "targets": 12,
                 "render": function (data, type, row) {
                     if (row[14]) {
                         return '<a href="' + row[14] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
@@ -191,7 +192,7 @@ if ($('#players-page').length > 0) {
     function updateColumns(dt, hash) {
 
         if (!hash) {
-            hash = '#stats';
+            hash = '#level';
         }
 
         $('#player-nav a[href="' + hash + '"]').tab('show');
@@ -202,20 +203,36 @@ if ($('#players-page').length > 0) {
         let show = [];
 
         switch (hash) {
-            case '#stats':
+            case '#level':
 
-                show = [3, 4, 5, 6, 7];
-                hide = [8, 9, 10];
+                show = [3, 4];
+                hide = [5, 6, 7, 8, 9, 10, 11];
 
                 dt.order([3, 'desc']);
                 break;
 
+            case '#games':
+
+                show = [5, 6];
+                hide = [3, 4, 7, 8, 9, 10, 11];
+
+                dt.order([5, 'desc']);
+                break;
+
             case '#bans':
 
-                show = [8, 9, 10];
-                hide = [3, 4, 5, 6, 7];
+                show = [7, 8, 9];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-                dt.order([8, 'desc']);
+                dt.order([7, 'desc']);
+                break;
+
+            case '#profile':
+
+                show = [10, 11];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+                dt.order([10, 'desc']);
                 break;
         }
 
