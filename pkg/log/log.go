@@ -177,7 +177,7 @@ func log(interfaces ...interface{}) {
 
 		switch val := v.(type) {
 		case nil:
-			entry.texts = append(entry.texts, "nil")
+			continue
 		case error:
 			entry.error = val
 		case bool:
