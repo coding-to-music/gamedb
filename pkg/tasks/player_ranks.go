@@ -102,7 +102,7 @@ func (c PlayerRanks) work() {
 
 		for _, field := range fields {
 
-			filter := D{{field.readCol, M{"$exists": true, "$gt": 0}}, {"country_code", "US"}}
+			filter := D{{"country_code", "US"}, {"status_code", cc}, {field.readCol, M{"$exists": true, "$gt": 0}}}
 
 			players, err := mongo.GetPlayers(0, 0, D{{field.readCol, -1}}, filter, M{"_id": 1})
 			if err != nil {
