@@ -83,7 +83,7 @@ func (c PlayerRanks) work() {
 				ranks[v.ID][key] = playerK + 1
 			}
 
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 1 / 2)
 		}
 
 		runtime.GC()
@@ -121,7 +121,7 @@ func (c PlayerRanks) work() {
 				ranks[v.ID][key] = playerK + 1
 			}
 
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 1 / 2)
 		}
 
 		runtime.GC()
