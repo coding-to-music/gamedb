@@ -139,13 +139,21 @@ func (c PlayerRanks) work() {
 		writes = append(writes, write)
 	}
 
-	err = mongo.BulkUpdatePlayers(writes)
-	if val, ok := err.(mongodb.BulkWriteException); ok {
-		for _, err2 := range val.WriteErrors {
-			log.Err(err2, err2.Request)
+	chunks := mongo.ChunkWriteModels(writes, 10000)
+	for k, chunk := range chunks {
+
+		log.Info("Saving ranks chunk: " + strconv.Itoa(k+1))
+
+		err = mongo.BulkUpdatePlayers(chunk)
+		if val, ok := err.(mongodb.BulkWriteException); ok {
+			for _, err2 := range val.WriteErrors {
+				log.Err(err2, err2.Request)
+			}
+		} else {
+			log.Err(err)
 		}
-	} else {
-		log.Err(err)
+
+		time.Sleep(time.Second * 1 / 2)
 	}
 }
 

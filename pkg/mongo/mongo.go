@@ -402,3 +402,17 @@ func mongoFilterToMemcacheKey(collection collection, filter D) string {
 
 	return collection.String() + "-" + key
 }
+
+func ChunkWriteModels(models []mongo.WriteModel, size int) (chunks [][]mongo.WriteModel) {
+
+	for i := 0; i < len(models); i += size {
+		end := i + size
+
+		if end > len(models) {
+			end = len(models)
+		}
+
+		chunks = append(chunks, models[i:end])
+	}
+	return chunks
+}
