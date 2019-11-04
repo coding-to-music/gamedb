@@ -254,7 +254,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Tag in
-	tagsIn := query.getSearchSlice("tagsIn")
+	tagsIn := query.getSearchSlice("tags-in")
 	if len(tagsIn) > 0 {
 
 		var or A
@@ -268,7 +268,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Tag out
-	tagsOut := query.getSearchSlice("tagsOut")
+	tagsOut := query.getSearchSlice("tags-out")
 	if len(tagsOut) > 0 {
 
 		var or A
