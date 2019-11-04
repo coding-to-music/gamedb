@@ -207,6 +207,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"htmlEscape":   func(text string) string { return html.EscapeString(text) },
 		"pathEscape":   func(text string) string { return url.PathEscape(text) },
 		"round":        func(i int) string { return helpers.ShortHandNumber(int64(i)) },
+		"round64":      func(i int64) string { return helpers.ShortHandNumber(i) },
 	}
 }
 

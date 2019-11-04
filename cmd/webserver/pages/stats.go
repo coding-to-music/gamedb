@@ -74,6 +74,18 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		a := sql.App{}
+		t.OnlinePlayersCount, err = a.GetOnlinePlayers()
+		log.Err(err, r)
+	}()
+
 	// Get total prices
 	wg.Add(1)
 	go func() {
@@ -138,12 +150,13 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsTemplate struct {
 	GlobalTemplate
-	AppsCount     int
-	BundlesCount  int
-	PackagesCount int
-	PlayersCount  int64
-	Totals        []statsAppTypeTotalsRow
-	TypeTotal     string
+	AppsCount          int
+	BundlesCount       int
+	PackagesCount      int
+	PlayersCount       int64
+	OnlinePlayersCount int64
+	Totals             []statsAppTypeTotalsRow
+	TypeTotal          string
 }
 
 type statsAppTypeTotalsRow struct {
