@@ -42,7 +42,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 		return &chunks
 	}
 
-	err := helpers.GetCache("experience", 0, retrieve, &chunks)
+	err := helpers.GetSetCache("experience", 0, retrieve, &chunks)
 	if err != nil {
 		log.Err(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500})

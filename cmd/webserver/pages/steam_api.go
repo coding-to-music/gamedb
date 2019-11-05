@@ -56,7 +56,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 		return &interfaces
 	}
 
-	err = helpers.GetCache("steam-api", time.Hour*24, retrieve, &interfaces)
+	err = helpers.GetSetCache("steam-api", time.Hour*24, retrieve, &interfaces)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "An error occurred"})
 		return

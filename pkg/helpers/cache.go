@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-func GetCache(name string, ttl time.Duration, retrieve func() interface{}, val interface{}) (err error) {
+func GetSetCache(name string, ttl time.Duration, retrieve func() interface{}, val interface{}) (err error) {
 
 	if ttl == 0 {
 		ttl = time.Hour * 24 * 365
