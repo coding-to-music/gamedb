@@ -5,7 +5,9 @@
 
         <div class="jumbotron">
 
-            <img src="{{ .Group.GetIcon }}" alt="{{ .Group.Name }}">
+            {{ if endsWith .Group.GetIcon ".jpg" }}
+                <img src="{{ .Group.GetIcon }}" alt="{{ .Group.Name }}">
+            {{ end }}
 
             {{ template "_social" .Group }}
 
