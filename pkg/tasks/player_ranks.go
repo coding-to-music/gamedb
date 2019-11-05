@@ -90,7 +90,7 @@ func (c PlayerRanks) work() {
 	}
 
 	// Rank by State
-	for _, cc := range []string{"AU", "CA", "FR", "GB", "NZ", "PH", "SI", "US"} {
+	for _, cc := range mongo.CountriesWithStates {
 
 		stateCodes, err := mongo.GetUniquePlayerStates(cc)
 		if err != nil {

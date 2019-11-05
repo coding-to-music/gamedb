@@ -15,6 +15,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var CountriesWithStates = []string{"AU", "CA", "FR", "GB", "NZ", "PH", "SI", "US"}
+
 type RankKey int
 
 func (rk RankKey) String() string {
