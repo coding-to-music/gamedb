@@ -89,42 +89,45 @@ func (c PlayerRanks) work() {
 		runtime.GC()
 	}
 
-	// US states
-	stateCodes, err := mongo.GetUniquePlayerStates("US")
-	if err != nil {
-		log.Err(err)
-		return
-	}
+	// Rank by State
+	for _, cc := range []string{"AU", "CA", "FR", "GB", "NZ", "PH", "SI", "US"} {
 
-	for k, cc := range stateCodes {
-
-		log.Info("State: " + cc + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(stateCodes)) + ")")
-
-		for _, field := range fields {
-
-			filter := D{{"country_code", "US"}, {"status_code", cc}, {field.readCol, M{"$exists": true, "$gt": 0}}}
-
-			players, err := mongo.GetPlayers(0, 0, D{{field.readCol, -1}}, filter, M{"_id": 1})
-			if err != nil {
-				log.Err(err)
-				continue
-			}
-
-			for playerK, v := range players {
-
-				key := strconv.Itoa(int(field.writeCol)) + "_s-" + cc
-
-				if _, ok := ranks[v.ID]; !ok {
-					ranks[v.ID] = M{}
-				}
-
-				ranks[v.ID][key] = playerK + 1
-			}
-
-			time.Sleep(time.Second * 1 / 2)
+		stateCodes, err := mongo.GetUniquePlayerStates(cc)
+		if err != nil {
+			log.Err(err)
+			return
 		}
 
-		runtime.GC()
+		for k, stateCode := range stateCodes {
+
+			log.Info("State: " + stateCode + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(stateCodes)) + ")")
+
+			for _, field := range fields {
+
+				filter := D{{"country_code", cc}, {"status_code", stateCode}, {field.readCol, M{"$exists": true, "$gt": 0}}}
+
+				players, err := mongo.GetPlayers(0, 0, D{{field.readCol, -1}}, filter, M{"_id": 1})
+				if err != nil {
+					log.Err(err)
+					continue
+				}
+
+				for playerK, v := range players {
+
+					key := strconv.Itoa(int(field.writeCol)) + "_s-" + stateCode
+
+					if _, ok := ranks[v.ID]; !ok {
+						ranks[v.ID] = M{}
+					}
+
+					ranks[v.ID][key] = playerK + 1
+				}
+
+				time.Sleep(time.Second * 1 / 2)
+			}
+
+			runtime.GC()
+		}
 	}
 
 	//
