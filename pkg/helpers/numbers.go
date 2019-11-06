@@ -21,7 +21,10 @@ func RoundFloatTo2DP(f float64) float64 {
 }
 
 func FloatToString(f float64, decimals int) string {
-	return strconv.FormatFloat(f, 'f', decimals, 64)
+	s := strconv.FormatFloat(f, 'f', decimals, 64)
+	s = strings.TrimRight(s, "0")
+	s = strings.TrimRight(s, ".")
+	return s
 }
 
 func OrdinalComma(i int) string {
