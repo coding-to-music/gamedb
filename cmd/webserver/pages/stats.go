@@ -119,11 +119,10 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 				app := sql.App{}
 				app.Type = totals[k].Type
+
 				totals[k].TypeFormatted = app.GetType()
-
 				totals[k].CountFormatted = humanize.Comma(totals[k].Count)
-
-				totals[k].TotalFormatted = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(totals[k].Total)))
+				totals[k].TotalFormatted = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(totals[k].Total)), true)
 			}
 
 			return totals, nil
@@ -140,7 +139,6 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		t.TypeTotal = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(total))
-
 	}()
 
 	wg.Wait()
