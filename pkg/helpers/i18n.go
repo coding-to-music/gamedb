@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/pariz/gountries"
 	"golang.org/x/text/currency"
@@ -397,13 +398,14 @@ func CountriesInContinent(continent string) (ret []string) {
 }
 
 // Value is cents
-func FormatPrice(currencyCode steam.CurrencyCode, value int) string {
+func FormatPrice(currencyCode steam.CurrencyCode, value int, returnNumber ...bool) string {
 
-	if value == 0 {
+	if value == 0 && len(returnNumber) == 0 {
 		return "Free"
 	}
 
 	unit, _ := currency.ParseISO(string(currencyCode))
 	printer := message.NewPrinter(language.AmericanEnglish)
-	return printer.Sprint(currency.Symbol(unit.Amount(float64(value) / 100)))
+	symbol := printer.Sprint(currency.Symbol(unit.Amount(0.0)))
+	return strings.Replace(symbol, "0.00", humanize.FormatFloat("#,###.##", float64(value)/100), 1)
 }
