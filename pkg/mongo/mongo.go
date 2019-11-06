@@ -304,7 +304,11 @@ func CountDocuments(collection collection, filter D, ttl int32) (count int64, er
 		ql := helpers.QueryLogger{}
 		ql.Start("CountDocuments", collection.String(), filter, nil)
 
-		count, err = client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
+		if len(filter) == 0 {
+			count, err = client.Database(MongoDatabase).Collection(collection.String()).EstimatedDocumentCount(ctx)
+		} else {
+			count, err = client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter)
+		}
 
 		ql.End()
 
