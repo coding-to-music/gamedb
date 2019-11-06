@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -393,22 +392,30 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			lowest = priceInt <= lowestPriceInt
 		}
 
+		// Rating
+		var rating interface{}
+		if offer.AppRating == 0 {
+			rating = "-"
+		} else {
+			rating = helpers.FloatToString(offer.AppRating, 1) + "%"
+		}
+
 		//
 		response.AddRow([]interface{}{
 			offer.AppID,          // 0
 			offer.GetOfferName(), // 1
 			offer.AppIcon,        // 2
 			helpers.GetAppPath(offer.AppID, offer.AppName), // 3
-			priceString,                           // 4
-			offer.SalePercent,                     // 5
-			math.Round(offer.AppRating*100) / 100, // 6
-			offer.SaleEnd.String(),                // 7
-			helpers.GetAppStoreLink(offer.AppID),  // 8
-			offer.AppReleaseDate.String(),         // 9
-			offer.GetType(),                       // 10
-			lowest,                                // 11
-			offer.SaleEndEstimate,                 // 12
-			helpers.GetAppType(offer.AppType),     // 13
+			priceString,                          // 4
+			offer.SalePercent,                    // 5
+			rating,                               // 6
+			offer.SaleEnd.String(),               // 7
+			helpers.GetAppStoreLink(offer.AppID), // 8
+			offer.AppReleaseDate.String(),        // 9
+			offer.GetType(),                      // 10
+			lowest,                               // 11
+			offer.SaleEndEstimate,                // 12
+			helpers.GetAppType(offer.AppType),    // 13
 		})
 	}
 
