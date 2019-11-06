@@ -258,7 +258,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			idMap := map[string]string{}
 
 			err := helpers.Unmarshal([]byte(val), &idMap)
-			log.Err(err)
+			log.Err(err, val)
 
 			var idSlice []string
 
@@ -285,7 +285,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			idMap := map[string]string{}
 
 			err := helpers.Unmarshal([]byte(val), &idMap)
-			log.Err(err)
+			log.Err(err, val)
 
 			var idSlice []string
 
@@ -333,7 +333,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 				m := map[string]string{}
 				err := helpers.Unmarshal([]byte(val), &m)
-				log.Err(err)
+				log.Err(err, val)
 
 				var items []string
 				for k, v := range m {
@@ -352,7 +352,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 					eulas := EULAs{}
 					err := helpers.Unmarshal([]byte(val), &eulas)
-					log.Err(err)
+					log.Err(err, val)
 
 					var items []string
 					for _, eula := range eulas {
@@ -368,7 +368,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 					langs := SupportedLanguages{}
 					err := helpers.Unmarshal([]byte(val), &langs)
-					log.Err(err)
+					log.Err(err, val)
 
 					var items []string
 					for code, lang := range langs {
@@ -409,7 +409,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 					categories := map[string]string{}
 					err := helpers.Unmarshal([]byte(val), &categories)
-					log.Err(err)
+					log.Err(err, val)
 
 					var items []int
 					for k := range categories {
@@ -433,7 +433,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 					languages := map[string]string{}
 					err := helpers.Unmarshal([]byte(val), &languages)
-					log.Err(err)
+					log.Err(err, val)
 
 					var items []string
 					for k, v := range languages {
@@ -455,7 +455,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 					associations := Associations{}
 					err := helpers.Unmarshal([]byte(val), &associations)
-					log.Err(err)
+					log.Err(err, val)
 
 					var items []string
 					for _, v := range associations {
@@ -475,7 +475,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 					files := saveFiles{}
 					err := helpers.Unmarshal([]byte(val), &files)
-					log.Err(err)
+					log.Err(err, val)
 
 					var items []string
 					for _, file := range files {
