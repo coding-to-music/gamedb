@@ -1,6 +1,6 @@
 if ($('#admin-page').length > 0) {
 
-    $('#actions tr').on('click', function () {
+    $('#actions tbody tr').on('click', function () {
         if (confirm('Are you sure?')) {
             $.ajax({
                 type: 'get',
