@@ -208,7 +208,7 @@ func (player Player) GetSpecialBadges() (badges []PlayerBadge) {
 
 	for _, v := range player.BadgeIDs {
 
-		if val, ok := Badges[v]; ok {
+		if val, ok := GlobalBadges[v]; ok {
 			badges = append(badges, val)
 		}
 	}

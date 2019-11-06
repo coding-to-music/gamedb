@@ -519,12 +519,12 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 		// Add significant badges to profile
 		if v.AppID == 0 {
-			_, ok := mongo.Badges[v.BadgeID]
+			_, ok := mongo.GlobalBadges[v.BadgeID]
 			if ok {
 				specialBadgeIDSlice = append(specialBadgeIDSlice, v.BadgeID)
 			}
 		} else {
-			_, ok := mongo.Badges[v.AppID]
+			_, ok := mongo.GlobalBadges[v.AppID]
 			if ok {
 				specialBadgeIDSlice = append(specialBadgeIDSlice, v.AppID)
 			}

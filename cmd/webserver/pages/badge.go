@@ -34,7 +34,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	val, ok := mongo.Badges[idx]
+	val, ok := mongo.GlobalBadges[idx]
 	if !ok {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
 		return
@@ -68,7 +68,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	badge, ok := mongo.Badges[idx]
+	badge, ok := mongo.GlobalBadges[idx]
 	if !ok {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
 		return

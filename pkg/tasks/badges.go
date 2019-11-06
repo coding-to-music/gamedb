@@ -2,7 +2,7 @@ package tasks
 
 import (
 	"math/rand"
-	"time"
+	"reflect"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -26,34 +26,11 @@ func (c SetBadgeCache) Cron() string {
 
 func (c SetBadgeCache) work() {
 
-	var err error
+	// Get random map key
+	keys := reflect.ValueOf(mongo.GlobalBadges).MapKeys()
+	randomID := keys[rand.Intn(len(keys))].Interface().(int)
 
-	// Get a random badge
-	badge := mongo.Badges[rand.Intn(len(mongo.Badges))]
-
-	if badge.IsSpecial() {
-
-		err = badge.SetSpecialFirsts()
-		log.Err(err)
-
-		time.Sleep(time.Second * 10)
-
-		err = badge.SetSpecialPlayers()
-		log.Err(err)
-
-	} else {
-
-		err = badge.SetEventMax()
-		log.Err(err)
-
-		time.Sleep(time.Second * 10)
-
-		err = badge.SetEventFoilMax()
-		log.Err(err)
-
-		time.Sleep(time.Second * 10)
-
-		err = badge.SetEventPlayers()
-		log.Err(err)
-	}
+	// Update random badge
+	err := mongo.UpdateBadgeSummary(randomID)
+	log.Err(err)
 }

@@ -57,11 +57,6 @@ var (
 	MemcachePlayerInQueue  = func(playerID int64) memcache.Item { return memcache.Item{Key: "profile-in-queue-" + strconv.FormatInt(playerID, 10), Expiration: 60 * 60, Value: []byte("1")} }
 	MemcacheGroupInQueue   = func(groupID string) memcache.Item { return memcache.Item{Key: "group-in-queue-" + groupID, Expiration: 60 * 60, Value: []byte("1")} }
 
-	// Badges
-	MemcacheBadgeMaxEvent      = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
-	MemcacheBadgeMaxEventFoil  = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-event-foil-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
-	MemcacheBadgeSpecialFirsts = func(id int) memcache.Item { return memcache.Item{Key: "badge-max-special-" + strconv.Itoa(id), Expiration: 60 * 60 * 25} }
-
 	// Home
 	MemcacheHomePlayers = func(sort string) memcache.Item { return memcache.Item{Key: "home-players-" + sort, Expiration: 60 * 60 * 48} }
 

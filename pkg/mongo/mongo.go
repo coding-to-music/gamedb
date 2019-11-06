@@ -37,25 +37,26 @@ func (c collection) String() string {
 }
 
 const (
-	CollectionAppArticles        collection = "app_articles"
-	CollectionAppItems           collection = "app_items"
-	CollectionAppSales           collection = "app_offers"
-	CollectionApps               collection = "apps"
-	CollectionBundlePrices       collection = "bundle_prices"
-	CollectionChangeItems        collection = "change_products"
-	CollectionChanges            collection = "changes"
-	CollectionEvents             collection = "events"
-	CollectionGroups             collection = "groups"
-	CollectionPatreonWebhooks    collection = "patreon_webhooks"
-	CollectionPackageApps        collection = "package_apps"
-	CollectionPlayerApps         collection = "player_apps"
-	CollectionPlayerAppsRecent   collection = "player_apps_recent"
-	CollectionPlayerBadges       collection = "player_badges"
-	CollectionPlayerFriends      collection = "player_friends"
-	CollectionPlayerGroups       collection = "player_groups"
-	CollectionPlayerWishlistApps collection = "player_wishlist_apps"
-	CollectionPlayers            collection = "players"
-	CollectionProductPrices      collection = "product_prices"
+	CollectionAppArticles         collection = "app_articles"
+	CollectionAppItems            collection = "app_items"
+	CollectionAppSales            collection = "app_offers"
+	CollectionApps                collection = "apps"
+	CollectionBundlePrices        collection = "bundle_prices"
+	CollectionChangeItems         collection = "change_products"
+	CollectionChanges             collection = "changes"
+	CollectionEvents              collection = "events"
+	CollectionGroups              collection = "groups"
+	CollectionPatreonWebhooks     collection = "patreon_webhooks"
+	CollectionPackageApps         collection = "package_apps"
+	CollectionPlayerApps          collection = "player_apps"
+	CollectionPlayerAppsRecent    collection = "player_apps_recent"
+	CollectionPlayerBadges        collection = "player_badges"
+	CollectionPlayerBadgesSummary collection = "player_badges_summary"
+	CollectionPlayerFriends       collection = "player_friends"
+	CollectionPlayerGroups        collection = "player_groups"
+	CollectionPlayerWishlistApps  collection = "player_wishlist_apps"
+	CollectionPlayers             collection = "players"
+	CollectionProductPrices       collection = "product_prices"
 	// CollectionWishlistApps       collection = "wishlist-apps"
 	// CollectionWishlistTags       collection = "wishlist-tags"
 
@@ -300,15 +301,10 @@ func CountDocuments(collection collection, filter D, ttl int32) (count int64, er
 			return count, err
 		}
 
-		ops := options.Count()
-		if config.IsLocal() {
-			ops.SetLimit(1000)
-		}
-
 		ql := helpers.QueryLogger{}
 		ql.Start("CountDocuments", collection.String(), filter, nil)
 
-		count, err = client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, ops)
+		count, err = client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, options.Count())
 
 		ql.End()
 
@@ -316,37 +312,6 @@ func CountDocuments(collection collection, filter D, ttl int32) (count int64, er
 	})
 
 	return count, err
-}
-
-func SetCountDocuments(collection collection, filter D, ttl int32) error {
-
-	item := helpers.MemcacheMongoCount(mongoFilterToMemcacheKey(collection, filter))
-	if ttl > 0 {
-		item.Expiration = ttl
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return err
-	}
-
-	ops := options.Count()
-	if config.IsLocal() {
-		ops.SetLimit(1000)
-	}
-
-	ql := helpers.QueryLogger{}
-	ql.Start("CountDocuments", collection.String(), filter, nil)
-
-	count, err := client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter, ops)
-
-	ql.End()
-
-	if err != nil {
-		return err
-	}
-
-	return helpers.GetMemcache().SetInterface(item.Key, count, ttl)
 }
 
 // Need to close cursor after calling this

@@ -1,13 +1,9 @@
 package mongo
 
 import (
-	"errors"
-	"html/template"
-	"sort"
 	"strconv"
 	"time"
 
-	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
@@ -119,170 +115,6 @@ func (pb PlayerBadge) GetPlayerIcon() string {
 	return helpers.GetPlayerAvatar(pb.PlayerIcon)
 }
 
-func (pb PlayerBadge) GetSpecialPlayers() (int64, error) {
-	return CountDocuments(CollectionPlayerBadges, pb.specialPlayersCountFilter(), 60*60*24*24)
-}
-
-func (pb PlayerBadge) SetSpecialPlayers() error {
-	return SetCountDocuments(CollectionPlayerBadges, pb.specialPlayersCountFilter(), 60*60*24*24)
-}
-
-func (pb PlayerBadge) specialPlayersCountFilter() D {
-	return D{{"app_id", 0}, {"badge_id", pb.BadgeID}}
-}
-
-// Cached
-func (pb PlayerBadge) GetSpecialFirsts() (ret template.HTML, err error) {
-
-	var item = helpers.MemcacheBadgeSpecialFirsts(pb.BadgeID)
-	var firsts []PlayerBadge
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &firsts, func() (interface{}, error) {
-		return pb.getSpecialFirsts()
-	})
-
-	if len(firsts) > 1 {
-		return template.HTML(strconv.Itoa(len(firsts))) + " joint firsts", nil
-	}
-
-	sort.Slice(firsts, func(i, j int) bool {
-		return firsts[i].PlayerName < firsts[j].PlayerName
-	})
-
-	for k, v := range firsts {
-		ret += "<a href=" + template.HTML(v.GetPlayerPath()) + ">" + template.HTML(v.PlayerName) + "</a>"
-		if k < len(firsts)-1 {
-			ret += " / "
-		}
-	}
-
-	return ret, err
-}
-
-// Not cached
-func (pb PlayerBadge) getSpecialFirsts() (playerBadges []PlayerBadge, err error) {
-
-	var max PlayerBadge
-
-	err = FindOne(
-		CollectionPlayerBadges,
-		D{{"app_id", 0}, {"badge_id", pb.BadgeID}},
-		D{{"badge_level", -1}, {"badge_completion_time", 1}},
-		M{"badge_level": 1, "badge_completion_time": 1},
-		&max,
-	)
-
-	return getBadges(
-		0,
-		2, // We don't show names if above 1
-		D{{"app_id", 0}, {"badge_id", pb.BadgeID}, {"badge_level", max.BadgeLevel}, {"badge_completion_time", max.BadgeCompletionTime}},
-		D{{"badge_completion_time", -1}},
-		M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
-	)
-}
-
-func (pb PlayerBadge) SetSpecialFirsts() (err error) {
-
-	item := helpers.MemcacheBadgeSpecialFirsts(pb.BadgeID)
-
-	firsts, err := pb.getSpecialFirsts()
-	if err != nil {
-		return err
-	}
-
-	return helpers.GetMemcache().SetInterface(item.Key, firsts, 60*60*24)
-}
-
-func (pb PlayerBadge) GetEventPlayers() (int64, error) {
-	return CountDocuments(CollectionPlayerBadges, pb.eventPlayersCountFilter(), 60*60*24*24)
-}
-
-func (pb PlayerBadge) SetEventPlayers() error {
-	return SetCountDocuments(CollectionPlayerBadges, pb.eventPlayersCountFilter(), 60*60*24*24)
-}
-
-func (pb PlayerBadge) eventPlayersCountFilter() D {
-	return D{{"app_id", pb.AppID}, {"badge_id", M{"$gt": 0}}}
-}
-
-// Cached
-func (pb PlayerBadge) GetEventMax() (max PlayerBadge, err error) {
-
-	var item = helpers.MemcacheBadgeMaxEvent(pb.AppID)
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
-		return pb.getEventFirst(false)
-	})
-
-	return max, err
-}
-
-func (pb PlayerBadge) SetEventMax() (err error) {
-
-	item := helpers.MemcacheBadgeMaxEvent(pb.AppID)
-
-	max, err := pb.getEventFirst(false)
-	if err != nil {
-		return err
-	}
-
-	return helpers.GetMemcache().SetInterface(item.Key, max, 60*60*24)
-}
-
-// Cached
-func (pb PlayerBadge) GetEventMaxFoil() (max PlayerBadge, err error) {
-
-	var item = helpers.MemcacheBadgeMaxEventFoil(pb.AppID)
-
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &max, func() (interface{}, error) {
-		return pb.getEventFirst(true)
-	})
-
-	return max, err
-}
-
-func (pb PlayerBadge) SetEventFoilMax() (err error) {
-
-	item := helpers.MemcacheBadgeMaxEventFoil(pb.AppID)
-
-	max, err := pb.getEventFirst(true)
-	if err != nil {
-		return err
-	}
-
-	return helpers.GetMemcache().SetInterface(item.Key, max, 60*60*24)
-}
-
-func (pb PlayerBadge) getEventFirst(foil bool) (max PlayerBadge, err error) {
-
-	operation := func() (err error) {
-
-		err = FindOne(
-			CollectionPlayerBadges,
-			D{{"app_id", pb.AppID}, {"badge_id", M{"$gt": 0}}, {"badge_foil", foil}},
-			D{{"badge_level", -1}, {"badge_completion_time", 1}},
-			M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
-			&max,
-		)
-
-		if max.BadgeLevel < 2 {
-			return errors.New("mongo returned wrong result")
-		}
-
-		return err
-	}
-
-	policy := backoff.NewExponentialBackOff()
-	policy.InitialInterval = time.Second
-
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, t) })
-	if err != nil {
-		log.Critical(err)
-	}
-
-	return max, err
-}
-
 func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 
 	if badges == nil || len(badges) == 0 {
@@ -313,14 +145,14 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 }
 
 func GetPlayerEventBadges(offset int64, filter D) (badges []PlayerBadge, err error) {
-	return getBadges(offset, 100, filter, D{{"badge_completion_time", -1}}, nil)
+	return getPlayerBadges(offset, 100, filter, D{{"badge_completion_time", -1}}, nil)
 }
 
 func GetBadgePlayers(offset int64, filter D) (badges []PlayerBadge, err error) {
-	return getBadges(offset, 100, filter, D{{"badge_level", -1}, {"badge_completion_time", 1}}, nil)
+	return getPlayerBadges(offset, 100, filter, D{{"badge_level", -1}, {"badge_completion_time", 1}}, nil)
 }
 
-func getBadges(offset int64, limit int64, filter D, sort D, projection M) (badges []PlayerBadge, err error) {
+func getPlayerBadges(offset int64, limit int64, filter D, sort D, projection M) (badges []PlayerBadge, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerBadges, offset, limit, sort, filter, projection, nil)
 	if err != nil {
@@ -345,7 +177,7 @@ func getBadges(offset int64, limit int64, filter D, sort D, projection M) (badge
 	return badges, cur.Err()
 }
 
-var Badges = map[int]PlayerBadge{
+var GlobalBadges = map[int]PlayerBadge{
 	1:      {BadgeID: 1, BadgeIcon: "02_years/steamyears1002_80.png", BadgeName: "Years of Service"},
 	2:      {BadgeID: 2, BadgeIcon: "01_community/community03_80.png", BadgeName: "Community Ambassador"},
 	3:      {BadgeID: 3, BadgeIcon: "03_potato/potato03_80.png", BadgeName: "The Potato Sack"},
