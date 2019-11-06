@@ -28,20 +28,20 @@ type ProductPrice struct {
 	DifferencePercent float64            `bson:"difference_percent"`
 }
 
-func (price ProductPrice) BSON() (ret interface{}) {
+func (price ProductPrice) BSON() D {
 
-	return M{
-		"created_at":         price.CreatedAt,
-		"app_id":             price.AppID,
-		"package_id":         price.PackageID,
-		"currency":           price.Currency,
-		"prod_cc":            price.ProdCC,
-		"name":               price.Name,
-		"icon":               price.Icon,
-		"price_before":       price.PriceBefore,
-		"price_after":        price.PriceAfter,
-		"difference":         price.Difference,
-		"difference_percent": price.DifferencePercent,
+	return D{
+		{"created_at", price.CreatedAt},
+		{"app_id", price.AppID},
+		{"package_id", price.PackageID},
+		{"currency", price.Currency},
+		{"prod_cc", price.ProdCC},
+		{"name", price.Name},
+		{"icon", price.Icon},
+		{"price_before", price.PriceBefore},
+		{"price_after", price.PriceAfter},
+		{"difference", price.Difference},
+		{"difference_percent", price.DifferencePercent},
 	}
 }
 

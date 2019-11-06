@@ -22,19 +22,19 @@ type PatreonWebhook struct {
 	DataPledgeRelationshipStart time.Time `bson:"pledge_relationship_start"`
 }
 
-func (pw PatreonWebhook) BSON() (ret interface{}) {
+func (pw PatreonWebhook) BSON() D {
 
-	return M{
-		"created_at":                     pw.CreatedAt,
-		"request_body":                   pw.RequestBody,
-		"event":                          pw.Event,
-		"user_id":                        pw.UserID,
-		"user_email":                     pw.UserEmail,
-		"data_lifetime_support_cents":    pw.DataLifetimeSupportCents,
-		"data_patron_status":             pw.DataPatronStatus,
-		"data_pledge_amount_cents":       pw.DataPledgeAmountCents,
-		"data_pledge_cap_amount_cents":   pw.DataPledgeCapAmountCents,
-		"data_pledge_relationship_start": pw.DataPledgeRelationshipStart,
+	return D{
+		{"created_at", pw.CreatedAt},
+		{"request_body", pw.RequestBody},
+		{"event", pw.Event},
+		{"user_id", pw.UserID},
+		{"user_email", pw.UserEmail},
+		{"data_lifetime_support_cents", pw.DataLifetimeSupportCents},
+		{"data_patron_status", pw.DataPatronStatus},
+		{"data_pledge_amount_cents", pw.DataPledgeAmountCents},
+		{"data_pledge_cap_amount_cents", pw.DataPledgeCapAmountCents},
+		{"data_pledge_relationship_start", pw.DataPledgeRelationshipStart},
 	}
 }
 

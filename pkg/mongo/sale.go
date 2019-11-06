@@ -37,30 +37,30 @@ type Sale struct {
 	SaleName        string                  `bson:"offer_name"`
 }
 
-func (offer Sale) BSON() (ret interface{}) {
+func (offer Sale) BSON() D {
 
-	return M{
-		"_id":                offer.GetKey(),
-		"sub_id":             offer.SubID,
-		"sub_order":          offer.SubOrder,
-		"app_id":             offer.AppID,
-		"app_name":           offer.AppName,
-		"app_icon":           offer.AppIcon,
-		"app_rating":         offer.AppRating,
-		"app_date":           offer.AppReleaseDate,
-		"app_prices":         offer.AppPrices,
-		"app_lowest_price":   offer.AppLowestPrice,
-		"app_players":        offer.AppPlayersWeek,
-		"app_categories":     offer.AppCategories,
-		"app_type":           offer.AppType,
-		"app_platforms":      offer.AppPlatforms,
-		"app_tags":           offer.AppTags,
-		"offer_start":        offer.SaleStart,
-		"offer_end":          offer.SaleEnd,
-		"offer_end_estimate": offer.SaleEndEstimate,
-		"offer_type":         offer.SaleType,
-		"offer_percent":      offer.SalePercent,
-		"offer_name":         offer.SaleName,
+	return D{
+		{"_id", offer.GetKey()},
+		{"sub_id", offer.SubID},
+		{"sub_order", offer.SubOrder},
+		{"app_id", offer.AppID},
+		{"app_name", offer.AppName},
+		{"app_icon", offer.AppIcon},
+		{"app_rating", offer.AppRating},
+		{"app_date", offer.AppReleaseDate},
+		{"app_prices", offer.AppPrices},
+		{"app_lowest_price", offer.AppLowestPrice},
+		{"app_players", offer.AppPlayersWeek},
+		{"app_categories", offer.AppCategories},
+		{"app_type", offer.AppType},
+		{"app_platforms", offer.AppPlatforms},
+		{"app_tags", offer.AppTags},
+		{"offer_start", offer.SaleStart},
+		{"offer_end", offer.SaleEnd},
+		{"offer_end_estimate", offer.SaleEndEstimate},
+		{"offer_type", offer.SaleType},
+		{"offer_percent", offer.SalePercent},
+		{"offer_name", offer.SaleName},
 	}
 }
 

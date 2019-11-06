@@ -22,7 +22,7 @@ type PlayerApp struct {
 	AppPriceHour map[string]float64 `bson:"app_prices_hour"`
 }
 
-func (pa PlayerApp) BSON() (ret interface{}) {
+func (pa PlayerApp) BSON() D {
 
 	var prices = M{}
 	for k, v := range pa.AppPrices {
@@ -34,15 +34,15 @@ func (pa PlayerApp) BSON() (ret interface{}) {
 		pricesHour[k] = v
 	}
 
-	return M{
-		"_id":             pa.getKey(),
-		"player_id":       pa.PlayerID,
-		"app_id":          pa.AppID,
-		"app_name":        pa.AppName,
-		"app_icon":        pa.AppIcon,
-		"app_time":        pa.AppTime,
-		"app_prices":      prices,
-		"app_prices_hour": pricesHour,
+	return D{
+		{"_id", pa.getKey()},
+		{"player_id", pa.PlayerID},
+		{"app_id", pa.AppID},
+		{"app_name", pa.AppName},
+		{"app_icon", pa.AppIcon},
+		{"app_time", pa.AppTime},
+		{"app_prices", prices},
+		{"app_prices_hour", pricesHour},
 	}
 }
 

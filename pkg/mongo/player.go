@@ -91,41 +91,41 @@ type Player struct {
 	PlayTime     int `bson:"play_time"`
 }
 
-func (player Player) BSON() (ret interface{}) {
+func (player Player) BSON() D {
 
-	return M{
-		"_id":                    player.ID,
-		"avatar":                 player.Avatar,
-		"background_app_id":      player.BackgroundAppID,
-		"badge_ids":              player.BadgeIDs,
-		"badge_stats":            player.BadgeStats,
-		"bans":                   player.Bans,
-		"country_code":           player.CountryCode,
-		"donated":                player.Donated,
-		"game_stats":             player.GameStats,
-		"games_by_type":          player.GamesByType,
-		"time_logged_off":        player.LastLogOff,
-		"bans_last":              player.LastBan,
-		"bans_game":              player.NumberOfGameBans,
-		"bans_cav":               player.NumberOfVACBans,
-		"persona_name":           player.PersonaName,
-		"primary_clan_id_string": player.PrimaryClanIDString,
-		"status_code":            player.StateCode,
-		"time_created":           player.TimeCreated,
-		"updated_at":             time.Now(),
-		"vanity_url":             player.VanintyURL,
-		"wishlist_apps_count":    player.WishlistAppsCount,
-		"recent_apps_count":      player.RecentAppsCount,
-		"groups_count":           player.GroupsCount,
-		"ranks":                  player.Ranks,
+	return D{
+		{"_id", player.ID},
+		{"avatar", player.Avatar},
+		{"background_app_id", player.BackgroundAppID},
+		{"badge_ids", player.BadgeIDs},
+		{"badge_stats", player.BadgeStats},
+		{"bans", player.Bans},
+		{"country_code", player.CountryCode},
+		{"donated", player.Donated},
+		{"game_stats", player.GameStats},
+		{"games_by_type", player.GamesByType},
+		{"time_logged_off", player.LastLogOff},
+		{"bans_last", player.LastBan},
+		{"bans_game", player.NumberOfGameBans},
+		{"bans_cav", player.NumberOfVACBans},
+		{"persona_name", player.PersonaName},
+		{"primary_clan_id_string", player.PrimaryClanIDString},
+		{"status_code", player.StateCode},
+		{"time_created", player.TimeCreated},
+		{"updated_at", time.Now()},
+		{"vanity_url", player.VanintyURL},
+		{"wishlist_apps_count", player.WishlistAppsCount},
+		{"recent_apps_count", player.RecentAppsCount},
+		{"groups_count", player.GroupsCount},
+		{"ranks", player.Ranks},
 
 		// Ranked
-		"badges_count":   player.BadgesCount,
-		"friends_count":  player.FriendsCount,
-		"games_count":    player.GamesCount,
-		"level":          player.Level,
-		"play_time":      player.PlayTime,
-		"comments_count": player.CommentsCount,
+		{"badges_count", player.BadgesCount},
+		{"friends_count", player.FriendsCount},
+		{"games_count", player.GamesCount},
+		{"level", player.Level},
+		{"play_time", player.PlayTime},
+		{"comments_count", player.CommentsCount},
 	}
 }
 

@@ -19,17 +19,17 @@ type PackageApp struct {
 	AppDLCCount  int      `bson:"app_dlc_count"`
 }
 
-func (app PackageApp) BSON() (ret interface{}) {
+func (app PackageApp) BSON() D {
 
-	return M{
-		"_id":           app.getKey(),
-		"package_id":    app.PackageID,
-		"app_id":        app.AppID,
-		"app_icon":      app.AppIcon,
-		"app_name":      app.AppName,
-		"app_type":      app.AppType,
-		"app_platforms": app.AppPlatforms,
-		"app_dlc_count": app.AppDLCCount,
+	return D{
+		{"_id", app.getKey()},
+		{"package_id", app.PackageID},
+		{"app_id", app.AppID},
+		{"app_icon", app.AppIcon},
+		{"app_name", app.AppName},
+		{"app_type", app.AppType},
+		{"app_platforms", app.AppPlatforms},
+		{"app_dlc_count", app.AppDLCCount},
 	}
 }
 

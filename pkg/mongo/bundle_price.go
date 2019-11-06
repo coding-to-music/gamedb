@@ -15,13 +15,13 @@ type BundlePrice struct {
 	Discount  int       `bson:"price"`
 }
 
-func (price BundlePrice) BSON() (ret interface{}) {
+func (price BundlePrice) BSON() D {
 
-	return M{
-		"_id":        price.getKey(),
-		"created_at": price.CreatedAt,
-		"bundle_id":  price.BundleID,
-		"price":      price.Discount,
+	return D{
+		{"_id", price.getKey()},
+		{"created_at", price.CreatedAt},
+		{"bundle_id", price.BundleID},
+		{"price", price.Discount},
 	}
 }
 

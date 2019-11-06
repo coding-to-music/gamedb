@@ -26,23 +26,23 @@ type Article struct {
 	AppIcon    string    `bson:"app_icon"`
 }
 
-func (article Article) BSON() (ret interface{}) {
+func (article Article) BSON() D {
 
-	return M{
-		"_id":         article.ID,
-		"title":       article.Title,
-		"url":         article.URL,
-		"is_external": article.IsExternal,
-		"author":      article.Author,
-		"contents":    article.Contents,
-		"date":        article.Date,
-		"feed_label":  article.FeedLabel,
-		"feed_name":   article.FeedName,
-		"feed_type":   article.FeedType,
+	return D{
+		{"_id", article.ID},
+		{"title", article.Title},
+		{"url", article.URL},
+		{"is_external", article.IsExternal},
+		{"author", article.Author},
+		{"contents", article.Contents},
+		{"date", article.Date},
+		{"feed_label", article.FeedLabel},
+		{"feed_name", article.FeedName},
+		{"feed_type", article.FeedType},
 
-		"app_id":   article.AppID,
-		"app_name": article.AppName,
-		"app_icon": article.AppIcon,
+		{"app_id", article.AppID},
+		{"app_name", article.AppName},
+		{"app_icon", article.AppIcon},
 	}
 }
 

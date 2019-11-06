@@ -27,7 +27,7 @@ var (
 )
 
 type Document interface {
-	BSON() interface{}
+	BSON() D
 }
 
 type collection string

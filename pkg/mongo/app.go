@@ -17,14 +17,14 @@ type App struct {
 	PlaytimeAverage               float64 `bson:"playtime_average"` // Minutes
 }
 
-func (a App) BSON() (ret interface{}) {
+func (a App) BSON() (ret D) {
 
-	return M{
-		"_id":                             a.ID,
-		"achievements_total":              a.AchievementsCount,
-		"achievements_average_completion": a.AchievementsAverageCompletion,
-		"playtime_total":                  a.PlaytimeTotal,
-		"playtime_average":                a.PlaytimeAverage,
+	return D{
+		{"_id", a.ID},
+		{"achievements_total", a.AchievementsCount},
+		{"achievements_average_completion", a.AchievementsAverageCompletion},
+		{"playtime_total", a.PlaytimeTotal},
+		{"playtime_average", a.PlaytimeAverage},
 	}
 }
 

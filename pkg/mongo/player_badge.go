@@ -34,22 +34,22 @@ type PlayerBadge struct {
 	PlayerIcon          string    `bson:"player_icon"`
 }
 
-func (pb PlayerBadge) BSON() (ret interface{}) {
+func (pb PlayerBadge) BSON() D {
 
-	return M{
-		"_id":                   pb.getKey(),
-		"app_id":                pb.AppID,
-		"app_name":              pb.AppName,
-		"badge_completion_time": pb.BadgeCompletionTime,
-		"badge_foil":            pb.BadgeFoil,
-		"badge_icon":            pb.BadgeIcon,
-		"badge_id":              pb.BadgeID,
-		"badge_level":           pb.BadgeLevel,
-		"badge_scarcity":        pb.BadgeScarcity,
-		"badge_xp":              pb.BadgeXP,
-		"player_id":             pb.PlayerID,
-		"player_icon":           pb.PlayerIcon,
-		"player_name":           pb.PlayerName,
+	return D{
+		{"_id", pb.getKey()},
+		{"app_id", pb.AppID},
+		{"app_name", pb.AppName},
+		{"badge_completion_time", pb.BadgeCompletionTime},
+		{"badge_foil", pb.BadgeFoil},
+		{"badge_icon", pb.BadgeIcon},
+		{"badge_id", pb.BadgeID},
+		{"badge_level", pb.BadgeLevel},
+		{"badge_scarcity", pb.BadgeScarcity},
+		{"badge_xp", pb.BadgeXP},
+		{"player_id", pb.PlayerID},
+		{"player_icon", pb.PlayerIcon},
+		{"player_name", pb.PlayerName},
 	}
 }
 

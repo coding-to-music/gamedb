@@ -40,14 +40,14 @@ type Event struct {
 	IP        string    `bson:"ip"`
 }
 
-func (event Event) BSON() (ret interface{}) {
+func (event Event) BSON() D {
 
-	return M{
-		"created_at": event.CreatedAt,
-		"type":       event.Type,
-		"user_id":    event.UserID,
-		"user_agent": event.UserAgent,
-		"ip":         event.IP,
+	return D{
+		{"created_at", event.CreatedAt},
+		{"type", event.Type},
+		{"user_id", event.UserID},
+		{"user_agent", event.UserAgent},
+		{"ip", event.IP},
 	}
 }
 

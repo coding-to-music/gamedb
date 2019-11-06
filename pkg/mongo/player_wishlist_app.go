@@ -24,19 +24,19 @@ type PlayerWishlistApp struct {
 	AppPrices          map[steam.ProductCC]int `bson:"app_prices"`
 }
 
-func (app PlayerWishlistApp) BSON() (ret interface{}) {
+func (app PlayerWishlistApp) BSON() D {
 
-	return M{
-		"_id":                   app.getKey(),
-		"player_id":             app.PlayerID,
-		"order":                 app.Order,
-		"app_id":                app.AppID,
-		"app_name":              app.AppName,
-		"app_icon":              app.AppIcon,
-		"app_release_state":     app.AppReleaseState,
-		"app_release_date":      app.AppReleaseDate,
-		"app_release_date_nice": app.AppReleaseDateNice,
-		"app_prices":            app.AppPrices,
+	return D{
+		{"_id", app.getKey()},
+		{"player_id", app.PlayerID},
+		{"order", app.Order},
+		{"app_id", app.AppID},
+		{"app_name", app.AppName},
+		{"app_icon", app.AppIcon},
+		{"app_release_state", app.AppReleaseState},
+		{"app_release_date", app.AppReleaseDate},
+		{"app_release_date_nice", app.AppReleaseDateNice},
+		{"app_prices", app.AppPrices},
 	}
 }
 

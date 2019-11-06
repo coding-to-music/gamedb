@@ -19,17 +19,17 @@ type PlayerRecentApp struct {
 	Logo            string `bson:"logo"`
 }
 
-func (g PlayerRecentApp) BSON() (ret interface{}) {
+func (g PlayerRecentApp) BSON() D {
 
-	return M{
-		"_id":              g.getKey(),
-		"player_id":        g.PlayerID,
-		"app_id":           g.AppID,
-		"name":             g.AppName,
-		"playtime_2_weeks": g.PlayTime2Weeks,
-		"playtime_forever": g.PlayTimeForever,
-		"icon":             g.Icon,
-		"logo":             g.Logo,
+	return D{
+		{"_id", g.getKey()},
+		{"player_id", g.PlayerID},
+		{"app_id", g.AppID},
+		{"name", g.AppName},
+		{"playtime_2_weeks", g.PlayTime2Weeks},
+		{"playtime_forever", g.PlayTimeForever},
+		{"icon", g.Icon},
+		{"logo", g.Logo},
 	}
 }
 

@@ -21,15 +21,15 @@ type PlayerBadgeSummary struct {
 	Badge        PlayerBadge       `bson:"-"`
 }
 
-func (pbs PlayerBadgeSummary) BSON() interface{} {
+func (pbs PlayerBadgeSummary) BSON() D {
 
-	return M{
-		"_id":            pbs.ID,
-		"players":        pbs.PlayersCount,
-		"max_level":      pbs.MaxLevel,
-		"max_level_foil": pbs.MaxLevelFoil,
-		"leaders":        pbs.Leaders,
-		"leaders_foil":   pbs.LeadersFoil,
+	return D{
+		{"_id", pbs.ID},
+		{"players", pbs.PlayersCount},
+		{"max_level", pbs.MaxLevel},
+		{"max_level_foil", pbs.MaxLevelFoil},
+		{"leaders", pbs.Leaders},
+		{"leaders_foil", pbs.LeadersFoil},
 	}
 }
 

@@ -36,7 +36,7 @@ type Group struct {
 	Type          string    `bson:"type"`
 }
 
-func (group Group) BSON() (ret interface{}) {
+func (group Group) BSON() D {
 
 	if group.CreatedAt.IsZero() {
 		group.CreatedAt = time.Now()
@@ -44,25 +44,25 @@ func (group Group) BSON() (ret interface{}) {
 
 	group.UpdatedAt = time.Now()
 
-	return M{
-		"_id":             group.ID64,
-		"id":              group.ID,
-		"created_at":      group.CreatedAt,
-		"updated_at":      group.UpdatedAt,
-		"name":            group.Name,
-		"abbreviation":    group.Abbr,
-		"url":             group.URL,
-		"app_id":          group.AppID,
-		"headline":        group.Headline,
-		"summary":         group.Summary,
-		"icon":            group.Icon,
-		"trending":        group.Trending,
-		"members":         group.Members,
-		"members_in_chat": group.MembersInChat,
-		"members_in_game": group.MembersInGame,
-		"members_online":  group.MembersOnline,
-		"error":           group.Error,
-		"type":            group.Type,
+	return D{
+		{"_id", group.ID64},
+		{"id", group.ID},
+		{"created_at", group.CreatedAt},
+		{"updated_at", group.UpdatedAt},
+		{"name", group.Name},
+		{"abbreviation", group.Abbr},
+		{"url", group.URL},
+		{"app_id", group.AppID},
+		{"headline", group.Headline},
+		{"summary", group.Summary},
+		{"icon", group.Icon},
+		{"trending", group.Trending},
+		{"members", group.Members},
+		{"members_in_chat", group.MembersInChat},
+		{"members_in_game", group.MembersInGame},
+		{"members_online", group.MembersOnline},
+		{"error", group.Error},
+		{"type", group.Type},
 	}
 }
 

@@ -24,17 +24,17 @@ type PlayerFriend struct {
 	Relationship string    `bson:"relationship"`
 }
 
-func (f PlayerFriend) BSON() (ret interface{}) {
-	return M{
-		"_id":        f.getKey(),
-		"player_id":  f.PlayerID,
-		"friend_id":  f.FriendID,
-		"since":      f.FriendSince,
-		"avatar":     f.Avatar,
-		"name":       f.Name,
-		"games":      f.Games,
-		"level":      f.Level,
-		"logged_off": f.LoggedOff,
+func (f PlayerFriend) BSON() D {
+	return D{
+		{"_id", f.getKey()},
+		{"player_id", f.PlayerID},
+		{"friend_id", f.FriendID},
+		{"since", f.FriendSince},
+		{"avatar", f.Avatar},
+		{"name", f.Name},
+		{"games", f.Games},
+		{"level", f.Level},
+		{"logged_off", f.LoggedOff},
 	}
 }
 

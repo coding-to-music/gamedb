@@ -22,19 +22,19 @@ type PlayerGroup struct {
 	GroupURL     string `bson:"group_url"`
 }
 
-func (group PlayerGroup) BSON() (ret interface{}) {
+func (group PlayerGroup) BSON() D {
 
-	return M{
-		"_id":           group.getKey(),
-		"player_id":     group.PlayerID,
-		"group_id_64":   group.GroupID64,
-		"group_id":      group.GroupID,
-		"group_name":    group.GroupName,
-		"group_icon":    group.GroupIcon,
-		"group_members": group.GroupMembers,
-		"group_type":    group.GroupType,
-		"group_primary": group.GroupPrimary,
-		"group_url":     group.GroupURL,
+	return D{
+		{"_id", group.getKey()},
+		{"player_id", group.PlayerID},
+		{"group_id_64", group.GroupID64},
+		{"group_id", group.GroupID},
+		{"group_name", group.GroupName},
+		{"group_icon", group.GroupIcon},
+		{"group_members", group.GroupMembers},
+		{"group_type", group.GroupType},
+		{"group_primary", group.GroupPrimary},
+		{"group_url", group.GroupURL},
 	}
 }
 

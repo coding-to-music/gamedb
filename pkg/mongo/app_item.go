@@ -40,35 +40,35 @@ type AppItem struct {
 	WorkshopID       int64      `bson:"workshop_id"`
 }
 
-func (a AppItem) BSON() (ret interface{}) {
+func (a AppItem) BSON() D {
 
-	return M{
-		"_id":                 a.getKey(),
-		"app_id":              a.AppID,
-		"bundle":              a.Bundle,
-		"commodity":           a.Commodity,
-		"date_created":        a.DateCreated,
-		"description":         a.Description,
-		"display_type":        a.DisplayType,
-		"drop_interval":       a.DropInterval,
-		"drop_max_per_window": a.DropMaxPerWindow,
-		"exchange":            a.Exchange,
-		"hash":                a.Hash,
-		"icon_url":            a.IconURL,
-		"icon_url_large":      a.IconURLLarge,
-		"item_def_id":         a.ItemDefID,
-		"item_quality":        a.ItemQuality,
-		"marketable":          a.Marketable,
-		"modified":            a.Modified,
-		"name":                a.Name,
-		"price":               a.Price,
-		"promo":               a.Promo,
-		"quantity":            a.Quantity,
-		"tags":                a.Tags,
-		"timestamp":           a.Timestamp,
-		"tradable":            a.Tradable,
-		"type":                a.Type,
-		"workshop_id":         a.WorkshopID,
+	return D{
+		{"_id", a.getKey()},
+		{"app_id", a.AppID},
+		{"bundle", a.Bundle},
+		{"commodity", a.Commodity},
+		{"date_created", a.DateCreated},
+		{"description", a.Description},
+		{"display_type", a.DisplayType},
+		{"drop_interval", a.DropInterval},
+		{"drop_max_per_window", a.DropMaxPerWindow},
+		{"exchange", a.Exchange},
+		{"hash", a.Hash},
+		{"icon_url", a.IconURL},
+		{"icon_url_large", a.IconURLLarge},
+		{"item_def_id", a.ItemDefID},
+		{"item_quality", a.ItemQuality},
+		{"marketable", a.Marketable},
+		{"modified", a.Modified},
+		{"name", a.Name},
+		{"price", a.Price},
+		{"promo", a.Promo},
+		{"quantity", a.Quantity},
+		{"tags", a.Tags},
+		{"timestamp", a.Timestamp},
+		{"tradable", a.Tradable},
+		{"type", a.Type},
+		{"workshop_id", a.WorkshopID},
 	}
 }
 

@@ -16,7 +16,7 @@ type Change struct {
 	Packages  []int     `bson:"packages"`
 }
 
-func (change Change) BSON() (ret interface{}) {
+func (change Change) BSON() D {
 
 	// Apps
 	var apps A
@@ -31,11 +31,11 @@ func (change Change) BSON() (ret interface{}) {
 	}
 
 	// BSON
-	return M{
-		"_id":        change.ID,
-		"created_at": change.CreatedAt,
-		"apps":       apps,
-		"packages":   packages,
+	return D{
+		{"_id", change.ID},
+		{"created_at", change.CreatedAt},
+		{"apps", apps},
+		{"packages", packages},
 	}
 }
 
