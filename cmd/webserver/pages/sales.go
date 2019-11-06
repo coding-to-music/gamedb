@@ -281,7 +281,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Categories
-	categories := query.getSearchSlice("tagsIn")
+	categories := query.getSearchSlice("categories")
 	if len(categories) > 0 {
 
 		var in A
