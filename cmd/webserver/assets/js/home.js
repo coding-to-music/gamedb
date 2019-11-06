@@ -17,7 +17,10 @@ if ($('#home-page').length > 0) {
             success: function (data, textStatus, jqXHR) {
 
                 $('[data-sort]').removeClass('badge-success');
+                $('[data-sort]').addClass('cursor-pointer');
                 $('[data-sort="' + sort + '"]').addClass('badge-success');
+                $('[data-sort="' + sort + '"]').removeClass('cursor-pointer');
+
                 $('#players tbody tr').remove();
                 $('#column').html(sort);
 
