@@ -98,16 +98,23 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		for _, v := range codes {
-			if v == "" {
+		for _, cc := range codes {
+
+			// Add a star next to countries with states
+			var star = ""
+			if helpers.SliceHasString(mongo.CountriesWithStates, cc) {
+				star = " *"
+			}
+
+			if cc == "" {
 				countries = append(countries, playersCountriesTemplate{
 					CC:   mongo.RankCountryNone,
-					Name: "No Country",
+					Name: "No Country" + star,
 				})
 			} else {
 				countries = append(countries, playersCountriesTemplate{
-					CC:   v,
-					Name: helpers.CountryCodeToName(v),
+					CC:   cc,
+					Name: helpers.CountryCodeToName(cc) + star,
 				})
 			}
 		}
