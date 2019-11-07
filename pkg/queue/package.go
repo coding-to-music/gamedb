@@ -126,7 +126,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Scrape
 	err = scrapePackage(&pack)
 	if err != nil {
-		log.Err(err, id)
+		helpers.LogSteamError(err, id)
 		ackRetry(msg, &message)
 		return
 	}
