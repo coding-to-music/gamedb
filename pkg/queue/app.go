@@ -1124,15 +1124,17 @@ func updateAppSteamSpy(app *sql.App) error {
 		return errors.New("steamspy is down: " + ssURL)
 	}
 
-	owners := resp.GetOwners()
-
 	ss := sql.AppSteamSpy{
 		SSAveragePlaytimeTwoWeeks: resp.Average2Weeks,
 		SSAveragePlaytimeForever:  resp.AverageForever,
 		SSMedianPlaytimeTwoWeeks:  resp.Median2Weeks,
 		SSMedianPlaytimeForever:   resp.MedianForever,
-		SSOwnersLow:               owners[0],
-		SSOwnersHigh:              owners[1],
+	}
+
+	owners := resp.GetOwners()
+	if len(owners) == 2 {
+		ss.SSOwnersLow = owners[0]
+		ss.SSOwnersHigh = owners[1]
 	}
 
 	b, err := json.Marshal(ss)

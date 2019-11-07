@@ -991,14 +991,10 @@ type SteamSpyAppResponse struct {
 
 func (a SteamSpyAppResponse) GetOwners() (ret []int) {
 
-	owners := strings.Replace(a.Owners, ",", "", -1)
-	owners = strings.Replace(owners, " ", "", -1)
+	owners := strings.ReplaceAll(a.Owners, ",", "")
+	owners = strings.ReplaceAll(owners, " ", "")
 	ownersStrings := strings.Split(owners, "..")
-	ownersInts := helpers.StringSliceToIntSlice(ownersStrings)
-	if len(ownersInts) == 2 {
-		return ownersInts
-	}
-	return ret
+	return helpers.StringSliceToIntSlice(ownersStrings)
 }
 
 func GetTypesForSelect() []AppType {
