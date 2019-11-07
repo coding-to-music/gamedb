@@ -202,8 +202,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var sortOrder = query.getOrderMongo(columns, nil)
 	var filter = D{}
-
 	var isContinent bool
+
+	// Continent
 	for _, v := range continents {
 		if v.Key == country {
 			isContinent = true
@@ -216,13 +217,19 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+
+	// Country
 	if !isContinent && country != "" {
 		filter = append(filter, E{Key: "country_code", Value: country})
 	}
 
-	state := query.getSearchString("state")
-	if country == "US" && state != "" {
-		filter = append(filter, E{Key: "status_code", Value: state})
+	for _, cc := range mongo.CountriesWithStates {
+		if cc == country {
+			state := query.getSearchString(cc + "-state")
+			if state != "" && len(state) <= 3 {
+				filter = append(filter, E{Key: "status_code", Value: state})
+			}
+		}
 	}
 
 	search := query.getSearchString("search")
