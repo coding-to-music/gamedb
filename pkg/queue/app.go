@@ -1287,10 +1287,11 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 				// Play for free! Ends in 2 days
 
 				sale.SaleEndEstimate = true
+				sale.SaleEnd = time.Now()
 
 				// Get type
 				index := strings.Index(e.Text, "Ends in")
-				sale.SaleType = strings.ToLower(strings.TrimSpace(e.Text[:index]))
+				sale.SaleType = strings.ToLower(strings.Trim(e.Text[:index], " !"))
 
 				// Get end time
 				dateString := strings.TrimSpace(e.Text[index+len("Ends in"):])
@@ -1300,7 +1301,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 				if len(daysMatches) == 2 {
 					i, err := strconv.Atoi(daysMatches[1])
 					if err == nil {
-						sale.SaleEnd.AddDate(0, 0, i)
+						sale.SaleEnd = sale.SaleEnd.AddDate(0, 0, i)
 					}
 				}
 
@@ -1309,7 +1310,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 				if len(hoursMatches) == 2 {
 					i, err := strconv.Atoi(hoursMatches[1])
 					if err == nil {
-						sale.SaleEnd.Add(time.Hour * time.Duration(i))
+						sale.SaleEnd = sale.SaleEnd.Add(time.Hour * time.Duration(i))
 					}
 				}
 
