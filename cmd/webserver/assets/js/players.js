@@ -1,5 +1,7 @@
 if ($('#players-page').length > 0) {
 
+    const countriesWithStates = ['AU', 'CA', 'FR', 'GB', 'NZ', 'PH', 'SI', 'US'];
+
     const $country = $('#country');
 
     $country.on('change', function (e) {
@@ -8,11 +10,14 @@ if ($('#players-page').length > 0) {
 
     function toggleStateDropDown() {
 
-        const $container = $('#state-container');
-        if ($country.val() === 'US') {
-            $container.removeClass('d-none');
-        } else {
-            $container.addClass('d-none');
+        const countryVal = $country.val();
+
+        for (const cc of countriesWithStates) {
+            if (cc === countryVal) {
+                $('.state-dd[data-cc="' + cc + '"]').removeClass('d-none');
+            } else {
+                $('.state-dd[data-cc="' + cc + '"]').addClass('d-none');
+            }
         }
     }
 
@@ -181,11 +186,14 @@ if ($('#players-page').length > 0) {
         ]
     };
 
-    const searchFields = [
-        $('#search'),
-        $('#state'),
+    let searchFields = [
         $country,
+        $('#search'),
     ];
+
+    for (const cc of countriesWithStates) {
+        searchFields.push($('#' + cc + '-state'));
+    }
 
     const dt = $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
 

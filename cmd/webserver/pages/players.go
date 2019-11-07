@@ -124,6 +124,27 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}()
 
+	// Get states
+	statesOuter := map[string]map[string]string{}
+	for _, cc := range mongo.CountriesWithStates {
+		wg.Add(1)
+		go func(cc string) {
+			defer wg.Done()
+			states, err := mongo.GetUniquePlayerStates(cc)
+			if err != nil {
+				log.Info(err)
+				return
+			}
+			statesInner := map[string]string{}
+			for _, state := range states {
+				if state != "" {
+					statesInner[state] = state
+				}
+			}
+			statesOuter[cc] = statesInner
+		}(cc)
+	}
+
 	// Wait
 	wg.Wait()
 
@@ -132,6 +153,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	t.Date = date
 	t.Countries = countries
 	t.Continents = continents
+	t.States = statesOuter
 
 	returnTemplate(w, r, "players", t)
 }
@@ -141,6 +163,7 @@ type playersTemplate struct {
 	Date       string
 	Countries  []playersCountriesTemplate
 	Continents []continent
+	States     map[string]map[string]string
 }
 
 type playersCountriesTemplate struct {
