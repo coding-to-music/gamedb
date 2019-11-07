@@ -1260,23 +1260,37 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 				// Get end time
 				dateString := strings.TrimSpace(e.Text[index+len("Offer ends"):])
 
-				t, err := time.Parse("2 January", dateString)
-				if err != nil {
-					t, err = time.Parse("January 2", dateString)
-					if err != nil {
-						log.Err(app.ID, err)
-					} else {
+				var t time.Time
+				var timeSet bool
 
-						now := time.Now()
-
-						t = t.AddDate(now.Year(), 0, 0)
-						if t.Unix() < now.Unix() {
-							t = t.AddDate(1, 0, 0)
-						}
-						t.Add(time.Hour * 12)
-
-						sale.SaleEnd = t
+				if timeSet == false {
+					t, err = time.Parse("2 January", dateString)
+					if err == nil {
+						timeSet = true
 					}
+				}
+
+				if timeSet == false {
+					t, err = time.Parse("January 2", dateString)
+					if err == nil {
+						timeSet = true
+					}
+				}
+
+				if timeSet {
+
+					now := time.Now()
+
+					t = t.AddDate(now.Year(), 0, 0)
+					if t.Unix() < now.Unix() {
+						t = t.AddDate(1, 0, 0)
+					}
+
+					sale.SaleEnd = t
+
+				} else {
+					log.Err(err, dateString)
+					return
 				}
 
 				sales = append(sales, sale)
