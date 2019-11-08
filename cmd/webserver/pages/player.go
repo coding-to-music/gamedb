@@ -191,18 +191,32 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, v := range ranks {
-		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_"+cc]; ok {
-			t.Ranks = append(t.Ranks, playerRankTemplate{
-				CountryCode: player.CountryCode,
-				Metric:      v,
-				Position:    position,
-			})
-		}
 		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_"+mongo.RankCountryAll]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
-				CountryCode: mongo.RankCountryAll,
-				Metric:      v,
-				Position:    position,
+				List:     "globally",
+				Metric:   v,
+				Position: position,
+			})
+		}
+		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_"+cc]; ok {
+			t.Ranks = append(t.Ranks, playerRankTemplate{
+				List:     "in the country",
+				Metric:   v,
+				Position: position,
+			})
+		}
+		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_s-"+player.StateCode]; ok {
+			t.Ranks = append(t.Ranks, playerRankTemplate{
+				List:     "in the state",
+				Metric:   v,
+				Position: position,
+			})
+		}
+		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_c-"+player.StateCode]; ok {
+			t.Ranks = append(t.Ranks, playerRankTemplate{
+				List:     "in the continent",
+				Metric:   v,
+				Position: position,
 			})
 		}
 	}
@@ -249,20 +263,13 @@ type playerMissingTemplate struct {
 }
 
 type playerRankTemplate struct {
-	CountryCode string
-	Metric      mongo.RankKey
-	Position    int
+	List     string
+	Metric   mongo.RankKey
+	Position int
 }
 
 func (pr playerRankTemplate) Rank() string {
 	return helpers.OrdinalComma(pr.Position)
-}
-
-func (pr playerRankTemplate) List() string {
-	if pr.CountryCode == mongo.RankCountryAll {
-		return "globally"
-	}
-	return "in country"
 }
 
 func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
