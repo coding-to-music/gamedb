@@ -85,6 +85,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 
 	isError := func() bool {
 
+		// Sleeps on rate limits etc
 		if val, ok := err.(steam.Error); ok {
 
 			if val.Code == 429 {
@@ -98,40 +99,22 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			return false
 		}
 
-		if strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
-			return false
+		steamStrings := []string{
+			"Bad Gateway",
+			"Client.Timeout exceeded while awaiting headers",
+			"connection reset by peer",
+			"expected element type <memberList> but have <html>",
+			"html response",
+			"invalid character '<' looking for beginning of value",
+			"TLS handshake timeout",
+			"unexpected end of JSON input",
+			"XML syntax error",
 		}
 
-		if strings.Contains(err.Error(), "html response") {
-			return false
-		}
-
-		if strings.Contains(err.Error(), "unexpected end of JSON input") {
-			return false
-		}
-
-		if strings.Contains(err.Error(), "Bad Gateway") {
-			return false
-		}
-
-		if strings.Contains(err.Error(), "connection reset by peer") {
-			return false
-		}
-
-		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") {
-			return false
-		}
-
-		if strings.Contains(err.Error(), "TLS handshake timeout") {
-			return false
-		}
-
-		if strings.Contains(err.Error(), "XML syntax error") {
-			return false
-		}
-
-		if strings.Contains(err.Error(), "expected element type <memberList> but have <html>") {
-			return false
+		for _, v := range steamStrings {
+			if strings.Contains(err.Error(), v) {
+				return false
+			}
 		}
 
 		return true
