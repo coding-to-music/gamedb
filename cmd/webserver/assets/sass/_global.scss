@@ -161,14 +161,14 @@ body.dark {
 
     // Tables
     table.table {
-        color: #e9ecef !important;
+        color: #e9ecef;
 
         th[scope=col] {
             border-top: 1px solid #343a40;
         }
 
         tr:hover {
-            color: #e9ecef !important;
+            color: #e9ecef;
         }
 
         .thead-light th {
@@ -179,6 +179,12 @@ body.dark {
 
         td {
             border-top: 1px solid #343a40;
+        }
+
+        .table-success, .table-primary, .table-warning, .table-danger {
+            th, td {
+                color: #212529;
+            }
         }
     }
 
