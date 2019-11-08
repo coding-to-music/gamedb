@@ -48,12 +48,18 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var interfaces = Interfaces{}
 
-	retrieve := func() interface{} {
+	retrieve := func() (interface{}, error) {
 		err = interfaces.addDocumented(w, r)
-		log.Err(err)
+		if err != nil {
+			return nil, err
+		}
+
 		err = interfaces.addUndocumented()
-		log.Err(err)
-		return &interfaces
+		if err != nil {
+			return nil, err
+		}
+
+		return interfaces, nil
 	}
 
 	err = helpers.GetSetCache("steam-api", time.Hour*24, retrieve, &interfaces)

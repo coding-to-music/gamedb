@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-func GetSetCache(name string, ttl time.Duration, retrieve func() interface{}, val interface{}) (err error) {
+func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, error), val interface{}) (err error) {
 
 	if ttl == 0 {
 		ttl = time.Hour * 24 * 365
@@ -49,7 +49,12 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() interface{}, va
 		var buf bytes.Buffer
 		encoder := gob.NewEncoder(&buf)
 
-		err := encoder.Encode(retrieve())
+		i, err := retrieve()
+		if err != nil {
+			return err
+		}
+
+		err = encoder.Encode(i)
 		if err != nil {
 			return err
 		}

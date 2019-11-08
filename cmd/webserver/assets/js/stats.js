@@ -11,230 +11,226 @@ if ($('#genres-page').length > 0 || $('#developers-page').length > 0 || $('#publ
 
 if ($('#stats-page').length > 0) {
 
-    const defaultStatsChartOptions = {
-        chart: {
-            type: 'column',
-            backgroundColor: 'rgba(0,0,0,0)',
-        },
-        title: {
-            text: ''
-        },
-        subtitle: {
-            text: ''
-        },
-        credits: {
-            enabled: false
-        },
-        legend: {
-            enabled: false
-        },
-        xAxis: {
+    (function ($, window) {
+        'use strict';
+
+        const defaultStatsChartOptions = {
+            chart: {
+                type: 'column',
+                backgroundColor: 'rgba(0,0,0,0)',
+            },
             title: {
                 text: ''
             },
-            type: 'category'
-        },
-        yAxis: {
-            allowDecimals: false,
-            title: {
+            subtitle: {
                 text: ''
+            },
+            credits: {
+                enabled: false
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                title: {
+                    text: ''
+                },
+                type: 'category'
+            },
+            yAxis: {
+                allowDecimals: false,
+                title: {
+                    text: ''
+                }
+            },
+            series: [{
+                color: '#28a745',
+            }],
+            plotOptions: {
+                series: {
+                    pointPadding: 0,
+                    groupPadding: 0,
+                }
             }
-        },
-        series: [{
-            color: '#28a745',
-        }],
-        plotOptions: {
-            series: {
-                pointPadding: 0,
-                groupPadding: 0,
-            }
-        }
-    };
+        };
 
-    $.ajax({
-        type: "GET",
-        url: '/stats/client-players.json',
-        dataType: 'json',
-        success: function (data, textStatus, jqXHR) {
+        $.ajax({
+            type: "GET",
+            url: '/stats/client-players.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
 
-            if (data === null) {
-                data = [];
-            }
+                if (data === null) {
+                    data = [];
+                }
 
-            Highcharts.chart('client-players', $.extend(true, {}, defaultStatsChartOptions, {
-                chart: {
-                    type: 'area',
-                },
-                xAxis: {
-                    type: 'datetime',
-                    // tickInterval: 5,
-                },
-                tooltip: {
-                    formatter: function () {
-
-                        const time = moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
-
-                        if (this.series.name === 'ingame') {
-                            return this.y.toLocaleString() + ' people in a game on ' + time;
-                        } else {
-                            return this.y.toLocaleString() + ' people online on ' + time;
-                        }
+                Highcharts.chart('client-players', $.extend(true, {}, defaultStatsChartOptions, {
+                    chart: {
+                        type: 'area',
                     },
-                },
-                plotOptions: {
-                    series: {
-                        cursor: 'pointer',
-                        point: {
-                            events: {
-                                click: function () {
-                                    window.location.href = '/apps?score-low=' + this.x + '&score-high=' + (this.x + 1);
-                                }
-                            }
-                        }
-                    }
-                },
-                series: [
-                    {
-                        name: 'ingame',
-                        marker: {symbol: 'circle'},
-                        data: data['max_player_count'],
+                    xAxis: {
+                        type: 'datetime',
+                        // tickInterval: 5,
                     },
-                    {
-                        name: 'online',
-                        marker: {symbol: 'circle'},
-                        color: '#007bff',
-                        data: data['max_player_online'],
-                        type: 'line',
-                    },
-                ]
-            }));
-        },
-    });
-
-    $.ajax({
-        type: "GET",
-        url: '/stats/app-scores.json',
-        dataType: 'json',
-        success: function (data, textStatus, jqXHR) {
-
-            if (data === null) {
-                data = [];
-            }
-
-            Highcharts.chart('scores', $.extend(true, {}, defaultStatsChartOptions, {
-                xAxis: {
-                    tickInterval: 5,
-                },
-                tooltip: {
-                    formatter: function () {
-                        return this.y.toLocaleString() + ' apps have ' + this.x + '/100';
-                    },
-                },
-                plotOptions: {
-                    series: {
-                        cursor: 'pointer',
-                        point: {
-                            events: {
-                                click: function () {
-                                    window.location.href = '/apps?score-low=' + this.x + '&score-high=' + (this.x + 1);
-                                }
-                            }
-                        }
-                    }
-                },
-                series: [{
-                    data: data
-                }]
-            }));
-        },
-    });
-
-    $.ajax({
-        type: "GET",
-        url: '/stats/app-types.json',
-        dataType: 'json',
-        success: function (data, textStatus, jqXHR) {
-
-            if (data === null) {
-                data = [];
-            }
-
-            Highcharts.chart('types', $.extend(true, {}, defaultStatsChartOptions, {
-                xAxis: {
-                    labels: {
-                        rotation: -20,
-                    }
-                },
-                tooltip: {
-                    formatter: function () {
-                        return this.y.toLocaleString() + ' ' + this.key + ' apps';
-                    },
-                },
-                plotOptions: {
-                    series: {
-                        cursor: 'pointer',
-                        point: {
-                            events: {
-                                click: function () {
-                                    let name = this.name.toLowerCase();
-                                    if (name === 'unknown') {
-                                        name = '';
-                                    }
-                                    window.location.href = '/apps?types=' + name;
-                                }
-                            }
-                        }
-                    }
-                },
-                series: [{
-                    data: data,
-                    dataLabels: {
-                        enabled: true,
+                    tooltip: {
                         formatter: function () {
-                            return this.y.toLocaleString();
-                        }
-                    }
-                }]
-            }));
-        },
-    });
 
-    $.ajax({
-        type: "GET",
-        url: '/stats/release-dates.json',
-        dataType: 'json',
-        success: function (data, textStatus, jqXHR) {
+                            const time = moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
 
-            if (data === null) {
-                data = [];
-            }
-
-            Highcharts.chart('release-dates', $.extend(true, {}, defaultStatsChartOptions, {
-                chart: {
-                    type: 'area',
-                },
-                xAxis: {
-                    type: 'datetime'
-                },
-                tooltip: {
-                    formatter: function () {
-                        return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
-                    },
-                },
-                series: [{
-                    data: data
-                }],
-                plotOptions: {
-                    area: {
-                        lineWidth: 1,
-                        states: {
-                            hover: {
-                                lineWidth: 1
+                            if (this.series.name === 'ingame') {
+                                return this.y.toLocaleString() + ' people in a game on ' + time;
+                            } else {
+                                return this.y.toLocaleString() + ' people online on ' + time;
                             }
                         },
+                    },
+                    plotOptions: {
+                        series: {
+                            cursor: 'pointer',
+                            point: {
+                                events: {
+                                    click: function () {
+                                        window.location.href = '/apps?score-low=' + this.x + '&score-high=' + (this.x + 1);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'ingame',
+                            marker: {symbol: 'circle'},
+                            data: data['max_player_count'],
+                        },
+                        {
+                            name: 'online',
+                            marker: {symbol: 'circle'},
+                            color: '#007bff',
+                            data: data['max_player_online'],
+                            type: 'line',
+                        },
+                    ]
+                }));
+            },
+        });
+
+        $.ajax({
+            type: "GET",
+            url: '/stats/app-scores.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
+
+                Highcharts.chart('scores', $.extend(true, {}, defaultStatsChartOptions, {
+                    xAxis: {
+                        tickInterval: 5,
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.y.toLocaleString() + ' apps have ' + this.x + '/100';
+                        },
+                    },
+                    plotOptions: {
+                        series: {
+                            cursor: 'pointer',
+                            point: {
+                                events: {
+                                    click: function () {
+                                        window.location.href = '/apps?score-low=' + this.x + '&score-high=' + (this.x + 1);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        data: data
+                    }]
+                }));
+            },
+        });
+
+        $.ajax({
+            type: "GET",
+            url: '/stats/release-dates.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
+
+                Highcharts.chart('release-dates', $.extend(true, {}, defaultStatsChartOptions, {
+                    chart: {
+                        type: 'area',
+                    },
+                    xAxis: {
+                        type: 'datetime'
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        },
+                    },
+                    series: [{
+                        data: data
+                    }],
+                    plotOptions: {
+                        area: {
+                            lineWidth: 1,
+                            states: {
+                                hover: {
+                                    lineWidth: 1
+                                }
+                            },
+                        }
+                    },
+                }));
+            },
+        });
+
+        $.ajax({
+            type: "GET",
+            url: '/stats/app-types.json',
+            dataType: 'json',
+            cache: true,
+            success: function (data, textStatus, jqXHR) {
+
+                const $container = $('#app-types tbody');
+
+                $container.empty();
+
+                $container.json2html(
+                    data.rows,
+                    {
+                        '<>': 'tr', 'html': [
+                            {
+                                '<>': 'td', 'html': [
+                                    {
+                                        '<>': 'a', 'href': '/apps?types=${type}', 'html': '${typef}'
+                                    }
+                                ],
+                            },
+                            {
+                                '<>': 'td', 'html': '${countf}'
+                            },
+                            {
+                                '<>': 'td', 'html': '${totalf}'
+                            },
+                        ]
+                    },
+                    {
+                        prepend: false,
                     }
-                },
-            }));
-        },
-    });
+                );
+
+                $('total-price').text(data.total);
+
+                $('#app-types').gdbTable();
+            },
+        });
+
+    })(jQuery, window);
 }

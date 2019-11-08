@@ -13,18 +13,18 @@
             {{ template "_stats_header" . }}
             <div class="card-body">
 
-                <div class="row">
+                <div class="row mb-4">
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <a href="/apps" role="button" class="btn btn-success btn-block">Total Apps<br/>{{ comma .AppsCount}}</a>
+                        <a href="/apps" role="button" class="btn btn-success btn-block mb-0">Total Apps<br/>{{ comma .AppsCount}}</a>
                     </div>
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <a href="/packages" role="button" class="btn btn-success btn-block">Total Packages<br/>{{ comma .PackagesCount}}</a>
+                        <a href="/packages" role="button" class="btn btn-success btn-block mb-0">Total Packages<br/>{{ comma .PackagesCount}}</a>
                     </div>
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <a href="/bundles" role="button" class="btn btn-success btn-block">Total Bundles<br/>{{ comma .BundlesCount}}</a>
+                        <a href="/bundles" role="button" class="btn btn-success btn-block mb-0">Total Bundles<br/>{{ comma .BundlesCount}}</a>
                     </div>
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <a href="/players" role="button" class="btn btn-success btn-block">Total Players<br/>{{ comma64 .PlayersCount}}</a>
+                        <a href="/players" role="button" class="btn btn-success btn-block mb-0">Total Players<br/>{{ comma64 .PlayersCount}}</a>
                     </div>
                 </div>
 
@@ -35,7 +35,7 @@
 
                 <h5>App Types</h5>
                 <div class="table-responsive mb-4">
-                    <table class="table table-hover table-striped table-datatable table-smx" data-order='[[1, "desc"]]'>
+                    <table class="table table-hover table-striped" data-order='[[1, "desc"]]' id="app-types">
                         <thead class="thead-light">
                         <tr>
                             <th scope="col">Type</th>
@@ -44,31 +44,29 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{ range $key, $value := .Totals }}
-                            <tr>
-                                <td><a href="/apps?types={{ .Type }}">{{ .TypeFormatted }}</a></td>
-                                <td>{{ .CountFormatted }}</td>
-                                <td>{{ .TotalFormatted }}</td>
-                            </tr>
-                        {{ end }}
+                        <tr>
+                            <td colspan="3">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </td>
+                        </tr>
                         </tbody>
                         <tfoot class="thead-light">
                         <tr>
                             <td>Total:</td>
                             <td></td>
-                            <td nowrap="nowrap">{{ .TypeTotal }}</td>
+                            <td nowrap="nowrap" id="total-price">{{ .TypeTotal }}</td>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
 
-                <h5>Release Dates</h5>
-                <div class="chart mb-4" id="release-dates">
+                <h5>App Scores</h5>
+                <div class="chart mb-4" id="scores">
                     <i class="fas fa-spinner fa-spin"></i>
                 </div>
 
-                <h5>App Scores</h5>
-                <div class="chart mb-0" id="scores">
+                <h5>Release Dates</h5>
+                <div class="chart mb-0" id="release-dates">
                     <i class="fas fa-spinner fa-spin"></i>
                 </div>
 

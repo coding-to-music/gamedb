@@ -37,9 +37,9 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var chunks [][]level
 
-	retrieve := func() interface{} {
+	retrieve := func() (interface{}, error) {
 		chunks = getExperienceRows()
-		return &chunks
+		return chunks, nil
 	}
 
 	err := helpers.GetSetCache("experience", 0, retrieve, &chunks)

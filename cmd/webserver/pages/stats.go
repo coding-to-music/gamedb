@@ -22,6 +22,7 @@ func StatsRouter() http.Handler {
 	r.Get("/client-players.json", statsClientPlayersHandler)
 	r.Get("/release-dates.json", statsDatesHandler)
 	r.Get("/app-scores.json", statsScoresHandler)
+	r.Get("/app-types.json", statsAppTypesHandler)
 	return r
 }
 
@@ -86,61 +87,6 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
-	// Get total prices
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		var code = helpers.GetProductCC(r)
-		var item = helpers.MemcacheStatsAppTypes(code)
-
-		err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &t.Totals, func() (interface{}, error) {
-
-			var totals []statsAppTypeTotalsRow
-
-			gorm, err := sql.GetMySQLClient()
-			if err != nil {
-				return totals, err
-			}
-
-			gorm = gorm.Select([]string{"type", "count(type) as count", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
-			gorm = gorm.Table("apps")
-			gorm = gorm.Group("type")
-			gorm = gorm.Find(&totals)
-
-			if gorm.Error != nil {
-				log.Err(gorm.Error, r)
-				return nil, gorm.Error
-			}
-
-			for k := range totals {
-
-				app := sql.App{}
-				app.Type = totals[k].Type
-
-				totals[k].TypeFormatted = app.GetType()
-				totals[k].CountFormatted = humanize.Comma(totals[k].Count)
-				totals[k].TotalFormatted = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(totals[k].Total)), true)
-			}
-
-			return totals, nil
-		})
-		if err != nil {
-			log.Err(err)
-			return
-		}
-
-		// Get total
-		var total float64
-		for _, v := range t.Totals {
-			total += v.Total
-		}
-
-		t.TypeTotal = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(total))
-	}()
-
 	wg.Wait()
 
 	returnTemplate(w, r, "stats", t)
@@ -153,17 +99,73 @@ type statsTemplate struct {
 	PackagesCount      int
 	PlayersCount       int64
 	OnlinePlayersCount int64
-	Totals             []statsAppTypeTotalsRow
 	TypeTotal          string
 }
 
-type statsAppTypeTotalsRow struct {
-	Type           string  `gorm:"column:type"`
-	Total          float64 `gorm:"column:total;type:float64"`
-	Count          int64   `gorm:"column:count;type:int"`
-	TypeFormatted  string  `gorm:"-"`
-	TotalFormatted string  `gorm:"-"`
-	CountFormatted string  `gorm:"-"`
+func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {
+
+	var ret statsAppTypes
+	var code = helpers.GetProductCC(r)
+	var item = helpers.MemcacheStatsAppTypes(code)
+
+	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &ret, func() (interface{}, error) {
+
+		var code = helpers.GetProductCC(r)
+		var rows []statsAppTypesRow
+
+		gorm, err := sql.GetMySQLClient()
+		if err != nil {
+			return ret, err
+		}
+
+		gorm = gorm.Select([]string{"type", "count(type) as count", "round(sum(JSON_EXTRACT(prices, \"$." + string(code) + ".final\"))) as total"})
+		gorm = gorm.Table("apps")
+		gorm = gorm.Group("type")
+		gorm = gorm.Find(&rows)
+
+		if gorm.Error != nil {
+			log.Err(gorm.Error, r)
+			return ret, gorm.Error
+		}
+
+		for k := range rows {
+			rows[k].TypeFormatted = helpers.GetAppType(rows[k].Type)
+			rows[k].CountFormatted = humanize.Comma(rows[k].Count)
+			rows[k].TotalFormatted = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(rows[k].Total)), true)
+		}
+
+		// Get total
+		var total float64
+		for _, v := range rows {
+			total += v.Total
+		}
+
+		ret = statsAppTypes{
+			Rows:  rows,
+			Total: helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(total)),
+		}
+
+		return ret, nil
+	})
+	if err != nil {
+		log.Err(err)
+	}
+
+	returnJSON(w, r, ret)
+}
+
+type statsAppTypes struct {
+	Rows  []statsAppTypesRow `json:"rows"`
+	Total string             `json:"total"`
+}
+
+type statsAppTypesRow struct {
+	Type           string  `gorm:"column:type" json:"type"`
+	Total          float64 `gorm:"column:total;type:float64" json:"total"`
+	Count          int64   `gorm:"column:count;type:int" json:"count"`
+	TypeFormatted  string  `json:"typef"`
+	TotalFormatted string  `json:"totalf"`
+	CountFormatted string  `json:"countf"`
 }
 
 func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
