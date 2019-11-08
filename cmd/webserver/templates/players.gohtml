@@ -61,8 +61,8 @@
                                 <label for="{{ $cc }}-state">State</label>
                                 <select class="form-control form-control-chosen" id="{{ $cc }}-state" name="{{ $cc }}-state">
                                     <option value="">Any</option>
-                                    {{ range $sc := $states }}
-                                        <option value="{{$sc}}">{{$sc}}</option>
+                                    {{ range $states }}
+                                        <option value="{{ .Key }}">{{ .Value }}</option>
                                     {{ end }}
                                 </select>
                             </div>

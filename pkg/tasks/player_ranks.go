@@ -100,7 +100,7 @@ func (c PlayerRanks) work() {
 
 		for k, stateCode := range stateCodes {
 
-			log.Info("State: " + stateCode + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(stateCodes)) + ")")
+			log.Info("State: " + stateCode.Key + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(stateCodes)) + ")")
 
 			for _, field := range fields {
 
@@ -114,7 +114,7 @@ func (c PlayerRanks) work() {
 
 				for playerK, v := range players {
 
-					key := strconv.Itoa(int(field.writeCol)) + "_s-" + stateCode
+					key := strconv.Itoa(int(field.writeCol)) + "_s-" + stateCode.Key
 
 					if _, ok := ranks[v.ID]; !ok {
 						ranks[v.ID] = M{}

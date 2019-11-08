@@ -413,7 +413,7 @@ func GetUniquePlayerCountries() (codes []string, err error) {
 	return codes, err
 }
 
-func GetUniquePlayerStates(country string) (codes []string, err error) {
+func GetUniquePlayerStates(country string) (codes []helpers.Tuple, err error) {
 
 	var item = helpers.MemcacheUniquePlayerStateCodes(country)
 
@@ -432,10 +432,20 @@ func GetUniquePlayerStates(country string) (codes []string, err error) {
 		}
 
 		for _, v := range resp {
-			if code, ok := v.(string); ok {
-				codes = append(codes, code)
+			if stateCode, ok := v.(string); stateCode != "" && ok {
+
+				name := stateCode
+				if val, ok := helpers.States[country][stateCode]; ok {
+					name = val
+				}
+
+				codes = append(codes, helpers.Tuple{Key: stateCode, Value: name})
 			}
 		}
+
+		sort.Slice(codes, func(i, j int) bool {
+			return codes[i].Value < codes[j].Value
+		})
 
 		return codes, err
 	})

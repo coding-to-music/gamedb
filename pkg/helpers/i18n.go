@@ -410,53 +410,97 @@ func FormatPrice(currencyCode steam.CurrencyCode, value int, returnNumber ...boo
 	return strings.Replace(symbol, "0.00", humanize.FormatFloat("#,###.##", float64(value)/100), 1)
 }
 
-// <option value="AL">Alabama</option>
-// <option value="AK">Alaska</option>
-// <option value="AZ">Arizona</option>
-// <option value="AR">Arkansas</option>
-// <option value="CA">California</option>
-// <option value="CO">Colorado</option>
-// <option value="CT">Connecticut</option>
-// <option value="DE">Delaware</option>
-// <option value="FL">Florida</option>
-// <option value="GA">Georgia</option>
-// <option value="HI">Hawaii</option>
-// <option value="ID">Idaho</option>
-// <option value="IL">Illinois</option>
-// <option value="IN">Indiana</option>
-// <option value="IA">Iowa</option>
-// <option value="KS">Kansas</option>
-// <option value="KY">Kentucky</option>
-// <option value="LA">Louisiana</option>
-// <option value="ME">Maine</option>
-// <option value="MD">Maryland</option>
-// <option value="MA">Massachusetts</option>
-// <option value="MI">Michigan</option>
-// <option value="MN">Minnesota</option>
-// <option value="MS">Mississippi</option>
-// <option value="MO">Missouri</option>
-// <option value="MT">Montana</option>
-// <option value="NE">Nebraska</option>
-// <option value="NV">Nevada</option>
-// <option value="NH">New Hampshire</option>
-// <option value="NJ">New Jersey</option>
-// <option value="NM">New Mexico</option>
-// <option value="NY">New York</option>
-// <option value="NC">North Carolina</option>
-// <option value="ND">North Dakota</option>
-// <option value="OH">Ohio</option>
-// <option value="OK">Oklahoma</option>
-// <option value="OR">Oregon</option>
-// <option value="PA">Pennsylvania</option>
-// <option value="RI">Rhode Island</option>
-// <option value="SC">South Carolina</option>
-// <option value="SD">South Dakota</option>
-// <option value="TN">Tennessee</option>
-// <option value="TX">Texas</option>
-// <option value="UT">Utah</option>
-// <option value="VT">Vermont</option>
-// <option value="VA">Virginia</option>
-// <option value="WA">Washington</option>
-// <option value="WV">West Virginia</option>
-// <option value="WI">Wisconsin</option>
-// <option value="WY">Wyoming</option>
+var States = map[string]map[string]string{
+	"AU": {
+		"ACT": "Australian Capital Territory",
+		"JBT": "Jervis Bay Territory",
+		"NSW": "New South Wales",
+		"NT":  "Northern Territory",
+		"QLD": "Queensland",
+		"SA":  "South Australia",
+		"TAS": "Tasmania",
+		"VIC": "Victoria",
+		"WA":  "Western Australia",
+	},
+	"CA": {
+		"AB": "Alberta",
+		"BC": "British Columbia",
+		"MB": "Manitoba",
+		"NB": "New Brunswick",
+		"NL": "Newfoundland and Labrador",
+		"NS": "Nova Scotia",
+		"NT": "Northwest Territories",
+		"NU": "Nunavut",
+		"ON": "Ontario",
+		"PE": "Prince Edward Island",
+		"QC": "Quebec",
+		"SK": "Saskatchewan",
+		"YT": "Yukon",
+	},
+	"FR": {},
+	"GB": {},
+	"NZ": {},
+	"PH": {},
+	"SI": {},
+	"US": {
+		"AK": "Alaska",
+		"AL": "Alabama",
+		"AR": "Arkansas",
+		"AS": "American Samoa",
+		"AZ": "Arizona",
+		"CA": "California",
+		"CO": "Colorado",
+		"CT": "Connecticut",
+		"DC": "District of Columbia",
+		"DE": "Delaware",
+		"FL": "Florida",
+		"FM": "Micronesia",
+		"GA": "Georgia",
+		"GU": "Guam",
+		"HI": "Hawaii",
+		"IA": "Iowa",
+		"ID": "Idaho",
+		"IL": "Illinois",
+		"IN": "Indiana",
+		"KS": "Kansas",
+		"KY": "Kentucky",
+		"LA": "Louisiana",
+		"MA": "Massachusetts",
+		"MD": "Maryland",
+		"ME": "Maine",
+		"MH": "Marshall Islands",
+		"MI": "Michigan",
+		"MN": "Minnesota",
+		"MO": "Missouri",
+		"MP": "Northern Mariana Islands",
+		"MS": "Mississippi",
+		"MT": "Montana",
+		"NC": "North Carolina",
+		"ND": "North Dakota",
+		"NE": "Nebraska",
+		"NH": "New Hampshire",
+		"NJ": "New Jersey",
+		"NM": "New Mexico",
+		"NV": "Nevada",
+		"NY": "New York",
+		"OH": "Ohio",
+		"OK": "Oklahoma",
+		"OR": "Oregon",
+		"PA": "Pennsylvania",
+		"PR": "Puerto Rico",
+		"PW": "Palau",
+		"RI": "Rhode Island",
+		"SC": "South Carolina",
+		"SD": "South Dakota",
+		"TN": "Tennessee",
+		"TX": "Texas",
+		"UT": "Utah",
+		"VA": "Virginia",
+		"VI": "Virgin Islands",
+		"VT": "Vermont",
+		"WA": "Washington",
+		"WI": "Wisconsin",
+		"WV": "West Virginia",
+		"WY": "Wyoming",
+	},
+}

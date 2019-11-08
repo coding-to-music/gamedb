@@ -81,8 +81,8 @@ var (
 	MemcacheTotalCommits             = memcache.Item{Key: "total-commits", Expiration: 60 * 60}
 	MemcacheStatsAppTypes            = func(code steam.ProductCC) memcache.Item { return memcache.Item{Key: "stats-app-types-" + string(code), Expiration: 60 * 60 * 25} }
 	MemcacheUserByAPIKey             = func(key string) memcache.Item { return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
-	MemcacheUniquePlayerCountryCodes = memcache.Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24}
-	MemcacheUniquePlayerStateCodes   = func(c string) memcache.Item { return memcache.Item{Key: "unique-player-state-codes-" + c, Expiration: 60 * 60 * 24} }
+	MemcacheUniquePlayerCountryCodes = memcache.Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24 * 7}
+	MemcacheUniquePlayerStateCodes   = func(c string) memcache.Item { return memcache.Item{Key: "unique-player-state-codes-" + c, Expiration: 60 * 60 * 24 * 7} }
 	MemcacheUniqueSaleTypes          = memcache.Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}
 )
 
