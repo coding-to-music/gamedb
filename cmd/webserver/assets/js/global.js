@@ -239,7 +239,7 @@ $('.jumbotron button.close').on('click', function (e) {
 });
 
 const $darkMode = $('#dark-mode');
-$darkMode.on('click', '.fa-sun, .fa-moon', function (e) {
+$darkMode.on('click', function (e) {
 
     const $sun = $darkMode.find('.fa-sun');
     const $moon = $darkMode.find('.fa-moon');
