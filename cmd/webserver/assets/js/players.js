@@ -71,7 +71,7 @@ if ($('#players-page').length > 0) {
             {
                 "targets": 3,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><div class="' + row[4] + '"></div></div><div class="name min">' + row[5].toLocaleString() + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><div class="' + row[4] + '"></div></div><div class="name min nowrap">' + row[5].toLocaleString() + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
