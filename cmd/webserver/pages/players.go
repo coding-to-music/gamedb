@@ -211,6 +211,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Country
 	if !isContinent && country != "" {
+		if country == mongo.RankCountryNone {
+			country = ""
+		}
 		filter = append(filter, E{Key: "country_code", Value: country})
 	}
 
