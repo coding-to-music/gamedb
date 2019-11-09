@@ -170,6 +170,19 @@ func (player Player) CommunityLink() string {
 	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(player.ID, 10)
 }
 
+func (player Player) GetStateName() string {
+
+	if player.CountryCode == "" || player.StateCode == "" {
+		return ""
+	}
+
+	if val, ok := helpers.States[player.CountryCode][player.StateCode]; ok {
+		return val
+	}
+
+	return player.StateCode
+}
+
 func (player Player) GetMaxFriends() int {
 	return helpers.GetPlayerMaxFriends(player.Level)
 }

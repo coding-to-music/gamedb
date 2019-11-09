@@ -118,7 +118,7 @@
                                                 {{ if ne .Player.StateCode "" }}
                                                     <tr>
                                                         <th scope="col" nowrap="nowrap">State</th>
-                                                        <td>{{ .Player.StateCode }}</td>
+                                                        <td>{{ .Player.GetStateName }}</td>
                                                     </tr>
                                                 {{ end }}
                                             </table>
