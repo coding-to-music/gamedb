@@ -115,7 +115,7 @@
                                                         </td>
                                                     </tr>
                                                 {{ end }}
-                                                {{ if eq .Player.CountryCode "US" }}
+                                                {{ if ne .Player.StateCode "" }}
                                                     <tr>
                                                         <th scope="col" nowrap="nowrap">State</th>
                                                         <td>{{ .Player.StateCode }}</td>
