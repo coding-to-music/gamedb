@@ -65,6 +65,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		if err == mongo.ErrNoDocuments {
 
 			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}}, false)
+			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 			log.Err(err)
 
 			// Template
