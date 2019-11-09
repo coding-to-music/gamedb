@@ -13,14 +13,14 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20191015112215-cb5cd23f33ef
+	github.com/Jleagle/steam-go v0.0.0-20191105130514-b9bdeae5b53a
 	github.com/Jleagle/unmarshal-go v0.0.0-20190815120521-15f0bd3950ff
-	github.com/Jleagle/valve-data-format-go v0.0.0-20191018170405-419e8ff7cf85
+	github.com/Jleagle/valve-data-format-go v0.0.0-20191105130353-2651328f1d36
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.4
 	github.com/andybalholm/cascadia v1.1.0 // indirect
-	github.com/antchfx/htmlquery v1.1.0 // indirect
+	github.com/antchfx/htmlquery v1.2.0 // indirect
 	github.com/antchfx/xmlquery v1.1.0 // indirect
 	github.com/antchfx/xpath v1.1.0 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
@@ -56,16 +56,16 @@ require (
 	github.com/jinzhu/gorm v1.9.11
 	github.com/jinzhu/now v1.1.1
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
-	github.com/justinas/nosurf v0.0.0-20190416172904-05988550ea18
+	github.com/justinas/nosurf v1.1.0
 	github.com/jzelinskie/geddit v0.0.0-20190913104144-95ef6806b073
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20191017060258-dc85c304c434
-	github.com/mattn/go-runewidth v0.0.5 // indirect
+	github.com/mattn/go-runewidth v0.0.6 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v0.5.4
 	github.com/nlopes/slack v0.6.0
-	github.com/olekukonko/tablewriter v0.0.1 // indirect
+	github.com/olekukonko/tablewriter v0.0.2 // indirect
 	github.com/oschwald/maxminddb-golang v1.5.0
 	github.com/pariz/gountries v0.0.0-20191029140926-233bc78cf5b5
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
@@ -86,24 +86,24 @@ require (
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
-	go.mongodb.org/mongo-driver v1.1.2
-	go.opencensus.io v0.22.1 // indirect
+	go.mongodb.org/mongo-driver v1.1.3
+	go.opencensus.io v0.22.2 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20191029031824-8986dd9e96cf
+	golang.org/x/crypto v0.0.0-20191108234033-bd318be0434a
 	golang.org/x/exp v0.0.0-20191030013958-a1ab85dbe136 // indirect
-	golang.org/x/net v0.0.0-20191101175033-0deb6923b6d9 // indirect
+	golang.org/x/net v0.0.0-20191109021931-daa7c04131f5 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20191029155521-f43be2a4598c // indirect
+	golang.org/x/sys v0.0.0-20191105231009-c1f44814a5cd // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.0.0-20191101200257-8dbcdeb83d3f // indirect
+	golang.org/x/tools v0.0.0-20191108193012-7d206e10da11 // indirect
 	google.golang.org/api v0.13.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20191028173616-919d9bdd9fe6 // indirect
-	google.golang.org/grpc v1.24.0
+	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect
+	google.golang.org/grpc v1.25.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
-	gopkg.in/yaml.v2 v2.2.4 // indirect
+	gopkg.in/yaml.v2 v2.2.5 // indirect
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
 )
