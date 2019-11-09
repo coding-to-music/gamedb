@@ -197,33 +197,28 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	var resp []homePlayer
 
-	for _, player := range players {
+	for k, player := range players {
 
 		homePlayer := homePlayer{
 			Name:   player.GetName(),
 			Link:   player.GetPath(),
 			Avatar: player.GetAvatar(),
+			Rank:   helpers.OrdinalComma(k + 1),
 		}
 
 		switch id {
 		case "level":
-			homePlayer.setRank(player.GetRank(mongo.RankKeyLevel, mongo.RankCountryAll))
 			homePlayer.Value = humanize.Comma(int64(player.Level))
 			homePlayer.Class = helpers.GetPlayerAvatar2(player.Level)
 		case "games":
-			homePlayer.setRank(player.GetRank(mongo.RankKeyGames, mongo.RankCountryAll))
 			homePlayer.Value = humanize.Comma(int64(player.GamesCount))
 		case "badges":
-			homePlayer.setRank(player.GetRank(mongo.RankKeyBadges, mongo.RankCountryAll))
 			homePlayer.Value = humanize.Comma(int64(player.BadgesCount))
 		case "time":
-			homePlayer.setRank(player.GetRank(mongo.RankKeyPlaytime, mongo.RankCountryAll))
 			homePlayer.Value = helpers.GetTimeLong(player.PlayTime, 2)
 		case "friends":
-			homePlayer.setRank(player.GetRank(mongo.RankKeyFriends, mongo.RankCountryAll))
 			homePlayer.Value = humanize.Comma(int64(player.FriendsCount))
 		case "comments":
-			homePlayer.setRank(player.GetRank(mongo.RankKeyComments, mongo.RankCountryAll))
 			homePlayer.Value = humanize.Comma(int64(player.CommentsCount))
 		}
 
@@ -242,14 +237,6 @@ type homePlayer struct {
 	Class  string `json:"class"`
 }
 
-func (hp *homePlayer) setRank(i int, b bool) {
-	if b {
-		hp.Rank = helpers.OrdinalComma(i)
-	} else {
-		hp.Rank = "-"
-	}
-}
-
 func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 
 	var item = helpers.MemcacheHomePlayers(sort)
@@ -260,7 +247,6 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
-			"ranks":        1,
 			sort:           1,
 		}
 
