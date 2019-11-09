@@ -439,7 +439,7 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 		appsToAdd = append(appsToAdd, mongo.PlayerRecentApp{
 			PlayerID:        player.ID,
 			AppID:           v.AppID,
-			AppName:         v.Name,
+			AppName:         helpers.GetAppName(v.AppID, v.Name),
 			PlayTime2Weeks:  v.PlayTime2Weeks,
 			PlayTimeForever: v.PlayTimeForever,
 			Icon:            v.ImgIconURL,
