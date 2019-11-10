@@ -62,7 +62,7 @@ if ($('#price-changes-page').length > 0) {
 
     window.updateLabels = updateLabels;
 
-    $(document).on('ready', updateLabels);
+    $(document).ready(updateLabels);
 
     $typeField = $('#type');
 
