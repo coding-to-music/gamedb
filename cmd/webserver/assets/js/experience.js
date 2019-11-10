@@ -64,7 +64,7 @@ if ($xpPage.length > 0) {
         update();
     });
 
-    $(document).on('ready', function (e) {
+    $(document).ready(function (e) {
         scroll();
         update();
     });

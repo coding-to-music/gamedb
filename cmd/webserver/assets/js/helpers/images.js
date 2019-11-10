@@ -72,4 +72,4 @@ function fixBrokenImages() {
     });
 }
 
-$(document).on('ready', fixBrokenImages);
+$(document).ready(fixBrokenImages);
