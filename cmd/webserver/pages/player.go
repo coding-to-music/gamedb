@@ -697,11 +697,13 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		code := helpers.GetProductCC(r)
+
 		columns := map[string]string{
 			"0": "order",
 			"1": "app_name",
 			"3": "app_release_date",
-			// "4": "app_prices", // todo
+			"4": "app_prices." + string(code),
 		}
 
 		var err error
