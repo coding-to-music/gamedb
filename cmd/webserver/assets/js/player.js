@@ -286,7 +286,7 @@ if ($playerPage.length > 0) {
                     "targets": 3,
                     "render": function (data, type, row) {
                         if (row[8]) {
-                            return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
+                            return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },

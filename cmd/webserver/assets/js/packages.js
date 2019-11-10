@@ -60,7 +60,7 @@ if ($('#packages-page').length > 0) {
                 "targets": 5,
                 "render": function (data, type, row) {
                     if (row[10]) {
-                        return '<a href="' + row[10] + '" target="_blank" rel="nofollow"><i class="fas fa-link" data-target="_blank"></i></a>';
+                        return '<a href="' + row[10] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
                     }
                     return '';
                 },
