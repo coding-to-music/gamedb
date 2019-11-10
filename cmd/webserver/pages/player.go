@@ -194,28 +194,28 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range ranks {
 		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_"+mongo.RankCountryAll]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
-				List:     "globally",
+				List:     "Globally",
 				Metric:   v,
 				Position: position,
 			})
 		}
 		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_"+cc]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
-				List:     "in the country",
+				List:     "In the country",
 				Metric:   v,
 				Position: position,
 			})
 		}
 		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_s-"+player.StateCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
-				List:     "in the state",
+				List:     "In the state",
 				Metric:   v,
 				Position: position,
 			})
 		}
 		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_c-"+player.StateCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
-				List:     "in the continent",
+				List:     "In the continent",
 				Metric:   v,
 				Position: position,
 			})
