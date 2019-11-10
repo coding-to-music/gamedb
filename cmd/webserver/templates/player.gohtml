@@ -176,17 +176,21 @@
                                     <div class="card-header">Ranks <small>(Updated daily)</small></div>
                                     <div class="card-body">
 
-                                        <div class="table-responsive">
-                                            <table class="table mb-0">
-                                                {{ range $key, $value := .Ranks }}
-                                                    <tr>
-                                                        <td>{{ .Metric.String }}</td>
-                                                        <td>{{ .Rank }}</td>
-                                                        <td>{{ .List }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                            </table>
-                                        </div>
+                                        {{ if gt (len .Ranks) 0 }}
+                                            <div class="table-responsive">
+                                                <table class="table mb-0">
+                                                    {{ range $key, $value := .Ranks }}
+                                                        <tr>
+                                                            <td>{{ .Metric.String }}</td>
+                                                            <td>{{ .Rank }}</td>
+                                                            <td>{{ .List }}</td>
+                                                        </tr>
+                                                    {{ end }}
+                                                </table>
+                                            </div>
+                                        {{ else }}
+                                            <p>{{ .Player.PersonaName }} has not been ranked yet, this will start at midnight UTC.</p>
+                                        {{ end }}
 
                                     </div>
                                 </div>
