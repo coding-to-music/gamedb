@@ -2,6 +2,8 @@ package queue
 
 import (
 	"errors"
+	"strconv"
+	"time"
 
 	"github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/protocol"
@@ -11,6 +13,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
+
+var IDsToForce = map[string]time.Time{}
 
 type steamMessage struct {
 	baseMessage
@@ -56,6 +60,10 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 		var apps []*protobuf.CMsgClientPICSProductInfoRequest_AppInfo
 		for _, id := range message.Message.AppIDs {
 
+			if message.Force {
+				IDsToForce["app-"+strconv.Itoa(id)] = time.Now()
+			}
+
 			uid := uint32(id)
 
 			apps = append(apps, &protobuf.CMsgClientPICSProductInfoRequest_AppInfo{
@@ -78,6 +86,10 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 		var packages []*protobuf.CMsgClientPICSProductInfoRequest_PackageInfo
 		for _, id := range message.Message.PackageIDs {
 
+			if message.Force {
+				IDsToForce["package-"+strconv.Itoa(id)] = time.Now()
+			}
+
 			uid := uint32(id)
 
 			packages = append(packages, &protobuf.CMsgClientPICSProductInfoRequest_PackageInfo{
@@ -94,9 +106,13 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Profiles
-	for _, number := range message.Message.PlayerIDs {
+	for _, id := range message.Message.PlayerIDs {
 
-		ui := uint64(number)
+		if message.Force {
+			IDsToForce["player-"+strconv.FormatInt(id, 10)] = time.Now()
+		}
+
+		ui := uint64(id)
 
 		q.SteamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientFriendProfileInfo, &protobuf.CMsgClientFriendProfileInfo{
 			SteamidFriend: &ui,
