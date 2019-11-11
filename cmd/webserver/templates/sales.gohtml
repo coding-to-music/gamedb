@@ -35,7 +35,9 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h2 class="mb-0">
-                    <span class="icon">{{ .UpcomingSale.Icon }}</span>
+                    {{ if ne .UpcomingSale.Icon "" }}
+                        <span class="icon">{{ .UpcomingSale.Icon }}</span>
+                    {{ end }}
                     {{ if not .UpcomingSale.Started }}Upcoming {{ end }}
                     {{ .UpcomingSale.Name }}: <span id="clock" data-time="{{ .UpcomingSale.Time }}"></span>
                 </h2>
