@@ -17,13 +17,14 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/microcosm-cc/bluemonday"
-	"go.mongodb.org/mongo-driver/bson"
+	. "go.mongodb.org/mongo-driver/bson"
 )
 
 func HomeRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/prices.json", homePricesHandler)
-	r.Get("/{sort}/players.json", homePlayersHandler)
+	r.Get("/sales/{sort}.json", homeSalesHandler)
+	r.Get("/players/{sort}.json", homePlayersHandler)
 	return r
 }
 
@@ -126,10 +127,10 @@ type homeSpotlight struct {
 
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
-	var filter = bson.D{
+	var filter = D{
 		{"prod_cc", string(helpers.GetProductCC(r))},
-		{"app_id", bson.M{"$gt": 0}},
-		{"difference", bson.M{"$lt": 0}},
+		{"app_id", M{"$gt": 0}},
+		{"difference", M{"$lt": 0}},
 	}
 
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
@@ -162,13 +163,72 @@ type homePrice struct {
 	Avatar   string  `json:"avatar"`
 }
 
-func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
+func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "sort")
 
-	if !helpers.SliceHasString([]string{"level", "games", "badges", "time", "comments", "friends"}, id) {
+	var sort string
+	var order int
+
+	switch id {
+	case "top-rated":
+		sort = "app_rating"
+		order = -1
+	case "ending-soon":
+		sort = "offer_end"
+		order = 1
+	case "latest-found":
+		sort = "badges_count"
+		order = -1
+	default:
 		return
 	}
+
+	filter := D{
+		{"app_type", "game"},
+		{"sub_order", 0},
+		{"offer_end", M{"$gt": time.Now()}},
+	}
+
+	sales, err := mongo.GetAllSales(0, 15, filter, D{{sort, order}})
+	if err != nil {
+		log.Err(err)
+	}
+
+	var code = helpers.GetProductCC(r)
+
+	var homeSales []homeSale
+	for _, v := range sales {
+		homeSales = append(homeSales, homeSale{
+			ID:     v.AppID,
+			Name:   v.AppName,
+			Icon:   v.AppIcon,
+			Type:   v.SaleType,
+			Ends:   v.SaleEnd,
+			Rating: v.GetAppRating(),
+			Price:  v.GetPriceString(code),
+			Link:   helpers.GetAppStoreLink(v.AppID),
+		})
+	}
+
+	returnJSON(w, r, homeSales)
+}
+
+type homeSale struct {
+	ID       int       `json:"id"`
+	Name     string    `json:"name"`
+	Icon     string    `json:"icon"`
+	Type     string    `json:"type"`
+	Price    string    `json:"price"`
+	Discount int       `json:"discount"`
+	Rating   string    `json:"rating"`
+	Ends     time.Time `json:"ends"`
+	Link     string    `json:"link"`
+}
+
+func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "sort")
 
 	var sort string
 
@@ -243,14 +303,14 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
-		projection := bson.M{
+		projection := M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
 			sort:           1,
 		}
 
-		return mongo.GetPlayers(0, 15, bson.D{{sort, -1}}, bson.D{{sort, bson.M{"$gt": 0}}}, projection)
+		return mongo.GetPlayers(0, 15, D{{sort, -1}}, D{{sort, M{"$gt": 0}}}, projection)
 	})
 
 	return players, err

@@ -1,28 +1,111 @@
-if ($('#home-page').length > 0) {
+const $homePage = $('#home-page');
+
+if ($homePage.length > 0) {
+
+    // Sales
+    $homePage.on('click', '#sales span[data-sort]:not(.badge-success)', function (e) {
+        loadSales($(this).attr('data-sort'));
+    });
 
     // Players
-    $('[data-sort]').on('click', function (e) {
-
+    $homePage.on('click', '#players span[data-sort]:not(.badge-success)', function (e) {
         loadPlayers($(this).attr('data-sort'));
     });
 
+    loadSales('top-rated');
     loadPlayers('level');
 
-    function loadPlayers(sort) {
+    //
+    function loadSales(sort) {
 
         $.ajax({
-            url: '/home/' + sort + '/players.json',
+            url: '/home/sales/' + sort + '.json',
             dataType: 'json',
             cache: true,
             success: function (data, textStatus, jqXHR) {
 
-                $('[data-sort]').removeClass('badge-success');
-                $('[data-sort]').addClass('cursor-pointer');
-                $('[data-sort="' + sort + '"]').addClass('badge-success');
-                $('[data-sort="' + sort + '"]').removeClass('cursor-pointer');
+                $('#sales span[data-sort]').removeClass('badge-success');
+                $('#sales span[data-sort]').addClass('cursor-pointer');
+                $('#sales span[data-sort="' + sort + '"]').addClass('badge-success');
+                $('#sales span[data-sort="' + sort + '"]').removeClass('cursor-pointer');
+
+                $('#sales tbody tr').remove();
+                $('#sales .change').html(sort);
+
+                if (isIterable(data)) {
+
+                    const $container = $('#sales tbody');
+
+                    $container.json2html(
+                        data,
+                        {
+                            '<>': 'tr', 'data-link': '${link}', 'html': [
+                                {
+                                    '<>': 'td', 'class': 'img', 'html': [
+                                        {
+                                            '<>': 'div', 'class': 'icon-name', 'html': [
+                                                {
+                                                    '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${icon}', 'alt': '', 'data-lazy-alt': '${name}'}],
+                                                },
+                                                {
+                                                    '<>': 'div', 'class': 'name', 'html': '${name}'
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                },
+                                {
+                                    '<>': 'td', 'html': '${price}', 'class': 'nowrap',
+                                },
+                                {
+                                    '<>': 'td', 'html': '${rating}',
+                                },
+                                {
+                                    '<>': 'td', 'nowrap': 'nowrap', 'class': 'nowrap', 'html': [
+                                        {
+                                            '<>': 'span', 'data-toggle': 'tooltip', 'data-placement': 'left', 'data-livestamp': '${ends}',
+                                        }
+                                    ],
+                                },
+                                {
+                                    '<>': 'td', 'html': [
+                                        {
+                                            '<>': 'a', 'href': '${link}', 'target': '_blank', 'rel': 'nofollow', 'html': [
+                                                {
+                                                    '<>': 'i', 'class': 'fas fa-link',
+                                                }
+                                            ],
+                                        },
+                                    ]
+                                },
+                            ]
+                        },
+                        {
+                            prepend: false,
+                        }
+                    );
+
+                    observeLazyImages($container.find('img[data-lazy]'));
+                }
+            },
+        });
+    }
+
+    function loadPlayers(sort) {
+
+        $.ajax({
+            url: '/home/players/' + sort + '.json',
+            dataType: 'json',
+            cache: true,
+            success: function (data, textStatus, jqXHR) {
+
+                $('#players span[data-sort]').removeClass('badge-success');
+                $('#players span[data-sort]').addClass('cursor-pointer');
+                $('#players span[data-sort="' + sort + '"]').addClass('badge-success');
+                $('#players span[data-sort="' + sort + '"]').removeClass('cursor-pointer');
 
                 $('#players tbody tr').remove();
-                $('#column').html(sort);
+                $('#players .change').html(sort);
 
                 if (isIterable(data)) {
 

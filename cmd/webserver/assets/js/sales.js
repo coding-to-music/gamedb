@@ -115,8 +115,10 @@ if ($('#sales-page').length > 0) {
                         let field = row[1];
                         field = field + ' <br /><small>' + row[10] + ' / ' + row[13] + '</small>';
 
-                        if (row[11]) {
-                            field = field + ' <span class="badge badge-success float-right">Record Low</span>';
+                        if (row[11] === 1) {
+                            field = field + ' <span class="badge badge-success float-right">Equal lowest</span>';
+                        } else if (row[11] === 2) {
+                            field = field + ' <span class="badge badge-success float-right">Lowest Ever!</span>';
                         }
 
                         return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + field + '</div></div>'

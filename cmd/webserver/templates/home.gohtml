@@ -25,7 +25,41 @@
         <div class="row">
             <div class="col-12 col-md-8">
 
-                <div class="card mb-3" id="players">
+                <div class="card mb-4" id="sales">
+                    <div class="card-header">
+                        Game Sales
+                        <h5 class="float-right mb-0">
+                            <span class="badge cursor-pointer badge-success" data-sort="top-rated">Top Rated</span>
+                            <span class="badge cursor-pointer" data-sort="ending-soon">Ending Soon</span>
+                            <span class="badge cursor-pointer" data-sort="latest-found">Latest Found</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Sale</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Rating</th>
+                                    <th scope="col">Ends</th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="4"><a href="/sales">More Sales</a></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4" id="players">
                     <div class="card-header">
                         Top Players
                         <h5 class="float-right mb-0">
@@ -45,14 +79,14 @@
                                 <tr>
                                     <th scope="col" class="thin">Rank</th>
                                     <th scope="col">Player</th>
-                                    <th scope="col" id="column">Value</th>
+                                    <th scope="col" class="change">Value</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <td colspan="3"><a href="/players">More</a></td>
+                                    <td colspan="3"><a href="/players">More Players</a></td>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -60,7 +94,7 @@
                     </div>
                 </div>
 
-                <div class="card mb-3" id="prices">
+                <div class="card mb-4" id="prices">
                     <div class="card-header">
                         Price Drops
                         <h5 class="float-right mb-0">
@@ -83,7 +117,7 @@
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <td colspan="4"><a href="/price-changes">More</a></td>
+                                    <td colspan="4"><a href="/price-changes">More Price Changes</a></td>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -91,7 +125,7 @@
                     </div>
                 </div>
 
-                <div class="card mb-3 mb-md-0" id="news">
+                <div class="card mb-4 mb-md-0" id="news">
                     <div class="card-header">Popular Game News</div>
                     <div class="card-body">
                         <ul class="list-unstyled">
@@ -106,7 +140,7 @@
                                 </li>
                             {{ end }}
 
-                            <a href="/news#{{ .NewsID }}">More</a>
+                            <a href="/news#{{ .NewsID }}">More Game News</a>
 
                         </ul>
                     </div>
@@ -133,7 +167,7 @@
                         {{ end }}
                     </div>
                     <div class="card-footer">
-                        <a href="/new-releases">More</a>
+                        <a href="/new-releases">More New Released</a>
                     </div>
                 </div>
 
