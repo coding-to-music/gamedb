@@ -1420,6 +1420,10 @@ func saveAppToInflux(app sql.App) (err error) {
 
 func updateAppTwitch(app *sql.App) error {
 
+	if app.Type != "game" {
+		return nil
+	}
+
 	client, err := helpers.GetTwitch()
 	if err != nil {
 		return err
