@@ -255,15 +255,17 @@ func log(interfaces ...interface{}) {
 				})
 			}
 
-			if entry.severity >= SeverityWarning {
-
-				// Rollbar
-				rollbar.Log(rollbar.ERR, entry.toText(SeverityInfo))
-
-				// Sentry
-				sentry.CaptureException(entry.error)
-				sentry.Flush(time.Second * 5)
-			}
+			// if entry.severity >= SeverityWarning {
+			//
+			// 	// Rollbar
+			// 	rollbar.Log(rollbar.ERR, entry.toText(SeverityInfo))
+			//
+			// 	// Sentry
+			// 	if entry.error != nil {
+			// 		sentry.CaptureException(entry.error)
+			// 	}
+			// 	sentry.Flush(time.Second * 5)
+			// }
 		}
 	}
 }
