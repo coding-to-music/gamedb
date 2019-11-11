@@ -54,12 +54,12 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Filter
 	filter := D{}
 
-	search := query.getSearchString("search")
+	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
 	if len(search) >= 2 {
 		filter = append(filter, E{Key: "$or", Value: A{
-			M{"$text": M{"$search": search}},
-			M{"_id": search},
-			M{"id": search},
+			M{"name": M{"$regex": search, "$options": "i"}},
+			M{"abbreviation": M{"$regex": search, "$options": "i"}},
+			M{"url": M{"$regex": search, "$options": "i"}},
 		}})
 	}
 
