@@ -1,12 +1,14 @@
 package tasks
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
@@ -30,46 +32,50 @@ func (c SteamClientPlayers) Cron() string {
 
 func (c SteamClientPlayers) work() {
 
-	resp, err := http.Get("https://www.valvesoftware.com/en/about/stats")
-	if err != nil {
-		log.Err(err)
-		return
+	operation := func() (err error) {
+
+		resp, err := http.Get("https://www.valvesoftware.com/en/about/stats")
+		if err != nil {
+			return err
+		}
+
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+
+		if strings.TrimSpace(string(b)) == "[]" {
+			return errors.New("www.valvesoftware.com/en/about/stats returned empty array")
+		}
+
+		sp := steamPlayersStruct{}
+		err = helpers.Unmarshal(b, &sp)
+		if err != nil {
+			return errors.New("www.valvesoftware.com/en/about/stats down: " + string(b))
+		}
+
+		fields := map[string]interface{}{
+			"player_online": sp.int(sp.Online),
+			"player_count":  sp.int(sp.InGame),
+		}
+
+		_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
+			Measurement: string(helpers.InfluxMeasurementApps),
+			Tags: map[string]string{
+				"app_id": "0",
+			},
+			Fields:    fields,
+			Time:      time.Now(),
+			Precision: "m",
+		})
+		return err
 	}
 
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Err(err)
-		return
-	}
+	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second * 10
 
-	if strings.TrimSpace(string(b)) == "[]" {
-		log.Info("www.valvesoftware.com/en/about/stats returned empty array")
-		return
-	}
-
-	sp := steamPlayersStruct{}
-	err = helpers.Unmarshal(b, &sp)
-	if err != nil {
-		log.Warning("www.valvesoftware.com/en/about/stats down: " + string(b))
-		return
-	}
-
-	fields := map[string]interface{}{
-		"player_online": sp.int(sp.Online),
-		"player_count":  sp.int(sp.InGame),
-	}
-
-	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(helpers.InfluxMeasurementApps),
-		Tags: map[string]string{
-			"app_id": "0",
-		},
-		Fields:    fields,
-		Time:      time.Now(),
-		Precision: "m",
-	})
-
-	log.Warning(err)
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+	log.Err(err)
 }
 
 type steamPlayersStruct struct {
