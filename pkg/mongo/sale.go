@@ -76,6 +76,57 @@ func (offer Sale) GetOfferName() string {
 	return strings.TrimPrefix(offer.SaleName, "Buy ")
 }
 
+func (offer Sale) GetAppRating() string {
+	if offer.AppRating == 0 {
+		return "-"
+	} else {
+		return helpers.FloatToString(offer.AppRating, 1) + "%"
+	}
+}
+
+func (offer Sale) GetPriceInt() string {
+	if offer.AppRating == 0 {
+		return "-"
+	} else {
+		return helpers.FloatToString(offer.AppRating, 1) + "%"
+	}
+}
+
+func (offer Sale) GetPriceString(code steam.ProductCC) string {
+
+	priceInt, ok := offer.AppPrices[code]
+	if ok {
+		cc := helpers.GetProdCC(code)
+		return helpers.FormatPrice(cc.CurrencyCode, priceInt)
+	} else {
+		return "-"
+	}
+}
+
+// 0:not lowest - 1:match lowest - 2:lowest ever
+func (offer Sale) IsLowest(code steam.ProductCC) int {
+
+	price, ok := offer.AppPrices[code]
+	if !ok {
+		return 0
+	}
+
+	lowestPrice, ok := offer.AppLowestPrice[code]
+	if !ok {
+		return 0
+	}
+
+	if price == lowestPrice {
+		return 1
+	}
+
+	if price < lowestPrice {
+		return 2
+	}
+
+	return 0
+}
+
 func GetAppSales(appID int) (offers []Sale, err error) {
 	return getSales(0, 0, D{{"app_id", appID}}, D{{"offer_end", 1}}, M{"sub_id": 1, "offer_start": 1})
 }

@@ -376,47 +376,21 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, offer := range offers {
 
-		// Price
-		var priceString string
-		priceInt, ok := offer.AppPrices[code]
-		if ok {
-			cc := helpers.GetProdCC(code)
-			priceString = helpers.FormatPrice(cc.CurrencyCode, priceInt)
-		} else {
-			priceString = "-"
-		}
-
-		// Lowest price
-		var lowest bool
-		lowestPriceInt, ok := offer.AppLowestPrice[code]
-		if ok {
-			lowest = priceInt <= lowestPriceInt
-		}
-
-		// Rating
-		var rating interface{}
-		if offer.AppRating == 0 {
-			rating = "-"
-		} else {
-			rating = helpers.FloatToString(offer.AppRating, 1) + "%"
-		}
-
-		//
 		response.AddRow([]interface{}{
 			offer.AppID,          // 0
 			offer.GetOfferName(), // 1
 			offer.AppIcon,        // 2
 			helpers.GetAppPath(offer.AppID, offer.AppName), // 3
-			priceString,                          // 4
-			offer.SalePercent,                    // 5
-			rating,                               // 6
-			offer.SaleEnd.String(),               // 7
-			helpers.GetAppStoreLink(offer.AppID), // 8
-			offer.AppReleaseDate.String(),        // 9
-			offer.GetType(),                      // 10
-			lowest,                               // 11
-			offer.SaleEndEstimate,                // 12
-			helpers.GetAppType(offer.AppType),    // 13
+			offer.GetPriceString(code),                     // 4
+			offer.SalePercent,                              // 5
+			offer.GetAppRating(),                           // 6
+			offer.SaleEnd.String(),                         // 7
+			helpers.GetAppStoreLink(offer.AppID),           // 8
+			offer.AppReleaseDate.String(),                  // 9
+			offer.GetType(),                                // 10
+			offer.IsLowest(code),                           // 11
+			offer.SaleEndEstimate,                          // 12
+			helpers.GetAppType(offer.AppType),              // 13
 		})
 	}
 
