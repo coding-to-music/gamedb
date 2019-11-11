@@ -66,11 +66,10 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
 
-		log.Err(err, msg.Body)
-
 		if err == mongo.ErrInvalidPlayerID {
 			ackFail(msg, &message)
 		} else {
+			log.Err(err, msg.Body)
 			ackRetry(msg, &message)
 		}
 		return

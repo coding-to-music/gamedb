@@ -52,8 +52,8 @@ const (
 )
 
 var (
-	ErrInvalidPlayerID   = errors.New("invalid id")
-	ErrInvalidPlayerName = errors.New("invalid name")
+	ErrInvalidPlayerID   = errors.New("invalid player id")
+	ErrInvalidPlayerName = errors.New("invalid player name")
 )
 
 type Player struct {
