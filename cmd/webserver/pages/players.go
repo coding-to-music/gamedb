@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"errors"
 	"html/template"
 	"net/http"
 	"sort"
@@ -172,7 +171,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	country := query.getSearchString("country")
 	if len(country) > 4 {
-		log.Err(errors.New("invalid cc"))
+		_, err = w.Write([]byte("invalid cc"))
+		log.Err(err)
 		return
 	}
 
