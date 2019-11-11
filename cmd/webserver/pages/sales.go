@@ -85,6 +85,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 	upcomingSales := []upcomingSale{
 		{time.Date(2019, 10, 28, 10, 0, 0, 0, pst), 4, "Halloween Sale", "🎃"},
+		{time.Date(2019, 11, 10, 8, 0, 0, 0, pst), 2, "Singles' Day", ""},
 		{time.Date(2019, 11, 26, 10, 0, 0, 0, pst), 7, "Autumn Sale", "🍁"},
 		{time.Date(2019, 12, 19, 10, 0, 0, 0, pst), 14, "Winter Sale", "⛄"},
 	}
