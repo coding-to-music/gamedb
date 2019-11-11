@@ -90,7 +90,7 @@ func (c PlayerRanks) work() {
 	}
 
 	// Rank by State
-	for _, cc := range mongo.CountriesWithStates {
+	for k, cc := range mongo.CountriesWithStates {
 
 		stateCodes, err := mongo.GetUniquePlayerStates(cc)
 		if err != nil {
@@ -98,9 +98,9 @@ func (c PlayerRanks) work() {
 			return
 		}
 
-		for k, stateCode := range stateCodes {
+		for k2, stateCode := range stateCodes {
 
-			log.Info("State: " + stateCode.Key + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(stateCodes)) + ")")
+			log.Info("Country: " + cc + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(mongo.CountriesWithStates)) + ") State: " + stateCode.Key + " (" + strconv.Itoa(k2+1) + "/" + strconv.Itoa(len(stateCodes)) + ")")
 
 			for _, field := range fields {
 
