@@ -555,21 +555,46 @@ func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int,
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePrice() string {
-	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, int(math.Round(float64(p.Price[p.ProductCC])/float64(p.Count))))
+
+	if p.Count == 0 {
+		return "-"
+	}
+
+	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, int(math.Round(float64(p.Price[p.ProductCC])/float64(p.Count))), true)
 }
 
 func (p playerAppStatsInnerTemplate) GetTotalPrice() string {
-	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, p.Price[p.ProductCC])
+
+	if p.Count == 0 {
+		return "-"
+	}
+
+	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, p.Price[p.ProductCC], true)
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePriceHour() string {
-	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, int(p.PriceHour[p.ProductCC]/float64(p.Count)))
+
+	if p.Count == 0 {
+		return "-"
+	}
+
+	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, int(p.PriceHour[p.ProductCC]/float64(p.Count)), true)
 }
 
 func (p playerAppStatsInnerTemplate) GetAverageTime() string {
+
+	if p.Count == 0 {
+		return "-"
+	}
+
 	return helpers.GetTimeShort(int(float64(p.Time)/float64(p.Count)), 2)
 }
 
 func (p playerAppStatsInnerTemplate) GetTotalTime() string {
+
+	if p.Count == 0 {
+		return "-"
+	}
+
 	return helpers.GetTimeShort(p.Time, 2)
 }
