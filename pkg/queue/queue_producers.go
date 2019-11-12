@@ -110,74 +110,95 @@ func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 	return produce(message, QueueSteam)
 }
 
-func ProduceApp(id int, changeNumber int, vdf map[string]interface{}) (err error) {
+type AppPayload struct {
+	ID           int
+	ChangeNumber int
+	VDF          map[string]interface{}
+	Force        bool
+}
+
+func ProduceApp(payload AppPayload) (err error) {
 
 	time.Sleep(time.Millisecond)
 
-	if !helpers.IsValidAppID(id) {
+	if !helpers.IsValidAppID(payload.ID) {
 		return sql.ErrInvalidAppID
 	}
 
-	if vdf == nil {
-		vdf = map[string]interface{}{}
-	}
-
-	return produce(&appMessage{
+	message := &appMessage{
 		Message: appMessageInner{
-			ID:           id,
-			ChangeNumber: changeNumber,
-			VDF:          vdf,
+			ID:           payload.ID,
+			ChangeNumber: payload.ChangeNumber,
+			VDF:          payload.VDF,
 		},
-	}, queueApps)
+	}
+	message.Force = payload.Force
+
+	return produce(message, queueApps)
 }
 
-func ProducePackage(ID int, changeNumber int, vdf map[string]interface{}) (err error) {
+type PackagePayload struct {
+	ID           int
+	ChangeNumber int
+	VDF          map[string]interface{}
+	Force        bool
+}
+
+func ProducePackage(payload PackagePayload) (err error) {
 
 	time.Sleep(time.Millisecond)
 
-	if !sql.IsValidPackageID(ID) {
+	if !sql.IsValidPackageID(payload.ID) {
 		return sql.ErrInvalidPackageID
 	}
 
-	if vdf == nil {
-		vdf = map[string]interface{}{}
-	}
-
-	return produce(&packageMessage{
+	message := &packageMessage{
 		Message: packageMessageInner{
-			ID:           ID,
-			ChangeNumber: changeNumber,
-			VDF:          vdf,
+			ID:           payload.ID,
+			ChangeNumber: payload.ChangeNumber,
+			VDF:          payload.VDF,
 		},
-	}, queuePackages)
+	}
+	message.Force = payload.Force
+
+	return produce(message, queuePackages)
 }
 
-func ProducePlayer(ID int64, pb *protobuf.CMsgClientFriendProfileInfoResponse) (err error) {
+type PlayerPayload struct {
+	ID         int64
+	PBResponse *protobuf.CMsgClientFriendProfileInfoResponse
+	Force      bool
+}
+
+func ProducePlayer(payload PlayerPayload) (err error) {
 
 	time.Sleep(time.Millisecond)
 
-	if pb == nil {
-		pb = &protobuf.CMsgClientFriendProfileInfoResponse{}
+	if payload.PBResponse == nil {
+		payload.PBResponse = &protobuf.CMsgClientFriendProfileInfoResponse{}
 	}
 
-	if !helpers.IsValidPlayerID(ID) {
-		return errors.New("invalid player id: " + strconv.FormatInt(ID, 10))
+	if !helpers.IsValidPlayerID(payload.ID) {
+		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
 	}
 
-	return produce(&playerMessage{
+	message := &playerMessage{
 		Message: playerMessageInner{
-			ID:            ID,
-			Eresult:       pb.GetEresult(),
-			SteamidFriend: int64(pb.GetSteamidFriend()),
-			TimeCreated:   pb.GetTimeCreated(),
-			RealName:      pb.GetRealName(),
-			CityName:      pb.GetCityName(),
-			StateName:     pb.GetStateName(),
-			CountryName:   pb.GetCountryName(),
-			Headline:      pb.GetHeadline(),
-			Summary:       pb.GetSummary(),
+			ID:            payload.ID,
+			Eresult:       payload.PBResponse.GetEresult(),
+			SteamidFriend: int64(payload.PBResponse.GetSteamidFriend()),
+			TimeCreated:   payload.PBResponse.GetTimeCreated(),
+			RealName:      payload.PBResponse.GetRealName(),
+			CityName:      payload.PBResponse.GetCityName(),
+			StateName:     payload.PBResponse.GetStateName(),
+			CountryName:   payload.PBResponse.GetCountryName(),
+			Headline:      payload.PBResponse.GetHeadline(),
+			Summary:       payload.PBResponse.GetSummary(),
 		},
-	}, queuePlayers)
+	}
+	message.Force = payload.Force
+
+	return produce(message, queuePlayers2)
 }
 
 func ProduceChange(apps map[int]int, packages map[int]int) (err error) {

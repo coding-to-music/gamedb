@@ -194,7 +194,11 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				m = kv.ToMap()
 			}
 
-			err = queue.ProduceApp(int(app.GetAppid()), int(app.GetChangeNumber()), m)
+			var id = int(app.GetAppid())
+			var key = "app-" + strconv.Itoa(id)
+			var force = queue.IDsToForce.Read(key)
+
+			err = queue.ProduceApp(queue.AppPayload{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m, Force: force})
 			if err != nil {
 				log.Err(err)
 			}
@@ -213,21 +217,40 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				m = kv.ToMap()
 			}
 
-			err = queue.ProducePackage(int(pack.GetPackageid()), int(pack.GetChangeNumber()), m)
+			var id = int(pack.GetPackageid())
+			var key = "package-" + strconv.Itoa(id)
+			var force = queue.IDsToForce.Read(key)
+
+			err = queue.ProducePackage(queue.PackagePayload{
+				ID:           int(pack.GetPackageid()),
+				ChangeNumber: int(pack.GetChangeNumber()),
+				VDF:          m,
+				Force:        force,
+			})
 			log.Err(err)
 		}
 	}
 
 	if unknownApps != nil {
 		for _, app := range unknownApps {
-			err := queue.ProduceApp(int(app), 0, nil)
+
+			var id = int(app)
+			var key = "app-" + strconv.Itoa(id)
+			var force = queue.IDsToForce.Read(key)
+
+			err := queue.ProduceApp(queue.AppPayload{ID: id, Force: force})
 			log.Err(err)
 		}
 	}
 
 	if unknownPackages != nil {
 		for _, pack := range unknownPackages {
-			err := queue.ProducePackage(int(pack), 0, nil)
+
+			var id = int(pack)
+			var key = "package-" + strconv.Itoa(id)
+			var force = queue.IDsToForce.Read(key)
+
+			err := queue.ProducePackage(queue.PackagePayload{ID: int(pack), Force: force})
 			log.Err(err)
 		}
 	}
@@ -298,6 +321,10 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 	body := protobuf.CMsgClientFriendProfileInfoResponse{}
 	packet.ReadProtoMsg(&body)
 
-	err := queue.ProducePlayer(int64(body.GetSteamidFriend()), &body)
+	var id = int64(body.GetSteamidFriend())
+	var key = "player-" + strconv.FormatInt(id, 10)
+	var force = queue.IDsToForce.Read(key)
+
+	err := queue.ProducePlayer(queue.PlayerPayload{ID: id, PBResponse: &body, Force: force})
 	log.Err(err)
 }

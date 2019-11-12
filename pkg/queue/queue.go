@@ -31,6 +31,7 @@ const (
 	queueGroupsNew queueName = "GameDB_Go_Groups_New"
 	queuePackages  queueName = "GameDB_Go_Packages"
 	queuePlayers   queueName = "GameDB_Go_Profiles"
+	queuePlayers2  queueName = "GameDB_Go_Profiles2"
 	queueTest      queueName = "GameDB_Go_Test"
 )
 
@@ -76,6 +77,10 @@ var (
 		},
 		queuePlayers: {
 			Name:  queuePlayers,
+			queue: &playerQueue{},
+		},
+		queuePlayers2: {
+			Name:  queuePlayers2,
 			queue: &playerQueue{},
 		},
 		queueAppPlayer: {

@@ -3,6 +3,7 @@ package queue
 import (
 	"errors"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/Philipp15b/go-steam"
@@ -13,8 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
-
-var IDsToForce = map[string]time.Time{}
 
 type steamMessage struct {
 	baseMessage
@@ -61,7 +60,7 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 		for _, id := range message.Message.AppIDs {
 
 			if message.Force {
-				IDsToForce["app-"+strconv.Itoa(id)] = time.Now()
+				IDsToForce.Write("app-" + strconv.Itoa(id))
 			}
 
 			uid := uint32(id)
@@ -87,7 +86,7 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 		for _, id := range message.Message.PackageIDs {
 
 			if message.Force {
-				IDsToForce["package-"+strconv.Itoa(id)] = time.Now()
+				IDsToForce.Write("package-" + strconv.Itoa(id))
 			}
 
 			uid := uint32(id)
@@ -109,7 +108,7 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 	for _, id := range message.Message.PlayerIDs {
 
 		if message.Force {
-			IDsToForce["player-"+strconv.FormatInt(id, 10)] = time.Now()
+			IDsToForce.Write("player-" + strconv.FormatInt(id, 10))
 		}
 
 		ui := uint64(id)
@@ -121,4 +120,45 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 
 	//
 	message.ack(msg)
+}
+
+var IDsToForce = IDsToForceType{
+	IDs: map[string]time.Time{},
+}
+
+type IDsToForceType struct {
+	IDs map[string]time.Time
+	sync.Mutex
+}
+
+func (ids *IDsToForceType) Read(key string) (force bool) {
+
+	ids.Lock()
+	defer ids.Unlock()
+
+	_, force = ids.IDs[key]
+	if force {
+		delete(ids.IDs, key)
+	}
+	return force
+}
+
+func (ids *IDsToForceType) Write(key string) {
+
+	ids.Lock()
+	defer ids.Unlock()
+
+	ids.IDs[key] = time.Now()
+}
+
+func (ids *IDsToForceType) Cleanup() {
+
+	ids.Lock()
+	defer ids.Unlock()
+
+	for k, v := range ids.IDs {
+		if v.Unix() < time.Now().Add(-time.Minute).Unix() {
+			delete(ids.IDs, k)
+		}
+	}
 }
