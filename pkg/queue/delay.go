@@ -25,6 +25,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	err = helpers.Unmarshal(msg.Body, &message)
 	if err != nil {
 		log.Err(err)
+		ackFail(msg, &message)
 		return
 	}
 
@@ -237,6 +238,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	default:
 		log.Critical("Wrong message type", msg.Body)
+		ackFail(msg, &message)
 		return
 	}
 
