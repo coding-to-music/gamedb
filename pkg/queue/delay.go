@@ -68,16 +68,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	switch message.OriginalQueue {
 	case queueApps:
 
-		message2 := &appMessage{}
+		message2 := appMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -85,16 +85,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case queueAppPlayer:
 
-		message2 := &appPlayerMessage{}
+		message2 := appPlayerMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -102,16 +102,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case queueBundles:
 
-		message2 := &bundleMessage{}
+		message2 := bundleMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -119,16 +119,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case queueChanges:
 
-		message2 := &changeMessage{}
+		message2 := changeMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -136,16 +136,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case queueGroups:
 
-		message2 := &groupMessage{}
+		message2 := groupMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -153,16 +153,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case queueGroupsNew:
 
-		message2 := &groupMessage{}
+		message2 := groupMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -170,16 +170,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case queuePackages:
 
-		message2 := &packageMessage{}
+		message2 := packageMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -187,16 +187,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case queuePlayers, queuePlayers2:
 
-		message2 := &playerMessage{}
+		message2 := playerMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -204,16 +204,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case QueueSteam:
 
-		message2 := &steamMessage{}
+		message2 := steamMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
@@ -221,16 +221,16 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 
 	case queueTest:
 
-		message2 := &testMessage{}
+		message2 := testMessage{}
 		message2.Force = message.Force
 
-		err = helpers.Unmarshal(msg.Body, message2)
+		err = helpers.Unmarshal(msg.Body, &message2)
 		if err != nil {
 			log.Err(err)
 			return
 		}
 
-		err = produce(message2, queue)
+		err = produce(&message2, queue)
 		if err != nil {
 			log.Err(err)
 			return
