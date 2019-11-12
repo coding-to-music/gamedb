@@ -541,8 +541,15 @@ func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int,
 	}
 
 	for _, code := range helpers.GetProdCCs(true) {
+
+		// Sometimes priceHour can be -1, meaning infinite
+		var priceHour = priceHours[string(code.ProductCode)]
+		if priceHour < 0 {
+			priceHour = 0
+		}
+
 		p.Price[code.ProductCode] = p.Price[code.ProductCode] + prices[string(code.ProductCode)]
-		p.PriceHour[code.ProductCode] = p.PriceHour[code.ProductCode] + priceHours[string(code.ProductCode)]
+		p.PriceHour[code.ProductCode] = p.PriceHour[code.ProductCode] + priceHour
 		p.Time = p.Time + appTime
 	}
 }

@@ -354,11 +354,11 @@ func updatePlayerGames(player *mongo.Player) error {
 
 			appPrices[gameRow.ID][string(code)] = vv.Final
 			if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime == 0 {
-				appPriceHour[gameRow.ID][string(code)] = -1
+				appPriceHour[gameRow.ID][string(code)] = -1 // Infinite
 			} else if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime > 0 {
 				appPriceHour[gameRow.ID][string(code)] = (float64(appPrices[gameRow.ID][string(code)]) / 100) / (float64(playerApps[gameRow.ID].AppTime) / 60) * 100
 			} else {
-				appPriceHour[gameRow.ID][string(code)] = 0
+				appPriceHour[gameRow.ID][string(code)] = 0 // Free
 			}
 		}
 
