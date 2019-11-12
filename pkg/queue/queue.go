@@ -68,7 +68,7 @@ var (
 		queueGroupsNew: {
 			Name:    queueGroupsNew,
 			queue:   &groupQueueAPI{},
-			maxTime: time.Hour * 24 * 7,
+			maxTime: time.Hour * 24 * 28,
 		},
 		queuePackages: {
 			Name:  queuePackages,
