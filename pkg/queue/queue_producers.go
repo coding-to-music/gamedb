@@ -198,7 +198,7 @@ func ProducePlayer(payload PlayerPayload) (err error) {
 	}
 	message.Force = payload.Force
 
-	return produce(message, queuePlayers2)
+	return produce(message, queuePlayers)
 }
 
 func ProduceChange(apps map[int]int, packages map[int]int) (err error) {
