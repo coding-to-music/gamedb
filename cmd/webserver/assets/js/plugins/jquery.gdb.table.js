@@ -27,70 +27,31 @@
             "pagingType": 'simple_numbers',
             "searching": true,
             "stateSave": false,
+            "search": {
+                "smart": true,
+            },
         },
     };
 
     // The actual plugin constructor
     function Plugin(element, options) {
 
-        if (options == null) {
-            options = {}
-        }
-
-        if (options.tableOptions == null) {
-            options.tableOptions = {};
-        }
+        options = $.extend(true, {}, defaults, options);
 
         options.isAjax = function () {
             return $(element).attr('data-path') != null;
         };
 
+        let initialValues = {};
+        let currentValues = {};
+
+        //
         if (options.isAjax()) {
 
-            defaults.tableOptions.processing = false;
-            defaults.tableOptions.serverSide = true;
-            defaults.tableOptions.orderMulti = false;
-
-            const parentSettings = $.extend(true, {}, defaults, options);
-
-            defaults.tableOptions.ajax = function (data, callback, settings) {
+            const ajax = function (data, callback, settings) {
 
                 delete data.columns;
-                data.search = {};
-
-                // Add search fields to ajax query from URL
-                const params = new URL(window.location).searchParams;
-                for (const $field of parentSettings.searchFields) {
-
-                    let name, value = '';
-
-                    if ($field.prop('multiple')) {
-
-                        // Multi select
-                        name = $field.attr('name');
-                        value = params.getAll(name);
-
-                    } else if ($field.hasClass('noUi-target')) {
-
-                        // Slider
-                        name = $field.attr('data-name');
-                        if ($field.find('.noUi-connect').length > 0) {
-                            value = params.getAll(name);
-                        } else {
-                            value = params.get(name);
-                        }
-
-                    } else { // Inputs
-
-                        name = $field.attr('name');
-                        value = params.get(name);
-
-                    }
-
-                    if (name && value && value.length > 0) {
-                        data.search[name] = value;
-                    }
-                }
+                data.search = currentValues;
 
                 $.ajax({
                     data: data,
@@ -113,40 +74,82 @@
                         callback(data, textStatus, null);
                     },
                 });
-            }
-        } else {
-
-            defaults.tableOptions.search = {
-                "smart": true
             };
 
-            defaults.tableOptions.columnDefs = [
-                {
-                    "orderable": false,
-                    "targets": $(element).find('thead tr th[data-disabled]').map(function () {
-                        return $(this).index();
-                    }).get(),
+            options = $.extend(true, {}, options, {
+                tableOptions: {
+                    processing: false,
+                    serverSide: true,
+                    orderMulti: false,
+                    "ajax": ajax,
                 }
-            ]
+            });
+
+        } else {
+
+            const disabled = $(element).find('thead tr th[data-disabled]').map(function () {
+                return $(this).index();
+            }).get();
+
+            options = $.extend(true, {}, options, {
+                tableOptions: {
+                    columnDefs: [
+                        {
+                            "orderable": false,
+                            targets: disabled,
+                        }
+                    ],
+                }
+            });
         }
 
-        //
-        this.settingsWithoutUrl = $.extend(true, {}, defaults, options);
+        // Update initialValues from search field
+        for (const $field of options.searchFields) {
+
+            const name = getFieldName($field);
+            const value = getFieldValue($field);
+
+            if (name && value && value.length > 0) {
+                initialValues[name] = value;
+                currentValues[name] = value;
+            }
+        }
+
+        // Update currentValues with url values
+        const urlParams = new URL(window.location).searchParams;
+        for (const $field of options.searchFields) {
+
+            const name = getFieldName($field);
+
+            if (name && urlParams.has(name)) {
+
+                const value = urlParams.getAll(name);
+
+                setFieldValue($field, value);
+                currentValues[name] = value;
+            }
+        }
 
         // Add pagination url params to options
-        const urlOptions = {};
-        const params = new URL(window.location).searchParams;
-        if (params.get('page')) {
-            urlOptions.displayStart = (params.get('page') - 1) * this.settingsWithoutUrl.tableOptions.pageLength;
+        if (urlParams.has('p')) {
+            const page = urlParams.get('p');
+            options.tableOptions.displayStart = (page - 1) * options.tableOptions.pageLength;
+            currentValues['p'] = page;
         }
-        if (params.get('sort') && params.get('order')) {
-            urlOptions.order = [[parseInt(params.get('sort')), params.get('order')]];
+        if (urlParams.has('s') && urlParams.has('o')) {
+            const sort = urlParams.get('s');
+            const order = urlParams.get('o');
+            options.tableOptions.order = [[parseInt(sort), order]];
+            currentValues['s'] = sort;
+            currentValues['o'] = order;
         }
 
         //
-        this.settings = $.extend(true, {}, defaults, options, {tableOptions: urlOptions});
+        this.options = options;
         this.element = element;
         this.user = user;
+        this.initialValues = initialValues;
+        this.currentValues = currentValues;
         this.init();
     }
 
@@ -173,9 +176,10 @@
             });
 
             // Init table
-            // console.log(parent.element, this.settings.tableOptions);
-            const dt = $(this.element).DataTable(this.settings.tableOptions);
-            this.dt = dt; // To return from plugin call
+            // console.log(parent.element, this.options.tableOptions);
+            const dt = $(this.element).DataTable(this.options.tableOptions);
+            this.dt = dt;
+            this.initialValues.s = $.extend(true, [], dt.order()); // Using extend to copy, not reference
 
             // On Draw
             $(this.element).on('draw.dt', function (e, settings) {
@@ -197,22 +201,18 @@
                 if ($(parent.element).is(":visible")) {
 
                     const order = dt.order();
-                    const settingsOrder = parent.settingsWithoutUrl.tableOptions.order;
-
-                    if (settingsOrder != null && order.length > 0) {
-                        if (order[0][1] === settingsOrder[0][1] && order[0][0] === settingsOrder[0][0]) {
-                            deleteUrlParam('order');
-                            deleteUrlParam('sort');
-                        } else {
-                            setUrlParam('order', order[0][1]);
-                            setUrlParam('sort', order[0][0]);
-                        }
+                    if (JSON.stringify(parent.initialValues.s) === JSON.stringify(order)) {
+                        deleteUrlParam('o');
+                        deleteUrlParam('s');
+                    } else {
+                        setUrlParam('o', order[0][1]);
+                        setUrlParam('s', order[0][0]);
                     }
 
                     if (dt.page.info().page === 0) {
-                        deleteUrlParam('page');
+                        deleteUrlParam('p');
                     } else {
-                        setUrlParam('page', dt.page.info().page + 1);
+                        setUrlParam('p', dt.page.info().page + 1);
                     }
                 }
 
@@ -226,38 +226,8 @@
                 fixBrokenImages();
             });
 
-            // Hydrate search field inputs from url params
-            const params = new URL(window.location).searchParams;
-            for (const $field of this.settings.searchFields) {
-
-                if ($field.hasClass('noUi-target')) { // Slider
-
-                    const slider = $field[0].noUiSlider;
-                    const name = $field.attr('data-name');
-
-                    if (params.has(name)) {
-                        slider.set(params.getAll(name));
-                    }
-
-                } else { // Input
-
-                    const name = $field.attr('name');
-
-                    if (params.has(name)) {
-
-                        $field.val(params.getAll(name));
-
-                        // Update Chosen drop downs
-                        if ($field.hasClass('form-control-chosen')) {
-                            $field.trigger("chosen:updated");
-                        }
-                    }
-
-                }
-            }
-
             // On page change
-            dt.on('page.dt', function (e, settings, processing) {
+            $(this.element).on('page.dt', function (e, settings, processing) {
 
                 // Scroll on pagination click
                 let padding = 15;
@@ -281,23 +251,28 @@
                 clearUrlParams();
             });
 
-            // Update URL when search fields are changed
-            if (this.settings.isAjax()) {
-                for (const $field of this.settings.searchFields) {
+            // On search field change
+            if (this.options.isAjax()) {
+                for (const $field of this.options.searchFields) {
 
                     if ($field.hasClass('noUi-target')) { // Sliders
 
-                        const slider = $field[0].noUiSlider;
                         const name = $field.attr('data-name');
+                        const slider = $field[0].noUiSlider;
 
                         slider.on('set', function (e) {
 
                             const value = slider.get();
 
-                            if (name && value) {
-                                setUrlParam(name, value);
-                            } else {
-                                deleteUrlParam(name);
+                            if (name) {
+
+                                parent.currentValues[name] = value;
+
+                                if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
+                                    deleteUrlParam(name);
+                                } else {
+                                    setUrlParam(name, value);
+                                }
                             }
 
                             if (typeof window.updateLabels == 'function') {
@@ -322,10 +297,15 @@
 
                             const value = $field.val();
 
-                            if (name && value) {
-                                setUrlParam(name, value);
-                            } else {
-                                deleteUrlParam(name);
+                            if (name) {
+
+                                parent.currentValues[name] = value;
+
+                                if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
+                                    deleteUrlParam(name);
+                                } else {
+                                    setUrlParam(name, value);
+                                }
                             }
 
                             dt.draw();
@@ -335,8 +315,25 @@
                     }
                 }
             } else {
-                for (const $field of this.settings.searchFields) {
+                for (const $field of this.options.searchFields) {
+
+                    const name = $field.attr('name');
+
                     $field.on('keyup', function (e) {
+
+                        const value = $field.val();
+
+                        if (name) {
+
+                            parent.currentValues[name] = value;
+
+                            if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
+                                deleteUrlParam(name);
+                            } else {
+                                setUrlParam(name, value);
+                            }
+                        }
+
                         dt.search($(this).val());
                         dt.draw();
                     });
@@ -350,7 +347,7 @@
 
             // Local tables finish initializing before event handlers are attached,
             // so we trigger them again here.
-            if (!this.settings.isAjax()) {
+            if (!this.options.isAjax()) {
                 $(parent.element).trigger('draw.dt');
             }
 
@@ -393,6 +390,46 @@
             }
         },
     });
+
+    function getFieldValue($field) {
+
+        if ($field.hasClass('noUi-target')) {
+
+            return $field[0].noUiSlider.get();
+
+        } else {
+
+            return $field.val();
+        }
+    }
+
+    function setFieldValue($field, value) {
+
+        if ($field.hasClass('noUi-target')) {
+
+            $field[0].noUiSlider.set(value);
+
+        } else {
+
+            $field.val(value);
+
+            if ($field.hasClass('form-control-chosen')) {
+                $field.trigger("chosen:updated");
+            }
+        }
+    }
+
+    function getFieldName($field) {
+
+        if ($field.hasClass('noUi-target')) {
+
+            return $field.attr('data-name');
+
+        } else {
+
+            return $field.attr('name');
+        }
+    }
 
     $.fn[pluginName] = function (options) {
         return new Plugin(this, options).dt;
