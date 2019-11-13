@@ -61,7 +61,7 @@ var endpoints = []api.APICall{
 			{Name: "min_avg_players", Type: "int", Comment: "Avg over last 7 days"},
 			{Name: "max_avg_players", Type: "int", Comment: "Avg over last 7 days"},
 		},
-		Handler: ApiEndpointHandler(api.AppsHandler),
+		Handler: APIEndpointHandler(api.AppsHandler),
 	},
 	{
 		Title: "Articles",
@@ -211,7 +211,7 @@ func APIRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", apiHandler)
-	r.Get("/swagger.json", apiSwaggerHandler)
+	r.Get("/swagger.json", APISwaggerHandler)
 
 	for _, v := range endpoints {
 		if v.Handler != nil {
@@ -240,7 +240,7 @@ type apiTemplate struct {
 	Base  string
 }
 
-func apiSwaggerHandler(w http.ResponseWriter, r *http.Request) {
+func APISwaggerHandler(w http.ResponseWriter, r *http.Request) {
 
 	swagger := openapi3.Swagger{
 		OpenAPI: "3.0",
@@ -284,13 +284,13 @@ func apiSwaggerHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
-func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err error)) func(http.ResponseWriter, *http.Request) {
+func APIEndpointHandler(callback func(api.APIRequest) (ret interface{}, err error)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		call, err := api.NewAPICall(r)
 		if err != nil {
 
-			returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
+			returnJSON(w, r, APIEndpointResponse{Error: err.Error()})
 
 			err = call.SaveToInflux(false, err)
 			log.Err(err, r)
@@ -301,7 +301,7 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 		resp, err := callback(call)
 		if err != nil {
 
-			returnJSON(w, r, ApiEndpointResponse{Error: err.Error()})
+			returnJSON(w, r, APIEndpointResponse{Error: err.Error()})
 
 			err = call.SaveToInflux(false, err)
 			log.Err(err, r)
@@ -309,7 +309,7 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 			return
 		}
 
-		returnJSON(w, r, ApiEndpointResponse{Data: resp})
+		returnJSON(w, r, APIEndpointResponse{Data: resp})
 
 		err = call.SaveToInflux(true, nil)
 		log.Err(err, r)
@@ -318,7 +318,7 @@ func ApiEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 	}
 }
 
-type ApiEndpointResponse struct {
+type APIEndpointResponse struct {
 	Error string      `json:"error"`
 	Data  interface{} `json:"data"`
 }

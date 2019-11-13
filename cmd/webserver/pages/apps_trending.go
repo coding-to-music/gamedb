@@ -127,7 +127,7 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ret := map[string]helpers.HighChartsJson{}
+	ret := map[string]helpers.HighChartsJSON{}
 	if len(resp.Results) > 0 {
 		for _, v := range resp.Results[0].Series {
 			ret[v.Tags["app_id"]] = helpers.InfluxResponseToHighCharts(v)

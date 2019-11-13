@@ -33,7 +33,7 @@ type queuesTemplate struct {
 func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var item = helpers.MemcacheQueues
-	var highcharts = map[string]helpers.HighChartsJson{}
+	var highcharts = map[string]helpers.HighChartsJSON{}
 
 	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
@@ -63,7 +63,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return highcharts, err
 		}
 
-		ret := map[string]helpers.HighChartsJson{}
+		ret := map[string]helpers.HighChartsJSON{}
 		if len(resp.Results) > 0 {
 			for _, v := range resp.Results[0].Series {
 				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = helpers.InfluxResponseToHighCharts(v)

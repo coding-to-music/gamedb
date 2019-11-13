@@ -125,11 +125,11 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 	return resp, err
 }
 
-type HighChartsJson map[string][][]interface{}
+type HighChartsJSON map[string][][]interface{}
 
-func InfluxResponseToHighCharts(series models.Row) HighChartsJson {
+func InfluxResponseToHighCharts(series models.Row) HighChartsJSON {
 
-	resp := HighChartsJson{}
+	resp := HighChartsJSON{}
 
 	for k, v := range series.Columns {
 		if k > 0 {
