@@ -357,13 +357,13 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				if val != "" {
 
 					eulas := EULAs{}
-					err := helpers.Unmarshal([]byte(val), &eulas)
-					if err != nil {
-						log.Err(err, val)
-					}
+					_ = helpers.Unmarshal([]byte(val), &eulas)
 
 					var items []string
 					for _, eula := range eulas {
+						if eula.Name == "" {
+							eula.Name = "EULA"
+						}
 						items = append(items, `<li><a target="_blank" href="`+eula.URL+`">`+eula.Name+`</a></li>`)
 					}
 
