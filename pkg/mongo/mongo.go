@@ -17,10 +17,6 @@ import (
 )
 
 var (
-	mongoClient     *mongo.Client
-	mongoClientLock sync.Mutex
-	mongoCtx        context.Context
-
 	MongoDatabase = config.Config.MongoDatabase.Get()
 
 	ErrNoDocuments = mongo.ErrNoDocuments
@@ -68,12 +64,20 @@ const (
 	CollectionCategories collection = "categories"
 )
 
+var (
+	mongoClient     *mongo.Client
+	mongoCtx        context.Context
+	mongoClientLock sync.Mutex
+)
+
 func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 
 	mongoClientLock.Lock()
 	defer mongoClientLock.Unlock()
 
 	if mongoClient == nil {
+
+		log.Info("Getting Mongo client")
 
 		ctx = context.Background()
 
