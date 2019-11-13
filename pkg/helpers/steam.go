@@ -99,19 +99,21 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			return false
 		}
 
-		steamStrings := []string{
+		steamErrors := []string{
 			"Bad Gateway",
 			"Client.Timeout exceeded while awaiting headers",
 			"connection reset by peer",
 			"expected element type <memberList> but have <html>",
 			"html response",
+			"Internal Server Error",
 			"invalid character '<' looking for beginning of value",
+			"something went wrong",
 			"TLS handshake timeout",
 			"unexpected end of JSON input",
 			"XML syntax error",
 		}
 
-		for _, v := range steamStrings {
+		for _, v := range steamErrors {
 			if strings.Contains(err.Error(), v) {
 				return false
 			}
